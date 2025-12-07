@@ -32,7 +32,7 @@
     <nav class="navbar">
         <div class="nav-container">
             <a href="{{ '/' | relative_url }}" class="nav-logo">
-                <span class="logo-icon">⚡</span>
+                <img src="{{ '/media_ipro_logo.svg' | relative_url }}" alt="IPRO Logo" class="logo-image">
                 <span class="logo-text">IPRO SDK</span>
             </a>
 
@@ -62,9 +62,17 @@
     <footer class="footer">
         <div class="footer-container">
             <div class="footer-grid">
-                <div class="footer-section">
-                    <h4>IPRO SDK</h4>
-                    <p>高效能嵌入式系統開發套件，支援 BLE 5.4 與 Zephyr RTOS。</p>
+                <div class="footer-section footer-brand">
+                    <div class="footer-logo">
+                        <img src="{{ '/media_ipro_logo.svg' | relative_url }}" alt="IPRO Logo" class="footer-logo-image">
+                        <span class="footer-logo-text">IPRO SDK</span>
+                    </div>
+                    <p>高效能嵌入式系統開發套件，支援 BLE 5.4 與 Zephyr RTOS。專為下一代智慧裝置設計。</p>
+                    <div class="footer-badges">
+                        <span class="footer-badge">BLE 5.4</span>
+                        <span class="footer-badge">RISC-V</span>
+                        <span class="footer-badge">Zephyr</span>
+                    </div>
                 </div>
                 <div class="footer-section">
                     <h4>文件</h4>
@@ -90,7 +98,10 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 IPRO SDK. All rights reserved. | 最後更新：2025 年 12 月</p>
+                <div class="footer-bottom-content">
+                    <p>&copy; 2025 INTELPRO INC. All rights reserved.</p>
+                    <p class="footer-update">最後更新：2025 年 12 月</p>
+                </div>
             </div>
         </div>
     </footer>
