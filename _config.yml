@@ -3,8 +3,8 @@
 
 title: IPRO SDK
 description: A Comprehensive Software Development Kit for IPRO Hardware Platforms
-baseurl: "/ipro_sdk" # Change this to your repo name
-url: "" # Your GitHub Pages URL
+baseurl: "/ipro-sdk-docs" # Your GitHub Pages repository name
+url: "https://intelpro-inc.github.io" # Your GitHub Pages URL
 
 # Theme settings
 remote_theme: pages-themes/cayman@v0.2.0
