@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initNavigation();
     initCodeHighlight();
     initTabs();
-    initCopyButtons();
+    initEnhancedCopyButtons();
     initSmoothScroll();
     initScrollAnimations();
     initActiveNavigation();
@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', function() {
     initTooltips();
     initBackToTop();
     initCountUpAnimations();
+    initTableOfContents();
+    initKeyboardNavigation();
+    initImageLightbox();
 });
 
 // Navigation Toggle
@@ -76,7 +79,63 @@ function initTabs() {
     });
 }
 
-// Copy to Clipboard
+// Enhanced Copy to Clipboard - Works on all code blocks
+function initEnhancedCopyButtons() {
+    // Find all pre elements and code-blocks
+    const codeElements = document.querySelectorAll('pre, .code-block');
+    
+    codeElements.forEach(element => {
+        // Skip if already has a copy button
+        if (element.querySelector('.copy-btn')) return;
+        
+        const pre = element.tagName === 'PRE' ? element : element.querySelector('pre');
+        if (!pre) return;
+        
+        const code = pre.querySelector('code') || pre;
+        if (!code.textContent.trim()) return;
+        
+        // Create copy button
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-btn';
+        copyBtn.innerHTML = '<i class="fas fa-copy"></i> 複製';
+        copyBtn.setAttribute('aria-label', '複製程式碼');
+        
+        // Handle click
+        copyBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            
+            try {
+                await navigator.clipboard.writeText(code.textContent);
+                
+                // Success feedback
+                copyBtn.classList.add('copied');
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> 已複製!';
+                
+                setTimeout(() => {
+                    copyBtn.classList.remove('copied');
+                    copyBtn.innerHTML = '<i class="fas fa-copy"></i> 複製';
+                }, 2000);
+            } catch (err) {
+                console.error('複製失敗:', err);
+                copyBtn.innerHTML = '<i class="fas fa-times"></i> 失敗';
+                setTimeout(() => {
+                    copyBtn.innerHTML = '<i class="fas fa-copy"></i> 複製';
+                }, 2000);
+            }
+        });
+        
+        // Add button to element
+        if (element.classList.contains('code-block')) {
+            element.appendChild(copyBtn);
+        } else {
+            // For standalone pre elements, make them relative and add button
+            element.style.position = 'relative';
+            element.appendChild(copyBtn);
+        }
+    });
+}
+
+// Legacy copy buttons support
 function initCopyButtons() {
     document.querySelectorAll('.code-copy-btn').forEach(btn => {
         btn.addEventListener('click', async function() {
@@ -585,6 +644,383 @@ function initCountUpAnimations() {
     }, { threshold: 0.5 });
     
     stats.forEach(stat => observer.observe(stat));
+}
+
+// ==========================================
+// Table of Contents (TOC)
+// ==========================================
+function initTableOfContents() {
+    // Only show TOC on pages with enough headings
+    const headings = document.querySelectorAll('.doc-content h2, .doc-content h3, .content h2, .content h3, main h2, main h3');
+    
+    if (headings.length < 3) return;
+    
+    // Create TOC container
+    const toc = document.createElement('div');
+    toc.className = 'toc-container';
+    toc.innerHTML = `
+        <div class="toc-title">
+            <i class="fas fa-list"></i>
+            目錄導航
+        </div>
+        <ul class="toc-list"></ul>
+        <div class="toc-progress">
+            <div class="toc-progress-bar"></div>
+        </div>
+    `;
+    
+    const tocList = toc.querySelector('.toc-list');
+    const progressBar = toc.querySelector('.toc-progress-bar');
+    
+    // Build TOC list
+    headings.forEach((heading, index) => {
+        // Add ID to heading if not present
+        if (!heading.id) {
+            heading.id = `heading-${index}`;
+        }
+        
+        const li = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = `#${heading.id}`;
+        link.className = `toc-link toc-${heading.tagName.toLowerCase()}`;
+        link.textContent = heading.textContent;
+        link.dataset.target = heading.id;
+        
+        li.appendChild(link);
+        tocList.appendChild(li);
+        
+        // Smooth scroll on click
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+    
+    document.body.appendChild(toc);
+    
+    // Track scroll position and highlight active section
+    const updateActiveLink = () => {
+        const scrollPos = window.scrollY + 150;
+        let activeHeading = null;
+        
+        headings.forEach(heading => {
+            if (heading.offsetTop <= scrollPos) {
+                activeHeading = heading;
+            }
+        });
+        
+        tocList.querySelectorAll('.toc-link').forEach(link => {
+            link.classList.remove('active');
+            if (activeHeading && link.dataset.target === activeHeading.id) {
+                link.classList.add('active');
+            }
+        });
+        
+        // Update progress bar
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollProgress = (window.scrollY / docHeight) * 100;
+        progressBar.style.width = `${Math.min(scrollProgress, 100)}%`;
+    };
+    
+    window.addEventListener('scroll', updateActiveLink);
+    updateActiveLink();
+}
+
+// ==========================================
+// Keyboard Navigation
+// ==========================================
+function initKeyboardNavigation() {
+    // Define page navigation order
+    const pages = [
+        { key: 'h', name: '首頁', url: '/' },
+        { key: 'g', name: '快速開始', url: '/getting-started' },
+        { key: 'a', name: '架構', url: '/architecture' },
+        { key: 'b', name: 'BLE 開發', url: '/ble-development' },
+        { key: 'z', name: 'Zephyr RTOS', url: '/zephyr-rtos' },
+        { key: 'p', name: '應用範例', url: '/applications' },
+        { key: 'v', name: 'VS Code', url: '/vscode-extension' },
+        { key: 'r', name: 'API', url: '/api-reference' },
+        { key: 'c', name: '更新日誌', url: '/changelog' }
+    ];
+    
+    // Create navigation overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'page-nav-overlay';
+    overlay.innerHTML = `
+        <div class="page-nav-modal">
+            <div class="page-nav-title">
+                <i class="fas fa-compass"></i>
+                快速導航 <kbd>G</kbd>
+            </div>
+            <div class="page-nav-list">
+                ${pages.map(p => `
+                    <a href="${p.url}" class="page-nav-item" data-key="${p.key}">
+                        <span class="nav-key">${p.key.toUpperCase()}</span>
+                        <span>${p.name}</span>
+                    </a>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    
+    // Create keyboard hint
+    const hint = document.createElement('div');
+    hint.className = 'keyboard-nav-hint';
+    hint.innerHTML = `
+        <div class="nav-item"><kbd>G</kbd> 導航</div>
+        <div class="nav-item"><kbd>←</kbd><kbd>→</kbd> 上下頁</div>
+        <div class="nav-item"><kbd>/</kbd> 搜尋</div>
+        <div class="nav-item"><kbd>T</kbd> 主題</div>
+    `;
+    document.body.appendChild(hint);
+    
+    let showHintTimeout;
+    let isNavOpen = false;
+    let selectedIndex = 0;
+    
+    // Show hint on first visit
+    if (!localStorage.getItem('keyboard-hint-shown')) {
+        setTimeout(() => {
+            hint.classList.add('visible');
+            setTimeout(() => {
+                hint.classList.remove('visible');
+            }, 5000);
+            localStorage.setItem('keyboard-hint-shown', 'true');
+        }, 2000);
+    }
+    
+    // Get current page index
+    const currentPath = window.location.pathname.replace(/\/$/, '') || '/';
+    const currentIndex = pages.findIndex(p => {
+        const pagePath = p.url.replace(/\/$/, '') || '/';
+        return currentPath === pagePath || currentPath.endsWith(pagePath);
+    });
+    
+    // Keyboard event handler
+    document.addEventListener('keydown', (e) => {
+        // Ignore if typing in input/textarea
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        
+        // Toggle navigation overlay with 'G'
+        if (e.key.toLowerCase() === 'g' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+            e.preventDefault();
+            isNavOpen = !isNavOpen;
+            overlay.classList.toggle('visible', isNavOpen);
+            selectedIndex = 0;
+            updateSelectedItem();
+        }
+        
+        // Close overlay with Escape
+        if (e.key === 'Escape' && isNavOpen) {
+            isNavOpen = false;
+            overlay.classList.remove('visible');
+        }
+        
+        // Navigate in overlay
+        if (isNavOpen) {
+            const items = overlay.querySelectorAll('.page-nav-item');
+            
+            if (e.key === 'ArrowDown' || e.key === 'j') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex + 1) % items.length;
+                updateSelectedItem();
+            }
+            
+            if (e.key === 'ArrowUp' || e.key === 'k') {
+                e.preventDefault();
+                selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+                updateSelectedItem();
+            }
+            
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                items[selectedIndex]?.click();
+            }
+            
+            // Direct key navigation
+            const pressedKey = e.key.toLowerCase();
+            const targetPage = pages.find(p => p.key === pressedKey);
+            if (targetPage) {
+                window.location.href = targetPage.url;
+            }
+        }
+        
+        // Previous/Next page with arrow keys (when overlay closed)
+        if (!isNavOpen && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+            // Don't interfere with other focused elements
+            if (document.activeElement !== document.body) return;
+            
+            if (e.key === 'ArrowLeft' && currentIndex > 0) {
+                window.location.href = pages[currentIndex - 1].url;
+            }
+            if (e.key === 'ArrowRight' && currentIndex < pages.length - 1) {
+                window.location.href = pages[currentIndex + 1].url;
+            }
+        }
+        
+        // Theme toggle with 'T'
+        if (e.key.toLowerCase() === 't' && !e.ctrlKey && !e.metaKey && !e.altKey && !isNavOpen) {
+            const themeToggle = document.querySelector('.theme-toggle');
+            if (themeToggle) themeToggle.click();
+        }
+        
+        // Search with '/'
+        if (e.key === '/' && !isNavOpen) {
+            e.preventDefault();
+            const searchModal = document.querySelector('.search-modal');
+            if (searchModal) {
+                searchModal.classList.add('active');
+                searchModal.querySelector('input')?.focus();
+            }
+        }
+        
+        // Show keyboard hint with '?'
+        if (e.key === '?' && !isNavOpen) {
+            hint.classList.add('visible');
+            clearTimeout(showHintTimeout);
+            showHintTimeout = setTimeout(() => {
+                hint.classList.remove('visible');
+            }, 3000);
+        }
+    });
+    
+    function updateSelectedItem() {
+        const items = overlay.querySelectorAll('.page-nav-item');
+        items.forEach((item, i) => {
+            item.classList.toggle('selected', i === selectedIndex);
+        });
+    }
+    
+    // Close overlay on click outside
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            isNavOpen = false;
+            overlay.classList.remove('visible');
+        }
+    });
+}
+
+// ==========================================
+// Image Lightbox
+// ==========================================
+function initImageLightbox() {
+    // Collect all zoomable images
+    const images = document.querySelectorAll('.doc-content img, .content img, main img:not(.logo-img):not([class*="logo"])');
+    
+    if (images.length === 0) return;
+    
+    // Create lightbox overlay
+    const lightbox = document.createElement('div');
+    lightbox.className = 'lightbox-overlay';
+    lightbox.innerHTML = `
+        <button class="lightbox-close" aria-label="關閉">
+            <i class="fas fa-times"></i>
+        </button>
+        <button class="lightbox-nav prev" aria-label="上一張">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="lightbox-nav next" aria-label="下一張">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+        <div class="lightbox-counter"></div>
+        <div class="lightbox-content">
+            <img class="lightbox-image" src="" alt="">
+        </div>
+        <div class="lightbox-caption"></div>
+    `;
+    document.body.appendChild(lightbox);
+    
+    const lightboxImg = lightbox.querySelector('.lightbox-image');
+    const lightboxCaption = lightbox.querySelector('.lightbox-caption');
+    const lightboxCounter = lightbox.querySelector('.lightbox-counter');
+    const closeBtn = lightbox.querySelector('.lightbox-close');
+    const prevBtn = lightbox.querySelector('.lightbox-nav.prev');
+    const nextBtn = lightbox.querySelector('.lightbox-nav.next');
+    
+    let currentIndex = 0;
+    const imageArray = Array.from(images);
+    
+    function openLightbox(index) {
+        currentIndex = index;
+        updateLightbox();
+        lightbox.classList.add('visible');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeLightbox() {
+        lightbox.classList.remove('visible');
+        document.body.style.overflow = '';
+    }
+    
+    function updateLightbox() {
+        const img = imageArray[currentIndex];
+        lightboxImg.src = img.src;
+        lightboxImg.alt = img.alt;
+        lightboxCaption.textContent = img.alt || img.title || '';
+        lightboxCaption.style.display = lightboxCaption.textContent ? 'block' : 'none';
+        
+        // Update counter
+        if (imageArray.length > 1) {
+            lightboxCounter.textContent = `${currentIndex + 1} / ${imageArray.length}`;
+            lightboxCounter.style.display = 'block';
+            prevBtn.style.display = 'flex';
+            nextBtn.style.display = 'flex';
+        } else {
+            lightboxCounter.style.display = 'none';
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+        }
+    }
+    
+    function navigate(direction) {
+        currentIndex = (currentIndex + direction + imageArray.length) % imageArray.length;
+        updateLightbox();
+    }
+    
+    // Add click handlers to images
+    imageArray.forEach((img, index) => {
+        img.style.cursor = 'zoom-in';
+        img.addEventListener('click', () => openLightbox(index));
+    });
+    
+    // Lightbox controls
+    closeBtn.addEventListener('click', closeLightbox);
+    prevBtn.addEventListener('click', (e) => { e.stopPropagation(); navigate(-1); });
+    nextBtn.addEventListener('click', (e) => { e.stopPropagation(); navigate(1); });
+    
+    lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox || e.target === lightbox.querySelector('.lightbox-content')) {
+            closeLightbox();
+        }
+    });
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (!lightbox.classList.contains('visible')) return;
+        
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') navigate(-1);
+        if (e.key === 'ArrowRight') navigate(1);
+    });
+    
+    // Touch swipe support
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    lightbox.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    
+    lightbox.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+        
+        if (Math.abs(diff) > 50) {
+            if (diff > 0) navigate(1);
+            else navigate(-1);
+        }
+    }, { passive: true });
 }
 
 // Enhanced Code Block Interactions
