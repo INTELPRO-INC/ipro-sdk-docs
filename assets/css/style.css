@@ -126,16 +126,16 @@ a:hover {
 }
 
 .logo-image {
-    height: 40px;
+    height: 36px;
+    max-width: 120px;
     width: auto;
     object-fit: contain;
-    filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.3));
+    filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.2));
     transition: var(--transition);
 }
 
-.logo-image:hover {
-    filter: drop-shadow(0 0 12px rgba(16, 185, 129, 0.5));
-    transform: scale(1.05);
+.nav-logo:hover .logo-image {
+    filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.4));
 }
 
 .logo-icon {
@@ -257,17 +257,17 @@ a:hover {
 }
 
 .hero-logo {
-    height: 100px;
+    height: 80px;
+    max-width: 250px;
     width: auto;
     object-fit: contain;
-    filter: drop-shadow(0 0 20px rgba(16, 185, 129, 0.4));
+    filter: drop-shadow(0 0 15px rgba(16, 185, 129, 0.3));
     transition: var(--transition);
     animation: float 3s ease-in-out infinite;
 }
 
 .hero-logo:hover {
-    filter: drop-shadow(0 0 30px rgba(16, 185, 129, 0.6));
-    transform: scale(1.05);
+    filter: drop-shadow(0 0 25px rgba(16, 185, 129, 0.5));
 }
 
 @keyframes float {
@@ -892,10 +892,11 @@ a:hover {
 }
 
 .footer-logo-image {
-    height: 48px;
+    height: 40px;
+    max-width: 130px;
     width: auto;
     object-fit: contain;
-    filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.3));
+    filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.2));
 }
 
 .footer-logo-text {
@@ -947,30 +948,16 @@ a:hover {
     margin-bottom: 0.5rem;
 }
 
-.footer-section a {
+.footer-section ul a {
     color: var(--text-secondary);
     font-size: 0.9rem;
     transition: var(--transition);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
+    display: inline-block;
 }
 
-.footer-section a::before {
-    content: '→';
-    opacity: 0;
-    transform: translateX(-5px);
-    transition: var(--transition);
-}
-
-.footer-section a:hover::before {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-.footer-section a:hover {
+.footer-section ul a:hover {
     color: var(--primary-light);
-    padding-left: 0.5rem;
+    transform: translateX(4px);
 }
 
 .social-links {
