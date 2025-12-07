@@ -117,6 +117,52 @@ title: 架構概覽
                 <li><code>bsp/drivers/</code> - 週邊驅動程式</li>
                 <li><code>bsp/board/</code> - 板級配置</li>
             </ul>
+            
+            <h4>支援的週邊驅動</h4>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>類別</th>
+                            <th>驅動</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>通訊介面</td>
+                            <td>UART, SPI (主/從), I2C, I2S</td>
+                        </tr>
+                        <tr>
+                            <td>儲存</td>
+                            <td>SD 卡 (SDH), SPI Flash, PSRAM</td>
+                        </tr>
+                        <tr>
+                            <td>顯示</td>
+                            <td>LCD (ILI9488 SPI), OSD blend/draw</td>
+                        </tr>
+                        <tr>
+                            <td>音訊</td>
+                            <td>AUADC, DAC, I2S</td>
+                        </tr>
+                        <tr>
+                            <td>多媒體</td>
+                            <td>ISP 攝影機, DVP sensor, MJPEG 編解碼</td>
+                        </tr>
+                        <tr>
+                            <td>網路</td>
+                            <td>EMAC 乙太網</td>
+                        </tr>
+                        <tr>
+                            <td>USB</td>
+                            <td>Device (CDC, MSC, HID, UAC, UVC)</td>
+                        </tr>
+                        <tr>
+                            <td>其他</td>
+                            <td>GPIO, PWM, ADC, Timer, IR, QDEC, DMA</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
         
         <section id="directory">
