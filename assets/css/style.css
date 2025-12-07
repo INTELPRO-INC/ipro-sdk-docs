@@ -1002,3 +1002,144 @@ tr:last-child td {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--border-light);
 }
+
+/* ==========================================
+   VS Code Extension Page Styles
+   ========================================== */
+
+/* Info Box */
+.info-box {
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.info-box h4 {
+    color: var(--primary-light);
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.info-box ul {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.info-box li {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+/* Warning Box */
+.warning-box {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.warning-box h4 {
+    color: var(--warning);
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.warning-box ul {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.warning-box li {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+/* Architecture Diagram */
+.architecture-diagram {
+    background: var(--bg-tertiary);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    overflow-x: auto;
+}
+
+.architecture-diagram pre {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: var(--text-secondary);
+    white-space: pre;
+}
+
+/* FAQ Item */
+.faq-item {
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    border-left: 3px solid var(--primary);
+}
+
+.faq-item h4 {
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+}
+
+.faq-item p {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.faq-item ol {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+}
+
+.faq-item li {
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+/* Features Grid for VS Code page */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.feature-card {
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary);
+}
+
+.feature-card .feature-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.feature-card h3 {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+}
+
+.feature-card p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+}
