@@ -276,7 +276,7 @@ function initParticleBackground() {
         particles.forEach((p, i) => {
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(99, 102, 241, ${p.opacity})`;
+            ctx.fillStyle = `rgba(16, 185, 129, ${p.opacity})`;
             ctx.fill();
             
             // Draw connections
@@ -289,7 +289,7 @@ function initParticleBackground() {
                     ctx.beginPath();
                     ctx.moveTo(p.x, p.y);
                     ctx.lineTo(p2.x, p2.y);
-                    ctx.strokeStyle = `rgba(99, 102, 241, ${0.1 * (1 - dist / 100)})`;
+                    ctx.strokeStyle = `rgba(16, 185, 129, ${0.1 * (1 - dist / 100)})`;
                     ctx.stroke();
                 }
             });
