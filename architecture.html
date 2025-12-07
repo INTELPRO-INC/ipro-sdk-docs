@@ -1,0 +1,287 @@
+---
+layout: default
+title: 架構概覽
+---
+
+<div class="doc-layout">
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <h4 class="sidebar-title">本頁目錄</h4>
+            <ul class="sidebar-links">
+                <li><a href="#overview" class="sidebar-link">架構概覽</a></li>
+                <li><a href="#layers" class="sidebar-link">分層設計</a></li>
+                <li><a href="#directory" class="sidebar-link">目錄結構</a></li>
+                <li><a href="#build-system" class="sidebar-link">建構系統</a></li>
+                <li><a href="#configuration" class="sidebar-link">配置系統</a></li>
+                <li><a href="#components" class="sidebar-link">元件概覽</a></li>
+            </ul>
+        </nav>
+    </aside>
+    
+    <article class="doc-content">
+        <h1>架構概覽</h1>
+        <p>IPRO SDK 採用清晰的分層架構設計，提供高度模組化與可移植性，讓開發者能夠快速建構穩定的嵌入式應用。</p>
+        
+        <section id="overview">
+            <h2>系統架構圖</h2>
+            <p>SDK 的整體架構由五個主要層次組成：</p>
+            
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">IPRO SDK 架構</span>
+                </div>
+                <pre><code>+------------------------------------------------------+
+|                 Application Layer                    |
+|              (e.g., apps/ipro7_demo)                 |
++------------------------------------------------------+
+|          Middleware & Reusable Components            |
+|   (lwIP, Mbed TLS, CherryUSB, File Systems, etc.)    |
++------------------------------------------------------+
+|       Real-Time OS (FreeRTOS or Zephyr RTOS)        |
++------------------------------------------------------+
+|             Board Support Package (BSP)              |
+|   +----------------------------------------------+   |
+|   | Hardware Abstraction Layer (HAL) & Drivers   |   |
+|   +----------------------------------------------+   |
++------------------------------------------------------+
+|               IPRO Hardware Platform                 |
++------------------------------------------------------+</code></pre>
+            </div>
+        </section>
+        
+        <section id="layers">
+            <h2>各層詳細說明</h2>
+            
+            <h3>應用層（Application Layer）</h3>
+            <p>位於 <code>apps/</code> 目錄，包含所有的應用程式專案。每個應用都是獨立的專案，擁有自己的：</p>
+            <ul>
+                <li><code>CMakeLists.txt</code> - 建構配置</li>
+                <li><code>proj.conf</code> - Kconfig 配置覆蓋</li>
+                <li><code>main.c</code> - 應用程式入口</li>
+                <li><code>Kconfig.app</code> - 應用專屬選項</li>
+            </ul>
+            
+            <h3>中間件層（Middleware Layer）</h3>
+            <p>位於 <code>components/</code> 目錄，提供可重複使用的軟體元件：</p>
+            
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>元件</th>
+                            <th>目錄</th>
+                            <th>功能</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>lwIP</td>
+                            <td><code>components/network/</code></td>
+                            <td>輕量級 TCP/IP 協定棧</td>
+                        </tr>
+                        <tr>
+                            <td>Mbed TLS</td>
+                            <td><code>components/crypto/</code></td>
+                            <td>加密與安全通訊</td>
+                        </tr>
+                        <tr>
+                            <td>CherryUSB</td>
+                            <td><code>components/cherryusb/</code></td>
+                            <td>USB 裝置/主機協定棧</td>
+                        </tr>
+                        <tr>
+                            <td>Wireless</td>
+                            <td><code>components/wireless/</code></td>
+                            <td>BLE 5.4、Zigbee、Thread</td>
+                        </tr>
+                        <tr>
+                            <td>File Systems</td>
+                            <td><code>components/fs/</code></td>
+                            <td>FAT、LittleFS 等檔案系統</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h3>RTOS 層</h3>
+            <p>SDK 支援兩種即時作業系統：</p>
+            <ul>
+                <li><strong>FreeRTOS</strong> - 位於 <code>components/os/freertos/</code>，經典穩定的 RTOS 選擇</li>
+                <li><strong>Zephyr RTOS</strong> - 現代化 RTOS，提供 Device Tree、West 建構系統等進階功能</li>
+            </ul>
+            
+            <h3>BSP 層（Board Support Package）</h3>
+            <p>位於 <code>bsp/</code> 目錄，提供硬體抽象：</p>
+            <ul>
+                <li><code>bsp/hal/</code> - 硬體抽象層 API</li>
+                <li><code>bsp/drivers/</code> - 週邊驅動程式</li>
+                <li><code>bsp/board/</code> - 板級配置</li>
+            </ul>
+        </section>
+        
+        <section id="directory">
+            <h2>目錄結構</h2>
+            
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">SDK 目錄結構</span>
+                </div>
+                <pre><code>ipro_sdk/
+├── apps/                         # 應用程式專案
+│   ├── ipro7_demo/               # 基礎平台展示
+│   ├── ipro_ble_demo/            # BLE 展示應用
+│   ├── ipro7_fpga_ble_5p4/       # FPGA BLE 5.4
+│   ├── ipro7_phyrf_test/         # RF 測試
+│   └── ipro_zephyr_demo/         # Zephyr 展示
+│
+├── bsp/                          # Board Support Package
+│   ├── board/                    # 板級配置
+│   ├── drivers/                  # 週邊驅動
+│   ├── hal/                      # 硬體抽象層
+│   └── common/                   # 共用程式碼
+│
+├── components/                   # 可重用元件
+│   ├── wireless/                 # 無線協定棧
+│   │   └── ipro_ble_lib/         # BLE 程式庫
+│   ├── os/                       # RTOS 元件
+│   ├── network/                  # 網路協定棧
+│   ├── crypto/                   # 加密元件
+│   ├── fs/                       # 檔案系統
+│   └── ...
+│
+├── tools/                        # 開發工具
+│   ├── zephyr/                   # Zephyr 工具腳本
+│   │   ├── bootstrap.sh          # 環境設置
+│   │   ├── build.sh              # 建構腳本
+│   │   ├── menu.sh               # 互動選單
+│   │   └── apps.sh               # 應用管理
+│   ├── mcp_server/               # MCP 伺服器
+│   ├── vscode_extension/         # VS Code 擴充
+│   └── openocd/                  # 除錯工具配置
+│
+├── cmake/                        # CMake 配置
+├── kconfigs/                     # Kconfig 配置檔
+├── docs/                         # 文件
+│
+├── build_freertos.sh             # FreeRTOS 建構腳本
+├── CMakeLists.txt                # 根 CMake 配置
+├── Kconfig                       # 根 Kconfig 配置
+└── west.yml                      # Zephyr west 配置</code></pre>
+            </div>
+        </section>
+        
+        <section id="build-system">
+            <h2>建構系統</h2>
+            
+            <h3>CMake + Ninja</h3>
+            <p>SDK 使用 CMake 作為建構系統，搭配 Ninja 作為建構後端以獲得最佳效能。</p>
+            
+            <h4>建構流程</h4>
+            <ol>
+                <li><strong>配置階段</strong>：CMake 讀取 <code>CMakeLists.txt</code> 與 Kconfig，生成建構規則</li>
+                <li><strong>建構階段</strong>：Ninja 執行編譯、連結，生成最終二進位檔</li>
+            </ol>
+            
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構命令參數說明</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">cmake -S . -B build \
+    -G "Ninja" \                      # 使用 Ninja 建構
+    -DIPRO_SDK_BASE=$(pwd) \          # SDK 根目錄
+    -DCONFIG_BUILD_PORJECT=app_name \ # 目標應用名稱
+    -DCMAKE_PREFIX_PATH=$(pwd)/cmake \# CMake 模組路徑
+    -DCUSTOM_CONFIG_DIR=path/to/app \ # 應用配置目錄
+    -DCONFIG_APPS=1 \                 # 啟用應用建構
+    -DCROSS_COMPILE=path/to/toolchain # 交叉編譯器前綴</code></pre>
+            </div>
+            
+            <h3>West 建構系統（Zephyr）</h3>
+            <p>Zephyr 專案使用 <code>west</code> 作為建構工具，提供更現代化的開發體驗。</p>
+            
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">West 建構命令</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 初始化 west workspace
+west init -m https://github.com/your-org/ipro_sdk --mr main
+west update
+
+# 建構應用
+west build -b ipro7_fpga apps/ipro_zephyr_demo
+
+# 燒錄
+west flash</code></pre>
+            </div>
+        </section>
+        
+        <section id="configuration">
+            <h2>配置系統（Kconfig）</h2>
+            <p>SDK 使用 Kconfig 系統管理專案配置，提供圖形化與文字介面配置選項。</p>
+            
+            <h3>配置層次</h3>
+            <ol>
+                <li><strong>根配置</strong>：<code>Kconfig</code> - 定義所有可用選項</li>
+                <li><strong>預設配置</strong>：<code>kconfigs/*.config</code> - 各功能模組的預設值</li>
+                <li><strong>應用配置</strong>：<code>apps/*/proj.conf</code> - 應用專屬配置覆蓋</li>
+            </ol>
+            
+            <h3>常用配置選項</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">proj.conf 範例</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 啟用 BLE 功能
+CONFIG_IPRO_BLE_LIB_ENABLE=y
+CONFIG_IPRO_BLE_LIB_DEBUG_ENABLE=y
+
+# 記憶體配置
+CONFIG_HEAP_SIZE=32768
+
+# 日誌等級
+CONFIG_LOG_DEFAULT_LEVEL=3
+
+# 元件選擇
+CONFIG_LWIP_ENABLE=n
+CONFIG_MBEDTLS_ENABLE=y</code></pre>
+            </div>
+            
+            <div class="alert alert-info">
+                <strong>💡 提示：</strong>使用 <code>make menuconfig</code> 或修改 <code>proj.conf</code> 來調整配置。
+            </div>
+        </section>
+        
+        <section id="components">
+            <h2>主要元件概覽</h2>
+            
+            <h3>BLE 程式庫 (<code>ipro_ble_lib</code>)</h3>
+            <p>完整的 BLE 5.4 實作，採用 Core/Profile 分離架構：</p>
+            <ul>
+                <li><strong>Core 層</strong>：GAP/GATT 管理、連線控制、安全管理</li>
+                <li><strong>Profile 層</strong>：標準服務（HRS, BAS, DIS）、自訂服務</li>
+                <li><strong>Audio 層</strong>：LE Audio、LC3 編解碼、GAF 框架</li>
+            </ul>
+            
+            <h3>RTOS 元件</h3>
+            <ul>
+                <li><strong>FreeRTOS</strong>：任務管理、佇列、信號量、軟體定時器</li>
+                <li><strong>Zephyr</strong>：完整 RTOS 功能 + Device Tree + West</li>
+            </ul>
+            
+            <h3>網路元件</h3>
+            <ul>
+                <li><strong>lwIP</strong>：TCP/IP 協定棧，支援 IPv4/IPv6</li>
+                <li><strong>Mbed TLS</strong>：TLS/SSL、加密演算法</li>
+            </ul>
+            
+            <h3>儲存元件</h3>
+            <ul>
+                <li><strong>LittleFS</strong>：針對 Flash 優化的檔案系統</li>
+                <li><strong>FatFS</strong>：FAT 檔案系統，用於 SD 卡</li>
+            </ul>
+        </section>
+    </article>
+</div>

@@ -1,0 +1,310 @@
+---
+layout: default
+title: 首頁
+---
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-container">
+        <div class="hero-content">
+            <span class="hero-badge">
+                <i class="fas fa-bolt"></i>
+                BLE 5.4 + Zephyr RTOS
+            </span>
+            <h1 class="hero-title">IPRO SDK</h1>
+            <p class="hero-subtitle">
+                專為 IPRO 硬體平台打造的全方位軟體開發套件。支援現代 RTOS、BLE 5.4 協定棧與 LE Audio，助您快速建構高效能嵌入式應用。
+            </p>
+            <div class="hero-buttons">
+                <a href="{{ '/getting-started' | relative_url }}" class="btn btn-primary">
+                    <i class="fas fa-rocket"></i>
+                    快速開始
+                </a>
+                <a href="{{ '/architecture' | relative_url }}" class="btn btn-secondary">
+                    <i class="fas fa-layer-group"></i>
+                    架構概覽
+                </a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="hero-code">
+                <div class="code-header">
+                    <span class="code-dot red"></span>
+                    <span class="code-dot yellow"></span>
+                    <span class="code-dot green"></span>
+                    <span class="code-title">terminal</span>
+                </div>
+                <pre><code class="language-bash"><span style="color: #64748b;"># 快速建構 BLE 應用</span>
+./build_freertos.sh ipro_ble_demo
+
+<span style="color: #64748b;"># 或使用 Zephyr RTOS</span>
+./tools/zephyr/bootstrap.sh
+./tools/zephyr/build.sh -a ipro_zephyr_demo
+
+<span style="color: #10b981;">✓ Build successful!</span>
+<span style="color: #94a3b8;">Output: apps/ipro_ble_demo/build/build_out/</span></code></pre>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats">
+    <div class="stats-grid">
+        <div class="stat-item">
+            <div class="stat-value">BLE 5.4</div>
+            <div class="stat-label">藍牙協定支援</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">RISC-V</div>
+            <div class="stat-label">64-bit 架構</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">20+</div>
+            <div class="stat-label">BLE Profiles</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">&lt;20ms</div>
+            <div class="stat-label">音訊延遲</div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+    <div class="section-container">
+        <div class="section-header">
+            <h2 class="section-title">核心功能</h2>
+            <p class="section-subtitle">
+                IPRO SDK 提供完整的嵌入式開發生態系統，從底層驅動到高階應用一應俱全
+            </p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3 class="feature-title">BLE 5.4 完整支援</h3>
+                <p class="feature-description">
+                    整合 RivieraWaves BLE 5.4 協定棧，支援 LE Audio、LC3 編解碼、Isochronous Channels 等先進功能，最多可同時維持 4 個連線。
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3 class="feature-title">雙 RTOS 選擇</h3>
+                <p class="feature-description">
+                    同時支援 FreeRTOS 與 Zephyr RTOS。Zephyr 提供現代化開發體驗、Device Tree 配置、快速建構時間（約 30 秒）。
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔧</div>
+                <h3 class="feature-title">模組化架構</h3>
+                <p class="feature-description">
+                    清晰的分層架構設計：應用層、中間件、RTOS、BSP。各組件可獨立配置，透過 Kconfig 系統靈活管理。
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3 class="feature-title">豐富的元件庫</h3>
+                <p class="feature-description">
+                    內建 lwIP 網路協定棧、Mbed TLS 安全加密、CherryUSB、多種檔案系統支援，滿足各種應用場景需求。
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3 class="feature-title">AI 輔助開發</h3>
+                <p class="feature-description">
+                    整合 MCP Server 與 VS Code 擴充套件，支援 GitHub Copilot、遠端建構監控、JIRA/GitLab 整合等 AI 輔助功能。
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">完整 CI/CD</h3>
+                <p class="feature-description">
+                    內建 GitLab CI/CD 流程，自動化建構測試、記憶體分析、安全掃描，確保程式碼品質與穩定性。
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Applications Section -->
+<section class="applications">
+    <div class="section-container">
+        <div class="section-header">
+            <h2 class="section-title">參考應用</h2>
+            <p class="section-subtitle">
+                多個完整的參考應用範例，展示 SDK 各項功能的最佳實踐
+            </p>
+        </div>
+        <div class="app-grid">
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">📱</span>
+                    <span class="app-name">ipro_ble_demo</span>
+                    <span class="app-badge">推薦</span>
+                </div>
+                <p class="app-description">
+                    現代化 BLE 展示應用，採用 Core/Profile 分離架構。支援心率、電池、UART、裝置資訊等多種服務，完整的 CLI 指令系統。
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">BLE 5.4</span>
+                    <span class="app-feature-tag">LE Audio</span>
+                    <span class="app-feature-tag">40+ CLI 指令</span>
+                    <span class="app-feature-tag">GAF 框架</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">🌊</span>
+                    <span class="app-name">ipro_zephyr_demo</span>
+                    <span class="app-badge">新功能</span>
+                </div>
+                <p class="app-description">
+                    Zephyr RTOS 整合展示，採用現代化建構系統。記憶體優化（33KB ROM, 27KB RAM），建構時間約 30 秒。
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">Zephyr v3.4.0</span>
+                    <span class="app-feature-tag">Device Tree</span>
+                    <span class="app-feature-tag">West 建構</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">🔌</span>
+                    <span class="app-name">ipro7_fpga_ble_5p4</span>
+                </div>
+                <p class="app-description">
+                    FPGA 優化的 BLE 5.4 實作，硬體加速 BLE 處理，支援週期性廣播、同步串流等進階功能。
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">FPGA 加速</span>
+                    <span class="app-feature-tag">週期性廣播</span>
+                    <span class="app-feature-tag">同步串流</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">🔧</span>
+                    <span class="app-name">ipro7_demo</span>
+                </div>
+                <p class="app-description">
+                    基礎平台展示應用，包含硬體抽象範例、週邊驅動（GPIO, UART, SPI, I2C）、FreeRTOS 任務管理。
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">FreeRTOS</span>
+                    <span class="app-feature-tag">週邊驅動</span>
+                    <span class="app-feature-tag">HAL 範例</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Start Section -->
+<section class="quickstart">
+    <div class="section-container">
+        <div class="section-header">
+            <h2 class="section-title">快速開始</h2>
+            <p class="section-subtitle">
+                選擇您偏好的開發方式，幾分鐘內開始建構應用
+            </p>
+        </div>
+        
+        <div class="quickstart-tabs">
+            <button class="tab-btn active" data-tab="tab-zephyr">Zephyr RTOS</button>
+            <button class="tab-btn" data-tab="tab-freertos">FreeRTOS</button>
+        </div>
+        
+        <div id="tab-zephyr" class="tab-content active">
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Zephyr 環境設置與建構</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 1. 一鍵設置 Zephyr 環境（首次執行）
+./tools/zephyr/bootstrap.sh
+
+# 2. 使用互動式選單（推薦）
+./tools/zephyr/menu.sh
+
+# 3. 或直接建構應用
+./tools/zephyr/build.sh -a ipro_zephyr_demo -b ipro7_fpga -c
+
+# 4. 手動使用 west 建構
+cd zephyr-workspace
+source setup_env.sh
+west build -b ipro7_fpga ../apps/ipro_zephyr_demo</code></pre>
+            </div>
+            <div class="alert alert-info">
+                <strong>💡 提示：</strong>Zephyr 環境優化後僅需下載 6 個必要模組（約 125MB），建構時間約 30 秒。
+            </div>
+        </div>
+        
+        <div id="tab-freertos" class="tab-content">
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">FreeRTOS 建構指令</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 使用簡化建構腳本
+./build_freertos.sh ipro_ble_demo
+
+# 或手動使用 CMake
+cmake -S . -B build \
+    -G "Ninja" \
+    -DIPRO_SDK_BASE=$(pwd) \
+    -DCONFIG_BUILD_PORJECT=ipro_ble_demo \
+    -DCMAKE_PREFIX_PATH=$(pwd)/cmake \
+    -DCUSTOM_CONFIG_DIR=$(pwd)/apps/ipro_ble_demo \
+    -DCONFIG_APPS=1 \
+    -DCROSS_COMPILE=/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-
+
+cmake --build build</code></pre>
+            </div>
+            <div class="alert alert-info">
+                <strong>💡 提示：</strong>建構產出位於 <code>apps/&lt;PROJECT_NAME&gt;/build/build_out/</code> 目錄。
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Documentation CTA -->
+<section class="features" style="padding: 4rem 2rem;">
+    <div class="section-container">
+        <div class="section-header">
+            <h2 class="section-title">深入了解</h2>
+            <p class="section-subtitle">
+                完整的技術文件助您掌握 IPRO SDK 的所有功能
+            </p>
+        </div>
+        <div class="features-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+            <a href="{{ '/architecture' | relative_url }}" class="feature-card" style="text-decoration: none;">
+                <div class="feature-icon">🏗️</div>
+                <h3 class="feature-title">架構概覽</h3>
+                <p class="feature-description">
+                    深入了解 SDK 的分層架構設計、元件組織與建構系統。
+                </p>
+            </a>
+            <a href="{{ '/ble-development' | relative_url }}" class="feature-card" style="text-decoration: none;">
+                <div class="feature-icon">📡</div>
+                <h3 class="feature-title">BLE 開發指南</h3>
+                <p class="feature-description">
+                    完整的 BLE 5.4 開發教學，從基礎到 LE Audio 進階功能。
+                </p>
+            </a>
+            <a href="{{ '/zephyr-rtos' | relative_url }}" class="feature-card" style="text-decoration: none;">
+                <div class="feature-icon">🌊</div>
+                <h3 class="feature-title">Zephyr RTOS</h3>
+                <p class="feature-description">
+                    現代 RTOS 整合指南，Device Tree 配置與最佳實踐。
+                </p>
+            </a>
+            <a href="{{ '/applications' | relative_url }}" class="feature-card" style="text-decoration: none;">
+                <div class="feature-icon">📦</div>
+                <h3 class="feature-title">應用範例</h3>
+                <p class="feature-description">
+                    多個完整參考應用的詳細說明與使用方式。
+                </p>
+            </a>
+        </div>
+    </div>
+</section>

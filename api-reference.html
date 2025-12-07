@@ -1,0 +1,286 @@
+---
+layout: default
+title: API 參考
+---
+
+<div class="doc-layout">
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <h4 class="sidebar-title">API 分類</h4>
+            <ul class="sidebar-links">
+                <li><a href="#ble-api" class="sidebar-link">BLE API</a></li>
+                <li><a href="#hal-api" class="sidebar-link">HAL API</a></li>
+                <li><a href="#rtos-api" class="sidebar-link">RTOS API</a></li>
+                <li><a href="#log-api" class="sidebar-link">Log API</a></li>
+            </ul>
+        </nav>
+    </aside>
+    
+    <article class="doc-content">
+        <h1>API 參考</h1>
+        <p>本頁提供 IPRO SDK 主要 API 的快速參考。完整的 API 文件請參考原始碼中的標頭檔註解。</p>
+        
+        <section id="ble-api">
+            <h2>BLE API</h2>
+            <p>BLE 程式庫提供完整的藍牙低功耗功能。</p>
+            
+            <h3>初始化 API</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>函式</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>ipro_ble_init()</code></td>
+                            <td>初始化 BLE 子系統</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_ble_deinit()</code></td>
+                            <td>關閉 BLE 子系統</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h3>GAP API</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>函式</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>ipro_ble_gap_start_advertising()</code></td>
+                            <td>開始廣播</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_ble_gap_stop_advertising()</code></td>
+                            <td>停止廣播</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_ble_gap_set_adv_data()</code></td>
+                            <td>設置廣播資料</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_ble_gap_disconnect()</code></td>
+                            <td>斷開連線</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_ble_gap_update_conn_params()</code></td>
+                            <td>更新連線參數</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h3>GATT API</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>函式</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>ipro_ble_gatt_register_service()</code></td>
+                            <td>註冊 GATT 服務</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_ble_gatt_notify()</code></td>
+                            <td>發送通知</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_ble_gatt_indicate()</code></td>
+                            <td>發送指示</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h3>服務 API</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Heart Rate Service</span>
+                </div>
+                <pre><code class="language-c">// 初始化心率服務
+int ipro_ble_hrs_init(ipro_ble_hrs_init_t *init);
+
+// 發送心率測量
+int ipro_ble_hrs_send_measurement(ipro_ble_hrs_measurement_t *measurement);
+
+// 設置身體感測器位置
+int ipro_ble_hrs_set_body_sensor_location(uint8_t location);</code></pre>
+            </div>
+            
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Battery Service</span>
+                </div>
+                <pre><code class="language-c">// 初始化電池服務
+int ipro_ble_bas_init(void);
+
+// 更新電池電量
+int ipro_ble_bas_update_level(uint8_t level);</code></pre>
+            </div>
+        </section>
+        
+        <section id="hal-api">
+            <h2>HAL API</h2>
+            <p>硬體抽象層 API 提供統一的週邊存取介面。</p>
+            
+            <h3>GPIO API</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">GPIO 函式</span>
+                </div>
+                <pre><code class="language-c">// 初始化 GPIO
+int ipro_hal_gpio_init(uint32_t pin, ipro_gpio_config_t *config);
+
+// 設置輸出值
+int ipro_hal_gpio_write(uint32_t pin, uint8_t value);
+
+// 讀取輸入值
+uint8_t ipro_hal_gpio_read(uint32_t pin);
+
+// 切換輸出
+int ipro_hal_gpio_toggle(uint32_t pin);
+
+// 設置中斷
+int ipro_hal_gpio_set_interrupt(uint32_t pin, ipro_gpio_isr_t handler);</code></pre>
+            </div>
+            
+            <h3>UART API</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">UART 函式</span>
+                </div>
+                <pre><code class="language-c">// 初始化 UART
+int ipro_hal_uart_init(uint8_t port, ipro_uart_config_t *config);
+
+// 發送資料
+int ipro_hal_uart_write(uint8_t port, const uint8_t *data, size_t len);
+
+// 接收資料
+int ipro_hal_uart_read(uint8_t port, uint8_t *buffer, size_t len);
+
+// 設置接收回調
+int ipro_hal_uart_set_rx_callback(uint8_t port, ipro_uart_rx_cb_t callback);</code></pre>
+            </div>
+            
+            <h3>SPI API</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">SPI 函式</span>
+                </div>
+                <pre><code class="language-c">// 初始化 SPI
+int ipro_hal_spi_init(uint8_t port, ipro_spi_config_t *config);
+
+// 傳輸資料
+int ipro_hal_spi_transfer(uint8_t port, const uint8_t *tx, uint8_t *rx, size_t len);
+
+// 僅發送
+int ipro_hal_spi_write(uint8_t port, const uint8_t *data, size_t len);
+
+// 僅接收
+int ipro_hal_spi_read(uint8_t port, uint8_t *buffer, size_t len);</code></pre>
+            </div>
+        </section>
+        
+        <section id="rtos-api">
+            <h2>RTOS API</h2>
+            <p>SDK 支援 FreeRTOS 和 Zephyr RTOS。</p>
+            
+            <h3>FreeRTOS 常用 API</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">任務管理</span>
+                </div>
+                <pre><code class="language-c">// 建立任務
+BaseType_t xTaskCreate(TaskFunction_t pvTaskCode,
+                       const char *pcName,
+                       configSTACK_DEPTH_TYPE usStackDepth,
+                       void *pvParameters,
+                       UBaseType_t uxPriority,
+                       TaskHandle_t *pxCreatedTask);
+
+// 延遲任務
+void vTaskDelay(const TickType_t xTicksToDelay);
+
+// 毫秒轉 Ticks
+#define pdMS_TO_TICKS(xTimeInMs)</code></pre>
+            </div>
+            
+            <h3>Zephyr 常用 API</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Kernel API</span>
+                </div>
+                <pre><code class="language-c">// 休眠
+void k_sleep(k_timeout_t timeout);
+
+// 建立執行緒
+k_tid_t k_thread_create(struct k_thread *new_thread,
+                        k_thread_stack_t *stack,
+                        size_t stack_size,
+                        k_thread_entry_t entry,
+                        void *p1, void *p2, void *p3,
+                        int prio,
+                        uint32_t options,
+                        k_timeout_t delay);
+
+// 時間宏
+K_SECONDS(s)
+K_MSEC(ms)
+K_FOREVER</code></pre>
+            </div>
+        </section>
+        
+        <section id="log-api">
+            <h2>Log API</h2>
+            <p>統一的日誌輸出介面。</p>
+            
+            <h3>IPRO Log API</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">日誌函式</span>
+                </div>
+                <pre><code class="language-c">// 日誌輸出宏
+IPRO_LOG_ERROR(tag, fmt, ...)   // 錯誤等級
+IPRO_LOG_WARN(tag, fmt, ...)    // 警告等級
+IPRO_LOG_INFO(tag, fmt, ...)    // 資訊等級
+IPRO_LOG_DEBUG(tag, fmt, ...)   // 除錯等級
+IPRO_LOG_VERBOSE(tag, fmt, ...) // 詳細等級
+
+// 使用範例
+#define TAG "MY_MODULE"
+IPRO_LOG_INFO(TAG, "System started, version %d.%d", major, minor);</code></pre>
+            </div>
+            
+            <h3>Zephyr Log API</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Zephyr 日誌</span>
+                </div>
+                <pre><code class="language-c">#include &lt;zephyr/logging/log.h&gt;
+
+// 註冊日誌模組
+LOG_MODULE_REGISTER(my_module, LOG_LEVEL_INF);
+
+// 日誌輸出
+LOG_ERR("Error message");
+LOG_WRN("Warning message");
+LOG_INF("Info message");
+LOG_DBG("Debug message");</code></pre>
+            </div>
+        </section>
+    </article>
+</div>

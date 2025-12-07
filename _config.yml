@@ -1,0 +1,65 @@
+# IPRO SDK Documentation Site
+# GitHub Pages Configuration
+
+title: IPRO SDK
+description: A Comprehensive Software Development Kit for IPRO Hardware Platforms
+baseurl: "/ipro_sdk" # Change this to your repo name
+url: "" # Your GitHub Pages URL
+
+# Theme settings
+remote_theme: pages-themes/cayman@v0.2.0
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+
+# Kramdown settings
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    css_class: 'highlight'
+
+# Collections
+collections:
+  docs:
+    output: true
+    permalink: /:collection/:name
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "docs"
+    values:
+      layout: "default"
+
+# Navigation
+nav:
+  - title: Home
+    url: /
+  - title: Getting Started
+    url: /getting-started
+  - title: Architecture
+    url: /architecture
+  - title: BLE Development
+    url: /ble-development
+  - title: Zephyr RTOS
+    url: /zephyr-rtos
+  - title: Applications
+    url: /applications
+  - title: API Reference
+    url: /api-reference
+
+# Note: SDK source code is hosted on internal GitLab
+# This site is documentation only, hosted on GitHub Pages
+
+# Google Analytics (optional)
+# google_analytics: UA-XXXXXXXX-X
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor

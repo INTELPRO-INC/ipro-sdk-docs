@@ -1,0 +1,100 @@
+---
+layout: default
+title: 更新日誌
+---
+
+<div class="doc-layout">
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <h4 class="sidebar-title">版本</h4>
+            <ul class="sidebar-links">
+                <li><a href="#aug-2025" class="sidebar-link">2025 年 8 月</a></li>
+                <li><a href="#earlier" class="sidebar-link">更早版本</a></li>
+            </ul>
+        </nav>
+    </aside>
+    
+    <article class="doc-content">
+        <h1>更新日誌</h1>
+        <p>IPRO SDK 的版本更新記錄。</p>
+        
+        <section id="aug-2025">
+            <h2>2025 年 8 月</h2>
+            
+            <h3>August 23, 2025 - 重大文件與系統清理</h3>
+            <ul>
+                <li><strong>docs:</strong> 重新組織並清理 README.md 結構
+                    <ul>
+                        <li>簡化內容組織，建立清晰的章節</li>
+                        <li>移除重複和冗餘資訊</li>
+                        <li>增強快速入門章節，同時支援 Zephyr 和 SDK 選項</li>
+                        <li>改善技術規格說明</li>
+                    </ul>
+                </li>
+                <li><strong>refactor:</strong> 移除過時的 west 配置系統
+                    <ul>
+                        <li>移除 config/west_configs/ 目錄</li>
+                        <li>簡化 menu.sh，移除 west 配置管理</li>
+                        <li>簡化為使用單一 west.yml 配置</li>
+                    </ul>
+                </li>
+            </ul>
+            
+            <h3>August 22, 2025 - 主要功能增強</h3>
+            <ul>
+                <li><strong>feat:</strong> 新增多語言互動式選單 (menu.sh)
+                    <ul>
+                        <li>完整中英雙語支援</li>
+                        <li>互動式開發環境介面</li>
+                        <li>選單驅動存取所有開發工具</li>
+                    </ul>
+                </li>
+                <li><strong>feat:</strong> 增強 apps.sh，新增分類和搜尋功能
+                    <ul>
+                        <li>新增 list_categories() 函式瀏覽 Zephyr 範例類別</li>
+                        <li>增強搜尋功能，跨所有應用程式和範例</li>
+                        <li>支援 21 個 Zephyr 範例類別</li>
+                    </ul>
+                </li>
+                <li><strong>feat:</strong> 新增完整的 Zephyr 週邊驅動框架
+                    <ul>
+                        <li>完整的 GPIO、SPI、PWM 驅動整合</li>
+                        <li>增強 Kconfig 配置系統</li>
+                        <li>IPRO7 硬體支援優化</li>
+                    </ul>
+                </li>
+            </ul>
+            
+            <h3>August 19-21, 2025 - BLE 系統改進</h3>
+            <ul>
+                <li><strong>feat:</strong> 完成 BLE 廣播工作流程實作和狀態管理修復</li>
+                <li><strong>feat:</strong> 新增全面的 CLI 命令系統，包含 40+ 互動指令</li>
+                <li><strong>feat:</strong> 增強 BLE demo 和自訂 profile 實作</li>
+                <li><strong>feat:</strong> 新增完整的 IPRO 日誌系統，整合 BLE 程式庫</li>
+                <li><strong>fix:</strong> BLE Channel Map Indication 除錯和 CSA #2 驗證</li>
+            </ul>
+            
+            <h3>August 12-18, 2025 - 基礎設施和 CI/CD</h3>
+            <ul>
+                <li><strong>feat:</strong> MCP 伺服器訊息優化和註解翻譯</li>
+                <li><strong>feat:</strong> 增強 README 徽章，美化樣式</li>
+                <li><strong>feat:</strong> 新增 GitLab Merge Request 建立工具</li>
+                <li><strong>feat:</strong> JIRA 整合增強</li>
+            </ul>
+        </section>
+        
+        <section id="earlier">
+            <h2>更早版本</h2>
+            <p>完整的更新日誌請參考 SDK 原始碼中的 <code>changelog.md</code> 檔案。</p>
+            
+            <h3>主要里程碑</h3>
+            <ul>
+                <li><strong>Zephyr RTOS 整合</strong> - 完整的 Zephyr v3.4.0 支援</li>
+                <li><strong>BLE 5.4 支援</strong> - RivieraWaves BLE 5.4 協定棧整合</li>
+                <li><strong>LE Audio</strong> - GAF 框架和 LC3 編解碼支援</li>
+                <li><strong>MCP Server</strong> - AI 輔助開發工具</li>
+                <li><strong>VS Code Extension</strong> - 專用開發擴充套件</li>
+            </ul>
+        </section>
+    </article>
+</div>

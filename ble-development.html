@@ -1,0 +1,484 @@
+---
+layout: default
+title: BLE 開發指南
+---
+
+<div class="doc-layout">
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <h4 class="sidebar-title">本頁目錄</h4>
+            <ul class="sidebar-links">
+                <li><a href="#overview" class="sidebar-link">BLE 5.4 概覽</a></li>
+                <li><a href="#architecture" class="sidebar-link">程式庫架構</a></li>
+                <li><a href="#getting-started" class="sidebar-link">快速開始</a></li>
+                <li><a href="#gap-operations" class="sidebar-link">GAP 操作</a></li>
+                <li><a href="#gatt-services" class="sidebar-link">GATT 服務</a></li>
+                <li><a href="#le-audio" class="sidebar-link">LE Audio</a></li>
+                <li><a href="#debugging" class="sidebar-link">除錯技巧</a></li>
+                <li><a href="#best-practices" class="sidebar-link">最佳實踐</a></li>
+            </ul>
+        </nav>
+    </aside>
+    
+    <article class="doc-content">
+        <h1>BLE 開發指南</h1>
+        <p>本指南介紹如何使用 IPRO SDK 的 BLE 5.4 程式庫開發藍牙低功耗應用。</p>
+        
+        <section id="overview">
+            <h2>BLE 5.4 功能概覽</h2>
+            <p>IPRO SDK 整合了 RivieraWaves BLE 5.4 協定棧，提供完整的藍牙功能：</p>
+            
+            <div class="features-grid" style="margin: 2rem 0;">
+                <div class="feature-card">
+                    <div class="feature-icon">📡</div>
+                    <h3 class="feature-title">核心功能</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>BLE 5.4 Host Stack</li>
+                        <li>最多 4 個同時連線</li>
+                        <li>20+ BLE Profiles</li>
+                        <li>10-15m 通訊距離</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎵</div>
+                    <h3 class="feature-title">LE Audio</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>LC3 編解碼（32-320 kbps）</li>
+                        <li>SBC 備援編碼</li>
+                        <li>&lt;20ms 音訊延遲</li>
+                        <li>Isochronous Channels</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">安全性</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>LE Secure Connections</li>
+                        <li>AES-CCM 加密</li>
+                        <li>配對與綁定管理</li>
+                        <li>隱私功能（RPA）</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        
+        <section id="architecture">
+            <h2>程式庫架構</h2>
+            <p><code>ipro_ble_lib</code> 採用 Core/Profile 分離架構，提供清晰的抽象層次：</p>
+            
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">BLE Library 架構</span>
+                </div>
+                <pre><code>components/wireless/ipro_ble_lib/
+├── inc/
+│   ├── core/                 # Core BLE 功能 API
+│   │   ├── ipro_ble_gap.h    # GAP 操作
+│   │   ├── ipro_ble_gatt.h   # GATT 操作
+│   │   └── ipro_ble_sm.h     # 安全管理
+│   ├── services/             # 標準 BLE 服務
+│   │   ├── ipro_ble_bas.h    # 電池服務
+│   │   ├── ipro_ble_hrs.h    # 心率服務
+│   │   └── ipro_ble_dis.h    # 裝置資訊服務
+│   ├── audio/                # LE Audio API
+│   └── ipro_ble_api.h        # 主要公開 API
+└── src/
+    ├── core/                 # Core 實作
+    ├── services/             # 服務實作
+    └── audio/                # LE Audio 實作</code></pre>
+            </div>
+            
+            <h3>核心概念</h3>
+            <ul>
+                <li><strong>Core 層</strong>：處理 GAP、GATT、L2CAP、SMP 等協定操作</li>
+                <li><strong>Profile 層</strong>：實作標準與自訂 BLE 服務</li>
+                <li><strong>事件驅動</strong>：使用非同步回調處理 BLE 事件</li>
+                <li><strong>訊息傳遞</strong>：透過 ke_msg 系統與 BLE 協定棧通訊</li>
+            </ul>
+        </section>
+        
+        <section id="getting-started">
+            <h2>快速開始</h2>
+            
+            <h3>1. 初始化 BLE 子系統</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">BLE 初始化</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">#include "ipro_ble_api.h"
+
+// BLE 事件回調
+void ble_event_handler(ipro_ble_event_t *event)
+{
+    switch (event->type) {
+        case IPRO_BLE_EVT_READY:
+            IPRO_LOG_INFO("BLE stack ready");
+            // 開始廣播
+            start_advertising();
+            break;
+            
+        case IPRO_BLE_EVT_CONNECTED:
+            IPRO_LOG_INFO("Device connected");
+            break;
+            
+        case IPRO_BLE_EVT_DISCONNECTED:
+            IPRO_LOG_INFO("Device disconnected");
+            // 重新開始廣播
+            start_advertising();
+            break;
+    }
+}
+
+void app_init(void)
+{
+    // 初始化 BLE 程式庫
+    ipro_ble_config_t config = {
+        .device_name = "IPRO Device",
+        .event_handler = ble_event_handler,
+    };
+    
+    ipro_ble_init(&config);
+}</code></pre>
+            </div>
+            
+            <h3>2. 配置廣播</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">廣播設置</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">void start_advertising(void)
+{
+    ipro_ble_adv_params_t adv_params = {
+        .interval_min = 160,  // 100ms
+        .interval_max = 320,  // 200ms
+        .type = IPRO_BLE_ADV_TYPE_CONNECTABLE,
+        .own_addr_type = IPRO_BLE_ADDR_TYPE_PUBLIC,
+    };
+    
+    // 廣播資料
+    uint8_t adv_data[] = {
+        // Flags
+        0x02, 0x01, 0x06,
+        // Complete Local Name
+        0x0C, 0x09, 'I', 'P', 'R', 'O', ' ', 'D', 'e', 'v', 'i', 'c', 'e',
+        // Service UUIDs (Heart Rate Service)
+        0x03, 0x03, 0x0D, 0x18,
+    };
+    
+    ipro_ble_gap_set_adv_data(adv_data, sizeof(adv_data));
+    ipro_ble_gap_start_advertising(&adv_params);
+}</code></pre>
+            </div>
+            
+            <h3>3. 啟用配置選項</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">proj.conf</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 啟用 BLE 程式庫
+CONFIG_IPRO_BLE_LIB_ENABLE=y
+
+# 啟用除錯輸出
+CONFIG_IPRO_BLE_LIB_DEBUG_ENABLE=y
+
+# 啟用需要的服務
+CONFIG_IPRO_BLE_HRS_ENABLE=y
+CONFIG_IPRO_BLE_BAS_ENABLE=y
+CONFIG_IPRO_BLE_DIS_ENABLE=y</code></pre>
+            </div>
+        </section>
+        
+        <section id="gap-operations">
+            <h2>GAP 操作</h2>
+            
+            <h3>廣播管理</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">廣播控制</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">// 開始廣播
+ipro_ble_gap_start_advertising(&adv_params);
+
+// 停止廣播
+ipro_ble_gap_stop_advertising();
+
+// 更新廣播資料
+ipro_ble_gap_set_adv_data(new_data, data_len);
+
+// 設置掃描回應資料
+ipro_ble_gap_set_scan_rsp_data(rsp_data, rsp_len);</code></pre>
+            </div>
+            
+            <h3>連線管理</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">連線操作</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">// 更新連線參數
+ipro_ble_conn_params_t params = {
+    .interval_min = 24,   // 30ms
+    .interval_max = 40,   // 50ms
+    .latency = 0,
+    .timeout = 400,       // 4s
+};
+ipro_ble_gap_update_conn_params(conn_idx, &params);
+
+// 斷開連線
+ipro_ble_gap_disconnect(conn_idx, IPRO_BLE_REASON_REMOTE_USER);</code></pre>
+            </div>
+            
+            <div class="alert alert-warning">
+                <strong>⚠️ 重要：</strong>廣播活動管理必須遵循完整的生命週期：Stop → Delete → Reset actv_idx，避免資源衝突（錯誤碼 0x004B）。
+            </div>
+        </section>
+        
+        <section id="gatt-services">
+            <h2>GATT 服務</h2>
+            
+            <h3>標準服務使用</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">心率服務範例</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">#include "ipro_ble_hrs.h"
+
+// 初始化心率服務
+ipro_ble_hrs_init_t hrs_init = {
+    .initial_hr = 75,
+    .body_sensor_location = IPRO_BLE_HRS_BODY_SENSOR_WRIST,
+};
+ipro_ble_hrs_init(&hrs_init);
+
+// 更新心率數值
+void update_heart_rate(uint16_t hr_value)
+{
+    ipro_ble_hrs_measurement_t measurement = {
+        .hr_value = hr_value,
+        .flags = IPRO_BLE_HRS_FLAG_VALUE_FORMAT_UINT8,
+    };
+    ipro_ble_hrs_send_measurement(&measurement);
+}</code></pre>
+            </div>
+            
+            <h3>自訂服務</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">自訂服務範例</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">// 定義自訂 UUID
+#define CUSTOM_SERVICE_UUID     0x1234
+#define CUSTOM_CHAR_RX_UUID     0x1235
+#define CUSTOM_CHAR_TX_UUID     0x1236
+
+// 服務特徵值定義
+static const ipro_ble_gatt_char_t custom_chars[] = {
+    {
+        .uuid = CUSTOM_CHAR_RX_UUID,
+        .properties = IPRO_BLE_GATT_PROP_WRITE | IPRO_BLE_GATT_PROP_WRITE_NO_RSP,
+        .permissions = IPRO_BLE_GATT_PERM_WRITE,
+        .max_len = 512,
+    },
+    {
+        .uuid = CUSTOM_CHAR_TX_UUID,
+        .properties = IPRO_BLE_GATT_PROP_READ | IPRO_BLE_GATT_PROP_NOTIFY,
+        .permissions = IPRO_BLE_GATT_PERM_READ,
+        .max_len = 512,
+    },
+};
+
+// 註冊服務
+ipro_ble_gatt_service_t service = {
+    .uuid = CUSTOM_SERVICE_UUID,
+    .chars = custom_chars,
+    .char_count = 2,
+    .handler = custom_service_handler,
+};
+ipro_ble_gatt_register_service(&service);</code></pre>
+            </div>
+        </section>
+        
+        <section id="le-audio">
+            <h2>LE Audio</h2>
+            <p>SDK 支援完整的 LE Audio 功能，包括 LC3 編解碼與 GAF 框架。</p>
+            
+            <h3>LE Audio 服務</h3>
+            <ul>
+                <li><strong>ASCS</strong> (0x184E) - Audio Stream Control Service</li>
+                <li><strong>PACS</strong> (0x1850) - Published Audio Capabilities Service</li>
+                <li><strong>CAS</strong> (0x1853) - Common Audio Service</li>
+            </ul>
+            
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">LE Audio 廣播配置</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">// LE Audio 裝置廣播資料
+uint8_t le_audio_adv_data[] = {
+    // Flags
+    0x02, 0x01, 0x06,
+    // Device Appearance (Generic Audio Device)
+    0x03, 0x19, 0x41, 0x08,
+    // Complete list of 16-bit Service UUIDs
+    0x07, 0x03,
+    0x4E, 0x18,  // ASCS UUID
+    0x50, 0x18,  // PACS UUID
+    0x53, 0x18,  // CAS UUID
+};</code></pre>
+            </div>
+            
+            <h3>GAF/BAP 整合</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">BAP 配置</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">// BAP 配置請求
+bap_configure_req_t *req = ke_msg_alloc(
+    BAP_CONFIGURE_REQ,
+    prf_get_task_from_id(TASK_ID_BAP),
+    task_id,
+    sizeof(bap_configure_req_t)
+);
+req->role_bf = BAP_ROLE_UNICAST_SERVER;
+ke_msg_send(req);</code></pre>
+            </div>
+        </section>
+        
+        <section id="debugging">
+            <h2>除錯技巧</h2>
+            
+            <h3>啟用除錯日誌</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">proj.conf</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 啟用 BLE 除錯
+CONFIG_IPRO_BLE_LIB_DEBUG_ENABLE=y
+CONFIG_LOG_DEFAULT_LEVEL=4  # DEBUG level</code></pre>
+            </div>
+            
+            <h3>常見錯誤碼</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>錯誤碼</th>
+                            <th>說明</th>
+                            <th>解決方案</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>0x0043</code></td>
+                            <td>Activity already stopped</td>
+                            <td>檢查活動狀態再執行停止</td>
+                        </tr>
+                        <tr>
+                            <td><code>0x004B</code></td>
+                            <td>Activity creation failed</td>
+                            <td>確保完整清理：Stop → Delete → Reset</td>
+                        </tr>
+                        <tr>
+                            <td><code>0x00A3</code></td>
+                            <td>Connection terminated</td>
+                            <td>處理斷線事件，實作重連機制</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <h3>使用 CLI 除錯</h3>
+            <p><code>ipro_ble_demo</code> 提供 40+ CLI 指令用於除錯：</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">CLI 指令範例</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 查看 BLE 狀態
+ble status
+
+# 開始/停止廣播
+ble adv start
+ble adv stop
+
+# 連線管理
+ble conn list
+ble conn disconnect 0
+
+# 服務操作
+ble hrs update 80
+ble bas update 75</code></pre>
+            </div>
+        </section>
+        
+        <section id="best-practices">
+            <h2>最佳實踐</h2>
+            
+            <h3>1. 活動資源管理</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">完整的廣播清理流程</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">// 正確的活動清理順序
+void cleanup_advertising(void)
+{
+    // 1. 停止活動
+    gapm_activity_stop_cmd_t *stop = ke_msg_alloc(
+        GAPM_ACTIVITY_STOP_CMD, ...);
+    stop->actv_idx = adv_actv_idx;
+    ke_msg_send(stop);
+    
+    // 2. 等待 GAPM_ACTIVITY_STOPPED_IND
+    
+    // 3. 刪除活動
+    gapm_activity_delete_cmd_t *del = ke_msg_alloc(
+        GAPM_ACTIVITY_DELETE_CMD, ...);
+    del->actv_idx = adv_actv_idx;
+    ke_msg_send(del);
+    
+    // 4. 重置索引
+    adv_actv_idx = GAP_INVALID_IDX;
+}</code></pre>
+            </div>
+            
+            <h3>2. 重連機制</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">自動重連實作</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">void on_disconnect(uint8_t reason)
+{
+    // 延遲後重新廣播
+    vTaskDelay(pdMS_TO_TICKS(500));
+    
+    for (int retry = 0; retry < 3; retry++) {
+        if (restart_advertising() == 0) {
+            break;
+        }
+        vTaskDelay(pdMS_TO_TICKS(1000 * (retry + 1)));
+    }
+}</code></pre>
+            </div>
+            
+            <h3>3. 測試驗證</h3>
+            <ul>
+                <li>✅ 多次斷線重連循環測試</li>
+                <li>✅ 手機/中央設備可正確發現與配對</li>
+                <li>✅ LE Audio 服務（ASCS, PACS, CAS）可存取</li>
+                <li>✅ 無 0x004B 資源錯誤</li>
+                <li>✅ 記憶體使用穩定</li>
+            </ul>
+        </section>
+    </article>
+</div>

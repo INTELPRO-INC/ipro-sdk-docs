@@ -1,0 +1,402 @@
+---
+layout: default
+title: Zephyr RTOS
+---
+
+<div class="doc-layout">
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <h4 class="sidebar-title">本頁目錄</h4>
+            <ul class="sidebar-links">
+                <li><a href="#overview" class="sidebar-link">概覽</a></li>
+                <li><a href="#architecture" class="sidebar-link">整合架構</a></li>
+                <li><a href="#setup" class="sidebar-link">環境設置</a></li>
+                <li><a href="#building" class="sidebar-link">建構應用</a></li>
+                <li><a href="#tools" class="sidebar-link">開發工具</a></li>
+                <li><a href="#device-tree" class="sidebar-link">Device Tree</a></li>
+                <li><a href="#creating-apps" class="sidebar-link">建立新應用</a></li>
+                <li><a href="#debugging" class="sidebar-link">除錯</a></li>
+            </ul>
+        </nav>
+    </aside>
+    
+    <article class="doc-content">
+        <h1>Zephyr RTOS 整合指南</h1>
+        <p>Zephyr 是一個可擴展的開源即時作業系統，專為資源受限的裝置設計。IPRO SDK 提供完整的 Zephyr 支援，作為 FreeRTOS 的現代化替代方案。</p>
+        
+        <section id="overview">
+            <h2>為什麼選擇 Zephyr？</h2>
+            
+            <div class="features-grid" style="margin: 2rem 0;">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">快速建構</h3>
+                    <p class="feature-description">優化後的模組下載僅需約 125MB，建構時間約 30 秒。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">記憶體效率</h3>
+                    <p class="feature-description">Demo 應用僅需 33KB ROM、27KB RAM，高度優化的資源使用。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3 class="feature-title">現代工具鏈</h3>
+                    <p class="feature-description">West 建構系統、Device Tree 配置、豐富的驅動生態。</p>
+                </div>
+            </div>
+            
+            <h3>主要優勢</h3>
+            <ul>
+                <li><strong>Device Tree</strong>：宣告式硬體配置，易於移植</li>
+                <li><strong>Kconfig</strong>：圖形化配置介面</li>
+                <li><strong>West</strong>：統一的專案管理與建構工具</li>
+                <li><strong>豐富生態</strong>：大量現成的驅動與協定棧</li>
+                <li><strong>活躍社群</strong>：持續更新與技術支援</li>
+            </ul>
+        </section>
+        
+        <section id="architecture">
+            <h2>整合架構</h2>
+            <p>IPRO SDK 提供專用的 HAL 層，讓 Zephyr 能夠在 IPRO 硬體上高效運行。</p>
+            
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Zephyr 整合架構</span>
+                </div>
+                <pre><code>+------------------------------------------------------+
+|              Application Layer                       |
+|         (apps/ipro_zephyr_demo)                      |
++------------------------------------------------------+
+|       Middleware & Components                        |
+|      (lwIP, MbedTLS, etc.)                           |
++------------------------------------------------------+
+|           Zephyr RTOS Kernel                         |
++------------------------------------------------------+
+|     IPRO-Zephyr Integration Layer                    |
+|          (HAL & Drivers)                             |
++------------------------------------------------------+
+|         IPRO Hardware Platform                       |
++------------------------------------------------------+</code></pre>
+            </div>
+            
+            <h3>支援的開發板</h3>
+            <ul>
+                <li><code>ipro7</code> - IPRO7 SoC 基礎配置</li>
+                <li><code>ipro7_fpga</code> - FPGA 開發環境</li>
+                <li><code>ipro7_evb</code> - 評估板配置</li>
+            </ul>
+        </section>
+        
+        <section id="setup">
+            <h2>環境設置</h2>
+            
+            <h3>一鍵設置（推薦）</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Bootstrap 環境</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 從 SDK 根目錄執行
+./tools/zephyr/bootstrap.sh
+
+# 腳本會自動完成：
+# ✓ 下載並安裝 Zephyr SDK
+# ✓ 安裝 west 建構工具
+# ✓ 設置環境變數
+# ✓ 下載必要的 Zephyr 模組（6 個核心模組，約 125MB）</code></pre>
+            </div>
+            
+            <h3>手動設置</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">手動安裝步驟</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 1. 下載 Zephyr SDK
+wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.16.3/zephyr-sdk-0.16.3_linux-x86_64.tar.xz
+tar -xf zephyr-sdk-0.16.3_linux-x86_64.tar.xz
+cd zephyr-sdk-0.16.3 && ./setup.sh
+
+# 2. 安裝 west
+pip3 install west
+
+# 3. 設置環境變數
+export ZEPHYR_BASE=/path/to/zephyrproject
+export ZEPHYR_SDK_INSTALL_DIR=/path/to/zephyr-sdk
+
+# 4. 初始化 west workspace
+cd ipro_sdk
+west init -l .
+west update</code></pre>
+            </div>
+            
+            <div class="alert alert-info">
+                <strong>💡 提示：</strong>建議使用 <code>bootstrap.sh</code> 腳本，它會自動處理所有相依性並優化模組下載。
+            </div>
+        </section>
+        
+        <section id="building">
+            <h2>建構應用</h2>
+            
+            <h3>使用 build.sh 腳本</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">增強建構腳本</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 基本建構
+./tools/zephyr/build.sh -a ipro_zephyr_demo -b ipro7_fpga
+
+# 清除並重新建構
+./tools/zephyr/build.sh -a ipro_zephyr_demo -b ipro7_fpga -c
+
+# 顯示詳細進度
+./tools/zephyr/build.sh -a ipro_zephyr_demo -b ipro7_fpga -v</code></pre>
+            </div>
+            
+            <h3>使用 west 指令</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">West 建構指令</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 進入 workspace
+cd zephyr-workspace
+source setup_env.sh
+
+# 建構應用
+west build -b ipro7_fpga ../apps/ipro_zephyr_demo
+
+# 清除並建構
+west build -b ipro7_fpga ../apps/ipro_zephyr_demo --pristine
+
+# 燒錄（需連接硬體）
+west flash
+
+# 開啟序列監控
+west espmonitor  # 或使用其他序列工具</code></pre>
+            </div>
+        </section>
+        
+        <section id="tools">
+            <h2>開發工具</h2>
+            <p>SDK 提供多個實用工具腳本，簡化 Zephyr 開發流程。</p>
+            
+            <h3>互動式選單 (menu.sh)</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">啟動互動式選單</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 支援中英雙語介面
+./tools/zephyr/menu.sh</code></pre>
+            </div>
+            <p>選單提供：</p>
+            <ul>
+                <li>環境設置與初始化</li>
+                <li>應用程式瀏覽與建構</li>
+                <li>Zephyr 範例搜尋</li>
+                <li>配置管理</li>
+            </ul>
+            
+            <h3>應用管理 (apps.sh)</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">應用管理工具</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 列出所有應用
+./tools/zephyr/apps.sh list
+
+# 搜尋應用
+./tools/zephyr/apps.sh search bluetooth
+
+# 列出 Zephyr 範例類別
+./tools/zephyr/apps.sh categories
+
+# 顯示應用詳細資訊
+./tools/zephyr/apps.sh info ipro_zephyr_demo</code></pre>
+            </div>
+        </section>
+        
+        <section id="device-tree">
+            <h2>Device Tree 配置</h2>
+            <p>Zephyr 使用 Device Tree 描述硬體配置，讓驅動與硬體解耦。</p>
+            
+            <h3>Device Tree 結構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">ipro7_fpga.dts 範例</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-dts">/dts-v1/;
+
+/ {
+    model = "IPRO7 FPGA";
+    compatible = "ipro,ipro7-fpga";
+
+    chosen {
+        zephyr,console = &uart0;
+        zephyr,shell-uart = &uart0;
+        zephyr,sram = &sram0;
+    };
+
+    soc {
+        uart0: uart@40000000 {
+            compatible = "ipro,uart";
+            reg = <0x40000000 0x1000>;
+            interrupts = <10>;
+            status = "okay";
+        };
+
+        gpio0: gpio@40001000 {
+            compatible = "ipro,gpio";
+            reg = <0x40001000 0x1000>;
+            gpio-controller;
+            #gpio-cells = <2>;
+        };
+    };
+};</code></pre>
+            </div>
+            
+            <h3>Overlay 配置</h3>
+            <p>可以使用 overlay 檔案覆蓋預設配置：</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">app.overlay</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-dts">/* 覆蓋 UART 配置 */
+&uart0 {
+    current-speed = <921600>;
+};</code></pre>
+            </div>
+        </section>
+        
+        <section id="creating-apps">
+            <h2>建立新應用</h2>
+            
+            <h3>1. 建立目錄結構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">應用目錄結構</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">mkdir -p apps/my_zephyr_app/src</code></pre>
+            </div>
+            
+            <h3>2. 建立 CMakeLists.txt</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">CMakeLists.txt</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-cmake">cmake_minimum_required(VERSION 3.20)
+find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
+project(my_zephyr_app)
+
+target_sources(app PRIVATE
+    src/main.c
+)</code></pre>
+            </div>
+            
+            <h3>3. 建立 prj.conf</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">prj.conf</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 基本配置
+CONFIG_PRINTK=y
+CONFIG_LOG=y
+
+# GPIO 支援
+CONFIG_GPIO=y
+
+# 串口支援
+CONFIG_SERIAL=y
+CONFIG_UART_CONSOLE=y</code></pre>
+            </div>
+            
+            <h3>4. 建立主程式</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">src/main.c</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">#include &lt;zephyr/kernel.h&gt;
+#include &lt;zephyr/logging/log.h&gt;
+
+LOG_MODULE_REGISTER(my_app, LOG_LEVEL_INF);
+
+int main(void)
+{
+    LOG_INF("My Zephyr App Started!");
+    
+    while (1) {
+        LOG_INF("Hello from Zephyr!");
+        k_sleep(K_SECONDS(1));
+    }
+    
+    return 0;
+}</code></pre>
+            </div>
+            
+            <h3>5. 建構並執行</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構新應用</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">./tools/zephyr/build.sh -a my_zephyr_app -b ipro7_fpga</code></pre>
+            </div>
+        </section>
+        
+        <section id="debugging">
+            <h2>除錯</h2>
+            
+            <h3>使用 west debug</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">West 除錯指令</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 啟動 GDB 除錯
+west debug
+
+# 僅啟動 debug server
+west debugserver</code></pre>
+            </div>
+            
+            <h3>日誌配置</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">prj.conf 日誌設定</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 啟用日誌
+CONFIG_LOG=y
+CONFIG_LOG_DEFAULT_LEVEL=4  # DEBUG
+
+# 後端配置
+CONFIG_LOG_BACKEND_UART=y
+CONFIG_LOG_BUFFER_SIZE=4096</code></pre>
+            </div>
+            
+            <h3>Shell 支援</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">啟用 Shell</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># prj.conf
+CONFIG_SHELL=y
+CONFIG_SHELL_BACKEND_SERIAL=y
+
+# 內建指令
+CONFIG_KERNEL_SHELL=y
+CONFIG_DEVICE_SHELL=y</code></pre>
+            </div>
+        </section>
+    </article>
+</div>
