@@ -19,14 +19,14 @@ title: Zephyr RTOS
             </ul>
         </nav>
     </aside>
-    
+
     <article class="doc-content">
         <h1>Zephyr RTOS 整合指南</h1>
         <p>Zephyr 是一個可擴展的開源即時作業系統，專為資源受限的裝置設計。IPRO SDK 提供完整的 Zephyr 支援，作為 FreeRTOS 的現代化替代方案。</p>
-        
+
         <section id="overview">
             <h2>為什麼選擇 Zephyr？</h2>
-            
+
             <div class="features-grid" style="margin: 2rem 0;">
                 <div class="feature-card">
                     <div class="feature-icon">⚡</div>
@@ -44,7 +44,7 @@ title: Zephyr RTOS
                     <p class="feature-description">West 建構系統、Device Tree 配置、豐富的驅動生態。</p>
                 </div>
             </div>
-            
+
             <h3>主要優勢</h3>
             <ul>
                 <li><strong>Device Tree</strong>：宣告式硬體配置，易於移植</li>
@@ -54,11 +54,11 @@ title: Zephyr RTOS
                 <li><strong>活躍社群</strong>：持續更新與技術支援</li>
             </ul>
         </section>
-        
+
         <section id="architecture">
             <h2>整合架構</h2>
             <p>IPRO SDK 提供專用的 HAL 層，讓 Zephyr 能夠在 IPRO 硬體上高效運行。</p>
-            
+
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">Zephyr 整合架構</span>
@@ -78,7 +78,7 @@ title: Zephyr RTOS
 |         IPRO Hardware Platform                       |
 +------------------------------------------------------+</code></pre>
             </div>
-            
+
             <h3>支援的開發板</h3>
             <ul>
                 <li><code>ipro7</code> - IPRO7 SoC 基礎配置</li>
@@ -86,10 +86,10 @@ title: Zephyr RTOS
                 <li><code>ipro7_evb</code> - 評估板配置</li>
             </ul>
         </section>
-        
+
         <section id="setup">
             <h2>環境設置</h2>
-            
+
             <h3>一鍵設置（推薦）</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -105,7 +105,7 @@ title: Zephyr RTOS
 # ✓ 設置環境變數
 # ✓ 下載必要的 Zephyr 模組（6 個核心模組，約 125MB）</code></pre>
             </div>
-            
+
             <h3>手動設置</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -129,15 +129,15 @@ cd ipro_sdk
 west init -l .
 west update</code></pre>
             </div>
-            
+
             <div class="alert alert-info">
                 <strong>💡 提示：</strong>建議使用 <code>bootstrap.sh</code> 腳本，它會自動處理所有相依性並優化模組下載。
             </div>
         </section>
-        
+
         <section id="building">
             <h2>建構應用</h2>
-            
+
             <h3>使用 build.sh 腳本</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -153,7 +153,7 @@ west update</code></pre>
 # 顯示詳細進度
 ./tools/zephyr/build.sh -a ipro_zephyr_demo -b ipro7_fpga -v</code></pre>
             </div>
-            
+
             <h3>使用 west 指令</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -177,11 +177,11 @@ west flash
 west espmonitor  # 或使用其他序列工具</code></pre>
             </div>
         </section>
-        
+
         <section id="tools">
             <h2>開發工具</h2>
             <p>SDK 提供多個實用工具腳本，簡化 Zephyr 開發流程。</p>
-            
+
             <h3>互動式選單 (menu.sh)</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -198,7 +198,7 @@ west espmonitor  # 或使用其他序列工具</code></pre>
                 <li>Zephyr 範例搜尋</li>
                 <li>配置管理</li>
             </ul>
-            
+
             <h3>應用管理 (apps.sh)</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -218,11 +218,11 @@ west espmonitor  # 或使用其他序列工具</code></pre>
 ./tools/zephyr/apps.sh info ipro_zephyr_demo</code></pre>
             </div>
         </section>
-        
+
         <section id="device-tree">
             <h2>Device Tree 配置</h2>
             <p>Zephyr 使用 Device Tree 描述硬體配置，讓驅動與硬體解耦。</p>
-            
+
             <h3>Device Tree 結構</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -258,7 +258,7 @@ west espmonitor  # 或使用其他序列工具</code></pre>
     };
 };</code></pre>
             </div>
-            
+
             <h3>Overlay 配置</h3>
             <p>可以使用 overlay 檔案覆蓋預設配置：</p>
             <div class="code-block">
@@ -272,10 +272,10 @@ west espmonitor  # 或使用其他序列工具</code></pre>
 };</code></pre>
             </div>
         </section>
-        
+
         <section id="creating-apps">
             <h2>建立新應用</h2>
-            
+
             <h3>1. 建立目錄結構</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -284,7 +284,7 @@ west espmonitor  # 或使用其他序列工具</code></pre>
                 </div>
                 <pre><code class="language-bash">mkdir -p apps/my_zephyr_app/src</code></pre>
             </div>
-            
+
             <h3>2. 建立 CMakeLists.txt</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -299,7 +299,7 @@ target_sources(app PRIVATE
     src/main.c
 )</code></pre>
             </div>
-            
+
             <h3>3. 建立 prj.conf</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -317,7 +317,7 @@ CONFIG_GPIO=y
 CONFIG_SERIAL=y
 CONFIG_UART_CONSOLE=y</code></pre>
             </div>
-            
+
             <h3>4. 建立主程式</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -341,7 +341,7 @@ int main(void)
     return 0;
 }</code></pre>
             </div>
-            
+
             <h3>5. 建構並執行</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -351,10 +351,10 @@ int main(void)
                 <pre><code class="language-bash">./tools/zephyr/build.sh -a my_zephyr_app -b ipro7_fpga</code></pre>
             </div>
         </section>
-        
+
         <section id="debugging">
             <h2>除錯</h2>
-            
+
             <h3>使用 west debug</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -367,7 +367,7 @@ west debug
 # 僅啟動 debug server
 west debugserver</code></pre>
             </div>
-            
+
             <h3>日誌配置</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -382,7 +382,7 @@ CONFIG_LOG_DEFAULT_LEVEL=4  # DEBUG
 CONFIG_LOG_BACKEND_UART=y
 CONFIG_LOG_BUFFER_SIZE=4096</code></pre>
             </div>
-            
+
             <h3>Shell 支援</h3>
             <div class="code-block">
                 <div class="code-block-header">

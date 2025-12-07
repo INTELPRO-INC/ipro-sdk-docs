@@ -17,15 +17,15 @@ title: 架構概覽
             </ul>
         </nav>
     </aside>
-    
+
     <article class="doc-content">
         <h1>架構概覽</h1>
         <p>IPRO SDK 採用清晰的分層架構設計，提供高度模組化與可移植性，讓開發者能夠快速建構穩定的嵌入式應用。</p>
-        
+
         <section id="overview">
             <h2>系統架構圖</h2>
             <p>SDK 的整體架構由五個主要層次組成：</p>
-            
+
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">IPRO SDK 架構</span>
@@ -48,10 +48,10 @@ title: 架構概覽
 +------------------------------------------------------+</code></pre>
             </div>
         </section>
-        
+
         <section id="layers">
             <h2>各層詳細說明</h2>
-            
+
             <h3>應用層（Application Layer）</h3>
             <p>位於 <code>apps/</code> 目錄，包含所有的應用程式專案。每個應用都是獨立的專案，擁有自己的：</p>
             <ul>
@@ -60,10 +60,10 @@ title: 架構概覽
                 <li><code>main.c</code> - 應用程式入口</li>
                 <li><code>Kconfig.app</code> - 應用專屬選項</li>
             </ul>
-            
+
             <h3>中間件層（Middleware Layer）</h3>
             <p>位於 <code>components/</code> 目錄，提供可重複使用的軟體元件：</p>
-            
+
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -102,14 +102,14 @@ title: 架構概覽
                     </tbody>
                 </table>
             </div>
-            
+
             <h3>RTOS 層</h3>
             <p>SDK 支援兩種即時作業系統：</p>
             <ul>
                 <li><strong>FreeRTOS</strong> - 位於 <code>components/os/freertos/</code>，經典穩定的 RTOS 選擇</li>
                 <li><strong>Zephyr RTOS</strong> - 現代化 RTOS，提供 Device Tree、West 建構系統等進階功能</li>
             </ul>
-            
+
             <h3>BSP 層（Board Support Package）</h3>
             <p>位於 <code>bsp/</code> 目錄，提供硬體抽象：</p>
             <ul>
@@ -117,7 +117,7 @@ title: 架構概覽
                 <li><code>bsp/drivers/</code> - 週邊驅動程式</li>
                 <li><code>bsp/board/</code> - 板級配置</li>
             </ul>
-            
+
             <h4>支援的週邊驅動</h4>
             <div class="table-wrapper">
                 <table>
@@ -164,10 +164,10 @@ title: 架構概覽
                 </table>
             </div>
         </section>
-        
+
         <section id="directory">
             <h2>目錄結構</h2>
-            
+
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">SDK 目錄結構</span>
@@ -215,19 +215,19 @@ title: 架構概覽
 └── west.yml                      # Zephyr west 配置</code></pre>
             </div>
         </section>
-        
+
         <section id="build-system">
             <h2>建構系統</h2>
-            
+
             <h3>CMake + Ninja</h3>
             <p>SDK 使用 CMake 作為建構系統，搭配 Ninja 作為建構後端以獲得最佳效能。</p>
-            
+
             <h4>建構流程</h4>
             <ol>
                 <li><strong>配置階段</strong>：CMake 讀取 <code>CMakeLists.txt</code> 與 Kconfig，生成建構規則</li>
                 <li><strong>建構階段</strong>：Ninja 執行編譯、連結，生成最終二進位檔</li>
             </ol>
-            
+
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">建構命令參數說明</span>
@@ -242,10 +242,10 @@ title: 架構概覽
     -DCONFIG_APPS=1 \                 # 啟用應用建構
     -DCROSS_COMPILE=path/to/toolchain # 交叉編譯器前綴</code></pre>
             </div>
-            
+
             <h3>West 建構系統（Zephyr）</h3>
             <p>Zephyr 專案使用 <code>west</code> 作為建構工具，提供更現代化的開發體驗。</p>
-            
+
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">West 建構命令</span>
@@ -262,18 +262,18 @@ west build -b ipro7_fpga apps/ipro_zephyr_demo
 west flash</code></pre>
             </div>
         </section>
-        
+
         <section id="configuration">
             <h2>配置系統（Kconfig）</h2>
             <p>SDK 使用 Kconfig 系統管理專案配置，提供圖形化與文字介面配置選項。</p>
-            
+
             <h3>配置層次</h3>
             <ol>
                 <li><strong>根配置</strong>：<code>Kconfig</code> - 定義所有可用選項</li>
                 <li><strong>預設配置</strong>：<code>kconfigs/*.config</code> - 各功能模組的預設值</li>
                 <li><strong>應用配置</strong>：<code>apps/*/proj.conf</code> - 應用專屬配置覆蓋</li>
             </ol>
-            
+
             <h3>常用配置選項</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -294,15 +294,15 @@ CONFIG_LOG_DEFAULT_LEVEL=3
 CONFIG_LWIP_ENABLE=n
 CONFIG_MBEDTLS_ENABLE=y</code></pre>
             </div>
-            
+
             <div class="alert alert-info">
                 <strong>💡 提示：</strong>使用 <code>make menuconfig</code> 或修改 <code>proj.conf</code> 來調整配置。
             </div>
         </section>
-        
+
         <section id="components">
             <h2>主要元件概覽</h2>
-            
+
             <h3>BLE 程式庫 (<code>ipro_ble_lib</code>)</h3>
             <p>完整的 BLE 5.4 實作，採用 Core/Profile 分離架構：</p>
             <ul>
@@ -310,19 +310,19 @@ CONFIG_MBEDTLS_ENABLE=y</code></pre>
                 <li><strong>Profile 層</strong>：標準服務（HRS, BAS, DIS）、自訂服務</li>
                 <li><strong>Audio 層</strong>：LE Audio、LC3 編解碼、GAF 框架</li>
             </ul>
-            
+
             <h3>RTOS 元件</h3>
             <ul>
                 <li><strong>FreeRTOS</strong>：任務管理、佇列、信號量、軟體定時器</li>
                 <li><strong>Zephyr</strong>：完整 RTOS 功能 + Device Tree + West</li>
             </ul>
-            
+
             <h3>網路元件</h3>
             <ul>
                 <li><strong>lwIP</strong>：TCP/IP 協定棧，支援 IPv4/IPv6</li>
                 <li><strong>Mbed TLS</strong>：TLS/SSL、加密演算法</li>
             </ul>
-            
+
             <h3>儲存元件</h3>
             <ul>
                 <li><strong>LittleFS</strong>：針對 Flash 優化的檔案系統</li>

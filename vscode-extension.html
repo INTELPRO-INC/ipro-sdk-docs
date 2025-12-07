@@ -20,112 +20,112 @@ title: VS Code Extension - IPRO SDK
     </aside>
 
     <article class="doc-content">
-    <h1>IPRO SDK VS Code Extension</h1>
-    <p>專為 IPRO SDK 設計的 VS Code 擴充套件，支援本地與遠端開發環境，提供一鍵建構、燒錄等功能。</p>
-    
-    <section id="overview">
-        <h2>概覽</h2>
-        <p>IPRO SDK Extension 是一套完整的開發工具套件，包含兩個互相協作的擴充套件：</p>
-        
-        <div class="info-box">
-            <h4>🔧 IPRO SDK Extension (v0.0.7)</h4>
-            <p>主要開發擴充套件，安裝於遠端伺服器或本地環境</p>
-            <ul>
-                <li>專案管理與配置</li>
-                <li>CMake 建構整合</li>
-                <li>自動偵測工具鏈</li>
-                <li>燒錄介面</li>
-            </ul>
-        </div>
-        
-        <div class="info-box">
-            <h4>⚡ IPRO Flash Tool Extension (v1.0.0)</h4>
-            <p>燒錄工具擴充套件，安裝於本地 Windows 電腦</p>
-            <ul>
-                <li>本地燒錄執行</li>
-                <li>即時進度回報</li>
-                <li>自動偵測燒錄工具</li>
-            </ul>
-        </div>
-        
-        <h3>支援的開發場景</h3>
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>場景</th>
-                        <th>SDK 位置</th>
-                        <th>燒錄工具</th>
-                        <th>適用情況</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>本地開發</strong></td>
-                        <td>本地 Windows</td>
-                        <td>本地</td>
-                        <td>個人開發環境</td>
-                    </tr>
-                    <tr>
-                        <td><strong>遠端開發</strong></td>
-                        <td>遠端 Linux 伺服器</td>
-                        <td>本地 Windows</td>
-                        <td>團隊共用編譯伺服器</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-    
-    <section id="features">
-        <h2>功能特色</h2>
-        
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">🎯</div>
-                <h3>智慧專案管理</h3>
-                <p>自動偵測 SDK 內的所有應用專案，提供下拉選單快速切換。</p>
+        <h1>IPRO SDK VS Code Extension</h1>
+        <p>專為 IPRO SDK 設計的 VS Code 擴充套件，支援本地與遠端開發環境，提供一鍵建構、燒錄等功能。</p>
+
+        <section id="overview">
+            <h2>概覽</h2>
+            <p>IPRO SDK Extension 是一套完整的開發工具套件，包含兩個互相協作的擴充套件：</p>
+
+            <div class="info-box">
+                <h4>🔧 IPRO SDK Extension (v0.0.7)</h4>
+                <p>主要開發擴充套件，安裝於遠端伺服器或本地環境</p>
+                <ul>
+                    <li>專案管理與配置</li>
+                    <li>CMake 建構整合</li>
+                    <li>自動偵測工具鏈</li>
+                    <li>燒錄介面</li>
+                </ul>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">🔧</div>
-                <h3>自動工具鏈偵測</h3>
-                <p>自動偵測 PATH 中的 cmake、ninja、riscv64-unknown-elf-gcc，無需手動配置。</p>
+
+            <div class="info-box">
+                <h4>⚡ IPRO Flash Tool Extension (v1.0.0)</h4>
+                <p>燒錄工具擴充套件，安裝於本地 Windows 電腦</p>
+                <ul>
+                    <li>本地燒錄執行</li>
+                    <li>即時進度回報</li>
+                    <li>自動偵測燒錄工具</li>
+                </ul>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">🔨</div>
-                <h3>一鍵建構</h3>
-                <p>整合 CMake + Ninja 建構系統，提供 Configure 和 Build 按鈕。</p>
+
+            <h3>支援的開發場景</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>場景</th>
+                            <th>SDK 位置</th>
+                            <th>燒錄工具</th>
+                            <th>適用情況</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>本地開發</strong></td>
+                            <td>本地 Windows</td>
+                            <td>本地</td>
+                            <td>個人開發環境</td>
+                        </tr>
+                        <tr>
+                            <td><strong>遠端開發</strong></td>
+                            <td>遠端 Linux 伺服器</td>
+                            <td>本地 Windows</td>
+                            <td>團隊共用編譯伺服器</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3>遠端燒錄</h3>
-                <p>透過 Base64 傳輸韌體到本地，支援即時進度顯示。</p>
+        </section>
+
+        <section id="features">
+            <h2>功能特色</h2>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>智慧專案管理</h3>
+                    <p>自動偵測 SDK 內的所有應用專案，提供下拉選單快速切換。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3>自動工具鏈偵測</h3>
+                    <p>自動偵測 PATH 中的 cmake、ninja、riscv64-unknown-elf-gcc，無需手動配置。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔨</div>
+                    <h3>一鍵建構</h3>
+                    <p>整合 CMake + Ninja 建構系統，提供 Configure 和 Build 按鈕。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>遠端燒錄</h3>
+                    <p>透過 Base64 傳輸韌體到本地，支援即時進度顯示。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>即時進度</h3>
+                    <p>建構和燒錄過程中顯示即時進度條和詳細日誌。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <h3>Remote SSH 整合</h3>
+                    <p>完整支援 VS Code Remote SSH，遠端編譯本地燒錄。</p>
+                </div>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">📊</div>
-                <h3>即時進度</h3>
-                <p>建構和燒錄過程中顯示即時進度條和詳細日誌。</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">🔗</div>
-                <h3>Remote SSH 整合</h3>
-                <p>完整支援 VS Code Remote SSH，遠端編譯本地燒錄。</p>
-            </div>
-        </div>
-    </section>
-    
-    <section id="installation">
-        <h2>安裝指南</h2>
-        
-        <h3>遠端 Linux 伺服器準備</h3>
-        
-        <h4>1. 安裝必要工具</h4>
-        <div class="code-block">
-            <div class="code-block-header">
-                <span class="code-block-title">安裝開發工具</span>
-                <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-            </div>
-            <pre><code class="language-bash"># 安裝 CMake 和 Ninja
+        </section>
+
+        <section id="installation">
+            <h2>安裝指南</h2>
+
+            <h3>遠端 Linux 伺服器準備</h3>
+
+            <h4>1. 安裝必要工具</h4>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">安裝開發工具</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 安裝 CMake 和 Ninja
 sudo apt-get install cmake ninja-build
 
 # 手動安裝 RISC-V 工具鏈（推薦）
@@ -137,53 +137,53 @@ source ~/.bashrc
 which cmake ninja riscv64-unknown-elf-gcc
 cmake --version
 riscv64-unknown-elf-gcc --version</code></pre>
-        </div>
-        
-        <h3>本地 Windows 準備</h3>
-        
-        <h4>1. 安裝 VS Code 擴充功能</h4>
-        <ol>
-            <li>安裝 <a href="https://code.visualstudio.com/" target="_blank">Visual Studio Code</a></li>
-            <li>安裝 <strong>Remote - SSH</strong> 擴充功能</li>
-            <li>準備燒錄工具 <code>ipro_iot_tool.exe</code></li>
-        </ol>
-        
-        <h4>2. 燒錄工具路徑</h4>
-        <p>Extension 會自動偵測以下常見路徑：</p>
-        <div class="code-block">
-            <div class="code-block-header">
-                <span class="code-block-title">常見燒錄工具路徑</span>
             </div>
-            <pre><code>C:\Work\IPRO\ipro_sdk\tools\download\ipro_iot_tool.exe
+
+            <h3>本地 Windows 準備</h3>
+
+            <h4>1. 安裝 VS Code 擴充功能</h4>
+            <ol>
+                <li>安裝 <a href="https://code.visualstudio.com/" target="_blank">Visual Studio Code</a></li>
+                <li>安裝 <strong>Remote - SSH</strong> 擴充功能</li>
+                <li>準備燒錄工具 <code>ipro_iot_tool.exe</code></li>
+            </ol>
+
+            <h4>2. 燒錄工具路徑</h4>
+            <p>Extension 會自動偵測以下常見路徑：</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">常見燒錄工具路徑</span>
+                </div>
+                <pre><code>C:\Work\IPRO\ipro_sdk\tools\download\ipro_iot_tool.exe
 C:\IPRO\tools\download\ipro_iot_tool.exe
 C:\Program Files\IPRO\tools\download\ipro_iot_tool.exe</code></pre>
-        </div>
-        
-        <h3>安裝 Extensions</h3>
-        
-        <div class="warning-box">
-            <h4>⚠️ 重要安裝順序</h4>
-            <ul>
-                <li><strong>IPRO SDK Extension</strong>：安裝在 <strong>遠端伺服器</strong>（透過 Remote SSH）</li>
-                <li><strong>IPRO Flash Tool Extension</strong>：安裝在 <strong>本地</strong>（必須！）</li>
-            </ul>
-        </div>
-        
-        <h4>安裝步驟</h4>
-        <ol>
-            <li>連接到遠端伺服器後，打開 Extensions 面板（<code>Ctrl+Shift+X</code>）</li>
-            <li>搜尋 <strong>IPRO SDK Extension</strong>，點擊 "Install in SSH: server-name"</li>
-            <li>中斷 SSH 連接或開啟新的本地視窗</li>
-            <li>搜尋 <strong>IPRO Flash Tool</strong>，點擊 "Install"（確認不是 "Install in SSH"）</li>
-            <li>重新載入視窗：<code>F1</code> → <code>Developer: Reload Window</code></li>
-        </ol>
-    </section>
-    
-    <section id="remote-dev">
-        <h2>遠端開發架構</h2>
-        
-        <div class="architecture-diagram">
-            <pre>
+            </div>
+
+            <h3>安裝 Extensions</h3>
+
+            <div class="warning-box">
+                <h4>⚠️ 重要安裝順序</h4>
+                <ul>
+                    <li><strong>IPRO SDK Extension</strong>：安裝在 <strong>遠端伺服器</strong>（透過 Remote SSH）</li>
+                    <li><strong>IPRO Flash Tool Extension</strong>：安裝在 <strong>本地</strong>（必須！）</li>
+                </ul>
+            </div>
+
+            <h4>安裝步驟</h4>
+            <ol>
+                <li>連接到遠端伺服器後，打開 Extensions 面板（<code>Ctrl+Shift+X</code>）</li>
+                <li>搜尋 <strong>IPRO SDK Extension</strong>，點擊 "Install in SSH: server-name"</li>
+                <li>中斷 SSH 連接或開啟新的本地視窗</li>
+                <li>搜尋 <strong>IPRO Flash Tool</strong>，點擊 "Install"（確認不是 "Install in SSH"）</li>
+                <li>重新載入視窗：<code>F1</code> → <code>Developer: Reload Window</code></li>
+            </ol>
+        </section>
+
+        <section id="remote-dev">
+            <h2>遠端開發架構</h2>
+
+            <div class="architecture-diagram">
+                <pre>
 ┌─────────────────────────────────────────────────────────────────┐
 │                    遠端 Linux 伺服器                               │
 │  ┌─────────────────────────────────────────────────────────┐   │
@@ -210,268 +210,268 @@ C:\Program Files\IPRO\tools\download\ipro_iot_tool.exe</code></pre>
 │  │     .exe        │──│           IPRO7 FPGA               │   │
 │  └─────────────────┘  └─────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘</pre>
-        </div>
-    </section>
-    
-    <section id="workflow">
-        <h2>開發流程</h2>
-        
-        <h3>1. 連接遠端伺服器</h3>
-        <ol>
-            <li>按 <code>F1</code> 打開命令面板</li>
-            <li>選擇 <code>Remote-SSH: Connect to Host...</code></li>
-            <li>選擇或新增 SSH 主機</li>
-            <li>輸入密碼或使用 SSH 金鑰</li>
-        </ol>
-        
-        <h3>2. 打開 SDK 資料夾</h3>
-        <ol>
-            <li>選擇 <code>File</code> → <code>Open Folder...</code></li>
-            <li>選擇 IPRO SDK 根目錄（例如：<code>/home/username/ipro_sdk/</code>）</li>
-        </ol>
-        
-        <h3>3. 使用 IPRO 側邊欄</h3>
-        <ol>
-            <li>點擊左側活動列的 <strong>IPRO 圖示</strong></li>
-            <li>在 <strong>Project Manager</strong> 選擇專案</li>
-            <li>點擊 <strong>Configure</strong> 按鈕進行配置</li>
-            <li>點擊 <strong>Build</strong> 按鈕進行編譯</li>
-        </ol>
-        
-        <h3>Configure 輸出範例</h3>
-        <div class="code-block">
-            <div class="code-block-header">
-                <span class="code-block-title">Configure 日誌</span>
             </div>
-            <pre><code class="language-bash">[11:00:00 PM] 已載入專案: ipro_ble_demo
+        </section>
+
+        <section id="workflow">
+            <h2>開發流程</h2>
+
+            <h3>1. 連接遠端伺服器</h3>
+            <ol>
+                <li>按 <code>F1</code> 打開命令面板</li>
+                <li>選擇 <code>Remote-SSH: Connect to Host...</code></li>
+                <li>選擇或新增 SSH 主機</li>
+                <li>輸入密碼或使用 SSH 金鑰</li>
+            </ol>
+
+            <h3>2. 打開 SDK 資料夾</h3>
+            <ol>
+                <li>選擇 <code>File</code> → <code>Open Folder...</code></li>
+                <li>選擇 IPRO SDK 根目錄（例如：<code>/home/username/ipro_sdk/</code>）</li>
+            </ol>
+
+            <h3>3. 使用 IPRO 側邊欄</h3>
+            <ol>
+                <li>點擊左側活動列的 <strong>IPRO 圖示</strong></li>
+                <li>在 <strong>Project Manager</strong> 選擇專案</li>
+                <li>點擊 <strong>Configure</strong> 按鈕進行配置</li>
+                <li>點擊 <strong>Build</strong> 按鈕進行編譯</li>
+            </ol>
+
+            <h3>Configure 輸出範例</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Configure 日誌</span>
+                </div>
+                <pre><code class="language-bash">[11:00:00 PM] 已載入專案: ipro_ble_demo
 [11:00:00 PM] 開始 Configure...
 [11:00:00 PM] 🔗 Remote workspace detected, using toolchain from PATH: riscv64-unknown-elf-
 [11:00:01 PM] [CMake] Setting CC=/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-gcc, ...
 [11:00:02 PM] -- The C compiler identification is GNU 10.2.0
 [11:00:03 PM] ✅ Configure completed successfully</code></pre>
-        </div>
-        
-        <h3>Build 輸出範例</h3>
-        <div class="code-block">
-            <div class="code-block-header">
-                <span class="code-block-title">Build 日誌</span>
             </div>
-            <pre><code class="language-bash">[11:01:00 PM] 開始 Build...
+
+            <h3>Build 輸出範例</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build 日誌</span>
+                </div>
+                <pre><code class="language-bash">[11:01:00 PM] 開始 Build...
 [11:01:01 PM] [Build] [1/45] Building C object ...
 [11:01:30 PM] [Build] [45/45] Linking C executable ...
 [11:01:31 PM] ✅ Build completed successfully</code></pre>
-        </div>
-        
-        <p>編譯完成後，韌體檔案位於：</p>
-        <code>apps/&lt;project_name&gt;/build/build_out/&lt;project_name&gt;_IPRO7.bin</code>
-    </section>
-    
-    <section id="flash">
-        <h2>遠端燒錄</h2>
-        
-        <h3>燒錄步驟</h3>
-        
-        <h4>1. 準備硬體</h4>
-        <ol>
-            <li>將開發板通過 USB 連接到本地 Windows 電腦</li>
-            <li>開啟裝置管理員，確認 COM 埠號（例如：<code>COM4</code>）</li>
-        </ol>
-        
-        <h4>2. 開啟燒錄面板</h4>
-        <ol>
-            <li>在側邊欄 <strong>快速操作</strong> 區塊</li>
-            <li>點擊 <strong>Flash to Device</strong> 按鈕</li>
-        </ol>
-        
-        <h4>3. 設定參數</h4>
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>參數</th>
-                        <th>說明</th>
-                        <th>預設值</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>COM Port</td>
-                        <td>開發板連接的 COM 埠</td>
-                        <td>COM4</td>
-                    </tr>
-                    <tr>
-                        <td>Chip Name</td>
-                        <td>晶片型號</td>
-                        <td>ipro7</td>
-                    </tr>
-                    <tr>
-                        <td>Baudrate</td>
-                        <td>傳輸速率</td>
-                        <td>2000000</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        
-        <h4>4. 燒錄進度</h4>
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>進度</th>
-                        <th>階段</th>
-                        <th>說明</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>5%</td>
-                        <td>✅ 連接裝置成功</td>
-                        <td>與開發板建立連接</td>
-                    </tr>
-                    <tr>
-                        <td>8%</td>
-                        <td>📌 偵測到 Flash 晶片</td>
-                        <td>識別 Flash 型號</td>
-                    </tr>
-                    <tr>
-                        <td>25-30%</td>
-                        <td>🔥 擦除主韌體區域</td>
-                        <td>清除舊韌體</td>
-                    </tr>
-                    <tr>
-                        <td>30-90%</td>
-                        <td>📝 寫入主韌體中</td>
-                        <td>燒錄新韌體</td>
-                    </tr>
-                    <tr>
-                        <td>92%</td>
-                        <td>✅ 主韌體寫入完成</td>
-                        <td>燒錄完成</td>
-                    </tr>
-                    <tr>
-                        <td>96%</td>
-                        <td>✅ 主韌體驗證成功</td>
-                        <td>校驗成功</td>
-                    </tr>
-                    <tr>
-                        <td>100%</td>
-                        <td>🎉 燒錄完成！</td>
-                        <td>全部完成</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-    
-    <section id="faq">
-        <h2>常見問題</h2>
-        
-        <div class="faq-item">
-            <h4>Q1: 遠端無法找到 cmake 或工具鏈</h4>
-            <p><strong>問題：</strong><code>CMAKE_C_COMPILER not found in PATH</code></p>
-            <p><strong>解決方法：</strong></p>
+            </div>
+
+            <p>編譯完成後，韌體檔案位於：</p>
+            <code>apps/&lt;project_name&gt;/build/build_out/&lt;project_name&gt;_IPRO7.bin</code>
+        </section>
+
+        <section id="flash">
+            <h2>遠端燒錄</h2>
+
+            <h3>燒錄步驟</h3>
+
+            <h4>1. 準備硬體</h4>
             <ol>
-                <li>確認工具已安裝：<code>which cmake riscv64-unknown-elf-gcc</code></li>
-                <li>添加到 PATH：<code>echo 'export PATH=/opt/toolchain/riscv_ipro7/bin:$PATH' >> ~/.bashrc</code></li>
-                <li>重新載入視窗：<code>F1</code> → <code>Developer: Reload Window</code></li>
+                <li>將開發板通過 USB 連接到本地 Windows 電腦</li>
+                <li>開啟裝置管理員，確認 COM 埠號（例如：<code>COM4</code>）</li>
             </ol>
-        </div>
-        
-        <div class="faq-item">
-            <h4>Q2: 本地 Flash Tool Extension 未安裝</h4>
-            <p><strong>問題：</strong>無法呼叫本地 Flash Tool Extension</p>
-            <p><strong>解決方法：</strong></p>
+
+            <h4>2. 開啟燒錄面板</h4>
             <ol>
-                <li>中斷 SSH 連接，在本地 VS Code 中安裝</li>
-                <li>確認顯示 "Install" 而非 "Install in SSH"</li>
-                <li>重新連接遠端並重新載入視窗</li>
+                <li>在側邊欄 <strong>快速操作</strong> 區塊</li>
+                <li>點擊 <strong>Flash to Device</strong> 按鈕</li>
             </ol>
-        </div>
-        
-        <div class="faq-item">
-            <h4>Q3: 燒錄工具路徑未配置</h4>
-            <p><strong>問題：</strong><code>Flash tool not configured</code></p>
-            <p><strong>解決方法：</strong></p>
-            <ol>
-                <li>執行命令：<code>F1</code> → <code>IPRO: Configure Flash Tool Path</code></li>
-                <li>選擇 <code>ipro_iot_tool.exe</code> 位置</li>
-            </ol>
-        </div>
-        
-        <div class="faq-item">
-            <h4>Q4: COM 埠連接失敗</h4>
-            <p><strong>問題：</strong><code>shake hand failed</code></p>
-            <p><strong>解決方法：</strong></p>
-            <ol>
-                <li>確認 USB 線已連接且驅動正常</li>
-                <li>檢查 COM 埠號是否正確</li>
-                <li>關閉其他占用 COM 埠的程式</li>
-                <li>按下 RESET 按鈕後立即開始燒錄</li>
-            </ol>
-        </div>
-        
-        <div class="faq-item">
-            <h4>Q5: 韌體檔案不存在</h4>
-            <p><strong>問題：</strong>韌體檔案不存在，請先建置專案</p>
-            <p><strong>解決方法：</strong></p>
-            <ol>
-                <li>確認已執行 Configure 和 Build</li>
-                <li>檢查 <code>apps/&lt;project&gt;/build/build_out/</code> 目錄</li>
-                <li>如果沒有檔案，重新執行 Build</li>
-            </ol>
-        </div>
-    </section>
-    
-    <section id="shortcuts">
-        <h2>快捷鍵</h2>
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>功能</th>
-                        <th>快捷鍵</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>打開命令面板</td>
-                        <td><code>Ctrl+Shift+P</code> 或 <code>F1</code></td>
-                    </tr>
-                    <tr>
-                        <td>打開終端</td>
-                        <td><code>Ctrl+`</code></td>
-                    </tr>
-                    <tr>
-                        <td>切換側邊欄</td>
-                        <td><code>Ctrl+B</code></td>
-                    </tr>
-                    <tr>
-                        <td>Extensions 面板</td>
-                        <td><code>Ctrl+Shift+X</code></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
-    
-    <section id="version">
-        <h2>版本資訊</h2>
-        <div class="info-box">
-            <h4>v0.0.7 (2025-07-25)</h4>
-            <ul>
-                <li>✅ Remote SSH 完整支援</li>
-                <li>✅ 自動偵測遠端環境並使用 PATH 工具</li>
-                <li>✅ Base64 韌體傳輸機制</li>
-                <li>✅ 雙 Extension 協作架構</li>
-                <li>✅ 即時燒錄進度同步</li>
-                <li>✅ 本地燒錄工具自動配置</li>
-                <li>🔧 簡化側邊欄介面</li>
-                <li>🔧 優化 CMake 編譯器偵測</li>
-                <li>🔧 改進錯誤訊息提示</li>
-                <li>🔧 增強 BLE 專案配置支援</li>
-            </ul>
-        </div>
-    </section>
-</article>
+
+            <h4>3. 設定參數</h4>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>參數</th>
+                            <th>說明</th>
+                            <th>預設值</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>COM Port</td>
+                            <td>開發板連接的 COM 埠</td>
+                            <td>COM4</td>
+                        </tr>
+                        <tr>
+                            <td>Chip Name</td>
+                            <td>晶片型號</td>
+                            <td>ipro7</td>
+                        </tr>
+                        <tr>
+                            <td>Baudrate</td>
+                            <td>傳輸速率</td>
+                            <td>2000000</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h4>4. 燒錄進度</h4>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>進度</th>
+                            <th>階段</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>5%</td>
+                            <td>✅ 連接裝置成功</td>
+                            <td>與開發板建立連接</td>
+                        </tr>
+                        <tr>
+                            <td>8%</td>
+                            <td>📌 偵測到 Flash 晶片</td>
+                            <td>識別 Flash 型號</td>
+                        </tr>
+                        <tr>
+                            <td>25-30%</td>
+                            <td>🔥 擦除主韌體區域</td>
+                            <td>清除舊韌體</td>
+                        </tr>
+                        <tr>
+                            <td>30-90%</td>
+                            <td>📝 寫入主韌體中</td>
+                            <td>燒錄新韌體</td>
+                        </tr>
+                        <tr>
+                            <td>92%</td>
+                            <td>✅ 主韌體寫入完成</td>
+                            <td>燒錄完成</td>
+                        </tr>
+                        <tr>
+                            <td>96%</td>
+                            <td>✅ 主韌體驗證成功</td>
+                            <td>校驗成功</td>
+                        </tr>
+                        <tr>
+                            <td>100%</td>
+                            <td>🎉 燒錄完成！</td>
+                            <td>全部完成</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="faq">
+            <h2>常見問題</h2>
+
+            <div class="faq-item">
+                <h4>Q1: 遠端無法找到 cmake 或工具鏈</h4>
+                <p><strong>問題：</strong><code>CMAKE_C_COMPILER not found in PATH</code></p>
+                <p><strong>解決方法：</strong></p>
+                <ol>
+                    <li>確認工具已安裝：<code>which cmake riscv64-unknown-elf-gcc</code></li>
+                    <li>添加到 PATH：<code>echo 'export PATH=/opt/toolchain/riscv_ipro7/bin:$PATH' >> ~/.bashrc</code></li>
+                    <li>重新載入視窗：<code>F1</code> → <code>Developer: Reload Window</code></li>
+                </ol>
+            </div>
+
+            <div class="faq-item">
+                <h4>Q2: 本地 Flash Tool Extension 未安裝</h4>
+                <p><strong>問題：</strong>無法呼叫本地 Flash Tool Extension</p>
+                <p><strong>解決方法：</strong></p>
+                <ol>
+                    <li>中斷 SSH 連接，在本地 VS Code 中安裝</li>
+                    <li>確認顯示 "Install" 而非 "Install in SSH"</li>
+                    <li>重新連接遠端並重新載入視窗</li>
+                </ol>
+            </div>
+
+            <div class="faq-item">
+                <h4>Q3: 燒錄工具路徑未配置</h4>
+                <p><strong>問題：</strong><code>Flash tool not configured</code></p>
+                <p><strong>解決方法：</strong></p>
+                <ol>
+                    <li>執行命令：<code>F1</code> → <code>IPRO: Configure Flash Tool Path</code></li>
+                    <li>選擇 <code>ipro_iot_tool.exe</code> 位置</li>
+                </ol>
+            </div>
+
+            <div class="faq-item">
+                <h4>Q4: COM 埠連接失敗</h4>
+                <p><strong>問題：</strong><code>shake hand failed</code></p>
+                <p><strong>解決方法：</strong></p>
+                <ol>
+                    <li>確認 USB 線已連接且驅動正常</li>
+                    <li>檢查 COM 埠號是否正確</li>
+                    <li>關閉其他占用 COM 埠的程式</li>
+                    <li>按下 RESET 按鈕後立即開始燒錄</li>
+                </ol>
+            </div>
+
+            <div class="faq-item">
+                <h4>Q5: 韌體檔案不存在</h4>
+                <p><strong>問題：</strong>韌體檔案不存在，請先建置專案</p>
+                <p><strong>解決方法：</strong></p>
+                <ol>
+                    <li>確認已執行 Configure 和 Build</li>
+                    <li>檢查 <code>apps/&lt;project&gt;/build/build_out/</code> 目錄</li>
+                    <li>如果沒有檔案，重新執行 Build</li>
+                </ol>
+            </div>
+        </section>
+
+        <section id="shortcuts">
+            <h2>快捷鍵</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>功能</th>
+                            <th>快捷鍵</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>打開命令面板</td>
+                            <td><code>Ctrl+Shift+P</code> 或 <code>F1</code></td>
+                        </tr>
+                        <tr>
+                            <td>打開終端</td>
+                            <td><code>Ctrl+`</code></td>
+                        </tr>
+                        <tr>
+                            <td>切換側邊欄</td>
+                            <td><code>Ctrl+B</code></td>
+                        </tr>
+                        <tr>
+                            <td>Extensions 面板</td>
+                            <td><code>Ctrl+Shift+X</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="version">
+            <h2>版本資訊</h2>
+            <div class="info-box">
+                <h4>v0.0.7 (2025-07-25)</h4>
+                <ul>
+                    <li>✅ Remote SSH 完整支援</li>
+                    <li>✅ 自動偵測遠端環境並使用 PATH 工具</li>
+                    <li>✅ Base64 韌體傳輸機制</li>
+                    <li>✅ 雙 Extension 協作架構</li>
+                    <li>✅ 即時燒錄進度同步</li>
+                    <li>✅ 本地燒錄工具自動配置</li>
+                    <li>🔧 簡化側邊欄介面</li>
+                    <li>🔧 優化 CMake 編譯器偵測</li>
+                    <li>🔧 改進錯誤訊息提示</li>
+                    <li>🔧 增強 BLE 專案配置支援</li>
+                </ul>
+            </div>
+        </section>
+    </article>
 </div>

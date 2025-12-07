@@ -51,19 +51,19 @@ title: 首頁
 <!-- Stats Section -->
 <section class="stats">
     <div class="stats-grid">
-        <div class="stat-item">
+        <div class="stat-item" data-tooltip="完整 BLE 5.4 協定棧支援">
             <div class="stat-value">BLE 5.4</div>
             <div class="stat-label">藍牙協定支援</div>
         </div>
-        <div class="stat-item">
+        <div class="stat-item" data-tooltip="高效能 RISC-V 64-bit 處理器">
             <div class="stat-value">RISC-V</div>
             <div class="stat-label">64-bit 架構</div>
         </div>
-        <div class="stat-item">
+        <div class="stat-item" data-tooltip="完整的 CLI 命令系統用於開發測試">
             <div class="stat-value">40+</div>
             <div class="stat-label">CLI 互動指令</div>
         </div>
-        <div class="stat-item">
+        <div class="stat-item" data-tooltip="LC3 編解碼，超低延遲音訊傳輸">
             <div class="stat-value">&lt;20ms</div>
             <div class="stat-label">音訊延遲</div>
         </div>
@@ -217,12 +217,12 @@ title: 首頁
                 選擇您偏好的開發方式，幾分鐘內開始建構應用
             </p>
         </div>
-        
+
         <div class="quickstart-tabs">
             <button class="tab-btn active" data-tab="tab-zephyr">Zephyr RTOS</button>
             <button class="tab-btn" data-tab="tab-freertos">FreeRTOS</button>
         </div>
-        
+
         <div id="tab-zephyr" class="tab-content active">
             <div class="code-block">
                 <div class="code-block-header">
@@ -247,7 +247,7 @@ west build -b ipro7_fpga ../apps/ipro_zephyr_demo</code></pre>
                 <strong>💡 提示：</strong>Zephyr 環境優化後僅需下載 6 個必要模組（約 125MB），建構時間約 30 秒。
             </div>
         </div>
-        
+
         <div id="tab-freertos" class="tab-content">
             <div class="code-block">
                 <div class="code-block-header">

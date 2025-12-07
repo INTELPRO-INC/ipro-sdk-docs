@@ -18,22 +18,22 @@ title: 快速開始
             </ul>
         </nav>
     </aside>
-    
+
     <article class="doc-content">
         <h1>快速開始</h1>
         <p>本指南將帶您完成 IPRO SDK 的安裝設置，並建構您的第一個應用程式。</p>
-        
+
         <section id="prerequisites">
             <h2>系統需求</h2>
             <p>開始之前，請確保您的開發環境符合以下需求：</p>
-            
+
             <h3>硬體需求</h3>
             <ul>
                 <li>IPRO7 開發板（EVB 或 FPGA 版本）</li>
                 <li>JTAG 除錯器（用於燒錄與除錯）</li>
                 <li>USB 連接線</li>
             </ul>
-            
+
             <h3>軟體需求</h3>
             <ul>
                 <li><strong>作業系統：</strong>Linux（Ubuntu 20.04+ 建議）</li>
@@ -42,7 +42,7 @@ title: 快速開始
                 <li><strong>Python：</strong>Python 3.8+（用於 west 與腳本）</li>
                 <li><strong>Git：</strong>版本控制</li>
             </ul>
-            
+
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">安裝基本工具（Ubuntu/Debian）</span>
@@ -58,10 +58,10 @@ ninja --version
 python3 --version</code></pre>
             </div>
         </section>
-        
+
         <section id="installation">
             <h2>安裝設置</h2>
-            
+
             <h3>1. 取得 SDK 原始碼</h3>
             <div class="alert alert-info">
                 <strong>📋 注意：</strong>IPRO SDK 原始碼託管於內部 GitLab，請聯繫管理員取得存取權限。
@@ -76,10 +76,10 @@ python3 --version</code></pre>
 git clone https://your-gitlab-server/ipro/ipro_sdk.git
 cd ipro_sdk</code></pre>
             </div>
-            
+
             <h3>2. 設置工具鏈</h3>
             <p>IPRO SDK 使用 RISC-V 交叉編譯器。預設路徑為 <code>/opt/toolchain/riscv_ipro7/</code>。</p>
-            
+
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">驗證工具鏈</span>
@@ -94,16 +94,16 @@ ls /opt/toolchain/riscv_ipro7/bin/
 # riscv64-unknown-elf-objcopy
 # ...</code></pre>
             </div>
-            
+
             <div class="alert alert-warning">
                 <strong>⚠️ 注意：</strong>如果您的工具鏈位於不同路徑，請在建構時指定 <code>CROSS_COMPILE</code> 參數。
             </div>
         </section>
-        
+
         <section id="zephyr-quickstart">
             <h2>Zephyr RTOS 快速開始</h2>
             <p>Zephyr 是推薦的開發方式，提供現代化的建構系統和豐富的功能。</p>
-            
+
             <h3>一鍵設置環境</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -119,7 +119,7 @@ ls /opt/toolchain/riscv_ipro7/bin/
 # - 設置環境變數
 # - 下載必要的 Zephyr 模組</code></pre>
             </div>
-            
+
             <h3>使用互動式選單</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -129,7 +129,7 @@ ls /opt/toolchain/riscv_ipro7/bin/
                 <pre><code class="language-bash"># 啟動互動式選單（支援中英雙語）
 ./tools/zephyr/menu.sh</code></pre>
             </div>
-            
+
             <h3>直接建構應用</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -145,11 +145,11 @@ source setup_env.sh
 west build -b ipro7_fpga ../apps/ipro_zephyr_demo</code></pre>
             </div>
         </section>
-        
+
         <section id="freertos-quickstart">
             <h2>FreeRTOS 快速開始</h2>
             <p>傳統的 FreeRTOS 開發方式，適合熟悉 FreeRTOS 的開發者。</p>
-            
+
             <h3>使用簡化建構腳本</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -165,7 +165,7 @@ west build -b ipro7_fpga ../apps/ipro_zephyr_demo</code></pre>
 # 建構 FPGA BLE 5.4 應用
 ./build_freertos.sh ipro7_fpga_ble_5p4</code></pre>
             </div>
-            
+
             <h3>手動 CMake 建構</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -186,11 +186,11 @@ cmake -S . -B build \
 cmake --build build</code></pre>
             </div>
         </section>
-        
+
         <section id="first-build">
             <h2>第一次建構</h2>
             <p>讓我們建構並驗證 BLE Demo 應用。</p>
-            
+
             <h3>步驟 1：建構應用</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -199,7 +199,7 @@ cmake --build build</code></pre>
                 </div>
                 <pre><code class="language-bash">./build_freertos.sh ipro_ble_demo</code></pre>
             </div>
-            
+
             <h3>步驟 2：檢查建構輸出</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -214,7 +214,7 @@ ls -la apps/ipro_ble_demo/build/build_out/
 # ipro_ble_demo.bin  - 二進位燒錄檔
 # ipro_ble_demo.map  - 記憶體映射檔</code></pre>
             </div>
-            
+
             <h3>步驟 3：燒錄到開發板</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -225,15 +225,15 @@ ls -la apps/ipro_ble_demo/build/build_out/
 openocd -f apps/ipro_ble_demo/debug.cfg \
     -c "program apps/ipro_ble_demo/build/build_out/ipro_ble_demo.elf verify reset exit"</code></pre>
             </div>
-            
+
             <div class="alert alert-success">
                 <strong>✅ 成功！</strong>如果建構完成且沒有錯誤，您已經成功設置 IPRO SDK 開發環境。
             </div>
         </section>
-        
+
         <section id="debugging">
             <h2>除錯設置</h2>
-            
+
             <h3>使用 GDB + OpenOCD</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -249,15 +249,15 @@ openocd -f apps/ipro_ble_demo/debug.cfg
     -ex "target remote :3333" \
     -ex "monitor reset halt"</code></pre>
             </div>
-            
+
             <h3>VS Code 除錯配置</h3>
             <p>SDK 提供 VS Code 擴充套件，支援圖形化除錯。詳細設定請參考 <code>tools/vscode_extension/</code>。</p>
         </section>
-        
+
         <section id="next-steps">
             <h2>下一步</h2>
             <p>恭喜您完成基本設置！以下是建議的學習路徑：</p>
-            
+
             <div class="features-grid" style="margin-top: 2rem;">
                 <a href="{{ '/architecture' | relative_url }}" class="feature-card" style="text-decoration: none;">
                     <div class="feature-icon">🏗️</div>

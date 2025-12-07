@@ -19,15 +19,15 @@ title: BLE 開發指南
             </ul>
         </nav>
     </aside>
-    
+
     <article class="doc-content">
         <h1>BLE 開發指南</h1>
         <p>本指南介紹如何使用 IPRO SDK 的 BLE 5.4 程式庫開發藍牙低功耗應用。</p>
-        
+
         <section id="overview">
             <h2>BLE 5.4 功能概覽</h2>
             <p>IPRO SDK 整合了 RivieraWaves BLE 5.4 協定棧，提供完整的藍牙功能：</p>
-            
+
             <div class="features-grid" style="margin: 2rem 0;">
                 <div class="feature-card">
                     <div class="feature-icon">📡</div>
@@ -61,11 +61,11 @@ title: BLE 開發指南
                 </div>
             </div>
         </section>
-        
+
         <section id="architecture">
             <h2>程式庫架構</h2>
             <p><code>ipro_ble_lib</code> 採用 Core/Profile 分離架構，提供清晰的抽象層次：</p>
-            
+
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">BLE Library 架構</span>
@@ -87,7 +87,7 @@ title: BLE 開發指南
     ├── services/             # 服務實作
     └── audio/                # LE Audio 實作</code></pre>
             </div>
-            
+
             <h3>核心概念</h3>
             <ul>
                 <li><strong>Core 層</strong>：處理 GAP、GATT、L2CAP、SMP 等協定操作</li>
@@ -96,10 +96,10 @@ title: BLE 開發指南
                 <li><strong>訊息傳遞</strong>：透過 ke_msg 系統與 BLE 協定棧通訊</li>
             </ul>
         </section>
-        
+
         <section id="getting-started">
             <h2>快速開始</h2>
-            
+
             <h3>1. 初始化 BLE 子系統</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -141,7 +141,7 @@ void app_init(void)
     ipro_ble_init(&config);
 }</code></pre>
             </div>
-            
+
             <h3>2. 配置廣播</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -171,7 +171,7 @@ void app_init(void)
     ipro_ble_gap_start_advertising(&adv_params);
 }</code></pre>
             </div>
-            
+
             <h3>3. 啟用配置選項</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -190,10 +190,10 @@ CONFIG_IPRO_BLE_BAS_ENABLE=y
 CONFIG_IPRO_BLE_DIS_ENABLE=y</code></pre>
             </div>
         </section>
-        
+
         <section id="gap-operations">
             <h2>GAP 操作</h2>
-            
+
             <h3>廣播管理</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -212,7 +212,7 @@ ipro_ble_gap_set_adv_data(new_data, data_len);
 // 設置掃描回應資料
 ipro_ble_gap_set_scan_rsp_data(rsp_data, rsp_len);</code></pre>
             </div>
-            
+
             <h3>連線管理</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -231,15 +231,15 @@ ipro_ble_gap_update_conn_params(conn_idx, &params);
 // 斷開連線
 ipro_ble_gap_disconnect(conn_idx, IPRO_BLE_REASON_REMOTE_USER);</code></pre>
             </div>
-            
+
             <div class="alert alert-warning">
                 <strong>⚠️ 重要：</strong>廣播活動管理必須遵循完整的生命週期：Stop → Delete → Reset actv_idx，避免資源衝突（錯誤碼 0x004B）。
             </div>
         </section>
-        
+
         <section id="gatt-services">
             <h2>GATT 服務</h2>
-            
+
             <h3>標準服務使用</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -265,7 +265,7 @@ void update_heart_rate(uint16_t hr_value)
     ipro_ble_hrs_send_measurement(&measurement);
 }</code></pre>
             </div>
-            
+
             <h3>自訂服務</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -303,18 +303,18 @@ ipro_ble_gatt_service_t service = {
 ipro_ble_gatt_register_service(&service);</code></pre>
             </div>
         </section>
-        
+
         <section id="le-audio">
             <h2>LE Audio</h2>
             <p>SDK 支援完整的 LE Audio 功能，包括 LC3 編解碼與 GAF 框架。</p>
-            
+
             <h3>LE Audio 服務</h3>
             <ul>
                 <li><strong>ASCS</strong> (0x184E) - Audio Stream Control Service</li>
                 <li><strong>PACS</strong> (0x1850) - Published Audio Capabilities Service</li>
                 <li><strong>CAS</strong> (0x1853) - Common Audio Service</li>
             </ul>
-            
+
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">LE Audio 廣播配置</span>
@@ -333,7 +333,7 @@ uint8_t le_audio_adv_data[] = {
     0x53, 0x18,  // CAS UUID
 };</code></pre>
             </div>
-            
+
             <h3>GAF/BAP 整合</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -351,10 +351,10 @@ req->role_bf = BAP_ROLE_UNICAST_SERVER;
 ke_msg_send(req);</code></pre>
             </div>
         </section>
-        
+
         <section id="debugging">
             <h2>除錯技巧</h2>
-            
+
             <h3>啟用除錯日誌</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -365,7 +365,7 @@ ke_msg_send(req);</code></pre>
 CONFIG_IPRO_BLE_LIB_DEBUG_ENABLE=y
 CONFIG_LOG_DEFAULT_LEVEL=4  # DEBUG level</code></pre>
             </div>
-            
+
             <h3>常見錯誤碼</h3>
             <div class="table-wrapper">
                 <table>
@@ -395,7 +395,7 @@ CONFIG_LOG_DEFAULT_LEVEL=4  # DEBUG level</code></pre>
                     </tbody>
                 </table>
             </div>
-            
+
             <h3>使用 CLI 除錯</h3>
             <p><code>ipro_ble_demo</code> 提供 40+ CLI 指令用於除錯：</p>
             <div class="code-block">
@@ -419,10 +419,10 @@ ble hrs update 80
 ble bas update 75</code></pre>
             </div>
         </section>
-        
+
         <section id="best-practices">
             <h2>最佳實踐</h2>
-            
+
             <h3>1. 活動資源管理</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -450,7 +450,7 @@ void cleanup_advertising(void)
     adv_actv_idx = GAP_INVALID_IDX;
 }</code></pre>
             </div>
-            
+
             <h3>2. 重連機制</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -470,7 +470,7 @@ void cleanup_advertising(void)
     }
 }</code></pre>
             </div>
-            
+
             <h3>3. 測試驗證</h3>
             <ul>
                 <li>✅ 多次斷線重連循環測試</li>
