@@ -3862,6 +3862,45 @@ pre:not(.code-block pre) .copy-btn.copied {
     overflow-x: auto;
 }
 
+/* Chip Badge */
+.chip-badge {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    background: linear-gradient(135deg, var(--primary), var(--accent-color));
+    color: white;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* Spec Table */
+.spec-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.spec-table th,
+.spec-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.spec-table th {
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.spec-table td {
+    color: var(--text-secondary);
+}
+
+.spec-table tr:hover {
+    background: var(--bg-tertiary);
+}
+
 /* Pinout Table */
 .pinout-table-container {
     overflow-x: auto;
