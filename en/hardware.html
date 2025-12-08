@@ -25,7 +25,7 @@ lang: en
                 <span>Pinout</span>
             </a>
             <a href="#evb" class="hw-nav-item">
-                <i class="fas fa-circuit-board"></i>
+                <i class="fas fa-tachograph-digital"></i>
                 <span>EVB</span>
             </a>
             <a href="#peripherals" class="hw-nav-item">
@@ -130,17 +130,17 @@ lang: en
 
             <div class="package-info" style="display: flex; gap: 1rem; margin-bottom: 2rem;">
                 <div class="spec-card" style="flex: 1;">
-                    <h4>QFN56 (7x7mm)</h4>
-                    <p>Standard package, suitable for most applications</p>
+                    <h4>QFN56 (7×7mm)</h4>
+                    <p>Standard package with 42 GPIOs (GPIO0-GPIO41), suitable for most applications</p>
                 </div>
                 <div class="spec-card" style="flex: 1;">
-                    <h4>QFN32 (5x5mm)</h4>
-                    <p>Compact package, for space-constrained designs</p>
+                    <h4>QFN48 (6×6mm)</h4>
+                    <p>Compact package for space-constrained designs</p>
                 </div>
             </div>
 
             <div class="pinout-table-container">
-                <h3>GPIO Function Reference Table</h3>
+                <h3>GPIO Function Reference Table (IPRO7-SEVB)</h3>
                 <table class="pinout-table">
                     <thead>
                         <tr>
@@ -149,129 +149,209 @@ lang: en
                             <th>ALT1</th>
                             <th>ALT2</th>
                             <th>ALT3</th>
-                            <th>Description</th>
+                            <th>SEVB Connection</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td><span class="pin-num">GPIO0</span></td>
                             <td>GPIO</td>
-                            <td>UART0_TX</td>
-                            <td>SPI0_MOSI</td>
+                            <td>UART_TX</td>
+                            <td>SPI_MOSI</td>
                             <td>PWM0</td>
-                            <td>Default UART Console TX</td>
+                            <td>J19 (UART Console)</td>
                         </tr>
                         <tr>
                             <td><span class="pin-num">GPIO1</span></td>
                             <td>GPIO</td>
-                            <td>UART0_RX</td>
-                            <td>SPI0_MISO</td>
+                            <td>UART_RX</td>
+                            <td>SPI_MISO</td>
                             <td>PWM1</td>
-                            <td>Default UART Console RX</td>
+                            <td>J19 (UART Console)</td>
                         </tr>
                         <tr>
                             <td><span class="pin-num">GPIO2</span></td>
                             <td>GPIO</td>
-                            <td>UART0_CTS</td>
-                            <td>SPI0_CLK</td>
+                            <td>UART_CTS</td>
+                            <td>SPI_CLK</td>
                             <td>PWM2</td>
-                            <td></td>
+                            <td>GPIO Expansion</td>
                         </tr>
                         <tr>
                             <td><span class="pin-num">GPIO3</span></td>
                             <td>GPIO</td>
-                            <td>UART0_RTS</td>
-                            <td>SPI0_CS</td>
+                            <td>UART_RTS</td>
+                            <td>SPI_CS</td>
                             <td>PWM3</td>
-                            <td></td>
+                            <td>GPIO Expansion</td>
                         </tr>
                         <tr>
                             <td><span class="pin-num">GPIO4</span></td>
                             <td>GPIO</td>
-                            <td>I2C0_SCL</td>
+                            <td>I2C_SCL</td>
                             <td>UART1_TX</td>
                             <td>PWM4</td>
-                            <td></td>
+                            <td>I2C Interface</td>
                         </tr>
                         <tr>
                             <td><span class="pin-num">GPIO5</span></td>
                             <td>GPIO</td>
-                            <td>I2C0_SDA</td>
+                            <td>I2C_SDA</td>
                             <td>UART1_RX</td>
                             <td>PWM5</td>
-                            <td></td>
+                            <td>I2C Interface</td>
                         </tr>
                         <tr>
                             <td><span class="pin-num">GPIO6</span></td>
                             <td>GPIO</td>
-                            <td>SPI1_MOSI</td>
+                            <td>SPI_MOSI</td>
                             <td>I2S_DO</td>
                             <td>-</td>
-                            <td>Audio Data Output</td>
+                            <td>Audio/SPI</td>
                         </tr>
                         <tr>
                             <td><span class="pin-num">GPIO7</span></td>
                             <td>GPIO</td>
-                            <td>SPI1_MISO</td>
+                            <td>SPI_MISO</td>
                             <td>I2S_DI</td>
                             <td>-</td>
-                            <td>Audio Data Input</td>
+                            <td>Audio/SPI</td>
                         </tr>
-                        <tr>
+                        <tr class="special-pin">
                             <td><span class="pin-num">GPIO8</span></td>
+                            <td>USB_DP</td>
                             <td>GPIO</td>
-                            <td>SPI1_CLK</td>
-                            <td>I2S_BCLK</td>
+                            <td>SPI_CLK</td>
                             <td>-</td>
-                            <td>I2S Bit Clock</td>
+                            <td>⚠️ J40 USB 2.0 D+</td>
+                        </tr>
+                        <tr class="special-pin">
+                            <td><span class="pin-num">GPIO9</span></td>
+                            <td>USB_DN</td>
+                            <td>GPIO</td>
+                            <td>SPI_CS</td>
+                            <td>-</td>
+                            <td>⚠️ J40 USB 2.0 D-</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">GPIO9</span></td>
+                            <td><span class="pin-num">GPIO10</span></td>
                             <td>GPIO</td>
-                            <td>SPI1_CS</td>
-                            <td>I2S_LRCLK</td>
                             <td>-</td>
-                            <td>I2S L/R Clock</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>GPIO Expansion</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO11</span></td>
+                            <td>GPIO</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>GPIO Expansion</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO12</span></td>
+                            <td>GPIO</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>GPIO Expansion</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO13</span></td>
+                            <td>GPIO</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>GPIO Expansion</td>
                         </tr>
                         <tr class="special-pin">
                             <td><span class="pin-num">GPIO14</span></td>
-                            <td>SWDIO</td>
+                            <td>JTAG_TMS</td>
                             <td>GPIO</td>
                             <td>-</td>
                             <td>-</td>
-                            <td>⚠️ Debug Interface</td>
+                            <td>⚠️ J23 JTAG TMS</td>
                         </tr>
                         <tr class="special-pin">
                             <td><span class="pin-num">GPIO15</span></td>
-                            <td>SWCLK</td>
+                            <td>JTAG_TCK</td>
                             <td>GPIO</td>
                             <td>-</td>
                             <td>-</td>
-                            <td>⚠️ Debug Interface</td>
+                            <td>⚠️ J23 JTAG TCK</td>
                         </tr>
                         <tr class="special-pin">
                             <td><span class="pin-num">GPIO16</span></td>
-                            <td>BOOT</td>
+                            <td>BOOT/ANT</td>
                             <td>GPIO</td>
                             <td>-</td>
                             <td>-</td>
-                            <td>⚠️ Boot Select Pin</td>
+                            <td>⚠️ Boot/Antenna Select</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">ADC0</span></td>
-                            <td>ADC_CH0</td>
+                            <td><span class="pin-num">GPIO17</span></td>
+                            <td>GPIO</td>
+                            <td>JTAG_TDI</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>J23 JTAG TDI</td>
+                        </tr>
+                        <tr class="special-pin">
+                            <td><span class="pin-num">GPIO18</span></td>
+                            <td>X32K_IN</td>
                             <td>GPIO</td>
                             <td>-</td>
                             <td>-</td>
-                            <td>12-bit ADC</td>
+                            <td>⚠️ 32.768kHz Crystal Input</td>
+                        </tr>
+                        <tr class="special-pin">
+                            <td><span class="pin-num">GPIO19</span></td>
+                            <td>X32K_OUT</td>
+                            <td>GPIO</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>⚠️ 32.768kHz Crystal Output</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">ADC1</span></td>
-                            <td>ADC_CH1</td>
+                            <td><span class="pin-num">GPIO20</span></td>
+                            <td>GPIO</td>
+                            <td>JTAG_TDO</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>J23 JTAG TDO</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO21</span></td>
                             <td>GPIO</td>
                             <td>-</td>
                             <td>-</td>
-                            <td>12-bit ADC</td>
+                            <td>-</td>
+                            <td>GPIO Expansion</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO22-27</span></td>
+                            <td>GPIO</td>
+                            <td>DVP_D0-D5</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>J27 DVP Camera</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO28-33</span></td>
+                            <td>GPIO</td>
+                            <td>DVP_D6-D7</td>
+                            <td>PCLK/SYNC</td>
+                            <td>-</td>
+                            <td>J27 DVP Camera</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO34-41</span></td>
+                            <td>GPIO</td>
+                            <td>Ethernet</td>
+                            <td>Motor</td>
+                            <td>PWM</td>
+                            <td>J56-J63 Expansion</td>
                         </tr>
                     </tbody>
                 </table>
@@ -280,56 +360,190 @@ lang: en
             <div class="pin-notes">
                 <h4>⚠️ Important Notes</h4>
                 <ul>
-                    <li><strong>GPIO14/15:</strong> Default SWD Debug interface, can be reconfigured as GPIO after
-                        flashing</li>
-                    <li><strong>GPIO16:</strong> Read at boot, LOW = Enter Bootloader, HIGH = Normal Boot</li>
-                    <li><strong>ADC:</strong> Input voltage range 0 ~ 3.3V, do not exceed VDD</li>
-                    <li><strong>RF:</strong> Refer to Reference Design for antenna matching circuit</li>
+                    <li><strong>GPIO8/9:</strong> Default USB 2.0 interface (D+/D-), connected to J40</li>
+                    <li><strong>GPIO14/15/17/20:</strong> JTAG Debug interface, connected to J23</li>
+                    <li><strong>GPIO16:</strong> Read at boot, also used for antenna switch control</li>
+                    <li><strong>GPIO18/19:</strong> 32.768kHz external crystal connection for RTC</li>
+                    <li><strong>DVP (GPIO22-33):</strong> 8-bit parallel camera interface, connected to J27</li>
+                    <li><strong>RF:</strong> Refer to SEVB Reference Design for antenna matching circuit</li>
                 </ul>
             </div>
         </div>
 
         <!-- Evaluation Board -->
         <div id="evb" class="hw-section">
-            <h2><i class="fas fa-circuit-board"></i> Evaluation Board (EVB)</h2>
+            <h2><i class="fas fa-tachograph-digital"></i> Evaluation Board (EVB)</h2>
 
             <div class="evb-grid">
-                <div class="evb-card">
+                <div class="evb-card full-width">
                     <div class="evb-header">
-                        <h3>IPRO7-EVB</h3>
+                        <h3>IPRO7-SEVB V1</h3>
                         <span class="evb-badge">Recommended</span>
+                        <span class="evb-version">Rev 1 | 2025-09-09</span>
                     </div>
                     <div class="evb-image">
                         <div class="evb-placeholder">
-                            <i class="fas fa-tachograph-digital"></i>
-                            <span>IPRO7 Evaluation Board</span>
+                            <i class="fas fa-server"></i>
+                            <span>IPRO7 System EVB</span>
                         </div>
                     </div>
-                    <div class="evb-features">
-                        <h4>On-board Features</h4>
-                        <ul>
-                            <li><i class="fas fa-check"></i> IPRO7 Main Chip</li>
-                            <li><i class="fas fa-check"></i> USB Type-C Power/Flash</li>
-                            <li><i class="fas fa-check"></i> Integrated JTAG Debug</li>
-                            <li><i class="fas fa-check"></i> 2.4GHz PCB Antenna</li>
-                            <li><i class="fas fa-check"></i> UART Console (115200 8N1)</li>
-                            <li><i class="fas fa-check"></i> 2x Buttons (Reset, User)</li>
-                            <li><i class="fas fa-check"></i> 3x LEDs</li>
-                            <li><i class="fas fa-check"></i> Arduino Compatible Headers</li>
-                        </ul>
+                    
+                    <div class="evb-features-grid">
+                        <div class="evb-features">
+                            <h4>🔌 Power Supply</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> 12V DC Input (J1, DC-062A)</li>
+                                <li><i class="fas fa-check"></i> 5V/3.3V/1.8V/0.9V Multi-rail</li>
+                                <li><i class="fas fa-check"></i> Built-in TVS ESD Protection</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4>🖥️ Core Processing</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> IPRO7 QFN56 Socket</li>
+                                <li><i class="fas fa-check"></i> NOR Flash / SPI NAND Support</li>
+                                <li><i class="fas fa-check"></i> Strap Pin Configuration</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4>📡 Wireless Connectivity</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> PCB Antenna (On-board)</li>
+                                <li><i class="fas fa-check"></i> U.FL Antenna Connector (J118-J122)</li>
+                                <li><i class="fas fa-check"></i> BLE 5.4 / LE Audio</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4>🔧 Debug Interface</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> JTAG (J23: TMS/TDI/TCK/TDO)</li>
+                                <li><i class="fas fa-check"></i> UART Console (J19)</li>
+                                <li><i class="fas fa-check"></i> USB 2.0 (J40)</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4>📷 Video Interface</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> DVP Port (J27)</li>
+                                <li><i class="fas fa-check"></i> 8-bit DVP (D0-D7)</li>
+                                <li><i class="fas fa-check"></i> PCLK/VSYNC/HSYNC</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4>🔊 Audio Interface</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> Audio Codec Support</li>
+                                <li><i class="fas fa-check"></i> I2S Interface</li>
+                                <li><i class="fas fa-check"></i> Analog Audio I/O</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4>🌐 Network Interface</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> RJ45 Ethernet</li>
+                                <li><i class="fas fa-check"></i> 10/100 Mbps</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4>⚙️ Motor Control</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> PWM Output</li>
+                                <li><i class="fas fa-check"></i> Motor Control Interface</li>
+                            </ul>
+                        </div>
                     </div>
+
+                    <div class="evb-connectors">
+                        <h4>📌 Main Connectors</h4>
+                        <div class="connector-grid">
+                            <div class="connector-item">
+                                <span class="connector-name">J1</span>
+                                <span class="connector-desc">12V DC Power Input</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">J2</span>
+                                <span class="connector-desc">System Power Output</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">J12/J13/J17</span>
+                                <span class="connector-desc">USB Interface</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">J19</span>
+                                <span class="connector-desc">UART Console</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">J23</span>
+                                <span class="connector-desc">JTAG Debug</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">J27</span>
+                                <span class="connector-desc">DVP Camera</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">J40</span>
+                                <span class="connector-desc">USB 2.0</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">J56-J63</span>
+                                <span class="connector-desc">GPIO Expansion</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">J118-J122</span>
+                                <span class="connector-desc">Antenna (U.FL)</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">RJ45</span>
+                                <span class="connector-desc">Ethernet</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="evb-pinout">
-                        <h4>Interface Layout</h4>
+                        <h4>📋 System Architecture</h4>
                         <pre class="evb-diagram">
-     USB-C          J1 (Arduino)      J2 (Expansion)
-    ┌─────┐        ┌──────────┐      ┌──────────┐
-    │     │        │ 3V3  GND │      │ GPIO20   │
-    │ PWR │        │ GPIO0 1  │      │ GPIO21   │
-    │ DBG │        │ GPIO2 3  │      │ SPI1_CLK │
-    │     │        │ GPIO4 5  │      │ SPI1_CS  │
-    └─────┘        │ ADC0 ADC1│      │ I2C_SCL  │
-                   │ RST  NC  │      │ I2C_SDA  │
-     [RST] [USR]   └──────────┘      └──────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        IPRO7-SEVB V1 System Architecture                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   ┌─────────┐     ┌──────────────────────────────────────────────────┐     │
+│   │ 12V DC  │────►│              Power Management                    │     │
+│   │  (J1)   │     │  12V ──► 5V ──► 3.3V ──► 1.8V ──► 0.9V          │     │
+│   └─────────┘     └──────────────────────────────────────────────────┘     │
+│                                       │                                     │
+│   ┌───────────────────────────────────┼───────────────────────────────┐    │
+│   │                           IPRO7 SoC (QFN56)                       │    │
+│   │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐               │    │
+│   │  │  RISC-V     │  │    BLE      │  │     RF      │◄─► Antenna    │    │
+│   │  │  RV64IMC    │  │  5.4 Core   │  │ Transceiver │    (J118-122) │    │
+│   │  └─────────────┘  └─────────────┘  └─────────────┘               │    │
+│   │         │                                                        │    │
+│   │  ┌──────┴───────────────────────────────────────────────────┐   │    │
+│   │  │                  Peripherals                              │   │    │
+│   │  │  GPIO[0:41] │ UART │ SPI │ I2C │ I2S │ PWM │ USB │ DVP   │   │    │
+│   │  └─────────────────────────────────────────────────────────┘   │    │
+│   └────────────────────────────────────────────────────────────────┘    │
+│              │          │        │        │         │       │            │
+│         ┌────┘     ┌────┘   ┌────┘   ┌────┘    ┌────┘  ┌────┘           │
+│         ▼          ▼        ▼        ▼         ▼       ▼                │
+│    ┌─────────┐ ┌───────┐ ┌──────┐ ┌──────┐ ┌───────┐ ┌──────┐          │
+│    │  JTAG   │ │ UART  │ │ NOR/ │ │Audio │ │  USB  │ │ DVP  │          │
+│    │ (J23)   │ │ (J19) │ │ NAND │ │Codec │ │ (J40) │ │(J27) │          │
+│    └─────────┘ └───────┘ └──────┘ └──────┘ └───────┘ └──────┘          │
+│                                                                         │
+│    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐            │
+│    │   Ethernet   │    │    Motor     │    │     GPIO     │            │
+│    │    (RJ45)    │    │   Control    │    │  Extension   │            │
+│    │              │    │              │    │  (J56-J63)   │            │
+│    └──────────────┘    └──────────────┘    └──────────────┘            │
+└─────────────────────────────────────────────────────────────────────────┘
                         </pre>
                     </div>
                 </div>
@@ -353,6 +567,31 @@ lang: en
                             <li><i class="fas fa-check"></i> Adjustable Clock Frequency</li>
                             <li><i class="fas fa-check"></i> External RF with AD9361</li>
                             <li><i class="fas fa-check"></i> Early Development Validation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QFN Reference Circuits -->
+            <div class="package-reference">
+                <h3>📦 Package Reference Circuits</h3>
+                <div class="package-grid">
+                    <div class="package-card">
+                        <h4>QFN56 (7×7mm)</h4>
+                        <p>Standard package with full GPIO functionality, suitable for complete application development.</p>
+                        <ul>
+                            <li>GPIO: 42 pins (GPIO0-GPIO41)</li>
+                            <li>USB: GPIO8/GPIO9</li>
+                            <li>32kHz Crystal: GPIO18/GPIO19</li>
+                        </ul>
+                    </div>
+                    <div class="package-card">
+                        <h4>QFN48 (6×6mm)</h4>
+                        <p>Compact package with reduced GPIO count, suitable for space-constrained applications.</p>
+                        <ul>
+                            <li>GPIO: Reduced version</li>
+                            <li>Core functionality intact</li>
+                            <li>Smaller PCB footprint</li>
                         </ul>
                     </div>
                 </div>
@@ -495,23 +734,139 @@ RF_OUT ─┬─[L1]─┬─ ANT
             <h2><i class="fas fa-bolt"></i> Power Design Guide</h2>
 
             <div class="power-diagram">
-                <h3>Power Architecture</h3>
+                <h3>IPRO7-SEVB Power Architecture</h3>
                 <pre class="ascii-diagram">
-                    ┌─────────────────────────────────────┐
-                    │           Power Management          │
-                    ├─────────────────────────────────────┤
-    VBAT ──────────►│  LDO 3.3V  ───► VDD_IO (3.3V)      │
-    (1.8~3.6V)      │                                     │
-                    │  DC-DC 1.1V ───► VDD_CORE (1.1V)   │
-                    │                                     │
-                    │  LDO 1.8V  ───► VDD_RF (1.8V)      │
-                    └─────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     IPRO7-SEVB Power Management System                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌──────────────┐                                                          │
+│  │ 12V DC Input │    TVS Protection (SMAJ15CA)                             │
+│  │   (J1)       │─────────────┬─────────────────────────────────────┐      │
+│  │ DC-062A-4A   │             │                                     │      │
+│  └──────────────┘             ▼                                     │      │
+│                        ┌──────────────┐                             │      │
+│                        │  DC-DC 12V   │                             │      │
+│                        │   → +5V      │────────────────┐            │      │
+│                        │ (+5V_ADAPTER)│                │            │      │
+│                        └──────────────┘                │            │      │
+│                               │                        │            │      │
+│              ┌────────────────┼────────────────┐       │            │      │
+│              ▼                ▼                ▼       ▼            │      │
+│       ┌──────────┐    ┌──────────┐    ┌──────────┐ ┌──────────┐    │      │
+│       │ LDO 5V   │    │ LDO 5V   │    │ LDO 5V   │ │  +5V_SOC │    │      │
+│       │ → 3.3V   │    │ → 3.3V   │    │ → 1.5V   │ │          │    │      │
+│       │(3V3_SOC) │    │(DVDD33)  │    │ → 1.8V   │ └──────────┘    │      │
+│       └────┬─────┘    └────┬─────┘    │(1V8_SOC) │                  │      │
+│            │               │          └────┬─────┘                  │      │
+│            ▼               ▼               │                        │      │
+│       ┌──────────┐    ┌──────────┐         │    ┌──────────────┐   │      │
+│       │ AVDD33   │    │DVDD33_SOC│         │    │   LDO 1.8V   │   │      │
+│       │ AVDD33_  │    │          │         │    │    → 0.9V    │   │      │
+│       │   AON    │    │          │         │    │   (0V9/DVDD) │   │      │
+│       └──────────┘    └──────────┘         │    └──────────────┘   │      │
+│                                            │           │           │      │
+│       ┌──────────┐    ┌──────────┐         │           │           │      │
+│       │  AVDD18  │◄───┤  1.8V    │◄────────┘           │           │      │
+│       │  AVDD15  │    │  Power   │                     │           │      │
+│       └──────────┘    │  Rail    │         ┌───────────┘           │      │
+│                       └──────────┘         ▼                       │      │
+│                                       ┌──────────┐                 │      │
+│                                       │DVDD_CORE │                 │      │
+│                                       │  (0.9V)  │                 │      │
+│                                       └──────────┘                 │      │
+│                                                                    │      │
+│  Power Rail Overview:                                              │      │
+│  ┌────────────────────────────────────────────────────────────┐   │      │
+│  │ +12V → +5V → +3.3V (3V3_SOC, AVDD33, DVDD33_SOC)          │   │      │
+│  │            → +1.8V (1V8_SOC, AVDD18)                       │   │      │
+│  │            → +1.5V (AVDD15)                                │   │      │
+│  │            → +0.9V (DVDD_CORE, 0V9)                        │   │      │
+│  └────────────────────────────────────────────────────────────┘   │      │
+└─────────────────────────────────────────────────────────────────────────────┘
                 </pre>
+            </div>
+
+            <div class="power-rails">
+                <h3>Power Rail Description</h3>
+                <table class="pinout-table">
+                    <thead>
+                        <tr>
+                            <th>Power Rail</th>
+                            <th>Voltage</th>
+                            <th>Purpose</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="pin-num">+12V</span></td>
+                            <td>12V</td>
+                            <td>External DC Input</td>
+                            <td>J1 DC Adapter, TVS Protected</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">+5V</span></td>
+                            <td>5V</td>
+                            <td>System Main Power</td>
+                            <td>Buck from 12V</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">3V3_SOC</span></td>
+                            <td>3.3V</td>
+                            <td>SoC IO Power</td>
+                            <td>GPIO, Peripherals</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">AVDD33</span></td>
+                            <td>3.3V</td>
+                            <td>Analog Power</td>
+                            <td>ADC/DAC, RF Frontend</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">DVDD33_SOC</span></td>
+                            <td>3.3V</td>
+                            <td>Digital Power</td>
+                            <td>Digital Logic</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">1V8_SOC</span></td>
+                            <td>1.8V</td>
+                            <td>Low Voltage IO Power</td>
+                            <td>1.8V IO Interface</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">AVDD18</span></td>
+                            <td>1.8V</td>
+                            <td>Analog Low Voltage</td>
+                            <td>RF Circuits</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">AVDD15</span></td>
+                            <td>1.5V</td>
+                            <td>Analog Core Power</td>
+                            <td>Internal Analog</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">DVDD_CORE</span></td>
+                            <td>0.9V</td>
+                            <td>Digital Core Power</td>
+                            <td>CPU, Memory Core</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <div class="power-tips">
                 <h3>Design Recommendations</h3>
                 <div class="tip-grid">
+                    <div class="tip-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <h4>Input Protection</h4>
+                            <p>Add TVS (SMAJ15CA) for 12V input ESD/surge protection</p>
+                        </div>
+                    </div>
                     <div class="tip-item">
                         <i class="fas fa-check-circle"></i>
                         <div>
@@ -522,22 +877,29 @@ RF_OUT ─┬─[L1]─┬─ ANT
                     <div class="tip-item">
                         <i class="fas fa-check-circle"></i>
                         <div>
-                            <h4>Bulk Capacitor</h4>
-                            <p>Place 10μF capacitor on VBAT to stabilize surge current</p>
-                        </div>
-                    </div>
-                    <div class="tip-item">
-                        <i class="fas fa-check-circle"></i>
-                        <div>
-                            <h4>Ground Planning</h4>
-                            <p>Use solid ground plane, separate RF ground area</p>
+                            <h4>Bulk Capacitors</h4>
+                            <p>Place 10μF~47μF capacitor on +5V and +3.3V rails</p>
                         </div>
                     </div>
                     <div class="tip-item">
                         <i class="fas fa-check-circle"></i>
                         <div>
                             <h4>Power Sequencing</h4>
-                            <p>Ensure VDD_CORE powers up before VDD_IO</p>
+                            <p>Ensure 0.9V core power establishes before IO power</p>
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <h4>Ground Planning</h4>
+                            <p>Use solid ground plane, separate analog/digital regions</p>
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <h4>LDO Selection</h4>
+                            <p>Use low-noise LDO for analog power (AVDD)</p>
                         </div>
                     </div>
                 </div>

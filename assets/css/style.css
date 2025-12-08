@@ -3939,6 +3939,142 @@ pre:not(.code-block pre) .copy-btn.copied {
     background: #f59e0b;
 }
 
+.evb-version {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    background: var(--bg-tertiary);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    margin-left: auto;
+}
+
+.evb-card.full-width {
+    grid-column: 1 / -1;
+}
+
+.evb-features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 1.5rem;
+}
+
+.evb-features-grid .evb-features {
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.evb-features-grid .evb-features h4 {
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+}
+
+.evb-features-grid .evb-features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.evb-features-grid .evb-features li {
+    font-size: 0.8rem;
+    padding: 0.25rem 0;
+}
+
+.evb-connectors {
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.evb-connectors h4 {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.connector-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem;
+}
+
+.connector-item {
+    display: flex;
+    flex-direction: column;
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.connector-name {
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.connector-desc {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.package-reference {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.package-reference h3 {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.package-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.package-card {
+    padding: 1.5rem;
+    background: var(--bg-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.package-card h4 {
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.package-card p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.75rem;
+}
+
+.package-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.package-card li {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    padding: 0.25rem 0;
+}
+
+.power-rails {
+    margin-bottom: 2rem;
+}
+
+.power-rails h3 {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
 .evb-image {
     padding: 2rem;
     background: var(--bg-secondary);

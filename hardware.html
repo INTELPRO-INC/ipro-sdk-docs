@@ -130,17 +130,17 @@ lang: zh-TW
 
             <div class="package-info" style="display: flex; gap: 1rem; margin-bottom: 2rem;">
                 <div class="spec-card" style="flex: 1;">
-                    <h4>QFN56 (7x7mm)</h4>
-                    <p>標準封裝，適合大多數應用</p>
+                    <h4>QFN56 (7×7mm)</h4>
+                    <p>標準封裝，提供 42 個 GPIO (GPIO0-GPIO41)，適合大多數應用</p>
                 </div>
                 <div class="spec-card" style="flex: 1;">
-                    <h4>QFN32 (5x5mm)</h4>
+                    <h4>QFN48 (6×6mm)</h4>
                     <p>精簡封裝，適合空間受限設計</p>
                 </div>
             </div>
 
             <div class="pinout-table-container">
-                <h3>GPIO 功能對照表</h3>
+                <h3>GPIO 功能對照表 (IPRO7-SEVB)</h3>
                 <table class="pinout-table">
                     <thead>
                         <tr>
@@ -149,129 +149,209 @@ lang: zh-TW
                             <th>ALT1</th>
                             <th>ALT2</th>
                             <th>ALT3</th>
-                            <th>說明</th>
+                            <th>SEVB 連接</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td><span class="pin-num">GPIO0</span></td>
                             <td>GPIO</td>
-                            <td>UART0_TX</td>
-                            <td>SPI0_MOSI</td>
+                            <td>UART_TX</td>
+                            <td>SPI_MOSI</td>
                             <td>PWM0</td>
-                            <td>預設 UART Console TX</td>
+                            <td>J19 (UART Console)</td>
                         </tr>
                         <tr>
                             <td><span class="pin-num">GPIO1</span></td>
                             <td>GPIO</td>
-                            <td>UART0_RX</td>
-                            <td>SPI0_MISO</td>
+                            <td>UART_RX</td>
+                            <td>SPI_MISO</td>
                             <td>PWM1</td>
-                            <td>預設 UART Console RX</td>
+                            <td>J19 (UART Console)</td>
                         </tr>
                         <tr>
                             <td><span class="pin-num">GPIO2</span></td>
                             <td>GPIO</td>
-                            <td>UART0_CTS</td>
-                            <td>SPI0_CLK</td>
+                            <td>UART_CTS</td>
+                            <td>SPI_CLK</td>
                             <td>PWM2</td>
-                            <td></td>
+                            <td>GPIO 擴展</td>
                         </tr>
                         <tr>
                             <td><span class="pin-num">GPIO3</span></td>
                             <td>GPIO</td>
-                            <td>UART0_RTS</td>
-                            <td>SPI0_CS</td>
+                            <td>UART_RTS</td>
+                            <td>SPI_CS</td>
                             <td>PWM3</td>
-                            <td></td>
+                            <td>GPIO 擴展</td>
                         </tr>
                         <tr>
                             <td><span class="pin-num">GPIO4</span></td>
                             <td>GPIO</td>
-                            <td>I2C0_SCL</td>
+                            <td>I2C_SCL</td>
                             <td>UART1_TX</td>
                             <td>PWM4</td>
-                            <td></td>
+                            <td>I2C 介面</td>
                         </tr>
                         <tr>
                             <td><span class="pin-num">GPIO5</span></td>
                             <td>GPIO</td>
-                            <td>I2C0_SDA</td>
+                            <td>I2C_SDA</td>
                             <td>UART1_RX</td>
                             <td>PWM5</td>
-                            <td></td>
+                            <td>I2C 介面</td>
                         </tr>
                         <tr>
                             <td><span class="pin-num">GPIO6</span></td>
                             <td>GPIO</td>
-                            <td>SPI1_MOSI</td>
+                            <td>SPI_MOSI</td>
                             <td>I2S_DO</td>
                             <td>-</td>
-                            <td>音訊資料輸出</td>
+                            <td>音訊/SPI</td>
                         </tr>
                         <tr>
                             <td><span class="pin-num">GPIO7</span></td>
                             <td>GPIO</td>
-                            <td>SPI1_MISO</td>
+                            <td>SPI_MISO</td>
                             <td>I2S_DI</td>
                             <td>-</td>
-                            <td>音訊資料輸入</td>
+                            <td>音訊/SPI</td>
                         </tr>
-                        <tr>
+                        <tr class="special-pin">
                             <td><span class="pin-num">GPIO8</span></td>
+                            <td>USB_DP</td>
                             <td>GPIO</td>
-                            <td>SPI1_CLK</td>
-                            <td>I2S_BCLK</td>
+                            <td>SPI_CLK</td>
                             <td>-</td>
-                            <td>I2S Bit Clock</td>
+                            <td>⚠️ J40 USB 2.0 D+</td>
+                        </tr>
+                        <tr class="special-pin">
+                            <td><span class="pin-num">GPIO9</span></td>
+                            <td>USB_DN</td>
+                            <td>GPIO</td>
+                            <td>SPI_CS</td>
+                            <td>-</td>
+                            <td>⚠️ J40 USB 2.0 D-</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">GPIO9</span></td>
+                            <td><span class="pin-num">GPIO10</span></td>
                             <td>GPIO</td>
-                            <td>SPI1_CS</td>
-                            <td>I2S_LRCLK</td>
                             <td>-</td>
-                            <td>I2S L/R Clock</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>GPIO 擴展</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO11</span></td>
+                            <td>GPIO</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>GPIO 擴展</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO12</span></td>
+                            <td>GPIO</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>GPIO 擴展</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO13</span></td>
+                            <td>GPIO</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>GPIO 擴展</td>
                         </tr>
                         <tr class="special-pin">
                             <td><span class="pin-num">GPIO14</span></td>
-                            <td>SWDIO</td>
+                            <td>JTAG_TMS</td>
                             <td>GPIO</td>
                             <td>-</td>
                             <td>-</td>
-                            <td>⚠️ Debug 介面</td>
+                            <td>⚠️ J23 JTAG TMS</td>
                         </tr>
                         <tr class="special-pin">
                             <td><span class="pin-num">GPIO15</span></td>
-                            <td>SWCLK</td>
+                            <td>JTAG_TCK</td>
                             <td>GPIO</td>
                             <td>-</td>
                             <td>-</td>
-                            <td>⚠️ Debug 介面</td>
+                            <td>⚠️ J23 JTAG TCK</td>
                         </tr>
                         <tr class="special-pin">
                             <td><span class="pin-num">GPIO16</span></td>
-                            <td>BOOT</td>
+                            <td>BOOT/ANT</td>
                             <td>GPIO</td>
                             <td>-</td>
                             <td>-</td>
-                            <td>⚠️ Boot 選擇腳</td>
+                            <td>⚠️ Boot/天線選擇</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">ADC0</span></td>
-                            <td>ADC_CH0</td>
+                            <td><span class="pin-num">GPIO17</span></td>
+                            <td>GPIO</td>
+                            <td>JTAG_TDI</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>J23 JTAG TDI</td>
+                        </tr>
+                        <tr class="special-pin">
+                            <td><span class="pin-num">GPIO18</span></td>
+                            <td>X32K_IN</td>
                             <td>GPIO</td>
                             <td>-</td>
                             <td>-</td>
-                            <td>12-bit ADC</td>
+                            <td>⚠️ 32.768kHz 晶振輸入</td>
+                        </tr>
+                        <tr class="special-pin">
+                            <td><span class="pin-num">GPIO19</span></td>
+                            <td>X32K_OUT</td>
+                            <td>GPIO</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>⚠️ 32.768kHz 晶振輸出</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">ADC1</span></td>
-                            <td>ADC_CH1</td>
+                            <td><span class="pin-num">GPIO20</span></td>
+                            <td>GPIO</td>
+                            <td>JTAG_TDO</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>J23 JTAG TDO</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO21</span></td>
                             <td>GPIO</td>
                             <td>-</td>
                             <td>-</td>
-                            <td>12-bit ADC</td>
+                            <td>-</td>
+                            <td>GPIO 擴展</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO22-27</span></td>
+                            <td>GPIO</td>
+                            <td>DVP_D0-D5</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>J27 DVP Camera</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO28-33</span></td>
+                            <td>GPIO</td>
+                            <td>DVP_D6-D7</td>
+                            <td>PCLK/SYNC</td>
+                            <td>-</td>
+                            <td>J27 DVP Camera</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO34-41</span></td>
+                            <td>GPIO</td>
+                            <td>Ethernet</td>
+                            <td>Motor</td>
+                            <td>PWM</td>
+                            <td>J56-J63 擴展</td>
                         </tr>
                     </tbody>
                 </table>
@@ -280,10 +360,12 @@ lang: zh-TW
             <div class="pin-notes">
                 <h4>⚠️ 注意事項</h4>
                 <ul>
-                    <li><strong>GPIO14/15:</strong> 預設為 SWD Debug 介面，燒錄後可重新配置為 GPIO</li>
-                    <li><strong>GPIO16:</strong> 開機時讀取此腳位，LOW = 進入 Bootloader，HIGH = 正常開機</li>
-                    <li><strong>ADC:</strong> 輸入電壓範圍 0 ~ 3.3V，請勿超過 VDD</li>
-                    <li><strong>RF:</strong> 天線匹配電路請參考 Reference Design</li>
+                    <li><strong>GPIO8/9:</strong> 預設為 USB 2.0 介面 (D+/D-)，連接 J40</li>
+                    <li><strong>GPIO14/15/17/20:</strong> JTAG Debug 介面，連接 J23</li>
+                    <li><strong>GPIO16:</strong> 開機時讀取此腳位，也用於天線切換控制</li>
+                    <li><strong>GPIO18/19:</strong> 32.768kHz 外部晶振連接，RTC 使用</li>
+                    <li><strong>DVP (GPIO22-33):</strong> 8-bit 並行相機介面，連接 J27</li>
+                    <li><strong>RF:</strong> 天線匹配電路請參考 SEVB Reference Design</li>
                 </ul>
             </div>
         </div>
@@ -293,42 +375,175 @@ lang: zh-TW
             <h2><i class="fas fa-tachograph-digital"></i> 評估板 (EVB)</h2>
 
             <div class="evb-grid">
-                <div class="evb-card">
+                <div class="evb-card full-width">
                     <div class="evb-header">
-                        <h3>IPRO7-EVB</h3>
+                        <h3>IPRO7-SEVB V1</h3>
                         <span class="evb-badge">推薦</span>
+                        <span class="evb-version">Rev 1 | 2025-09-09</span>
                     </div>
                     <div class="evb-image">
                         <div class="evb-placeholder">
-                            <i class="fas fa-tachograph-digital"></i>
-                            <span>IPRO7 評估板</span>
+                            <i class="fas fa-server"></i>
+                            <span>IPRO7 System EVB</span>
                         </div>
                     </div>
-                    <div class="evb-features">
-                        <h4>板載功能</h4>
-                        <ul>
-                            <li><i class="fas fa-check"></i> IPRO7 主晶片</li>
-                            <li><i class="fas fa-check"></i> USB Type-C 供電/燒錄</li>
-                            <li><i class="fas fa-check"></i> 整合 JTAG Debug</li>
-                            <li><i class="fas fa-check"></i> 2.4GHz PCB 天線</li>
-                            <li><i class="fas fa-check"></i> UART Console (115200 8N1)</li>
-                            <li><i class="fas fa-check"></i> 按鈕 x2 (Reset, User)</li>
-                            <li><i class="fas fa-check"></i> LED x3</li>
-                            <li><i class="fas fa-check"></i> Arduino 相容排針</li>
-                        </ul>
+                    
+                    <div class="evb-features-grid">
+                        <div class="evb-features">
+                            <h4>🔌 電源與供電</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> 12V DC 輸入 (J1, DC-062A)</li>
+                                <li><i class="fas fa-check"></i> 5V/3.3V/1.8V/0.9V 多級穩壓</li>
+                                <li><i class="fas fa-check"></i> 內建 TVS 靜電保護</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4>🖥️ 核心處理</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> IPRO7 QFN56 Socket</li>
+                                <li><i class="fas fa-check"></i> NOR Flash / SPI NAND 支援</li>
+                                <li><i class="fas fa-check"></i> Strap Pin 配置</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4>📡 無線連接</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> PCB 天線 (板載)</li>
+                                <li><i class="fas fa-check"></i> U.FL 天線座 (J118-J122)</li>
+                                <li><i class="fas fa-check"></i> BLE 5.4 / LE Audio</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4>🔧 Debug 介面</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> JTAG (J23: TMS/TDI/TCK/TDO)</li>
+                                <li><i class="fas fa-check"></i> UART Console (J19)</li>
+                                <li><i class="fas fa-check"></i> USB 2.0 (J40)</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4>📷 影像介面</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> DVP Port (J27)</li>
+                                <li><i class="fas fa-check"></i> 8-bit DVP (D0-D7)</li>
+                                <li><i class="fas fa-check"></i> PCLK/VSYNC/HSYNC</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4>🔊 音訊介面</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> Audio Codec 支援</li>
+                                <li><i class="fas fa-check"></i> I2S 介面</li>
+                                <li><i class="fas fa-check"></i> 類比音訊輸入/輸出</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4>🌐 網路介面</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> RJ45 Ethernet</li>
+                                <li><i class="fas fa-check"></i> 10/100 Mbps</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4>⚙️ 馬達控制</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> PWM 輸出</li>
+                                <li><i class="fas fa-check"></i> Motor Control 介面</li>
+                            </ul>
+                        </div>
                     </div>
+
+                    <div class="evb-connectors">
+                        <h4>📌 主要連接器</h4>
+                        <div class="connector-grid">
+                            <div class="connector-item">
+                                <span class="connector-name">J1</span>
+                                <span class="connector-desc">12V DC 電源輸入</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">J2</span>
+                                <span class="connector-desc">系統電源輸出</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">J12/J13/J17</span>
+                                <span class="connector-desc">USB 介面</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">J19</span>
+                                <span class="connector-desc">UART Console</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">J23</span>
+                                <span class="connector-desc">JTAG Debug</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">J27</span>
+                                <span class="connector-desc">DVP Camera</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">J40</span>
+                                <span class="connector-desc">USB 2.0</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">J56-J63</span>
+                                <span class="connector-desc">GPIO 擴展</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">J118-J122</span>
+                                <span class="connector-desc">天線座 (U.FL)</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">RJ45</span>
+                                <span class="connector-desc">Ethernet</span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="evb-pinout">
-                        <h4>接口說明</h4>
+                        <h4>📋 系統架構</h4>
                         <pre class="evb-diagram">
-     USB-C          J1 (Arduino)      J2 (Expansion)
-    ┌─────┐        ┌──────────┐      ┌──────────┐
-    │     │        │ 3V3  GND │      │ GPIO20   │
-    │ PWR │        │ GPIO0 1  │      │ GPIO21   │
-    │ DBG │        │ GPIO2 3  │      │ SPI1_CLK │
-    │     │        │ GPIO4 5  │      │ SPI1_CS  │
-    └─────┘        │ ADC0 ADC1│      │ I2C_SCL  │
-                   │ RST  NC  │      │ I2C_SDA  │
-     [RST] [USR]   └──────────┘      └──────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           IPRO7-SEVB V1 系統架構                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│   ┌─────────┐     ┌──────────────────────────────────────────────────┐     │
+│   │ 12V DC  │────►│              Power Management                    │     │
+│   │  (J1)   │     │  12V ──► 5V ──► 3.3V ──► 1.8V ──► 0.9V          │     │
+│   └─────────┘     └──────────────────────────────────────────────────┘     │
+│                                       │                                     │
+│   ┌───────────────────────────────────┼───────────────────────────────┐    │
+│   │                           IPRO7 SoC (QFN56)                       │    │
+│   │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐               │    │
+│   │  │  RISC-V     │  │    BLE      │  │     RF      │◄─► Antenna    │    │
+│   │  │  RV64IMC    │  │  5.4 Core   │  │ Transceiver │    (J118-122) │    │
+│   │  └─────────────┘  └─────────────┘  └─────────────┘               │    │
+│   │         │                                                        │    │
+│   │  ┌──────┴───────────────────────────────────────────────────┐   │    │
+│   │  │                  Peripherals                              │   │    │
+│   │  │  GPIO[0:41] │ UART │ SPI │ I2C │ I2S │ PWM │ USB │ DVP   │   │    │
+│   │  └─────────────────────────────────────────────────────────┘   │    │
+│   └────────────────────────────────────────────────────────────────┘    │
+│              │          │        │        │         │       │            │
+│         ┌────┘     ┌────┘   ┌────┘   ┌────┘    ┌────┘  ┌────┘           │
+│         ▼          ▼        ▼        ▼         ▼       ▼                │
+│    ┌─────────┐ ┌───────┐ ┌──────┐ ┌──────┐ ┌───────┐ ┌──────┐          │
+│    │  JTAG   │ │ UART  │ │ NOR/ │ │Audio │ │  USB  │ │ DVP  │          │
+│    │ (J23)   │ │ (J19) │ │ NAND │ │Codec │ │ (J40) │ │(J27) │          │
+│    └─────────┘ └───────┘ └──────┘ └──────┘ └───────┘ └──────┘          │
+│                                                                         │
+│    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐            │
+│    │   Ethernet   │    │    Motor     │    │     GPIO     │            │
+│    │    (RJ45)    │    │   Control    │    │  Extension   │            │
+│    │              │    │              │    │  (J56-J63)   │            │
+│    └──────────────┘    └──────────────┘    └──────────────┘            │
+└─────────────────────────────────────────────────────────────────────────┘
                         </pre>
                     </div>
                 </div>
@@ -352,6 +567,31 @@ lang: zh-TW
                             <li><i class="fas fa-check"></i> 可調時鐘頻率</li>
                             <li><i class="fas fa-check"></i> RF 外接 AD9361</li>
                             <li><i class="fas fa-check"></i> 適合早期開發驗證</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QFN Reference Circuits -->
+            <div class="package-reference">
+                <h3>📦 封裝參考電路</h3>
+                <div class="package-grid">
+                    <div class="package-card">
+                        <h4>QFN56 (7×7mm)</h4>
+                        <p>標準封裝，提供完整 GPIO 功能，適合功能完整的應用開發。</p>
+                        <ul>
+                            <li>GPIO: 42 pins (GPIO0-GPIO41)</li>
+                            <li>USB: GPIO8/GPIO9</li>
+                            <li>32kHz Crystal: GPIO18/GPIO19</li>
+                        </ul>
+                    </div>
+                    <div class="package-card">
+                        <h4>QFN48 (6×6mm)</h4>
+                        <p>精簡封裝，減少部分 GPIO，適合空間受限的應用。</p>
+                        <ul>
+                            <li>GPIO: 精簡版本</li>
+                            <li>核心功能完整</li>
+                            <li>較小 PCB 空間</li>
                         </ul>
                     </div>
                 </div>
@@ -494,23 +734,139 @@ RF_OUT ─┬─[L1]─┬─ ANT
             <h2><i class="fas fa-bolt"></i> 電源設計指南</h2>
 
             <div class="power-diagram">
-                <h3>電源架構</h3>
+                <h3>IPRO7-SEVB 電源架構</h3>
                 <pre class="ascii-diagram">
-                    ┌─────────────────────────────────────┐
-                    │           Power Management          │
-                    ├─────────────────────────────────────┤
-    VBAT ──────────►│  LDO 3.3V  ───► VDD_IO (3.3V)      │
-    (1.8~3.6V)      │                                     │
-                    │  DC-DC 1.1V ───► VDD_CORE (1.1V)   │
-                    │                                     │
-                    │  LDO 1.8V  ───► VDD_RF (1.8V)      │
-                    └─────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        IPRO7-SEVB 電源管理系統                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌──────────────┐                                                          │
+│  │ 12V DC Input │    TVS 保護 (SMAJ15CA)                                   │
+│  │   (J1)       │─────────────┬─────────────────────────────────────┐      │
+│  │ DC-062A-4A   │             │                                     │      │
+│  └──────────────┘             ▼                                     │      │
+│                        ┌──────────────┐                             │      │
+│                        │  DC-DC 12V   │                             │      │
+│                        │   → +5V      │────────────────┐            │      │
+│                        │ (+5V_ADAPTER)│                │            │      │
+│                        └──────────────┘                │            │      │
+│                               │                        │            │      │
+│              ┌────────────────┼────────────────┐       │            │      │
+│              ▼                ▼                ▼       ▼            │      │
+│       ┌──────────┐    ┌──────────┐    ┌──────────┐ ┌──────────┐    │      │
+│       │ LDO 5V   │    │ LDO 5V   │    │ LDO 5V   │ │  +5V_SOC │    │      │
+│       │ → 3.3V   │    │ → 3.3V   │    │ → 1.5V   │ │          │    │      │
+│       │(3V3_SOC) │    │(DVDD33)  │    │ → 1.8V   │ └──────────┘    │      │
+│       └────┬─────┘    └────┬─────┘    │(1V8_SOC) │                  │      │
+│            │               │          └────┬─────┘                  │      │
+│            ▼               ▼               │                        │      │
+│       ┌──────────┐    ┌──────────┐         │    ┌──────────────┐   │      │
+│       │ AVDD33   │    │DVDD33_SOC│         │    │   LDO 1.8V   │   │      │
+│       │ AVDD33_  │    │          │         │    │    → 0.9V    │   │      │
+│       │   AON    │    │          │         │    │   (0V9/DVDD) │   │      │
+│       └──────────┘    └──────────┘         │    └──────────────┘   │      │
+│                                            │           │           │      │
+│       ┌──────────┐    ┌──────────┐         │           │           │      │
+│       │  AVDD18  │◄───┤  1.8V    │◄────────┘           │           │      │
+│       │  AVDD15  │    │  Power   │                     │           │      │
+│       └──────────┘    │  Rail    │         ┌───────────┘           │      │
+│                       └──────────┘         ▼                       │      │
+│                                       ┌──────────┐                 │      │
+│                                       │DVDD_CORE │                 │      │
+│                                       │  (0.9V)  │                 │      │
+│                                       └──────────┘                 │      │
+│                                                                    │      │
+│  電源軌道總覽:                                                      │      │
+│  ┌────────────────────────────────────────────────────────────┐   │      │
+│  │ +12V → +5V → +3.3V (3V3_SOC, AVDD33, DVDD33_SOC)          │   │      │
+│  │            → +1.8V (1V8_SOC, AVDD18)                       │   │      │
+│  │            → +1.5V (AVDD15)                                │   │      │
+│  │            → +0.9V (DVDD_CORE, 0V9)                        │   │      │
+│  └────────────────────────────────────────────────────────────┘   │      │
+└─────────────────────────────────────────────────────────────────────────────┘
                 </pre>
+            </div>
+
+            <div class="power-rails">
+                <h3>電源軌道說明</h3>
+                <table class="pinout-table">
+                    <thead>
+                        <tr>
+                            <th>電源軌</th>
+                            <th>電壓</th>
+                            <th>用途</th>
+                            <th>備註</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="pin-num">+12V</span></td>
+                            <td>12V</td>
+                            <td>外部 DC 輸入</td>
+                            <td>J1 DC Adapter, TVS 保護</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">+5V</span></td>
+                            <td>5V</td>
+                            <td>系統主電源</td>
+                            <td>由 12V 降壓產生</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">3V3_SOC</span></td>
+                            <td>3.3V</td>
+                            <td>SoC IO 電源</td>
+                            <td>GPIO、外設供電</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">AVDD33</span></td>
+                            <td>3.3V</td>
+                            <td>類比電源</td>
+                            <td>ADC/DAC、RF 前端</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">DVDD33_SOC</span></td>
+                            <td>3.3V</td>
+                            <td>數位電源</td>
+                            <td>數位邏輯供電</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">1V8_SOC</span></td>
+                            <td>1.8V</td>
+                            <td>低壓 IO 電源</td>
+                            <td>1.8V IO 介面</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">AVDD18</span></td>
+                            <td>1.8V</td>
+                            <td>類比低壓電源</td>
+                            <td>RF 電路</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">AVDD15</span></td>
+                            <td>1.5V</td>
+                            <td>類比核心電源</td>
+                            <td>內部類比電路</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">DVDD_CORE</span></td>
+                            <td>0.9V</td>
+                            <td>數位核心電源</td>
+                            <td>CPU、記憶體核心</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <div class="power-tips">
                 <h3>設計建議</h3>
                 <div class="tip-grid">
+                    <div class="tip-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <h4>輸入保護</h4>
+                            <p>12V 輸入加裝 TVS (SMAJ15CA) 靜電/浪湧保護</p>
+                        </div>
+                    </div>
                     <div class="tip-item">
                         <i class="fas fa-check-circle"></i>
                         <div>
@@ -522,21 +878,28 @@ RF_OUT ─┬─[L1]─┬─ ANT
                         <i class="fas fa-check-circle"></i>
                         <div>
                             <h4>大容量電容</h4>
-                            <p>VBAT 放置 10μF 電容，穩定瞬間電流</p>
-                        </div>
-                    </div>
-                    <div class="tip-item">
-                        <i class="fas fa-check-circle"></i>
-                        <div>
-                            <h4>接地規劃</h4>
-                            <p>使用完整接地面，RF 區域獨立接地</p>
+                            <p>+5V 與 +3.3V 放置 10μF~47μF 電容穩定電源</p>
                         </div>
                     </div>
                     <div class="tip-item">
                         <i class="fas fa-check-circle"></i>
                         <div>
                             <h4>電源序列</h4>
-                            <p>確保 VDD_CORE 先於 VDD_IO 上電</p>
+                            <p>確保 0.9V 核心電源優先建立，再上 IO 電源</p>
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <h4>接地規劃</h4>
+                            <p>使用完整接地面，類比/數位區域分離</p>
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <h4>LDO 選型</h4>
+                            <p>低雜訊 LDO 用於類比電源 (AVDD)</p>
                         </div>
                     </div>
                 </div>
