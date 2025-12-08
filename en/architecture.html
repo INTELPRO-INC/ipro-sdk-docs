@@ -1,0 +1,334 @@
+---
+layout: default
+title: Architecture Overview - IPRO SDK
+lang: en
+---
+
+<div class="doc-layout">
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <h4 class="sidebar-title">Table of Contents</h4>
+            <ul class="sidebar-links">
+                <li><a href="#overview" class="sidebar-link">Architecture Overview</a></li>
+                <li><a href="#layers" class="sidebar-link">Layered Design</a></li>
+                <li><a href="#directory" class="sidebar-link">Directory Structure</a></li>
+                <li><a href="#build-system" class="sidebar-link">Build System</a></li>
+                <li><a href="#configuration" class="sidebar-link">Configuration</a></li>
+                <li><a href="#components" class="sidebar-link">Components</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <article class="doc-content">
+        <h1>Architecture Overview</h1>
+        <p>IPRO SDK adopts a clear layered architecture design, providing high modularity and portability, enabling developers to quickly build stable embedded applications.</p>
+
+        <section id="overview">
+            <h2>System Architecture Diagram</h2>
+            <p>The overall SDK architecture consists of five main layers:</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">IPRO SDK Architecture</span>
+                </div>
+                <pre><code>+------------------------------------------------------+
+|                 Application Layer                    |
+|              (e.g., apps/ipro7_demo)                 |
++------------------------------------------------------+
+|          Middleware & Reusable Components            |
+|   (lwIP, Mbed TLS, CherryUSB, File Systems, etc.)    |
++------------------------------------------------------+
+|       Real-Time OS (FreeRTOS or Zephyr RTOS)        |
++------------------------------------------------------+
+|             Board Support Package (BSP)              |
+|   +----------------------------------------------+   |
+|   | Hardware Abstraction Layer (HAL) & Drivers   |   |
+|   +----------------------------------------------+   |
++------------------------------------------------------+
+|               IPRO Hardware Platform                 |
++------------------------------------------------------+</code></pre>
+            </div>
+        </section>
+
+        <section id="layers">
+            <h2>Layer Details</h2>
+
+            <h3>Application Layer</h3>
+            <p>Located in <code>apps/</code> directory, contains all application projects. Each application is an independent project with its own:</p>
+            <ul>
+                <li><code>CMakeLists.txt</code> - Build configuration</li>
+                <li><code>proj.conf</code> - Kconfig configuration overrides</li>
+                <li><code>main.c</code> - Application entry point</li>
+                <li><code>Kconfig.app</code> - Application-specific options</li>
+            </ul>
+
+            <h3>Middleware Layer</h3>
+            <p>Located in <code>components/</code> directory, provides reusable software components:</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Directory</th>
+                            <th>Function</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>lwIP</td>
+                            <td><code>components/network/</code></td>
+                            <td>Lightweight TCP/IP Stack</td>
+                        </tr>
+                        <tr>
+                            <td>Mbed TLS</td>
+                            <td><code>components/crypto/</code></td>
+                            <td>Encryption & Secure Communication</td>
+                        </tr>
+                        <tr>
+                            <td>CherryUSB</td>
+                            <td><code>components/cherryusb/</code></td>
+                            <td>USB Device/Host Stack</td>
+                        </tr>
+                        <tr>
+                            <td>Wireless</td>
+                            <td><code>components/wireless/</code></td>
+                            <td>BLE 5.4, Zigbee, Thread</td>
+                        </tr>
+                        <tr>
+                            <td>File Systems</td>
+                            <td><code>components/fs/</code></td>
+                            <td>FAT, LittleFS, etc.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>RTOS Layer</h3>
+            <p>SDK supports two real-time operating systems:</p>
+            <ul>
+                <li><strong>FreeRTOS</strong> - Located in <code>components/os/freertos/</code>, classic and stable RTOS choice</li>
+                <li><strong>Zephyr RTOS</strong> - Modern RTOS with Device Tree, West build system, and advanced features</li>
+            </ul>
+
+            <h3>BSP Layer (Board Support Package)</h3>
+            <p>Located in <code>bsp/</code> directory, provides hardware abstraction:</p>
+            <ul>
+                <li><code>bsp/hal/</code> - Hardware Abstraction Layer API</li>
+                <li><code>bsp/drivers/</code> - Peripheral drivers</li>
+                <li><code>bsp/board/</code> - Board-level configuration</li>
+            </ul>
+
+            <h4>Supported Peripheral Drivers</h4>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Drivers</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Communication</td>
+                            <td>UART, SPI (Master/Slave), I2C, I2S</td>
+                        </tr>
+                        <tr>
+                            <td>Storage</td>
+                            <td>SD Card (SDH), SPI Flash, PSRAM</td>
+                        </tr>
+                        <tr>
+                            <td>Display</td>
+                            <td>LCD (ILI9488 SPI), OSD blend/draw</td>
+                        </tr>
+                        <tr>
+                            <td>Audio</td>
+                            <td>AUADC, DAC, I2S</td>
+                        </tr>
+                        <tr>
+                            <td>Multimedia</td>
+                            <td>ISP Camera, DVP sensor, MJPEG codec</td>
+                        </tr>
+                        <tr>
+                            <td>Network</td>
+                            <td>EMAC Ethernet</td>
+                        </tr>
+                        <tr>
+                            <td>USB</td>
+                            <td>Device (CDC, MSC, HID, UAC, UVC)</td>
+                        </tr>
+                        <tr>
+                            <td>Others</td>
+                            <td>GPIO, PWM, ADC, Timer, IR, QDEC, DMA</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="directory">
+            <h2>Directory Structure</h2>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">SDK Directory Structure</span>
+                </div>
+                <pre><code>ipro_sdk/
+├── apps/                         # Application projects
+│   ├── ipro7_demo/               # Basic platform demo
+│   ├── ipro_ble_demo/            # BLE demo application
+│   ├── ipro7_fpga_ble_5p4/       # FPGA BLE 5.4
+│   ├── ipro7_phyrf_test/         # RF test
+│   └── ipro_zephyr_demo/         # Zephyr demo
+│
+├── bsp/                          # Board Support Package
+│   ├── board/                    # Board configuration
+│   ├── drivers/                  # Peripheral drivers
+│   ├── hal/                      # Hardware Abstraction Layer
+│   └── common/                   # Common code
+│
+├── components/                   # Reusable components
+│   ├── wireless/                 # Wireless stack
+│   │   └── ipro_ble_lib/         # BLE library
+│   ├── os/                       # RTOS components
+│   ├── network/                  # Network stack
+│   ├── crypto/                   # Crypto components
+│   ├── fs/                       # File systems
+│   └── ...
+│
+├── tools/                        # Development tools
+│   ├── zephyr/                   # Zephyr tool scripts
+│   │   ├── bootstrap.sh          # Environment setup
+│   │   ├── build.sh              # Build script
+│   │   ├── menu.sh               # Interactive menu
+│   │   └── apps.sh               # App management
+│   ├── mcp_server/               # MCP server
+│   ├── vscode_extension/         # VS Code extension
+│   └── openocd/                  # Debug tool config
+│
+├── cmake/                        # CMake configuration
+├── kconfigs/                     # Kconfig files
+├── docs/                         # Documentation
+│
+├── build_freertos.sh             # FreeRTOS build script
+├── CMakeLists.txt                # Root CMake config
+├── Kconfig                       # Root Kconfig
+└── west.yml                      # Zephyr west config</code></pre>
+            </div>
+        </section>
+
+        <section id="build-system">
+            <h2>Build System</h2>
+
+            <h3>CMake + Ninja</h3>
+            <p>SDK uses CMake as the build system, with Ninja as the build backend for optimal performance.</p>
+
+            <h4>Build Process</h4>
+            <ol>
+                <li><strong>Configuration Phase</strong>: CMake reads <code>CMakeLists.txt</code> and Kconfig, generates build rules</li>
+                <li><strong>Build Phase</strong>: Ninja executes compilation and linking, produces final binaries</li>
+            </ol>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build Command Parameters</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">cmake -S . -B build \
+    -G "Ninja" \                      # Use Ninja builder
+    -DIPRO_SDK_BASE=$(pwd) \          # SDK root directory
+    -DCONFIG_BUILD_PORJECT=app_name \ # Target app name
+    -DCMAKE_PREFIX_PATH=$(pwd)/cmake \# CMake module path
+    -DCUSTOM_CONFIG_DIR=path/to/app \ # App config directory
+    -DCONFIG_APPS=1 \                 # Enable app build
+    -DCROSS_COMPILE=path/to/toolchain # Cross compiler prefix</code></pre>
+            </div>
+
+            <h3>West Build System (Zephyr)</h3>
+            <p>Zephyr projects use <code>west</code> as the build tool, providing a more modern development experience.</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">West Build Commands</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Initialize west workspace
+west init -m https://github.com/your-org/ipro_sdk --mr main
+west update
+
+# Build application
+west build -b ipro7_fpga apps/ipro_zephyr_demo
+
+# Flash
+west flash</code></pre>
+            </div>
+        </section>
+
+        <section id="configuration">
+            <h2>Configuration System (Kconfig)</h2>
+            <p>SDK uses Kconfig system for project configuration, providing both graphical and text-based configuration interfaces.</p>
+
+            <h3>Configuration Hierarchy</h3>
+            <ol>
+                <li><strong>Root Config</strong>: <code>Kconfig</code> - Defines all available options</li>
+                <li><strong>Default Config</strong>: <code>kconfigs/*.config</code> - Default values for each module</li>
+                <li><strong>App Config</strong>: <code>apps/*/proj.conf</code> - Application-specific overrides</li>
+            </ol>
+
+            <h3>Common Configuration Options</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">proj.conf Example</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Enable BLE features
+CONFIG_IPRO_BLE_LIB_ENABLE=y
+CONFIG_IPRO_BLE_LIB_DEBUG_ENABLE=y
+
+# Memory configuration
+CONFIG_HEAP_SIZE=32768
+
+# Log level
+CONFIG_LOG_DEFAULT_LEVEL=3
+
+# Component selection
+CONFIG_LWIP_ENABLE=n
+CONFIG_MBEDTLS_ENABLE=y</code></pre>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡 Tip:</strong> Use <code>make menuconfig</code> or modify <code>proj.conf</code> to adjust configuration.
+            </div>
+        </section>
+
+        <section id="components">
+            <h2>Main Components Overview</h2>
+
+            <h3>BLE Library (<code>ipro_ble_lib</code>)</h3>
+            <p>Complete BLE 5.4 implementation with Core/Profile separation architecture:</p>
+            <ul>
+                <li><strong>Core Layer</strong>: GAP/GATT management, connection control, security management</li>
+                <li><strong>Profile Layer</strong>: Standard services (HRS, BAS, DIS), custom services</li>
+                <li><strong>Audio Layer</strong>: LE Audio, LC3 codec, GAF framework</li>
+            </ul>
+
+            <h3>RTOS Components</h3>
+            <ul>
+                <li><strong>FreeRTOS</strong>: Task management, queues, semaphores, software timers</li>
+                <li><strong>Zephyr</strong>: Full RTOS features + Device Tree + West</li>
+            </ul>
+
+            <h3>Network Components</h3>
+            <ul>
+                <li><strong>lwIP</strong>: TCP/IP stack, supports IPv4/IPv6</li>
+                <li><strong>Mbed TLS</strong>: TLS/SSL, cryptographic algorithms</li>
+            </ul>
+
+            <h3>Storage Components</h3>
+            <ul>
+                <li><strong>LittleFS</strong>: Flash-optimized file system</li>
+                <li><strong>FatFS</strong>: FAT file system for SD cards</li>
+            </ul>
+        </section>
+    </article>
+</div>

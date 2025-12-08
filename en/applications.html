@@ -1,0 +1,445 @@
+---
+layout: default
+lang: en
+title: Applications - IPRO SDK
+---
+
+<div class="doc-layout">
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <h4 class="sidebar-title">Table of Contents</h4>
+            <ul class="sidebar-links">
+                <li><a href="#overview" class="sidebar-link">Applications Overview</a></li>
+                <li><a href="#ipro-ble-demo" class="sidebar-link">ipro_ble_demo</a></li>
+                <li><a href="#ipro-zephyr-demo" class="sidebar-link">ipro_zephyr_demo</a></li>
+                <li><a href="#ipro7-fpga-ble" class="sidebar-link">ipro7_fpga_ble_5p4</a></li>
+                <li><a href="#ipro7-demo" class="sidebar-link">ipro7_demo</a></li>
+                <li><a href="#ipro7-phyrf" class="sidebar-link">ipro7_phyrf_test</a></li>
+                <li><a href="#creating-apps" class="sidebar-link">Creating New Apps</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <article class="doc-content">
+        <h1>Applications</h1>
+        <p>IPRO SDK provides multiple complete reference applications demonstrating best practices for various features. Each application can be built, flashed, and tested directly.</p>
+
+        <section id="overview">
+            <h2>Applications Overview</h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Application Name</th>
+                            <th>RTOS</th>
+                            <th>Main Features</th>
+                            <th>Use Cases</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>ipro_ble_demo</code></td>
+                            <td>FreeRTOS</td>
+                            <td>BLE 5.4, LE Audio, CLI</td>
+                            <td>BLE Application Development Starting Point</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_zephyr_demo</code></td>
+                            <td>Zephyr</td>
+                            <td>Zephyr RTOS Integration</td>
+                            <td>Modern RTOS Development</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro7_fpga_ble_5p4</code></td>
+                            <td>FreeRTOS</td>
+                            <td>FPGA Optimized BLE</td>
+                            <td>High-Performance BLE Requirements</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro7_demo</code></td>
+                            <td>FreeRTOS</td>
+                            <td>Multimedia, USB, Peripheral Drivers</td>
+                            <td>SDK Introduction & Hardware Testing</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro7_phyrf_test</code></td>
+                            <td>FreeRTOS</td>
+                            <td>RF Test Tools</td>
+                            <td>RF Calibration & Testing</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="ipro-ble-demo">
+            <h2>ipro_ble_demo ⭐</h2>
+            <p>The most complete BLE demonstration application, recommended as the starting point for BLE development.</p>
+
+            <h3>Features</h3>
+            <ul>
+                <li><strong>Core/Profile Architecture</strong>: Clear layer separation, easy to extend</li>
+                <li><strong>Multi-Service Support</strong>: Heart Rate, Battery, UART, Device Info</li>
+                <li><strong>LE Audio</strong>: GAF framework integration, LC3 codec support</li>
+                <li><strong>Complete CLI</strong>: 40+ interactive commands for testing and debugging</li>
+                <li><strong>Auto Reconnection</strong>: Automatic advertising recovery after disconnection</li>
+                <li><strong>OTA Updates</strong>: Wireless firmware update support</li>
+            </ul>
+
+            <h3>Directory Structure</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">ipro_ble_demo Structure</span>
+                </div>
+                <pre><code>apps/ipro_ble_demo/
+├── main.c                    # Application entry point
+├── ipro_ble_demo_app.c       # BLE application logic
+├── ipro_ble_demo_cli.c       # CLI command implementation
+├── include/
+│   └── ipro_ble_demo_app.h   # Header file
+├── CMakeLists.txt            # Build configuration
+├── proj.conf                 # Kconfig configuration
+├── debug.cfg                 # OpenOCD debug configuration
+├── README.md                 # Application documentation
+├── BLE_DEMO_CLI_GUIDE.md     # CLI usage guide
+└── CLI_QUICK_REFERENCE.md    # CLI quick reference</code></pre>
+            </div>
+
+            <h3>Build and Run</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build BLE Demo</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Build
+./build_freertos.sh ipro_ble_demo
+
+# Flash
+openocd -f apps/ipro_ble_demo/debug.cfg \
+    -c "program apps/ipro_ble_demo/build/build_out/ipro_ble_demo.elf verify reset exit"</code></pre>
+            </div>
+
+            <h3>CLI Command Examples</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Common CLI Commands</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># System Information
+help                  # Show all commands
+ble status            # BLE status
+
+# Advertising Control
+ble adv start         # Start advertising
+ble adv stop          # Stop advertising
+ble adv data          # Show advertising data
+
+# Connection Management
+ble conn list         # List connections
+ble conn info 0       # Connection details
+ble conn disconnect 0 # Disconnect
+
+# Service Operations
+ble hrs update 80     # Update heart rate
+ble bas update 75     # Update battery level
+ble uart send "Hello" # Send UART data</code></pre>
+            </div>
+
+            <h3>Configuration Options</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">proj.conf Key Configuration</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># BLE Features
+CONFIG_IPRO_BLE_LIB_ENABLE=y
+CONFIG_IPRO_BLE_LIB_DEBUG_ENABLE=y
+
+# Service Enable
+CONFIG_IPRO_BLE_HRS_ENABLE=y
+CONFIG_IPRO_BLE_BAS_ENABLE=y
+CONFIG_IPRO_BLE_DIS_ENABLE=y
+CONFIG_IPRO_BLE_UART_ENABLE=y
+
+# LE Audio (Optional)
+CONFIG_IPRO_BLE_AUDIO_ENABLE=y</code></pre>
+            </div>
+        </section>
+
+        <section id="ipro-zephyr-demo">
+            <h2>ipro_zephyr_demo 🌊</h2>
+            <p>Zephyr RTOS integration demonstration, showcasing modern RTOS development approach.</p>
+
+            <h3>Features</h3>
+            <ul>
+                <li><strong>Zephyr v3.4.0</strong>: Complete RTOS functionality</li>
+                <li><strong>Device Tree</strong>: Declarative hardware configuration</li>
+                <li><strong>West Build</strong>: Modern project management</li>
+                <li><strong>Memory Optimized</strong>: 33KB ROM, 27KB RAM</li>
+                <li><strong>Fast Build</strong>: Approximately 30 seconds</li>
+            </ul>
+
+            <h3>Build and Run</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build Zephyr Demo</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Using build script
+./tools/zephyr/build.sh -a ipro_zephyr_demo -b ipro7_fpga -c
+
+# Or using west
+cd zephyr-workspace
+source setup_env.sh
+west build -b ipro7_fpga ../apps/ipro_zephyr_demo</code></pre>
+            </div>
+
+            <h3>Main Program Example</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">main.c</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">#include &lt;zephyr/kernel.h&gt;
+#include &lt;zephyr/logging/log.h&gt;
+
+LOG_MODULE_REGISTER(ipro_zephyr, LOG_LEVEL_INF);
+
+int main(void)
+{
+    LOG_INF("IPRO Zephyr Demo Started!");
+    LOG_INF("Board: %s", CONFIG_BOARD);
+    
+    while (1) {
+        LOG_INF("Running...");
+        k_sleep(K_SECONDS(1));
+    }
+    
+    return 0;
+}</code></pre>
+            </div>
+        </section>
+
+        <section id="ipro7-fpga-ble">
+            <h2>ipro7_fpga_ble_5p4</h2>
+            <p>FPGA-optimized BLE 5.4 implementation, suitable for scenarios requiring high-performance BLE processing.</p>
+
+            <h3>Features</h3>
+            <ul>
+                <li><strong>Hardware Acceleration</strong>: FPGA-accelerated BLE processing</li>
+                <li><strong>Periodic Advertising</strong>: Periodic Advertising support</li>
+                <li><strong>Synchronized Streams</strong>: Isochronous Streams</li>
+                <li><strong>Performance Optimized</strong>: Tuned for FPGA environment</li>
+            </ul>
+
+            <h3>Build</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build FPGA BLE</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">./build_freertos.sh ipro7_fpga_ble_5p4</code></pre>
+            </div>
+        </section>
+
+        <section id="ipro7-demo">
+            <h2>ipro7_demo</h2>
+            <p>Comprehensive platform demonstration application, showcasing complete SDK functionality including multimedia, USB, and peripheral drivers.</p>
+
+            <h3>Features</h3>
+            <ul>
+                <li><strong>Peripheral Drivers</strong>: GPIO, UART, SPI (Master/Slave), I2C, PWM, ADC, DAC</li>
+                <li><strong>USB Device</strong>: CDC, MSC, HID, UAC (Audio), UVC (Video) via CherryUSB</li>
+                <li><strong>Multimedia</strong>: ISP Camera, MJPEG Codec, LCD Display (ILI9488)</li>
+                <li><strong>Audio</strong>: AUADC Audio Input, DAC Speaker Output</li>
+                <li><strong>Network</strong>: EMAC Ethernet, lwIP Protocol Stack, iPerf Testing</li>
+                <li><strong>Storage</strong>: SD Card (SDH), FatFS File System</li>
+                <li><strong>FreeRTOS</strong>: Multi-task Management & Runtime Statistics</li>
+            </ul>
+
+            <h3>Build</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build Platform Demo</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">./build_freertos.sh ipro7_demo</code></pre>
+            </div>
+
+            <h3>proj.conf Configuration Example</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Enable USB and Multimedia Features</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-properties"># USB Device Configuration
+CONFIG_COMPONENTS_CHERRYUSB_ENABLE=y
+CONFIG_CHERRYUSB_DEVICE=y
+CONFIG_CHERRYUSB_DEVICE_CDC=y
+CONFIG_CHERRYUSB_DEVICE_MSC=y
+CONFIG_CHERRYUSB_DEVICE_AUDIO=y
+CONFIG_CHERRYUSB_DEVICE_VIDEO=y
+
+# File System
+CONFIG_COMPONENTS_FATFS_ENABLE=y
+CONFIG_COMPONENTS_VFS_ENABLE=y
+
+# Sensors and Tools
+CONFIG_COMPONENTS_SENSOR_ENABLE=y
+CONFIG_CLI_CMD_ENABLE=y</code></pre>
+            </div>
+
+            <h3>Code Example</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">GPIO Usage Example</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">#include "ipro_hal_gpio.h"
+
+void gpio_example(void)
+{
+    // Configure GPIO as output
+    ipro_gpio_config_t config = {
+        .mode = IPRO_GPIO_MODE_OUTPUT,
+        .pull = IPRO_GPIO_PULL_NONE,
+    };
+    ipro_hal_gpio_init(GPIO_PIN_0, &config);
+    
+    // Set output
+    ipro_hal_gpio_write(GPIO_PIN_0, 1);
+    
+    // Read input
+    uint8_t value = ipro_hal_gpio_read(GPIO_PIN_1);
+}</code></pre>
+            </div>
+        </section>
+
+        <section id="ipro7-phyrf">
+            <h2>ipro7_phyrf_test</h2>
+            <p>RF testing and calibration tool for RF characteristic verification.</p>
+
+            <h3>Features</h3>
+            <ul>
+                <li><strong>RF Characteristic Testing</strong>: Transmit power, sensitivity measurement</li>
+                <li><strong>Antenna Testing</strong>: Antenna matching verification</li>
+                <li><strong>Frequency Calibration</strong>: Crystal oscillator calibration tool</li>
+                <li><strong>Performance Verification</strong>: Throughput and latency testing</li>
+            </ul>
+
+            <h3>Build</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build RF Test</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">./build_freertos.sh ipro7_phyrf_test</code></pre>
+            </div>
+        </section>
+
+        <section id="creating-apps">
+            <h2>Creating New Applications</h2>
+            <p>Follow these steps to create your own application.</p>
+
+            <h3>Step 1: Create Directory</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Create Application Directory</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">mkdir -p apps/my_app/include</code></pre>
+            </div>
+
+            <h3>Step 2: Create CMakeLists.txt</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">apps/my_app/CMakeLists.txt</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-cmake">cmake_minimum_required(VERSION 3.13)
+
+# Set application name
+set(APP_NAME my_app)
+
+# Include SDK build system
+include(${IPRO_SDK_BASE}/cmake/extension.cmake)
+
+# Add source files
+target_sources(app PRIVATE
+    main.c
+)
+
+# Add include directories
+target_include_directories(app PRIVATE
+    include
+)</code></pre>
+            </div>
+
+            <h3>Step 3: Create proj.conf</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">apps/my_app/proj.conf</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Basic configuration
+CONFIG_LOG_DEFAULT_LEVEL=3
+
+# Enable components as needed
+# CONFIG_IPRO_BLE_LIB_ENABLE=y
+# CONFIG_LWIP_ENABLE=y</code></pre>
+            </div>
+
+            <h3>Step 4: Create Main Program</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">apps/my_app/main.c</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include "FreeRTOS.h"
+#include "task.h"
+#include "ipro_log.h"
+
+#define TAG "MY_APP"
+
+void app_task(void *params)
+{
+    IPRO_LOG_INFO(TAG, "My App Started!");
+    
+    while (1) {
+        IPRO_LOG_INFO(TAG, "Running...");
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
+
+int main(void)
+{
+    // System initialization
+    system_init();
+    
+    // Create application task
+    xTaskCreate(app_task, "app", 4096, NULL, 5, NULL);
+    
+    // Start scheduler
+    vTaskStartScheduler();
+    
+    return 0;
+}</code></pre>
+            </div>
+
+            <h3>Step 5: Build</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build New Application</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">./build_freertos.sh my_app</code></pre>
+            </div>
+
+            <div class="alert alert-success">
+                <strong>✅ Complete!</strong> Your new application has been created and is ready for development.
+            </div>
+        </section>
+    </article>
+</div>

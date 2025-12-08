@@ -1,0 +1,403 @@
+---
+layout: default
+title: Zephyr RTOS - IPRO SDK
+lang: en
+---
+
+<div class="doc-layout">
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <h4 class="sidebar-title">Table of Contents</h4>
+            <ul class="sidebar-links">
+                <li><a href="#overview" class="sidebar-link">Overview</a></li>
+                <li><a href="#architecture" class="sidebar-link">Integration Architecture</a></li>
+                <li><a href="#setup" class="sidebar-link">Environment Setup</a></li>
+                <li><a href="#building" class="sidebar-link">Building Applications</a></li>
+                <li><a href="#tools" class="sidebar-link">Development Tools</a></li>
+                <li><a href="#device-tree" class="sidebar-link">Device Tree</a></li>
+                <li><a href="#creating-apps" class="sidebar-link">Creating New Apps</a></li>
+                <li><a href="#debugging" class="sidebar-link">Debugging</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <article class="doc-content">
+        <h1>Zephyr RTOS Integration Guide</h1>
+        <p>Zephyr is a scalable open-source real-time operating system designed for resource-constrained devices. IPRO SDK provides complete Zephyr support as a modern alternative to FreeRTOS.</p>
+
+        <section id="overview">
+            <h2>Why Choose Zephyr?</h2>
+
+            <div class="features-grid" style="margin: 2rem 0;">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Fast Build</h3>
+                    <p class="feature-description">Optimized module download of only ~125MB, build time approximately 30 seconds.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Memory Efficient</h3>
+                    <p class="feature-description">Demo application requires only 33KB ROM, 27KB RAM, highly optimized resource usage.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3 class="feature-title">Modern Toolchain</h3>
+                    <p class="feature-description">West build system, Device Tree configuration, rich driver ecosystem.</p>
+                </div>
+            </div>
+
+            <h3>Key Advantages</h3>
+            <ul>
+                <li><strong>Device Tree</strong>: Declarative hardware configuration, easy to port</li>
+                <li><strong>Kconfig</strong>: Graphical configuration interface</li>
+                <li><strong>West</strong>: Unified project management and build tool</li>
+                <li><strong>Rich Ecosystem</strong>: Extensive ready-to-use drivers and protocol stacks</li>
+                <li><strong>Active Community</strong>: Continuous updates and technical support</li>
+            </ul>
+        </section>
+
+        <section id="architecture">
+            <h2>Integration Architecture</h2>
+            <p>IPRO SDK provides a dedicated HAL layer that enables Zephyr to run efficiently on IPRO hardware.</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Zephyr Integration Architecture</span>
+                </div>
+                <pre><code>+------------------------------------------------------+
+|              Application Layer                       |
+|         (apps/ipro_zephyr_demo)                      |
++------------------------------------------------------+
+|       Middleware & Components                        |
+|      (lwIP, MbedTLS, etc.)                           |
++------------------------------------------------------+
+|           Zephyr RTOS Kernel                         |
++------------------------------------------------------+
+|     IPRO-Zephyr Integration Layer                    |
+|          (HAL & Drivers)                             |
++------------------------------------------------------+
+|         IPRO Hardware Platform                       |
++------------------------------------------------------+</code></pre>
+            </div>
+
+            <h3>Supported Boards</h3>
+            <ul>
+                <li><code>ipro7</code> - IPRO7 SoC base configuration</li>
+                <li><code>ipro7_fpga</code> - FPGA development environment</li>
+                <li><code>ipro7_evb</code> - Evaluation board configuration</li>
+            </ul>
+        </section>
+
+        <section id="setup">
+            <h2>Environment Setup</h2>
+
+            <h3>One-Click Setup (Recommended)</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Bootstrap Environment</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Run from SDK root directory
+./tools/zephyr/bootstrap.sh
+
+# The script will automatically:
+# ✓ Download and install Zephyr SDK
+# ✓ Install west build tool
+# ✓ Set up environment variables
+# ✓ Download required Zephyr modules (6 core modules, ~125MB)</code></pre>
+            </div>
+
+            <h3>Manual Setup</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Manual Installation Steps</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 1. Download Zephyr SDK
+wget https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v0.16.3/zephyr-sdk-0.16.3_linux-x86_64.tar.xz
+tar -xf zephyr-sdk-0.16.3_linux-x86_64.tar.xz
+cd zephyr-sdk-0.16.3 && ./setup.sh
+
+# 2. Install west
+pip3 install west
+
+# 3. Set environment variables
+export ZEPHYR_BASE=/path/to/zephyrproject
+export ZEPHYR_SDK_INSTALL_DIR=/path/to/zephyr-sdk
+
+# 4. Initialize west workspace
+cd ipro_sdk
+west init -l .
+west update</code></pre>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡 Tip:</strong> We recommend using the <code>bootstrap.sh</code> script, which automatically handles all dependencies and optimizes module downloads.
+            </div>
+        </section>
+
+        <section id="building">
+            <h2>Building Applications</h2>
+
+            <h3>Using build.sh Script</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Enhanced Build Script</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Basic build
+./tools/zephyr/build.sh -a ipro_zephyr_demo -b ipro7_fpga
+
+# Clean and rebuild
+./tools/zephyr/build.sh -a ipro_zephyr_demo -b ipro7_fpga -c
+
+# Show verbose progress
+./tools/zephyr/build.sh -a ipro_zephyr_demo -b ipro7_fpga -v</code></pre>
+            </div>
+
+            <h3>Using west Commands</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">West Build Commands</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Enter workspace
+cd zephyr-workspace
+source setup_env.sh
+
+# Build application
+west build -b ipro7_fpga ../apps/ipro_zephyr_demo
+
+# Clean and build
+west build -b ipro7_fpga ../apps/ipro_zephyr_demo --pristine
+
+# Flash (requires connected hardware)
+west flash
+
+# Open serial monitor
+west espmonitor  # or use other serial tools</code></pre>
+            </div>
+        </section>
+
+        <section id="tools">
+            <h2>Development Tools</h2>
+            <p>The SDK provides several utility scripts to simplify Zephyr development workflow.</p>
+
+            <h3>Interactive Menu (menu.sh)</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Launch Interactive Menu</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Supports bilingual interface (Chinese/English)
+./tools/zephyr/menu.sh</code></pre>
+            </div>
+            <p>The menu provides:</p>
+            <ul>
+                <li>Environment setup and initialization</li>
+                <li>Application browsing and building</li>
+                <li>Zephyr sample searching</li>
+                <li>Configuration management</li>
+            </ul>
+
+            <h3>Application Management (apps.sh)</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Application Management Tool</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># List all applications
+./tools/zephyr/apps.sh list
+
+# Search applications
+./tools/zephyr/apps.sh search bluetooth
+
+# List Zephyr sample categories
+./tools/zephyr/apps.sh categories
+
+# Show application details
+./tools/zephyr/apps.sh info ipro_zephyr_demo</code></pre>
+            </div>
+        </section>
+
+        <section id="device-tree">
+            <h2>Device Tree Configuration</h2>
+            <p>Zephyr uses Device Tree to describe hardware configuration, decoupling drivers from hardware.</p>
+
+            <h3>Device Tree Structure</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">ipro7_fpga.dts Example</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-dts">/dts-v1/;
+
+/ {
+    model = "IPRO7 FPGA";
+    compatible = "ipro,ipro7-fpga";
+
+    chosen {
+        zephyr,console = &uart0;
+        zephyr,shell-uart = &uart0;
+        zephyr,sram = &sram0;
+    };
+
+    soc {
+        uart0: uart@40000000 {
+            compatible = "ipro,uart";
+            reg = <0x40000000 0x1000>;
+            interrupts = <10>;
+            status = "okay";
+        };
+
+        gpio0: gpio@40001000 {
+            compatible = "ipro,gpio";
+            reg = <0x40001000 0x1000>;
+            gpio-controller;
+            #gpio-cells = <2>;
+        };
+    };
+};</code></pre>
+            </div>
+
+            <h3>Overlay Configuration</h3>
+            <p>You can use overlay files to override default configurations:</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">app.overlay</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-dts">/* Override UART configuration */
+&uart0 {
+    current-speed = <921600>;
+};</code></pre>
+            </div>
+        </section>
+
+        <section id="creating-apps">
+            <h2>Creating New Applications</h2>
+
+            <h3>1. Create Directory Structure</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Application Directory Structure</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">mkdir -p apps/my_zephyr_app/src</code></pre>
+            </div>
+
+            <h3>2. Create CMakeLists.txt</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">CMakeLists.txt</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-cmake">cmake_minimum_required(VERSION 3.20)
+find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
+project(my_zephyr_app)
+
+target_sources(app PRIVATE
+    src/main.c
+)</code></pre>
+            </div>
+
+            <h3>3. Create prj.conf</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">prj.conf</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Basic configuration
+CONFIG_PRINTK=y
+CONFIG_LOG=y
+
+# GPIO support
+CONFIG_GPIO=y
+
+# Serial support
+CONFIG_SERIAL=y
+CONFIG_UART_CONSOLE=y</code></pre>
+            </div>
+
+            <h3>4. Create Main Program</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">src/main.c</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">#include &lt;zephyr/kernel.h&gt;
+#include &lt;zephyr/logging/log.h&gt;
+
+LOG_MODULE_REGISTER(my_app, LOG_LEVEL_INF);
+
+int main(void)
+{
+    LOG_INF("My Zephyr App Started!");
+    
+    while (1) {
+        LOG_INF("Hello from Zephyr!");
+        k_sleep(K_SECONDS(1));
+    }
+    
+    return 0;
+}</code></pre>
+            </div>
+
+            <h3>5. Build and Run</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build New Application</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">./tools/zephyr/build.sh -a my_zephyr_app -b ipro7_fpga</code></pre>
+            </div>
+        </section>
+
+        <section id="debugging">
+            <h2>Debugging</h2>
+
+            <h3>Using west debug</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">West Debug Commands</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Start GDB debugging
+west debug
+
+# Start debug server only
+west debugserver</code></pre>
+            </div>
+
+            <h3>Log Configuration</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">prj.conf Log Settings</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Enable logging
+CONFIG_LOG=y
+CONFIG_LOG_DEFAULT_LEVEL=4  # DEBUG
+
+# Backend configuration
+CONFIG_LOG_BACKEND_UART=y
+CONFIG_LOG_BUFFER_SIZE=4096</code></pre>
+            </div>
+
+            <h3>Shell Support</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Enable Shell</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># prj.conf
+CONFIG_SHELL=y
+CONFIG_SHELL_BACKEND_SERIAL=y
+
+# Built-in commands
+CONFIG_KERNEL_SHELL=y
+CONFIG_DEVICE_SHELL=y</code></pre>
+            </div>
+        </section>
+    </article>
+</div>

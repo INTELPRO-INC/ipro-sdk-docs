@@ -1,0 +1,189 @@
+---
+layout: default
+lang: en
+title: Changelog - IPRO SDK
+---
+
+<div class="doc-layout">
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <h4 class="sidebar-title">Table of Contents</h4>
+            <ul class="sidebar-links">
+                <li><a href="#aug-2025" class="sidebar-link">August 2025</a></li>
+                <li><a href="#earlier" class="sidebar-link">Earlier Versions</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <article class="doc-content">
+        <h1>Changelog</h1>
+        <p>Version update history for IPRO SDK.</p>
+
+        <section id="dec-2025">
+            <h2>December 2025</h2>
+
+            <h3>December 7, 2025 - Comprehensive SDK Documentation Update</h3>
+            <ul>
+                <li><strong>docs:</strong> Comprehensive SDK documentation update and optimization
+                    <ul>
+                        <li>README.md updated to latest features and structure</li>
+                        <li>BLE development guide enhanced</li>
+                        <li>Quick start guide improved</li>
+                        <li>AI Assistant Reference updated</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3>December 2025 - Documentation Website Launch</h3>
+            <ul>
+                <li><strong>docs:</strong> IPRO SDK documentation website officially launched on GitHub Pages
+                    <ul>
+                        <li>Complete getting started guide</li>
+                        <li>Architecture overview and component descriptions</li>
+                        <li>BLE 5.4 development guide</li>
+                        <li>Zephyr RTOS integration tutorial</li>
+                        <li>Detailed application examples</li>
+                        <li>API reference documentation</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section id="sep-dec-2025">
+            <h2>September-December 2025 - Multimedia & Peripheral Enhancements</h2>
+
+            <h3>BLE Enhancements</h3>
+            <ul>
+                <li><strong>fix:</strong> BLE timing optimizations and debug enhancements</li>
+                <li><strong>feat:</strong> Comprehensive BLE development improvements and PA sync fix</li>
+                <li><strong>fix:</strong> BLE audio context type swap</li>
+                <li><strong>refactor:</strong> Consolidate EM initialization to board level</li>
+                <li><strong>fix:</strong> Resolve static CLI commands registration issue</li>
+                <li><strong>refactor:</strong> Remove verbose messages for default EM configuration</li>
+                <li><strong>fix:</strong> Correct default EM_SIZE to 0KB for non-BLE projects</li>
+            </ul>
+
+            <h3>USB & Audio</h3>
+            <ul>
+                <li><strong>feat:</strong> [USBD][UAC] Add UAC demo with AUADC integration</li>
+                <li><strong>feat:</strong> [USBD][CDC] Add DUT send memory to PC command</li>
+                <li><strong>feat:</strong> [USBD] Enable all USB examples by default</li>
+                <li><strong>feat:</strong> [AUADC] Add AUADC demo</li>
+                <li><strong>feat:</strong> [BSP] DAC speaker support and FreeRTOS debug info update</li>
+            </ul>
+
+            <h3>Multimedia (ISP, MJPEG, LCD)</h3>
+            <ul>
+                <li><strong>feat:</strong> [ISP] Add sw pingpong control for ISP</li>
+                <li><strong>feat:</strong> [ISP] SPI sensor demo and DVP sensor updates</li>
+                <li><strong>feat:</strong> [MM] DVP sensor + MJPG demo</li>
+                <li><strong>feat:</strong> [MM] Stream control add UVC and show LCD flow</li>
+                <li><strong>fix:</strong> [jpeg_combo] MJPEG HW stuck at 255 frame bug workaround</li>
+                <li><strong>feat:</strong> [lcd_demo] Add LCD demo with ILI9488 SPI LCD support</li>
+                <li><strong>feat:</strong> [lcd_demo] Add LCD inversion command</li>
+            </ul>
+
+            <h3>Network & Peripherals</h3>
+            <ul>
+                <li><strong>feat:</strong> [BSP] Add EMAC Ethernet support</li>
+                <li><strong>feat:</strong> [LWIP] Rename lwIP options and set IPERF dependency</li>
+                <li><strong>feat:</strong> [SDH] Add SD card support</li>
+                <li><strong>feat:</strong> [SPI] SPI slave demo and SPI1 support</li>
+            </ul>
+
+            <h3>BSP & System</h3>
+            <ul>
+                <li><strong>feat:</strong> [BSP] Move TCM to non-cachable region</li>
+                <li><strong>feat:</strong> Add FreeRTOS runtime statistics support</li>
+                <li><strong>feat:</strong> [DBG] Add frame pointer and backtrace chain support</li>
+                <li><strong>fix:</strong> Implement dynamic OCRAM sizing</li>
+            </ul>
+
+            <h3>CI/CD</h3>
+            <ul>
+                <li><strong>feat:</strong> Enable Teams notifications for all pipeline triggers</li>
+            </ul>
+        </section>
+
+        <section id="aug-2025">
+            <h2>August 2025</h2>
+
+            <h3>August 23, 2025 - Major Documentation and System Cleanup</h3>
+            <ul>
+                <li><strong>docs:</strong> Reorganized and cleaned up README.md structure
+                    <ul>
+                        <li>Simplified content organization with clear sections</li>
+                        <li>Removed duplicate and redundant information</li>
+                        <li>Enhanced quick start section with both Zephyr and SDK options</li>
+                        <li>Improved technical specifications</li>
+                    </ul>
+                </li>
+                <li><strong>refactor:</strong> Removed outdated west configuration system
+                    <ul>
+                        <li>Removed config/west_configs/ directory</li>
+                        <li>Simplified menu.sh by removing west configuration management</li>
+                        <li>Streamlined to use single west.yml configuration</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3>August 22, 2025 - Major Feature Enhancements</h3>
+            <ul>
+                <li><strong>feat:</strong> Added multilingual interactive menu (menu.sh)
+                    <ul>
+                        <li>Full bilingual support (Chinese/English)</li>
+                        <li>Interactive development environment interface</li>
+                        <li>Menu-driven access to all development tools</li>
+                    </ul>
+                </li>
+                <li><strong>feat:</strong> Enhanced apps.sh with categories and search functionality
+                    <ul>
+                        <li>Added list_categories() function to browse Zephyr sample categories</li>
+                        <li>Enhanced search functionality across all apps and samples</li>
+                        <li>Support for 21 Zephyr sample categories</li>
+                    </ul>
+                </li>
+                <li><strong>feat:</strong> Added complete Zephyr peripheral driver framework
+                    <ul>
+                        <li>Complete GPIO, SPI, PWM driver integration</li>
+                        <li>Enhanced Kconfig configuration system</li>
+                        <li>IPRO7 hardware support optimization</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3>August 19-21, 2025 - BLE System Improvements</h3>
+            <ul>
+                <li><strong>feat:</strong> Completed BLE advertising workflow implementation and state management fixes</li>
+                <li><strong>feat:</strong> Added comprehensive CLI command system with 40+ interactive commands</li>
+                <li><strong>feat:</strong> Enhanced BLE demo and custom profile implementation</li>
+                <li><strong>feat:</strong> Added complete IPRO logging system integrated with BLE library</li>
+                <li><strong>fix:</strong> BLE Channel Map Indication debugging and CSA #2 validation</li>
+                <li><strong>feat:</strong> OTA firmware update feature integration</li>
+            </ul>
+
+            <h3>August 12-18, 2025 - Infrastructure and CI/CD</h3>
+            <ul>
+                <li><strong>feat:</strong> MCP server message optimization and comment translation</li>
+                <li><strong>feat:</strong> Enhanced README badges with improved styling</li>
+                <li><strong>feat:</strong> Added GitLab Merge Request creation tool</li>
+                <li><strong>feat:</strong> JIRA integration enhancements</li>
+                <li><strong>feat:</strong> VS Code extension updates (v0.0.7)</li>
+            </ul>
+        </section>
+
+        <section id="earlier">
+            <h2>Earlier Versions</h2>
+            <p>For the complete changelog, please refer to the <code>changelog.md</code> file in the SDK source code.</p>
+
+            <h3>Major Milestones</h3>
+            <ul>
+                <li><strong>Zephyr RTOS Integration</strong> - Full Zephyr v3.4.0 support</li>
+                <li><strong>BLE 5.4 Support</strong> - RivieraWaves BLE 5.4 protocol stack integration</li>
+                <li><strong>LE Audio</strong> - GAF framework and LC3 codec support</li>
+                <li><strong>MCP Server</strong> - AI-assisted development tools</li>
+                <li><strong>VS Code Extension</strong> - Dedicated development extension</li>
+            </ul>
+        </section>
+    </article>
+</div>

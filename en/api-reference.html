@@ -1,0 +1,287 @@
+---
+layout: default
+lang: en
+title: API Reference - IPRO SDK
+---
+
+<div class="doc-layout">
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <h4 class="sidebar-title">Table of Contents</h4>
+            <ul class="sidebar-links">
+                <li><a href="#ble-api" class="sidebar-link">BLE API</a></li>
+                <li><a href="#hal-api" class="sidebar-link">HAL API</a></li>
+                <li><a href="#rtos-api" class="sidebar-link">RTOS API</a></li>
+                <li><a href="#log-api" class="sidebar-link">Log API</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <article class="doc-content">
+        <h1>API Reference</h1>
+        <p>This page provides a quick reference for the main IPRO SDK APIs. For complete API documentation, please refer to the header file comments in the source code.</p>
+
+        <section id="ble-api">
+            <h2>BLE API</h2>
+            <p>The BLE library provides comprehensive Bluetooth Low Energy functionality.</p>
+
+            <h3>Initialization API</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Function</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>ipro_ble_init()</code></td>
+                            <td>Initialize the BLE subsystem</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_ble_deinit()</code></td>
+                            <td>Deinitialize the BLE subsystem</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>GAP API</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Function</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>ipro_ble_gap_start_advertising()</code></td>
+                            <td>Start advertising</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_ble_gap_stop_advertising()</code></td>
+                            <td>Stop advertising</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_ble_gap_set_adv_data()</code></td>
+                            <td>Set advertising data</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_ble_gap_disconnect()</code></td>
+                            <td>Disconnect connection</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_ble_gap_update_conn_params()</code></td>
+                            <td>Update connection parameters</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>GATT API</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Function</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>ipro_ble_gatt_register_service()</code></td>
+                            <td>Register GATT service</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_ble_gatt_notify()</code></td>
+                            <td>Send notification</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_ble_gatt_indicate()</code></td>
+                            <td>Send indication</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Service API</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Heart Rate Service</span>
+                </div>
+                <pre><code class="language-c">// Initialize heart rate service
+int ipro_ble_hrs_init(ipro_ble_hrs_init_t *init);
+
+// Send heart rate measurement
+int ipro_ble_hrs_send_measurement(ipro_ble_hrs_measurement_t *measurement);
+
+// Set body sensor location
+int ipro_ble_hrs_set_body_sensor_location(uint8_t location);</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Battery Service</span>
+                </div>
+                <pre><code class="language-c">// Initialize battery service
+int ipro_ble_bas_init(void);
+
+// Update battery level
+int ipro_ble_bas_update_level(uint8_t level);</code></pre>
+            </div>
+        </section>
+
+        <section id="hal-api">
+            <h2>HAL API</h2>
+            <p>The Hardware Abstraction Layer API provides a unified peripheral access interface.</p>
+
+            <h3>GPIO API</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">GPIO Functions</span>
+                </div>
+                <pre><code class="language-c">// Initialize GPIO
+int ipro_hal_gpio_init(uint32_t pin, ipro_gpio_config_t *config);
+
+// Set output value
+int ipro_hal_gpio_write(uint32_t pin, uint8_t value);
+
+// Read input value
+uint8_t ipro_hal_gpio_read(uint32_t pin);
+
+// Toggle output
+int ipro_hal_gpio_toggle(uint32_t pin);
+
+// Set interrupt
+int ipro_hal_gpio_set_interrupt(uint32_t pin, ipro_gpio_isr_t handler);</code></pre>
+            </div>
+
+            <h3>UART API</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">UART Functions</span>
+                </div>
+                <pre><code class="language-c">// Initialize UART
+int ipro_hal_uart_init(uint8_t port, ipro_uart_config_t *config);
+
+// Send data
+int ipro_hal_uart_write(uint8_t port, const uint8_t *data, size_t len);
+
+// Receive data
+int ipro_hal_uart_read(uint8_t port, uint8_t *buffer, size_t len);
+
+// Set receive callback
+int ipro_hal_uart_set_rx_callback(uint8_t port, ipro_uart_rx_cb_t callback);</code></pre>
+            </div>
+
+            <h3>SPI API</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">SPI Functions</span>
+                </div>
+                <pre><code class="language-c">// Initialize SPI
+int ipro_hal_spi_init(uint8_t port, ipro_spi_config_t *config);
+
+// Transfer data
+int ipro_hal_spi_transfer(uint8_t port, const uint8_t *tx, uint8_t *rx, size_t len);
+
+// Write only
+int ipro_hal_spi_write(uint8_t port, const uint8_t *data, size_t len);
+
+// Read only
+int ipro_hal_spi_read(uint8_t port, uint8_t *buffer, size_t len);</code></pre>
+            </div>
+        </section>
+
+        <section id="rtos-api">
+            <h2>RTOS API</h2>
+            <p>The SDK supports FreeRTOS and Zephyr RTOS.</p>
+
+            <h3>FreeRTOS Common API</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Task Management</span>
+                </div>
+                <pre><code class="language-c">// Create task
+BaseType_t xTaskCreate(TaskFunction_t pvTaskCode,
+                       const char *pcName,
+                       configSTACK_DEPTH_TYPE usStackDepth,
+                       void *pvParameters,
+                       UBaseType_t uxPriority,
+                       TaskHandle_t *pxCreatedTask);
+
+// Delay task
+void vTaskDelay(const TickType_t xTicksToDelay);
+
+// Convert milliseconds to ticks
+#define pdMS_TO_TICKS(xTimeInMs)</code></pre>
+            </div>
+
+            <h3>Zephyr Common API</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Kernel API</span>
+                </div>
+                <pre><code class="language-c">// Sleep
+void k_sleep(k_timeout_t timeout);
+
+// Create thread
+k_tid_t k_thread_create(struct k_thread *new_thread,
+                        k_thread_stack_t *stack,
+                        size_t stack_size,
+                        k_thread_entry_t entry,
+                        void *p1, void *p2, void *p3,
+                        int prio,
+                        uint32_t options,
+                        k_timeout_t delay);
+
+// Time macros
+K_SECONDS(s)
+K_MSEC(ms)
+K_FOREVER</code></pre>
+            </div>
+        </section>
+
+        <section id="log-api">
+            <h2>Log API</h2>
+            <p>Unified logging output interface.</p>
+
+            <h3>IPRO Log API</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Logging Functions</span>
+                </div>
+                <pre><code class="language-c">// Logging macros
+IPRO_LOG_ERROR(tag, fmt, ...)   // Error level
+IPRO_LOG_WARN(tag, fmt, ...)    // Warning level
+IPRO_LOG_INFO(tag, fmt, ...)    // Info level
+IPRO_LOG_DEBUG(tag, fmt, ...)   // Debug level
+IPRO_LOG_VERBOSE(tag, fmt, ...) // Verbose level
+
+// Usage example
+#define TAG "MY_MODULE"
+IPRO_LOG_INFO(TAG, "System started, version %d.%d", major, minor);</code></pre>
+            </div>
+
+            <h3>Zephyr Log API</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Zephyr Logging</span>
+                </div>
+                <pre><code class="language-c">#include &lt;zephyr/logging/log.h&gt;
+
+// Register log module
+LOG_MODULE_REGISTER(my_module, LOG_LEVEL_INF);
+
+// Log output
+LOG_ERR("Error message");
+LOG_WRN("Warning message");
+LOG_INF("Info message");
+LOG_DBG("Debug message");</code></pre>
+            </div>
+        </section>
+    </article>
+</div>

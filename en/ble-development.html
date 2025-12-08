@@ -1,0 +1,485 @@
+---
+layout: default
+title: BLE Development Guide - IPRO SDK
+lang: en
+---
+
+<div class="doc-layout">
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <h4 class="sidebar-title">Table of Contents</h4>
+            <ul class="sidebar-links">
+                <li><a href="#overview" class="sidebar-link">BLE 5.4 Overview</a></li>
+                <li><a href="#architecture" class="sidebar-link">Library Architecture</a></li>
+                <li><a href="#getting-started" class="sidebar-link">Getting Started</a></li>
+                <li><a href="#gap-operations" class="sidebar-link">GAP Operations</a></li>
+                <li><a href="#gatt-services" class="sidebar-link">GATT Services</a></li>
+                <li><a href="#le-audio" class="sidebar-link">LE Audio</a></li>
+                <li><a href="#debugging" class="sidebar-link">Debugging Tips</a></li>
+                <li><a href="#best-practices" class="sidebar-link">Best Practices</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <article class="doc-content">
+        <h1>BLE Development Guide</h1>
+        <p>This guide explains how to develop Bluetooth Low Energy applications using the IPRO SDK's BLE 5.4 library.</p>
+
+        <section id="overview">
+            <h2>BLE 5.4 Feature Overview</h2>
+            <p>IPRO SDK integrates the RivieraWaves BLE 5.4 protocol stack, providing comprehensive Bluetooth functionality:</p>
+
+            <div class="features-grid" style="margin: 2rem 0;">
+                <div class="feature-card">
+                    <div class="feature-icon">📡</div>
+                    <h3 class="feature-title">Core Features</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>BLE 5.4 Host Stack</li>
+                        <li>Up to 4 simultaneous connections</li>
+                        <li>20+ BLE Profiles</li>
+                        <li>10-15m communication range</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎵</div>
+                    <h3 class="feature-title">LE Audio</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>LC3 codec (32-320 kbps)</li>
+                        <li>SBC fallback encoding</li>
+                        <li>&lt;20ms audio latency</li>
+                        <li>Isochronous Channels</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3 class="feature-title">Security</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>LE Secure Connections</li>
+                        <li>AES-CCM encryption</li>
+                        <li>Pairing & bonding management</li>
+                        <li>Privacy features (RPA)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="architecture">
+            <h2>Library Architecture</h2>
+            <p><code>ipro_ble_lib</code> adopts a Core/Profile separation architecture, providing clear abstraction layers:</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">BLE Library Architecture</span>
+                </div>
+                <pre><code>components/wireless/ipro_ble_lib/
+├── inc/
+│   ├── core/                 # Core BLE functionality APIs
+│   │   ├── ipro_ble_gap.h    # GAP operations
+│   │   ├── ipro_ble_gatt.h   # GATT operations
+│   │   └── ipro_ble_sm.h     # Security management
+│   ├── services/             # Standard BLE services
+│   │   ├── ipro_ble_bas.h    # Battery Service
+│   │   ├── ipro_ble_hrs.h    # Heart Rate Service
+│   │   └── ipro_ble_dis.h    # Device Information Service
+│   ├── audio/                # LE Audio APIs
+│   └── ipro_ble_api.h        # Main public API
+└── src/
+    ├── core/                 # Core implementation
+    ├── services/             # Service implementation
+    └── audio/                # LE Audio implementation</code></pre>
+            </div>
+
+            <h3>Core Concepts</h3>
+            <ul>
+                <li><strong>Core Layer</strong>: Handles GAP, GATT, L2CAP, SMP and other protocol operations</li>
+                <li><strong>Profile Layer</strong>: Implements standard and custom BLE services</li>
+                <li><strong>Event-Driven</strong>: Uses asynchronous callbacks to handle BLE events</li>
+                <li><strong>Message Passing</strong>: Communicates with BLE protocol stack via ke_msg system</li>
+            </ul>
+        </section>
+
+        <section id="getting-started">
+            <h2>Getting Started</h2>
+
+            <h3>1. Initialize BLE Subsystem</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">BLE Initialization</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">#include "ipro_ble_api.h"
+
+// BLE event callback
+void ble_event_handler(ipro_ble_event_t *event)
+{
+    switch (event->type) {
+        case IPRO_BLE_EVT_READY:
+            IPRO_LOG_INFO("BLE stack ready");
+            // Start advertising
+            start_advertising();
+            break;
+            
+        case IPRO_BLE_EVT_CONNECTED:
+            IPRO_LOG_INFO("Device connected");
+            break;
+            
+        case IPRO_BLE_EVT_DISCONNECTED:
+            IPRO_LOG_INFO("Device disconnected");
+            // Restart advertising
+            start_advertising();
+            break;
+    }
+}
+
+void app_init(void)
+{
+    // Initialize BLE library
+    ipro_ble_config_t config = {
+        .device_name = "IPRO Device",
+        .event_handler = ble_event_handler,
+    };
+    
+    ipro_ble_init(&config);
+}</code></pre>
+            </div>
+
+            <h3>2. Configure Advertising</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Advertising Setup</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">void start_advertising(void)
+{
+    ipro_ble_adv_params_t adv_params = {
+        .interval_min = 160,  // 100ms
+        .interval_max = 320,  // 200ms
+        .type = IPRO_BLE_ADV_TYPE_CONNECTABLE,
+        .own_addr_type = IPRO_BLE_ADDR_TYPE_PUBLIC,
+    };
+    
+    // Advertising data
+    uint8_t adv_data[] = {
+        // Flags
+        0x02, 0x01, 0x06,
+        // Complete Local Name
+        0x0C, 0x09, 'I', 'P', 'R', 'O', ' ', 'D', 'e', 'v', 'i', 'c', 'e',
+        // Service UUIDs (Heart Rate Service)
+        0x03, 0x03, 0x0D, 0x18,
+    };
+    
+    ipro_ble_gap_set_adv_data(adv_data, sizeof(adv_data));
+    ipro_ble_gap_start_advertising(&adv_params);
+}</code></pre>
+            </div>
+
+            <h3>3. Enable Configuration Options</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">proj.conf</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Enable BLE library
+CONFIG_IPRO_BLE_LIB_ENABLE=y
+
+# Enable debug output
+CONFIG_IPRO_BLE_LIB_DEBUG_ENABLE=y
+
+# Enable required services
+CONFIG_IPRO_BLE_HRS_ENABLE=y
+CONFIG_IPRO_BLE_BAS_ENABLE=y
+CONFIG_IPRO_BLE_DIS_ENABLE=y</code></pre>
+            </div>
+        </section>
+
+        <section id="gap-operations">
+            <h2>GAP Operations</h2>
+
+            <h3>Advertising Management</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Advertising Control</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">// Start advertising
+ipro_ble_gap_start_advertising(&adv_params);
+
+// Stop advertising
+ipro_ble_gap_stop_advertising();
+
+// Update advertising data
+ipro_ble_gap_set_adv_data(new_data, data_len);
+
+// Set scan response data
+ipro_ble_gap_set_scan_rsp_data(rsp_data, rsp_len);</code></pre>
+            </div>
+
+            <h3>Connection Management</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Connection Operations</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">// Update connection parameters
+ipro_ble_conn_params_t params = {
+    .interval_min = 24,   // 30ms
+    .interval_max = 40,   // 50ms
+    .latency = 0,
+    .timeout = 400,       // 4s
+};
+ipro_ble_gap_update_conn_params(conn_idx, &params);
+
+// Disconnect
+ipro_ble_gap_disconnect(conn_idx, IPRO_BLE_REASON_REMOTE_USER);</code></pre>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>⚠️ Important:</strong> Advertising activity management must follow the complete lifecycle: Stop → Delete → Reset actv_idx, to avoid resource conflicts (error code 0x004B).
+            </div>
+        </section>
+
+        <section id="gatt-services">
+            <h2>GATT Services</h2>
+
+            <h3>Using Standard Services</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Heart Rate Service Example</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">#include "ipro_ble_hrs.h"
+
+// Initialize Heart Rate Service
+ipro_ble_hrs_init_t hrs_init = {
+    .initial_hr = 75,
+    .body_sensor_location = IPRO_BLE_HRS_BODY_SENSOR_WRIST,
+};
+ipro_ble_hrs_init(&hrs_init);
+
+// Update heart rate value
+void update_heart_rate(uint16_t hr_value)
+{
+    ipro_ble_hrs_measurement_t measurement = {
+        .hr_value = hr_value,
+        .flags = IPRO_BLE_HRS_FLAG_VALUE_FORMAT_UINT8,
+    };
+    ipro_ble_hrs_send_measurement(&measurement);
+}</code></pre>
+            </div>
+
+            <h3>Custom Services</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Custom Service Example</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">// Define custom UUIDs
+#define CUSTOM_SERVICE_UUID     0x1234
+#define CUSTOM_CHAR_RX_UUID     0x1235
+#define CUSTOM_CHAR_TX_UUID     0x1236
+
+// Service characteristic definitions
+static const ipro_ble_gatt_char_t custom_chars[] = {
+    {
+        .uuid = CUSTOM_CHAR_RX_UUID,
+        .properties = IPRO_BLE_GATT_PROP_WRITE | IPRO_BLE_GATT_PROP_WRITE_NO_RSP,
+        .permissions = IPRO_BLE_GATT_PERM_WRITE,
+        .max_len = 512,
+    },
+    {
+        .uuid = CUSTOM_CHAR_TX_UUID,
+        .properties = IPRO_BLE_GATT_PROP_READ | IPRO_BLE_GATT_PROP_NOTIFY,
+        .permissions = IPRO_BLE_GATT_PERM_READ,
+        .max_len = 512,
+    },
+};
+
+// Register service
+ipro_ble_gatt_service_t service = {
+    .uuid = CUSTOM_SERVICE_UUID,
+    .chars = custom_chars,
+    .char_count = 2,
+    .handler = custom_service_handler,
+};
+ipro_ble_gatt_register_service(&service);</code></pre>
+            </div>
+        </section>
+
+        <section id="le-audio">
+            <h2>LE Audio</h2>
+            <p>The SDK supports complete LE Audio functionality, including LC3 codec and GAF framework.</p>
+
+            <h3>LE Audio Services</h3>
+            <ul>
+                <li><strong>ASCS</strong> (0x184E) - Audio Stream Control Service</li>
+                <li><strong>PACS</strong> (0x1850) - Published Audio Capabilities Service</li>
+                <li><strong>CAS</strong> (0x1853) - Common Audio Service</li>
+            </ul>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">LE Audio Advertising Configuration</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">// LE Audio device advertising data
+uint8_t le_audio_adv_data[] = {
+    // Flags
+    0x02, 0x01, 0x06,
+    // Device Appearance (Generic Audio Device)
+    0x03, 0x19, 0x41, 0x08,
+    // Complete list of 16-bit Service UUIDs
+    0x07, 0x03,
+    0x4E, 0x18,  // ASCS UUID
+    0x50, 0x18,  // PACS UUID
+    0x53, 0x18,  // CAS UUID
+};</code></pre>
+            </div>
+
+            <h3>GAF/BAP Integration</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">BAP Configuration</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">// BAP configuration request
+bap_configure_req_t *req = ke_msg_alloc(
+    BAP_CONFIGURE_REQ,
+    prf_get_task_from_id(TASK_ID_BAP),
+    task_id,
+    sizeof(bap_configure_req_t)
+);
+req->role_bf = BAP_ROLE_UNICAST_SERVER;
+ke_msg_send(req);</code></pre>
+            </div>
+        </section>
+
+        <section id="debugging">
+            <h2>Debugging Tips</h2>
+
+            <h3>Enable Debug Logging</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">proj.conf</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Enable BLE debugging
+CONFIG_IPRO_BLE_LIB_DEBUG_ENABLE=y
+CONFIG_LOG_DEFAULT_LEVEL=4  # DEBUG level</code></pre>
+            </div>
+
+            <h3>Common Error Codes</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Error Code</th>
+                            <th>Description</th>
+                            <th>Solution</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>0x0043</code></td>
+                            <td>Activity already stopped</td>
+                            <td>Check activity state before stopping</td>
+                        </tr>
+                        <tr>
+                            <td><code>0x004B</code></td>
+                            <td>Activity creation failed</td>
+                            <td>Ensure complete cleanup: Stop → Delete → Reset</td>
+                        </tr>
+                        <tr>
+                            <td><code>0x00A3</code></td>
+                            <td>Connection terminated</td>
+                            <td>Handle disconnect event, implement reconnection</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Using CLI for Debugging</h3>
+            <p><code>ipro_ble_demo</code> provides 40+ CLI commands for debugging:</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">CLI Command Examples</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># View BLE status
+ble status
+
+# Start/stop advertising
+ble adv start
+ble adv stop
+
+# Connection management
+ble conn list
+ble conn disconnect 0
+
+# Service operations
+ble hrs update 80
+ble bas update 75</code></pre>
+            </div>
+        </section>
+
+        <section id="best-practices">
+            <h2>Best Practices</h2>
+
+            <h3>1. Activity Resource Management</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Complete Advertising Cleanup Flow</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">// Correct activity cleanup sequence
+void cleanup_advertising(void)
+{
+    // 1. Stop activity
+    gapm_activity_stop_cmd_t *stop = ke_msg_alloc(
+        GAPM_ACTIVITY_STOP_CMD, ...);
+    stop->actv_idx = adv_actv_idx;
+    ke_msg_send(stop);
+    
+    // 2. Wait for GAPM_ACTIVITY_STOPPED_IND
+    
+    // 3. Delete activity
+    gapm_activity_delete_cmd_t *del = ke_msg_alloc(
+        GAPM_ACTIVITY_DELETE_CMD, ...);
+    del->actv_idx = adv_actv_idx;
+    ke_msg_send(del);
+    
+    // 4. Reset index
+    adv_actv_idx = GAP_INVALID_IDX;
+}</code></pre>
+            </div>
+
+            <h3>2. Reconnection Mechanism</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Auto-Reconnection Implementation</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">void on_disconnect(uint8_t reason)
+{
+    // Delay before restarting advertising
+    vTaskDelay(pdMS_TO_TICKS(500));
+    
+    for (int retry = 0; retry < 3; retry++) {
+        if (restart_advertising() == 0) {
+            break;
+        }
+        vTaskDelay(pdMS_TO_TICKS(1000 * (retry + 1)));
+    }
+}</code></pre>
+            </div>
+
+            <h3>3. Testing Validation</h3>
+            <ul>
+                <li>✅ Multiple disconnect-reconnect cycle testing</li>
+                <li>✅ Phone/central device can correctly discover and pair</li>
+                <li>✅ LE Audio services (ASCS, PACS, CAS) are accessible</li>
+                <li>✅ No 0x004B resource errors</li>
+                <li>✅ Memory usage remains stable</li>
+            </ul>
+        </section>
+    </article>
+</div>
