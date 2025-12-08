@@ -753,6 +753,11 @@ function initCountUpAnimations() {
 // Table of Contents (TOC)
 // ==========================================
 function initTableOfContents() {
+    // Skip TOC if page already has a sidebar (doc-sidebar)
+    if (document.querySelector('.doc-sidebar')) {
+        return;
+    }
+    
     // Only show TOC on pages with enough headings
     const headings = document.querySelectorAll('.doc-content h2, .doc-content h3, .content h2, .content h3, main h2, main h3');
     
