@@ -41,7 +41,7 @@ lang: en
         <!-- Chip Overview -->
         <div id="chip-overview" class="hw-section">
             <h2><i class="fas fa-microchip"></i> IPRO7 Chip Overview</h2>
-            
+
             <div class="spec-grid">
                 <div class="spec-card">
                     <div class="spec-icon">💻</div>
@@ -54,7 +54,7 @@ lang: en
                         <li>FPU Floating Point Unit</li>
                     </ul>
                 </div>
-                
+
                 <div class="spec-card">
                     <div class="spec-icon">💾</div>
                     <h3>Memory Configuration</h3>
@@ -66,7 +66,7 @@ lang: en
                         <li>External QSPI Flash Support</li>
                     </ul>
                 </div>
-                
+
                 <div class="spec-card">
                     <div class="spec-icon">📶</div>
                     <h3>Wireless Features</h3>
@@ -78,7 +78,7 @@ lang: en
                         <li>IEEE 802.15.4 (Optional)</li>
                     </ul>
                 </div>
-                
+
                 <div class="spec-card">
                     <div class="spec-icon">⚡</div>
                     <h3>Power Characteristics</h3>
@@ -127,7 +127,7 @@ lang: en
         <!-- Pinout -->
         <div id="pinout" class="hw-section">
             <h2><i class="fas fa-th"></i> Pinout Definition</h2>
-            
+
             <div class="package-info" style="display: flex; gap: 1rem; margin-bottom: 2rem;">
                 <div class="spec-card" style="flex: 1;">
                     <h4>QFN56 (7x7mm)</h4>
@@ -280,7 +280,8 @@ lang: en
             <div class="pin-notes">
                 <h4>⚠️ Important Notes</h4>
                 <ul>
-                    <li><strong>GPIO14/15:</strong> Default SWD Debug interface, can be reconfigured as GPIO after flashing</li>
+                    <li><strong>GPIO14/15:</strong> Default SWD Debug interface, can be reconfigured as GPIO after
+                        flashing</li>
                     <li><strong>GPIO16:</strong> Read at boot, LOW = Enter Bootloader, HIGH = Normal Boot</li>
                     <li><strong>ADC:</strong> Input voltage range 0 ~ 3.3V, do not exceed VDD</li>
                     <li><strong>RF:</strong> Refer to Reference Design for antenna matching circuit</li>
@@ -291,7 +292,7 @@ lang: en
         <!-- Evaluation Board -->
         <div id="evb" class="hw-section">
             <h2><i class="fas fa-circuit-board"></i> Evaluation Board (EVB)</h2>
-            
+
             <div class="evb-grid">
                 <div class="evb-card">
                     <div class="evb-header">
@@ -300,7 +301,7 @@ lang: en
                     </div>
                     <div class="evb-image">
                         <div class="evb-placeholder">
-                            <i class="fas fa-server"></i>
+                            <i class="fas fa-tachograph-digital"></i>
                             <span>IPRO7 Evaluation Board</span>
                         </div>
                     </div>
@@ -367,13 +368,34 @@ lang: en
                     <h3><i class="fas fa-volume-up"></i> I2S Audio Codec</h3>
                     <p>Connect external audio codec (e.g., ES8388, WM8978)</p>
                     <table class="connection-table">
-                        <tr><th>IPRO7</th><th>Codec</th></tr>
-                        <tr><td>GPIO8 (I2S_BCLK)</td><td>BCLK</td></tr>
-                        <tr><td>GPIO9 (I2S_LRCLK)</td><td>LRCLK/WS</td></tr>
-                        <tr><td>GPIO6 (I2S_DO)</td><td>DIN</td></tr>
-                        <tr><td>GPIO7 (I2S_DI)</td><td>DOUT</td></tr>
-                        <tr><td>GPIO4 (I2C_SCL)</td><td>SCL</td></tr>
-                        <tr><td>GPIO5 (I2C_SDA)</td><td>SDA</td></tr>
+                        <tr>
+                            <th>IPRO7</th>
+                            <th>Codec</th>
+                        </tr>
+                        <tr>
+                            <td>GPIO8 (I2S_BCLK)</td>
+                            <td>BCLK</td>
+                        </tr>
+                        <tr>
+                            <td>GPIO9 (I2S_LRCLK)</td>
+                            <td>LRCLK/WS</td>
+                        </tr>
+                        <tr>
+                            <td>GPIO6 (I2S_DO)</td>
+                            <td>DIN</td>
+                        </tr>
+                        <tr>
+                            <td>GPIO7 (I2S_DI)</td>
+                            <td>DOUT</td>
+                        </tr>
+                        <tr>
+                            <td>GPIO4 (I2C_SCL)</td>
+                            <td>SCL</td>
+                        </tr>
+                        <tr>
+                            <td>GPIO5 (I2C_SDA)</td>
+                            <td>SDA</td>
+                        </tr>
                     </table>
                 </div>
 
@@ -381,13 +403,34 @@ lang: en
                     <h3><i class="fas fa-sd-card"></i> SPI Flash</h3>
                     <p>Extend external QSPI Flash storage</p>
                     <table class="connection-table">
-                        <tr><th>IPRO7</th><th>Flash</th></tr>
-                        <tr><td>QSPI_CLK</td><td>CLK</td></tr>
-                        <tr><td>QSPI_CS</td><td>CS#</td></tr>
-                        <tr><td>QSPI_D0</td><td>DI/IO0</td></tr>
-                        <tr><td>QSPI_D1</td><td>DO/IO1</td></tr>
-                        <tr><td>QSPI_D2</td><td>WP#/IO2</td></tr>
-                        <tr><td>QSPI_D3</td><td>HOLD#/IO3</td></tr>
+                        <tr>
+                            <th>IPRO7</th>
+                            <th>Flash</th>
+                        </tr>
+                        <tr>
+                            <td>QSPI_CLK</td>
+                            <td>CLK</td>
+                        </tr>
+                        <tr>
+                            <td>QSPI_CS</td>
+                            <td>CS#</td>
+                        </tr>
+                        <tr>
+                            <td>QSPI_D0</td>
+                            <td>DI/IO0</td>
+                        </tr>
+                        <tr>
+                            <td>QSPI_D1</td>
+                            <td>DO/IO1</td>
+                        </tr>
+                        <tr>
+                            <td>QSPI_D2</td>
+                            <td>WP#/IO2</td>
+                        </tr>
+                        <tr>
+                            <td>QSPI_D3</td>
+                            <td>HOLD#/IO3</td>
+                        </tr>
                     </table>
                 </div>
 
@@ -395,14 +438,34 @@ lang: en
                     <h3><i class="fas fa-thermometer-half"></i> Sensors</h3>
                     <p>I2C interface sensor connection example</p>
                     <table class="connection-table">
-                        <tr><th>IPRO7</th><th>Sensor</th></tr>
-                        <tr><td>GPIO4 (I2C_SCL)</td><td>SCL</td></tr>
-                        <tr><td>GPIO5 (I2C_SDA)</td><td>SDA</td></tr>
-                        <tr><td>GPIO10</td><td>INT (Optional)</td></tr>
-                        <tr><td>3V3</td><td>VDD</td></tr>
-                        <tr><td>GND</td><td>GND</td></tr>
+                        <tr>
+                            <th>IPRO7</th>
+                            <th>Sensor</th>
+                        </tr>
+                        <tr>
+                            <td>GPIO4 (I2C_SCL)</td>
+                            <td>SCL</td>
+                        </tr>
+                        <tr>
+                            <td>GPIO5 (I2C_SDA)</td>
+                            <td>SDA</td>
+                        </tr>
+                        <tr>
+                            <td>GPIO10</td>
+                            <td>INT (Optional)</td>
+                        </tr>
+                        <tr>
+                            <td>3V3</td>
+                            <td>VDD</td>
+                        </tr>
+                        <tr>
+                            <td>GND</td>
+                            <td>GND</td>
+                        </tr>
                     </table>
-                    <p style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(245, 158, 11, 0.15); border-radius: 4px; font-size: 0.8rem; color: #f59e0b;">⚠️ I2C requires 4.7kΩ pull-up resistors</p>
+                    <p
+                        style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(245, 158, 11, 0.15); border-radius: 4px; font-size: 0.8rem; color: #f59e0b;">
+                        ⚠️ I2C requires 4.7kΩ pull-up resistors</p>
                 </div>
 
                 <div class="peripheral-card">
