@@ -2762,6 +2762,7 @@ pre:not(.code-block pre) .copy-btn.copied {
     color: var(--accent-color);
 }
 
+/* Legacy dropdown support - kept for backwards compatibility */
 .nav-item.has-dropdown > .nav-link {
     display: flex;
     align-items: center;
@@ -2780,7 +2781,7 @@ pre:not(.code-block pre) .copy-btn.copied {
     transform: rotate(180deg);
 }
 
-.nav-dropdown {
+.nav-item.has-dropdown .legacy-dropdown {
     position: absolute;
     top: calc(100% + 0.5rem);
     left: 50%;
@@ -2797,38 +2798,10 @@ pre:not(.code-block pre) .copy-btn.copied {
     padding: 0.5rem 0;
 }
 
-.nav-item.has-dropdown:hover .nav-dropdown {
+.nav-item.has-dropdown:hover .legacy-dropdown {
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) translateY(0);
-}
-
-.nav-dropdown-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1.25rem;
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: var(--transition);
-    font-size: 0.9rem;
-}
-
-.nav-dropdown-item:hover {
-    background: var(--bg-tertiary);
-    color: var(--accent-color);
-}
-
-.nav-dropdown-item i {
-    width: 1.25rem;
-    text-align: center;
-    color: var(--accent-color);
-}
-
-.nav-dropdown-divider {
-    height: 1px;
-    background: var(--border-color);
-    margin: 0.5rem 0;
 }
 
 /* ========================================
