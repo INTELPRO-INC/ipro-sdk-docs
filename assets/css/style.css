@@ -162,6 +162,19 @@ a:hover {
     background: var(--bg-tertiary);
 }
 
+/* Language Switch Button */
+.nav-link.lang-switch {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    font-size: 0.85rem;
+}
+
+.nav-link.lang-switch:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
 .nav-github {
     font-size: 1.5rem;
 }

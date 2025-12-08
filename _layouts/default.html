@@ -51,37 +51,12 @@
                 <li><a href="{{ '/getting-started' | relative_url }}" class="nav-link">Get Started</a></li>
                 <li><a href="{{ '/architecture' | relative_url }}" class="nav-link">Architecture</a></li>
                 <li><a href="{{ '/ble-development' | relative_url }}" class="nav-link">BLE</a></li>
-                <li class="nav-item has-dropdown">
-                    <a href="#" class="nav-link">Learn <i class="fas fa-chevron-down"></i></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{{ '/en/tutorials' | relative_url }}" class="dropdown-item">📖 Tutorials</a></li>
-                        <li><a href="{{ '/en/faq' | relative_url }}" class="dropdown-item">❓ FAQ</a></li>
-                        <li><a href="{{ '/applications' | relative_url }}" class="dropdown-item">📱 Examples</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item has-dropdown">
-                    <a href="#" class="nav-link">Reference <i class="fas fa-chevron-down"></i></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{{ '/api-reference' | relative_url }}" class="dropdown-item">📚 API Reference</a></li>
-                        <li><a href="{{ '/en/hardware' | relative_url }}" class="dropdown-item">🔧 Hardware</a></li>
-                        <li><a href="{{ '/changelog' | relative_url }}" class="dropdown-item">📋 Changelog</a></li>
-                    </ul>
-                </li>
+                <li><a href="{{ '/en/tutorials' | relative_url }}" class="nav-link">Tutorials</a></li>
+                <li><a href="{{ '/en/faq' | relative_url }}" class="nav-link">FAQ</a></li>
+                <li><a href="{{ '/en/hardware' | relative_url }}" class="nav-link">Hardware</a></li>
                 <li><a href="{{ '/zephyr-rtos' | relative_url }}" class="nav-link">Zephyr</a></li>
+                <li><a href="{{ '/' | relative_url }}" class="nav-link lang-switch">🇹🇼 中文</a></li>
             </ul>
-
-            <!-- Language Switcher (English) -->
-            <div class="lang-switcher">
-                <button class="lang-btn" aria-label="Switch language">
-                    <span class="lang-flag">🇺🇸</span>
-                    <span class="lang-name">EN</span>
-                    <i class="fas fa-chevron-down"></i>
-                </button>
-                <ul class="lang-menu">
-                    <li><a href="{{ '/' | relative_url }}" class="lang-option"><span>🇹🇼</span> 繁體中文</a></li>
-                    <li><a href="{{ '/en/' | relative_url }}" class="lang-option active"><span>🇺🇸</span> English</a></li>
-                </ul>
-            </div>
             {% else %}
             <!-- Chinese Navigation -->
             <ul class="nav-menu">
@@ -89,37 +64,12 @@
                 <li><a href="{{ '/getting-started' | relative_url }}" class="nav-link">快速開始</a></li>
                 <li><a href="{{ '/architecture' | relative_url }}" class="nav-link">架構</a></li>
                 <li><a href="{{ '/ble-development' | relative_url }}" class="nav-link">BLE</a></li>
-                <li class="nav-item has-dropdown">
-                    <a href="#" class="nav-link">學習 <i class="fas fa-chevron-down"></i></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{{ '/tutorials' | relative_url }}" class="dropdown-item">📖 教學系列</a></li>
-                        <li><a href="{{ '/faq' | relative_url }}" class="dropdown-item">❓ FAQ</a></li>
-                        <li><a href="{{ '/applications' | relative_url }}" class="dropdown-item">📱 應用範例</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item has-dropdown">
-                    <a href="#" class="nav-link">參考 <i class="fas fa-chevron-down"></i></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="{{ '/api-reference' | relative_url }}" class="dropdown-item">📚 API 參考</a></li>
-                        <li><a href="{{ '/hardware' | relative_url }}" class="dropdown-item">🔧 硬體參考</a></li>
-                        <li><a href="{{ '/changelog' | relative_url }}" class="dropdown-item">📋 更新日誌</a></li>
-                    </ul>
-                </li>
+                <li><a href="{{ '/tutorials' | relative_url }}" class="nav-link">教學</a></li>
+                <li><a href="{{ '/faq' | relative_url }}" class="nav-link">FAQ</a></li>
+                <li><a href="{{ '/hardware' | relative_url }}" class="nav-link">硬體</a></li>
                 <li><a href="{{ '/zephyr-rtos' | relative_url }}" class="nav-link">Zephyr</a></li>
+                <li><a href="{{ '/en/' | relative_url }}" class="nav-link lang-switch">🇺🇸 EN</a></li>
             </ul>
-
-            <!-- Language Switcher (Chinese) -->
-            <div class="lang-switcher">
-                <button class="lang-btn" aria-label="Switch language">
-                    <span class="lang-flag">🇹🇼</span>
-                    <span class="lang-name">中文</span>
-                    <i class="fas fa-chevron-down"></i>
-                </button>
-                <ul class="lang-menu">
-                    <li><a href="{{ '/' | relative_url }}" class="lang-option active"><span>🇹🇼</span> 繁體中文</a></li>
-                    <li><a href="{{ '/en/' | relative_url }}" class="lang-option"><span>🇺🇸</span> English</a></li>
-                </ul>
-            </div>
             {% endif %}
         </div>
     </nav>
@@ -139,7 +89,7 @@
                         <span class="footer-logo-text">IPRO SDK</span>
                     </div>
                     {% if page.lang == 'en' %}
-                    <p>High-performance embedded development kit supporting BLE 5.4 and Zephyr RTOS. Designed for next-generation smart devices.</p>
+                    <p>High-performance embedded development kit supporting BLE 5.4 and Zephyr RTOS.</p>
                     {% else %}
                     <p>高效能嵌入式系統開發套件，支援 BLE 5.4 與 Zephyr RTOS。專為下一代智慧裝置設計。</p>
                     {% endif %}
@@ -190,10 +140,10 @@
                 <div class="footer-section">
                     {% if page.lang == 'en' %}
                     <h4>About</h4>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">SDK source code is hosted on internal GitLab.<br>This documentation site provides development guides and API references.</p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">SDK source hosted on internal GitLab.</p>
                     {% else %}
                     <h4>關於</h4>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">SDK 原始碼託管於內部 GitLab。<br>本文件網站提供開發指南與 API 參考。</p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">SDK 原始碼託管於內部 GitLab。</p>
                     {% endif %}
                 </div>
             </div>
