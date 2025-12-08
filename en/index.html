@@ -20,11 +20,11 @@ lang: en
                 A comprehensive software development kit for IPRO hardware platforms. Supporting modern RTOS, BLE 5.4 protocol stack, and LE Audio for building high-performance embedded applications.
             </p>
             <div class="hero-buttons">
-                <a href="{{ '/en/getting-started' | relative_url }}" class="btn btn-primary">
+                <a href="{{ '/getting-started' | relative_url }}" class="btn btn-primary">
                     <i class="fas fa-rocket"></i>
                     Get Started
                 </a>
-                <a href="{{ '/en/architecture' | relative_url }}" class="btn btn-secondary">
+                <a href="{{ '/architecture' | relative_url }}" class="btn btn-secondary">
                     <i class="fas fa-layer-group"></i>
                     Architecture
                 </a>
@@ -99,97 +99,232 @@ lang: en
                 </p>
             </div>
             <div class="feature-card">
+                <div class="feature-icon">🔧</div>
+                <h3 class="feature-title">Modular Architecture</h3>
+                <p class="feature-description">
+                    Clean layered architecture: Application, Middleware, RTOS, BSP. Components can be configured independently via Kconfig system.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3 class="feature-title">Rich Component Library</h3>
+                <p class="feature-description">
+                    Built-in lwIP network stack, Mbed TLS security, CherryUSB, multiple filesystem support for various application scenarios.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔌</div>
+                <h3 class="feature-title">VS Code Extension</h3>
+                <p class="feature-description">
+                    Dedicated VS Code Extension supporting Remote SSH development, one-click build, auto toolchain detection, remote compile local flash.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3 class="feature-title">AI-Assisted Development</h3>
+                <p class="feature-description">
+                    Integrated MCP Server supporting GitHub Copilot, remote build monitoring, JIRA/GitLab integration for AI-assisted development.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">Complete CI/CD</h3>
+                <p class="feature-description">
+                    Built-in GitLab CI/CD pipeline with automated build testing, memory analysis, security scanning for code quality assurance.
+                </p>
+            </div>
+            <div class="feature-card">
                 <div class="feature-icon">🎵</div>
                 <h3 class="feature-title">LE Audio Ready</h3>
                 <p class="feature-description">
                     Complete LC3 encoder/decoder support with Unicast and Broadcast Audio capabilities. Perfect for next-generation audio devices.
                 </p>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">🔋</div>
-                <h3 class="feature-title">Ultra Low Power</h3>
-                <p class="feature-description">
-                    Multiple sleep modes with μA-level standby current. Advanced power management for extended battery life.
+        </div>
+    </div>
+</section>
+
+<!-- Applications Section -->
+<section class="applications">
+    <div class="section-container">
+        <div class="section-header">
+            <h2 class="section-title">Reference Applications</h2>
+            <p class="section-subtitle">
+                Multiple complete reference applications demonstrating SDK capabilities and best practices
+            </p>
+        </div>
+        <div class="app-grid">
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">📱</span>
+                    <span class="app-name">ipro_ble_demo</span>
+                    <span class="app-badge">Recommended</span>
+                </div>
+                <p class="app-description">
+                    Modern BLE demo application with Core/Profile separation architecture. Supports Heart Rate, Battery, UART, Device Info services, complete CLI system, and OTA firmware updates.
                 </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">BLE 5.4</span>
+                    <span class="app-feature-tag">LE Audio</span>
+                    <span class="app-feature-tag">40+ CLI Commands</span>
+                    <span class="app-feature-tag">OTA Updates</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">🌊</span>
+                    <span class="app-name">ipro_zephyr_demo</span>
+                    <span class="app-badge">New</span>
+                </div>
+                <p class="app-description">
+                    Zephyr RTOS integration demo with modern build system. Memory optimized (33KB ROM, 27KB RAM), build time ~30 seconds.
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">Zephyr v3.4.0</span>
+                    <span class="app-feature-tag">Device Tree</span>
+                    <span class="app-feature-tag">West Build</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">🔌</span>
+                    <span class="app-name">ipro7_fpga_ble_5p4</span>
+                </div>
+                <p class="app-description">
+                    FPGA-optimized BLE 5.4 implementation with hardware-accelerated BLE processing, periodic advertising, and isochronous streaming support.
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">FPGA Accelerated</span>
+                    <span class="app-feature-tag">Periodic Advertising</span>
+                    <span class="app-feature-tag">ISO Streaming</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">🔧</span>
+                    <span class="app-name">ipro7_demo</span>
+                    <span class="app-badge">Multimedia</span>
+                </div>
+                <p class="app-description">
+                    Comprehensive platform demo with multimedia (ISP, MJPEG, LCD), USB (CDC, MSC, UAC, UVC), network (EMAC), and audio (AUADC, DAC) capabilities.
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">USB Audio/Video</span>
+                    <span class="app-feature-tag">ISP Camera</span>
+                    <span class="app-feature-tag">Ethernet</span>
+                    <span class="app-feature-tag">SD Card</span>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Quick Links -->
-<section class="quick-links">
+<!-- Quick Start Section -->
+<section class="quickstart">
     <div class="section-container">
         <div class="section-header">
-            <h2 class="section-title">Quick Links</h2>
+            <h2 class="section-title">Quick Start</h2>
+            <p class="section-subtitle">
+                Choose your preferred development approach and start building in minutes
+            </p>
         </div>
-        <div class="links-grid">
-            <a href="{{ '/en/tutorials' | relative_url }}" class="link-card">
-                <div class="link-icon">📖</div>
-                <h3>Tutorials</h3>
-                <p>Step-by-step guides for BLE, LE Audio, RF testing</p>
-            </a>
-            <a href="{{ '/en/faq' | relative_url }}" class="link-card">
-                <div class="link-icon">❓</div>
-                <h3>FAQ</h3>
-                <p>Common questions and solutions</p>
-            </a>
-            <a href="{{ '/en/hardware' | relative_url }}" class="link-card">
-                <div class="link-icon">🔧</div>
-                <h3>Hardware Reference</h3>
-                <p>Pinout, schematics, and design guides</p>
-            </a>
-            <a href="{{ '/api-reference' | relative_url }}" class="link-card">
-                <div class="link-icon">📚</div>
-                <h3>API Reference</h3>
-                <p>Complete API documentation</p>
-            </a>
+
+        <div class="quickstart-tabs">
+            <button class="tab-btn active" data-tab="tab-zephyr">Zephyr RTOS</button>
+            <button class="tab-btn" data-tab="tab-freertos">FreeRTOS</button>
+        </div>
+
+        <div id="tab-zephyr" class="tab-content active">
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Zephyr Environment Setup & Build</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 1. One-click Zephyr environment setup (first time)
+./tools/zephyr/bootstrap.sh
+
+# 2. Use interactive menu (recommended)
+./tools/zephyr/menu.sh
+
+# 3. Or build directly
+./tools/zephyr/build.sh -a ipro_zephyr_demo -b ipro7_fpga -c
+
+# 4. Manual west build
+cd zephyr-workspace
+source setup_env.sh
+west build -b ipro7_fpga ../apps/ipro_zephyr_demo</code></pre>
+            </div>
+            <div class="alert alert-info">
+                <strong>💡 Tip:</strong> Optimized Zephyr environment downloads only 6 essential modules (~125MB), build time ~30 seconds.
+            </div>
+        </div>
+
+        <div id="tab-freertos" class="tab-content">
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">FreeRTOS Build Commands</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Use simplified build script
+./build_freertos.sh ipro_ble_demo
+
+# Or manual CMake build
+cmake -S . -B build \
+    -G "Ninja" \
+    -DIPRO_SDK_BASE=$(pwd) \
+    -DCONFIG_BUILD_PORJECT=ipro_ble_demo \
+    -DCMAKE_PREFIX_PATH=$(pwd)/cmake \
+    -DCUSTOM_CONFIG_DIR=$(pwd)/apps/ipro_ble_demo \
+    -DCONFIG_APPS=1 \
+    -DCROSS_COMPILE=/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-
+
+cmake --build build</code></pre>
+            </div>
+            <div class="alert alert-info">
+                <strong>💡 Tip:</strong> Build output is located in <code>apps/&lt;PROJECT_NAME&gt;/build/build_out/</code> directory.
+            </div>
         </div>
     </div>
 </section>
 
-<style>
-.quick-links {
-    padding: 4rem 2rem;
-    background: #f8fafc;
-}
-
-.links-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-.link-card {
-    display: block;
-    padding: 2rem;
-    background: #fff;
-    border-radius: 12px;
-    text-decoration: none;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    transition: all 0.3s;
-}
-
-.link-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-}
-
-.link-icon {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-}
-
-.link-card h3 {
-    font-size: 1.1rem;
-    color: #1e293b;
-    margin-bottom: 0.5rem;
-}
-
-.link-card p {
-    font-size: 0.9rem;
-    color: #64748b;
-    margin: 0;
-}
-</style>
+<!-- Documentation CTA -->
+<section class="features" style="padding: 4rem 2rem;">
+    <div class="section-container">
+        <div class="section-header">
+            <h2 class="section-title">Learn More</h2>
+            <p class="section-subtitle">
+                Comprehensive documentation to help you master all IPRO SDK features
+            </p>
+        </div>
+        <div class="features-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+            <a href="{{ '/architecture' | relative_url }}" class="feature-card" style="text-decoration: none;">
+                <div class="feature-icon">🏗️</div>
+                <h3 class="feature-title">Architecture Overview</h3>
+                <p class="feature-description">
+                    Deep dive into SDK layered architecture, component organization, and build system.
+                </p>
+            </a>
+            <a href="{{ '/ble-development' | relative_url }}" class="feature-card" style="text-decoration: none;">
+                <div class="feature-icon">📡</div>
+                <h3 class="feature-title">BLE Development Guide</h3>
+                <p class="feature-description">
+                    Complete BLE 5.4 development tutorial from basics to LE Audio advanced features.
+                </p>
+            </a>
+            <a href="{{ '/zephyr-rtos' | relative_url }}" class="feature-card" style="text-decoration: none;">
+                <div class="feature-icon">🌊</div>
+                <h3 class="feature-title">Zephyr RTOS</h3>
+                <p class="feature-description">
+                    Modern RTOS integration guide, Device Tree configuration, and best practices.
+                </p>
+            </a>
+            <a href="{{ '/applications' | relative_url }}" class="feature-card" style="text-decoration: none;">
+                <div class="feature-icon">📦</div>
+                <h3 class="feature-title">Application Examples</h3>
+                <p class="feature-description">
+                    Detailed documentation and usage for multiple complete reference applications.
+                </p>
+            </a>
+        </div>
+    </div>
+</section>
