@@ -4,306 +4,398 @@ title: Tutorials - IPRO SDK
 lang: en
 ---
 
-<section class="tutorials-page">
+<section class="page-header-section">
     <div class="container">
-        <div class="tutorials-header">
-            <h1><i class="fas fa-graduation-cap"></i> Tutorials</h1>
-            <p>Step-by-step guides to master IPRO SDK development</p>
-        </div>
-        
-        <!-- BLE Basics Series -->
-        <div class="tutorial-series">
-            <div class="series-header">
-                <div class="series-icon">
-                    <i class="fas fa-bluetooth-b"></i>
-                </div>
-                <div class="series-info">
-                    <h2>BLE Development Basics</h2>
-                    <p>From beginner to proficient - master BLE 5.4 development</p>
-                </div>
-            </div>
-            
-            <div class="tutorial-grid">
-                <a href="tutorials/ble-01-introduction.html" class="tutorial-card">
-                    <div class="tutorial-number">1</div>
-                    <span class="difficulty-badge difficulty-beginner">Beginner</span>
-                    <h3>BLE Architecture Overview</h3>
-                    <p>Understand the BLE protocol stack architecture and IPRO SDK implementation</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 20 min</span>
-                        <span><i class="fas fa-book"></i> Theory</span>
-                    </div>
-                </a>
-                
-                <a href="tutorials/ble-02-advertising.html" class="tutorial-card">
-                    <div class="tutorial-number">2</div>
-                    <span class="difficulty-badge difficulty-beginner">Beginner</span>
-                    <h3>Implementing BLE Advertising</h3>
-                    <p>Create advertising data, configure parameters, and start advertising</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 30 min</span>
-                        <span><i class="fas fa-code"></i> Hands-on</span>
-                    </div>
-                </a>
-                
-                <a href="tutorials/ble-03-connection.html" class="tutorial-card">
-                    <div class="tutorial-number">3</div>
-                    <span class="difficulty-badge difficulty-intermediate">Intermediate</span>
-                    <h3>Connection Management</h3>
-                    <p>Implement connection handling, parameter updates, and disconnection events</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 45 min</span>
-                        <span><i class="fas fa-code"></i> Hands-on</span>
-                    </div>
-                </a>
-                
-                <a href="tutorials/ble-04-gatt.html" class="tutorial-card">
-                    <div class="tutorial-number">4</div>
-                    <span class="difficulty-badge difficulty-intermediate">Intermediate</span>
-                    <h3>GATT Services & Characteristics</h3>
-                    <p>Create custom GATT services and implement read/write/notify operations</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 60 min</span>
-                        <span><i class="fas fa-code"></i> Hands-on</span>
-                    </div>
-                </a>
-            </div>
-        </div>
-        
-        <!-- LE Audio Series -->
-        <div class="tutorial-series">
-            <div class="series-header">
-                <div class="series-icon">
-                    <i class="fas fa-headphones"></i>
-                </div>
-                <div class="series-info">
-                    <h2>LE Audio Implementation</h2>
-                    <p>Complete guide to implementing LE Audio features</p>
-                </div>
-            </div>
-            
-            <div class="tutorial-grid">
-                <a href="tutorials/lea-01-overview.html" class="tutorial-card">
-                    <div class="tutorial-number">1</div>
-                    <span class="difficulty-badge difficulty-intermediate">Intermediate</span>
-                    <h3>LE Audio Architecture</h3>
-                    <p>Understand BAP, CAP, and the LE Audio protocol stack</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 30 min</span>
-                        <span><i class="fas fa-book"></i> Theory</span>
-                    </div>
-                </a>
-                
-                <a href="tutorials/lea-02-pacs.html" class="tutorial-card">
-                    <div class="tutorial-number">2</div>
-                    <span class="difficulty-badge difficulty-intermediate">Intermediate</span>
-                    <h3>PACS Configuration</h3>
-                    <p>Configure Published Audio Capabilities for your device</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 45 min</span>
-                        <span><i class="fas fa-code"></i> Hands-on</span>
-                    </div>
-                </a>
-                
-                <a href="tutorials/lea-03-ascs.html" class="tutorial-card">
-                    <div class="tutorial-number">3</div>
-                    <span class="difficulty-badge difficulty-advanced">Advanced</span>
-                    <h3>ASE State Machine</h3>
-                    <p>Implement Audio Stream Endpoint state management</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 60 min</span>
-                        <span><i class="fas fa-code"></i> Hands-on</span>
-                    </div>
-                </a>
-                
-                <a href="tutorials/lea-04-broadcast.html" class="tutorial-card">
-                    <div class="tutorial-number">4</div>
-                    <span class="difficulty-badge difficulty-advanced">Advanced</span>
-                    <h3>Broadcast Audio</h3>
-                    <p>Implement BIS for broadcast audio streaming</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 90 min</span>
-                        <span><i class="fas fa-code"></i> Hands-on</span>
-                    </div>
-                </a>
-            </div>
-        </div>
-        
-        <!-- RF Testing Series -->
-        <div class="tutorial-series">
-            <div class="series-header">
-                <div class="series-icon">
-                    <i class="fas fa-broadcast-tower"></i>
-                </div>
-                <div class="series-info">
-                    <h2>RF Testing & Calibration</h2>
-                    <p>Learn RF testing methods and calibration procedures</p>
-                </div>
-            </div>
-            
-            <div class="tutorial-grid">
-                <a href="tutorials/rf-01-basics.html" class="tutorial-card">
-                    <div class="tutorial-number">1</div>
-                    <span class="difficulty-badge difficulty-beginner">Beginner</span>
-                    <h3>RF Test Basics</h3>
-                    <p>Introduction to BLE RF testing and test equipment setup</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 20 min</span>
-                        <span><i class="fas fa-book"></i> Theory</span>
-                    </div>
-                </a>
-                
-                <a href="tutorials/rf-02-tx-test.html" class="tutorial-card">
-                    <div class="tutorial-number">2</div>
-                    <span class="difficulty-badge difficulty-intermediate">Intermediate</span>
-                    <h3>TX Power Measurement</h3>
-                    <p>Measure and calibrate TX output power</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 40 min</span>
-                        <span><i class="fas fa-code"></i> Hands-on</span>
-                    </div>
-                </a>
-                
-                <a href="tutorials/rf-03-rx-test.html" class="tutorial-card">
-                    <div class="tutorial-number">3</div>
-                    <span class="difficulty-badge difficulty-intermediate">Intermediate</span>
-                    <h3>RX Sensitivity Test</h3>
-                    <p>Test receiver sensitivity and PER measurement</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 40 min</span>
-                        <span><i class="fas fa-code"></i> Hands-on</span>
-                    </div>
-                </a>
-                
-                <a href="tutorials/rf-04-calibration.html" class="tutorial-card">
-                    <div class="tutorial-number">4</div>
-                    <span class="difficulty-badge difficulty-advanced">Advanced</span>
-                    <h3>RF Calibration Deep Dive</h3>
-                    <p>Understand and customize RF calibration procedures</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 60 min</span>
-                        <span><i class="fas fa-code"></i> Hands-on</span>
-                    </div>
-                </a>
-            </div>
-        </div>
-        
-        <!-- Low Power Series -->
-        <div class="tutorial-series">
-            <div class="series-header">
-                <div class="series-icon">
-                    <i class="fas fa-battery-full"></i>
-                </div>
-                <div class="series-info">
-                    <h2>Low Power Optimization</h2>
-                    <p>Techniques for minimizing power consumption</p>
-                </div>
-            </div>
-            
-            <div class="tutorial-grid">
-                <a href="tutorials/power-01-overview.html" class="tutorial-card">
-                    <div class="tutorial-number">1</div>
-                    <span class="difficulty-badge difficulty-beginner">Beginner</span>
-                    <h3>Power States Overview</h3>
-                    <p>Understand IPRO7 power modes and wake-up mechanisms</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 25 min</span>
-                        <span><i class="fas fa-book"></i> Theory</span>
-                    </div>
-                </a>
-                
-                <a href="tutorials/power-02-sleep.html" class="tutorial-card">
-                    <div class="tutorial-number">2</div>
-                    <span class="difficulty-badge difficulty-intermediate">Intermediate</span>
-                    <h3>Sleep Mode Implementation</h3>
-                    <p>Configure and enter different sleep modes</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 35 min</span>
-                        <span><i class="fas fa-code"></i> Hands-on</span>
-                    </div>
-                </a>
-                
-                <a href="tutorials/power-03-ble-power.html" class="tutorial-card">
-                    <div class="tutorial-number">3</div>
-                    <span class="difficulty-badge difficulty-intermediate">Intermediate</span>
-                    <h3>BLE Connection Power</h3>
-                    <p>Optimize BLE connection parameters for low power</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 40 min</span>
-                        <span><i class="fas fa-code"></i> Hands-on</span>
-                    </div>
-                </a>
-                
-                <a href="tutorials/power-04-profiling.html" class="tutorial-card">
-                    <div class="tutorial-number">4</div>
-                    <span class="difficulty-badge difficulty-advanced">Advanced</span>
-                    <h3>Power Profiling</h3>
-                    <p>Measure and analyze power consumption patterns</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 50 min</span>
-                        <span><i class="fas fa-code"></i> Hands-on</span>
-                    </div>
-                </a>
-            </div>
-        </div>
-        
-        <!-- Quick Start Guides -->
-        <div class="tutorial-series">
-            <div class="series-header">
-                <div class="series-icon">
-                    <i class="fas fa-rocket"></i>
-                </div>
-                <div class="series-info">
-                    <h2>Quick Start Guides</h2>
-                    <p>Short guides for common development tasks</p>
-                </div>
-            </div>
-            
-            <div class="tutorial-grid">
-                <a href="tutorials/quick-setup.html" class="tutorial-card">
-                    <div class="tutorial-number"><i class="fas fa-tools"></i></div>
-                    <span class="difficulty-badge difficulty-beginner">Beginner</span>
-                    <h3>Environment Setup</h3>
-                    <p>Set up your development environment in 10 minutes</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 10 min</span>
-                        <span><i class="fas fa-code"></i> Hands-on</span>
-                    </div>
-                </a>
-                
-                <a href="tutorials/quick-debug.html" class="tutorial-card">
-                    <div class="tutorial-number"><i class="fas fa-bug"></i></div>
-                    <span class="difficulty-badge difficulty-beginner">Beginner</span>
-                    <h3>Debugging with OpenOCD</h3>
-                    <p>Connect debugger and start debugging</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 15 min</span>
-                        <span><i class="fas fa-code"></i> Hands-on</span>
-                    </div>
-                </a>
-                
-                <a href="tutorials/quick-cli.html" class="tutorial-card">
-                    <div class="tutorial-number"><i class="fas fa-terminal"></i></div>
-                    <span class="difficulty-badge difficulty-beginner">Beginner</span>
-                    <h3>Using CLI Commands</h3>
-                    <p>Quick reference for BLE demo CLI commands</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 10 min</span>
-                        <span><i class="fas fa-code"></i> Reference</span>
-                    </div>
-                </a>
-                
-                <a href="tutorials/quick-flash.html" class="tutorial-card">
-                    <div class="tutorial-number"><i class="fas fa-download"></i></div>
-                    <span class="difficulty-badge difficulty-beginner">Beginner</span>
-                    <h3>Flashing Firmware</h3>
-                    <p>Different methods to flash firmware to the device</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 10 min</span>
-                        <span><i class="fas fa-code"></i> Hands-on</span>
-                    </div>
-                </a>
-            </div>
-        </div>
+        <h1 class="page-title">📖 Tutorials</h1>
+        <p class="page-subtitle">Step-by-step guides to master IPRO SDK development from scratch</p>
     </div>
 </section>
+
+<section class="tutorials-section">
+    <div class="container">
+        
+        <!-- Tutorial Cards Grid -->
+        <div class="tutorials-grid">
+            
+            <!-- BLE Tutorial -->
+            <div class="tutorial-card">
+                <div class="tutorial-header ble">
+                    <div class="tutorial-icon">📱</div>
+                    <span class="tutorial-level beginner">Beginner</span>
+                </div>
+                <div class="tutorial-content">
+                    <h2>Building BLE Applications from Scratch</h2>
+                    <p>Learn how to create your first BLE application with IPRO SDK, including Advertising, Connection Management, and GATT Services.</p>
+                    <div class="tutorial-meta">
+                        <span><i class="fas fa-clock"></i> ~45 minutes</span>
+                        <span><i class="fas fa-list-ol"></i> 6 steps</span>
+                    </div>
+                </div>
+                <div class="tutorial-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Environment Setup</h4>
+                            <p>Install toolchain, configure development environment</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Project Structure</h4>
+                            <p>Create CMakeLists.txt, proj.conf, and main program</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Initialize BLE Stack</h4>
+                            <p>Configure BLE Controller and Host</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Implement Advertising</h4>
+                            <p>Set up Advertising Data and start broadcasting</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Handle Connection Events</h4>
+                            <p>Implement connect and disconnect callbacks</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Create GATT Services</h4>
+                            <p>Add custom Characteristics and handle read/write</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="tutorial-code-preview">
+                    <h4><i class="fas fa-code"></i> Code Preview</h4>
+                    <pre><code class="language-c">// main.c - BLE Application Entry Point
+#include "ble_lib_api.h"
+#include "FreeRTOS.h"
+#include "task.h"
+
+int main(void) {
+    // 1. Platform initialization
+    platform_init(0);
+    setup_heap();
+    
+    // 2. Initialize BLE Controller
+    ble_controller_init(configMAX_PRIORITIES - 3, 1);
+    
+    // 3. Start FreeRTOS
+    vTaskStartScheduler();
+    
+    return 0;
+}</code></pre>
+                </div>
+                <a href="tutorials/ble-getting-started.html" class="tutorial-btn">
+                    <i class="fas fa-play-circle"></i> Start Learning
+                </a>
+            </div>
+
+            <!-- LE Audio Tutorial -->
+            <div class="tutorial-card">
+                <div class="tutorial-header audio">
+                    <div class="tutorial-icon">🎵</div>
+                    <span class="tutorial-level intermediate">Intermediate</span>
+                </div>
+                <div class="tutorial-content">
+                    <h2>LE Audio Streaming Implementation</h2>
+                    <p>Deep dive into BLE 5.4 LE Audio features, implement LC3 codec, Isochronous Channels, and audio synchronization.</p>
+                    <div class="tutorial-meta">
+                        <span><i class="fas fa-clock"></i> ~90 minutes</span>
+                        <span><i class="fas fa-list-ol"></i> 8 steps</span>
+                    </div>
+                </div>
+                <div class="tutorial-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>LE Audio Architecture</h4>
+                            <p>Understand BAP, PACS, ASCS services</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>GAF Configuration</h4>
+                            <p>Initialize Generic Audio Framework</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>CIS Connection Setup</h4>
+                            <p>Configure Connected Isochronous Stream</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>LC3 Encoder Setup</h4>
+                            <p>Configure sample rate, bitrate, Frame Duration</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Audio Data Transmission</h4>
+                            <p>Send audio via ISO Data Path</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Sync & Latency Optimization</h4>
+                            <p>Adjust Presentation Delay</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <h4>Broadcast Audio (Auracast)</h4>
+                            <p>Implement Broadcast Audio Streaming</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">8</div>
+                        <div class="step-content">
+                            <h4>Quality Monitoring & Debug</h4>
+                            <p>Analyze audio quality metrics</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="tutorial-code-preview">
+                    <h4><i class="fas fa-code"></i> Code Preview</h4>
+                    <pre><code class="language-c">// LE Audio Configuration Example
+struct bap_unicast_config audio_cfg = {
+    .sampling_freq = 48000,      // 48kHz
+    .frame_duration = 10000,     // 10ms
+    .octets_per_frame = 120,     // 96kbps
+    .codec_id = LC3_CODEC_ID,
+};
+
+// Create CIS
+bap_uc_cli_create_cis(conhdl, &audio_cfg);</code></pre>
+                </div>
+                <a href="tutorials/le-audio-streaming.html" class="tutorial-btn">
+                    <i class="fas fa-play-circle"></i> Start Learning
+                </a>
+            </div>
+
+            <!-- RF Tutorial -->
+            <div class="tutorial-card">
+                <div class="tutorial-header rf">
+                    <div class="tutorial-icon">📡</div>
+                    <span class="tutorial-level intermediate">Intermediate</span>
+                </div>
+                <div class="tutorial-content">
+                    <h2>RF Testing & Calibration Guide</h2>
+                    <p>Learn RF parameter tuning, CMW500 testing, and troubleshooting CFO and power issues.</p>
+                    <div class="tutorial-meta">
+                        <span><i class="fas fa-clock"></i> ~60 minutes</span>
+                        <span><i class="fas fa-list-ol"></i> 5 steps</span>
+                    </div>
+                </div>
+                <div class="tutorial-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>RF Calibration Process</h4>
+                            <p>rf_acal, rf_kcal, rf_roscal, rf_rccal</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>DTM Test Mode</h4>
+                            <p>Direct Test Mode operation guide</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>CFO Adjustment</h4>
+                            <p>XTAL capcode and frequency offset correction</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>TX Power Calibration</h4>
+                            <p>Power level configuration and measurement</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>CMW500 Integration</h4>
+                            <p>Automated RF certification testing</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="tutorial-code-preview">
+                    <h4><i class="fas fa-code"></i> CLI Commands</h4>
+                    <pre><code class="language-bash"># RF Test CLI Commands
+le_tx 0 37 0      # TX test: ch=0, len=37, type=PRBS9
+le_rx 0 0         # RX test: ch=0, phy=1M
+le_test_stop      # Stop test and show packet count
+
+# Set TX Power
+rf_set_pwr 12     # Set to +5dBm
+
+# Show calibration results
+rf_show_cal       # Display calibration values</code></pre>
+                </div>
+                <a href="tutorials/rf-testing-calibration.html" class="tutorial-btn">
+                    <i class="fas fa-play-circle"></i> Start Learning
+                </a>
+            </div>
+
+            <!-- Low Power Tutorial -->
+            <div class="tutorial-card">
+                <div class="tutorial-header power">
+                    <div class="tutorial-icon">🔋</div>
+                    <span class="tutorial-level advanced">Advanced</span>
+                </div>
+                <div class="tutorial-content">
+                    <h2>Low Power Optimization Techniques</h2>
+                    <p>Master IPRO7 power saving modes, optimize battery life, and achieve μA-level standby current.</p>
+                    <div class="tutorial-meta">
+                        <span><i class="fas fa-clock"></i> ~75 minutes</span>
+                        <span><i class="fas fa-list-ol"></i> 6 steps</span>
+                    </div>
+                </div>
+                <div class="tutorial-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Power Architecture Overview</h4>
+                            <p>Understand IPRO7 power domains and clock tree</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Sleep Mode Configuration</h4>
+                            <p>Light Sleep, Deep Sleep, Hibernate</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>BLE Connection Optimization</h4>
+                            <p>Adjust Connection Interval and Latency</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Peripheral Power Management</h4>
+                            <p>Dynamic control of GPIO, ADC, Timer</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Wake-up Mechanisms</h4>
+                            <p>RTC, GPIO, BLE Event wake-up</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>Current Measurement & Analysis</h4>
+                            <p>Use Power Profiler for analysis</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="tutorial-code-preview">
+                    <h4><i class="fas fa-code"></i> Code Preview</h4>
+                    <pre><code class="language-c">// Enter Deep Sleep
+void enter_deep_sleep(void) {
+    // Set wake-up source
+    hal_pmu_set_wakeup_source(PMU_WAKEUP_RTC);
+    hal_rtc_set_alarm(60);  // Wake up after 60 seconds
+    
+    // Disable unnecessary peripherals
+    hal_gpio_set_all_analog();
+    
+    // Enter Deep Sleep
+    hal_pmu_enter_deep_sleep();
+}
+
+// Expected standby current: < 5μA</code></pre>
+                </div>
+                <a href="tutorials/low-power-optimization.html" class="tutorial-btn">
+                    <i class="fas fa-play-circle"></i> Start Learning
+                </a>
+            </div>
+
+        </div>
+
+        <!-- Learning Path -->
+        <div class="learning-path">
+            <h2><i class="fas fa-route"></i> Recommended Learning Path</h2>
+            <div class="path-container">
+                <div class="path-item">
+                    <div class="path-icon">🚀</div>
+                    <div class="path-content">
+                        <h4>Week 1</h4>
+                        <p>Environment Setup + BLE Basics</p>
+                    </div>
+                </div>
+                <div class="path-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="path-item">
+                    <div class="path-icon">📱</div>
+                    <div class="path-content">
+                        <h4>Week 2</h4>
+                        <p>GATT Services + Phone Connection</p>
+                    </div>
+                </div>
+                <div class="path-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="path-item">
+                    <div class="path-icon">🎵</div>
+                    <div class="path-content">
+                        <h4>Week 3</h4>
+                        <p>LE Audio Features</p>
+                    </div>
+                </div>
+                <div class="path-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="path-item">
+                    <div class="path-icon">🔋</div>
+                    <div class="path-content">
+                        <h4>Week 4</h4>
+                        <p>Low Power + Production</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tutorial cards hover effect for steps
+    const tutorialCards = document.querySelectorAll('.tutorial-card');
+    tutorialCards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            const steps = card.querySelector('.tutorial-steps');
+            if (steps) steps.style.maxHeight = '500px';
+        });
+        card.addEventListener('mouseleave', () => {
+            const steps = card.querySelector('.tutorial-steps');
+            if (steps) steps.style.maxHeight = '0';
+        });
+    });
+});
+</script>

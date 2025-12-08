@@ -184,6 +184,30 @@ struct bap_unicast_config {
             <div class="faq-item" data-category="ble">
                 <div class="faq-question">
                     <span class="faq-badge ble">BLE</span>
+                    <h3>Activity 建立失敗 (Error 0x004B)？</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Error 0x004B (75) 表示資源衝突，通常是因為 Activity 未完全清理。</p>
+                    <p><strong>解決方案：</strong>使用完整的清理流程：</p>
+                    <pre><code class="language-c">// 1. 停止 Activity
+gapm_activity_stop_cmd_t *stop_cmd = ke_msg_alloc(...);
+stop_cmd->actv_idx = actv_idx;
+ke_msg_send(stop_cmd);
+
+// 2. 在 GAPM_ACTIVITY_STOPPED_IND handler 中發送刪除命令
+gapm_activity_delete_cmd_t *del_cmd = ke_msg_alloc(...);
+del_cmd->actv_idx = actv_idx;
+ke_msg_send(del_cmd);
+
+// 3. 重設 activity index
+actv_idx = GAP_INVALID_IDX;</code></pre>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="ble">
+                <div class="faq-question">
+                    <span class="faq-badge ble">BLE</span>
                     <h3>le_test_stop 執行後 crash？</h3>
                     <i class="fas fa-chevron-down"></i>
                 </div>
@@ -410,202 +434,6 @@ K_THREAD_STACK_DEFINE(my_stack, 4096);  // 增加為 4KB</code></pre>
         </div>
     </div>
 </section>
-
-<style>
-.page-header-section {
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    padding: 4rem 2rem;
-    text-align: center;
-}
-
-.page-title {
-    font-size: 2.5rem;
-    color: #fff;
-    margin-bottom: 0.5rem;
-}
-
-.page-subtitle {
-    color: #94a3b8;
-    font-size: 1.2rem;
-}
-
-.faq-section {
-    padding: 3rem 2rem;
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-.faq-categories {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
-    justify-content: center;
-}
-
-.faq-category-btn {
-    padding: 0.5rem 1rem;
-    border: 1px solid #e2e8f0;
-    background: #fff;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 0.9rem;
-}
-
-.faq-category-btn:hover,
-.faq-category-btn.active {
-    background: #3b82f6;
-    color: #fff;
-    border-color: #3b82f6;
-}
-
-.faq-search {
-    position: relative;
-    margin-bottom: 2rem;
-}
-
-.faq-search i {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #94a3b8;
-}
-
-.faq-search input {
-    width: 100%;
-    padding: 1rem 1rem 1rem 3rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 1rem;
-}
-
-.faq-search input:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.faq-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.faq-item {
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    overflow: hidden;
-    background: #fff;
-}
-
-.faq-item.hidden {
-    display: none;
-}
-
-.faq-question {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.5rem;
-    cursor: pointer;
-    background: #f8fafc;
-    transition: background 0.2s;
-}
-
-.faq-question:hover {
-    background: #f1f5f9;
-}
-
-.faq-question h3 {
-    flex: 1;
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-.faq-question i {
-    transition: transform 0.3s;
-    color: #94a3b8;
-}
-
-.faq-item.open .faq-question i {
-    transform: rotate(180deg);
-}
-
-.faq-answer {
-    padding: 0 1.5rem;
-    max-height: 0;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.faq-item.open .faq-answer {
-    padding: 1.5rem;
-    max-height: 1000px;
-}
-
-.faq-badge {
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-.faq-badge.build { background: #fef3c7; color: #92400e; }
-.faq-badge.ble { background: #dbeafe; color: #1e40af; }
-.faq-badge.rf { background: #dcfce7; color: #166534; }
-.faq-badge.debug { background: #fce7f3; color: #9d174d; }
-.faq-badge.rtos { background: #e0e7ff; color: #3730a3; }
-
-.faq-answer pre {
-    background: #1e293b;
-    padding: 1rem;
-    border-radius: 8px;
-    overflow-x: auto;
-}
-
-.faq-answer code {
-    font-family: 'Fira Code', monospace;
-    font-size: 0.85rem;
-}
-
-.comparison-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 1rem 0;
-}
-
-.comparison-table th,
-.comparison-table td {
-    padding: 0.75rem;
-    border: 1px solid #e2e8f0;
-    text-align: left;
-}
-
-.comparison-table th {
-    background: #f8fafc;
-    font-weight: 600;
-}
-
-@media (max-width: 768px) {
-    .faq-categories {
-        justify-content: flex-start;
-    }
-    
-    .faq-question {
-        flex-wrap: wrap;
-    }
-    
-    .faq-question h3 {
-        order: 3;
-        width: 100%;
-        margin-top: 0.5rem;
-    }
-}
-</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
