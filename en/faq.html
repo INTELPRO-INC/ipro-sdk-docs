@@ -1,0 +1,320 @@
+---
+layout: default
+title: FAQ - IPRO SDK
+lang: en
+---
+
+<section class="faq-page">
+    <div class="container">
+        <div class="faq-header">
+            <h1><i class="fas fa-question-circle"></i> Frequently Asked Questions</h1>
+            <p>Find answers to the most common questions about IPRO SDK development</p>
+        </div>
+        
+        <div class="faq-search">
+            <i class="fas fa-search"></i>
+            <input type="text" id="faqSearch" placeholder="Search questions...">
+        </div>
+        
+        <div class="faq-categories">
+            <button class="faq-category-btn active" data-category="all">All Questions</button>
+            <button class="faq-category-btn" data-category="build">Build Issues</button>
+            <button class="faq-category-btn" data-category="ble">BLE Development</button>
+            <button class="faq-category-btn" data-category="rf">RF/Calibration</button>
+            <button class="faq-category-btn" data-category="debug">Debugging</button>
+        </div>
+        
+        <div class="faq-list">
+            <!-- Build Issues -->
+            <div class="faq-item" data-category="build">
+                <div class="faq-question">
+                    <span>How to build an application from scratch?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Follow these steps to build any IPRO SDK application:</p>
+                        <pre><code># 1. Navigate to SDK root directory
+cd /path/to/ipro_sdk
+
+# 2. Configure the build
+cmake -S . -B build -G "Ninja" \
+  -DIPRO_SDK_BASE=$(pwd) \
+  -DCONFIG_BUILD_PORJECT=ipro_ble_demo \
+  -DCROSS_COMPILE=/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-
+
+# 3. Build the project
+cmake --build build</code></pre>
+                        <p>The output files will be located in <code>apps/&lt;PROJECT_NAME&gt;/build/build_out/</code></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="build">
+                <div class="faq-question">
+                    <span>Build error: Toolchain not found?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Make sure the RISC-V toolchain is installed in the correct path:</p>
+                        <ul>
+                            <li>Default path: <code>/opt/toolchain/riscv_ipro7/bin/</code></li>
+                            <li>You can specify a custom path using the <code>CROSS_COMPILE</code> variable</li>
+                        </ul>
+                        <p>To verify toolchain installation:</p>
+                        <pre><code>ls /opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-gcc</code></pre>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="build">
+                <div class="faq-question">
+                    <span>How to add a new source file to the build?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>To add a new source file to a component or application:</p>
+                        <ol>
+                            <li>Add your <code>.c</code> file to the appropriate directory</li>
+                            <li>Edit the corresponding <code>CMakeLists.txt</code></li>
+                            <li>Add the file to the <code>target_sources()</code> list</li>
+                        </ol>
+                        <pre><code>target_sources(${PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/existing_file.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/your_new_file.c
+)</code></pre>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- BLE Development -->
+            <div class="faq-item" data-category="ble">
+                <div class="faq-question">
+                    <span>How to enable BLE functionality?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Enable BLE features in your application's <code>proj.conf</code> file:</p>
+                        <pre><code># Enable BLE library
+CONFIG_IPRO_BLE_LIB=y
+
+# Enable specific BLE features
+CONFIG_IPRO_BLE_LIB_PERIPHERAL=y
+CONFIG_IPRO_BLE_LIB_CENTRAL=y
+
+# Enable LE Audio (optional)
+CONFIG_IPRO_BLE_LIB_LE_AUDIO=y</code></pre>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="ble">
+                <div class="faq-question">
+                    <span>BLE Activity Creation fails with error 0x004B?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Error 0x004B (75) indicates a resource conflict, usually caused by incomplete activity cleanup.</p>
+                        <p><strong>Solution:</strong> Follow the complete cleanup sequence:</p>
+                        <pre><code>// 1. Stop the activity
+gapm_activity_stop_cmd_t *stop_cmd = ke_msg_alloc(...);
+stop_cmd->actv_idx = actv_idx;
+ke_msg_send(stop_cmd);
+
+// 2. In GAPM_ACTIVITY_STOPPED_IND handler, send delete command
+gapm_activity_delete_cmd_t *del_cmd = ke_msg_alloc(...);
+del_cmd->actv_idx = actv_idx;
+ke_msg_send(del_cmd);
+
+// 3. Reset the activity index
+actv_idx = GAP_INVALID_IDX;</code></pre>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="ble">
+                <div class="faq-question">
+                    <span>Phone cannot discover my BLE device?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Common causes and solutions:</p>
+                        <ol>
+                            <li><strong>Advertising not started</strong> - Verify advertising is active</li>
+                            <li><strong>Missing service UUIDs</strong> - Include proper UUIDs in advertising data</li>
+                            <li><strong>Incorrect flags</strong> - Use FLAGS 0x06 (LE General Discoverable + BR/EDR Not Supported)</li>
+                        </ol>
+                        <p>For LE Audio devices, include these UUIDs:</p>
+                        <ul>
+                            <li>ASCS (0x184E) - Audio Stream Control Service</li>
+                            <li>PACS (0x1850) - Published Audio Capabilities Service</li>
+                            <li>CAS (0x1853) - Common Audio Service</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- RF/Calibration -->
+            <div class="faq-item" data-category="rf">
+                <div class="faq-question">
+                    <span>How to perform RF calibration?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>RF calibration runs automatically during <code>rf_init()</code>. Ensure calibration is enabled:</p>
+                        <pre><code>// RF_CAL_STATE_CTRL register must have calibration bits enabled
+// Bit 1: acal_state_en (Amplitude calibration)
+// Bit 2: kcal_state_en (K calibration)
+// Bit 3: roscal_state_en (RC oscillator calibration)
+// Bit 4: rccal_state_en (RC calibration)</code></pre>
+                        <p>After successful calibration, all 40 BLE channels will be calibrated.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="rf">
+                <div class="faq-question">
+                    <span>How to adjust carrier frequency offset (CFO)?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>CFO is primarily controlled by the XTAL capacitor code (capcode):</p>
+                        <ul>
+                            <li><strong>Lower capcode</strong> = Higher frequency (positive adjustment)</li>
+                            <li><strong>Higher capcode</strong> = Lower frequency (negative adjustment)</li>
+                        </ul>
+                        <p>Each capcode step typically corresponds to approximately 1-2 ppm frequency change.</p>
+                        <p>Adjust the XTAL capcode in the RF initialization code to compensate for CFO measured with test equipment.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Debugging -->
+            <div class="faq-item" data-category="debug">
+                <div class="faq-question">
+                    <span>How to enable debug logging?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Enable debug logging in your <code>proj.conf</code>:</p>
+                        <pre><code># General debug
+CONFIG_DEBUG=y
+CONFIG_DEBUG_LEVEL=4
+
+# BLE specific debug
+CONFIG_IPRO_BLE_LIB_DEBUG_ENABLE=y</code></pre>
+                        <p>Use the IPRO_LOG macros in your code:</p>
+                        <pre><code>IPRO_LOG_DEBUG("Debug message: %d", value);
+IPRO_LOG_INFO("Info message");
+IPRO_LOG_WARNING("Warning!");
+IPRO_LOG_ERROR("Error occurred!");</code></pre>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="debug">
+                <div class="faq-question">
+                    <span>How to analyze a crash backtrace?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Use the backtrace parser tool:</p>
+                        <pre><code>python tools/parse_backtrace.py &lt;backtrace_output&gt;</code></pre>
+                        <p>Or use addr2line manually:</p>
+                        <pre><code>riscv64-unknown-elf-addr2line -e build/build_out/app.elf 0x&lt;address&gt;</code></pre>
+                        <p>Ensure you're using the same ELF file that was running when the crash occurred.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="faq-item" data-category="debug">
+                <div class="faq-question">
+                    <span>How to use OpenOCD for debugging?</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-answer-content">
+                        <p>Start OpenOCD with the appropriate configuration:</p>
+                        <pre><code># Start OpenOCD server
+openocd -f tools/openocd/ipro7_fpga.cfg
+
+# In another terminal, connect with GDB
+riscv64-unknown-elf-gdb build/build_out/app.elf
+(gdb) target remote :3333
+(gdb) load
+(gdb) continue</code></pre>
+                        <p>Configuration files are located in <code>tools/openocd/</code></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // FAQ accordion
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        question.addEventListener('click', () => {
+            const isActive = item.classList.contains('active');
+            // Close all items
+            faqItems.forEach(i => i.classList.remove('active'));
+            // Open clicked item if it wasn't active
+            if (!isActive) {
+                item.classList.add('active');
+            }
+        });
+    });
+    
+    // Category filter
+    const categoryBtns = document.querySelectorAll('.faq-category-btn');
+    categoryBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const category = btn.dataset.category;
+            
+            // Update active button
+            categoryBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Filter items
+            faqItems.forEach(item => {
+                if (category === 'all' || item.dataset.category === category) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Search functionality
+    const searchInput = document.getElementById('faqSearch');
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        
+        faqItems.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+        
+        // Reset category filter
+        categoryBtns.forEach(b => b.classList.remove('active'));
+        document.querySelector('[data-category="all"]').classList.add('active');
+    });
+});
+</script>

@@ -1,0 +1,975 @@
+---
+layout: default
+title: 硬體參考 Hardware Reference
+lang: zh-TW
+---
+
+<section class="page-header-section">
+    <div class="container">
+        <h1 class="page-title">🔧 硬體參考 Hardware Reference</h1>
+        <p class="page-subtitle">IPRO7 硬體規格、腳位定義與評估板資訊</p>
+    </div>
+</section>
+
+<section class="hardware-section">
+    <div class="container">
+
+        <!-- Quick Navigation -->
+        <div class="hw-nav">
+            <a href="#chip-overview" class="hw-nav-item">
+                <i class="fas fa-microchip"></i>
+                <span>晶片概覽</span>
+            </a>
+            <a href="#pinout" class="hw-nav-item">
+                <i class="fas fa-th"></i>
+                <span>腳位定義</span>
+            </a>
+            <a href="#evb" class="hw-nav-item">
+                <i class="fas fa-circuit-board"></i>
+                <span>評估板</span>
+            </a>
+            <a href="#peripherals" class="hw-nav-item">
+                <i class="fas fa-plug"></i>
+                <span>外設連接</span>
+            </a>
+            <a href="#power" class="hw-nav-item">
+                <i class="fas fa-bolt"></i>
+                <span>電源設計</span>
+            </a>
+        </div>
+
+        <!-- Chip Overview -->
+        <div id="chip-overview" class="hw-section">
+            <h2><i class="fas fa-microchip"></i> IPRO7 晶片概覽</h2>
+            
+            <div class="spec-grid">
+                <div class="spec-card">
+                    <div class="spec-icon">💻</div>
+                    <h3>處理器核心</h3>
+                    <ul>
+                        <li>RISC-V RV64IMAFDC</li>
+                        <li>最高 320MHz 時脈</li>
+                        <li>32KB I-Cache</li>
+                        <li>32KB D-Cache</li>
+                        <li>FPU 浮點運算單元</li>
+                    </ul>
+                </div>
+                
+                <div class="spec-card">
+                    <div class="spec-icon">💾</div>
+                    <h3>記憶體配置</h3>
+                    <ul>
+                        <li>4MB 內建 Flash</li>
+                        <li>16MB PSRAM</li>
+                        <li>256KB OCRAM</li>
+                        <li>4KB HBNRAM (休眠保持)</li>
+                        <li>支援外部 QSPI Flash</li>
+                    </ul>
+                </div>
+                
+                <div class="spec-card">
+                    <div class="spec-icon">📶</div>
+                    <h3>無線功能</h3>
+                    <ul>
+                        <li>BLE 5.4 完整支援</li>
+                        <li>LE Audio / LC3 編解碼</li>
+                        <li>TX Power: -20 ~ +10 dBm</li>
+                        <li>RX Sensitivity: -97 dBm</li>
+                        <li>IEEE 802.15.4 (可選)</li>
+                    </ul>
+                </div>
+                
+                <div class="spec-card">
+                    <div class="spec-icon">⚡</div>
+                    <h3>電源特性</h3>
+                    <ul>
+                        <li>工作電壓: 1.8V ~ 3.6V</li>
+                        <li>Active: 約 5mA @ 3.3V</li>
+                        <li>Deep Sleep: < 5μA</li>
+                        <li>Hibernate: < 1μA</li>
+                        <li>內建 DC-DC 轉換器</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="block-diagram">
+                <h3>系統架構圖</h3>
+                <div class="diagram-container">
+                    <pre class="ascii-diagram">
+┌─────────────────────────────────────────────────────────────────┐
+│                         IPRO7 SoC                               │
+├─────────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
+│  │   RISC-V    │  │    BLE      │  │      RF Transceiver     │  │
+│  │   RV64IMC   │  │  Controller │  │   2.4GHz / BLE 5.4      │  │
+│  │   320MHz    │  │  BLE 5.4    │  │   TX: +10dBm max        │  │
+│  └──────┬──────┘  └──────┬──────┘  └───────────┬─────────────┘  │
+│         │                │                      │                │
+│  ┌──────┴────────────────┴──────────────────────┴──────────┐    │
+│  │                      AHB/APB Bus                        │    │
+│  └──────┬────────────────┬──────────────────────┬──────────┘    │
+│         │                │                      │                │
+│  ┌──────┴──────┐  ┌──────┴──────┐  ┌───────────┴───────────┐    │
+│  │   Memory    │  │ Peripherals │  │     Security          │    │
+│  │  4MB Flash  │  │  UART x3    │  │  AES-128/256          │    │
+│  │ 16MB PSRAM  │  │  SPI x2     │  │  SHA-256              │    │
+│  │ 256KB SRAM  │  │  I2C x2     │  │  TRNG                 │    │
+│  │  4KB HBNRAM │  │  PWM x8     │  │  Secure Boot          │    │
+│  └─────────────┘  │  ADC/DAC    │  └───────────────────────┘    │
+│                   │  GPIO x32   │                                │
+│                   └─────────────┘                                │
+└─────────────────────────────────────────────────────────────────┘
+                    </pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pinout -->
+        <div id="pinout" class="hw-section">
+            <h2><i class="fas fa-th"></i> 腳位定義</h2>
+            
+            <div class="package-info">
+                <div class="package-item">
+                    <h4>QFN56 (7x7mm)</h4>
+                    <p>標準封裝，適合大多數應用</p>
+                </div>
+                <div class="package-item">
+                    <h4>QFN32 (5x5mm)</h4>
+                    <p>精簡封裝，適合空間受限設計</p>
+                </div>
+            </div>
+
+            <div class="pinout-table-container">
+                <h3>GPIO 功能對照表</h3>
+                <table class="pinout-table">
+                    <thead>
+                        <tr>
+                            <th>GPIO</th>
+                            <th>預設功能</th>
+                            <th>ALT1</th>
+                            <th>ALT2</th>
+                            <th>ALT3</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="pin-num">GPIO0</span></td>
+                            <td>GPIO</td>
+                            <td>UART0_TX</td>
+                            <td>SPI0_MOSI</td>
+                            <td>PWM0</td>
+                            <td>預設 UART Console TX</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO1</span></td>
+                            <td>GPIO</td>
+                            <td>UART0_RX</td>
+                            <td>SPI0_MISO</td>
+                            <td>PWM1</td>
+                            <td>預設 UART Console RX</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO2</span></td>
+                            <td>GPIO</td>
+                            <td>UART0_CTS</td>
+                            <td>SPI0_CLK</td>
+                            <td>PWM2</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO3</span></td>
+                            <td>GPIO</td>
+                            <td>UART0_RTS</td>
+                            <td>SPI0_CS</td>
+                            <td>PWM3</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO4</span></td>
+                            <td>GPIO</td>
+                            <td>I2C0_SCL</td>
+                            <td>UART1_TX</td>
+                            <td>PWM4</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO5</span></td>
+                            <td>GPIO</td>
+                            <td>I2C0_SDA</td>
+                            <td>UART1_RX</td>
+                            <td>PWM5</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO6</span></td>
+                            <td>GPIO</td>
+                            <td>SPI1_MOSI</td>
+                            <td>I2S_DO</td>
+                            <td>-</td>
+                            <td>音訊資料輸出</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO7</span></td>
+                            <td>GPIO</td>
+                            <td>SPI1_MISO</td>
+                            <td>I2S_DI</td>
+                            <td>-</td>
+                            <td>音訊資料輸入</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO8</span></td>
+                            <td>GPIO</td>
+                            <td>SPI1_CLK</td>
+                            <td>I2S_BCLK</td>
+                            <td>-</td>
+                            <td>I2S Bit Clock</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO9</span></td>
+                            <td>GPIO</td>
+                            <td>SPI1_CS</td>
+                            <td>I2S_LRCLK</td>
+                            <td>-</td>
+                            <td>I2S L/R Clock</td>
+                        </tr>
+                        <tr class="special-pin">
+                            <td><span class="pin-num">GPIO14</span></td>
+                            <td>SWDIO</td>
+                            <td>GPIO</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>⚠️ Debug 介面</td>
+                        </tr>
+                        <tr class="special-pin">
+                            <td><span class="pin-num">GPIO15</span></td>
+                            <td>SWCLK</td>
+                            <td>GPIO</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>⚠️ Debug 介面</td>
+                        </tr>
+                        <tr class="special-pin">
+                            <td><span class="pin-num">GPIO16</span></td>
+                            <td>BOOT</td>
+                            <td>GPIO</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>⚠️ Boot 選擇腳</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">ADC0</span></td>
+                            <td>ADC_CH0</td>
+                            <td>GPIO</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>12-bit ADC</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">ADC1</span></td>
+                            <td>ADC_CH1</td>
+                            <td>GPIO</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>12-bit ADC</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pin-notes">
+                <h4>⚠️ 注意事項</h4>
+                <ul>
+                    <li><strong>GPIO14/15:</strong> 預設為 SWD Debug 介面，燒錄後可重新配置為 GPIO</li>
+                    <li><strong>GPIO16:</strong> 開機時讀取此腳位，LOW = 進入 Bootloader，HIGH = 正常開機</li>
+                    <li><strong>ADC:</strong> 輸入電壓範圍 0 ~ 3.3V，請勿超過 VDD</li>
+                    <li><strong>RF:</strong> 天線匹配電路請參考 Reference Design</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Evaluation Board -->
+        <div id="evb" class="hw-section">
+            <h2><i class="fas fa-circuit-board"></i> 評估板 (EVB)</h2>
+            
+            <div class="evb-grid">
+                <div class="evb-card">
+                    <div class="evb-header">
+                        <h3>IPRO7-EVB</h3>
+                        <span class="evb-badge">推薦</span>
+                    </div>
+                    <div class="evb-image">
+                        <div class="evb-placeholder">
+                            <i class="fas fa-circuit-board"></i>
+                            <span>IPRO7 評估板</span>
+                        </div>
+                    </div>
+                    <div class="evb-features">
+                        <h4>板載功能</h4>
+                        <ul>
+                            <li><i class="fas fa-check"></i> IPRO7 主晶片</li>
+                            <li><i class="fas fa-check"></i> USB Type-C 供電/燒錄</li>
+                            <li><i class="fas fa-check"></i> 整合 JTAG Debug</li>
+                            <li><i class="fas fa-check"></i> 2.4GHz PCB 天線</li>
+                            <li><i class="fas fa-check"></i> UART Console (115200 8N1)</li>
+                            <li><i class="fas fa-check"></i> 按鈕 x2 (Reset, User)</li>
+                            <li><i class="fas fa-check"></i> LED x3</li>
+                            <li><i class="fas fa-check"></i> Arduino 相容排針</li>
+                        </ul>
+                    </div>
+                    <div class="evb-pinout">
+                        <h4>接口說明</h4>
+                        <pre class="evb-diagram">
+     USB-C          J1 (Arduino)      J2 (Expansion)
+    ┌─────┐        ┌──────────┐      ┌──────────┐
+    │     │        │ 3V3  GND │      │ GPIO20   │
+    │ PWR │        │ GPIO0 1  │      │ GPIO21   │
+    │ DBG │        │ GPIO2 3  │      │ SPI1_CLK │
+    │     │        │ GPIO4 5  │      │ SPI1_CS  │
+    └─────┘        │ ADC0 ADC1│      │ I2C_SCL  │
+                   │ RST  NC  │      │ I2C_SDA  │
+     [RST] [USR]   └──────────┘      └──────────┘
+        </pre>
+                    </div>
+                </div>
+
+                <div class="evb-card">
+                    <div class="evb-header">
+                        <h3>IPRO7-FPGA</h3>
+                        <span class="evb-badge dev">開發用</span>
+                    </div>
+                    <div class="evb-image">
+                        <div class="evb-placeholder fpga">
+                            <i class="fas fa-microchip"></i>
+                            <span>FPGA 驗證平台</span>
+                        </div>
+                    </div>
+                    <div class="evb-features">
+                        <h4>特點</h4>
+                        <ul>
+                            <li><i class="fas fa-check"></i> FPGA 模擬 IPRO7</li>
+                            <li><i class="fas fa-check"></i> 完整 Debug 功能</li>
+                            <li><i class="fas fa-check"></i> 可調時鐘頻率</li>
+                            <li><i class="fas fa-check"></i> RF 外接 AD9361</li>
+                            <li><i class="fas fa-check"></i> 適合早期開發驗證</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Peripheral Connections -->
+        <div id="peripherals" class="hw-section">
+            <h2><i class="fas fa-plug"></i> 外設連接指南</h2>
+
+            <div class="peripheral-grid">
+                <div class="peripheral-card">
+                    <h3><i class="fas fa-volume-up"></i> I2S 音訊 Codec</h3>
+                    <p>連接外部音訊編解碼器 (如 ES8388、WM8978)</p>
+                    <table class="connection-table">
+                        <tr><th>IPRO7</th><th>Codec</th></tr>
+                        <tr><td>GPIO8 (I2S_BCLK)</td><td>BCLK</td></tr>
+                        <tr><td>GPIO9 (I2S_LRCLK)</td><td>LRCLK/WS</td></tr>
+                        <tr><td>GPIO6 (I2S_DO)</td><td>DIN</td></tr>
+                        <tr><td>GPIO7 (I2S_DI)</td><td>DOUT</td></tr>
+                        <tr><td>GPIO4 (I2C_SCL)</td><td>SCL</td></tr>
+                        <tr><td>GPIO5 (I2C_SDA)</td><td>SDA</td></tr>
+                    </table>
+                </div>
+
+                <div class="peripheral-card">
+                    <h3><i class="fas fa-sd-card"></i> SPI Flash</h3>
+                    <p>擴展外部 QSPI Flash 儲存空間</p>
+                    <table class="connection-table">
+                        <tr><th>IPRO7</th><th>Flash</th></tr>
+                        <tr><td>QSPI_CLK</td><td>CLK</td></tr>
+                        <tr><td>QSPI_CS</td><td>CS#</td></tr>
+                        <tr><td>QSPI_D0</td><td>DI/IO0</td></tr>
+                        <tr><td>QSPI_D1</td><td>DO/IO1</td></tr>
+                        <tr><td>QSPI_D2</td><td>WP#/IO2</td></tr>
+                        <tr><td>QSPI_D3</td><td>HOLD#/IO3</td></tr>
+                    </table>
+                </div>
+
+                <div class="peripheral-card">
+                    <h3><i class="fas fa-thermometer-half"></i> 感測器</h3>
+                    <p>I2C 介面感測器連接範例</p>
+                    <table class="connection-table">
+                        <tr><th>IPRO7</th><th>Sensor</th></tr>
+                        <tr><td>GPIO4 (I2C_SCL)</td><td>SCL</td></tr>
+                        <tr><td>GPIO5 (I2C_SDA)</td><td>SDA</td></tr>
+                        <tr><td>GPIO10</td><td>INT (可選)</td></tr>
+                        <tr><td>3V3</td><td>VDD</td></tr>
+                        <tr><td>GND</td><td>GND</td></tr>
+                    </table>
+                    <p class="note">⚠️ I2C 需要 4.7kΩ 上拉電阻</p>
+                </div>
+
+                <div class="peripheral-card">
+                    <h3><i class="fas fa-broadcast-tower"></i> 天線設計</h3>
+                    <p>2.4GHz RF 天線建議</p>
+                    <ul class="antenna-list">
+                        <li><strong>PCB 天線:</strong> 成本低，需留出淨空區</li>
+                        <li><strong>Chip 天線:</strong> 體積小，需匹配電路</li>
+                        <li><strong>外接天線:</strong> 效能最佳，需 U.FL 連接器</li>
+                    </ul>
+                    <div class="rf-matching">
+                        <p><strong>π 型匹配電路:</strong></p>
+                        <pre>
+RF_OUT ─┬─[L1]─┬─ ANT
+        │      │
+       [C1]   [C2]
+        │      │
+       GND    GND
+                        </pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Power Design -->
+        <div id="power" class="hw-section">
+            <h2><i class="fas fa-bolt"></i> 電源設計指南</h2>
+
+            <div class="power-diagram">
+                <h3>電源架構</h3>
+                <pre class="ascii-diagram">
+                    ┌─────────────────────────────────────┐
+                    │           Power Management          │
+                    ├─────────────────────────────────────┤
+    VBAT ──────────►│  LDO 3.3V  ───► VDD_IO (3.3V)      │
+    (1.8~3.6V)      │                                     │
+                    │  DC-DC 1.1V ───► VDD_CORE (1.1V)   │
+                    │                                     │
+                    │  LDO 1.8V  ───► VDD_RF (1.8V)      │
+                    └─────────────────────────────────────┘
+                </pre>
+            </div>
+
+            <div class="power-tips">
+                <h3>設計建議</h3>
+                <div class="tip-grid">
+                    <div class="tip-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <h4>去耦電容</h4>
+                            <p>每個電源腳位放置 100nF 去耦電容，靠近 IC</p>
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <h4>大容量電容</h4>
+                            <p>VBAT 放置 10μF 電容，穩定瞬間電流</p>
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <h4>接地規劃</h4>
+                            <p>使用完整接地面，RF 區域獨立接地</p>
+                        </div>
+                    </div>
+                    <div class="tip-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <h4>電源序列</h4>
+                            <p>確保 VDD_CORE 先於 VDD_IO 上電</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="current-table">
+                <h3>典型電流消耗</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>工作模式</th>
+                            <th>典型電流</th>
+                            <th>條件</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Active (CPU)</td>
+                            <td>15 mA</td>
+                            <td>160MHz, 執行程式</td>
+                        </tr>
+                        <tr>
+                            <td>BLE TX</td>
+                            <td>8.5 mA</td>
+                            <td>0 dBm, 1M PHY</td>
+                        </tr>
+                        <tr>
+                            <td>BLE RX</td>
+                            <td>7.5 mA</td>
+                            <td>1M PHY</td>
+                        </tr>
+                        <tr>
+                            <td>Light Sleep</td>
+                            <td>50 μA</td>
+                            <td>RAM 保持</td>
+                        </tr>
+                        <tr>
+                            <td>Deep Sleep</td>
+                            <td>5 μA</td>
+                            <td>RTC 運作</td>
+                        </tr>
+                        <tr>
+                            <td>Hibernate</td>
+                            <td>0.8 μA</td>
+                            <td>僅保持 HBNRAM</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<style>
+.page-header-section {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    color: #fff;
+    margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+    color: #94a3b8;
+    font-size: 1.2rem;
+}
+
+.hardware-section {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Navigation */
+.hw-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 3rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 12px;
+}
+
+.hw-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    background: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #1e293b;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.hw-nav-item:hover {
+    background: #3b82f6;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.hw-nav-item i {
+    font-size: 1.5rem;
+}
+
+/* Sections */
+.hw-section {
+    margin-bottom: 4rem;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.hw-section h2 {
+    font-size: 1.5rem;
+    color: #1e293b;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.hw-section h2 i {
+    margin-right: 0.5rem;
+    color: #3b82f6;
+}
+
+/* Spec Grid */
+.spec-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.spec-card {
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.spec-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.spec-card h3 {
+    font-size: 1rem;
+    color: #1e293b;
+    margin-bottom: 1rem;
+}
+
+.spec-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.spec-card li {
+    padding: 0.25rem 0;
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+/* Block Diagram */
+.block-diagram {
+    margin-top: 2rem;
+}
+
+.diagram-container {
+    overflow-x: auto;
+}
+
+.ascii-diagram {
+    background: #1e293b;
+    color: #10b981;
+    padding: 1.5rem;
+    border-radius: 8px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    overflow-x: auto;
+}
+
+/* Pinout Table */
+.pinout-table-container {
+    overflow-x: auto;
+    margin: 2rem 0;
+}
+
+.pinout-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.pinout-table th,
+.pinout-table td {
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+.pinout-table th {
+    background: #f8fafc;
+    font-weight: 600;
+}
+
+.pinout-table tr:hover {
+    background: #f1f5f9;
+}
+
+.pinout-table tr.special-pin {
+    background: #fef3c7;
+}
+
+.pin-num {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background: #e0e7ff;
+    color: #3730a3;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+}
+
+.pin-notes {
+    background: #fef3c7;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.pin-notes h4 {
+    margin-bottom: 0.5rem;
+    color: #92400e;
+}
+
+.pin-notes li {
+    margin: 0.5rem 0;
+    color: #78350f;
+}
+
+/* EVB */
+.evb-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.evb-card {
+    background: #f8fafc;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+}
+
+.evb-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: #1e293b;
+}
+
+.evb-header h3 {
+    color: #fff;
+    margin: 0;
+}
+
+.evb-badge {
+    padding: 0.25rem 0.75rem;
+    background: #10b981;
+    color: #fff;
+    border-radius: 20px;
+    font-size: 0.75rem;
+}
+
+.evb-badge.dev {
+    background: #f59e0b;
+}
+
+.evb-image {
+    padding: 2rem;
+    background: #e2e8f0;
+}
+
+.evb-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 150px;
+    color: #64748b;
+}
+
+.evb-placeholder i {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.evb-placeholder.fpga {
+    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+}
+
+.evb-features {
+    padding: 1.5rem;
+}
+
+.evb-features h4 {
+    margin-bottom: 1rem;
+    color: #1e293b;
+}
+
+.evb-features ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.evb-features li {
+    padding: 0.5rem 0;
+    color: #64748b;
+}
+
+.evb-features li i {
+    color: #10b981;
+    margin-right: 0.5rem;
+}
+
+.evb-pinout {
+    padding: 1.5rem;
+    background: #fff;
+    border-top: 1px solid #e2e8f0;
+}
+
+.evb-diagram {
+    background: #1e293b;
+    color: #94a3b8;
+    padding: 1rem;
+    border-radius: 8px;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.75rem;
+}
+
+/* Peripherals */
+.peripheral-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.peripheral-card {
+    padding: 1.5rem;
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+}
+
+.peripheral-card h3 {
+    font-size: 1rem;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.peripheral-card h3 i {
+    margin-right: 0.5rem;
+    color: #3b82f6;
+}
+
+.peripheral-card > p {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.connection-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+}
+
+.connection-table th,
+.connection-table td {
+    padding: 0.5rem;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+.connection-table th {
+    background: #e0e7ff;
+}
+
+.note {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: #fef3c7;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #92400e;
+}
+
+.antenna-list {
+    list-style: none;
+    padding: 0;
+}
+
+.antenna-list li {
+    padding: 0.5rem 0;
+    color: #64748b;
+}
+
+.rf-matching pre {
+    background: #1e293b;
+    color: #10b981;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+}
+
+/* Power */
+.power-diagram {
+    margin-bottom: 2rem;
+}
+
+.power-tips {
+    margin-bottom: 2rem;
+}
+
+.tip-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.tip-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+.tip-item i {
+    color: #10b981;
+    font-size: 1.25rem;
+}
+
+.tip-item h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.9rem;
+    color: #1e293b;
+}
+
+.tip-item p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.current-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.current-table th,
+.current-table td {
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+.current-table th {
+    background: #f8fafc;
+}
+
+@media (max-width: 768px) {
+    .hw-nav {
+        flex-direction: column;
+    }
+    
+    .spec-grid,
+    .evb-grid,
+    .peripheral-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>

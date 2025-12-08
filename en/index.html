@@ -1,0 +1,195 @@
+---
+layout: default
+title: Home
+lang: en
+---
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-container">
+        <div class="hero-content">
+            <div class="hero-logo-wrapper">
+                <img src="{{ '/media_ipro_logo.svg' | relative_url }}" alt="IPRO Logo" class="hero-logo">
+            </div>
+            <span class="hero-badge">
+                <i class="fas fa-bolt"></i>
+                BLE 5.4 + Zephyr RTOS
+            </span>
+            <h1 class="hero-title">IPRO SDK</h1>
+            <p class="hero-subtitle">
+                A comprehensive software development kit for IPRO hardware platforms. Supporting modern RTOS, BLE 5.4 protocol stack, and LE Audio for building high-performance embedded applications.
+            </p>
+            <div class="hero-buttons">
+                <a href="{{ '/en/getting-started' | relative_url }}" class="btn btn-primary">
+                    <i class="fas fa-rocket"></i>
+                    Get Started
+                </a>
+                <a href="{{ '/en/architecture' | relative_url }}" class="btn btn-secondary">
+                    <i class="fas fa-layer-group"></i>
+                    Architecture
+                </a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="hero-code">
+                <div class="code-header">
+                    <span class="code-dot red"></span>
+                    <span class="code-dot yellow"></span>
+                    <span class="code-dot green"></span>
+                    <span class="code-title">terminal</span>
+                </div>
+                <pre><code class="language-bash"><span style="color: #64748b;"># Build BLE application</span>
+./build_freertos.sh ipro_ble_demo
+
+<span style="color: #64748b;"># Or use Zephyr RTOS</span>
+./tools/zephyr/bootstrap.sh
+./tools/zephyr/build.sh -a ipro_zephyr_demo
+
+<span style="color: #10b981;">✓ Build successful!</span>
+<span style="color: #94a3b8;">Output: apps/ipro_ble_demo/build/build_out/</span></code></pre>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats">
+    <div class="stats-grid">
+        <div class="stat-item" data-tooltip="Complete BLE 5.4 protocol stack support">
+            <div class="stat-value">BLE 5.4</div>
+            <div class="stat-label">Bluetooth Support</div>
+        </div>
+        <div class="stat-item" data-tooltip="High-performance RISC-V 64-bit processor">
+            <div class="stat-value">RISC-V</div>
+            <div class="stat-label">64-bit Architecture</div>
+        </div>
+        <div class="stat-item" data-tooltip="Complete CLI command system for development">
+            <div class="stat-value">40+</div>
+            <div class="stat-label">CLI Commands</div>
+        </div>
+        <div class="stat-item" data-tooltip="LC3 codec, ultra-low latency audio">
+            <div class="stat-value">&lt;20ms</div>
+            <div class="stat-label">Audio Latency</div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+    <div class="section-container">
+        <div class="section-header">
+            <h2 class="section-title">Core Features</h2>
+            <p class="section-subtitle">
+                IPRO SDK provides a complete embedded development ecosystem, from low-level drivers to high-level applications
+            </p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h3 class="feature-title">BLE 5.4 Complete Support</h3>
+                <p class="feature-description">
+                    Integrated RivieraWaves BLE 5.4 protocol stack with LE Audio, LC3 codec, Isochronous Channels, supporting up to 4 simultaneous connections.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3 class="feature-title">Dual RTOS Options</h3>
+                <p class="feature-description">
+                    Support for both FreeRTOS and Zephyr RTOS. Zephyr offers modern development experience, Device Tree configuration, and fast build times (~30 seconds).
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎵</div>
+                <h3 class="feature-title">LE Audio Ready</h3>
+                <p class="feature-description">
+                    Complete LC3 encoder/decoder support with Unicast and Broadcast Audio capabilities. Perfect for next-generation audio devices.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔋</div>
+                <h3 class="feature-title">Ultra Low Power</h3>
+                <p class="feature-description">
+                    Multiple sleep modes with μA-level standby current. Advanced power management for extended battery life.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Links -->
+<section class="quick-links">
+    <div class="section-container">
+        <div class="section-header">
+            <h2 class="section-title">Quick Links</h2>
+        </div>
+        <div class="links-grid">
+            <a href="{{ '/en/tutorials' | relative_url }}" class="link-card">
+                <div class="link-icon">📖</div>
+                <h3>Tutorials</h3>
+                <p>Step-by-step guides for BLE, LE Audio, RF testing</p>
+            </a>
+            <a href="{{ '/en/faq' | relative_url }}" class="link-card">
+                <div class="link-icon">❓</div>
+                <h3>FAQ</h3>
+                <p>Common questions and solutions</p>
+            </a>
+            <a href="{{ '/en/hardware' | relative_url }}" class="link-card">
+                <div class="link-icon">🔧</div>
+                <h3>Hardware Reference</h3>
+                <p>Pinout, schematics, and design guides</p>
+            </a>
+            <a href="{{ '/api-reference' | relative_url }}" class="link-card">
+                <div class="link-icon">📚</div>
+                <h3>API Reference</h3>
+                <p>Complete API documentation</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<style>
+.quick-links {
+    padding: 4rem 2rem;
+    background: #f8fafc;
+}
+
+.links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.link-card {
+    display: block;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 12px;
+    text-decoration: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    transition: all 0.3s;
+}
+
+.link-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.link-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.link-card h3 {
+    font-size: 1.1rem;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.link-card p {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin: 0;
+}
+</style>

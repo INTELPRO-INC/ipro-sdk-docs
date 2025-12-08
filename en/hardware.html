@@ -1,0 +1,385 @@
+---
+layout: default
+title: Hardware Reference - IPRO SDK
+lang: en
+---
+
+<section class="hardware-page">
+    <div class="container">
+        <div class="hardware-header">
+            <h1><i class="fas fa-microchip"></i> Hardware Reference</h1>
+            <p>IPRO7 platform hardware documentation and specifications</p>
+        </div>
+        
+        <!-- Platform Overview -->
+        <div class="card" style="margin-bottom: var(--space-xl);">
+            <h2><i class="fas fa-info-circle"></i> Platform Overview</h2>
+            <div class="feature-grid" style="margin-top: 1rem;">
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-microchip"></i></div>
+                    <h3>RISC-V Core</h3>
+                    <p>RV32IMAFC architecture with custom extensions</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-memory"></i></div>
+                    <h3>Memory</h3>
+                    <p>4MB Flash, 16MB PSRAM, 256KB OCRAM</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-bluetooth-b"></i></div>
+                    <h3>BLE 5.4</h3>
+                    <p>Full BLE 5.4 + LE Audio support</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                    <h3>Low Power</h3>
+                    <p>Multiple power modes, sub-mA sleep current</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pinout Diagram -->
+        <div class="pinout-diagram">
+            <h2><i class="fas fa-th"></i> IPRO7 EVB Pinout</h2>
+            <div style="overflow-x: auto;">
+                <table class="pinout-table">
+                    <thead>
+                        <tr>
+                            <th>Pin Number</th>
+                            <th>Pin Name</th>
+                            <th>Type</th>
+                            <th>Function</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>VDD</td>
+                            <td><span class="pin-type pin-type-power">Power</span></td>
+                            <td>Power Supply</td>
+                            <td>Main power input 3.3V</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>GND</td>
+                            <td><span class="pin-type pin-type-power">Power</span></td>
+                            <td>Ground</td>
+                            <td>Ground reference</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>GPIO0</td>
+                            <td><span class="pin-type pin-type-gpio">GPIO</span></td>
+                            <td>General Purpose I/O</td>
+                            <td>Configurable as input/output</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>GPIO1</td>
+                            <td><span class="pin-type pin-type-gpio">GPIO</span></td>
+                            <td>General Purpose I/O</td>
+                            <td>Configurable as input/output</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>UART0_TX</td>
+                            <td><span class="pin-type pin-type-uart">UART</span></td>
+                            <td>UART0 Transmit</td>
+                            <td>Debug console TX</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>UART0_RX</td>
+                            <td><span class="pin-type pin-type-uart">UART</span></td>
+                            <td>UART0 Receive</td>
+                            <td>Debug console RX</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td>SPI_CLK</td>
+                            <td><span class="pin-type pin-type-spi">SPI</span></td>
+                            <td>SPI Clock</td>
+                            <td>SPI bus clock signal</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>SPI_MOSI</td>
+                            <td><span class="pin-type pin-type-spi">SPI</span></td>
+                            <td>SPI Master Out</td>
+                            <td>SPI data out</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td>SPI_MISO</td>
+                            <td><span class="pin-type pin-type-spi">SPI</span></td>
+                            <td>SPI Master In</td>
+                            <td>SPI data in</td>
+                        </tr>
+                        <tr>
+                            <td>10</td>
+                            <td>SPI_CS</td>
+                            <td><span class="pin-type pin-type-spi">SPI</span></td>
+                            <td>SPI Chip Select</td>
+                            <td>SPI slave select (active low)</td>
+                        </tr>
+                        <tr>
+                            <td>11</td>
+                            <td>I2C_SCL</td>
+                            <td><span class="pin-type pin-type-i2c">I2C</span></td>
+                            <td>I2C Clock</td>
+                            <td>I2C bus clock</td>
+                        </tr>
+                        <tr>
+                            <td>12</td>
+                            <td>I2C_SDA</td>
+                            <td><span class="pin-type pin-type-i2c">I2C</span></td>
+                            <td>I2C Data</td>
+                            <td>I2C bus data</td>
+                        </tr>
+                        <tr>
+                            <td>13</td>
+                            <td>JTAG_TCK</td>
+                            <td><span class="pin-type pin-type-gpio">Debug</span></td>
+                            <td>JTAG Clock</td>
+                            <td>Debug interface clock</td>
+                        </tr>
+                        <tr>
+                            <td>14</td>
+                            <td>JTAG_TMS</td>
+                            <td><span class="pin-type pin-type-gpio">Debug</span></td>
+                            <td>JTAG Mode Select</td>
+                            <td>Debug interface mode</td>
+                        </tr>
+                        <tr>
+                            <td>15</td>
+                            <td>JTAG_TDI</td>
+                            <td><span class="pin-type pin-type-gpio">Debug</span></td>
+                            <td>JTAG Data In</td>
+                            <td>Debug interface data in</td>
+                        </tr>
+                        <tr>
+                            <td>16</td>
+                            <td>JTAG_TDO</td>
+                            <td><span class="pin-type pin-type-gpio">Debug</span></td>
+                            <td>JTAG Data Out</td>
+                            <td>Debug interface data out</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Memory Map -->
+        <div class="card" style="margin-bottom: var(--space-xl);">
+            <h2><i class="fas fa-map"></i> Memory Map</h2>
+            <div style="overflow-x: auto; margin-top: 1rem;">
+                <table class="pinout-table">
+                    <thead>
+                        <tr>
+                            <th>Region</th>
+                            <th>Start Address</th>
+                            <th>End Address</th>
+                            <th>Size</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Flash</td>
+                            <td>0x10000000</td>
+                            <td>0x103FFFFF</td>
+                            <td>4 MB</td>
+                            <td>XIP code execution region</td>
+                        </tr>
+                        <tr>
+                            <td>PSRAM</td>
+                            <td>0x20000000</td>
+                            <td>0x20FFFFFF</td>
+                            <td>16 MB</td>
+                            <td>External data memory</td>
+                        </tr>
+                        <tr>
+                            <td>OCRAM</td>
+                            <td>0x30000000</td>
+                            <td>0x3003FFFF</td>
+                            <td>256 KB</td>
+                            <td>On-chip high-speed RAM</td>
+                        </tr>
+                        <tr>
+                            <td>HBNRAM</td>
+                            <td>0x40000000</td>
+                            <td>0x40000FFF</td>
+                            <td>4 KB</td>
+                            <td>Hibernate retention RAM</td>
+                        </tr>
+                        <tr>
+                            <td>Peripherals</td>
+                            <td>0x50000000</td>
+                            <td>0x5FFFFFFF</td>
+                            <td>256 MB</td>
+                            <td>Peripheral register space</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Schematic Downloads -->
+        <div class="schematic-section">
+            <h2 style="margin-bottom: var(--space-lg);"><i class="fas fa-file-pdf"></i> Schematic & Reference Designs</h2>
+            <div class="schematic-grid">
+                <div class="schematic-card">
+                    <div class="schematic-image">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="schematic-info">
+                        <h3>IPRO7 EVB Schematic</h3>
+                        <p>Complete evaluation board circuit schematic</p>
+                        <a href="#" class="btn btn-primary" style="margin-top: 1rem;">
+                            <i class="fas fa-download"></i> Download PDF
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="schematic-card">
+                    <div class="schematic-image">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <div class="schematic-info">
+                        <h3>Minimal Design</h3>
+                        <p>Reference design for BLE peripheral product</p>
+                        <a href="#" class="btn btn-primary" style="margin-top: 1rem;">
+                            <i class="fas fa-download"></i> Download PDF
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="schematic-card">
+                    <div class="schematic-image">
+                        <i class="fas fa-headphones-alt"></i>
+                    </div>
+                    <div class="schematic-info">
+                        <h3>LE Audio Reference</h3>
+                        <p>Reference design for LE Audio earbuds</p>
+                        <a href="#" class="btn btn-primary" style="margin-top: 1rem;">
+                            <i class="fas fa-download"></i> Download PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Peripheral Connections -->
+        <div class="card" style="margin-bottom: var(--space-xl);">
+            <h2><i class="fas fa-plug"></i> Peripheral Connections</h2>
+            
+            <h3 style="margin-top: 1.5rem;">UART Debug Console</h3>
+            <p>Default UART settings for debug console:</p>
+            <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                <li>Baud Rate: <code>115200</code></li>
+                <li>Data Bits: <code>8</code></li>
+                <li>Stop Bits: <code>1</code></li>
+                <li>Parity: <code>None</code></li>
+                <li>Flow Control: <code>None</code></li>
+            </ul>
+            
+            <h3 style="margin-top: 1.5rem;">JTAG/SWD Debug Interface</h3>
+            <p>Connect OpenOCD compatible debugger (J-Link, FTDI-based):</p>
+            <pre><code># OpenOCD connection
+openocd -f tools/openocd/ipro7_fpga.cfg
+
+# GDB connection
+riscv64-unknown-elf-gdb -ex "target remote :3333"</code></pre>
+            
+            <h3 style="margin-top: 1.5rem;">RF Test Port</h3>
+            <p>For conducted RF tests, connect test equipment to RF connector:</p>
+            <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                <li>Connector Type: U.FL / IPEX</li>
+                <li>Impedance: 50Ω</li>
+                <li>Frequency Range: 2.4 GHz ISM band (2400-2483.5 MHz)</li>
+            </ul>
+        </div>
+        
+        <!-- Power Supply -->
+        <div class="card">
+            <h2><i class="fas fa-bolt"></i> Power Supply Requirements</h2>
+            
+            <div style="overflow-x: auto; margin-top: 1rem;">
+                <table class="pinout-table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Min</th>
+                            <th>Typical</th>
+                            <th>Max</th>
+                            <th>Unit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Supply Voltage (VDD)</td>
+                            <td>1.8</td>
+                            <td>3.3</td>
+                            <td>3.6</td>
+                            <td>V</td>
+                        </tr>
+                        <tr>
+                            <td>Active Current (TX)</td>
+                            <td>-</td>
+                            <td>15</td>
+                            <td>25</td>
+                            <td>mA</td>
+                        </tr>
+                        <tr>
+                            <td>Active Current (RX)</td>
+                            <td>-</td>
+                            <td>10</td>
+                            <td>15</td>
+                            <td>mA</td>
+                        </tr>
+                        <tr>
+                            <td>Sleep Current</td>
+                            <td>-</td>
+                            <td>5</td>
+                            <td>10</td>
+                            <td>µA</td>
+                        </tr>
+                        <tr>
+                            <td>Deep Sleep Current</td>
+                            <td>-</td>
+                            <td>1</td>
+                            <td>3</td>
+                            <td>µA</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="alert alert-warning" style="margin-top: 1.5rem;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Important:</strong> Ensure stable power supply with adequate decoupling capacitors. 
+                Use 100nF ceramic capacitors close to power pins.
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.alert {
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+.alert-warning {
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: #f59e0b;
+}
+.alert i {
+    font-size: 1.25rem;
+    margin-top: 0.125rem;
+}
+</style>

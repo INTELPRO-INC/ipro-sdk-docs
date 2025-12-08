@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="{{ page.lang | default: 'zh-TW' }}">
 
 <head>
     <meta charset="UTF-8">
@@ -44,12 +44,38 @@
                 <li><a href="{{ '/' | relative_url }}" class="nav-link">首頁</a></li>
                 <li><a href="{{ '/getting-started' | relative_url }}" class="nav-link">快速開始</a></li>
                 <li><a href="{{ '/architecture' | relative_url }}" class="nav-link">架構</a></li>
-                <li><a href="{{ '/ble-development' | relative_url }}" class="nav-link">BLE 開發</a></li>
-                <li><a href="{{ '/zephyr-rtos' | relative_url }}" class="nav-link">Zephyr RTOS</a></li>
-                <li><a href="{{ '/applications' | relative_url }}" class="nav-link">應用範例</a></li>
-                <li><a href="{{ '/vscode-extension' | relative_url }}" class="nav-link">VS Code</a></li>
-                <li><a href="{{ '/api-reference' | relative_url }}" class="nav-link">API</a></li>
+                <li><a href="{{ '/ble-development' | relative_url }}" class="nav-link">BLE</a></li>
+                <li class="nav-dropdown">
+                    <a href="#" class="nav-link dropdown-toggle">學習 <i class="fas fa-chevron-down"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ '/tutorials' | relative_url }}">📖 教學系列</a></li>
+                        <li><a href="{{ '/faq' | relative_url }}">❓ FAQ</a></li>
+                        <li><a href="{{ '/applications' | relative_url }}">📱 應用範例</a></li>
+                    </ul>
+                </li>
+                <li class="nav-dropdown">
+                    <a href="#" class="nav-link dropdown-toggle">參考 <i class="fas fa-chevron-down"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{{ '/api-reference' | relative_url }}">📚 API 參考</a></li>
+                        <li><a href="{{ '/hardware' | relative_url }}">🔧 硬體參考</a></li>
+                        <li><a href="{{ '/changelog' | relative_url }}">📋 更新日誌</a></li>
+                    </ul>
+                </li>
+                <li><a href="{{ '/zephyr-rtos' | relative_url }}" class="nav-link">Zephyr</a></li>
             </ul>
+
+            <!-- Language Switcher -->
+            <div class="lang-switcher">
+                <button class="lang-btn" aria-label="Switch language">
+                    <span class="lang-flag">🇹🇼</span>
+                    <span class="lang-name">中文</span>
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <ul class="lang-menu">
+                    <li><a href="{{ '/' | relative_url }}" class="lang-option active"><span>🇹🇼</span> 繁體中文</a></li>
+                    <li><a href="{{ '/en/' | relative_url }}" class="lang-option"><span>🇺🇸</span> English</a></li>
+                </ul>
+            </div>
         </div>
     </nav>
 
@@ -80,15 +106,16 @@
                         <li><a href="{{ '/getting-started' | relative_url }}">快速開始</a></li>
                         <li><a href="{{ '/architecture' | relative_url }}">架構概覽</a></li>
                         <li><a href="{{ '/ble-development' | relative_url }}">BLE 開發</a></li>
-                        <li><a href="{{ '/applications' | relative_url }}">應用範例</a></li>
+                        <li><a href="{{ '/tutorials' | relative_url }}">教學系列</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h4>資源</h4>
                     <ul>
                         <li><a href="{{ '/api-reference' | relative_url }}">API 參考</a></li>
+                        <li><a href="{{ '/hardware' | relative_url }}">硬體參考</a></li>
+                        <li><a href="{{ '/faq' | relative_url }}">常見問題</a></li>
                         <li><a href="{{ '/changelog' | relative_url }}">更新日誌</a></li>
-                        <li><a href="{{ '/getting-started' | relative_url }}">快速開始</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">

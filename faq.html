@@ -1,0 +1,657 @@
+---
+layout: default
+title: 常見問題 FAQ
+lang: zh-TW
+---
+
+<section class="page-header-section">
+    <div class="container">
+        <h1 class="page-title">❓ 常見問題 FAQ</h1>
+        <p class="page-subtitle">快速解決開發過程中遇到的問題</p>
+    </div>
+</section>
+
+<section class="faq-section">
+    <div class="container">
+        <!-- FAQ Categories Navigation -->
+        <div class="faq-categories">
+            <button class="faq-category-btn active" data-category="all">
+                <i class="fas fa-list"></i> 全部
+            </button>
+            <button class="faq-category-btn" data-category="build">
+                <i class="fas fa-hammer"></i> Build 編譯
+            </button>
+            <button class="faq-category-btn" data-category="ble">
+                <i class="fas fa-bluetooth-b"></i> BLE 藍牙
+            </button>
+            <button class="faq-category-btn" data-category="rf">
+                <i class="fas fa-broadcast-tower"></i> RF 射頻
+            </button>
+            <button class="faq-category-btn" data-category="debug">
+                <i class="fas fa-bug"></i> Debug 除錯
+            </button>
+            <button class="faq-category-btn" data-category="rtos">
+                <i class="fas fa-microchip"></i> RTOS
+            </button>
+        </div>
+
+        <!-- Search Box -->
+        <div class="faq-search">
+            <i class="fas fa-search"></i>
+            <input type="text" id="faq-search-input" placeholder="搜尋問題...">
+        </div>
+
+        <!-- FAQ Items -->
+        <div class="faq-list">
+            
+            <!-- Build Category -->
+            <div class="faq-item" data-category="build">
+                <div class="faq-question">
+                    <span class="faq-badge build">Build</span>
+                    <h3>編譯時出現 "toolchain not found" 錯誤怎麼辦？</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>請確認 RISC-V 工具鏈已正確安裝並設定路徑：</p>
+                    <pre><code class="language-bash"># 檢查工具鏈路徑
+ls /opt/toolchain/riscv_ipro7/bin/
+
+# 如果不存在，請設定正確的 CROSS_COMPILE 路徑
+export CROSS_COMPILE=/your/toolchain/path/bin/riscv64-unknown-elf-
+
+# 或在編譯指令中指定
+cmake -DCROSS_COMPILE=/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf- ...</code></pre>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="build">
+                <div class="faq-question">
+                    <span class="faq-badge build">Build</span>
+                    <h3>如何清除編譯快取重新編譯？</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>刪除 build 目錄後重新編譯：</p>
+                    <pre><code class="language-bash"># 清除編譯快取
+rm -rf build/
+
+# 重新編譯
+./build_freertos.sh ipro_ble_demo build
+
+# 或使用 CMake
+cmake -S . -B build -G "Ninja" ...
+cmake --build build</code></pre>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="build">
+                <div class="faq-question">
+                    <span class="faq-badge build">Build</span>
+                    <h3>編譯時 Flash 或 RAM 空間不足？</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>可以透過以下方式優化：</p>
+                    <ol>
+                        <li>在 <code>proj.conf</code> 中關閉不需要的功能</li>
+                        <li>使用 <code>-Os</code> 優化等級</li>
+                        <li>檢查是否有未使用的組件被編譯進去</li>
+                    </ol>
+                    <pre><code class="language-bash"># 查看各模組大小
+arm-none-eabi-size build/build_out/*.elf
+
+# 詳細分析
+arm-none-eabi-nm --size-sort build/build_out/*.elf | tail -50</code></pre>
+                </div>
+            </div>
+
+            <!-- BLE Category -->
+            <div class="faq-item" data-category="ble">
+                <div class="faq-question">
+                    <span class="faq-badge ble">BLE</span>
+                    <h3>手機搜尋不到 BLE 裝置？</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>請檢查以下項目：</p>
+                    <ol>
+                        <li>確認 Advertising 已啟動</li>
+                        <li>檢查 Advertising Data 是否正確設定</li>
+                        <li>確認包含正確的 Service UUID</li>
+                        <li>檢查 RF 是否正常工作</li>
+                    </ol>
+                    <pre><code class="language-c">// 確保 Advertising Data 包含必要資訊
+// Flags: LE General Discoverable + BR/EDR Not Supported
+uint8_t adv_data[] = {
+    0x02, 0x01, 0x06,  // Flags
+    0x03, 0x03, 0x4E, 0x18,  // Complete 16-bit Service UUID (ASCS)
+    // ... 其他資料
+};</code></pre>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="ble">
+                <div class="faq-question">
+                    <span class="faq-badge ble">BLE</span>
+                    <h3>連線後立即斷線 (Error 0x00A3)？</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Error 0x00A3 表示連線被遠端終止。可能原因：</p>
+                    <ul>
+                        <li>連線參數不被對方接受</li>
+                        <li>GATT 服務未正確設定</li>
+                        <li>安全配對失敗</li>
+                    </ul>
+                    <pre><code class="language-c">// 檢查連線參數是否在合理範圍
+// Interval: 7.5ms ~ 4s
+// Latency: 0 ~ 499
+// Timeout: 100ms ~ 32s
+struct gapc_conn_param param = {
+    .intv_min = 24,   // 30ms
+    .intv_max = 40,   // 50ms
+    .latency = 0,
+    .time_out = 500,  // 5s
+};</code></pre>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="ble">
+                <div class="faq-question">
+                    <span class="faq-badge ble">BLE</span>
+                    <h3>LE Audio 音訊有雜音或斷斷續續？</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>音訊品質問題可能來源：</p>
+                    <ul>
+                        <li>ISO Interval 設定不當</li>
+                        <li>LC3 編碼參數不匹配</li>
+                        <li>Buffer underrun/overrun</li>
+                        <li>RF 干擾或訊號弱</li>
+                    </ul>
+                    <pre><code class="language-c">// 建議的 LE Audio 參數
+// 48kHz, 10ms frame duration
+// SDU size: 120 bytes (48_4 config)
+struct bap_unicast_config {
+    .sampling_freq = 48000,
+    .frame_duration = 10000,  // 10ms in us
+    .octets_per_frame = 120,
+};</code></pre>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="ble">
+                <div class="faq-question">
+                    <span class="faq-badge ble">BLE</span>
+                    <h3>le_test_stop 執行後 crash？</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>這是因為 CLI 直接呼叫 HCI 命令處理器，未正確管理 <code>nb_h2c_cmd_pkts</code> 計數器。</p>
+                    <p><strong>解決方案：</strong></p>
+                    <pre><code class="language-bash"># 在 proj.conf 中啟用 BLE_MFG 模式
+CONFIG_BLE_MFG=y</code></pre>
+                    <p>此配置會讓 test 命令不發送 HCI Command Complete Event，避免計數器溢出。</p>
+                </div>
+            </div>
+
+            <!-- RF Category -->
+            <div class="faq-item" data-category="rf">
+                <div class="faq-question">
+                    <span class="faq-badge rf">RF</span>
+                    <h3>CFO (載波頻率偏移) 過大怎麼調整？</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>CFO 問題通常有兩個原因：</p>
+                    <ol>
+                        <li><strong>rf_kcal 未執行：</strong> 檢查 RF_CAL_STATE_CTRL 寄存器</li>
+                        <li><strong>XTAL 頻率偏差：</strong> 調整 capcode</li>
+                    </ol>
+                    <pre><code class="language-c">// 1. 確保校準啟用
+tmpVal = BL_RD_REG(RF_BASE, RF_CAL_STATE_CTRL);
+tmpVal = BL_SET_REG_BITS_VAL(tmpVal, RF_KCAL_STATE_EN, 0x1);
+BL_WR_REG(RF_BASE, RF_CAL_STATE_CTRL, tmpVal);
+
+// 2. 調整 XTAL capcode
+// CFO 為負值（頻率太低）→ 降低 capcode
+// CFO 為正值（頻率太高）→ 提高 capcode
+tmpVal = BL_RD_REG(AON_BASE, AON_XTAL_CFG2);
+tmpVal = BL_SET_REG_BITS_VAL(tmpVal, AON_XTAL_HF_CAPCODE_IN_AON, 70);
+tmpVal = BL_SET_REG_BITS_VAL(tmpVal, AON_XTAL_HF_CAPCODE_OUT_AON, 70);
+BL_WR_REG(AON_BASE, AON_XTAL_CFG2, tmpVal);</code></pre>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="rf">
+                <div class="faq-question">
+                    <span class="faq-badge rf">RF</span>
+                    <h3>TX Power 如何設定？</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>IPRO7 支援的 TX Power 範圍為 -20dBm ~ +10dBm：</p>
+                    <pre><code class="language-c">// 使用 CLI 設定
+// rf_set_pwr <power_level>
+// power_level: 0~15 對應不同功率
+
+// 或在程式碼中設定
+rf_set_tx_power(power_level);
+
+// Power Level 對照表
+// 0: -20dBm
+// 4: -10dBm
+// 8: 0dBm
+// 12: +5dBm
+// 15: +10dBm</code></pre>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="rf">
+                <div class="faq-question">
+                    <span class="faq-badge rf">RF</span>
+                    <h3>RF 校準失敗或數值異常？</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>RF 校準包含四個步驟，每個都需要成功完成：</p>
+                    <ul>
+                        <li><strong>rf_acal:</strong> VCO 幅度校準</li>
+                        <li><strong>rf_kcal:</strong> LO 頻率校準</li>
+                        <li><strong>rf_roscal:</strong> RX DC offset 校準</li>
+                        <li><strong>rf_rccal:</strong> RBB filter RC 校準</li>
+                    </ul>
+                    <p>如果看到 <code>rosdac_i = 63, rosdac_q = 1</code> 這類邊界值，表示校準可能未收斂。請檢查：</p>
+                    <ol>
+                        <li>硬體連接是否正確</li>
+                        <li>電源供應是否穩定</li>
+                        <li>XTAL 是否正常起振</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Debug Category -->
+            <div class="faq-item" data-category="debug">
+                <div class="faq-question">
+                    <span class="faq-badge debug">Debug</span>
+                    <h3>如何啟用 Debug Log？</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>在 <code>proj.conf</code> 中設定：</p>
+                    <pre><code class="language-bash"># 啟用 Debug 模式
+CONFIG_CFG_DBG=y
+
+# 啟用 BLE Library Debug
+CONFIG_IPRO_BLE_LIB_DEBUG_ENABLE=y
+
+# 設定 Log Level
+CONFIG_LOG_DEFAULT_LEVEL=4  # DEBUG</code></pre>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="debug">
+                <div class="faq-question">
+                    <span class="faq-badge debug">Debug</span>
+                    <h3>如何使用 GDB 進行除錯？</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>使用 OpenOCD + GDB 進行硬體除錯：</p>
+                    <pre><code class="language-bash"># 1. 啟動 OpenOCD
+openocd -f apps/ipro_blecontroller_test/fpga.cfg
+
+# 2. 在另一個終端連接 GDB
+riscv64-unknown-elf-gdb build/build_out/ipro_blecontroller_test.elf
+
+# 3. GDB 命令
+(gdb) target remote localhost:3333
+(gdb) load
+(gdb) break main
+(gdb) continue</code></pre>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="debug">
+                <div class="faq-question">
+                    <span class="faq-badge debug">Debug</span>
+                    <h3>遇到 Hard Fault 如何分析？</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Hard Fault 通常由以下原因造成：</p>
+                    <ul>
+                        <li>空指標存取</li>
+                        <li>Stack overflow</li>
+                        <li>非對齊記憶體存取</li>
+                        <li>非法指令</li>
+                    </ul>
+                    <pre><code class="language-bash"># 使用 addr2line 解析 backtrace
+riscv64-unknown-elf-addr2line -e build/build_out/app.elf 0x12345678
+
+# 或使用提供的工具
+python tools/parse_backtrace.py build/build_out/app.elf 0x12345678</code></pre>
+                </div>
+            </div>
+
+            <!-- RTOS Category -->
+            <div class="faq-item" data-category="rtos">
+                <div class="faq-question">
+                    <span class="faq-badge rtos">RTOS</span>
+                    <h3>Task Stack Overflow 如何解決？</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>增加 Task 的 Stack 大小：</p>
+                    <pre><code class="language-c">// FreeRTOS
+xTaskCreate(
+    task_function,
+    "TaskName",
+    2048,  // 增加 Stack 大小 (words)
+    NULL,
+    tskIDLE_PRIORITY + 1,
+    &task_handle
+);
+
+// Zephyr
+K_THREAD_STACK_DEFINE(my_stack, 4096);  // 增加為 4KB</code></pre>
+                    <p>也可以啟用 Stack 監控功能來追蹤使用量。</p>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="rtos">
+                <div class="faq-question">
+                    <span class="faq-badge rtos">RTOS</span>
+                    <h3>FreeRTOS vs Zephyr 該選哪個？</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>特性</th>
+                                <th>FreeRTOS</th>
+                                <th>Zephyr</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>學習曲線</td>
+                                <td>較低</td>
+                                <td>較高</td>
+                            </tr>
+                            <tr>
+                                <td>建構時間</td>
+                                <td>較長</td>
+                                <td>約 30 秒</td>
+                            </tr>
+                            <tr>
+                                <td>設備驅動</td>
+                                <td>手動整合</td>
+                                <td>Device Tree</td>
+                            </tr>
+                            <tr>
+                                <td>記憶體佔用</td>
+                                <td>較小</td>
+                                <td>較大</td>
+                            </tr>
+                            <tr>
+                                <td>BLE 支援</td>
+                                <td>完整</td>
+                                <td>開發中</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p><strong>建議：</strong>BLE 應用選 FreeRTOS，需要現代化開發體驗選 Zephyr。</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<style>
+.page-header-section {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    color: #fff;
+    margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+    color: #94a3b8;
+    font-size: 1.2rem;
+}
+
+.faq-section {
+    padding: 3rem 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.faq-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    justify-content: center;
+}
+
+.faq-category-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+}
+
+.faq-category-btn:hover,
+.faq-category-btn.active {
+    background: #3b82f6;
+    color: #fff;
+    border-color: #3b82f6;
+}
+
+.faq-search {
+    position: relative;
+    margin-bottom: 2rem;
+}
+
+.faq-search i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+}
+
+.faq-search input {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.faq-search input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.faq-item {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.faq-item.hidden {
+    display: none;
+}
+
+.faq-question {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    background: #f8fafc;
+    transition: background 0.2s;
+}
+
+.faq-question:hover {
+    background: #f1f5f9;
+}
+
+.faq-question h3 {
+    flex: 1;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.faq-question i {
+    transition: transform 0.3s;
+    color: #94a3b8;
+}
+
+.faq-item.open .faq-question i {
+    transform: rotate(180deg);
+}
+
+.faq-answer {
+    padding: 0 1.5rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.faq-item.open .faq-answer {
+    padding: 1.5rem;
+    max-height: 1000px;
+}
+
+.faq-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.faq-badge.build { background: #fef3c7; color: #92400e; }
+.faq-badge.ble { background: #dbeafe; color: #1e40af; }
+.faq-badge.rf { background: #dcfce7; color: #166534; }
+.faq-badge.debug { background: #fce7f3; color: #9d174d; }
+.faq-badge.rtos { background: #e0e7ff; color: #3730a3; }
+
+.faq-answer pre {
+    background: #1e293b;
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+.faq-answer code {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.85rem;
+}
+
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+.comparison-table th,
+.comparison-table td {
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+}
+
+.comparison-table th {
+    background: #f8fafc;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .faq-categories {
+        justify-content: flex-start;
+    }
+    
+    .faq-question {
+        flex-wrap: wrap;
+    }
+    
+    .faq-question h3 {
+        order: 3;
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // FAQ Accordion
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        question.addEventListener('click', () => {
+            item.classList.toggle('open');
+        });
+    });
+
+    // Category Filter
+    const categoryBtns = document.querySelectorAll('.faq-category-btn');
+    categoryBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            categoryBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            const category = btn.dataset.category;
+            faqItems.forEach(item => {
+                if (category === 'all' || item.dataset.category === category) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        });
+    });
+
+    // Search
+    const searchInput = document.getElementById('faq-search-input');
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        faqItems.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(query)) {
+                item.classList.remove('hidden');
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+        
+        // Reset category filter
+        categoryBtns.forEach(b => b.classList.remove('active'));
+        document.querySelector('[data-category="all"]').classList.add('active');
+    });
+});
+</script>

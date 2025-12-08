@@ -33,23 +33,63 @@ defaults:
       type: "docs"
     values:
       layout: "default"
+  - scope:
+      path: "en"
+    values:
+      lang: "en"
+  - scope:
+      path: ""
+    values:
+      lang: "zh-TW"
 
-# Navigation
+# Navigation (Chinese)
 nav:
-  - title: Home
+  - title: 首頁
     url: /
-  - title: Getting Started
+  - title: 快速開始
     url: /getting-started
-  - title: Architecture
+  - title: 架構概覽
     url: /architecture
-  - title: BLE Development
+  - title: BLE 開發
     url: /ble-development
   - title: Zephyr RTOS
     url: /zephyr-rtos
-  - title: Applications
+  - title: 應用程式
     url: /applications
-  - title: API Reference
+  - title: API 參考
     url: /api-reference
+  - title: 教學系列
+    url: /tutorials
+  - title: FAQ
+    url: /faq
+  - title: 硬體參考
+    url: /hardware
+
+# Navigation (English)
+nav_en:
+  - title: Home
+    url: /en/
+  - title: Getting Started
+    url: /en/getting-started
+  - title: Architecture
+    url: /en/architecture
+  - title: BLE Development
+    url: /en/ble-development
+  - title: Tutorials
+    url: /en/tutorials
+  - title: FAQ
+    url: /en/faq
+  - title: Hardware
+    url: /en/hardware
+
+# Languages
+languages:
+  zh-TW:
+    name: 繁體中文
+    flag: 🇹🇼
+  en:
+    name: English
+    flag: 🇺🇸
 
 # Note: SDK source code is hosted on internal GitLab
 # This site is documentation only, hosted on GitHub Pages
@@ -63,3 +103,4 @@ exclude:
   - Gemfile.lock
   - node_modules
   - vendor
+

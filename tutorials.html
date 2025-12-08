@@ -1,0 +1,639 @@
+---
+layout: default
+title: 教學系列 Tutorials
+lang: zh-TW
+---
+
+<section class="page-header-section">
+    <div class="container">
+        <h1 class="page-title">📖 教學系列 Tutorials</h1>
+        <p class="page-subtitle">從零開始，循序漸進學習 IPRO SDK 開發</p>
+    </div>
+</section>
+
+<section class="tutorials-section">
+    <div class="container">
+        
+        <!-- Tutorial Cards Grid -->
+        <div class="tutorials-grid">
+            
+            <!-- BLE Tutorial -->
+            <div class="tutorial-card">
+                <div class="tutorial-header ble">
+                    <div class="tutorial-icon">📱</div>
+                    <span class="tutorial-level beginner">初學者</span>
+                </div>
+                <div class="tutorial-content">
+                    <h2>從零開始建立 BLE 應用</h2>
+                    <p>學習如何使用 IPRO SDK 建立你的第一個 BLE 應用程式，包含 Advertising、連線管理與 GATT 服務。</p>
+                    <div class="tutorial-meta">
+                        <span><i class="fas fa-clock"></i> 約 45 分鐘</span>
+                        <span><i class="fas fa-list-ol"></i> 6 個步驟</span>
+                    </div>
+                </div>
+                <div class="tutorial-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>環境準備</h4>
+                            <p>安裝工具鏈、設定開發環境</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>建立專案結構</h4>
+                            <p>建立 CMakeLists.txt、proj.conf 與主程式</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>初始化 BLE Stack</h4>
+                            <p>設定 BLE Controller 與 Host</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>實作 Advertising</h4>
+                            <p>設定 Advertising Data 並啟動廣播</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>處理連線事件</h4>
+                            <p>實作連線與斷線回呼函數</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>建立 GATT 服務</h4>
+                            <p>新增自訂 Characteristic 並處理讀寫</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="tutorial-code-preview">
+                    <h4><i class="fas fa-code"></i> 程式碼預覽</h4>
+                    <pre><code class="language-c">// main.c - BLE 應用程式進入點
+#include "ble_lib_api.h"
+#include "FreeRTOS.h"
+#include "task.h"
+
+int main(void) {
+    // 1. 平台初始化
+    platform_init(0);
+    setup_heap();
+    
+    // 2. 初始化 BLE Controller
+    ble_controller_init(configMAX_PRIORITIES - 3, 1);
+    
+    // 3. 啟動 FreeRTOS
+    vTaskStartScheduler();
+    
+    return 0;
+}</code></pre>
+                </div>
+                <a href="#ble-tutorial-detail" class="tutorial-btn">
+                    <i class="fas fa-play-circle"></i> 開始學習
+                </a>
+            </div>
+
+            <!-- LE Audio Tutorial -->
+            <div class="tutorial-card">
+                <div class="tutorial-header audio">
+                    <div class="tutorial-icon">🎵</div>
+                    <span class="tutorial-level intermediate">中級</span>
+                </div>
+                <div class="tutorial-content">
+                    <h2>LE Audio 音訊串流實作</h2>
+                    <p>深入了解 BLE 5.4 LE Audio 功能，實作 LC3 編解碼、Isochronous Channels 與音訊同步。</p>
+                    <div class="tutorial-meta">
+                        <span><i class="fas fa-clock"></i> 約 90 分鐘</span>
+                        <span><i class="fas fa-list-ol"></i> 8 個步驟</span>
+                    </div>
+                </div>
+                <div class="tutorial-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>LE Audio 架構介紹</h4>
+                            <p>了解 BAP、PACS、ASCS 等服務</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>設定 GAF 配置</h4>
+                            <p>初始化 Generic Audio Framework</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>建立 CIS 連線</h4>
+                            <p>設定 Connected Isochronous Stream</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>LC3 編碼器設定</h4>
+                            <p>配置取樣率、位元率與 Frame Duration</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>音訊資料傳輸</h4>
+                            <p>透過 ISO Data Path 傳送音訊</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>同步與延遲優化</h4>
+                            <p>調整 Presentation Delay</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">7</div>
+                        <div class="step-content">
+                            <h4>多裝置廣播 (Auracast)</h4>
+                            <p>實作 Broadcast Audio</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">8</div>
+                        <div class="step-content">
+                            <h4>品質監控與除錯</h4>
+                            <p>分析音訊品質指標</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="tutorial-code-preview">
+                    <h4><i class="fas fa-code"></i> 程式碼預覽</h4>
+                    <pre><code class="language-c">// LE Audio 配置範例
+struct bap_unicast_config audio_cfg = {
+    .sampling_freq = 48000,      // 48kHz
+    .frame_duration = 10000,     // 10ms
+    .octets_per_frame = 120,     // 96kbps
+    .codec_id = LC3_CODEC_ID,
+};
+
+// 建立 CIS
+bap_uc_cli_create_cis(conhdl, &audio_cfg);</code></pre>
+                </div>
+                <a href="#leaudio-tutorial-detail" class="tutorial-btn">
+                    <i class="fas fa-play-circle"></i> 開始學習
+                </a>
+            </div>
+
+            <!-- RF Tutorial -->
+            <div class="tutorial-card">
+                <div class="tutorial-header rf">
+                    <div class="tutorial-icon">📡</div>
+                    <span class="tutorial-level intermediate">中級</span>
+                </div>
+                <div class="tutorial-content">
+                    <h2>RF 測試與校準指南</h2>
+                    <p>學習 RF 參數調校、使用 CMW500 進行測試、解決 CFO 與功率問題。</p>
+                    <div class="tutorial-meta">
+                        <span><i class="fas fa-clock"></i> 約 60 分鐘</span>
+                        <span><i class="fas fa-list-ol"></i> 5 個步驟</span>
+                    </div>
+                </div>
+                <div class="tutorial-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>RF 校準流程</h4>
+                            <p>rf_acal、rf_kcal、rf_roscal、rf_rccal</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>使用 DTM 測試模式</h4>
+                            <p>Direct Test Mode 操作指南</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>CFO 調整</h4>
+                            <p>XTAL capcode 與頻率偏移校正</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>TX Power 校準</h4>
+                            <p>功率等級設定與量測</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>CMW500 整合測試</h4>
+                            <p>自動化 RF 認證測試</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="tutorial-code-preview">
+                    <h4><i class="fas fa-code"></i> CLI 指令</h4>
+                    <pre><code class="language-bash"># RF 測試 CLI 指令
+le_tx 0 37 0      # TX test: ch=0, len=37, type=PRBS9
+le_rx 0 0         # RX test: ch=0, phy=1M
+le_test_stop      # 停止測試並顯示封包數
+
+# 設定 TX Power
+rf_set_pwr 12     # 設定為 +5dBm
+
+# 查看校準結果
+rf_show_cal       # 顯示校準數值</code></pre>
+                </div>
+                <a href="#rf-tutorial-detail" class="tutorial-btn">
+                    <i class="fas fa-play-circle"></i> 開始學習
+                </a>
+            </div>
+
+            <!-- Low Power Tutorial -->
+            <div class="tutorial-card">
+                <div class="tutorial-header power">
+                    <div class="tutorial-icon">🔋</div>
+                    <span class="tutorial-level advanced">進階</span>
+                </div>
+                <div class="tutorial-content">
+                    <h2>低功耗優化技巧</h2>
+                    <p>掌握 IPRO7 的各種省電模式，優化電池壽命，實現 μA 級待機電流。</p>
+                    <div class="tutorial-meta">
+                        <span><i class="fas fa-clock"></i> 約 75 分鐘</span>
+                        <span><i class="fas fa-list-ol"></i> 6 個步驟</span>
+                    </div>
+                </div>
+                <div class="tutorial-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>電源架構概覽</h4>
+                            <p>了解 IPRO7 電源域與時鐘樹</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Sleep Mode 配置</h4>
+                            <p>Light Sleep、Deep Sleep、Hibernate</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>BLE 連線間隔優化</h4>
+                            <p>調整 Connection Interval 與 Latency</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>周邊關閉策略</h4>
+                            <p>動態管理 GPIO、ADC、Timer</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Wake-up 機制</h4>
+                            <p>RTC、GPIO、BLE Event 喚醒</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>電流量測與分析</h4>
+                            <p>使用 Power Profiler 分析功耗</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="tutorial-code-preview">
+                    <h4><i class="fas fa-code"></i> 程式碼預覽</h4>
+                    <pre><code class="language-c">// 進入 Deep Sleep
+void enter_deep_sleep(void) {
+    // 設定喚醒源
+    hal_pmu_set_wakeup_source(PMU_WAKEUP_RTC);
+    hal_rtc_set_alarm(60);  // 60 秒後喚醒
+    
+    // 關閉不需要的周邊
+    hal_gpio_set_all_analog();
+    
+    // 進入 Deep Sleep
+    hal_pmu_enter_deep_sleep();
+}
+
+// 預期待機電流: < 5μA</code></pre>
+                </div>
+                <a href="#lowpower-tutorial-detail" class="tutorial-btn">
+                    <i class="fas fa-play-circle"></i> 開始學習
+                </a>
+            </div>
+
+        </div>
+
+        <!-- Learning Path -->
+        <div class="learning-path">
+            <h2><i class="fas fa-route"></i> 建議學習路徑</h2>
+            <div class="path-container">
+                <div class="path-item">
+                    <div class="path-icon">🚀</div>
+                    <div class="path-content">
+                        <h4>第一週</h4>
+                        <p>環境設定 + BLE 基礎</p>
+                    </div>
+                </div>
+                <div class="path-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="path-item">
+                    <div class="path-icon">📱</div>
+                    <div class="path-content">
+                        <h4>第二週</h4>
+                        <p>GATT 服務 + 手機連接</p>
+                    </div>
+                </div>
+                <div class="path-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="path-item">
+                    <div class="path-icon">🎵</div>
+                    <div class="path-content">
+                        <h4>第三週</h4>
+                        <p>LE Audio 音訊功能</p>
+                    </div>
+                </div>
+                <div class="path-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="path-item">
+                    <div class="path-icon">🔋</div>
+                    <div class="path-content">
+                        <h4>第四週</h4>
+                        <p>低功耗優化 + 產品化</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<style>
+.page-header-section {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    color: #fff;
+    margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+    color: #94a3b8;
+    font-size: 1.2rem;
+}
+
+.tutorials-section {
+    padding: 3rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.tutorials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.tutorial-card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.tutorial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+}
+
+.tutorial-header {
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.tutorial-header.ble { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+.tutorial-header.audio { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+.tutorial-header.rf { background: linear-gradient(135deg, #10b981, #059669); }
+.tutorial-header.power { background: linear-gradient(135deg, #f59e0b, #d97706); }
+
+.tutorial-icon {
+    font-size: 2.5rem;
+}
+
+.tutorial-level {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.tutorial-level.beginner { background: #dcfce7; color: #166534; }
+.tutorial-level.intermediate { background: #fef3c7; color: #92400e; }
+.tutorial-level.advanced { background: #fee2e2; color: #991b1b; }
+
+.tutorial-content {
+    padding: 1.5rem;
+}
+
+.tutorial-content h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: #1e293b;
+}
+
+.tutorial-content p {
+    color: #64748b;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.tutorial-meta {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    color: #94a3b8;
+    font-size: 0.85rem;
+}
+
+.tutorial-meta i {
+    margin-right: 0.5rem;
+}
+
+.tutorial-steps {
+    padding: 0 1.5rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+}
+
+.tutorial-card:hover .tutorial-steps {
+    max-height: 500px;
+}
+
+.step {
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.step:last-child {
+    border-bottom: none;
+}
+
+.step-number {
+    width: 24px;
+    height: 24px;
+    background: #e0e7ff;
+    color: #3730a3;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.step-content h4 {
+    font-size: 0.9rem;
+    margin: 0;
+    color: #1e293b;
+}
+
+.step-content p {
+    font-size: 0.8rem;
+    margin: 0;
+    color: #94a3b8;
+}
+
+.tutorial-code-preview {
+    padding: 1rem 1.5rem;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+}
+
+.tutorial-code-preview h4 {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+}
+
+.tutorial-code-preview pre {
+    background: #1e293b;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 0;
+    overflow-x: auto;
+}
+
+.tutorial-code-preview code {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.8rem;
+    color: #e2e8f0;
+}
+
+.tutorial-btn {
+    display: block;
+    padding: 1rem;
+    text-align: center;
+    background: #f8fafc;
+    color: #3b82f6;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.tutorial-btn:hover {
+    background: #e0e7ff;
+}
+
+.tutorial-btn i {
+    margin-right: 0.5rem;
+}
+
+/* Learning Path */
+.learning-path {
+    background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+    padding: 2rem;
+    border-radius: 16px;
+}
+
+.learning-path h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #1e293b;
+}
+
+.path-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.path-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #fff;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.path-icon {
+    font-size: 2rem;
+}
+
+.path-content h4 {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #1e293b;
+}
+
+.path-content p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.path-arrow {
+    color: #94a3b8;
+    font-size: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .path-container {
+        flex-direction: column;
+    }
+    
+    .path-arrow {
+        transform: rotate(90deg);
+    }
+}
+</style>
