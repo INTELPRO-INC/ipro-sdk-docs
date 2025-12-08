@@ -2470,6 +2470,14 @@ pre:not(.code-block pre) .copy-btn.copied {
     transform: translateY(0);
 }
 
+/* Language Switcher active state for mobile */
+.lang-switcher.active .lang-menu,
+.lang-switcher:hover .lang-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
 .lang-option {
     display: flex;
     align-items: center;
@@ -3117,12 +3125,13 @@ pre:not(.code-block pre) .copy-btn.copied {
         margin-top: 1rem;
     }
     
-    .lang-dropdown {
+    .lang-menu {
         right: auto;
         left: 0;
     }
     
-    .nav-dropdown {
+    /* Mobile dropdown menu */
+    .dropdown-menu {
         position: static;
         transform: none;
         opacity: 1;
@@ -3132,14 +3141,15 @@ pre:not(.code-block pre) .copy-btn.copied {
         background: transparent;
         padding-left: 1rem;
         display: none;
+        min-width: auto;
     }
     
-    .nav-item.has-dropdown.active .nav-dropdown {
+    .nav-item.has-dropdown.active .dropdown-menu {
         display: block;
     }
     
-    .nav-item.has-dropdown > .nav-link::after {
-        content: '\f107';
+    .dropdown-item {
+        padding: 0.5rem 1rem;
     }
     
     .faq-header h1,

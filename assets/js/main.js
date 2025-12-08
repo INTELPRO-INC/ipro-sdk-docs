@@ -4,6 +4,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize all components
     initNavigation();
+    initDropdownMenus();
+    initLanguageSwitcher();
     initCodeHighlight();
     initTabs();
     initEnhancedCopyButtons();
@@ -40,13 +42,80 @@ function initNavigation() {
             }
         });
         
-        // Close menu when clicking a link
+        // Close menu when clicking a link (but not dropdown toggles)
         navMenu.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', function() {
+            link.addEventListener('click', function(e) {
+                // Don't close if it's a dropdown toggle
+                if (this.closest('.has-dropdown') && !this.getAttribute('href').startsWith('/')) {
+                    return;
+                }
                 navMenu.classList.remove('active');
             });
         });
     }
+}
+
+// Dropdown Menus
+function initDropdownMenus() {
+    const dropdowns = document.querySelectorAll('.nav-item.has-dropdown');
+    
+    dropdowns.forEach(dropdown => {
+        const toggle = dropdown.querySelector('.nav-link');
+        const menu = dropdown.querySelector('.dropdown-menu');
+        
+        if (!toggle || !menu) return;
+        
+        // Prevent default on dropdown toggle click
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // On mobile, toggle the dropdown
+            if (window.innerWidth <= 768) {
+                dropdown.classList.toggle('active');
+                
+                // Close other dropdowns
+                dropdowns.forEach(other => {
+                    if (other !== dropdown) {
+                        other.classList.remove('active');
+                    }
+                });
+            }
+        });
+    });
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.nav-item.has-dropdown')) {
+            dropdowns.forEach(dropdown => {
+                dropdown.classList.remove('active');
+            });
+        }
+    });
+}
+
+// Language Switcher
+function initLanguageSwitcher() {
+    const langSwitcher = document.querySelector('.lang-switcher');
+    if (!langSwitcher) return;
+    
+    const langBtn = langSwitcher.querySelector('.lang-btn');
+    const langMenu = langSwitcher.querySelector('.lang-menu');
+    
+    if (!langBtn || !langMenu) return;
+    
+    // Toggle on click for mobile
+    langBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        langSwitcher.classList.toggle('active');
+    });
+    
+    // Close when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!langSwitcher.contains(e.target)) {
+            langSwitcher.classList.remove('active');
+        }
+    });
 }
 
 // Code Highlight
