@@ -57,20 +57,22 @@ function initNavigation() {
 
 // Dropdown Menus
 function initDropdownMenus() {
-    const dropdowns = document.querySelectorAll('.nav-item.has-dropdown');
+    // New dropdown structure (.nav-dropdown)
+    const dropdowns = document.querySelectorAll('.nav-dropdown');
     
     dropdowns.forEach(dropdown => {
-        const toggle = dropdown.querySelector('.nav-link');
-        const menu = dropdown.querySelector('.dropdown-menu');
+        const toggle = dropdown.querySelector('.nav-dropdown-btn');
+        const menu = dropdown.querySelector('.nav-dropdown-menu');
         
         if (!toggle || !menu) return;
         
-        // Prevent default on dropdown toggle click
+        // Handle click for mobile
         toggle.addEventListener('click', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             
             // On mobile, toggle the dropdown
-            if (window.innerWidth <= 768) {
+            if (window.innerWidth <= 900) {
                 dropdown.classList.toggle('active');
                 
                 // Close other dropdowns
@@ -83,10 +85,42 @@ function initDropdownMenus() {
         });
     });
     
-    // Close dropdowns when clicking outside
+    // Close dropdowns when clicking outside (mobile)
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.nav-dropdown') && window.innerWidth <= 900) {
+            dropdowns.forEach(dropdown => {
+                dropdown.classList.remove('active');
+            });
+        }
+    });
+
+    // Legacy dropdown support (.nav-item.has-dropdown)
+    const legacyDropdowns = document.querySelectorAll('.nav-item.has-dropdown');
+    
+    legacyDropdowns.forEach(dropdown => {
+        const toggle = dropdown.querySelector('.nav-link');
+        const menu = dropdown.querySelector('.dropdown-menu');
+        
+        if (!toggle || !menu) return;
+        
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            if (window.innerWidth <= 768) {
+                dropdown.classList.toggle('active');
+                
+                legacyDropdowns.forEach(other => {
+                    if (other !== dropdown) {
+                        other.classList.remove('active');
+                    }
+                });
+            }
+        });
+    });
+    
     document.addEventListener('click', function(e) {
         if (!e.target.closest('.nav-item.has-dropdown')) {
-            dropdowns.forEach(dropdown => {
+            legacyDropdowns.forEach(dropdown => {
                 dropdown.classList.remove('active');
             });
         }

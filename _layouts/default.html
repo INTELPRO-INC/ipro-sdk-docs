@@ -48,27 +48,177 @@
             <!-- English Navigation -->
             <ul class="nav-menu">
                 <li><a href="{{ '/en/' | relative_url }}" class="nav-link">Home</a></li>
-                <li><a href="{{ '/getting-started' | relative_url }}" class="nav-link">Get Started</a></li>
-                <li><a href="{{ '/architecture' | relative_url }}" class="nav-link">Architecture</a></li>
-                <li><a href="{{ '/ble-development' | relative_url }}" class="nav-link">BLE</a></li>
-                <li><a href="{{ '/en/tutorials' | relative_url }}" class="nav-link">Tutorials</a></li>
+                
+                <!-- Docs Dropdown -->
+                <li class="nav-dropdown">
+                    <button class="nav-link nav-dropdown-btn">
+                        Docs <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="nav-dropdown-menu">
+                        <a href="{{ '/getting-started' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-rocket"></i>
+                            <div>
+                                <span class="nav-dropdown-title">Getting Started</span>
+                                <span class="nav-dropdown-desc">Quick start guide</span>
+                            </div>
+                        </a>
+                        <a href="{{ '/architecture' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-sitemap"></i>
+                            <div>
+                                <span class="nav-dropdown-title">Architecture</span>
+                                <span class="nav-dropdown-desc">System overview</span>
+                            </div>
+                        </a>
+                        <a href="{{ '/ble-development' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-bluetooth-b"></i>
+                            <div>
+                                <span class="nav-dropdown-title">BLE Development</span>
+                                <span class="nav-dropdown-desc">BLE 5.4 & LE Audio</span>
+                            </div>
+                        </a>
+                        <a href="{{ '/zephyr-rtos' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-wind"></i>
+                            <div>
+                                <span class="nav-dropdown-title">Zephyr RTOS</span>
+                                <span class="nav-dropdown-desc">Zephyr integration</span>
+                            </div>
+                        </a>
+                    </div>
+                </li>
+
+                <!-- Resources Dropdown -->
+                <li class="nav-dropdown">
+                    <button class="nav-link nav-dropdown-btn">
+                        Resources <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="nav-dropdown-menu">
+                        <a href="{{ '/en/tutorials' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <div>
+                                <span class="nav-dropdown-title">Tutorials</span>
+                                <span class="nav-dropdown-desc">Step-by-step guides</span>
+                            </div>
+                        </a>
+                        <a href="{{ '/en/hardware' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-microchip"></i>
+                            <div>
+                                <span class="nav-dropdown-title">Hardware</span>
+                                <span class="nav-dropdown-desc">Specs & pinout</span>
+                            </div>
+                        </a>
+                        <a href="{{ '/api-reference' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-book"></i>
+                            <div>
+                                <span class="nav-dropdown-title">API Reference</span>
+                                <span class="nav-dropdown-desc">API documentation</span>
+                            </div>
+                        </a>
+                        <a href="{{ '/changelog' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-history"></i>
+                            <div>
+                                <span class="nav-dropdown-title">Changelog</span>
+                                <span class="nav-dropdown-desc">Version history</span>
+                            </div>
+                        </a>
+                    </div>
+                </li>
+
                 <li><a href="{{ '/en/faq' | relative_url }}" class="nav-link">FAQ</a></li>
-                <li><a href="{{ '/en/hardware' | relative_url }}" class="nav-link">Hardware</a></li>
-                <li><a href="{{ '/zephyr-rtos' | relative_url }}" class="nav-link">Zephyr</a></li>
-                <li><a href="{{ '/' | relative_url }}" class="nav-link lang-switch">🇹🇼 中文</a></li>
+                
+                <!-- Language Switch -->
+                <li class="nav-lang">
+                    <a href="{{ '/' | relative_url }}" class="nav-link lang-switch" title="切換為中文">
+                        🇹🇼
+                    </a>
+                </li>
             </ul>
             {% else %}
             <!-- Chinese Navigation -->
             <ul class="nav-menu">
                 <li><a href="{{ '/' | relative_url }}" class="nav-link">首頁</a></li>
-                <li><a href="{{ '/getting-started' | relative_url }}" class="nav-link">快速開始</a></li>
-                <li><a href="{{ '/architecture' | relative_url }}" class="nav-link">架構</a></li>
-                <li><a href="{{ '/ble-development' | relative_url }}" class="nav-link">BLE</a></li>
-                <li><a href="{{ '/tutorials' | relative_url }}" class="nav-link">教學</a></li>
+                
+                <!-- Docs Dropdown -->
+                <li class="nav-dropdown">
+                    <button class="nav-link nav-dropdown-btn">
+                        文件 <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="nav-dropdown-menu">
+                        <a href="{{ '/getting-started' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-rocket"></i>
+                            <div>
+                                <span class="nav-dropdown-title">快速開始</span>
+                                <span class="nav-dropdown-desc">環境設定與第一個專案</span>
+                            </div>
+                        </a>
+                        <a href="{{ '/architecture' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-sitemap"></i>
+                            <div>
+                                <span class="nav-dropdown-title">系統架構</span>
+                                <span class="nav-dropdown-desc">SDK 整體架構概覽</span>
+                            </div>
+                        </a>
+                        <a href="{{ '/ble-development' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-bluetooth-b"></i>
+                            <div>
+                                <span class="nav-dropdown-title">BLE 開發</span>
+                                <span class="nav-dropdown-desc">BLE 5.4 與 LE Audio</span>
+                            </div>
+                        </a>
+                        <a href="{{ '/zephyr-rtos' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-wind"></i>
+                            <div>
+                                <span class="nav-dropdown-title">Zephyr RTOS</span>
+                                <span class="nav-dropdown-desc">Zephyr 整合指南</span>
+                            </div>
+                        </a>
+                    </div>
+                </li>
+
+                <!-- Resources Dropdown -->
+                <li class="nav-dropdown">
+                    <button class="nav-link nav-dropdown-btn">
+                        資源 <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="nav-dropdown-menu">
+                        <a href="{{ '/tutorials' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <div>
+                                <span class="nav-dropdown-title">教學系列</span>
+                                <span class="nav-dropdown-desc">循序漸進學習指南</span>
+                            </div>
+                        </a>
+                        <a href="{{ '/hardware' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-microchip"></i>
+                            <div>
+                                <span class="nav-dropdown-title">硬體參考</span>
+                                <span class="nav-dropdown-desc">規格與腳位定義</span>
+                            </div>
+                        </a>
+                        <a href="{{ '/api-reference' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-book"></i>
+                            <div>
+                                <span class="nav-dropdown-title">API 參考</span>
+                                <span class="nav-dropdown-desc">API 文件與範例</span>
+                            </div>
+                        </a>
+                        <a href="{{ '/changelog' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-history"></i>
+                            <div>
+                                <span class="nav-dropdown-title">更新日誌</span>
+                                <span class="nav-dropdown-desc">版本歷史紀錄</span>
+                            </div>
+                        </a>
+                    </div>
+                </li>
+
                 <li><a href="{{ '/faq' | relative_url }}" class="nav-link">FAQ</a></li>
-                <li><a href="{{ '/hardware' | relative_url }}" class="nav-link">硬體</a></li>
-                <li><a href="{{ '/zephyr-rtos' | relative_url }}" class="nav-link">Zephyr</a></li>
-                <li><a href="{{ '/en/' | relative_url }}" class="nav-link lang-switch">🇺🇸 EN</a></li>
+                
+                <!-- Language Switch -->
+                <li class="nav-lang">
+                    <a href="{{ '/en/' | relative_url }}" class="nav-link lang-switch" title="Switch to English">
+                        🇺🇸
+                    </a>
+                </li>
             </ul>
             {% endif %}
         </div>
