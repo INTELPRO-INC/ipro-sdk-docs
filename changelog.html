@@ -21,6 +21,32 @@ title: 更新日誌
         <section id="dec-2025">
             <h2>2025 年 12 月</h2>
 
+            <h3>December 24, 2025 - BLE MTU 優化與效能提升</h3>
+            <ul>
+                <li><strong>feat:</strong> Image Service MTU 優化與傳輸速度統計
+                    <ul>
+                        <li>MTU 計算優化：從 MTU-8 調整為 MTU-11（增加 4-byte 安全邊界）</li>
+                        <li>支援動態 chunk size（236-506 bytes，基於 MTU 517）</li>
+                        <li>新增傳輸速度統計：顯示 KB/s 和 Kbps</li>
+                        <li>效能提升：56KB 圖片傳輸達 ~40 KB/s (320 Kbps)</li>
+                    </ul>
+                </li>
+                <li><strong>feat:</strong> BLE MTU Changed 事件通知系統
+                    <ul>
+                        <li>新增 IPRO_BLE_EVENT_MTU_CHANGED 事件類型</li>
+                        <li>實作 GAPC_LE_ATT_LEGACY_BEARER_MTU_CHANGED_IND 訊息處理</li>
+                        <li>自動將 MTU 變更從 BLE 協定棧傳播到應用層</li>
+                        <li>支援 OTA 和 Image Service 的動態 MTU 適配</li>
+                    </ul>
+                </li>
+                <li><strong>fix:</strong> 移除重複的 image_start_transfer() 呼叫
+                    <ul>
+                        <li>修復導致 "Not ready" 警告的問題</li>
+                        <li>改善應用程式事件處理流程</li>
+                    </ul>
+                </li>
+            </ul>
+
             <h3>December 7, 2025 - SDK 文件全面更新</h3>
             <ul>
                 <li><strong>docs:</strong> SDK 文件全面更新與優化

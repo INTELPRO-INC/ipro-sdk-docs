@@ -87,7 +87,7 @@ title: 首頁
                 <div class="feature-icon">🌐</div>
                 <h3 class="feature-title">Matter 多協定支援</h3>
                 <p class="feature-description">
-                    完整支援 Matter 1.4 智慧家庭協定，整合 BLE 5.4（最多 16 連線）、Zigbee 3.0、Thread 1.2，支援藍牙/Zigbee/Thread 共存。
+                    完整支援 Matter 1.4 智慧家庭協定，整合 BLE 5.4（最多 16 連線、MTU 517）、Zigbee 3.0、Thread 1.2，支援藍牙/Zigbee/Thread 共存。
                 </p>
             </div>
             <div class="feature-card">
@@ -153,42 +153,70 @@ title: 首頁
                     <span class="app-badge">推薦</span>
                 </div>
                 <p class="app-description">
-                    現代化 BLE 展示應用，採用 Core/Profile 分離架構。支援心率、電池、UART、裝置資訊等多種服務，完整的 CLI 指令系統，支援 OTA 韌體更新。
+                    BLE 5.4 多服務展示，支援 HRS、BAS、UART、DIS 服務，完整的 CLI 系統（40+ 指令），OTA 韌體更新，LE Audio 支援。
                 </p>
                 <div class="app-features">
                     <span class="app-feature-tag">BLE 5.4</span>
                     <span class="app-feature-tag">LE Audio</span>
-                    <span class="app-feature-tag">40+ CLI 指令</span>
-                    <span class="app-feature-tag">OTA 更新</span>
+                    <span class="app-feature-tag">40+ CLI</span>
+                    <span class="app-feature-tag">OTA</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">🎮</span>
+                    <span class="app-name">ipro_ble_remote</span>
+                    <span class="app-badge">新功能</span>
+                </div>
+                <p class="app-description">
+                    手機互動遙控器，6 個 GATT 服務（LED/Button/Env/UART/PIR/OTA），圖片傳輸 40 KB/s，OTA 更新 12.3 KB/s。
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">MTU 517</span>
+                    <span class="app-feature-tag">圖片傳輸</span>
+                    <span class="app-feature-tag">OTA 12.3KB/s</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">📊</span>
+                    <span class="app-name">ipro_throughput_test</span>
+                </div>
+                <p class="app-description">
+                    BLE 效能測試工具，支援 Master/Slave 模式、PHY 選擇、連線參數調整，最高可達 600+ Kbps。
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">600+ Kbps</span>
+                    <span class="app-feature-tag">2M PHY</span>
+                    <span class="app-feature-tag">效能測試</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">⌨️</span>
+                    <span class="app-name">ipro_ble_hid_keyboard</span>
+                </div>
+                <p class="app-description">
+                    標準 HOGP 藍牙鍵盤，支援所有字母數字鍵、修飾鍵、字串輸入功能，自動重連。
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">HOGP</span>
+                    <span class="app-feature-tag">完整鍵盤</span>
+                    <span class="app-feature-tag">字串輸入</span>
                 </div>
             </div>
             <div class="app-card">
                 <div class="app-header">
                     <span class="app-icon">🌊</span>
                     <span class="app-name">ipro_zephyr_demo</span>
-                    <span class="app-badge">新功能</span>
                 </div>
                 <p class="app-description">
-                    Zephyr RTOS 整合展示，採用現代化建構系統。記憶體優化（33KB ROM, 27KB RAM），建構時間約 30 秒。
+                    Zephyr RTOS 整合展示，記憶體優化（33KB ROM, 27KB RAM），快速建構（~30 秒）。
                 </p>
                 <div class="app-features">
                     <span class="app-feature-tag">Zephyr v3.4.0</span>
                     <span class="app-feature-tag">Device Tree</span>
-                    <span class="app-feature-tag">West 建構</span>
-                </div>
-            </div>
-            <div class="app-card">
-                <div class="app-header">
-                    <span class="app-icon">🔌</span>
-                    <span class="app-name">ipro7_fpga_ble_5p4</span>
-                </div>
-                <p class="app-description">
-                    FPGA 優化的 BLE 5.4 實作，硬體加速 BLE 處理，支援週期性廣播、同步串流等進階功能。
-                </p>
-                <div class="app-features">
-                    <span class="app-feature-tag">FPGA 加速</span>
-                    <span class="app-feature-tag">週期性廣播</span>
-                    <span class="app-feature-tag">同步串流</span>
+                    <span class="app-feature-tag">West</span>
                 </div>
             </div>
             <div class="app-card">
@@ -198,13 +226,13 @@ title: 首頁
                     <span class="app-badge">多媒體</span>
                 </div>
                 <p class="app-description">
-                    綜合平台展示應用，包含多媒體（ISP, MJPEG, LCD）、USB（CDC, MSC, UAC, UVC）、網路（EMAC）、音訊（AUADC, DAC）等完整功能。
+                    綜合平台展示，包含 USB、ISP 攝影機、LCD、音訊、乙太網路、SD 卡等完整功能。
                 </p>
                 <div class="app-features">
-                    <span class="app-feature-tag">USB 音視訊</span>
-                    <span class="app-feature-tag">ISP 攝影機</span>
-                    <span class="app-feature-tag">乙太網路</span>
-                    <span class="app-feature-tag">SD 卡</span>
+                    <span class="app-feature-tag">USB</span>
+                    <span class="app-feature-tag">ISP</span>
+                    <span class="app-feature-tag">網路</span>
+                    <span class="app-feature-tag">SD</span>
                 </div>
             </div>
         </div>

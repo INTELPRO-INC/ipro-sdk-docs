@@ -471,7 +471,44 @@ void cleanup_advertising(void)
 }</code></pre>
             </div>
 
-            <h3>3. 測試驗證</h3>
+            <h3>3. MTU 優化與高速資料傳輸</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">MTU 事件處理與動態封包大小</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">// 處理 MTU 變更事件
+void ble_event_handler(const ipro_ble_event_t *event)
+{
+    if (event->type == IPRO_BLE_EVENT_MTU_CHANGED) {
+        uint16_t new_mtu = event->data.conn_info.mtu;
+        
+        // 計算最佳 payload 大小
+        // MTU - 3 (ATT header) - 4 (app header) - 4 (safety) = MTU - 11
+        uint16_t payload = (new_mtu > 11) ? (new_mtu - 11) : 240;
+        
+        // 更新傳輸參數
+        update_transfer_params(payload);
+        
+        IPRO_LOG_INFO("MTU updated: %d, payload: %d", new_mtu, payload);
+    }
+}
+
+// OTA 傳輸效能：MTU 517 → 504 bytes payload → 12.3 KB/s
+// Image 傳輸效能：MTU 517 → 506 bytes payload → 40 KB/s (320 Kbps)</code></pre>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡 效能提示：</strong>
+                <ul style="margin-top: 0.5rem; margin-bottom: 0;">
+                    <li>MTU 517 協商成功後，實際可用 payload：OTA 504 bytes，Image 506 bytes</li>
+                    <li>傳輸速度受 MTU、連線間隔和手機端處理能力影響</li>
+                    <li>建議在傳輸完成時記錄速度統計（bytes/sec, bits/sec）</li>
+                    <li>手機相容性：使用 MTU-11 計算確保穩定性</li>
+                </ul>
+            </div>
+
+            <h3>4. 測試驗證</h3>
             <ul>
                 <li>✅ 多次斷線重連循環測試</li>
                 <li>✅ 手機/中央設備可正確發現與配對</li>
