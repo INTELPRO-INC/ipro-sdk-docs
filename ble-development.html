@@ -495,7 +495,7 @@ void ble_event_handler(const ipro_ble_event_t *event)
 }
 
 // OTA 傳輸效能：MTU 517 → 504 bytes payload → 12.3 KB/s
-// Image 傳輸效能：MTU 517 → 506 bytes payload → 40 KB/s (320 Kbps)</code></pre>
+// Image 傳輸效能：MTU 517 → 506 bytes payload → 101.4 KB/s (811 Kbps) ⚡</code></pre>
             </div>
 
             <div class="alert alert-info">
@@ -503,7 +503,8 @@ void ble_event_handler(const ipro_ble_event_t *event)
                 <ul style="margin-top: 0.5rem; margin-bottom: 0;">
                     <li>MTU 517 協商成功後，實際可用 payload：OTA 504 bytes，Image 506 bytes</li>
                     <li>傳輸速度受 MTU、連線間隔和手機端處理能力影響</li>
-                    <li>建議在傳輸完成時記錄速度統計（bytes/sec, bits/sec）</li>
+                    <li><strong>實測結果</strong>：56KB 圖片 542ms 完成，達 101.4 KB/s (811 Kbps)</li>
+                    <li>圖片傳輸速度為 OTA 的 8 倍（專用 TX 任務 + 4ms chunk 間隔優化）</li>
                     <li>手機相容性：使用 MTU-11 計算確保穩定性</li>
                 </ul>
             </div>

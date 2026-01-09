@@ -10,10 +10,17 @@ title: 應用範例
             <ul class="sidebar-links">
                 <li><a href="#overview" class="sidebar-link">應用概覽</a></li>
                 <li><a href="#ipro-ble-demo" class="sidebar-link">ipro_ble_demo</a></li>
-                <li><a href="#ipro-zephyr-demo" class="sidebar-link">ipro_zephyr_demo</a></li>
-                <li><a href="#ipro7-fpga-ble" class="sidebar-link">ipro7_fpga_ble_5p4</a></li>
+                <li><a href="#ipro-ble-remote" class="sidebar-link">ipro_ble_remote</a></li>
+                <li><a href="#ipro-throughput-test" class="sidebar-link">ipro_throughput_test</a></li>
+                <li><a href="#ipro-ble-hid-keyboard" class="sidebar-link">ipro_ble_hid_keyboard</a></li>
+                <li><a href="#ipro-blecontroller-test" class="sidebar-link">ipro_blecontroller_test</a></li>
                 <li><a href="#ipro7-demo" class="sidebar-link">ipro7_demo</a></li>
-                <li><a href="#ipro7-phyrf" class="sidebar-link">ipro7_phyrf_test</a></li>
+                <li><a href="#ipro7-pircam" class="sidebar-link">ipro7_pircam</a></li>
+                <li><a href="#ipro6-demo" class="sidebar-link">ipro6_demo</a></li>
+                <li><a href="#ipro6le-demo" class="sidebar-link">ipro6le_demo</a></li>
+                <li><a href="#ipro-thread-ftd-cli" class="sidebar-link">ipro_thread_ftd_cli</a></li>
+                <li><a href="#ipro-zephyr-demo" class="sidebar-link">ipro_zephyr_demo</a></li>
+                <li><a href="#ipro7-bootrom" class="sidebar-link">ipro7_bootrom</a></li>
                 <li><a href="#creating-apps" class="sidebar-link">建立新應用</a></li>
             </ul>
         </nav>
@@ -25,7 +32,7 @@ title: 應用範例
 
         <section id="overview">
             <h2>應用概覽</h2>
-            <p>SDK 包含 <strong>9 個參考應用</strong>，展示不同功能領域的最佳實踐：</p>
+            <p>SDK 包含 <strong>11 個參考應用</strong>，展示不同功能領域的最佳實踐：</p>
 
             <div class="table-wrapper">
                 <table>
@@ -63,28 +70,46 @@ title: 應用範例
                             <td>HID 裝置開發</td>
                         </tr>
                         <tr>
-                            <td><code>ipro7_demo</code></td>
-                            <td>FreeRTOS</td>
-                            <td>USB/LCD/Camera/Audio/Ethernet/SD</td>
-                            <td>SDK 入門與硬體測試</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_zephyr_demo</code></td>
-                            <td>Zephyr</td>
-                            <td>GPIO/UART/Threading/Device Tree</td>
-                            <td>現代 RTOS 開發</td>
-                        </tr>
-                        <tr>
                             <td><code>ipro_blecontroller_test</code></td>
                             <td>FreeRTOS</td>
                             <td>BLE Controller 底層測試</td>
                             <td>BLE 協定棧驗證</td>
                         </tr>
                         <tr>
+                            <td><code>ipro7_demo</code></td>
+                            <td>FreeRTOS</td>
+                            <td>USB/LCD/Camera/Audio/Ethernet/SD</td>
+                            <td>SDK 入門與硬體測試</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro7_pircam</code></td>
+                            <td>FreeRTOS</td>
+                            <td>PIR 觸發攝影 + JPEG 流程</td>
+                            <td>安防/影像觸發應用</td>
+                        </tr>
+                        <tr>
                             <td><code>ipro6_demo</code></td>
                             <td>FreeRTOS</td>
-                            <td>WiFi, lwIP, USB</td>
+                            <td>GPIO/UART/SPI/I2C + lwIP</td>
                             <td>IPRO6 平台開發</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro6le_demo</code></td>
+                            <td>FreeRTOS</td>
+                            <td>WiFi + lwIP + USB</td>
+                            <td>IPRO6LE 無線網路開發</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_thread_ftd_cli</code></td>
+                            <td>Zephyr</td>
+                            <td>Thread FTD CLI 範例</td>
+                            <td>Thread 網路建置</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_zephyr_demo</code></td>
+                            <td>Zephyr</td>
+                            <td>GPIO/UART/Threading/Device Tree</td>
+                            <td>現代 RTOS 開發</td>
                         </tr>
                         <tr>
                             <td><code>ipro7_bootrom</code></td>
@@ -240,7 +265,7 @@ CONFIG_IPRO_BLE_AUDIO_ENABLE=y</code></pre>
                         <tr>
                             <td>PIR Image</td>
                             <td><code>0xFF50</code></td>
-                            <td>動態偵測 + JPEG 傳輸 (40 KB/s)</td>
+                            <td>動態偵測 + JPEG 傳輸 (101 KB/s ⚡)</td>
                         </tr>
                         <tr>
                             <td>OTA</td>
@@ -415,6 +440,27 @@ hid_status</code></pre>
             </div>
         </section>
 
+        <section id="ipro-blecontroller-test">
+            <h2>ipro_blecontroller_test 🧪</h2>
+            <p>底層 BLE Controller 驗證範例，用於協定棧與射頻相關測試。</p>
+
+            <h3>功能特色</h3>
+            <ul>
+                <li><strong>Controller API 測試</strong>：掃描、廣播、連線、PHY/MTU 調整</li>
+                <li><strong>除錯訊號</strong>：輸出關鍵測試訊號便於儀器量測</li>
+                <li><strong>WDT 整合</strong>：加入看門狗驗證長時間穩定性</li>
+            </ul>
+
+            <h3>建構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構 Controller Test</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">./build_freertos.sh ipro_blecontroller_test build</code></pre>
+            </div>
+        </section>
+
         <section id="ipro-zephyr-demo">
             <h2>ipro_zephyr_demo 🌊</h2>
             <p>Zephyr RTOS 整合展示，展示現代化 RTOS 開發方式。</p>
@@ -469,25 +515,25 @@ int main(void)
             </div>
         </section>
 
-        <section id="ipro7-fpga-ble">
-            <h2>ipro7_fpga_ble_5p4</h2>
-            <p>FPGA 優化的 BLE 5.4 實作，適合需要高效能 BLE 處理的場景。</p>
+        <section id="ipro7-pircam">
+            <h2>ipro7_pircam 🎥</h2>
+            <p>PIR 觸發的攝影範例，示範影像擷取、JPEG 流程與顯示/儲存。</p>
 
             <h3>功能特色</h3>
             <ul>
-                <li><strong>硬體加速</strong>：FPGA 加速 BLE 處理</li>
-                <li><strong>週期性廣播</strong>：Periodic Advertising 支援</li>
-                <li><strong>同步串流</strong>：Isochronous Streams</li>
-                <li><strong>效能優化</strong>：針對 FPGA 環境調校</li>
+                <li><strong>PIR 觸發</strong>：偵測動作事件後啟動拍攝</li>
+                <li><strong>影像管線</strong>：攝像頭輸入 → JPEG 處理 → LCD 預覽或儲存</li>
+                <li><strong>儲存輸出</strong>：支援 SD/PSRAM 緩衝</li>
+                <li><strong>事件掛鉤</strong>：可串接警示或無線上傳流程</li>
             </ul>
 
             <h3>建構</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">建構 FPGA BLE</span>
+                    <span class="code-block-title">建構 PIR Camera</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">./build_freertos.sh ipro7_fpga_ble_5p4</code></pre>
+                <pre><code class="language-bash">./build_freertos.sh ipro7_pircam build</code></pre>
             </div>
         </section>
 
@@ -512,7 +558,7 @@ int main(void)
                     <span class="code-block-title">建構平台 Demo</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">./build_freertos.sh ipro7_demo</code></pre>
+                <pre><code class="language-bash">./build_freertos.sh ipro7_demo build</code></pre>
             </div>
 
             <h3>proj.conf 配置範例</h3>
@@ -564,26 +610,72 @@ void gpio_example(void)
             </div>
         </section>
 
-        <section id="ipro7-phyrf">
-            <h2>ipro7_phyrf_test</h2>
-            <p>RF 測試與校準工具，用於射頻特性驗證。</p>
+        <section id="ipro6-demo">
+            <h2>ipro6_demo 🛠️</h2>
+            <p>IPRO6 平台週邊與網路示範，包含基本 I/O 與 lwIP。</p>
 
             <h3>功能特色</h3>
             <ul>
-                <li><strong>RF 特性測試</strong>：發射功率、靈敏度測量</li>
-                <li><strong>天線測試</strong>：天線匹配驗證</li>
-                <li><strong>頻率校準</strong>：晶振校準工具</li>
-                <li><strong>效能驗證</strong>：吞吐量與延遲測試</li>
+                <li><strong>週邊</strong>：GPIO、UART、SPI、I2C、PWM</li>
+                <li><strong>網路</strong>：lwIP + iPerf 測試</li>
+                <li><strong>USB</strong>：CherryUSB 裝置類別示例</li>
             </ul>
 
             <h3>建構</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">建構 RF 測試</span>
+                    <span class="code-block-title">建構 ipro6_demo</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">./build_freertos.sh ipro7_phyrf_test</code></pre>
+                <pre><code class="language-bash">./build_freertos.sh ipro6_demo build</code></pre>
             </div>
+        </section>
+
+        <section id="ipro6le-demo">
+            <h2>ipro6le_demo 📡</h2>
+            <p>IPRO6LE 平台 WiFi/lwIP 與 USB 範例。</p>
+
+            <h3>功能特色</h3>
+            <ul>
+                <li><strong>WiFi 管理</strong>：連線、掃描與狀態管理</li>
+                <li><strong>lwIP</strong>：TCP/IP 連線與 iPerf 測試</li>
+                <li><strong>USB</strong>：常用裝置類別示例</li>
+            </ul>
+
+            <h3>建構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構 ipro6le_demo</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">./build_freertos.sh ipro6le_demo build</code></pre>
+            </div>
+        </section>
+
+        <section id="ipro-thread-ftd-cli">
+            <h2>ipro_thread_ftd_cli 🌐</h2>
+            <p>Zephyr 基礎的 Thread Full Thread Device CLI 範例，用於 Thread 網路佈建與除錯。</p>
+
+            <h3>功能特色</h3>
+            <ul>
+                <li><strong>FTD CLI</strong>：委任、連線、網路診斷</li>
+                <li><strong>Zephyr Device Tree</strong>：宣告式硬體配置</li>
+                <li><strong>UART 主控台</strong>：指令回應與日誌輸出</li>
+            </ul>
+
+            <h3>建構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構 Thread FTD CLI</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">./tools/zephyr/build.sh -a ipro_thread_ftd_cli -b ipro7_fpga -c</code></pre>
+            </div>
+        </section>
+
+        <section id="ipro7-bootrom">
+            <h2>ipro7_bootrom 🚀</h2>
+            <p>IPRO7 平台的 Boot ROM/Boot Loader 配置，負責開機與分割區管理。</p>
         </section>
 
         <section id="creating-apps">

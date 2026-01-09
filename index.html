@@ -16,7 +16,8 @@ title: 首頁
             </span>
             <h1 class="hero-title">IPRO SDK</h1>
             <p class="hero-subtitle">
-                專為 IPRO7AI AIOT Matter 晶片打造的全方位軟體開發套件。支援 Matter 1.4、BLE 5.4、Zigbee 3.0、Thread 1.2，內建 AI NPU 加速器，助您快速建構智慧物聯網應用。
+                專為 IPRO7AI AIOT Matter 晶片打造的全方位軟體開發套件。支援 Matter 1.4、BLE 5.4、Zigbee 3.0、Thread 1.2，內建 AI NPU
+                加速器，助您快速建構智慧物聯網應用。
             </p>
             <div class="hero-buttons">
                 <a href="{{ '/getting-started' | relative_url }}" class="btn btn-primary">
@@ -38,14 +39,14 @@ title: 首頁
                     <span class="code-title">terminal</span>
                 </div>
                 <pre><code class="language-bash"><span style="color: #64748b;"># 快速建構 BLE 應用</span>
-./build_freertos.sh ipro_ble_demo
+                ./build_freertos.sh ipro_ble_demo build
 
-<span style="color: #64748b;"># 或使用 Zephyr RTOS</span>
-./tools/zephyr/bootstrap.sh
-./tools/zephyr/build.sh -a ipro_zephyr_demo
+                <span style="color: #64748b;"># 或使用 Zephyr RTOS</span>
+                ./tools/zephyr/bootstrap.sh
+                ./tools/zephyr/build.sh -a ipro_zephyr_demo -b ipro7_fpga -c
 
-<span style="color: #10b981;">✓ Build successful!</span>
-<span style="color: #94a3b8;">Output: apps/ipro_ble_demo/build/build_out/</span></code></pre>
+                <span style="color: #10b981;">✓ Build successful!</span>
+                <span style="color: #94a3b8;">Output: apps/bluetooth/ipro_ble_demo/build/build_out/</span></code></pre>
             </div>
         </div>
     </div>
@@ -112,10 +113,10 @@ title: 首頁
                 </p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">🔌</div>
-                <h3 class="feature-title">VS Code 擴充套件</h3>
+                <div class="feature-icon">🛠️</div>
+                <h3 class="feature-title">開發工具鏈</h3>
                 <p class="feature-description">
-                    專屬 VS Code Extension 支援 Remote SSH 遠端開發、一鍵建構、自動工具鏈偵測、遠端編譯本地燒錄。
+                    提供 `build_freertos.sh` 快速建構、Zephyr `bootstrap/menu/build` 腳本、size 分析與 backtrace 工具，支援日常開發除錯。
                 </p>
             </div>
             <div class="feature-card">
@@ -169,12 +170,12 @@ title: 首頁
                     <span class="app-badge">新功能</span>
                 </div>
                 <p class="app-description">
-                    手機互動遙控器，6 個 GATT 服務（LED/Button/Env/UART/PIR/OTA），圖片傳輸 40 KB/s，OTA 更新 12.3 KB/s。
+                    手機互動遙控器，6 個 GATT 服務（LED/Button/Env/UART/PIR/OTA），圖片傳輸 101 KB/s⚡，OTA 更新 12.3 KB/s。
                 </p>
                 <div class="app-features">
                     <span class="app-feature-tag">MTU 517</span>
-                    <span class="app-feature-tag">圖片傳輸</span>
-                    <span class="app-feature-tag">OTA 12.3KB/s</span>
+                    <span class="app-feature-tag">101 KB/s⚡</span>
+                    <span class="app-feature-tag">OTA 12KB/s</span>
                 </div>
             </div>
             <div class="app-card">
