@@ -32,28 +32,66 @@ lang: en
             <h2>System Overview</h2>
             <p>The overall SDK architecture consists of five main layers, from top to bottom: Application, Components, RTOS, BSP, and Hardware:</p>
 
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">IPRO SDK Layered Architecture</span>
+            <div class="architecture-layers">
+                <div class="layer layer-green">
+                    <div class="layer-label">Applications (apps/)</div>
+                    <div class="layer-items">
+                        <span class="pill">bluetooth/</span>
+                        <span class="pill">matter/</span>
+                        <span class="pill">ipro7_demo</span>
+                        <span class="pill">ipro_unit_test</span>
+                    </div>
                 </div>
-                <pre style="line-height:1.4;"><code>┌─────────────────────────────────────────────────────────┐
-│                  Applications (apps/)                    │
-│   bluetooth/ │ matter/ │ ipro7_demo │ ipro_unit_test     │
-├─────────────────────────────────────────────────────────┤
-│                Components (components/)                   │
-│  BLE 5.4 │ Matter │ WiFi 6 │ Thread │ Zigbee │ 802.15.4 │
-│  lwIP    │ mbedTLS│ CherryUSB │ Audio │ AI/NPU│ Codec   │
-│  LittleFS│ FatFS  │ Shell     │ Agora │ Opus  │ LC3     │
-├─────────────────────────────────────────────────────────┤
-│             RTOS (FreeRTOS / Zephyr)                     │
-│         FreeRTOS POSIX │ OSAL │ Zephyr Kernel            │
-├─────────────────────────────────────────────────────────┤
-│              BSP (bsp/)                                   │
-│  HAL │ Drivers │ Board Config │ Linker Scripts │ Startup │
-├─────────────────────────────────────────────────────────┤
-│           Hardware (IPRO7 / IPRO6 / IPRO6LE)             │
-│     RISC-V RV32IMAFC │ Cortex-M0+ │ BLE Radio │ NPU    │
-└─────────────────────────────────────────────────────────┘</code></pre>
+                <div class="layer layer-cyan">
+                    <div class="layer-label">Components (components/)</div>
+                    <div class="layer-items">
+                        <span class="pill">BLE 5.4</span>
+                        <span class="pill">Matter</span>
+                        <span class="pill">WiFi 6</span>
+                        <span class="pill">Thread</span>
+                        <span class="pill">Zigbee</span>
+                        <span class="pill">802.15.4</span>
+                        <span class="pill">lwIP</span>
+                        <span class="pill">mbedTLS</span>
+                        <span class="pill">CherryUSB</span>
+                        <span class="pill">Audio</span>
+                        <span class="pill">AI/NPU</span>
+                        <span class="pill">Codec</span>
+                        <span class="pill">LittleFS</span>
+                        <span class="pill">FatFS</span>
+                        <span class="pill">Shell</span>
+                        <span class="pill">Agora</span>
+                        <span class="pill">Opus</span>
+                        <span class="pill">LC3</span>
+                    </div>
+                </div>
+                <div class="layer layer-purple">
+                    <div class="layer-label">RTOS (FreeRTOS / Zephyr)</div>
+                    <div class="layer-items">
+                        <span class="pill">FreeRTOS POSIX</span>
+                        <span class="pill">OSAL</span>
+                        <span class="pill">Zephyr Kernel</span>
+                    </div>
+                </div>
+                <div class="layer layer-amber">
+                    <div class="layer-label">BSP (bsp/)</div>
+                    <div class="layer-items">
+                        <span class="pill">HAL</span>
+                        <span class="pill">Drivers</span>
+                        <span class="pill">Board Config</span>
+                        <span class="pill">Linker Scripts</span>
+                        <span class="pill">Startup</span>
+                    </div>
+                </div>
+                <div class="layer layer-red">
+                    <div class="layer-label">Hardware (IPRO7 / IPRO6 / IPRO6LE)</div>
+                    <div class="layer-items">
+                        <span class="pill">RISC-V RV32IMAFC</span>
+                        <span class="pill">Cortex-M0+</span>
+                        <span class="pill">BLE Radio</span>
+                        <span class="pill">NPU</span>
+                    </div>
+                </div>
             </div>
 
             <p>Each layer has clear responsibility boundaries:</p>
@@ -113,7 +151,7 @@ lang: en
             </div>
 
             <div class="alert alert-info">
-                <strong>💡 Tip:</strong> IPRO7 is the primary development platform. Most examples and documentation are based on IPRO7. Select the target SoC via <code>CONFIG_IPRO7=y</code> or <code>CONFIG_IPRO6=y</code> in Kconfig.
+                <strong>Tip:</strong> IPRO7 is the primary development platform. Most examples and documentation are based on IPRO7. Select the target SoC via <code>CONFIG_IPRO7=y</code> or <code>CONFIG_IPRO6=y</code> in Kconfig.
             </div>
         </section>
 
@@ -166,25 +204,23 @@ lang: en
                 </table>
             </div>
 
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Memory Map Diagram</span>
+            <div class="architecture-layers">
+                <div class="layer layer-blue">
+                    <div class="layer-label">Flash (4 MB) — 0x00000000 ~ 0x003FFFFF</div>
+                    <div class="layer-desc">Code + read-only data (XIP execution)</div>
                 </div>
-                <pre><code>0x00000000 ┌──────────────────┐
-           │   Flash (4 MB)   │  Code + read-only data (XIP)
-0x003FFFFF └──────────────────┘
-              ...
-0x20000000 ┌──────────────────┐
-           │  PSRAM (16 MB)   │  Main RAM (heap, .data, .bss)
-0x20FFFFFF └──────────────────┘
-              ...
-0x50000000 ┌──────────────────┐
-           │  HBNRAM (4 KB)   │  Hibernate retention RAM
-0x50000FFF └──────────────────┘
-              ...
-0x60000000 ┌──────────────────┐
-           │  OCRAM (256 KB)  │  High-speed SRAM (stack, critical paths)
-0x6003FFFF └──────────────────┘</code></pre>
+                <div class="layer layer-cyan">
+                    <div class="layer-label">PSRAM (16 MB) — 0x20000000 ~ 0x20FFFFFF</div>
+                    <div class="layer-desc">Main RAM (heap, .data, .bss)</div>
+                </div>
+                <div class="layer layer-amber">
+                    <div class="layer-label">HBNRAM (4 KB) — 0x50000000 ~ 0x50000FFF</div>
+                    <div class="layer-desc">Hibernate retention RAM</div>
+                </div>
+                <div class="layer layer-green">
+                    <div class="layer-label">OCRAM (256 KB) — 0x60000000 ~ 0x6003FFFF</div>
+                    <div class="layer-desc">High-speed SRAM (stack, critical paths)</div>
+                </div>
             </div>
         </section>
 
@@ -193,27 +229,36 @@ lang: en
             <h2>Build Pipeline</h2>
             <p>The SDK uses a <strong>Kconfig + CMake + Ninja</strong> build pipeline. The flow from configuration to final binary is as follows:</p>
 
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build Pipeline</span>
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <div class="flow-number">1</div>
+                    <div class="flow-title">.config</div>
+                    <div class="flow-desc">Kconfig file</div>
                 </div>
-                <pre><code>.config (Kconfig)          CMakeLists.txt
-       │                         │
-       ▼                         ▼
- ┌───────────┐          ┌──────────────┐
- │ autoconf.h │◄────────│    CMake     │
- │ (generated)│         │  Configure   │
- └───────────┘          └──────┬───────┘
-                               │
-                               ▼
-                        ┌──────────────┐
-                        │    Ninja     │
-                        │   Compile    │
-                        └──────┬───────┘
-                               │
-                               ▼
-                   apps/&lt;project&gt;/build/build_out/
-                   &lt;project&gt;_IPRO7.bin</code></pre>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">2</div>
+                    <div class="flow-title">CMake</div>
+                    <div class="flow-desc">Generate autoconf.h</div>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">3</div>
+                    <div class="flow-title">Ninja</div>
+                    <div class="flow-desc">Compile source</div>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">4</div>
+                    <div class="flow-title">Link</div>
+                    <div class="flow-desc">Link to ELF</div>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">5</div>
+                    <div class="flow-title">.bin</div>
+                    <div class="flow-desc">Firmware binary</div>
+                </div>
             </div>
 
             <h3>Standard Build Commands</h3>
@@ -274,7 +319,7 @@ make -C apps/ipro7_demo clean</code></pre>
             </div>
 
             <div class="alert alert-warning">
-                <strong>⚠️ Note:</strong> Zephyr build is currently experimental. Use the FreeRTOS build for production environments.
+                <strong>Note:</strong> Zephyr build is currently experimental. Use the FreeRTOS build for production environments.
             </div>
         </section>
 
@@ -594,7 +639,7 @@ CONFIG_TEST_AUTO_RUN=y</code></pre>
             </div>
 
             <div class="alert alert-info">
-                <strong>💡 Tip:</strong> <code>CONFIG_CPU_ID</code> must be correctly set in <code>.config</code> for <code>cmake/toolchain.cmake</code> to detect the proper architecture flags. The toolchain detection logic automatically distinguishes between vendor GCC (with <code>_xxldsp</code> DSP extension instructions) and standard GCC, adapting compiler flags accordingly.
+                <strong>Tip:</strong> <code>CONFIG_CPU_ID</code> must be correctly set in <code>.config</code> for <code>cmake/toolchain.cmake</code> to detect the proper architecture flags. The toolchain detection logic automatically distinguishes between vendor GCC (with <code>_xxldsp</code> DSP extension instructions) and standard GCC, adapting compiler flags accordingly.
             </div>
         </section>
 
@@ -657,7 +702,7 @@ CONFIG_TEST_AUTO_RUN=y</code></pre>
             </div>
 
             <div class="alert alert-info">
-                <strong>💡 Tip:</strong> Applications in subdirectories (e.g., <code>apps/bluetooth/</code>) need to set <code>CONFIG_APP_CATEGORY</code> in their <code>.config</code> so the build system can correctly locate the project path.
+                <strong>Tip:</strong> Applications in subdirectories (e.g., <code>apps/bluetooth/</code>) need to set <code>CONFIG_APP_CATEGORY</code> in their <code>.config</code> so the build system can correctly locate the project path.
             </div>
         </section>
 
@@ -717,24 +762,31 @@ CONFIG_TEST_AUTO_RUN=y</code></pre>
             <h2>BLE Stack Architecture</h2>
             <p>The BLE 5.4 stack is located in <code>components/wireless/bluetooth/</code>, using Zephyr-style callback-based GAP/GATT APIs:</p>
 
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">BLE Stack Layers</span>
+            <div class="protocol-stack">
+                <div class="stack-layer stack-green">
+                    <div class="layer-name">Application</div>
+                    <div class="layer-detail">User application code</div>
                 </div>
-                <pre><code>┌──────────────────────────────────────────────┐
-│          Application (GAP/GATT Callbacks)    │
-├──────────────────────────────────────────────┤
-│  btprofile/          │  blemesh/ (optional)  │
-│  70+ BLE Profiles    │  Bluetooth Mesh       │
-├──────────────────────────────────────────────┤
-│              blestack/ (Zephyr BLE Host)      │
-│  GAP │ GATT │ L2CAP │ SMP │ ISO │ LE Audio  │
-├──────────────────────────────────────────────┤
-│        btblecontroller/ (RivieraWaves)       │
-│     Prebuilt linkN variant libraries         │
-├──────────────────────────────────────────────┤
-│               BLE Radio Hardware             │
-└──────────────────────────────────────────────┘</code></pre>
+                <div class="stack-layer stack-cyan">
+                    <div class="layer-name">Profiles (btprofile/)</div>
+                    <div class="layer-detail">70+ BLE Profile implementations</div>
+                </div>
+                <div class="stack-layer stack-cyan">
+                    <div class="layer-name">GAP / GATT / SMP</div>
+                    <div class="layer-detail">Zephyr BLE Host API</div>
+                </div>
+                <div class="stack-layer stack-purple">
+                    <div class="layer-name">L2CAP</div>
+                    <div class="layer-detail">Logical channel management</div>
+                </div>
+                <div class="stack-layer stack-amber">
+                    <div class="layer-name">HCI (On-chip)</div>
+                    <div class="layer-detail">ipro_hci_wrapper</div>
+                </div>
+                <div class="stack-layer stack-red">
+                    <div class="layer-name">Controller (btblecontroller/)</div>
+                    <div class="layer-detail">RivieraWaves prebuilt linkN variants</div>
+                </div>
             </div>
 
             <h3>Controller Variants (linkN Naming)</h3>
@@ -784,7 +836,7 @@ components/wireless/bluetooth/build_all_prebuilts.sh all
             </div>
 
             <div class="alert alert-warning">
-                <strong>⚠️ Note:</strong> <code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> cannot be used in release builds. Release builds must use prebuilt libraries.
+                <strong>Note:</strong> <code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> cannot be used in release builds. Release builds must use prebuilt libraries.
             </div>
 
             <h3>LE Audio Application Framework</h3>

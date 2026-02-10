@@ -101,31 +101,57 @@ bsp/hal/inc/
             <p>LE Audio 是 BLE 5.2 引入的次世代藍牙音訊標準，使用 ISO Channel（等時通道）傳輸音訊資料，取代傳統 Classic Audio 的 A2DP/HFP。</p>
 
             <h3>傳送端管線</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">LE Audio 傳送路徑</span>
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <div class="flow-number">1</div>
+                    <div class="flow-title">Audio Input</div>
+                    <div class="flow-desc">AUADC / I2S PCM 取樣</div>
                 </div>
-                <pre><code>┌────────────┐    ┌──────────┐    ┌──────────────┐    ┌──────────┐
-│ Audio Input │───&gt;│ LC3/Opus │───&gt;│ ISO Channel  │───&gt;│ BLE PHY  │
-│ (AUADC/I2S)│    │ Encoder  │    │ (CIS or BIS) │    │          │
-└────────────┘    └──────────┘    └──────────────┘    └──────────┘
-
-  麥克風/I2S       音訊編碼          等時通道            無線傳輸
-  PCM 取樣         32-320 kbps      排程傳輸            2M PHY</code></pre>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">2</div>
+                    <div class="flow-title">LC3/Opus</div>
+                    <div class="flow-desc">音訊編碼 32-320 kbps</div>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">3</div>
+                    <div class="flow-title">ISO Channel</div>
+                    <div class="flow-desc">CIS 或 BIS 等時通道</div>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">4</div>
+                    <div class="flow-title">BLE PHY</div>
+                    <div class="flow-desc">2M PHY 無線傳輸</div>
+                </div>
             </div>
 
             <h3>接收端管線</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">LE Audio 接收路徑</span>
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <div class="flow-number">1</div>
+                    <div class="flow-title">BLE PHY</div>
+                    <div class="flow-desc">2M PHY 無線接收</div>
                 </div>
-                <pre><code>┌──────────┐    ┌──────────────┐    ┌──────────┐    ┌─────────────┐
-│ BLE PHY  │───&gt;│ ISO Channel  │───&gt;│ LC3/Opus │───&gt;│ Audio Output│
-│          │    │ (CIS or BIS) │    │ Decoder  │    │ (DAC/I2S)   │
-└──────────┘    └──────────────┘    └──────────┘    └─────────────┘
-
-  無線接收          等時通道            音訊解碼          DAC/I2S
-  2M PHY           資料重組            PCM 還原          喇叭輸出</code></pre>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">2</div>
+                    <div class="flow-title">ISO Channel</div>
+                    <div class="flow-desc">CIS 或 BIS 資料重組</div>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">3</div>
+                    <div class="flow-title">LC3/Opus</div>
+                    <div class="flow-desc">音訊解碼 PCM 還原</div>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">4</div>
+                    <div class="flow-title">Audio Output</div>
+                    <div class="flow-desc">DAC / I2S 喇叭輸出</div>
+                </div>
             </div>
 
             <h3>關鍵特性</h3>
@@ -149,38 +175,63 @@ bsp/hal/inc/
             <p>Connected Isochronous Stream（CIS）提供點對點的雙向音訊傳輸，適用於耳機、助聽器等需要穩定連線的場景。</p>
 
             <h3>CIS 架構</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">單播音訊架構</span>
+            <div class="comparison-grid">
+                <div class="comparison-side">
+                    <div class="comparison-title">Unicast Server (耳機端)</div>
+                    <div class="comparison-items">
+                        <span class="pill">BAP Acceptor</span>
+                        <span class="pill">VCP Renderer</span>
+                        <span class="pill">MCS Server</span>
+                        <span class="pill">CAP Acceptor</span>
+                    </div>
                 </div>
-                <pre><code>┌─────────────────┐          CIS          ┌──────────────────┐
-│   Unicast Server │◄═══════════════════►│  Unicast Client   │
-│   (耳機端)       │                       │  (手機端)         │
-│                  │    ┌──────────────┐   │                  │
-│  BAP Acceptor    │◄───│ Audio Stream │───│  BAP Initiator   │
-│  VCP Renderer    │    │  (LC3 Data)  │   │  VCP Controller  │
-│  MCS Server      │    └──────────────┘   │  MCC Client      │
-│  CAP Acceptor    │                       │  CAP Initiator   │
-└─────────────────┘                       └──────────────────┘</code></pre>
+                <div class="comparison-connector">
+                    <i class="fas fa-arrows-left-right"></i>
+                    <div class="comparison-label">CIS (LC3 Audio Stream)</div>
+                </div>
+                <div class="comparison-side">
+                    <div class="comparison-title">Unicast Client (手機端)</div>
+                    <div class="comparison-items">
+                        <span class="pill">BAP Initiator</span>
+                        <span class="pill">VCP Controller</span>
+                        <span class="pill">MCC Client</span>
+                        <span class="pill">CAP Initiator</span>
+                    </div>
+                </div>
             </div>
 
             <h3>BAP 單播流程</h3>
             <p>Basic Audio Profile（BAP）負責管理音訊串流的建立與控制，流程如下：</p>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">BAP 單播連線流程</span>
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <div class="flow-number">1</div>
+                    <div class="flow-title">Discover PACS</div>
+                    <div class="flow-desc">查詢支援的音訊能力</div>
                 </div>
-                <pre><code>Unicast Client                           Unicast Server
-     │                                        │
-     │──── 1. Discover PACS ────────────────►│  查詢支援的音訊能力
-     │◄─── 2. PAC Records ──────────────────│  回傳編碼器/取樣率
-     │                                        │
-     │──── 3. Configure ASE ─────────────────►│  設定音訊串流端點
-     │──── 4. Establish CIS ─────────────────►│  建立等時通道
-     │──── 5. Enable Stream ─────────────────►│  啟動音訊傳輸
-     │                                        │
-     │◄═══ 6. Audio Data (LC3) ══════════════►│  雙向音訊串流
-     │                                        │</code></pre>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">2</div>
+                    <div class="flow-title">PAC Records</div>
+                    <div class="flow-desc">回傳編碼器/取樣率</div>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">3</div>
+                    <div class="flow-title">Configure ASE</div>
+                    <div class="flow-desc">設定音訊串流端點</div>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">4</div>
+                    <div class="flow-title">Establish CIS</div>
+                    <div class="flow-desc">建立等時通道</div>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">5</div>
+                    <div class="flow-title">Enable Stream</div>
+                    <div class="flow-desc">啟動音訊傳輸</div>
+                </div>
             </div>
 
             <h3>耳機端範例程式碼</h3>
@@ -219,22 +270,26 @@ int bap_server_init(void)
             <p>Broadcast Isochronous Stream（BIS）提供一對多的單向音訊傳輸，接收端無需建立連線即可收聽。這是 Auracast 技術的基礎。</p>
 
             <h3>BIS 架構</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">廣播音訊架構</span>
+            <div class="broadcast-diagram">
+                <div class="broadcast-source">
+                    <div class="broadcast-source-title">Broadcast Source</div>
+                    <div class="broadcast-source-items">
+                        <span class="pill">BAP Source</span>
+                        <span class="pill">Audio Encoder</span>
+                        <span class="pill">BIG 管理</span>
+                    </div>
                 </div>
-                <pre><code>                              BIS (無需連線)
-┌───────────────────┐        ┌──────────────────┐
-│  Broadcast Source  │═══════►│  Broadcast Sink  │  接收端 1
-│  (廣播端)          │        └──────────────────┘
-│                    │        ┌──────────────────┐
-│  BAP Source        │═══════►│  Broadcast Sink  │  接收端 2
-│  Audio Encoder     │        └──────────────────┘
-│  BIG 管理          │        ┌──────────────────┐
-│                    │═══════►│  Broadcast Sink  │  接收端 N
-└───────────────────┘        └──────────────────┘
-
-適用場景：對講機、公共廣播、助聽器、導覽系統</code></pre>
+                <div class="broadcast-arrows">
+                    <div class="broadcast-arrow"><i class="fas fa-arrow-right"></i></div>
+                    <div class="broadcast-arrow"><i class="fas fa-arrow-right"></i></div>
+                    <div class="broadcast-arrow"><i class="fas fa-arrow-right"></i></div>
+                </div>
+                <div class="broadcast-sinks">
+                    <div class="broadcast-sink">Broadcast Sink 1</div>
+                    <div class="broadcast-sink">Broadcast Sink 2</div>
+                    <div class="broadcast-sink">Broadcast Sink N</div>
+                </div>
+                <div class="broadcast-note">BIS (無需連線) -- 適用場景：對講機、公共廣播、助聽器、導覽系統</div>
             </div>
 
             <h3>廣播端範例</h3>

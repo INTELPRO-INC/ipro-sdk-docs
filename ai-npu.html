@@ -94,25 +94,25 @@ title: AI 與 NPU
             <h3>支援的算子</h3>
             <p>NPU 硬體加速支援以下算子，其餘算子由 CPU 端 fallback 執行：</p>
 
-            <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+            <table>
                 <thead>
-                    <tr style="border-bottom: 2px solid var(--border-color);">
-                        <th style="padding: 0.75rem; text-align: left;">執行端</th>
-                        <th style="padding: 0.75rem; text-align: left;">支援算子</th>
+                    <tr>
+                        <th>執行端</th>
+                        <th>支援算子</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>NPU</strong></td>
-                        <td style="padding: 0.75rem;">Convolution, Depthwise Conv, MaxPool, AvgPool, Fully Connected, MatMul, Activation (ReLU/ReLU6/Leaky)</td>
+                    <tr>
+                        <td><strong>NPU</strong></td>
+                        <td>Convolution, Depthwise Conv, MaxPool, AvgPool, Fully Connected, MatMul, Activation (ReLU/ReLU6/Leaky)</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>CPU</strong></td>
-                        <td style="padding: 0.75rem;">Softmax, YOLO, Route, Shortcut, Upsample, Reshape, Transpose, Pad, ArgMax, Resize Bilinear, SSD, Gather, Mean, Dequantize</td>
+                    <tr>
+                        <td><strong>CPU</strong></td>
+                        <td>Softmax, YOLO, Route, Shortcut, Upsample, Reshape, Transpose, Pad, ArgMax, Resize Bilinear, SSD, Gather, Mean, Dequantize</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>Activation</strong></td>
-                        <td style="padding: 0.75rem;">Leaky, ReLU, Linear, ReLU6, Mish, ELU, Logistic, Swish, GELU, Tanh, PReLU</td>
+                    <tr>
+                        <td><strong>Activation</strong></td>
+                        <td>Leaky, ReLU, Linear, ReLU6, Mish, ELU, Logistic, Swish, GELU, Tanh, PReLU</td>
                     </tr>
                 </tbody>
             </table>
@@ -284,39 +284,39 @@ CONFIG_AI_PREBUILT_PATH="components/ai/prebuilt/libai.a"</code></pre>
             <h2>支援模型</h2>
             <p>SDK 內建多種 YOLOv8 偵測模型，使用 <code>.blai</code> 格式。所有模型接受 640x360 RGB888 輸入：</p>
 
-            <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+            <table>
                 <thead>
-                    <tr style="border-bottom: 2px solid var(--border-color);">
-                        <th style="padding: 0.75rem; text-align: left;">模型</th>
-                        <th style="padding: 0.75rem; text-align: left;">類別</th>
-                        <th style="padding: 0.75rem; text-align: left;">輸出層</th>
-                        <th style="padding: 0.75rem; text-align: left;">說明</th>
+                    <tr>
+                        <th>模型</th>
+                        <th>類別</th>
+                        <th>輸出層</th>
+                        <th>說明</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><code>person_detect.blai</code></td>
-                        <td style="padding: 0.75rem;">person (1)</td>
-                        <td style="padding: 0.75rem;">4</td>
-                        <td style="padding: 0.75rem;">人形偵測</td>
+                    <tr>
+                        <td><code>person_detect.blai</code></td>
+                        <td>person (1)</td>
+                        <td>4</td>
+                        <td>人形偵測</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><code>person_pet_detect.blai</code></td>
-                        <td style="padding: 0.75rem;">person, pet (2)</td>
-                        <td style="padding: 0.75rem;">6</td>
-                        <td style="padding: 0.75rem;">人形 + 寵物偵測（3 box + 3 class）</td>
+                    <tr>
+                        <td><code>person_pet_detect.blai</code></td>
+                        <td>person, pet (2)</td>
+                        <td>6</td>
+                        <td>人形 + 寵物偵測（3 box + 3 class）</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><code>pet_detect.blai</code></td>
-                        <td style="padding: 0.75rem;">pet (1)</td>
-                        <td style="padding: 0.75rem;">4</td>
-                        <td style="padding: 0.75rem;">寵物偵測</td>
+                    <tr>
+                        <td><code>pet_detect.blai</code></td>
+                        <td>pet (1)</td>
+                        <td>4</td>
+                        <td>寵物偵測</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><code>face_detect.blai</code></td>
-                        <td style="padding: 0.75rem;">face (1)</td>
-                        <td style="padding: 0.75rem;">4</td>
-                        <td style="padding: 0.75rem;">人臉偵測</td>
+                    <tr>
+                        <td><code>face_detect.blai</code></td>
+                        <td>face (1)</td>
+                        <td>4</td>
+                        <td>人臉偵測</td>
                     </tr>
                 </tbody>
             </table>
@@ -478,33 +478,33 @@ void isp_frame_callback(uint32_t buffer_addr)
             <h2>效能與優化</h2>
 
             <h3>效能參考</h3>
-            <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+            <table>
                 <thead>
-                    <tr style="border-bottom: 2px solid var(--border-color);">
-                        <th style="padding: 0.75rem; text-align: left;">指標</th>
-                        <th style="padding: 0.75rem; text-align: left;">數值</th>
+                    <tr>
+                        <th>指標</th>
+                        <th>數值</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">NPU 峰值算力</td>
-                        <td style="padding: 0.75rem;">0.1 TOPS (INT8)</td>
+                    <tr>
+                        <td>NPU 峰值算力</td>
+                        <td>0.1 TOPS (INT8)</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">量化精度</td>
-                        <td style="padding: 0.75rem;">INT8 (per-channel)</td>
+                    <tr>
+                        <td>量化精度</td>
+                        <td>INT8 (per-channel)</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">輸入格式</td>
-                        <td style="padding: 0.75rem;">640x360 RGB888 / ARGB</td>
+                    <tr>
+                        <td>輸入格式</td>
+                        <td>640x360 RGB888 / ARGB</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">YOLOv8 偵測閾值</td>
-                        <td style="padding: 0.75rem;">Confidence: 0.25, IoU: 0.45</td>
+                    <tr>
+                        <td>YOLOv8 偵測閾值</td>
+                        <td>Confidence: 0.25, IoU: 0.45</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">最大偵測數量</td>
-                        <td style="padding: 0.75rem;">50（NMS 後）</td>
+                    <tr>
+                        <td>最大偵測數量</td>
+                        <td>50（NMS 後）</td>
                     </tr>
                 </tbody>
             </table>

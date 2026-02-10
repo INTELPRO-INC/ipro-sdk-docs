@@ -29,7 +29,7 @@ title: VS Code Extension - IPRO SDK
             <p>IPRO SDK Extension 是一套完整的開發工具套件，包含兩個互相協作的擴充套件：</p>
 
             <div class="info-box">
-                <h4>🔧 IPRO SDK Extension (v0.0.7)</h4>
+                <h4><i class="fas fa-wrench"></i> IPRO SDK Extension (v0.0.7)</h4>
                 <p>主要開發擴充套件，安裝於遠端伺服器或本地環境</p>
                 <ul>
                     <li>專案管理與配置</li>
@@ -40,7 +40,7 @@ title: VS Code Extension - IPRO SDK
             </div>
 
             <div class="info-box">
-                <h4>⚡ IPRO Flash Tool Extension (v1.0.0)</h4>
+                <h4><i class="fas fa-bolt"></i> IPRO Flash Tool Extension (v1.0.0)</h4>
                 <p>燒錄工具擴充套件，安裝於本地 Windows 電腦</p>
                 <ul>
                     <li>本地燒錄執行</li>
@@ -83,32 +83,32 @@ title: VS Code Extension - IPRO SDK
 
             <div class="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon">🎯</div>
+                    <div class="feature-icon"><i class="fas fa-bullseye"></i></div>
                     <h3>智慧專案管理</h3>
                     <p>自動偵測 SDK 內的所有應用專案，提供下拉選單快速切換。</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🔧</div>
+                    <div class="feature-icon"><i class="fas fa-wrench"></i></div>
                     <h3>自動工具鏈偵測</h3>
                     <p>自動偵測 PATH 中的 cmake、ninja、riscv64-unknown-elf-gcc，無需手動配置。</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🔨</div>
+                    <div class="feature-icon"><i class="fas fa-hammer"></i></div>
                     <h3>一鍵建構</h3>
                     <p>整合 CMake + Ninja 建構系統，提供 Configure 和 Build 按鈕。</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
+                    <div class="feature-icon"><i class="fas fa-bolt"></i></div>
                     <h3>遠端燒錄</h3>
                     <p>透過 Base64 傳輸韌體到本地，支援即時進度顯示。</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">📊</div>
+                    <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
                     <h3>即時進度</h3>
                     <p>建構和燒錄過程中顯示即時進度條和詳細日誌。</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🔗</div>
+                    <div class="feature-icon"><i class="fas fa-link"></i></div>
                     <h3>Remote SSH 整合</h3>
                     <p>完整支援 VS Code Remote SSH，遠端編譯本地燒錄。</p>
                 </div>
@@ -163,7 +163,7 @@ C:\Program Files\IPRO\tools\download\ipro_iot_tool.exe</code></pre>
             <h3>安裝 Extensions</h3>
 
             <div class="warning-box">
-                <h4>⚠️ 重要安裝順序</h4>
+                <h4><i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> 重要安裝順序</h4>
                 <ul>
                     <li><strong>IPRO SDK Extension</strong>：安裝在 <strong>遠端伺服器</strong>（透過 Remote SSH）</li>
                     <li><strong>IPRO Flash Tool Extension</strong>：安裝在 <strong>本地</strong>（必須！）</li>
@@ -246,10 +246,10 @@ C:\Program Files\IPRO\tools\download\ipro_iot_tool.exe</code></pre>
                 </div>
                 <pre><code class="language-bash">[11:00:00 PM] 已載入專案: ipro_ble_demo
 [11:00:00 PM] 開始 Configure...
-[11:00:00 PM] 🔗 Remote workspace detected, using toolchain from PATH: riscv64-unknown-elf-
+[11:00:00 PM] <i class="fas fa-link"></i> Remote workspace detected, using toolchain from PATH: riscv64-unknown-elf-
 [11:00:01 PM] [CMake] Setting CC=/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-gcc, ...
 [11:00:02 PM] -- The C compiler identification is GNU 10.2.0
-[11:00:03 PM] ✅ Configure completed successfully</code></pre>
+[11:00:03 PM] <i class="fas fa-check-circle"></i> Configure completed successfully</code></pre>
             </div>
 
             <h3>Build 輸出範例</h3>
@@ -260,7 +260,7 @@ C:\Program Files\IPRO\tools\download\ipro_iot_tool.exe</code></pre>
                 <pre><code class="language-bash">[11:01:00 PM] 開始 Build...
 [11:01:01 PM] [Build] [1/45] Building C object ...
 [11:01:30 PM] [Build] [45/45] Linking C executable ...
-[11:01:31 PM] ✅ Build completed successfully</code></pre>
+[11:01:31 PM] <i class="fas fa-check-circle"></i> Build completed successfully</code></pre>
             </div>
 
             <p>編譯完成後，韌體檔案位於：</p>
@@ -327,37 +327,37 @@ C:\Program Files\IPRO\tools\download\ipro_iot_tool.exe</code></pre>
                     <tbody>
                         <tr>
                             <td>5%</td>
-                            <td>✅ 連接裝置成功</td>
+                            <td><i class="fas fa-check-circle"></i> 連接裝置成功</td>
                             <td>與開發板建立連接</td>
                         </tr>
                         <tr>
                             <td>8%</td>
-                            <td>📌 偵測到 Flash 晶片</td>
+                            <td><i class="fas fa-thumbtack"></i> 偵測到 Flash 晶片</td>
                             <td>識別 Flash 型號</td>
                         </tr>
                         <tr>
                             <td>25-30%</td>
-                            <td>🔥 擦除主韌體區域</td>
+                            <td><i class="fas fa-fire"></i> 擦除主韌體區域</td>
                             <td>清除舊韌體</td>
                         </tr>
                         <tr>
                             <td>30-90%</td>
-                            <td>📝 寫入主韌體中</td>
+                            <td><i class="fas fa-pen-to-square"></i> 寫入主韌體中</td>
                             <td>燒錄新韌體</td>
                         </tr>
                         <tr>
                             <td>92%</td>
-                            <td>✅ 主韌體寫入完成</td>
+                            <td><i class="fas fa-check-circle"></i> 主韌體寫入完成</td>
                             <td>燒錄完成</td>
                         </tr>
                         <tr>
                             <td>96%</td>
-                            <td>✅ 主韌體驗證成功</td>
+                            <td><i class="fas fa-check-circle"></i> 主韌體驗證成功</td>
                             <td>校驗成功</td>
                         </tr>
                         <tr>
                             <td>100%</td>
-                            <td>🎉 燒錄完成！</td>
+                            <td><i class="fas fa-circle-check"></i> 燒錄完成！</td>
                             <td>全部完成</td>
                         </tr>
                     </tbody>
@@ -511,16 +511,16 @@ tools/board_test.sh --project apps/ipro_unit_test
             <div class="info-box">
                 <h4>v0.0.7 (2025-07-25)</h4>
                 <ul>
-                    <li>✅ Remote SSH 完整支援</li>
-                    <li>✅ 自動偵測遠端環境並使用 PATH 工具</li>
-                    <li>✅ Base64 韌體傳輸機制</li>
-                    <li>✅ 雙 Extension 協作架構</li>
-                    <li>✅ 即時燒錄進度同步</li>
-                    <li>✅ 本地燒錄工具自動配置</li>
-                    <li>🔧 簡化側邊欄介面</li>
-                    <li>🔧 優化 CMake 編譯器偵測</li>
-                    <li>🔧 改進錯誤訊息提示</li>
-                    <li>🔧 增強 BLE 專案配置支援</li>
+                    <li><i class="fas fa-check-circle"></i> Remote SSH 完整支援</li>
+                    <li><i class="fas fa-check-circle"></i> 自動偵測遠端環境並使用 PATH 工具</li>
+                    <li><i class="fas fa-check-circle"></i> Base64 韌體傳輸機制</li>
+                    <li><i class="fas fa-check-circle"></i> 雙 Extension 協作架構</li>
+                    <li><i class="fas fa-check-circle"></i> 即時燒錄進度同步</li>
+                    <li><i class="fas fa-check-circle"></i> 本地燒錄工具自動配置</li>
+                    <li><i class="fas fa-wrench"></i> 簡化側邊欄介面</li>
+                    <li><i class="fas fa-wrench"></i> 優化 CMake 編譯器偵測</li>
+                    <li><i class="fas fa-wrench"></i> 改進錯誤訊息提示</li>
+                    <li><i class="fas fa-wrench"></i> 增強 BLE 專案配置支援</li>
                 </ul>
             </div>
         </section>

@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize all components
     initNavigation();
     initDropdownMenus();
-    initLanguageSwitcher();
     initCodeHighlight();
     initTabs();
     initEnhancedCopyButtons();
@@ -25,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initImageLightbox();
     initHeroParallax();
     initCardTilt();
+    initTableWrappers();
 });
 
 // Navigation Toggle
@@ -129,31 +129,6 @@ function initDropdownMenus() {
     });
 }
 
-// Language Switcher
-function initLanguageSwitcher() {
-    const langSwitcher = document.querySelector('.lang-switcher');
-    if (!langSwitcher) return;
-    
-    const langBtn = langSwitcher.querySelector('.lang-btn');
-    const langMenu = langSwitcher.querySelector('.lang-menu');
-    
-    if (!langBtn || !langMenu) return;
-    
-    // Toggle on click for mobile
-    langBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        langSwitcher.classList.toggle('active');
-    });
-    
-    // Close when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!langSwitcher.contains(e.target)) {
-            langSwitcher.classList.remove('active');
-        }
-    });
-}
-
 // Code Highlight
 function initCodeHighlight() {
     if (typeof hljs !== 'undefined') {
@@ -186,49 +161,57 @@ function initTabs() {
 
 // Enhanced Copy to Clipboard - Works on all code blocks
 function initEnhancedCopyButtons() {
+    const isEn = document.documentElement.lang?.startsWith('en');
+    const copyText = isEn ? 'Copy' : '複製';
+    const copiedText = isEn ? 'Copied!' : '已複製!';
+    const failText = isEn ? 'Failed' : '失敗';
+    const ariaLabel = isEn ? 'Copy code' : '複製程式碼';
+
     // Find all pre elements and code-blocks
     const codeElements = document.querySelectorAll('pre, .code-block');
-    
+
     codeElements.forEach(element => {
         // Skip if already has a copy button
         if (element.querySelector('.copy-btn')) return;
-        
+
         const pre = element.tagName === 'PRE' ? element : element.querySelector('pre');
         if (!pre) return;
-        
+
         const code = pre.querySelector('code') || pre;
         if (!code.textContent.trim()) return;
-        
+
         // Create copy button
         const copyBtn = document.createElement('button');
         copyBtn.className = 'copy-btn';
-        copyBtn.innerHTML = '<i class="fas fa-copy"></i> 複製';
-        copyBtn.setAttribute('aria-label', '複製程式碼');
-        
+        copyBtn.innerHTML = '<i class="fas fa-copy"></i> ' + copyText;
+        copyBtn.setAttribute('aria-label', ariaLabel);
+
         // Handle click
         copyBtn.addEventListener('click', async (e) => {
             e.stopPropagation();
-            
+
             try {
                 await navigator.clipboard.writeText(code.textContent);
-                
+
                 // Success feedback
                 copyBtn.classList.add('copied');
-                copyBtn.innerHTML = '<i class="fas fa-check"></i> 已複製!';
-                
+                copyBtn.classList.add('copy-pulse');
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> ' + copiedText;
+
                 setTimeout(() => {
                     copyBtn.classList.remove('copied');
-                    copyBtn.innerHTML = '<i class="fas fa-copy"></i> 複製';
+                    copyBtn.classList.remove('copy-pulse');
+                    copyBtn.innerHTML = '<i class="fas fa-copy"></i> ' + copyText;
                 }, 2000);
             } catch (err) {
-                console.error('複製失敗:', err);
-                copyBtn.innerHTML = '<i class="fas fa-times"></i> 失敗';
+                console.error('Copy failed:', err);
+                copyBtn.innerHTML = '<i class="fas fa-times"></i> ' + failText;
                 setTimeout(() => {
-                    copyBtn.innerHTML = '<i class="fas fa-copy"></i> 複製';
+                    copyBtn.innerHTML = '<i class="fas fa-copy"></i> ' + copyText;
                 }, 2000);
             }
         });
-        
+
         // Add button to element
         if (element.classList.contains('code-block')) {
             element.appendChild(copyBtn);
@@ -237,32 +220,6 @@ function initEnhancedCopyButtons() {
             element.style.position = 'relative';
             element.appendChild(copyBtn);
         }
-    });
-}
-
-// Legacy copy buttons support
-function initCopyButtons() {
-    document.querySelectorAll('.code-copy-btn').forEach(btn => {
-        btn.addEventListener('click', async function() {
-            const codeBlock = this.closest('.code-block');
-            const code = codeBlock.querySelector('code').textContent;
-            
-            try {
-                await navigator.clipboard.writeText(code);
-                
-                // Visual feedback
-                const originalIcon = this.innerHTML;
-                this.innerHTML = '<i class="fas fa-check"></i>';
-                this.style.color = '#10b981';
-                
-                setTimeout(() => {
-                    this.innerHTML = originalIcon;
-                    this.style.color = '';
-                }, 2000);
-            } catch (err) {
-                console.error('Failed to copy:', err);
-            }
-        });
     });
 }
 
@@ -314,27 +271,26 @@ function initScrollAnimations() {
 function initActiveNavigation() {
     const sections = document.querySelectorAll('section[id]');
     const navLinks = document.querySelectorAll('.sidebar-link');
-    
-    window.addEventListener('scroll', () => {
-        let current = '';
-        const navbarHeight = document.querySelector('.navbar').offsetHeight;
-        
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop - navbarHeight - 100;
-            const sectionHeight = section.offsetHeight;
-            
-            if (window.pageYOffset >= sectionTop && window.pageYOffset < sectionTop + sectionHeight) {
-                current = section.getAttribute('id');
+
+    if (!sections.length || !navLinks.length) return;
+
+    const navbarHeight = document.querySelector('.navbar')?.offsetHeight || 70;
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.getAttribute('id');
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+                });
             }
         });
-        
-        navLinks.forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href') === '#' + current) {
-                link.classList.add('active');
-            }
-        });
+    }, {
+        rootMargin: `-${navbarHeight + 20}px 0px -60% 0px`,
+        threshold: 0
     });
+
+    sections.forEach(section => observer.observe(section));
 }
 
 // Particle Background Effect with Mouse Interaction
@@ -1250,6 +1206,17 @@ function initCardTilt() {
         card.addEventListener('mouseleave', () => {
             card.style.transform = '';
         });
+    });
+}
+
+// Auto-wrap tables for mobile scroll
+function initTableWrappers() {
+    document.querySelectorAll('.doc-content table').forEach(table => {
+        if (table.parentElement.classList.contains('table-wrapper')) return;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'table-wrapper';
+        table.parentNode.insertBefore(wrapper, table);
+        wrapper.appendChild(table);
     });
 }
 

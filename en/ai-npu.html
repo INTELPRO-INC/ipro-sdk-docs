@@ -95,25 +95,25 @@ lang: en
             <h3>Supported Operators</h3>
             <p>The NPU hardware accelerates the following operators. All other operators fall back to CPU execution:</p>
 
-            <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+            <table>
                 <thead>
-                    <tr style="border-bottom: 2px solid var(--border-color);">
-                        <th style="padding: 0.75rem; text-align: left;">Backend</th>
-                        <th style="padding: 0.75rem; text-align: left;">Supported Operators</th>
+                    <tr>
+                        <th>Backend</th>
+                        <th>Supported Operators</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>NPU</strong></td>
-                        <td style="padding: 0.75rem;">Convolution, Depthwise Conv, MaxPool, AvgPool, Fully Connected, MatMul, Activation (ReLU/ReLU6/Leaky)</td>
+                    <tr>
+                        <td><strong>NPU</strong></td>
+                        <td>Convolution, Depthwise Conv, MaxPool, AvgPool, Fully Connected, MatMul, Activation (ReLU/ReLU6/Leaky)</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>CPU</strong></td>
-                        <td style="padding: 0.75rem;">Softmax, YOLO, Route, Shortcut, Upsample, Reshape, Transpose, Pad, ArgMax, Resize Bilinear, SSD, Gather, Mean, Dequantize</td>
+                    <tr>
+                        <td><strong>CPU</strong></td>
+                        <td>Softmax, YOLO, Route, Shortcut, Upsample, Reshape, Transpose, Pad, ArgMax, Resize Bilinear, SSD, Gather, Mean, Dequantize</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>Activations</strong></td>
-                        <td style="padding: 0.75rem;">Leaky, ReLU, Linear, ReLU6, Mish, ELU, Logistic, Swish, GELU, Tanh, PReLU</td>
+                    <tr>
+                        <td><strong>Activations</strong></td>
+                        <td>Leaky, ReLU, Linear, ReLU6, Mish, ELU, Logistic, Swish, GELU, Tanh, PReLU</td>
                     </tr>
                 </tbody>
             </table>
@@ -285,39 +285,39 @@ CONFIG_AI_PREBUILT_PATH="components/ai/prebuilt/libai.a"</code></pre>
             <h2>Supported Models</h2>
             <p>The SDK includes several pre-trained YOLOv8 detection models in <code>.blai</code> format. All models accept 640x360 RGB888 input:</p>
 
-            <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+            <table>
                 <thead>
-                    <tr style="border-bottom: 2px solid var(--border-color);">
-                        <th style="padding: 0.75rem; text-align: left;">Model</th>
-                        <th style="padding: 0.75rem; text-align: left;">Classes</th>
-                        <th style="padding: 0.75rem; text-align: left;">Output Layers</th>
-                        <th style="padding: 0.75rem; text-align: left;">Description</th>
+                    <tr>
+                        <th>Model</th>
+                        <th>Classes</th>
+                        <th>Output Layers</th>
+                        <th>Description</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><code>person_detect.blai</code></td>
-                        <td style="padding: 0.75rem;">person (1)</td>
-                        <td style="padding: 0.75rem;">4</td>
-                        <td style="padding: 0.75rem;">Person detection</td>
+                    <tr>
+                        <td><code>person_detect.blai</code></td>
+                        <td>person (1)</td>
+                        <td>4</td>
+                        <td>Person detection</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><code>person_pet_detect.blai</code></td>
-                        <td style="padding: 0.75rem;">person, pet (2)</td>
-                        <td style="padding: 0.75rem;">6</td>
-                        <td style="padding: 0.75rem;">Person + Pet detection (3 box + 3 class outputs)</td>
+                    <tr>
+                        <td><code>person_pet_detect.blai</code></td>
+                        <td>person, pet (2)</td>
+                        <td>6</td>
+                        <td>Person + Pet detection (3 box + 3 class outputs)</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><code>pet_detect.blai</code></td>
-                        <td style="padding: 0.75rem;">pet (1)</td>
-                        <td style="padding: 0.75rem;">4</td>
-                        <td style="padding: 0.75rem;">Pet detection</td>
+                    <tr>
+                        <td><code>pet_detect.blai</code></td>
+                        <td>pet (1)</td>
+                        <td>4</td>
+                        <td>Pet detection</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><code>face_detect.blai</code></td>
-                        <td style="padding: 0.75rem;">face (1)</td>
-                        <td style="padding: 0.75rem;">4</td>
-                        <td style="padding: 0.75rem;">Face detection</td>
+                    <tr>
+                        <td><code>face_detect.blai</code></td>
+                        <td>face (1)</td>
+                        <td>4</td>
+                        <td>Face detection</td>
                     </tr>
                 </tbody>
             </table>
@@ -479,33 +479,33 @@ void isp_frame_callback(uint32_t buffer_addr)
             <h2>Performance & Optimization</h2>
 
             <h3>Performance Reference</h3>
-            <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+            <table>
                 <thead>
-                    <tr style="border-bottom: 2px solid var(--border-color);">
-                        <th style="padding: 0.75rem; text-align: left;">Metric</th>
-                        <th style="padding: 0.75rem; text-align: left;">Value</th>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">NPU Peak Performance</td>
-                        <td style="padding: 0.75rem;">0.1 TOPS (INT8)</td>
+                    <tr>
+                        <td>NPU Peak Performance</td>
+                        <td>0.1 TOPS (INT8)</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">Quantization Precision</td>
-                        <td style="padding: 0.75rem;">INT8 (per-channel)</td>
+                    <tr>
+                        <td>Quantization Precision</td>
+                        <td>INT8 (per-channel)</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">Input Format</td>
-                        <td style="padding: 0.75rem;">640x360 RGB888 / ARGB</td>
+                    <tr>
+                        <td>Input Format</td>
+                        <td>640x360 RGB888 / ARGB</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">YOLOv8 Detection Thresholds</td>
-                        <td style="padding: 0.75rem;">Confidence: 0.25, IoU: 0.45</td>
+                    <tr>
+                        <td>YOLOv8 Detection Thresholds</td>
+                        <td>Confidence: 0.25, IoU: 0.45</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">Max Detections</td>
-                        <td style="padding: 0.75rem;">50 (after NMS)</td>
+                    <tr>
+                        <td>Max Detections</td>
+                        <td>50 (after NMS)</td>
                     </tr>
                 </tbody>
             </table>

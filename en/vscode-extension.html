@@ -30,7 +30,7 @@ title: VS Code Extension - IPRO SDK
             <p>IPRO SDK Extension is a complete development toolkit that includes two collaborative extensions:</p>
 
             <div class="info-box">
-                <h4>🔧 IPRO SDK Extension (v0.0.7)</h4>
+                <h4><i class="fas fa-wrench"></i> IPRO SDK Extension (v0.0.7)</h4>
                 <p>Main development extension, installed on remote server or local environment</p>
                 <ul>
                     <li>Project management and configuration</li>
@@ -41,7 +41,7 @@ title: VS Code Extension - IPRO SDK
             </div>
 
             <div class="info-box">
-                <h4>⚡ IPRO Flash Tool Extension (v1.0.0)</h4>
+                <h4><i class="fas fa-bolt"></i> IPRO Flash Tool Extension (v1.0.0)</h4>
                 <p>Flash tool extension, installed on local Windows computer</p>
                 <ul>
                     <li>Local flash execution</li>
@@ -84,32 +84,32 @@ title: VS Code Extension - IPRO SDK
 
             <div class="features-grid">
                 <div class="feature-card">
-                    <div class="feature-icon">🎯</div>
+                    <div class="feature-icon"><i class="fas fa-bullseye"></i></div>
                     <h3>Smart Project Management</h3>
                     <p>Automatically detects all application projects in the SDK, providing a dropdown menu for quick switching.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🔧</div>
+                    <div class="feature-icon"><i class="fas fa-wrench"></i></div>
                     <h3>Automatic Toolchain Detection</h3>
                     <p>Automatically detects cmake, ninja, and riscv64-unknown-elf-gcc in PATH, no manual configuration required.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🔨</div>
+                    <div class="feature-icon"><i class="fas fa-hammer"></i></div>
                     <h3>One-Click Build</h3>
                     <p>Integrated CMake + Ninja build system, providing Configure and Build buttons.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
+                    <div class="feature-icon"><i class="fas fa-bolt"></i></div>
                     <h3>Remote Flashing</h3>
                     <p>Transfers firmware to local via Base64, supporting real-time progress display.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">📊</div>
+                    <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
                     <h3>Real-time Progress</h3>
                     <p>Displays real-time progress bars and detailed logs during build and flash processes.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🔗</div>
+                    <div class="feature-icon"><i class="fas fa-link"></i></div>
                     <h3>Remote SSH Integration</h3>
                     <p>Full support for VS Code Remote SSH, remote compilation with local flashing.</p>
                 </div>
@@ -164,7 +164,7 @@ C:\Program Files\IPRO\tools\download\ipro_iot_tool.exe</code></pre>
             <h3>Install Extensions</h3>
 
             <div class="warning-box">
-                <h4>⚠️ Important Installation Order</h4>
+                <h4><i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> Important Installation Order</h4>
                 <ul>
                     <li><strong>IPRO SDK Extension</strong>: Install on <strong>remote server</strong> (via Remote SSH)</li>
                     <li><strong>IPRO Flash Tool Extension</strong>: Install on <strong>local</strong> (required!)</li>
@@ -247,10 +247,10 @@ C:\Program Files\IPRO\tools\download\ipro_iot_tool.exe</code></pre>
                 </div>
                 <pre><code class="language-bash">[11:00:00 PM] Loaded project: ipro_ble_demo
 [11:00:00 PM] Starting Configure...
-[11:00:00 PM] 🔗 Remote workspace detected, using toolchain from PATH: riscv64-unknown-elf-
+[11:00:00 PM] <i class="fas fa-link"></i> Remote workspace detected, using toolchain from PATH: riscv64-unknown-elf-
 [11:00:01 PM] [CMake] Setting CC=/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-gcc, ...
 [11:00:02 PM] -- The C compiler identification is GNU 10.2.0
-[11:00:03 PM] ✅ Configure completed successfully</code></pre>
+[11:00:03 PM] <i class="fas fa-check-circle"></i> Configure completed successfully</code></pre>
             </div>
 
             <h3>Build Output Example</h3>
@@ -261,7 +261,7 @@ C:\Program Files\IPRO\tools\download\ipro_iot_tool.exe</code></pre>
                 <pre><code class="language-bash">[11:01:00 PM] Starting Build...
 [11:01:01 PM] [Build] [1/45] Building C object ...
 [11:01:30 PM] [Build] [45/45] Linking C executable ...
-[11:01:31 PM] ✅ Build completed successfully</code></pre>
+[11:01:31 PM] <i class="fas fa-check-circle"></i> Build completed successfully</code></pre>
             </div>
 
             <p>After compilation, firmware files are located at:</p>
@@ -328,37 +328,37 @@ C:\Program Files\IPRO\tools\download\ipro_iot_tool.exe</code></pre>
                     <tbody>
                         <tr>
                             <td>5%</td>
-                            <td>✅ Device connected successfully</td>
+                            <td><i class="fas fa-check-circle"></i> Device connected successfully</td>
                             <td>Establishing connection with development board</td>
                         </tr>
                         <tr>
                             <td>8%</td>
-                            <td>📌 Flash chip detected</td>
+                            <td><i class="fas fa-thumbtack"></i> Flash chip detected</td>
                             <td>Identifying Flash model</td>
                         </tr>
                         <tr>
                             <td>25-30%</td>
-                            <td>🔥 Erasing main firmware area</td>
+                            <td><i class="fas fa-fire"></i> Erasing main firmware area</td>
                             <td>Clearing old firmware</td>
                         </tr>
                         <tr>
                             <td>30-90%</td>
-                            <td>📝 Writing main firmware</td>
+                            <td><i class="fas fa-pen-to-square"></i> Writing main firmware</td>
                             <td>Flashing new firmware</td>
                         </tr>
                         <tr>
                             <td>92%</td>
-                            <td>✅ Main firmware write complete</td>
+                            <td><i class="fas fa-check-circle"></i> Main firmware write complete</td>
                             <td>Flash completed</td>
                         </tr>
                         <tr>
                             <td>96%</td>
-                            <td>✅ Main firmware verification successful</td>
+                            <td><i class="fas fa-check-circle"></i> Main firmware verification successful</td>
                             <td>Checksum passed</td>
                         </tr>
                         <tr>
                             <td>100%</td>
-                            <td>🎉 Flash complete!</td>
+                            <td><i class="fas fa-circle-check"></i> Flash complete!</td>
                             <td>All done</td>
                         </tr>
                     </tbody>
@@ -512,16 +512,16 @@ tools/board_test.sh --project apps/ipro_unit_test
             <div class="info-box">
                 <h4>v0.0.7 (2025-07-25)</h4>
                 <ul>
-                    <li>✅ Full Remote SSH support</li>
-                    <li>✅ Auto-detect remote environment and use PATH tools</li>
-                    <li>✅ Base64 firmware transfer mechanism</li>
-                    <li>✅ Dual Extension collaboration architecture</li>
-                    <li>✅ Real-time flash progress synchronization</li>
-                    <li>✅ Local flash tool auto-configuration</li>
-                    <li>🔧 Simplified sidebar interface</li>
-                    <li>🔧 Optimized CMake compiler detection</li>
-                    <li>🔧 Improved error message prompts</li>
-                    <li>🔧 Enhanced BLE project configuration support</li>
+                    <li><i class="fas fa-check-circle"></i> Full Remote SSH support</li>
+                    <li><i class="fas fa-check-circle"></i> Auto-detect remote environment and use PATH tools</li>
+                    <li><i class="fas fa-check-circle"></i> Base64 firmware transfer mechanism</li>
+                    <li><i class="fas fa-check-circle"></i> Dual Extension collaboration architecture</li>
+                    <li><i class="fas fa-check-circle"></i> Real-time flash progress synchronization</li>
+                    <li><i class="fas fa-check-circle"></i> Local flash tool auto-configuration</li>
+                    <li><i class="fas fa-wrench"></i> Simplified sidebar interface</li>
+                    <li><i class="fas fa-wrench"></i> Optimized CMake compiler detection</li>
+                    <li><i class="fas fa-wrench"></i> Improved error message prompts</li>
+                    <li><i class="fas fa-wrench"></i> Enhanced BLE project configuration support</li>
                 </ul>
             </div>
         </section>

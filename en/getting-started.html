@@ -84,7 +84,7 @@ python3 --version</code></pre>
 
             <h3>1. Get SDK Source Code</h3>
             <div class="alert alert-info">
-                <strong>📋 Note:</strong> IPRO SDK source code is hosted on internal GitLab. Please contact your administrator for access.
+                <strong><i class="fas fa-clipboard-list"></i> Note:</strong> IPRO SDK source code is hosted on internal GitLab. Please contact your administrator for access.
             </div>
             <div class="code-block">
                 <div class="code-block-header">
@@ -119,7 +119,7 @@ ls /opt/toolchain/riscv_ipro7/bin/
             </div>
 
             <div class="alert alert-warning">
-                <strong>⚠️ Note:</strong> If your toolchain is in a different location, specify the <code>CROSS_COMPILE</code> parameter during build, e.g.: <code>CROSS_COMPILE=/your/path/bin/riscv64-unknown-elf-</code>.
+                <strong>Note:</strong> If your toolchain is in a different location, specify the <code>CROSS_COMPILE</code> parameter during build, e.g.: <code>CROSS_COMPILE=/your/path/bin/riscv64-unknown-elf-</code>.
             </div>
         </section>
 
@@ -299,7 +299,7 @@ ls -la apps/bluetooth/ipro_ble_remote/build/build_out/
             </div>
 
             <div class="alert alert-success">
-                <strong>✅ Success!</strong> If the build completes without errors, you have successfully set up the IPRO SDK development environment.
+                <strong><i class="fas fa-check-circle"></i> Success!</strong> If the build completes without errors, you have successfully set up the IPRO SDK development environment.
             </div>
         </section>
 
@@ -339,7 +339,7 @@ CONFIG_TEST_AUTO_RUN=y</code></pre>
             </div>
 
             <div class="alert alert-info">
-                <strong>💡 Tip:</strong> <code>CONFIG_CPU_ID</code> must be correctly set in <code>.config</code> for the toolchain to detect the proper architecture flags. <code>cmake/toolchain.cmake</code> auto-detects vendor GCC vs standard GCC and adjusts compiler flags accordingly.
+                <strong>Tip:</strong> <code>CONFIG_CPU_ID</code> must be correctly set in <code>.config</code> for the toolchain to detect the proper architecture flags. <code>cmake/toolchain.cmake</code> auto-detects vendor GCC vs standard GCC and adjusts compiler flags accordingly.
             </div>
         </section>
 
@@ -363,7 +363,7 @@ tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
             </div>
 
             <div class="alert alert-warning">
-                <strong>⚠️ macOS Note:</strong> Serial ports must use <code>/dev/cu.*</code> devices, not <code>/dev/tty.*</code>. The <code>tty.*</code> devices block waiting for the DCD signal. Linux users should use <code>/dev/ttyUSB0</code> or similar.
+                <strong>macOS Note:</strong> Serial ports must use <code>/dev/cu.*</code> devices, not <code>/dev/tty.*</code>. The <code>tty.*</code> devices block waiting for the DCD signal. Linux users should use <code>/dev/ttyUSB0</code> or similar.
             </div>
 
             <h3>Using Automated Test Script</h3>
@@ -396,7 +396,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
             </div>
 
             <div class="alert alert-info">
-                <strong>💡 Tip:</strong> On macOS, <code>cat</code> has buffering issues with serial ports. Use <code>serial_monitor.py</code> instead.
+                <strong>Tip:</strong> On macOS, <code>cat</code> has buffering issues with serial ports. Use <code>serial_monitor.py</code> instead.
             </div>
         </section>
 
@@ -427,7 +427,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
             </div>
 
             <div class="alert alert-info">
-                <strong>💡 Tip:</strong> Test applications need <code>CONFIG_TEST_AUTO_RUN=y</code> enabled. Tests run automatically on boot. Result markers are <code>ALL TESTS PASSED</code> or <code>SOME TESTS FAILED</code>.
+                <strong>Tip:</strong> Test applications need <code>CONFIG_TEST_AUTO_RUN=y</code> enabled. Tests run automatically on boot. Result markers are <code>ALL TESTS PASSED</code> or <code>SOME TESTS FAILED</code>.
             </div>
         </section>
 
@@ -540,22 +540,22 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
 
             <div class="features-grid" style="margin-top: 2rem;">
                 <a href="{{ '/en/architecture' | relative_url }}" class="feature-card" style="text-decoration: none;">
-                    <div class="feature-icon">🏗️</div>
+                    <div class="feature-icon"><i class="fas fa-layer-group"></i></div>
                     <h3 class="feature-title">Understand Architecture</h3>
                     <p class="feature-description">Deep dive into the SDK's layered design and component relationships.</p>
                 </a>
                 <a href="{{ '/en/ble-development' | relative_url }}" class="feature-card" style="text-decoration: none;">
-                    <div class="feature-icon">📡</div>
+                    <div class="feature-icon"><i class="fas fa-satellite-dish"></i></div>
                     <h3 class="feature-title">BLE Development</h3>
                     <p class="feature-description">Learn how to develop wireless applications using BLE 5.4 features.</p>
                 </a>
                 <a href="{{ '/en/applications' | relative_url }}" class="feature-card" style="text-decoration: none;">
-                    <div class="feature-icon">📦</div>
+                    <div class="feature-icon"><i class="fas fa-box"></i></div>
                     <h3 class="feature-title">Explore Examples</h3>
                     <p class="feature-description">Study implementation details of various reference applications.</p>
                 </a>
                 <a href="{{ '/en/vscode-extension' | relative_url }}" class="feature-card" style="text-decoration: none;">
-                    <div class="feature-icon">🛠️</div>
+                    <div class="feature-icon"><i class="fas fa-screwdriver-wrench"></i></div>
                     <h3 class="feature-title">Tools & Debugging</h3>
                     <p class="feature-description">Boost productivity with VS Code extension and development tools.</p>
                 </a>

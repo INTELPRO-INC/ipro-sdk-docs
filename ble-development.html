@@ -30,22 +30,23 @@ title: BLE 開發指南
             <h2>協定棧架構</h2>
             <p>BLE 協定棧採用 Host + Controller 雙層架構，透過片上 HCI 介面通訊（無 UART HCI 傳輸）：</p>
 
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">BLE 協定棧分層圖</span>
+            <div class="protocol-stack">
+                <div class="stack-layer stack-green">
+                    <div class="layer-name">Application Layer</div>
+                    <div class="layer-detail">GAP / GATT Services / Profiles</div>
                 </div>
-                <pre><code>┌──────────────────────────────────────────────┐
-│          Application Layer                    │
-│    GAP │ GATT Services │ Profiles             │
-├──────────────────────────────────────────────┤
-│          BLE Host (Zephyr-based)              │
-│    GAP │ GATT │ L2CAP │ SMP │ ISO            │
-├──────────────────────────────────────────────┤
-│          HCI (On-Chip)                        │
-├──────────────────────────────────────────────┤
-│          BLE Controller (RivieraWaves)        │
-│    Link Layer │ PHY (1M/2M/Coded)             │
-└──────────────────────────────────────────────┘</code></pre>
+                <div class="stack-layer stack-cyan">
+                    <div class="layer-name">BLE Host (Zephyr-based)</div>
+                    <div class="layer-detail">GAP / GATT / L2CAP / SMP / ISO</div>
+                </div>
+                <div class="stack-layer stack-amber">
+                    <div class="layer-name">HCI (On-Chip)</div>
+                    <div class="layer-detail">ipro_hci_wrapper</div>
+                </div>
+                <div class="stack-layer stack-red">
+                    <div class="layer-name">BLE Controller (RivieraWaves)</div>
+                    <div class="layer-detail">Link Layer / PHY (1M/2M/Coded)</div>
+                </div>
             </div>
 
             <h3>核心概念</h3>

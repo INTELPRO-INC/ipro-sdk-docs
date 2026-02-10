@@ -31,22 +31,23 @@ lang: en
             <h2>Stack Architecture</h2>
             <p>The BLE stack uses a Host + Controller dual-layer architecture, communicating through on-chip HCI (no UART HCI transport):</p>
 
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">BLE Stack Layer Diagram</span>
+            <div class="protocol-stack">
+                <div class="stack-layer stack-green">
+                    <div class="layer-name">Application Layer</div>
+                    <div class="layer-detail">GAP / GATT Services / Profiles</div>
                 </div>
-                <pre><code>┌──────────────────────────────────────────────┐
-│          Application Layer                    │
-│    GAP │ GATT Services │ Profiles             │
-├──────────────────────────────────────────────┤
-│          BLE Host (Zephyr-based)              │
-│    GAP │ GATT │ L2CAP │ SMP │ ISO            │
-├──────────────────────────────────────────────┤
-│          HCI (On-Chip)                        │
-├──────────────────────────────────────────────┤
-│          BLE Controller (RivieraWaves)        │
-│    Link Layer │ PHY (1M/2M/Coded)             │
-└──────────────────────────────────────────────┘</code></pre>
+                <div class="stack-layer stack-cyan">
+                    <div class="layer-name">BLE Host (Zephyr-based)</div>
+                    <div class="layer-detail">GAP / GATT / L2CAP / SMP / ISO</div>
+                </div>
+                <div class="stack-layer stack-amber">
+                    <div class="layer-name">HCI (On-Chip)</div>
+                    <div class="layer-detail">ipro_hci_wrapper</div>
+                </div>
+                <div class="stack-layer stack-red">
+                    <div class="layer-name">BLE Controller (RivieraWaves)</div>
+                    <div class="layer-detail">Link Layer / PHY (1M/2M/Coded)</div>
+                </div>
             </div>
 
             <h3>Core Concepts</h3>

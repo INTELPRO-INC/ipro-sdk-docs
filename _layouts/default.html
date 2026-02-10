@@ -226,6 +226,21 @@
 
     <!-- Main Content -->
     <main class="main-content">
+        {% unless page.url == '/' or page.url == '/en/' or page.url == '/index.html' or page.url == '/en/index.html' %}
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+            <div class="breadcrumb-container">
+                {% if page.lang == 'en' %}
+                <a href="{{ '/en/' | relative_url }}" class="breadcrumb-link">Home</a>
+                <i class="fas fa-chevron-right breadcrumb-sep"></i>
+                <span class="breadcrumb-current">{{ page.title }}</span>
+                {% else %}
+                <a href="{{ '/' | relative_url }}" class="breadcrumb-link">首頁</a>
+                <i class="fas fa-chevron-right breadcrumb-sep"></i>
+                <span class="breadcrumb-current">{{ page.title }}</span>
+                {% endif %}
+            </div>
+        </nav>
+        {% endunless %}
         {{ content }}
     </main>
 

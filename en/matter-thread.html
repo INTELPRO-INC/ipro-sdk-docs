@@ -31,7 +31,7 @@ lang: en
 
             <div class="features-grid" style="margin: 2rem 0;">
                 <div class="feature-card">
-                    <div class="feature-icon">🏠</div>
+                    <div class="feature-icon"><i class="fas fa-house"></i></div>
                     <h3 class="feature-title">Matter 1.4</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
                         <li>CSA unified smart home standard</li>
@@ -41,7 +41,7 @@ lang: en
                     </ul>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🕸️</div>
+                    <div class="feature-icon"><i class="fas fa-diagram-project"></i></div>
                     <h3 class="feature-title">Thread 1.2</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
                         <li>IEEE 802.15.4 low-power mesh network</li>
@@ -51,7 +51,7 @@ lang: en
                     </ul>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">📶</div>
+                    <div class="feature-icon"><i class="fas fa-wifi"></i></div>
                     <h3 class="feature-title">Multi-Transport</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
                         <li>Matter over Thread (low power)</li>
@@ -67,64 +67,65 @@ lang: en
             <h2>Matter Architecture</h2>
             <p>The Matter protocol is built on top of IP networking, using Thread or WiFi as the transport layer, and BLE for device commissioning:</p>
 
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Matter Protocol Stack Architecture</span>
+            <div class="protocol-stack">
+                <div class="stack-layer stack-green">
+                    <div class="layer-name">Application Layer</div>
+                    <div class="layer-detail">Lighting / Switch / Sensor</div>
                 </div>
-                <pre><code>┌─────────────────────────────────────────┐
-│          Application Layer              │
-│     Lighting │ Switch │ Sensor          │
-├─────────────────────────────────────────┤
-│          Matter SDK (1.4)               │
-│   Data Model │ Interaction Model        │
-│   Commissioning │ Security (CASE/PASE)  │
-├──────────────────┬──────────────────────┤
-│   Thread 1.2     │      WiFi 6          │
-│   (802.15.4)     │    (802.11ax)         │
-├──────────────────┴──────────────────────┤
-│          BLE (Commissioning)            │
-├─────────────────────────────────────────┤
-│          IPRO7 Hardware                 │
-│   802.15.4 Radio │ WiFi │ BLE Radio     │
-└─────────────────────────────────────────┘</code></pre>
+                <div class="stack-layer stack-cyan">
+                    <div class="layer-name">Matter SDK (1.4)</div>
+                    <div class="layer-detail">Data Model / Interaction Model / Commissioning / Security (CASE/PASE)</div>
+                </div>
+                <div class="stack-layer stack-purple">
+                    <div class="layer-name">Thread 1.2 (802.15.4) | WiFi 6 (802.11ax)</div>
+                    <div class="layer-detail">IP Transport Layer</div>
+                </div>
+                <div class="stack-layer stack-amber">
+                    <div class="layer-name">BLE (Commissioning)</div>
+                    <div class="layer-detail">Device commissioning channel</div>
+                </div>
+                <div class="stack-layer stack-red">
+                    <div class="layer-name">IPRO7 Hardware</div>
+                    <div class="layer-detail">802.15.4 Radio / WiFi / BLE Radio</div>
+                </div>
             </div>
 
             <h3>Matter Data Model</h3>
             <p>Matter uses a hierarchical data model to describe device capabilities:</p>
 
-            <table style="width: 100%; border-collapse: collapse; margin: 1.5rem 0;">
+            <table>
                 <thead>
-                    <tr style="border-bottom: 2px solid var(--border-color);">
-                        <th style="padding: 0.75rem; text-align: left;">Concept</th>
-                        <th style="padding: 0.75rem; text-align: left;">Description</th>
-                        <th style="padding: 0.75rem; text-align: left;">Example</th>
+                    <tr>
+                        <th>Concept</th>
+                        <th>Description</th>
+                        <th>Example</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>Node</strong></td>
-                        <td style="padding: 0.75rem;">An addressable Matter device</td>
-                        <td style="padding: 0.75rem;">A smart light bulb</td>
+                    <tr>
+                        <td><strong>Node</strong></td>
+                        <td>An addressable Matter device</td>
+                        <td>A smart light bulb</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>Endpoint</strong></td>
-                        <td style="padding: 0.75rem;">A functional unit on a Node</td>
-                        <td style="padding: 0.75rem;">Endpoint 0 (Root), Endpoint 1 (Light)</td>
+                    <tr>
+                        <td><strong>Endpoint</strong></td>
+                        <td>A functional unit on a Node</td>
+                        <td>Endpoint 0 (Root), Endpoint 1 (Light)</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>Cluster</strong></td>
-                        <td style="padding: 0.75rem;">A collection of related features</td>
-                        <td style="padding: 0.75rem;">OnOff, LevelControl, ColorControl</td>
+                    <tr>
+                        <td><strong>Cluster</strong></td>
+                        <td>A collection of related features</td>
+                        <td>OnOff, LevelControl, ColorControl</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>Attribute</strong></td>
-                        <td style="padding: 0.75rem;">A readable/writable state value</td>
-                        <td style="padding: 0.75rem;">OnOff.onOff, LevelControl.currentLevel</td>
+                    <tr>
+                        <td><strong>Attribute</strong></td>
+                        <td>A readable/writable state value</td>
+                        <td>OnOff.onOff, LevelControl.currentLevel</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>Command</strong></td>
-                        <td style="padding: 0.75rem;">An executable action</td>
-                        <td style="padding: 0.75rem;">OnOff.Toggle(), LevelControl.MoveToLevel()</td>
+                    <tr>
+                        <td><strong>Command</strong></td>
+                        <td>An executable action</td>
+                        <td>OnOff.Toggle(), LevelControl.MoveToLevel()</td>
                     </tr>
                 </tbody>
             </table>
@@ -155,67 +156,77 @@ lang: en
             <p>Thread is a mesh networking protocol designed for low-power IoT devices. Matter over Thread is ideal for battery-powered sensors, switches, and lighting devices.</p>
 
             <div class="alert alert-info">
-                <strong>💡</strong> Thread uses IEEE 802.15.4 radio, which operates in the 2.4 GHz ISM band with a different modulation scheme than WiFi/BLE. IPRO7 supports 802.15.4, WiFi, and BLE radios simultaneously.
+                <strong></strong> Thread uses IEEE 802.15.4 radio, which operates in the 2.4 GHz ISM band with a different modulation scheme than WiFi/BLE. IPRO7 supports 802.15.4, WiFi, and BLE radios simultaneously.
             </div>
 
             <h3>Thread Network Topology</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Thread Mesh Network Topology</span>
+            <div class="tree-diagram">
+                <div class="tree-level">
+                    <div class="tree-node tree-root">
+                        <div class="tree-node-label">Border Router</div>
+                        <div class="tree-node-detail">WiFi/Ethernet <i class="fas fa-arrow-right"></i> Internet</div>
+                    </div>
                 </div>
-                <pre><code>                    ┌──────────┐
-                    │  Border  │←── WiFi/Ethernet ──→ Internet
-                    │  Router  │
-                    └────┬─────┘
-                         │ Thread
-              ┌──────────┼──────────┐
-              │          │          │
-         ┌────┴───┐ ┌───┴────┐ ┌──┴─────┐
-         │ Router │ │ Leader │ │ Router │
-         │ (FTD)  │ │ (FTD)  │ │ (FTD)  │
-         └───┬────┘ └───┬────┘ └───┬────┘
-             │          │          │
-        ┌────┴───┐ ┌───┴────┐ ┌──┴─────┐
-        │  End   │ │  End   │ │ Sleepy │
-        │ Device │ │ Device │ │  End   │
-        │ (MTD)  │ │ (MTD)  │ │ Device │
-        └────────┘ └────────┘ └────────┘</code></pre>
+                <div class="tree-connector"></div>
+                <div class="tree-level">
+                    <div class="tree-node tree-branch">
+                        <div class="tree-node-label">Router (FTD)</div>
+                    </div>
+                    <div class="tree-node tree-branch">
+                        <div class="tree-node-label">Leader (FTD)</div>
+                    </div>
+                    <div class="tree-node tree-branch">
+                        <div class="tree-node-label">Router (FTD)</div>
+                    </div>
+                </div>
+                <div class="tree-connector"></div>
+                <div class="tree-level">
+                    <div class="tree-node tree-leaf">
+                        <div class="tree-node-label">End Device (MTD)</div>
+                    </div>
+                    <div class="tree-node tree-leaf">
+                        <div class="tree-node-label">End Device (MTD)</div>
+                    </div>
+                    <div class="tree-node tree-leaf">
+                        <div class="tree-node-label">Sleepy End Device</div>
+                    </div>
+                </div>
             </div>
 
             <h3>Device Roles</h3>
-            <table style="width: 100%; border-collapse: collapse; margin: 1.5rem 0;">
+            <table>
                 <thead>
-                    <tr style="border-bottom: 2px solid var(--border-color);">
-                        <th style="padding: 0.75rem; text-align: left;">Role</th>
-                        <th style="padding: 0.75rem; text-align: left;">Type</th>
-                        <th style="padding: 0.75rem; text-align: left;">Description</th>
+                    <tr>
+                        <th>Role</th>
+                        <th>Type</th>
+                        <th>Description</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>Leader</strong></td>
-                        <td style="padding: 0.75rem;">FTD</td>
-                        <td style="padding: 0.75rem;">Manages routing table and address allocation; one per partition</td>
+                    <tr>
+                        <td><strong>Leader</strong></td>
+                        <td>FTD</td>
+                        <td>Manages routing table and address allocation; one per partition</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>Router</strong></td>
-                        <td style="padding: 0.75rem;">FTD</td>
-                        <td style="padding: 0.75rem;">Forwards packets, maintains routing tables, supports child devices</td>
+                    <tr>
+                        <td><strong>Router</strong></td>
+                        <td>FTD</td>
+                        <td>Forwards packets, maintains routing tables, supports child devices</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>End Device</strong></td>
-                        <td style="padding: 0.75rem;">MTD</td>
-                        <td style="padding: 0.75rem;">Communicates only with parent router; does not forward packets</td>
+                    <tr>
+                        <td><strong>End Device</strong></td>
+                        <td>MTD</td>
+                        <td>Communicates only with parent router; does not forward packets</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>Sleepy End Device</strong></td>
-                        <td style="padding: 0.75rem;">MTD</td>
-                        <td style="padding: 0.75rem;">Sleeps most of the time; ideal for battery-powered devices</td>
+                    <tr>
+                        <td><strong>Sleepy End Device</strong></td>
+                        <td>MTD</td>
+                        <td>Sleeps most of the time; ideal for battery-powered devices</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>Border Router</strong></td>
-                        <td style="padding: 0.75rem;">FTD</td>
-                        <td style="padding: 0.75rem;">Bridges Thread and WiFi/Ethernet networks</td>
+                    <tr>
+                        <td><strong>Border Router</strong></td>
+                        <td>FTD</td>
+                        <td>Bridges Thread and WiFi/Ethernet networks</td>
                     </tr>
                 </tbody>
             </table>
@@ -244,44 +255,44 @@ lang: en
             </ul>
 
             <h3>Matter over Thread vs WiFi Comparison</h3>
-            <table style="width: 100%; border-collapse: collapse; margin: 1.5rem 0;">
+            <table>
                 <thead>
-                    <tr style="border-bottom: 2px solid var(--border-color);">
-                        <th style="padding: 0.75rem; text-align: left;">Feature</th>
-                        <th style="padding: 0.75rem; text-align: left;">Thread</th>
-                        <th style="padding: 0.75rem; text-align: left;">WiFi</th>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Thread</th>
+                        <th>WiFi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">Power Consumption</td>
-                        <td style="padding: 0.75rem;">Very low (battery-friendly)</td>
-                        <td style="padding: 0.75rem;">Higher (requires stable power)</td>
+                    <tr>
+                        <td>Power Consumption</td>
+                        <td>Very low (battery-friendly)</td>
+                        <td>Higher (requires stable power)</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">Bandwidth</td>
-                        <td style="padding: 0.75rem;">250 kbps</td>
-                        <td style="padding: 0.75rem;">Hundreds of Mbps</td>
+                    <tr>
+                        <td>Bandwidth</td>
+                        <td>250 kbps</td>
+                        <td>Hundreds of Mbps</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">Network Topology</td>
-                        <td style="padding: 0.75rem;">Mesh (self-healing)</td>
-                        <td style="padding: 0.75rem;">Star (AP-dependent)</td>
+                    <tr>
+                        <td>Network Topology</td>
+                        <td>Mesh (self-healing)</td>
+                        <td>Star (AP-dependent)</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">Border Router</td>
-                        <td style="padding: 0.75rem;">Required</td>
-                        <td style="padding: 0.75rem;">Not required</td>
+                    <tr>
+                        <td>Border Router</td>
+                        <td>Required</td>
+                        <td>Not required</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">Max Nodes</td>
-                        <td style="padding: 0.75rem;">250+ (mesh scaling)</td>
-                        <td style="padding: 0.75rem;">Limited by AP capacity</td>
+                    <tr>
+                        <td>Max Nodes</td>
+                        <td>250+ (mesh scaling)</td>
+                        <td>Limited by AP capacity</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">Ideal Devices</td>
-                        <td style="padding: 0.75rem;">Sensors, switches, lights</td>
-                        <td style="padding: 0.75rem;">Cameras, displays, speakers</td>
+                    <tr>
+                        <td>Ideal Devices</td>
+                        <td>Sensors, switches, lights</td>
+                        <td>Cameras, displays, speakers</td>
                     </tr>
                 </tbody>
             </table>
@@ -524,7 +535,7 @@ CONFIG_OPENTHREAD_LOG_LEVEL=3</code></pre>
             </div>
 
             <div class="alert alert-info">
-                <strong>💡</strong> Disabling unused features can significantly save memory: Commissioner/Joiner requires ~150KB (DTLS/SSL), Border Router ~30KB, ECDSA ~15KB, SRP Client ~20KB.
+                <strong></strong> Disabling unused features can significantly save memory: Commissioner/Joiner requires ~150KB (DTLS/SSL), Border Router ~30KB, ECDSA ~15KB, SRP Client ~20KB.
             </div>
 
             <h3>Selecting Matter over Thread vs WiFi</h3>

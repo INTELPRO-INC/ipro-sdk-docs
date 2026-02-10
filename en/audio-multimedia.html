@@ -102,31 +102,57 @@ bsp/hal/inc/
             <p>LE Audio is the next-generation Bluetooth audio standard introduced in BLE 5.2. It uses ISO Channels (Isochronous Channels) to transmit audio data, replacing the traditional Classic Audio A2DP/HFP approach.</p>
 
             <h3>Transmit Pipeline</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">LE Audio Transmit Path</span>
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <div class="flow-number">1</div>
+                    <div class="flow-title">Audio Input</div>
+                    <div class="flow-desc">AUADC / I2S PCM samples</div>
                 </div>
-                <pre><code>┌────────────┐    ┌──────────┐    ┌──────────────┐    ┌──────────┐
-│ Audio Input │───&gt;│ LC3/Opus │───&gt;│ ISO Channel  │───&gt;│ BLE PHY  │
-│ (AUADC/I2S)│    │ Encoder  │    │ (CIS or BIS) │    │          │
-└────────────┘    └──────────┘    └──────────────┘    └──────────┘
-
-  Microphone/I2S    Audio Encode     Isochronous Ch     Wireless TX
-  PCM samples       32-320 kbps      Scheduled TX        2M PHY</code></pre>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">2</div>
+                    <div class="flow-title">LC3/Opus</div>
+                    <div class="flow-desc">Audio encode 32-320 kbps</div>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">3</div>
+                    <div class="flow-title">ISO Channel</div>
+                    <div class="flow-desc">CIS or BIS isochronous</div>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">4</div>
+                    <div class="flow-title">BLE PHY</div>
+                    <div class="flow-desc">2M PHY wireless TX</div>
+                </div>
             </div>
 
             <h3>Receive Pipeline</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">LE Audio Receive Path</span>
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <div class="flow-number">1</div>
+                    <div class="flow-title">BLE PHY</div>
+                    <div class="flow-desc">2M PHY wireless RX</div>
                 </div>
-                <pre><code>┌──────────┐    ┌──────────────┐    ┌──────────┐    ┌─────────────┐
-│ BLE PHY  │───&gt;│ ISO Channel  │───&gt;│ LC3/Opus │───&gt;│ Audio Output│
-│          │    │ (CIS or BIS) │    │ Decoder  │    │ (DAC/I2S)   │
-└──────────┘    └──────────────┘    └──────────┘    └─────────────┘
-
-  Wireless RX       Isochronous Ch    Audio Decode      DAC/I2S
-  2M PHY            Data reassembly   PCM recovery      Speaker out</code></pre>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">2</div>
+                    <div class="flow-title">ISO Channel</div>
+                    <div class="flow-desc">CIS or BIS reassembly</div>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">3</div>
+                    <div class="flow-title">LC3/Opus</div>
+                    <div class="flow-desc">Audio decode PCM recovery</div>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">4</div>
+                    <div class="flow-title">Audio Output</div>
+                    <div class="flow-desc">DAC / I2S speaker out</div>
+                </div>
             </div>
 
             <h3>Key Specifications</h3>
@@ -150,38 +176,63 @@ bsp/hal/inc/
             <p>Connected Isochronous Stream (CIS) provides point-to-point bidirectional audio transport, suitable for headsets, hearing aids, and other scenarios requiring a stable connection.</p>
 
             <h3>CIS Architecture</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Unicast Audio Architecture</span>
+            <div class="comparison-grid">
+                <div class="comparison-side">
+                    <div class="comparison-title">Unicast Server (Headset)</div>
+                    <div class="comparison-items">
+                        <span class="pill">BAP Acceptor</span>
+                        <span class="pill">VCP Renderer</span>
+                        <span class="pill">MCS Server</span>
+                        <span class="pill">CAP Acceptor</span>
+                    </div>
                 </div>
-                <pre><code>┌─────────────────┐          CIS          ┌──────────────────┐
-│   Unicast Server │◄═══════════════════►│  Unicast Client   │
-│   (Headset)      │                       │  (Phone)          │
-│                  │    ┌──────────────┐   │                  │
-│  BAP Acceptor    │◄───│ Audio Stream │───│  BAP Initiator   │
-│  VCP Renderer    │    │  (LC3 Data)  │   │  VCP Controller  │
-│  MCS Server      │    └──────────────┘   │  MCC Client      │
-│  CAP Acceptor    │                       │  CAP Initiator   │
-└─────────────────┘                       └──────────────────┘</code></pre>
+                <div class="comparison-connector">
+                    <i class="fas fa-arrows-left-right"></i>
+                    <div class="comparison-label">CIS (LC3 Audio Stream)</div>
+                </div>
+                <div class="comparison-side">
+                    <div class="comparison-title">Unicast Client (Phone)</div>
+                    <div class="comparison-items">
+                        <span class="pill">BAP Initiator</span>
+                        <span class="pill">VCP Controller</span>
+                        <span class="pill">MCC Client</span>
+                        <span class="pill">CAP Initiator</span>
+                    </div>
+                </div>
             </div>
 
             <h3>BAP Unicast Flow</h3>
             <p>Basic Audio Profile (BAP) manages audio stream establishment and control. The unicast connection flow is as follows:</p>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">BAP Unicast Connection Flow</span>
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <div class="flow-number">1</div>
+                    <div class="flow-title">Discover PACS</div>
+                    <div class="flow-desc">Query audio capabilities</div>
                 </div>
-                <pre><code>Unicast Client                           Unicast Server
-     │                                        │
-     │──── 1. Discover PACS ────────────────►│  Query supported audio capabilities
-     │◄─── 2. PAC Records ──────────────────│  Return codec/sample rate support
-     │                                        │
-     │──── 3. Configure ASE ─────────────────►│  Configure Audio Stream Endpoint
-     │──── 4. Establish CIS ─────────────────►│  Create Isochronous Channel
-     │──── 5. Enable Stream ─────────────────►│  Start audio transmission
-     │                                        │
-     │◄═══ 6. Audio Data (LC3) ══════════════►│  Bidirectional audio streaming
-     │                                        │</code></pre>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">2</div>
+                    <div class="flow-title">PAC Records</div>
+                    <div class="flow-desc">Return codec/sample rate</div>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">3</div>
+                    <div class="flow-title">Configure ASE</div>
+                    <div class="flow-desc">Configure stream endpoint</div>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">4</div>
+                    <div class="flow-title">Establish CIS</div>
+                    <div class="flow-desc">Create isochronous channel</div>
+                </div>
+                <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="flow-step">
+                    <div class="flow-number">5</div>
+                    <div class="flow-title">Enable Stream</div>
+                    <div class="flow-desc">Start audio transmission</div>
+                </div>
             </div>
 
             <h3>Headset-Side Example Code</h3>
@@ -220,22 +271,26 @@ int bap_server_init(void)
             <p>Broadcast Isochronous Stream (BIS) provides one-to-many unidirectional audio transport. Receivers do not need to establish a connection to listen. This is the foundation of Auracast technology.</p>
 
             <h3>BIS Architecture</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Broadcast Audio Architecture</span>
+            <div class="broadcast-diagram">
+                <div class="broadcast-source">
+                    <div class="broadcast-source-title">Broadcast Source</div>
+                    <div class="broadcast-source-items">
+                        <span class="pill">BAP Source</span>
+                        <span class="pill">Audio Encoder</span>
+                        <span class="pill">BIG Management</span>
+                    </div>
                 </div>
-                <pre><code>                              BIS (Connectionless)
-┌───────────────────┐        ┌──────────────────┐
-│  Broadcast Source  │═══════►│  Broadcast Sink  │  Receiver 1
-│  (Transmitter)     │        └──────────────────┘
-│                    │        ┌──────────────────┐
-│  BAP Source        │═══════►│  Broadcast Sink  │  Receiver 2
-│  Audio Encoder     │        └──────────────────┘
-│  BIG Management    │        ┌──────────────────┐
-│                    │═══════►│  Broadcast Sink  │  Receiver N
-└───────────────────┘        └──────────────────┘
-
-Use cases: walkie-talkie, PA system, hearing aids, tour guides</code></pre>
+                <div class="broadcast-arrows">
+                    <div class="broadcast-arrow"><i class="fas fa-arrow-right"></i></div>
+                    <div class="broadcast-arrow"><i class="fas fa-arrow-right"></i></div>
+                    <div class="broadcast-arrow"><i class="fas fa-arrow-right"></i></div>
+                </div>
+                <div class="broadcast-sinks">
+                    <div class="broadcast-sink">Broadcast Sink 1</div>
+                    <div class="broadcast-sink">Broadcast Sink 2</div>
+                    <div class="broadcast-sink">Broadcast Sink N</div>
+                </div>
+                <div class="broadcast-note">BIS (Connectionless) -- Use cases: walkie-talkie, PA system, hearing aids, tour guides</div>
             </div>
 
             <h3>Broadcast Source Example</h3>

@@ -30,7 +30,7 @@ title: Matter & Thread 開發指南
 
             <div class="features-grid" style="margin: 2rem 0;">
                 <div class="feature-card">
-                    <div class="feature-icon">🏠</div>
+                    <div class="feature-icon"><i class="fas fa-house"></i></div>
                     <h3 class="feature-title">Matter 1.4</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
                         <li>CSA 統一智慧家庭標準</li>
@@ -40,7 +40,7 @@ title: Matter & Thread 開發指南
                     </ul>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">🕸️</div>
+                    <div class="feature-icon"><i class="fas fa-diagram-project"></i></div>
                     <h3 class="feature-title">Thread 1.2</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
                         <li>IEEE 802.15.4 低功耗網狀網路</li>
@@ -50,7 +50,7 @@ title: Matter & Thread 開發指南
                     </ul>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon">📶</div>
+                    <div class="feature-icon"><i class="fas fa-wifi"></i></div>
                     <h3 class="feature-title">多傳輸層</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
                         <li>Matter over Thread（低功耗）</li>
@@ -66,64 +66,65 @@ title: Matter & Thread 開發指南
             <h2>Matter 架構</h2>
             <p>Matter 協定建構在 IP 網路之上，透過 Thread 或 WiFi 作為傳輸層，並使用 BLE 進行裝置配網（Commissioning）：</p>
 
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Matter 協定棧架構</span>
+            <div class="protocol-stack">
+                <div class="stack-layer stack-green">
+                    <div class="layer-name">Application Layer</div>
+                    <div class="layer-detail">Lighting / Switch / Sensor</div>
                 </div>
-                <pre><code>┌─────────────────────────────────────────┐
-│          Application Layer              │
-│     Lighting │ Switch │ Sensor          │
-├─────────────────────────────────────────┤
-│          Matter SDK (1.4)               │
-│   Data Model │ Interaction Model        │
-│   Commissioning │ Security (CASE/PASE)  │
-├──────────────────┬──────────────────────┤
-│   Thread 1.2     │      WiFi 6          │
-│   (802.15.4)     │    (802.11ax)         │
-├──────────────────┴──────────────────────┤
-│          BLE (Commissioning)            │
-├─────────────────────────────────────────┤
-│          IPRO7 Hardware                 │
-│   802.15.4 Radio │ WiFi │ BLE Radio     │
-└─────────────────────────────────────────┘</code></pre>
+                <div class="stack-layer stack-cyan">
+                    <div class="layer-name">Matter SDK (1.4)</div>
+                    <div class="layer-detail">Data Model / Interaction Model / Commissioning / Security (CASE/PASE)</div>
+                </div>
+                <div class="stack-layer stack-purple">
+                    <div class="layer-name">Thread 1.2 (802.15.4) | WiFi 6 (802.11ax)</div>
+                    <div class="layer-detail">IP 傳輸層</div>
+                </div>
+                <div class="stack-layer stack-amber">
+                    <div class="layer-name">BLE (Commissioning)</div>
+                    <div class="layer-detail">裝置配網通道</div>
+                </div>
+                <div class="stack-layer stack-red">
+                    <div class="layer-name">IPRO7 Hardware</div>
+                    <div class="layer-detail">802.15.4 Radio / WiFi / BLE Radio</div>
+                </div>
             </div>
 
             <h3>Matter Data Model</h3>
             <p>Matter 使用分層式資料模型來描述裝置功能：</p>
 
-            <table style="width: 100%; border-collapse: collapse; margin: 1.5rem 0;">
+            <table>
                 <thead>
-                    <tr style="border-bottom: 2px solid var(--border-color);">
-                        <th style="padding: 0.75rem; text-align: left;">概念</th>
-                        <th style="padding: 0.75rem; text-align: left;">說明</th>
-                        <th style="padding: 0.75rem; text-align: left;">範例</th>
+                    <tr>
+                        <th>概念</th>
+                        <th>說明</th>
+                        <th>範例</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>Node</strong></td>
-                        <td style="padding: 0.75rem;">一個可定址的 Matter 裝置</td>
-                        <td style="padding: 0.75rem;">一個智慧燈泡</td>
+                    <tr>
+                        <td><strong>Node</strong></td>
+                        <td>一個可定址的 Matter 裝置</td>
+                        <td>一個智慧燈泡</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>Endpoint</strong></td>
-                        <td style="padding: 0.75rem;">Node 上的功能單元</td>
-                        <td style="padding: 0.75rem;">Endpoint 0（Root）、Endpoint 1（Light）</td>
+                    <tr>
+                        <td><strong>Endpoint</strong></td>
+                        <td>Node 上的功能單元</td>
+                        <td>Endpoint 0（Root）、Endpoint 1（Light）</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>Cluster</strong></td>
-                        <td style="padding: 0.75rem;">一組相關功能的集合</td>
-                        <td style="padding: 0.75rem;">OnOff、LevelControl、ColorControl</td>
+                    <tr>
+                        <td><strong>Cluster</strong></td>
+                        <td>一組相關功能的集合</td>
+                        <td>OnOff、LevelControl、ColorControl</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>Attribute</strong></td>
-                        <td style="padding: 0.75rem;">可讀寫的狀態值</td>
-                        <td style="padding: 0.75rem;">OnOff.onOff、LevelControl.currentLevel</td>
+                    <tr>
+                        <td><strong>Attribute</strong></td>
+                        <td>可讀寫的狀態值</td>
+                        <td>OnOff.onOff、LevelControl.currentLevel</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>Command</strong></td>
-                        <td style="padding: 0.75rem;">可執行的操作</td>
-                        <td style="padding: 0.75rem;">OnOff.Toggle()、LevelControl.MoveToLevel()</td>
+                    <tr>
+                        <td><strong>Command</strong></td>
+                        <td>可執行的操作</td>
+                        <td>OnOff.Toggle()、LevelControl.MoveToLevel()</td>
                     </tr>
                 </tbody>
             </table>
@@ -154,67 +155,77 @@ title: Matter & Thread 開發指南
             <p>Thread 是為低功耗物聯網裝置設計的網狀網路協定。Matter over Thread 適合電池供電的感測器、開關和燈具等裝置。</p>
 
             <div class="alert alert-info">
-                <strong>💡</strong> Thread 使用 IEEE 802.15.4 無線電，與 WiFi/BLE 使用不同的頻段（2.4 GHz ISM Band，但不同調變方式），IPRO7 同時支援 802.15.4、WiFi 和 BLE 三種無線電。
+                <strong></strong> Thread 使用 IEEE 802.15.4 無線電，與 WiFi/BLE 使用不同的頻段（2.4 GHz ISM Band，但不同調變方式），IPRO7 同時支援 802.15.4、WiFi 和 BLE 三種無線電。
             </div>
 
             <h3>Thread 網路拓撲</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Thread 網狀網路拓撲</span>
+            <div class="tree-diagram">
+                <div class="tree-level">
+                    <div class="tree-node tree-root">
+                        <div class="tree-node-label">Border Router</div>
+                        <div class="tree-node-detail">WiFi/Ethernet <i class="fas fa-arrow-right"></i> Internet</div>
+                    </div>
                 </div>
-                <pre><code>                    ┌──────────┐
-                    │  Border  │←── WiFi/Ethernet ──→ Internet
-                    │  Router  │
-                    └────┬─────┘
-                         │ Thread
-              ┌──────────┼──────────┐
-              │          │          │
-         ┌────┴───┐ ┌───┴────┐ ┌──┴─────┐
-         │ Router │ │ Leader │ │ Router │
-         │ (FTD)  │ │ (FTD)  │ │ (FTD)  │
-         └───┬────┘ └───┬────┘ └───┬────┘
-             │          │          │
-        ┌────┴───┐ ┌───┴────┐ ┌──┴─────┐
-        │  End   │ │  End   │ │ Sleepy │
-        │ Device │ │ Device │ │  End   │
-        │ (MTD)  │ │ (MTD)  │ │ Device │
-        └────────┘ └────────┘ └────────┘</code></pre>
+                <div class="tree-connector"></div>
+                <div class="tree-level">
+                    <div class="tree-node tree-branch">
+                        <div class="tree-node-label">Router (FTD)</div>
+                    </div>
+                    <div class="tree-node tree-branch">
+                        <div class="tree-node-label">Leader (FTD)</div>
+                    </div>
+                    <div class="tree-node tree-branch">
+                        <div class="tree-node-label">Router (FTD)</div>
+                    </div>
+                </div>
+                <div class="tree-connector"></div>
+                <div class="tree-level">
+                    <div class="tree-node tree-leaf">
+                        <div class="tree-node-label">End Device (MTD)</div>
+                    </div>
+                    <div class="tree-node tree-leaf">
+                        <div class="tree-node-label">End Device (MTD)</div>
+                    </div>
+                    <div class="tree-node tree-leaf">
+                        <div class="tree-node-label">Sleepy End Device</div>
+                    </div>
+                </div>
             </div>
 
             <h3>裝置角色</h3>
-            <table style="width: 100%; border-collapse: collapse; margin: 1.5rem 0;">
+            <table>
                 <thead>
-                    <tr style="border-bottom: 2px solid var(--border-color);">
-                        <th style="padding: 0.75rem; text-align: left;">角色</th>
-                        <th style="padding: 0.75rem; text-align: left;">類型</th>
-                        <th style="padding: 0.75rem; text-align: left;">說明</th>
+                    <tr>
+                        <th>角色</th>
+                        <th>類型</th>
+                        <th>說明</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>Leader</strong></td>
-                        <td style="padding: 0.75rem;">FTD</td>
-                        <td style="padding: 0.75rem;">管理路由表與位址分配，每個分區只有一個</td>
+                    <tr>
+                        <td><strong>Leader</strong></td>
+                        <td>FTD</td>
+                        <td>管理路由表與位址分配，每個分區只有一個</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>Router</strong></td>
-                        <td style="padding: 0.75rem;">FTD</td>
-                        <td style="padding: 0.75rem;">轉發封包、維護路由表、支援子裝置</td>
+                    <tr>
+                        <td><strong>Router</strong></td>
+                        <td>FTD</td>
+                        <td>轉發封包、維護路由表、支援子裝置</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>End Device</strong></td>
-                        <td style="padding: 0.75rem;">MTD</td>
-                        <td style="padding: 0.75rem;">僅與父路由器通訊，不轉發封包</td>
+                    <tr>
+                        <td><strong>End Device</strong></td>
+                        <td>MTD</td>
+                        <td>僅與父路由器通訊，不轉發封包</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>Sleepy End Device</strong></td>
-                        <td style="padding: 0.75rem;">MTD</td>
-                        <td style="padding: 0.75rem;">大部分時間休眠，適合電池裝置</td>
+                    <tr>
+                        <td><strong>Sleepy End Device</strong></td>
+                        <td>MTD</td>
+                        <td>大部分時間休眠，適合電池裝置</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;"><strong>Border Router</strong></td>
-                        <td style="padding: 0.75rem;">FTD</td>
-                        <td style="padding: 0.75rem;">橋接 Thread 與 WiFi/Ethernet 網路</td>
+                    <tr>
+                        <td><strong>Border Router</strong></td>
+                        <td>FTD</td>
+                        <td>橋接 Thread 與 WiFi/Ethernet 網路</td>
                     </tr>
                 </tbody>
             </table>
@@ -243,44 +254,44 @@ title: Matter & Thread 開發指南
             </ul>
 
             <h3>Matter over Thread vs WiFi 比較</h3>
-            <table style="width: 100%; border-collapse: collapse; margin: 1.5rem 0;">
+            <table>
                 <thead>
-                    <tr style="border-bottom: 2px solid var(--border-color);">
-                        <th style="padding: 0.75rem; text-align: left;">特性</th>
-                        <th style="padding: 0.75rem; text-align: left;">Thread</th>
-                        <th style="padding: 0.75rem; text-align: left;">WiFi</th>
+                    <tr>
+                        <th>特性</th>
+                        <th>Thread</th>
+                        <th>WiFi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">功耗</td>
-                        <td style="padding: 0.75rem;">極低（適合電池裝置）</td>
-                        <td style="padding: 0.75rem;">較高（需要穩定供電）</td>
+                    <tr>
+                        <td>功耗</td>
+                        <td>極低（適合電池裝置）</td>
+                        <td>較高（需要穩定供電）</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">頻寬</td>
-                        <td style="padding: 0.75rem;">250 kbps</td>
-                        <td style="padding: 0.75rem;">數百 Mbps</td>
+                    <tr>
+                        <td>頻寬</td>
+                        <td>250 kbps</td>
+                        <td>數百 Mbps</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">網路拓撲</td>
-                        <td style="padding: 0.75rem;">網狀網路（自我修復）</td>
-                        <td style="padding: 0.75rem;">星狀（依賴 AP）</td>
+                    <tr>
+                        <td>網路拓撲</td>
+                        <td>網狀網路（自我修復）</td>
+                        <td>星狀（依賴 AP）</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">Border Router</td>
-                        <td style="padding: 0.75rem;">需要</td>
-                        <td style="padding: 0.75rem;">不需要</td>
+                    <tr>
+                        <td>Border Router</td>
+                        <td>需要</td>
+                        <td>不需要</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">最大節點數</td>
-                        <td style="padding: 0.75rem;">250+（網狀擴展）</td>
-                        <td style="padding: 0.75rem;">受限於 AP 容量</td>
+                    <tr>
+                        <td>最大節點數</td>
+                        <td>250+（網狀擴展）</td>
+                        <td>受限於 AP 容量</td>
                     </tr>
-                    <tr style="border-bottom: 1px solid var(--border-color);">
-                        <td style="padding: 0.75rem;">適用裝置</td>
-                        <td style="padding: 0.75rem;">感測器、開關、燈具</td>
-                        <td style="padding: 0.75rem;">攝影機、顯示器、音箱</td>
+                    <tr>
+                        <td>適用裝置</td>
+                        <td>感測器、開關、燈具</td>
+                        <td>攝影機、顯示器、音箱</td>
                     </tr>
                 </tbody>
             </table>
@@ -523,7 +534,7 @@ CONFIG_OPENTHREAD_LOG_LEVEL=3</code></pre>
             </div>
 
             <div class="alert alert-info">
-                <strong>💡</strong> 停用未使用的功能可顯著節省記憶體：Commissioner/Joiner 約需 150KB（DTLS/SSL），Border Router 約需 30KB，ECDSA 約需 15KB，SRP Client 約需 20KB。
+                <strong></strong> 停用未使用的功能可顯著節省記憶體：Commissioner/Joiner 約需 150KB（DTLS/SSL），Border Router 約需 30KB，ECDSA 約需 15KB，SRP Client 約需 20KB。
             </div>
 
             <h3>Matter over Thread vs WiFi 選擇</h3>
