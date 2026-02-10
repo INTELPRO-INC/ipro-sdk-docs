@@ -8,71 +8,58 @@ title: BLE 開發指南
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">本頁目錄</h4>
             <ul class="sidebar-links">
-                <li><a href="#overview" class="sidebar-link">BLE 5.4 概覽</a></li>
-                <li><a href="#architecture" class="sidebar-link">程式庫架構</a></li>
+                <li><a href="#stack-architecture" class="sidebar-link">協定棧架構</a></li>
                 <li><a href="#controller-variants" class="sidebar-link">控制器變體</a></li>
-                <li><a href="#getting-started" class="sidebar-link">快速開始</a></li>
-                <li><a href="#gap-operations" class="sidebar-link">GAP 操作</a></li>
-                <li><a href="#gatt-services" class="sidebar-link">GATT 服務</a></li>
+                <li><a href="#api-patterns" class="sidebar-link">API 模式</a></li>
                 <li><a href="#le-audio" class="sidebar-link">LE Audio</a></li>
-                <li><a href="#throughput" class="sidebar-link">傳輸效能優化</a></li>
-                <li><a href="#prebuilt-libs" class="sidebar-link">預建構程式庫</a></li>
-                <li><a href="#debugging" class="sidebar-link">除錯技巧</a></li>
-                <li><a href="#best-practices" class="sidebar-link">最佳實踐</a></li>
+                <li><a href="#app-framework" class="sidebar-link">應用框架</a></li>
                 <li><a href="#reference-apps" class="sidebar-link">參考應用</a></li>
+                <li><a href="#prebuilt-libs" class="sidebar-link">預建構函式庫</a></li>
             </ul>
         </nav>
     </aside>
 
     <article class="doc-content">
         <h1>BLE 開發指南</h1>
-        <p>本指南介紹如何使用 IPRO SDK 的 Zephyr BLE Host Stack 開發藍牙低功耗應用。SDK 採用 Zephyr 標準 <code>bt_*</code> API，搭配 RivieraWaves 控制器，提供完整的 BLE 5.4 功能。</p>
+        <p>本指南介紹如何使用 IPRO SDK 的 BLE 協定棧開發藍牙低功耗應用。SDK 採用 Zephyr BLE Host Stack 搭配 RivieraWaves 預建構控制器，提供完整的 BLE 5.4 功能支援。</p>
 
-        <section id="overview">
-            <h2>BLE 5.4 功能概覽</h2>
-            <p>IPRO SDK 整合了 Zephyr BLE Host Stack 與 RivieraWaves 控制器，提供完整的藍牙功能：</p>
-
-            <div class="features-grid" style="margin: 2rem 0;">
-                <div class="feature-card">
-                    <div class="feature-icon">📡</div>
-                    <h3 class="feature-title">核心功能</h3>
-                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
-                        <li>BLE 5.4 Host Stack (Zephyr bt_* API)</li>
-                        <li>最多 8 個同時連線（統一連線池）</li>
-                        <li>23 個 GATT Profiles</li>
-                        <li>999 Kbps 實測傳輸速率</li>
-                    </ul>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🎵</div>
-                    <h3 class="feature-title">LE Audio</h3>
-                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
-                        <li>LC3 編解碼（32-320 kbps）</li>
-                        <li>BAP / CAP / VCP / MCP / CSIP</li>
-                        <li>&lt;20ms 音訊延遲</li>
-                        <li>Isochronous Channels</li>
-                    </ul>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔒</div>
-                    <h3 class="feature-title">安全性</h3>
-                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
-                        <li>LE Secure Connections</li>
-                        <li>AES-CCM 加密</li>
-                        <li>配對與綁定管理</li>
-                        <li>隱私功能（RPA）</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <section id="architecture">
-            <h2>程式庫架構</h2>
-            <p>BLE 協定棧採用 Zephyr Host + RivieraWaves Controller 雙層架構，應用程式使用標準 Zephyr <code>bt_*</code> API：</p>
+        <!-- ============================================================ -->
+        <!-- Stack Architecture -->
+        <!-- ============================================================ -->
+        <section id="stack-architecture">
+            <h2>協定棧架構</h2>
+            <p>BLE 協定棧採用 Host + Controller 雙層架構，透過片上 HCI 介面通訊（無 UART HCI 傳輸）：</p>
 
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">BLE Stack 架構</span>
+                    <span class="code-block-title">BLE 協定棧分層圖</span>
+                </div>
+                <pre><code>┌──────────────────────────────────────────────┐
+│          Application Layer                    │
+│    GAP │ GATT Services │ Profiles             │
+├──────────────────────────────────────────────┤
+│          BLE Host (Zephyr-based)              │
+│    GAP │ GATT │ L2CAP │ SMP │ ISO            │
+├──────────────────────────────────────────────┤
+│          HCI (On-Chip)                        │
+├──────────────────────────────────────────────┤
+│          BLE Controller (RivieraWaves)        │
+│    Link Layer │ PHY (1M/2M/Coded)             │
+└──────────────────────────────────────────────┘</code></pre>
+            </div>
+
+            <h3>核心概念</h3>
+            <ul>
+                <li><strong>Zephyr BLE Host</strong>：即使在 FreeRTOS 上也使用 Zephyr BLE Host Stack，應用程式透過標準 <code>bt_*</code> API 操作</li>
+                <li><strong>RivieraWaves 控制器</strong>：以預建構靜態庫形式提供，負責 Link Layer 與 PHY 管理</li>
+                <li><strong>片上 HCI</strong>：Host 與 Controller 之間使用片上 HCI 通訊，無需 UART HCI 傳輸層</li>
+                <li><strong>回調驅動</strong>：所有非同步事件（連線、斷線、通知）透過回調函式處理</li>
+            </ul>
+
+            <h3>原始碼結構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">BLE 元件目錄</span>
                 </div>
                 <pre><code>components/wireless/bluetooth/
 ├── blestack/                        # Zephyr BLE Host Stack（可建構原始碼）
@@ -82,118 +69,171 @@ title: BLE 開發指南
 │       ├── gatt.h                   # bt_gatt_service_register(), bt_gatt_notify()
 │       ├── uuid.h                   # BT_UUID_DECLARE_16() 等
 │       └── audio/                   # LE Audio API（BAP, CAP, VCP...）
-├── btblecontroller/                 # RivieraWaves 控制器（預建構 linkN 變體庫）
-├── btprofile/                       # 23 個 GATT Profiles
+├── btblecontroller/                 # RivieraWaves 控制器原始碼（需授權）
+├── btblecontroller_ipro7_&lt;variant&gt;/ # 預建構控制器靜態庫
+├── btprofile/                       # 20+ GATT Profiles 實作
 │   ├── bas/   dis/   hogp/          # 電池、裝置資訊、HID
 │   ├── csip/  otp/   find/          # CSIP、OTP、Find Me
 │   └── ...
+├── blemesh/                         # Bluetooth Mesh 支援
 ├── ble_common.cmake                 # 控制器變體配置
-└── btble_inc/                       # 舊版相容標頭檔</code></pre>
+└── build_all_prebuilts.sh           # 預建構庫建置腳本</code></pre>
             </div>
-
-            <h3>核心概念</h3>
-            <ul>
-                <li><strong>Zephyr bt_* API</strong>：應用程式使用標準 Zephyr BLE API（取代已棄用的 ipro_ble_api.h）</li>
-                <li><strong>回調驅動</strong>：使用 <code>bt_conn_cb_register()</code> 註冊連線回調</li>
-                <li><strong>靜態服務定義</strong>：使用 <code>BT_GATT_SERVICE_DEFINE()</code> 巨集定義 GATT 服務</li>
-                <li><strong>統一連線池</strong>：linkN 變體中 N = 總連線數，Central/Peripheral 任意組合</li>
-            </ul>
         </section>
 
+        <!-- ============================================================ -->
+        <!-- Controller Variants -->
+        <!-- ============================================================ -->
         <section id="controller-variants">
-            <h2>控制器變體（linkN 命名）</h2>
-            <p>控制器採用統一連線池架構，linkN 中的 N 表示同時連線數，每個連線槽可作為 Central 或 Peripheral 使用：</p>
+            <h2>控制器變體</h2>
+            <p>控制器採用統一連線池架構，<code>linkN</code> 中的 N 表示同時連線數。每個連線槽可作為 Central 或 Peripheral 使用（任意角色組合）。</p>
 
+            <h3>基礎變體</h3>
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
                             <th>變體</th>
-                            <th>連線數</th>
-                            <th>TX Buffers</th>
-                            <th>角色支援</th>
-                            <th>說明</th>
+                            <th>最大連線數</th>
+                            <th>BLE 版本</th>
+                            <th>LE Audio</th>
+                            <th>適用場景</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td><code>link1_periph</code></td>
                             <td>1</td>
-                            <td>2</td>
-                            <td>Peripheral only</td>
-                            <td>最小尺寸，僅周邊設備</td>
+                            <td>5.0+</td>
+                            <td>否</td>
+                            <td>簡易周邊設備（最小 footprint）</td>
                         </tr>
                         <tr>
                             <td><code>link1</code></td>
                             <td>1</td>
-                            <td>2</td>
-                            <td>All roles</td>
+                            <td>5.0+</td>
+                            <td>否</td>
                             <td>單連線，支援所有角色</td>
                         </tr>
                         <tr>
                             <td><code>link2</code></td>
                             <td>2</td>
-                            <td>4</td>
-                            <td>All roles</td>
+                            <td>5.0+</td>
+                            <td>否</td>
                             <td>雙連線（2C+0P, 1C+1P, 0C+2P）</td>
                         </tr>
                         <tr>
                             <td><code>link4</code></td>
                             <td>4</td>
-                            <td>6</td>
-                            <td>All roles</td>
-                            <td>四連線，任意組合</td>
+                            <td>5.0+</td>
+                            <td>否</td>
+                            <td>多連線應用</td>
                         </tr>
                         <tr>
                             <td><code>link8</code></td>
                             <td>8</td>
-                            <td>8</td>
-                            <td>All roles</td>
-                            <td>八連線，任意組合</td>
+                            <td>5.0+</td>
+                            <td>否</td>
+                            <td>Hub / 閘道器</td>
+                        </tr>
+                        <tr>
+                            <td><code>link1_leaudio</code></td>
+                            <td>1</td>
+                            <td>5.2</td>
+                            <td>是</td>
+                            <td>LE Audio 周邊設備</td>
+                        </tr>
+                        <tr>
+                            <td><code>link2_leaudio</code></td>
+                            <td>2</td>
+                            <td>5.2</td>
+                            <td>是</td>
+                            <td>LE Audio 雙連線</td>
+                        </tr>
+                        <tr>
+                            <td><code>link1_leaudio_53_54</code></td>
+                            <td>1</td>
+                            <td>5.4</td>
+                            <td>是</td>
+                            <td>最新 BLE + LE Audio</td>
+                        </tr>
+                        <tr>
+                            <td><code>link2_leaudio_53_54</code></td>
+                            <td>2</td>
+                            <td>5.4</td>
+                            <td>是</td>
+                            <td>最新 BLE + LE Audio</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <h3>LE Audio 與 BLE 5.3/5.4 後綴</h3>
-            <p>基礎變體可加上後綴啟用進階功能：</p>
-            <ul>
-                <li><code>_leaudio</code> — BLE 5.2 + LE Audio（BAP, CAP, VCP, MCP, CSIP）</li>
-                <li><code>_leaudio_53_54</code> — BLE 5.4 + LE Audio（最完整功能）</li>
-            </ul>
-            <p>例如：<code>link1_leaudio</code>、<code>link2_leaudio_53_54</code></p>
-
             <h3>Kconfig 配置</h3>
+            <p>在應用程式的 <code>.config</code> 中透過 <code>CONFIG_BTBLECONTROLLER_LIB</code> 選擇變體：</p>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">.config 變體選擇</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 選擇控制器變體
+                <pre><code class="language-bash"># 直接指定變體名稱
 CONFIG_BTBLECONTROLLER_LIB="link2"
 
-# 或使用布林旗標組合
+# 或使用布林旗標組合（自動拼接後綴）
 CONFIG_BTBLECONTROLLER_LIB="link2"
 CONFIG_BTBLECONTROLLER_LE_AUDIO=y     # 加上 _leaudio
-CONFIG_BTBLECONTROLLER_BT_54=y        # 加上 _53_54（5.4 隱含 5.3）</code></pre>
+CONFIG_BTBLECONTROLLER_BT_54=y        # 加上 _53_54（5.4 隱含 5.3）
+# 結果變體：link2_leaudio_53_54</code></pre>
             </div>
+
+            <p>預建構庫位於：<code>components/wireless/bluetooth/btblecontroller_ipro7_&lt;variant&gt;/</code></p>
         </section>
 
-        <section id="getting-started">
-            <h2>快速開始</h2>
+        <!-- ============================================================ -->
+        <!-- API Patterns -->
+        <!-- ============================================================ -->
+        <section id="api-patterns">
+            <h2>API 模式</h2>
+            <p>應用程式使用 Zephyr 風格的回調驅動 BLE API。舊版 RivieraWaves <code>ke_msg</code> 訊息傳遞機制僅限控制器內部使用，不對應用程式暴露。</p>
 
-            <h3>1. 初始化 BLE 子系統</h3>
+            <h3>GAP：廣播與掃描</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">BLE 初始化（Zephyr bt_* API）</span>
+                    <span class="code-block-title">GAP 廣播操作</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">#include &lt;bluetooth/bluetooth.h&gt;
 #include &lt;bluetooth/conn.h&gt;
-#include &lt;bluetooth/gatt.h&gt;
 
-/* 連線回調 */
-static void connected(struct bt_conn *conn, u8_t err)
+/* 廣播資料 */
+static const struct bt_data ad[] = {
+    BT_DATA_BYTES(BT_DATA_FLAGS,
+                  BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR),
+    BT_DATA_BYTES(BT_DATA_UUID16_ALL,
+                  0x0d, 0x18),  /* Heart Rate Service */
+};
+
+static const struct bt_data sd[] = {
+    BT_DATA(BT_DATA_NAME_COMPLETE, "IPRO Device", 11),
+};
+
+/* 開始可連線廣播 */
+bt_le_adv_start(BT_LE_ADV_CONN_NAME,
+                ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd));
+
+/* 停止廣播 */
+bt_le_adv_stop();
+
+/* 開始掃描（Central 角色） */
+bt_le_scan_start(BT_LE_SCAN_ACTIVE, scan_cb);</code></pre>
+            </div>
+
+            <h3>連線回調</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">連線管理</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">static void connected(struct bt_conn *conn, u8_t err)
 {
     if (err) {
         printk("Connection failed (err %u)\n", err);
@@ -212,233 +252,112 @@ static struct bt_conn_cb conn_callbacks = {
     .disconnected = disconnected,
 };
 
-/* BLE 就緒回調 */
-static void bt_ready(int err)
-{
-    if (err) {
-        printk("Bluetooth init failed (err %d)\n", err);
-        return;
-    }
-    printk("Bluetooth initialized\n");
-
-    /* 開始廣播 */
-    start_advertising();
-}
-
 void app_init(void)
 {
-    /* 註冊連線回調 */
-    bt_conn_cb_register(&conn_callbacks);
-
-    /* 啟用藍牙 */
-    int err = bt_enable(bt_ready);
-    if (err) {
-        printk("bt_enable failed (err %d)\n", err);
-    }
+    bt_conn_cb_register(&amp;conn_callbacks);
+    bt_enable(bt_ready);
 }</code></pre>
             </div>
 
-            <h3>2. 配置廣播</h3>
+            <h3>GATT：服務註冊</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">廣播設置</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">static const struct bt_data ad[] = {
-    BT_DATA_BYTES(BT_DATA_FLAGS,
-                  BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR),
-    BT_DATA_BYTES(BT_DATA_UUID16_ALL,
-                  0x0d, 0x18),  /* Heart Rate Service */
-};
-
-static const struct bt_data sd[] = {
-    BT_DATA(BT_DATA_NAME_COMPLETE, "IPRO Device", 11),
-};
-
-void start_advertising(void)
-{
-    int err = bt_le_adv_start(BT_LE_ADV_CONN_NAME,
-                              ad, ARRAY_SIZE(ad),
-                              sd, ARRAY_SIZE(sd));
-    if (err) {
-        printk("Advertising failed to start (err %d)\n", err);
-    }
-}</code></pre>
-            </div>
-
-            <h3>3. 啟用配置選項</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">.config</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># 啟用 BLE
-CONFIG_BLUETOOTH_LE_ENABLE=y
-CONFIG_BTBLECONTROLLER_LIB="link2"
-
-# 啟用除錯輸出
-CONFIG_LOG_DEFAULT_LEVEL=4</code></pre>
-            </div>
-        </section>
-
-        <section id="gap-operations">
-            <h2>GAP 操作</h2>
-
-            <h3>廣播管理</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">廣播控制</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">/* 使用預設參數開始可連線廣播 */
-bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd));
-
-/* 使用自訂參數 */
-struct bt_le_adv_param param = {
-    .options = BT_LE_ADV_OPT_CONNECTABLE | BT_LE_ADV_OPT_USE_NAME,
-    .interval_min = BT_GAP_ADV_FAST_INT_MIN_2,
-    .interval_max = BT_GAP_ADV_FAST_INT_MAX_2,
-};
-bt_le_adv_start(&param, ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd));
-
-/* 停止廣播 */
-bt_le_adv_stop();</code></pre>
-            </div>
-
-            <h3>連線管理</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">連線操作</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">/* 發起連線（Central 角色） */
-struct bt_conn *conn = bt_conn_create_le(&peer_addr,
-                                          BT_LE_CONN_PARAM_DEFAULT);
-
-/* 更新連線參數 */
-struct bt_le_conn_param param = {
-    .interval_min = 24,   /* 30ms */
-    .interval_max = 40,   /* 50ms */
-    .latency = 0,
-    .timeout = 400,       /* 4s */
-};
-bt_conn_le_param_update(conn, &param);
-
-/* 斷開連線 */
-bt_conn_disconnect(conn, BT_HCI_ERR_REMOTE_USER_TERM_CONN);</code></pre>
-            </div>
-        </section>
-
-        <section id="gatt-services">
-            <h2>GATT 服務</h2>
-
-            <h3>靜態服務定義</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">自訂 GATT 服務範例</span>
+                    <span class="code-block-title">靜態 GATT 服務定義</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">#include &lt;bluetooth/gatt.h&gt;
 #include &lt;bluetooth/uuid.h&gt;
 
-/* 定義自訂 UUID */
-static struct bt_uuid_128 custom_svc_uuid = BT_UUID_INIT_128(
+/* 自訂 UUID */
+static struct bt_uuid_128 my_svc_uuid = BT_UUID_INIT_128(
     0xf0, 0xde, 0xbc, 0x9a, 0x78, 0x56, 0x34, 0x12,
     0x78, 0x56, 0x34, 0x12, 0x78, 0x56, 0x34, 0x12);
 
-static struct bt_uuid_128 custom_char_uuid = BT_UUID_INIT_128(
+static struct bt_uuid_128 my_char_uuid = BT_UUID_INIT_128(
     0xf1, 0xde, 0xbc, 0x9a, 0x78, 0x56, 0x34, 0x12,
     0x78, 0x56, 0x34, 0x12, 0x78, 0x56, 0x34, 0x12);
 
-static uint8_t custom_value[512];
+static uint8_t my_value[256];
 
 /* 讀取回調 */
-static ssize_t read_custom(struct bt_conn *conn,
-                           const struct bt_gatt_attr *attr,
-                           void *buf, u16_t len, u16_t offset)
+static ssize_t read_my_char(struct bt_conn *conn,
+                            const struct bt_gatt_attr *attr,
+                            void *buf, u16_t len, u16_t offset)
 {
     return bt_gatt_attr_read(conn, attr, buf, len, offset,
-                             custom_value, sizeof(custom_value));
+                             my_value, sizeof(my_value));
 }
 
-/* 使用巨集靜態定義服務 */
-BT_GATT_SERVICE_DEFINE(custom_svc,
-    BT_GATT_PRIMARY_SERVICE(&custom_svc_uuid),
-    BT_GATT_CHARACTERISTIC(&custom_char_uuid.uuid,
+/* 使用巨集定義服務（編譯期靜態註冊） */
+BT_GATT_SERVICE_DEFINE(my_svc,
+    BT_GATT_PRIMARY_SERVICE(&amp;my_svc_uuid),
+    BT_GATT_CHARACTERISTIC(&amp;my_char_uuid.uuid,
                            BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY,
                            BT_GATT_PERM_READ,
-                           read_custom, NULL, custom_value),
+                           read_my_char, NULL, my_value),
     BT_GATT_CCC(NULL, BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
 );
 
-/* 發送通知 */
-void notify_custom_value(struct bt_conn *conn)
-{
-    bt_gatt_notify(conn, &custom_svc.attrs[1],
-                   custom_value, sizeof(custom_value));
-}</code></pre>
+/* 發送 GATT 通知 */
+bt_gatt_notify(conn, &amp;my_svc.attrs[1], my_value, sizeof(my_value));</code></pre>
             </div>
 
-            <h3>動態服務註冊</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">動態註冊</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">/* 動態服務屬性陣列 */
-static struct bt_gatt_attr svc_attrs[] = { /* ... */ };
-static struct bt_gatt_service svc = BT_GATT_SERVICE(svc_attrs);
-
-/* 執行期間註冊 */
-int err = bt_gatt_service_register(&svc);</code></pre>
+            <div class="alert alert-info">
+                <strong>提示：</strong>舊版 <code>ipro_ble_api.h</code> 與 RivieraWaves <code>ke_msg</code> API 已棄用。所有新應用程式應使用 Zephyr <code>bt_*</code> API。
             </div>
+        </section>
 
-            <h3>內建 Profiles（btprofile/）</h3>
-            <p>SDK 提供 23 個 GATT Profile 實作：</p>
+        <!-- ============================================================ -->
+        <!-- LE Audio -->
+        <!-- ============================================================ -->
+        <section id="le-audio">
+            <h2>LE Audio 生態系統</h2>
+            <p>SDK 支援完整的 LE Audio 功能，需使用 <code>_leaudio</code> 後綴的控制器變體。標頭檔位於 <code>bluetooth/audio/</code>。</p>
+
+            <h3>LE Audio Profiles</h3>
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
                             <th>Profile</th>
-                            <th>說明</th>
+                            <th>全名</th>
+                            <th>功能</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td><code>bas</code></td><td>Battery Service</td></tr>
-                        <tr><td><code>dis</code></td><td>Device Information Service</td></tr>
-                        <tr><td><code>hogp</code></td><td>HID over GATT Profile</td></tr>
-                        <tr><td><code>csip</code></td><td>Coordinated Set Identification Profile</td></tr>
-                        <tr><td><code>otp</code></td><td>Object Transfer Profile</td></tr>
-                        <tr><td><code>find</code></td><td>Find Me Profile</td></tr>
-                        <tr><td><code>tip</code></td><td>Time Profile</td></tr>
-                        <tr><td><code>anp</code></td><td>Alert Notification Profile</td></tr>
-                        <tr><td><code>hogp</code></td><td>HID over GATT Profile</td></tr>
+                        <tr>
+                            <td><strong>BAP</strong></td>
+                            <td>Basic Audio Profile</td>
+                            <td>音訊串流管理（單播/廣播）</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CAP</strong></td>
+                            <td>Common Audio Profile</td>
+                            <td>協調設備集合的音訊操作</td>
+                        </tr>
+                        <tr>
+                            <td><strong>VCP</strong></td>
+                            <td>Volume Control Profile</td>
+                            <td>音量控制</td>
+                        </tr>
+                        <tr>
+                            <td><strong>MCP</strong></td>
+                            <td>Media Control Profile</td>
+                            <td>媒體播放控制</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CSIP</strong></td>
+                            <td>Coordinated Set Identification Profile</td>
+                            <td>協調設備識別（如左右耳機配對）</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
-        </section>
 
-        <section id="le-audio">
-            <h2>LE Audio</h2>
-            <p>SDK 支援完整的 LE Audio 功能，需使用 <code>_leaudio</code> 後綴的控制器變體。標頭檔位於 <code>bluetooth/audio/</code>。</p>
+            <h3>LC3 編解碼管線</h3>
+            <p>LE Audio 使用 LC3 (Low Complexity Communication Codec) 作為強制編解碼器，支援 32-320 kbps 位元率，音訊延遲低於 20ms。音訊資料透過 Isochronous Channels (CIS/BIS) 傳輸。</p>
 
-            <h3>支援的 LE Audio Profiles</h3>
-            <ul>
-                <li><strong>BAP</strong> — Basic Audio Profile（單播/廣播音訊串流）</li>
-                <li><strong>CAP</strong> — Common Audio Profile（協調音訊操作）</li>
-                <li><strong>VCP</strong> — Volume Control Profile</li>
-                <li><strong>MCP</strong> — Media Control Profile</li>
-                <li><strong>CSIP</strong> — Coordinated Set Identification Profile</li>
-            </ul>
-
-            <h3>LE Audio 服務</h3>
-            <ul>
-                <li><strong>ASCS</strong> (0x184E) - Audio Stream Control Service</li>
-                <li><strong>PACS</strong> (0x1850) - Published Audio Capabilities Service</li>
-                <li><strong>CAS</strong> (0x1853) - Common Audio Service</li>
-            </ul>
-
-            <h3>配置</h3>
+            <h3>配置範例</h3>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">.config LE Audio 配置</span>
@@ -448,69 +367,131 @@ int err = bt_gatt_service_register(&svc);</code></pre>
 CONFIG_BTBLECONTROLLER_LIB="link2"
 CONFIG_BTBLECONTROLLER_LE_AUDIO=y
 CONFIG_BTBLECONTROLLER_BT_54=y
+# 結果變體：link2_leaudio_53_54
 
-# 結果變體：link2_leaudio_53_54</code></pre>
-            </div>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">LE Audio 廣播資料</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">static const struct bt_data le_audio_ad[] = {
-    BT_DATA_BYTES(BT_DATA_FLAGS,
-                  BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR),
-    BT_DATA_BYTES(BT_DATA_UUID16_ALL,
-                  0x4E, 0x18,  /* ASCS */
-                  0x50, 0x18,  /* PACS */
-                  0x53, 0x18), /* CAS */
-};</code></pre>
-            </div>
-        </section>
-
-        <section id="throughput">
-            <h2>傳輸效能優化</h2>
-
-            <h3>連線參數與 TX 描述符</h3>
-            <p>影響吞吐量的關鍵參數：</p>
-            <ul>
-                <li><strong>max_ce_len</strong>：連線事件最大長度，值越大每個事件可傳輸越多封包</li>
-                <li><strong>BLE_NB_TX_DESC_PER_CON</strong>：每連線 TX 描述符數量</li>
-                <li><strong>CONFIG_BLE_TX_BUFF_DATA</strong>：TX 緩衝區數量（隨 linkN 變體自動調整）</li>
-            </ul>
-
-            <h3>MTU 優化</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">MTU 與高速傳輸</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">/* MTU 協商後計算最佳 payload */
-uint16_t mtu = bt_gatt_get_mtu(conn);
-uint16_t payload = (mtu > 3) ? (mtu - 3) : 20;  /* ATT header = 3 bytes */
-
-/* 發送通知 */
-bt_gatt_notify(conn, attr, data, payload);</code></pre>
+# 啟用 LE Audio Host 功能
+CONFIG_BT_AUDIO=y
+CONFIG_BT_BAP_UNICAST_SERVER=y
+CONFIG_BT_ASCS=y
+CONFIG_BT_PACS=y
+CONFIG_BT_VCP_VOL_REND=y
+CONFIG_BT_CSIP_SET_MEMBER=y</code></pre>
             </div>
 
             <div class="alert alert-info">
-                <strong>💡 效能基準：</strong>
-                <ul style="margin-top: 0.5rem; margin-bottom: 0;">
-                    <li>MTU 517 + 優化 TX 描述符：<strong>999 Kbps</strong> 實測傳輸速率</li>
-                    <li>圖片傳輸：56KB 在 542ms 完成，達 101.4 KB/s (811 Kbps)</li>
-                    <li>TX buffer 隨變體自動調整：link1=2, link2=4, link4=6, link8=8</li>
-                </ul>
+                <strong>交叉參考：</strong>詳細的音訊管線說明請參閱「音訊與多媒體」頁面。
             </div>
         </section>
 
+        <!-- ============================================================ -->
+        <!-- App Framework -->
+        <!-- ============================================================ -->
+        <section id="app-framework">
+            <h2>應用框架</h2>
+            <p>BLE 應用採用 Mediator 設計模式，將複雜的藍牙功能分解為可重用的元件：</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>元件</th>
+                            <th>角色</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Mediator</strong></td>
+                            <td>協調者</td>
+                            <td>管理 Applet 之間的互動與生命週期，負責整體流程控制</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Applets</strong></td>
+                            <td>可重用元件</td>
+                            <td>封裝特定功能（如廣播管理、GATT 服務、音訊串流），可在不同應用間共用</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Intermediaries</strong></td>
+                            <td>協議橋接</td>
+                            <td>在不同協議層之間轉換資料格式，例如將應用層命令轉為 BLE GAP/GATT 操作</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>此框架主要用於 LE Audio 應用（如 GAF、BAP、VCP、MCP、CAP），將複雜的音訊管理邏輯模組化。</p>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- Reference Applications -->
+        <!-- ============================================================ -->
+        <section id="reference-apps">
+            <h2>參考應用</h2>
+            <p>SDK 提供多個 BLE 參考應用程式，涵蓋常見的藍牙使用場景：</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>應用</th>
+                            <th>功能說明</th>
+                            <th>控制器變體</th>
+                            <th>路徑</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>ipro_ble_remote</strong></td>
+                            <td>GATT 服務 + OTA 更新，6 個服務，圖片傳輸達 101 KB/s</td>
+                            <td>link2</td>
+                            <td><code>apps/bluetooth/ipro_ble_remote/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_throughput_test</strong></td>
+                            <td>吞吐量基準測試，最高 999 Kbps，原生 Zephyr bt_* API，支援 Master/Slave 角色</td>
+                            <td>link2</td>
+                            <td><code>apps/bluetooth/ipro_throughput_test/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_ble_transparent</strong></td>
+                            <td>UART 透傳橋接，BLE 與序列埠雙向透傳</td>
+                            <td>link1</td>
+                            <td><code>apps/bluetooth/ipro_ble_transparent/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_ble_hid_keyboard</strong></td>
+                            <td>HOGP HID 鍵盤，使用 HID over GATT Profile</td>
+                            <td>link1_periph</td>
+                            <td><code>apps/bluetooth/ipro_ble_hid_keyboard/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_le_audio_headset</strong></td>
+                            <td>GAF/BAP 單播音訊耳機，支援 VCP、CSIP</td>
+                            <td>link2_leaudio_53_54</td>
+                            <td><code>apps/bluetooth/ipro_le_audio_headset/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_walkie_talkie</strong></td>
+                            <td>BIS LE Audio 廣播對講機</td>
+                            <td>link2_leaudio</td>
+                            <td><code>apps/bluetooth/ipro_walkie_talkie/</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- Prebuilt Library Workflow -->
+        <!-- ============================================================ -->
         <section id="prebuilt-libs">
-            <h2>預建構程式庫</h2>
-            <p>控制器以預建構靜態庫形式提供。發行版不可使用 <code>CONFIG_BLE_FORCE_SOURCE_BUILD</code>。</p>
+            <h2>預建構函式庫</h2>
+            <p>BLE 控制器以預建構靜態庫形式提供。正式發行版不可使用 <code>CONFIG_BLE_FORCE_SOURCE_BUILD</code>。</p>
 
             <h3>建構腳本</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">建構預建構程式庫</span>
+                    <span class="code-block-title">建構預建構庫</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 建構特定變體
@@ -519,125 +500,40 @@ components/wireless/bluetooth/build_all_prebuilts.sh link2
 # 建構所有變體
 components/wireless/bluetooth/build_all_prebuilts.sh all
 
-# 輸出：btblecontroller_ipro7_link2/libbtblecontroller_ipro7_link2.a</code></pre>
+# 輸出位置
+# btblecontroller_ipro7_link2/libbtblecontroller_ipro7_link2.a</code></pre>
+            </div>
+
+            <h3>開發時原始碼建構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">.config 啟用原始碼建構（僅開發用）</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 僅限開發除錯，不可用於正式發行
+CONFIG_BLE_FORCE_SOURCE_BUILD=y</code></pre>
             </div>
 
             <div class="alert alert-warning">
-                <strong>⚠️ 重要：</strong><code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> 僅供開發除錯使用，不可用於正式發行版本。
+                <strong>注意：</strong><code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> 僅供開發除錯使用，不可用於正式發行版本。正式版必須使用預建構靜態庫。
             </div>
-        </section>
 
-        <section id="debugging">
-            <h2>除錯技巧</h2>
-
-            <h3>啟用除錯日誌</h3>
+            <h3>庫檔案位置</h3>
+            <p>預建構庫存放於 <code>components/wireless/bluetooth/</code> 下，命名格式為：</p>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">.config</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                    <span class="code-block-title">預建構庫目錄</span>
                 </div>
-                <pre><code class="language-bash"># 啟用 BLE 除錯
-CONFIG_LOG_DEFAULT_LEVEL=4  # DEBUG level</code></pre>
-            </div>
-
-            <h3>常見錯誤碼</h3>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>錯誤碼</th>
-                            <th>說明</th>
-                            <th>解決方案</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>0x0043</code></td>
-                            <td>Activity already stopped</td>
-                            <td>檢查活動狀態再執行停止</td>
-                        </tr>
-                        <tr>
-                            <td><code>0x004B</code></td>
-                            <td>Activity creation failed</td>
-                            <td>確保完整清理：Stop → Delete → Reset</td>
-                        </tr>
-                        <tr>
-                            <td><code>0x00A3</code></td>
-                            <td>Connection terminated</td>
-                            <td>處理斷線事件，實作重連機制</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="best-practices">
-            <h2>最佳實踐</h2>
-
-            <h3>1. 重連機制</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">自動重連實作</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">static void disconnected(struct bt_conn *conn, u8_t reason)
-{
-    /* 延遲後重新廣播 */
-    k_sleep(K_MSEC(500));
-
-    int err = bt_le_adv_start(BT_LE_ADV_CONN_NAME,
-                              ad, ARRAY_SIZE(ad),
-                              sd, ARRAY_SIZE(sd));
-    if (err) {
-        printk("Re-advertising failed (err %d)\n", err);
-    }
-}</code></pre>
-            </div>
-
-            <h3>2. 測試驗證</h3>
-            <ul>
-                <li>多次斷線重連循環測試</li>
-                <li>手機/中央設備可正確發現與配對</li>
-                <li>LE Audio 服務（ASCS, PACS, CAS）可存取</li>
-                <li>無 0x004B 資源錯誤</li>
-                <li>記憶體使用穩定</li>
-            </ul>
-        </section>
-
-        <section id="reference-apps">
-            <h2>參考應用</h2>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>應用</th>
-                            <th>功能</th>
-                            <th>路徑</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>ipro_ble_remote</strong></td>
-                            <td>GATT + OTA 更新</td>
-                            <td><code>apps/bluetooth/ipro_ble_remote/</code></td>
-                        </tr>
-                        <tr>
-                            <td><strong>ipro_walkie_talkie</strong></td>
-                            <td>BIS LE Audio 廣播</td>
-                            <td><code>apps/bluetooth/ipro_walkie_talkie/</code></td>
-                        </tr>
-                        <tr>
-                            <td><strong>ipro_le_audio_headset</strong></td>
-                            <td>GAF/BAP 單播音訊</td>
-                            <td><code>apps/bluetooth/ipro_le_audio_headset/</code></td>
-                        </tr>
-                        <tr>
-                            <td><strong>ipro_throughput_test</strong></td>
-                            <td>傳輸速率基準測試</td>
-                            <td><code>apps/bluetooth/ipro_throughput_test/</code></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <pre><code>btblecontroller_ipro7_link1/
+btblecontroller_ipro7_link1_periph/
+btblecontroller_ipro7_link2/
+btblecontroller_ipro7_link4/
+btblecontroller_ipro7_link8/
+btblecontroller_ipro7_link1_leaudio/
+btblecontroller_ipro7_link2_leaudio/
+btblecontroller_ipro7_link1_leaudio_53_54/
+btblecontroller_ipro7_link2_leaudio_53_54/
+...</code></pre>
             </div>
         </section>
     </article>

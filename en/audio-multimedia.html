@@ -1,0 +1,670 @@
+---
+layout: default
+title: Audio & Multimedia
+lang: en
+---
+
+<div class="doc-layout">
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <h4 class="sidebar-title">Table of Contents</h4>
+            <ul class="sidebar-links">
+                <li><a href="#overview" class="sidebar-link">Overview</a></li>
+                <li><a href="#le-audio-pipeline" class="sidebar-link">LE Audio Pipeline</a></li>
+                <li><a href="#unicast-audio" class="sidebar-link">Unicast Audio (CIS)</a></li>
+                <li><a href="#broadcast-audio" class="sidebar-link">Broadcast Audio (BIS)</a></li>
+                <li><a href="#audio-profiles" class="sidebar-link">Audio Profiles</a></li>
+                <li><a href="#usb-audio" class="sidebar-link">USB Audio (UAC)</a></li>
+                <li><a href="#camera-video" class="sidebar-link">Camera & Video</a></li>
+                <li><a href="#audio-hardware" class="sidebar-link">Audio Hardware</a></li>
+                <li><a href="#reference-apps" class="sidebar-link">Reference Applications</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <article class="doc-content">
+        <h1>Audio & Multimedia</h1>
+        <p>IPRO SDK provides comprehensive audio and multimedia capabilities, including LE Audio Bluetooth audio, USB audio devices, camera image processing, and video streaming. This page covers the architecture, APIs, and reference applications for each subsystem.</p>
+
+        <section id="overview">
+            <h2>Overview</h2>
+            <p>The IPRO7 SoC integrates multiple audio and multimedia hardware accelerators. Combined with the SDK software stack, the following features are supported:</p>
+
+            <div class="features-grid" style="margin: 2rem 0;">
+                <div class="feature-card">
+                    <div class="feature-icon">LE Audio</div>
+                    <h3 class="feature-title">LE Audio (BLE 5.2+)</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>LC3 / Opus codecs</li>
+                        <li>Unicast (CIS) & Broadcast (BIS)</li>
+                        <li>BAP / CAP / VCP / MCP profiles</li>
+                        <li>Auracast broadcast audio</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">USB</div>
+                    <h3 class="feature-title">USB Audio (UAC)</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>USB Audio Class device</li>
+                        <li>USB-to-BLE audio bridge</li>
+                        <li>CherryUSB integration</li>
+                        <li>Low-latency audio transfer</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">CAM</div>
+                    <h3 class="feature-title">Camera & Video</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>ISP image signal processing</li>
+                        <li>MJPEG hardware encoding</li>
+                        <li>UVC USB camera device</li>
+                        <li>LCD display output</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Audio & Multimedia Component Directory Structure</span>
+                </div>
+                <pre><code>components/
+├── audio/                          # Audio processing (resampler, etc.)
+│   ├── include/audio_resampler.h
+│   └── src/audio_resampler.c
+├── wireless/bluetooth/
+│   └── blestack/src/audio/         # LE Audio protocol stack
+│       ├── bap_*.c                 # Basic Audio Profile
+│       ├── cap_*.c                 # Common Audio Profile
+│       ├── vcp_*.c                 # Volume Control Profile
+│       ├── mcc.c / mcs.c          # Media Control
+│       ├── csip_*.c               # Coordinated Set Identification
+│       ├── pacs.c / ascs.c        # Published/Available Audio Capabilities
+│       └── codec.c                # LC3 codec integration
+├── cherryusb/class/
+│   ├── audio/                      # USB Audio Class (UAC)
+│   └── video/                      # USB Video Class (UVC)
+├── isp_algorithm/                  # ISP image algorithms
+├── isp_firmware/                   # ISP firmware
+└── isp_iq_param/                   # ISP image quality parameters
+
+bsp/hal/inc/
+├── hal_auadc.h                     # Audio ADC (microphone input)
+├── hal_dac.h                       # DAC (speaker output)
+├── hal_i2s.h                       # I2S interface (external codecs)
+├── hal_isp.h                       # ISP image signal processor
+├── hal_mjpeg.h                     # MJPEG hardware encoder
+└── hal_dma.h                       # DMA audio streaming</code></pre>
+            </div>
+        </section>
+
+        <section id="le-audio-pipeline">
+            <h2>LE Audio Pipeline</h2>
+            <p>LE Audio is the next-generation Bluetooth audio standard introduced in BLE 5.2. It uses ISO Channels (Isochronous Channels) to transmit audio data, replacing the traditional Classic Audio A2DP/HFP approach.</p>
+
+            <h3>Transmit Pipeline</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">LE Audio Transmit Path</span>
+                </div>
+                <pre><code>┌────────────┐    ┌──────────┐    ┌──────────────┐    ┌──────────┐
+│ Audio Input │───&gt;│ LC3/Opus │───&gt;│ ISO Channel  │───&gt;│ BLE PHY  │
+│ (AUADC/I2S)│    │ Encoder  │    │ (CIS or BIS) │    │          │
+└────────────┘    └──────────┘    └──────────────┘    └──────────┘
+
+  Microphone/I2S    Audio Encode     Isochronous Ch     Wireless TX
+  PCM samples       32-320 kbps      Scheduled TX        2M PHY</code></pre>
+            </div>
+
+            <h3>Receive Pipeline</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">LE Audio Receive Path</span>
+                </div>
+                <pre><code>┌──────────┐    ┌──────────────┐    ┌──────────┐    ┌─────────────┐
+│ BLE PHY  │───&gt;│ ISO Channel  │───&gt;│ LC3/Opus │───&gt;│ Audio Output│
+│          │    │ (CIS or BIS) │    │ Decoder  │    │ (DAC/I2S)   │
+└──────────┘    └──────────────┘    └──────────┘    └─────────────┘
+
+  Wireless RX       Isochronous Ch    Audio Decode      DAC/I2S
+  2M PHY            Data reassembly   PCM recovery      Speaker out</code></pre>
+            </div>
+
+            <h3>Key Specifications</h3>
+            <table>
+                <thead>
+                    <tr><th>Feature</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Codec</td><td>LC3 (mandatory), Opus (optional)</td></tr>
+                    <tr><td>Bitrate</td><td>32 - 320 kbps</td></tr>
+                    <tr><td>Sample Rate</td><td>8 / 16 / 24 / 32 / 48 kHz</td></tr>
+                    <tr><td>Channels</td><td>Mono, Stereo</td></tr>
+                    <tr><td>Latency</td><td>&lt; 20ms end-to-end</td></tr>
+                    <tr><td>Transport</td><td>CIS (Unicast), BIS (Broadcast)</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="unicast-audio">
+            <h2>Unicast Audio (CIS)</h2>
+            <p>Connected Isochronous Stream (CIS) provides point-to-point bidirectional audio transport, suitable for headsets, hearing aids, and other scenarios requiring a stable connection.</p>
+
+            <h3>CIS Architecture</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Unicast Audio Architecture</span>
+                </div>
+                <pre><code>┌─────────────────┐          CIS          ┌──────────────────┐
+│   Unicast Server │◄═══════════════════►│  Unicast Client   │
+│   (Headset)      │                       │  (Phone)          │
+│                  │    ┌──────────────┐   │                  │
+│  BAP Acceptor    │◄───│ Audio Stream │───│  BAP Initiator   │
+│  VCP Renderer    │    │  (LC3 Data)  │   │  VCP Controller  │
+│  MCS Server      │    └──────────────┘   │  MCC Client      │
+│  CAP Acceptor    │                       │  CAP Initiator   │
+└─────────────────┘                       └──────────────────┘</code></pre>
+            </div>
+
+            <h3>BAP Unicast Flow</h3>
+            <p>Basic Audio Profile (BAP) manages audio stream establishment and control. The unicast connection flow is as follows:</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">BAP Unicast Connection Flow</span>
+                </div>
+                <pre><code>Unicast Client                           Unicast Server
+     │                                        │
+     │──── 1. Discover PACS ────────────────►│  Query supported audio capabilities
+     │◄─── 2. PAC Records ──────────────────│  Return codec/sample rate support
+     │                                        │
+     │──── 3. Configure ASE ─────────────────►│  Configure Audio Stream Endpoint
+     │──── 4. Establish CIS ─────────────────►│  Create Isochronous Channel
+     │──── 5. Enable Stream ─────────────────►│  Start audio transmission
+     │                                        │
+     │◄═══ 6. Audio Data (LC3) ══════════════►│  Bidirectional audio streaming
+     │                                        │</code></pre>
+            </div>
+
+            <h3>Headset-Side Example Code</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">BAP Server Init (apps/bluetooth/ipro_le_audio_headset/src/bap_server.c)</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/* Register BAP Unicast Server callbacks */
+static struct bt_bap_unicast_server_cb unicast_server_cb = {
+    .config = bap_config_cb,
+    .reconfig = bap_reconfig_cb,
+    .qos = bap_qos_cb,
+    .enable = bap_enable_cb,
+    .start = bap_start_cb,
+    .disable = bap_disable_cb,
+    .release = bap_release_cb,
+};
+
+int bap_server_init(void)
+{
+    /* Register Published Audio Capabilities */
+    bt_pacs_cap_register(BT_AUDIO_DIR_SINK, &amp;cap_sink);
+    bt_pacs_cap_register(BT_AUDIO_DIR_SOURCE, &amp;cap_source);
+
+    /* Register Unicast Server */
+    bt_bap_unicast_server_register_cb(&amp;unicast_server_cb);
+
+    return 0;
+}</code></pre>
+            </div>
+        </section>
+
+        <section id="broadcast-audio">
+            <h2>Broadcast Audio (BIS)</h2>
+            <p>Broadcast Isochronous Stream (BIS) provides one-to-many unidirectional audio transport. Receivers do not need to establish a connection to listen. This is the foundation of Auracast technology.</p>
+
+            <h3>BIS Architecture</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Broadcast Audio Architecture</span>
+                </div>
+                <pre><code>                              BIS (Connectionless)
+┌───────────────────┐        ┌──────────────────┐
+│  Broadcast Source  │═══════►│  Broadcast Sink  │  Receiver 1
+│  (Transmitter)     │        └──────────────────┘
+│                    │        ┌──────────────────┐
+│  BAP Source        │═══════►│  Broadcast Sink  │  Receiver 2
+│  Audio Encoder     │        └──────────────────┘
+│  BIG Management    │        ┌──────────────────┐
+│                    │═══════►│  Broadcast Sink  │  Receiver N
+└───────────────────┘        └──────────────────┘
+
+Use cases: walkie-talkie, PA system, hearing aids, tour guides</code></pre>
+            </div>
+
+            <h3>Broadcast Source Example</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">BIS Source (apps/bluetooth/ipro_walkie_talkie/src/wt_broadcast_source.c)</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/* Create Broadcast Source */
+static int create_broadcast_source(void)
+{
+    struct bt_bap_broadcast_source_param param = {
+        .params_count = 1,
+        .params = &amp;subgroup_param,
+        .qos = &amp;preset_qos,
+        .packing = BT_ISO_PACKING_SEQUENTIAL,
+        .encryption = false,
+    };
+
+    int err = bt_bap_broadcast_source_create(&amp;param, &amp;broadcast_source);
+    if (err) {
+        printk("Failed to create broadcast source: %d\n", err);
+        return err;
+    }
+
+    /* Start broadcasting */
+    err = bt_bap_broadcast_source_start(broadcast_source, adv);
+    return err;
+}</code></pre>
+            </div>
+
+            <h3>Broadcast Sink Example</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">BIS Sink (apps/bluetooth/ipro_walkie_talkie/src/wt_broadcast_sink.c)</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/* Broadcast Sink callbacks */
+static struct bt_bap_broadcast_sink_cb broadcast_sink_cb = {
+    .base_recv = base_recv_cb,        /* BASE information received */
+    .syncable = syncable_cb,          /* Syncable notification */
+    .pa_synced = pa_synced_cb,        /* PA sync established */
+};
+
+/* Scan and sync to broadcast source */
+static void scan_for_broadcast(void)
+{
+    bt_bap_broadcast_sink_register_cb(&amp;broadcast_sink_cb);
+    bt_le_scan_start(BT_LE_SCAN_PASSIVE, scan_recv_cb);
+}</code></pre>
+            </div>
+        </section>
+
+        <section id="audio-profiles">
+            <h2>Audio Profiles</h2>
+            <p>LE Audio defines multiple cooperating profiles that collectively manage different aspects of audio streaming:</p>
+
+            <table>
+                <thead>
+                    <tr><th>Profile</th><th>Full Name</th><th>Function</th><th>Source</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>BAP</strong></td>
+                        <td>Basic Audio Profile</td>
+                        <td>Audio stream establishment and management (CIS/BIS)</td>
+                        <td><code>blestack/src/audio/bap_*.c</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>CAP</strong></td>
+                        <td>Common Audio Profile</td>
+                        <td>Coordinated set audio operations (L/R ear sync)</td>
+                        <td><code>blestack/src/audio/cap_*.c</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>VCP</strong></td>
+                        <td>Volume Control Profile</td>
+                        <td>Volume control and mute</td>
+                        <td><code>blestack/src/audio/vcp_*.c</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>MCP</strong></td>
+                        <td>Media Control Profile</td>
+                        <td>Media playback control (play/pause/track)</td>
+                        <td><code>blestack/src/audio/mcc.c, mcs.c</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>CSIP</strong></td>
+                        <td>Coordinated Set Identification Profile</td>
+                        <td>Identify device sets (e.g., a pair of earbuds)</td>
+                        <td><code>blestack/src/audio/csip_*.c</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>PACS</strong></td>
+                        <td>Published Audio Capabilities Service</td>
+                        <td>Publish supported audio capabilities</td>
+                        <td><code>blestack/src/audio/pacs.c</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>ASCS</strong></td>
+                        <td>Audio Stream Control Service</td>
+                        <td>Audio stream endpoint state machine</td>
+                        <td><code>blestack/src/audio/ascs.c</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>MICP</strong></td>
+                        <td>Microphone Control Profile</td>
+                        <td>Microphone mute control</td>
+                        <td><code>blestack/src/audio/micp_*.c</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>TMAP</strong></td>
+                        <td>Telephony and Media Audio Profile</td>
+                        <td>Telephony and media audio role definition</td>
+                        <td><code>blestack/src/audio/tmap.c</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>LC3 Codec</h3>
+            <p>LC3 (Low Complexity Communication Codec) is the mandatory codec for LE Audio. It delivers better audio quality than SBC at lower bitrates:</p>
+            <ul>
+                <li><strong>Sample Rate</strong>: 8 / 16 / 24 / 32 / 48 kHz</li>
+                <li><strong>Bitrate</strong>: 32 - 320 kbps</li>
+                <li><strong>Frame Duration</strong>: 7.5ms or 10ms</li>
+                <li><strong>Channels</strong>: Mono, Stereo</li>
+                <li><strong>Advantage</strong>: Matches SBC 328 kbps quality at just 160 kbps</li>
+            </ul>
+        </section>
+
+        <section id="usb-audio">
+            <h2>USB Audio (UAC)</h2>
+            <p>IPRO SDK integrates USB Audio Class (UAC) functionality through CherryUSB, enabling the IPRO7 to function as a USB audio device or as a USB-to-BLE audio bridge.</p>
+
+            <h3>USB Audio Architecture</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">USB Audio Data Flow</span>
+                </div>
+                <pre><code>USB Audio Device Mode:
+┌──────────┐    USB     ┌──────────────┐    ┌──────────────┐
+│   Host    │◄═════════►│  CherryUSB   │───►│  Audio DAC   │
+│ (PC/Phone)│   UAC     │  (usbd_audio)│    │  / I2S Out   │
+└──────────┘           └──────────────┘    └──────────────┘
+
+USB-to-BLE Bridge Mode:
+┌──────────┐    USB     ┌──────────────┐    BLE    ┌────────────┐
+│   Host    │◄═════════►│   IPRO7      │◄════════►│ BLE Headset│
+│ (PC/Phone)│   UAC     │  USB ↔ BLE   │   CIS    │ (LE Audio) │
+└──────────┘           └──────────────┘          └────────────┘</code></pre>
+            </div>
+
+            <h3>CherryUSB Audio Components</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">USB Audio Component Structure</span>
+                </div>
+                <pre><code>components/cherryusb/class/audio/
+├── usb_audio.h         # USB Audio Class definitions
+├── usbd_audio.c        # USB audio device-side driver
+├── usbd_audio.h        # Device-side API
+├── usbh_audio.c        # USB audio host-side driver
+└── usbh_audio.h        # Host-side API</code></pre>
+            </div>
+
+            <h3>UAC Initialization Example</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">USB Audio Device Init (apps/bluetooth/ipro_le_audio_headset/src/app_uac.c)</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/* USB Audio Class device configuration */
+#include "usbd_audio.h"
+
+/* Audio stream callback: receive audio data from USB host */
+static void usbd_audio_data_recv_callback(uint8_t *data, uint32_t len)
+{
+    /* Forward PCM data to DAC or BLE encoder */
+    audio_output_write(data, len);
+}
+
+/* Initialize USB Audio device */
+void app_uac_init(void)
+{
+    usbd_audio_add_interface(/* ... */);
+    usbd_initialize();
+}</code></pre>
+            </div>
+        </section>
+
+        <section id="camera-video">
+            <h2>Camera & Video</h2>
+            <p>The IPRO7 SoC includes a built-in ISP (Image Signal Processor) and MJPEG hardware encoder. It can drive camera sensors for image capture, processing, and compression, with output via USB UVC or LCD display.</p>
+
+            <h3>Video Processing Pipeline</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Camera Image Processing Pipeline</span>
+                </div>
+                <pre><code>┌────────────┐    ┌─────────┐    ┌──────────────┐    ┌───────────────┐
+│ Camera     │───►│  ISP    │───►│ MJPEG Encoder│───►│ USB UVC       │
+│ Sensor     │    │ Pipeline│    │ (HW Accel)   │    │ (Camera Dev)  │
+│ (SPI/DVP)  │    │         │    └──────────────┘    └───────────────┘
+└────────────┘    │         │    ┌──────────────┐
+                  │         │───►│ LCD Display  │
+                  │         │    │ (Live Preview)│
+                  └─────────┘    └──────────────┘
+
+ISP Features: Auto Exposure (AE), Auto White Balance (AWB), Noise Reduction (NR), Sharpening</code></pre>
+            </div>
+
+            <h3>ISP Component Structure</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">ISP & Video Components</span>
+                </div>
+                <pre><code>components/
+├── isp_algorithm/          # ISP image algorithms (AE, AWB, NR, etc.)
+├── isp_firmware/           # ISP firmware control
+│   ├── include/            # ISP API headers
+│   └── src/                # ISP driver implementation
+├── isp_iq_param/           # Sensor IQ tuning parameters
+│   └── sc101iot/           # SC101IoT sensor parameters
+└── cherryusb/class/video/  # USB Video Class (UVC)
+    ├── usbd_video.c        # UVC device-side driver
+    └── usbh_video.c        # UVC host-side driver
+
+bsp/hal/inc/
+├── hal_isp.h               # ISP HAL interface
+└── hal_mjpeg.h             # MJPEG encoder HAL</code></pre>
+            </div>
+
+            <h3>Multimedia Demo Application</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">ipro7_demo Multimedia Examples</span>
+                </div>
+                <pre><code>apps/ipro7_demo/demo/mm/
+├── isp/                    # ISP pipeline example
+├── mjpeg/                  # MJPEG encoding example
+├── mjdec/                  # MJPEG decoding example
+├── spi_sensor/             # SPI sensor driver
+├── isp_test_demo.c         # ISP test example
+├── mjpeg_test_demo.c       # MJPEG encoding test
+├── mjdec_test_demo.c       # MJPEG decoding test
+├── lcd_ai_demo.c           # LCD + AI demonstration
+├── mm_demo.c               # Multimedia combined example
+└── stream_control.c        # Stream control</code></pre>
+            </div>
+
+            <h3>PIR Camera Application</h3>
+            <p><code>ipro7_pircam</code> is a complete PIR (Passive Infrared) triggered camera reference application, integrating low-power wake-up, ISP image capture, and AI object detection:</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">PIR Camera Architecture (apps/ipro7_pircam/)</span>
+                </div>
+                <pre><code>PIR Sensor Trigger → Low-Power Wake → ISP Image Capture → AI Detection → MJPEG Compression
+
+Key files:
+├── main.c              # Application entry point
+├── pircam_isp.c        # ISP camera control
+├── pircam_ai.c         # AI inference integration
+├── pircam_process.c    # Image processing pipeline
+├── pircam_lpfw.c       # Low-power framework
+└── pircam_demo.c       # Demo mode</code></pre>
+            </div>
+        </section>
+
+        <section id="audio-hardware">
+            <h2>Audio Hardware</h2>
+            <p>The IPRO7 SoC integrates multiple audio hardware peripherals, accessible through a unified HAL layer:</p>
+
+            <table>
+                <thead>
+                    <tr><th>Hardware</th><th>Function</th><th>HAL Header</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>AUADC</strong></td>
+                        <td>Audio ADC</td>
+                        <td><code>hal_auadc.h</code></td>
+                        <td>Built-in audio analog-to-digital converter for direct microphone connection</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DAC</strong></td>
+                        <td>Digital-to-Analog Converter</td>
+                        <td><code>hal_dac.h</code></td>
+                        <td>Audio output to speaker or headphone</td>
+                    </tr>
+                    <tr>
+                        <td><strong>I2S</strong></td>
+                        <td>Inter-IC Sound</td>
+                        <td><code>hal_i2s.h</code></td>
+                        <td>Digital audio interface for connecting external audio codec chips</td>
+                    </tr>
+                    <tr>
+                        <td><strong>DMA</strong></td>
+                        <td>Direct Memory Access</td>
+                        <td><code>hal_dma.h</code></td>
+                        <td>Zero CPU-overhead audio data transfer</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Audio Hardware Data Flow</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Audio Hardware Data Paths</span>
+                </div>
+                <pre><code>Recording Path (Input):
+  Microphone → AUADC → DMA → Memory Buffer → LC3 Encoder / USB
+
+Playback Path (Output):
+  LC3 Decoder / USB → Memory Buffer → DMA → DAC → Speaker
+
+External Codec Path:
+  External Codec ↔ I2S ↔ DMA ↔ Memory Buffer</code></pre>
+            </div>
+
+            <h3>Audio Resampler</h3>
+            <p>The SDK provides a software audio resampler for sample rate conversion between different sources:</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Audio Resampler (components/audio/include/audio_resampler.h)</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">#include "audio_resampler.h"
+
+/* Use cases: USB 48kHz PCM ↔ BLE LC3 16/32kHz */
+/* Or sample rate matching between different audio sources */</code></pre>
+            </div>
+        </section>
+
+        <section id="reference-apps">
+            <h2>Reference Applications</h2>
+
+            <h3>ipro_le_audio_headset</h3>
+            <p>Complete LE Audio headset reference design supporting both unicast and broadcast audio:</p>
+            <table>
+                <thead>
+                    <tr><th>Feature</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>BAP Unicast Server</td><td>Accept audio streams from phone</td></tr>
+                    <tr><td>CAP Acceptor</td><td>Coordinated set audio (L/R ear sync)</td></tr>
+                    <tr><td>VCP Volume Renderer</td><td>Remote volume control</td></tr>
+                    <tr><td>MCS Server</td><td>Media playback control</td></tr>
+                    <tr><td>USB Audio (UAC)</td><td>USB audio input/output</td></tr>
+                    <tr><td>DAC Output</td><td>Built-in DAC speaker driver</td></tr>
+                </tbody>
+            </table>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build LE Audio Headset</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Build
+make -C apps/bluetooth/ipro_le_audio_headset
+
+# Output binary
+# apps/bluetooth/ipro_le_audio_headset/build/build_out/ipro_le_audio_headset_IPRO7.bin</code></pre>
+            </div>
+
+            <h3>ipro_walkie_talkie</h3>
+            <p>BIS broadcast walkie-talkie application demonstrating one-to-many connectionless audio:</p>
+            <table>
+                <thead>
+                    <tr><th>Feature</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Broadcast Source</td><td>Transmitter side, encodes and sends audio</td></tr>
+                    <tr><td>Broadcast Sink</td><td>Receiver side, decodes and plays audio</td></tr>
+                    <tr><td>Bidirectional Switch</td><td>Button to toggle transmit/receive mode</td></tr>
+                    <tr><td>Shell Control</td><td>Serial shell command interface</td></tr>
+                </tbody>
+            </table>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build Walkie-Talkie</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Build
+make -C apps/bluetooth/ipro_walkie_talkie
+
+# Output binary
+# apps/bluetooth/ipro_walkie_talkie/build/build_out/ipro_walkie_talkie_IPRO7.bin</code></pre>
+            </div>
+
+            <h3>ipro7_demo</h3>
+            <p>Multimedia demonstration platform integrating ISP, MJPEG, LCD, USB audio/video, and more:</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build Multimedia Demo</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Build
+make -C apps/ipro7_demo
+
+# Output binary
+# apps/ipro7_demo/build/build_out/ipro7_demo_IPRO7.bin</code></pre>
+            </div>
+
+            <h3>ipro7_pircam</h3>
+            <p>PIR-triggered camera integrating low-power wake-up, ISP image capture, and AI object detection:</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build PIR Camera</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Build
+make -C apps/ipro7_pircam
+
+# Output binary
+# apps/ipro7_pircam/build/build_out/ipro7_pircam_IPRO7.bin</code></pre>
+            </div>
+
+            <h3>Controller Variant Selection</h3>
+            <p>LE Audio applications require a controller variant that supports ISO Channels:</p>
+            <table>
+                <thead>
+                    <tr><th>Variant</th><th>BLE Version</th><th>LE Audio</th><th>Use Case</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>link1_leaudio</code></td><td>5.2</td><td>Supported</td><td>Single-connection LE Audio device</td></tr>
+                    <tr><td><code>link2_leaudio</code></td><td>5.2</td><td>Supported</td><td>Dual-connection LE Audio device</td></tr>
+                    <tr><td><code>link1_leaudio_53_54</code></td><td>5.4</td><td>Supported</td><td>Single-connection BLE 5.4 + LE Audio</td></tr>
+                    <tr><td><code>link2_leaudio_53_54</code></td><td>5.4</td><td>Supported</td><td>Dual-connection BLE 5.4 + LE Audio</td></tr>
+                </tbody>
+            </table>
+        </section>
+    </article>
+</div>

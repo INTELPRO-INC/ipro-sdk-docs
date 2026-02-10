@@ -1,0 +1,540 @@
+---
+layout: default
+title: AI & NPU
+lang: en
+---
+
+<div class="doc-layout">
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <h4 class="sidebar-title">Table of Contents</h4>
+            <ul class="sidebar-links">
+                <li><a href="#overview" class="sidebar-link">Overview</a></li>
+                <li><a href="#architecture" class="sidebar-link">NPU Architecture</a></li>
+                <li><a href="#model-pipeline" class="sidebar-link">Model Pipeline</a></li>
+                <li><a href="#iproai-framework" class="sidebar-link">IPROAI Framework</a></li>
+                <li><a href="#supported-models" class="sidebar-link">Supported Models</a></li>
+                <li><a href="#reference-apps" class="sidebar-link">Reference Applications</a></li>
+                <li><a href="#dev-guide" class="sidebar-link">Development Guide</a></li>
+                <li><a href="#performance" class="sidebar-link">Performance & Optimization</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <article class="doc-content">
+        <h1>AI & NPU</h1>
+        <p>IPRO7AI features a built-in 0.1 TOPS Neural Processing Unit (NPU) designed for edge AI inference. Combined with the IPROAI inference framework and YOLOv8 post-processing engine, it enables object detection, image classification, and keyword spotting at low power consumption.</p>
+
+        <section id="overview">
+            <h2>Overview</h2>
+            <p>The IPRO SDK provides a complete AI development toolchain, from model loading to inference output:</p>
+
+            <div class="features-grid" style="margin: 2rem 0;">
+                <div class="feature-card">
+                    <div class="feature-icon">NPU</div>
+                    <h3 class="feature-title">Hardware Acceleration</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>0.1 TOPS peak performance</li>
+                        <li>INT8 quantized inference</li>
+                        <li>CPU + NPU hybrid scheduling</li>
+                        <li>DMA direct memory access</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">AI</div>
+                    <h3 class="feature-title">IPROAI Framework</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>Custom inference engine</li>
+                        <li>.blai model format</li>
+                        <li>Built-in YOLOv8 post-processing</li>
+                        <li>SD card / Flash loading</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">APP</div>
+                    <h3 class="feature-title">Applications</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>Person Detection</li>
+                        <li>Person + Pet Detection</li>
+                        <li>Face Detection</li>
+                        <li>PIR + AI Smart Camera</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="architecture">
+            <h2>NPU Architecture</h2>
+            <p>The IPRO7 NPU works in tandem with the RISC-V CPU, supporting a hybrid execution mode. Each layer is automatically dispatched to the optimal execution device based on its operator type:</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">AI System Architecture</span>
+                </div>
+                <pre><code>┌──────────────────────────────────────────────────┐
+│              Application Layer                    │
+│   ipro7_pircam  │  ipro7_demo  │  Custom App     │
+├──────────────────────────────────────────────────┤
+│          IPROAI Framework (components/ai/)        │
+│   iproai_core  │  iproai_inst  │  postprocess    │
+│   Model Load   │  Layer Sched  │  YOLOv8 / NMS   │
+├──────────────────────────────────────────────────┤
+│         Execution Backend                         │
+│   ┌─────────────────┐  ┌──────────────────────┐  │
+│   │   CPU Backend    │  │    NPU Backend       │  │
+│   │   Softmax, YOLO  │  │    Conv, Pool, FC    │  │
+│   │   Route, Reshape │  │    DW-Conv, MatMul   │  │
+│   │   NMSIS DSP Ops  │  │    Activation (HW)   │  │
+│   └─────────────────┘  └──────────────────────┘  │
+├──────────────────────────────────────────────────┤
+│         Memory / DMA Interface                    │
+│   PSRAM (16 MB)  │  OCRAM (256 KB)  │  Flash     │
+└──────────────────────────────────────────────────┘</code></pre>
+            </div>
+
+            <h3>Supported Operators</h3>
+            <p>The NPU hardware accelerates the following operators. All other operators fall back to CPU execution:</p>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color);">
+                        <th style="padding: 0.75rem; text-align: left;">Backend</th>
+                        <th style="padding: 0.75rem; text-align: left;">Supported Operators</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>NPU</strong></td>
+                        <td style="padding: 0.75rem;">Convolution, Depthwise Conv, MaxPool, AvgPool, Fully Connected, MatMul, Activation (ReLU/ReLU6/Leaky)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>CPU</strong></td>
+                        <td style="padding: 0.75rem;">Softmax, YOLO, Route, Shortcut, Upsample, Reshape, Transpose, Pad, ArgMax, Resize Bilinear, SSD, Gather, Mean, Dequantize</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>Activations</strong></td>
+                        <td style="padding: 0.75rem;">Leaky, ReLU, Linear, ReLU6, Mish, ELU, Logistic, Swish, GELU, Tanh, PReLU</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Quantization Format</h3>
+            <p>IPROAI uses INT8 fixed-point (<code>fixed_point_t = int8_t</code>) for inference. It supports TFLite-style per-channel quantization parameters (multiplier + shift), allowing direct conversion from TensorFlow Lite quantized models.</p>
+        </section>
+
+        <section id="model-pipeline">
+            <h2>Model Deployment Pipeline</h2>
+            <p>The complete workflow from training to on-device deployment:</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Model Pipeline</span>
+                </div>
+                <pre><code>  ┌─────────────┐     ┌──────────────┐     ┌─────────────┐     ┌───────────────┐
+  │  Training    │────&gt;│ Quantization │────&gt;│  Conversion │────&gt;│  Deployment   │
+  │  (PyTorch /  │     │  (INT8)      │     │  (.blai)    │     │  (SD / Flash) │
+  │  TensorFlow) │     │              │     │             │     │               │
+  └─────────────┘     └──────────────┘     └─────────────┘     └───────────────┘
+        │                    │                    │                     │
+   Float32 model       TFLite INT8 model     .blai binary        Load to PSRAM
+   (YOLO, MobileNet)  (per-channel quant)   (NPU inst+weights)  NPU inference</code></pre>
+            </div>
+
+            <h3>.blai Model Format</h3>
+            <p>IPROAI uses a custom <code>.blai</code> binary model format. The model file contains the following sections:</p>
+            <ul>
+                <li><strong>Header (32 bytes)</strong>: 8 uint32 fields recording the size of each section</li>
+                <li><strong>CPU instruction section</strong>: Layer definitions, connectivity, quantization parameters</li>
+                <li><strong>NPU instruction section</strong>: NPU hardware instructions (16 bytes each)</li>
+                <li><strong>Weights section</strong>: INT8 quantized weight data</li>
+                <li><strong>Bias section</strong>: INT32 bias data</li>
+                <li><strong>Multiplier/Shift section</strong>: Per-channel quantization parameters</li>
+            </ul>
+
+            <h3>Model Loading Methods</h3>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Load from SD Card</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/* Model stored on SD card at /sdcard/ai_model/person_pet_detect.blai */
+iproai_model_hdl_t hdl = iproai_create();
+uint8_t *buf = load_file_to_buffer("/sdcard/ai_model/person_pet_detect.blai");
+IPROAI_Status_e status = iproai_load_model_from_buffer(hdl, buf);
+vPortFree(buf);  /* Buffer can be freed after loading */</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Load from Flash Partition</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/* Model burned to Flash partition, skip 0x1000 header */
+uint32_t flash_addr, part_size;
+hal_boot2_partition_addr_active("ai_model", &amp;flash_addr, &amp;part_size);
+
+uint8_t *buf = pvPortMalloc(model_size);
+flash_read(flash_addr + 0x1000, buf, model_size);
+
+iproai_model_hdl_t hdl = iproai_create();
+iproai_load_model_from_buffer(hdl, buf);
+vPortFree(buf);</code></pre>
+            </div>
+        </section>
+
+        <section id="iproai-framework">
+            <h2>IPROAI Framework</h2>
+            <p>IPROAI is the custom AI inference framework in the IPRO SDK, located at <code>components/ai/</code>. It provides model loading, layer scheduling, NPU acceleration, and post-processing capabilities.</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Framework Source Structure</span>
+                </div>
+                <pre><code>components/ai/
+├── iproai_def.h                    # Public type definitions (layers, activations, results)
+├── iproai_def_internal.h           # Internal debug flags
+├── Kconfig                         # CONFIG_AI_SUPPORT, CONFIG_AI_DEBUG
+├── CMakeLists.txt                  # Build config (supports prebuilt .a)
+└── src/
+    ├── core/
+    │   ├── include/iproai_core.h   # Core API (create, load, compute, free)
+    │   └── iproai_core.c           # Core implementation
+    └── inst/
+        ├── include/
+        │   ├── detect/
+        │   │   ├── yolov8_detect.h             # YOLOv8 generic detection
+        │   │   └── yolov8_person_pet_detect.h  # Person+Pet detection
+        │   ├── iproai_inst_npu.h               # NPU driver interface
+        │   ├── iproai_inst_cpu.h               # CPU backend
+        │   └── iproai_inst_postprocess.h       # Post-processing
+        ├── iproai_inst_npu.c           # NPU instruction execution
+        ├── iproai_inst_npu_ops.c       # NPU operator implementations
+        ├── iproai_inst_cpu.c           # CPU layer execution
+        ├── iproai_inst_cpu_ops.c       # CPU operators (generic)
+        ├── iproai_inst_cpu_ops_yolo.c  # CPU operators (YOLO-specific)
+        ├── iproai_inst_process.c       # Inference scheduler
+        ├── iproai_inst_postprocess.c   # Post-processing
+        ├── iproai_nmsis_ops.c          # NMSIS DSP accelerated ops
+        └── detect/
+            ├── yolov8_detect.c                 # YOLOv8 6-output post-processing
+            └── yolov8_person_pet_detect.c      # Person+Pet detection wrapper</code></pre>
+            </div>
+
+            <h3>Core API</h3>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">IPROAI Core API (iproai_core.h)</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/* Create a model instance */
+iproai_model_hdl_t iproai_create(void);
+
+/* Load .blai model from memory buffer */
+IPROAI_Status_e iproai_load_model_from_buffer(iproai_model_hdl_t hdl, const uint8_t *buffer);
+
+/* Load .blai model from file */
+IPROAI_Status_e iproai_load_model_from_file(iproai_model_hdl_t hdl, const char *name);
+
+/* Get model input resolution */
+IPROAI_Status_e iproai_getInputResolution(iproai_model_hdl_t hdl, uint32_t *width, uint32_t *height);
+
+/* Set source image resolution (for coordinate mapping) */
+IPROAI_Status_e iproai_setSourceResolution(iproai_model_hdl_t hdl, uint32_t width, uint32_t height);
+
+/* Get input buffer address (for filling image data) */
+uint8_t* iproai_getInputBuffer(iproai_model_hdl_t hdl);
+
+/* Get output buffer address */
+uint8_t* iproai_getOutputBuffer(iproai_model_hdl_t hdl, uint32_t *size);
+
+/* Run inference (synchronous, blocks until completion) */
+IPROAI_Status_e iproai_startCompute(iproai_model_hdl_t hdl);
+
+/* Get network info (for post-processing) */
+struct iproai_net_info_t *iproai_getNetInfo(iproai_model_hdl_t hdl);
+
+/* Set inference result callback */
+IPROAI_Status_e iproai_setResultCB(iproai_model_hdl_t hdl, iproai_inference_cb cb);
+
+/* Free model resources */
+IPROAI_Status_e iproai_free(iproai_model_hdl_t hdl);</code></pre>
+            </div>
+
+            <h3>Kconfig Options</h3>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">.config Settings</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Enable AI/NPU support (automatically enables PSRAM)
+CONFIG_AI_SUPPORT=y
+
+# Enable AI debug output
+CONFIG_AI_DEBUG=y
+
+# Use prebuilt static library (no source code needed)
+CONFIG_AI_PREBUILT=y
+CONFIG_AI_PREBUILT_PATH="components/ai/prebuilt/libai.a"</code></pre>
+            </div>
+        </section>
+
+        <section id="supported-models">
+            <h2>Supported Models</h2>
+            <p>The SDK includes several pre-trained YOLOv8 detection models in <code>.blai</code> format. All models accept 640x360 RGB888 input:</p>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color);">
+                        <th style="padding: 0.75rem; text-align: left;">Model</th>
+                        <th style="padding: 0.75rem; text-align: left;">Classes</th>
+                        <th style="padding: 0.75rem; text-align: left;">Output Layers</th>
+                        <th style="padding: 0.75rem; text-align: left;">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><code>person_detect.blai</code></td>
+                        <td style="padding: 0.75rem;">person (1)</td>
+                        <td style="padding: 0.75rem;">4</td>
+                        <td style="padding: 0.75rem;">Person detection</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><code>person_pet_detect.blai</code></td>
+                        <td style="padding: 0.75rem;">person, pet (2)</td>
+                        <td style="padding: 0.75rem;">6</td>
+                        <td style="padding: 0.75rem;">Person + Pet detection (3 box + 3 class outputs)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><code>pet_detect.blai</code></td>
+                        <td style="padding: 0.75rem;">pet (1)</td>
+                        <td style="padding: 0.75rem;">4</td>
+                        <td style="padding: 0.75rem;">Pet detection</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><code>face_detect.blai</code></td>
+                        <td style="padding: 0.75rem;">face (1)</td>
+                        <td style="padding: 0.75rem;">4</td>
+                        <td style="padding: 0.75rem;">Face detection</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Supported Application Types</h3>
+            <p>The IPROAI framework's <code>APPLICATION_TYPE</code> enumeration defines the following application scenarios:</p>
+            <ul>
+                <li><strong>CLASSIFICATION</strong> - Image classification</li>
+                <li><strong>OBJECT_DETECTION</strong> - Object detection (YOLO family)</li>
+                <li><strong>KEYPOINT_DETECTION</strong> - Keypoint detection</li>
+                <li><strong>FACE_RECONGNITION</strong> - Face recognition (with feature matching)</li>
+                <li><strong>FACE_LANDMARK</strong> - Facial landmark detection</li>
+                <li><strong>KEYWORD_SPOTTING</strong> - Keyword spotting / voice trigger</li>
+                <li><strong>SEGMENTATION</strong> - Semantic segmentation</li>
+                <li><strong>RETINA_FACE / RETINA_PERSON</strong> - RetinaNet detection</li>
+                <li><strong>CUSTOM</strong> - Custom post-processing</li>
+            </ul>
+        </section>
+
+        <section id="reference-apps">
+            <h2>Reference Applications</h2>
+
+            <h3>ipro7_pircam - PIR + AI Smart Camera</h3>
+            <p>Located at <code>apps/ipro7_pircam/</code>, this application demonstrates a complete low-power workflow combining PIR sensor triggering with AI inference:</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">PIRCam Workflow</span>
+                </div>
+                <pre><code>  ┌─────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐     ┌───────────┐
+  │  Sleep   │────&gt;│ PIR      │────&gt;│ ISP      │────&gt;│ NPU      │────&gt;│ BLE       │
+  │  (LP)    │     │ Wakeup   │     │ Capture  │     │ Inference│     │ Report    │
+  └─────────┘     └──────────┘     └──────────┘     └──────────┘     └───────────┘
+       ^                                                                    │
+       └────────────────────────────────────────────────────────────────────┘
+                                 Return to low-power sleep</code></pre>
+            </div>
+
+            <p>Key features:</p>
+            <ul>
+                <li>Model loaded once to PSRAM and retained during sleep (<code>pircam_ai_init()</code> called only once at startup)</li>
+                <li>ISP Channel 1 callback pushes frames to inference queue via <code>pircam_ai_push_buffer()</code> (ISR-safe)</li>
+                <li>After wakeup, <code>pircam_ai_resume()</code> restores NPU clock and registers</li>
+                <li>Uses YOLOv8 Person+Pet model with 640x360 ARGB input</li>
+                <li>Supports SD card loading (<code>CONFIG_PIRCAM_AI_MODEL_FROM_SD</code>) or Flash partition loading</li>
+            </ul>
+
+            <h3>ipro7_demo - Interactive AI Demo</h3>
+            <p>Located at <code>apps/ipro7_demo/demo/ai/</code>, this provides shell command-based interactive AI inference:</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Shell Commands</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Load model and run single inference (reads model + test image from SD card)
+ai_sd_run
+
+# Run inference demo with a specific model
+ai_run_demo 0    # Person Detection
+ai_run_demo 1    # Person + Pet Detection
+ai_run_demo 2    # Pet Detection
+ai_run_demo 3    # Face Detection
+
+# Start External Buffer continuous inference mode
+ai_run_ext 1              # Start Person+Pet continuous inference
+ai_run_ext stop           # Stop inference
+
+# View AI status
+ai_status</code></pre>
+            </div>
+        </section>
+
+        <section id="dev-guide">
+            <h2>Development Guide</h2>
+
+            <h3>Adding AI Inference to Your Application</h3>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Complete Inference Example</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">#include &lt;iproai_core.h&gt;
+#include &lt;iproai_def.h&gt;
+#include "hal_npu.h"
+#include "detect/yolov8_person_pet_detect.h"
+
+static iproai_model_hdl_t g_hdl = NULL;
+
+int my_ai_init(const uint8_t *model_data)
+{
+    /* Step 1: Enable NPU clock */
+    GLB_PER_Clock_UnGate(GLB_AHB_CLOCK_MM);
+
+    /* Step 2: Create model instance */
+    g_hdl = iproai_create();
+    if (!g_hdl) return -1;
+
+    /* Step 3: Load model */
+    IPROAI_Status_e status = iproai_load_model_from_buffer(g_hdl, model_data);
+    if (status != IPROAI_STATUS_NO_ERROR) return -2;
+
+    return 0;
+}
+
+int my_ai_inference(uint32_t image_addr)
+{
+    /* Step 4: Set external image address (NPU reads directly) */
+    NPU_Img_Ext_Addr_Cfg(image_addr);
+
+    /* Step 5: Run inference */
+    IPROAI_Status_e status = iproai_startCompute(g_hdl);
+    if (status != IPROAI_STATUS_NO_ERROR) return -1;
+
+    /* Step 6: Post-processing */
+    struct iproai_net_info_t *net = iproai_getNetInfo(g_hdl);
+    uint8_t *data_buf = iproai_getInputBuffer(g_hdl);
+
+    yolov8_config_t yolo_cfg;
+    yolov8_result_t result;
+
+    yolov8_person_pet_init(&amp;yolo_cfg, net);
+    yolov8_person_pet_process(&amp;yolo_cfg, net, data_buf, &amp;result);
+    yolov8_person_pet_print_results(&amp;result);
+    yolov8_person_pet_deinit(&amp;yolo_cfg);
+
+    return result.num_detections;
+}</code></pre>
+            </div>
+
+            <h3>External Buffer Continuous Inference</h3>
+            <p>For scenarios where ISP continuously outputs frames. Uses a FreeRTOS Queue to push image addresses to the inference task:</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">ISP + AI Continuous Inference</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/* Push frame from ISP callback (ISR-safe) */
+void isp_frame_callback(uint32_t buffer_addr)
+{
+    pircam_ai_push_buffer(buffer_addr);  /* Uses xQueueSendFromISR */
+}
+
+/* Inference task automatically picks up frames from the queue */</code></pre>
+            </div>
+
+            <h3>Memory Considerations</h3>
+            <ul>
+                <li><strong>PSRAM is required</strong>: <code>CONFIG_AI_SUPPORT</code> automatically enables <code>CONFIG_USE_PSRAM</code>. Model weights and intermediate results are stored in the 16 MB PSRAM.</li>
+                <li><strong>Model size</strong>: Typical YOLOv8 models are 200 KB - 2 MB in .blai format</li>
+                <li><strong>Inference buffers</strong>: Inference requires additional intermediate buffers (automatically managed). Ensure sufficient heap space is available.</li>
+                <li><strong>Sleep retention</strong>: PSRAM retains its contents during low-power sleep, so the model does not need to be reloaded after wakeup.</li>
+            </ul>
+        </section>
+
+        <section id="performance">
+            <h2>Performance & Optimization</h2>
+
+            <h3>Performance Reference</h3>
+            <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color);">
+                        <th style="padding: 0.75rem; text-align: left;">Metric</th>
+                        <th style="padding: 0.75rem; text-align: left;">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">NPU Peak Performance</td>
+                        <td style="padding: 0.75rem;">0.1 TOPS (INT8)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">Quantization Precision</td>
+                        <td style="padding: 0.75rem;">INT8 (per-channel)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">Input Format</td>
+                        <td style="padding: 0.75rem;">640x360 RGB888 / ARGB</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">YOLOv8 Detection Thresholds</td>
+                        <td style="padding: 0.75rem;">Confidence: 0.25, IoU: 0.45</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">Max Detections</td>
+                        <td style="padding: 0.75rem;">50 (after NMS)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Optimization Tips</h3>
+            <ul>
+                <li><strong>Use NPU-accelerated layers</strong>: Ensure Conv / Pool / FC layers run on NPU to avoid unnecessary CPU fallback</li>
+                <li><strong>Reduce model size</strong>: Use smaller input resolution, fewer channels, or prune unnecessary classes</li>
+                <li><strong>Enable PSRAM sleep retention</strong>: Avoid reloading the model after every wakeup cycle</li>
+                <li><strong>Use External Buffer mode</strong>: Use <code>NPU_Img_Ext_Addr_Cfg()</code> to let NPU read ISP output directly, reducing memory copies</li>
+                <li><strong>Pre-allocate memory pools</strong>: YOLOv8 post-processing uses <code>mem_pool</code> for pre-allocated buffers to avoid dynamic allocation during inference</li>
+                <li><strong>Enable profiling</strong>: Set <code>CONFIG_AI_DEBUG=y</code> to view per-layer execution time and device assignment</li>
+            </ul>
+
+            <h3>Debugging</h3>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Enable AI Debugging</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Enable in .config
+CONFIG_AI_DEBUG=y
+
+# This enables the following debug information:
+# - IPROAI_NPU_OPS_DEBUG: NPU operator execution details
+# - IPROAI_SHOW_INST: Display per-layer instructions
+# - IPROAI_PROFILING_EACH_LAYER: Per-layer execution time</code></pre>
+            </div>
+        </section>
+    </article>
+</div>

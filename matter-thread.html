@@ -1,0 +1,620 @@
+---
+layout: default
+title: Matter & Thread 開發指南
+---
+
+<div class="doc-layout">
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <h4 class="sidebar-title">本頁目錄</h4>
+            <ul class="sidebar-links">
+                <li><a href="#overview" class="sidebar-link">概述</a></li>
+                <li><a href="#matter-architecture" class="sidebar-link">Matter 架構</a></li>
+                <li><a href="#matter-over-thread" class="sidebar-link">Matter over Thread</a></li>
+                <li><a href="#matter-over-wifi" class="sidebar-link">Matter over WiFi</a></li>
+                <li><a href="#openthread" class="sidebar-link">OpenThread</a></li>
+                <li><a href="#reference-apps" class="sidebar-link">參考應用</a></li>
+                <li><a href="#configuration" class="sidebar-link">配置說明</a></li>
+                <li><a href="#dev-workflow" class="sidebar-link">開發流程</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <article class="doc-content">
+        <h1>Matter & Thread 開發指南</h1>
+        <p>IPRO SDK 支援 Matter 1.4 統一智慧家庭協定以及 Thread 1.2 低功耗網狀網路，讓您的裝置能夠與 Apple Home、Google Home、Amazon Alexa 等生態系統無縫互通。</p>
+
+        <section id="overview">
+            <h2>概述</h2>
+            <p>Matter 是由 Connectivity Standards Alliance (CSA) 推動的統一智慧家庭標準，旨在解決物聯網裝置之間的互通性問題。IPRO SDK 提供完整的 Matter 與 Thread 支援：</p>
+
+            <div class="features-grid" style="margin: 2rem 0;">
+                <div class="feature-card">
+                    <div class="feature-icon">🏠</div>
+                    <h3 class="feature-title">Matter 1.4</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>CSA 統一智慧家庭標準</li>
+                        <li>多生態系統互通</li>
+                        <li>安全的裝置配網與控制</li>
+                        <li>Data Model / Interaction Model</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🕸️</div>
+                    <h3 class="feature-title">Thread 1.2</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>IEEE 802.15.4 低功耗網狀網路</li>
+                        <li>自我修復拓撲</li>
+                        <li>IPv6 原生支援</li>
+                        <li>FTD / MTD / RCP 裝置類型</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📶</div>
+                    <h3 class="feature-title">多傳輸層</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>Matter over Thread（低功耗）</li>
+                        <li>Matter over WiFi（高頻寬）</li>
+                        <li>BLE 配網通道</li>
+                        <li>Border Router 橋接</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="matter-architecture">
+            <h2>Matter 架構</h2>
+            <p>Matter 協定建構在 IP 網路之上，透過 Thread 或 WiFi 作為傳輸層，並使用 BLE 進行裝置配網（Commissioning）：</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Matter 協定棧架構</span>
+                </div>
+                <pre><code>┌─────────────────────────────────────────┐
+│          Application Layer              │
+│     Lighting │ Switch │ Sensor          │
+├─────────────────────────────────────────┤
+│          Matter SDK (1.4)               │
+│   Data Model │ Interaction Model        │
+│   Commissioning │ Security (CASE/PASE)  │
+├──────────────────┬──────────────────────┤
+│   Thread 1.2     │      WiFi 6          │
+│   (802.15.4)     │    (802.11ax)         │
+├──────────────────┴──────────────────────┤
+│          BLE (Commissioning)            │
+├─────────────────────────────────────────┤
+│          IPRO7 Hardware                 │
+│   802.15.4 Radio │ WiFi │ BLE Radio     │
+└─────────────────────────────────────────┘</code></pre>
+            </div>
+
+            <h3>Matter Data Model</h3>
+            <p>Matter 使用分層式資料模型來描述裝置功能：</p>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 1.5rem 0;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color);">
+                        <th style="padding: 0.75rem; text-align: left;">概念</th>
+                        <th style="padding: 0.75rem; text-align: left;">說明</th>
+                        <th style="padding: 0.75rem; text-align: left;">範例</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>Node</strong></td>
+                        <td style="padding: 0.75rem;">一個可定址的 Matter 裝置</td>
+                        <td style="padding: 0.75rem;">一個智慧燈泡</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>Endpoint</strong></td>
+                        <td style="padding: 0.75rem;">Node 上的功能單元</td>
+                        <td style="padding: 0.75rem;">Endpoint 0（Root）、Endpoint 1（Light）</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>Cluster</strong></td>
+                        <td style="padding: 0.75rem;">一組相關功能的集合</td>
+                        <td style="padding: 0.75rem;">OnOff、LevelControl、ColorControl</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>Attribute</strong></td>
+                        <td style="padding: 0.75rem;">可讀寫的狀態值</td>
+                        <td style="padding: 0.75rem;">OnOff.onOff、LevelControl.currentLevel</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>Command</strong></td>
+                        <td style="padding: 0.75rem;">可執行的操作</td>
+                        <td style="padding: 0.75rem;">OnOff.Toggle()、LevelControl.MoveToLevel()</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Interaction Model</h3>
+            <p>Matter 裝置之間透過以下交互模式通訊：</p>
+            <ul>
+                <li><strong>Read</strong> — 讀取屬性值（例如：查詢燈泡是否開啟）</li>
+                <li><strong>Write</strong> — 寫入屬性值（例如：設定亮度等級）</li>
+                <li><strong>Invoke</strong> — 呼叫命令（例如：Toggle 開關）</li>
+                <li><strong>Subscribe</strong> — 訂閱屬性變化通知（例如：監聽溫度變化）</li>
+            </ul>
+
+            <h3>配網流程（Commissioning）</h3>
+            <p>Matter 使用 BLE 作為配網通道，流程如下：</p>
+            <ol>
+                <li>裝置啟動後進入配網模式，開始 BLE 廣播</li>
+                <li>手機 App 掃描 QR Code 或輸入配對碼</li>
+                <li>通過 PASE（Passcode-Authenticated Session Establishment）建立安全連線</li>
+                <li>App 將 Thread/WiFi 網路憑證傳送至裝置</li>
+                <li>裝置加入 IP 網路，建立 CASE（Certificate-Authenticated Session Establishment）</li>
+                <li>裝置被加入 Matter Fabric，可以被控制</li>
+            </ol>
+        </section>
+
+        <section id="matter-over-thread">
+            <h2>Matter over Thread</h2>
+            <p>Thread 是為低功耗物聯網裝置設計的網狀網路協定。Matter over Thread 適合電池供電的感測器、開關和燈具等裝置。</p>
+
+            <div class="alert alert-info">
+                <strong>💡</strong> Thread 使用 IEEE 802.15.4 無線電，與 WiFi/BLE 使用不同的頻段（2.4 GHz ISM Band，但不同調變方式），IPRO7 同時支援 802.15.4、WiFi 和 BLE 三種無線電。
+            </div>
+
+            <h3>Thread 網路拓撲</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Thread 網狀網路拓撲</span>
+                </div>
+                <pre><code>                    ┌──────────┐
+                    │  Border  │←── WiFi/Ethernet ──→ Internet
+                    │  Router  │
+                    └────┬─────┘
+                         │ Thread
+              ┌──────────┼──────────┐
+              │          │          │
+         ┌────┴───┐ ┌───┴────┐ ┌──┴─────┐
+         │ Router │ │ Leader │ │ Router │
+         │ (FTD)  │ │ (FTD)  │ │ (FTD)  │
+         └───┬────┘ └───┬────┘ └───┬────┘
+             │          │          │
+        ┌────┴───┐ ┌───┴────┐ ┌──┴─────┐
+        │  End   │ │  End   │ │ Sleepy │
+        │ Device │ │ Device │ │  End   │
+        │ (MTD)  │ │ (MTD)  │ │ Device │
+        └────────┘ └────────┘ └────────┘</code></pre>
+            </div>
+
+            <h3>裝置角色</h3>
+            <table style="width: 100%; border-collapse: collapse; margin: 1.5rem 0;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color);">
+                        <th style="padding: 0.75rem; text-align: left;">角色</th>
+                        <th style="padding: 0.75rem; text-align: left;">類型</th>
+                        <th style="padding: 0.75rem; text-align: left;">說明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>Leader</strong></td>
+                        <td style="padding: 0.75rem;">FTD</td>
+                        <td style="padding: 0.75rem;">管理路由表與位址分配，每個分區只有一個</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>Router</strong></td>
+                        <td style="padding: 0.75rem;">FTD</td>
+                        <td style="padding: 0.75rem;">轉發封包、維護路由表、支援子裝置</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>End Device</strong></td>
+                        <td style="padding: 0.75rem;">MTD</td>
+                        <td style="padding: 0.75rem;">僅與父路由器通訊，不轉發封包</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>Sleepy End Device</strong></td>
+                        <td style="padding: 0.75rem;">MTD</td>
+                        <td style="padding: 0.75rem;">大部分時間休眠，適合電池裝置</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>Border Router</strong></td>
+                        <td style="padding: 0.75rem;">FTD</td>
+                        <td style="padding: 0.75rem;">橋接 Thread 與 WiFi/Ethernet 網路</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>典型應用場景</h3>
+            <ul>
+                <li>智慧燈泡與燈具（Router / End Device）</li>
+                <li>門窗感測器（Sleepy End Device）</li>
+                <li>溫濕度感測器（Sleepy End Device）</li>
+                <li>智慧開關與插座（Router）</li>
+                <li>動作感測器（Sleepy End Device）</li>
+            </ul>
+        </section>
+
+        <section id="matter-over-wifi">
+            <h2>Matter over WiFi</h2>
+            <p>Matter over WiFi 透過 WiFi 提供直接 IP 連線，適合需要較高頻寬的裝置，無需 Border Router 即可連接家庭網路。</p>
+
+            <h3>適用場景</h3>
+            <ul>
+                <li>智慧攝影機（需要高頻寬影像傳輸）</li>
+                <li>智慧顯示器</li>
+                <li>智慧音箱</li>
+                <li>家電設備（冰箱、洗衣機等）</li>
+                <li>需要快速回應的控制裝置</li>
+            </ul>
+
+            <h3>Matter over Thread vs WiFi 比較</h3>
+            <table style="width: 100%; border-collapse: collapse; margin: 1.5rem 0;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color);">
+                        <th style="padding: 0.75rem; text-align: left;">特性</th>
+                        <th style="padding: 0.75rem; text-align: left;">Thread</th>
+                        <th style="padding: 0.75rem; text-align: left;">WiFi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">功耗</td>
+                        <td style="padding: 0.75rem;">極低（適合電池裝置）</td>
+                        <td style="padding: 0.75rem;">較高（需要穩定供電）</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">頻寬</td>
+                        <td style="padding: 0.75rem;">250 kbps</td>
+                        <td style="padding: 0.75rem;">數百 Mbps</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">網路拓撲</td>
+                        <td style="padding: 0.75rem;">網狀網路（自我修復）</td>
+                        <td style="padding: 0.75rem;">星狀（依賴 AP）</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">Border Router</td>
+                        <td style="padding: 0.75rem;">需要</td>
+                        <td style="padding: 0.75rem;">不需要</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">最大節點數</td>
+                        <td style="padding: 0.75rem;">250+（網狀擴展）</td>
+                        <td style="padding: 0.75rem;">受限於 AP 容量</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">適用裝置</td>
+                        <td style="padding: 0.75rem;">感測器、開關、燈具</td>
+                        <td style="padding: 0.75rem;">攝影機、顯示器、音箱</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="openthread">
+            <h2>OpenThread</h2>
+            <p>IPRO SDK 整合了 Google 開源的 OpenThread 實作，提供完整的 Thread 協定棧。原始碼位於 <code>components/wireless/thread/</code>。</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">OpenThread 元件結構</span>
+                </div>
+                <pre><code>components/wireless/thread/
+├── CMakeLists.txt              # 建構配置
+├── Kconfig                     # 裝置類型選擇（FTD/MTD/RCP）
+├── openthread/                 # OpenThread 開源協定棧
+│   ├── src/                    # 核心實作
+│   │   ├── core/               #   Thread 協定核心
+│   │   └── cli/                #   CLI 命令介面
+│   ├── include/                # 公開 API 標頭
+│   └── examples/               # 範例與平台移植
+└── openthread_port/            # IPRO7 平台移植層
+    └── Kconfig                 #   平台特定配置選項</code></pre>
+            </div>
+
+            <h3>裝置類型</h3>
+            <p>透過 Kconfig 選擇 OpenThread 裝置類型：</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">裝置類型配置</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Full Thread Device — 可路由、可成為 Leader/Router
+CONFIG_OPENTHREAD_FTD=y
+
+# Minimal Thread Device — 僅為 End Device，省電省記憶體
+CONFIG_OPENTHREAD_MTD=y
+
+# Radio Co-processor — 802.15.4 射頻由外部主機控制
+CONFIG_OPENTHREAD_RADIO=y</code></pre>
+            </div>
+
+            <h3>OpenThread CLI</h3>
+            <p>啟用 <code>CONFIG_OPENTHREAD_CLI=y</code> 後，可透過序列埠使用 <code>ot</code> 命令進行開發與除錯：</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">常用 OpenThread CLI 命令</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 建立新的 Thread 網路
+ot dataset init new
+ot dataset networkname MyThreadNet
+ot dataset channel 15
+ot dataset panid 0x1234
+ot dataset commit active
+ot ifconfig up
+ot thread start
+
+# 查詢狀態
+ot state                  # 顯示角色：disabled/detached/child/router/leader
+ot ipaddr                 # 顯示 IPv6 位址
+ot neighbor table         # 顯示鄰居表
+ot router table           # 顯示路由表（僅 FTD）
+
+# 網路診斷
+ot ping &lt;ipv6_address&gt;    # Ping 另一個裝置
+ot child table            # 子裝置列表
+ot parent                 # 父裝置資訊</code></pre>
+            </div>
+
+            <h3>Commissioner 與 Joiner</h3>
+            <p>Thread 使用 Commissioner/Joiner 機制來安全地將新裝置加入網路：</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Commissioner 操作（已在網路中的裝置）</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 啟動 Commissioner
+ot commissioner start
+
+# 允許新裝置加入（* 表示接受任何裝置，J01NME 是預共享金鑰）
+ot commissioner joiner add * J01NME
+
+# 查看 Commissioner 狀態
+ot commissioner state</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Joiner 操作（要加入的新裝置）</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 使用預共享金鑰加入
+ot joiner start J01NME
+
+# 等待加入成功訊息後
+ot ifconfig up
+ot thread start</code></pre>
+            </div>
+        </section>
+
+        <section id="reference-apps">
+            <h2>參考應用</h2>
+            <p>IPRO SDK 提供多個 Matter 與 Thread 參考應用程式：</p>
+
+            <h3>Matter Lighting App</h3>
+            <p>實作 Matter On/Off Light 裝置類型，包含開關與亮度控制 Cluster。</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構 Matter Lighting App</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 建構
+make -C apps/matter/lighting-app
+
+# 原始碼位置
+apps/matter/lighting-app/ipro/main.c       # 應用程式進入點
+apps/matter/lighting-app/ipro/defconfig     # 配置檔</code></pre>
+            </div>
+            <p>主要功能：</p>
+            <ul>
+                <li>OnOff Cluster — 開關控制</li>
+                <li>LevelControl Cluster — 亮度調節（0-254）</li>
+                <li>Matter 配網（BLE Commissioning）</li>
+                <li>Vendor ID: 0xFFF1 / Product ID: 0x8000 / Device Type: 256（On/Off Light）</li>
+            </ul>
+
+            <h3>Matter All-Clusters App</h3>
+            <p>包含所有標準 Matter Cluster 的測試應用程式，用於開發與驗證。</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構 All-Clusters App</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 建構
+make -C apps/matter/all-clusters-app
+
+# 原始碼位置
+apps/matter/all-clusters-app/ipro/main.c    # 應用程式進入點
+apps/matter/all-clusters-app/ipro/defconfig  # 配置檔</code></pre>
+            </div>
+            <p>主要功能：</p>
+            <ul>
+                <li>Root Node（Device Type: 17）— 包含所有標準 Cluster</li>
+                <li>適合 Matter 認證測試與功能驗證</li>
+                <li>Vendor ID: 0xFFF1 / Product ID: 0x8001</li>
+            </ul>
+
+            <h3>Thread FTD CLI</h3>
+            <p>Full Thread Device 參考應用，提供完整的 OpenThread CLI 介面，適合 Thread 網路開發與測試。</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構 Thread FTD CLI</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 使用 Make
+make -C apps/ipro_thread_ftd_cli
+
+# 使用建構腳本
+./build_freertos.sh ipro_thread_ftd_cli build
+
+# 建構產出
+apps/ipro_thread_ftd_cli/build/build_out/ipro_thread_ftd_cli_IPRO7.bin</code></pre>
+            </div>
+            <p>主要功能：</p>
+            <ul>
+                <li>Full Thread Device（Router / Leader）</li>
+                <li>完整 OpenThread CLI 命令</li>
+                <li>IEEE 802.15.4 射頻支援（TX Power: 20 dBm）</li>
+                <li>mbedTLS 硬體加速（SHA-1/SHA-256/SHA-512）</li>
+                <li>Flash: 377KB / OCRAM: 96KB</li>
+            </ul>
+        </section>
+
+        <section id="configuration">
+            <h2>配置說明</h2>
+
+            <h3>Matter 配置</h3>
+            <p>在應用程式的 <code>defconfig</code> 或 <code>.config</code> 中設定 Matter 相關選項：</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Matter 配置選項</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 啟用 Matter
+CONFIG_MATTER_ENABLE=y
+CONFIG_COMPONENTS_MATTER_ENABLE=y
+
+# 裝置資訊
+CONFIG_MATTER_VENDOR_ID=0xFFF1          # CSA 測試用 Vendor ID
+CONFIG_MATTER_PRODUCT_ID=0x8000         # 產品 ID
+CONFIG_MATTER_DEVICE_TYPE=256           # 裝置類型（256 = On/Off Light）
+
+# 必要依賴
+CONFIG_FREERTOS_SUPPORT=y               # FreeRTOS
+CONFIG_COMPONENTS_MBEDTLS_ENABLE=y      # 安全層
+CONFIG_COMPONENTS_LWIP_ENABLE=y         # IP 網路棧</code></pre>
+            </div>
+
+            <h3>Thread / OpenThread 配置</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">OpenThread 配置選項</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 啟用 Thread
+CONFIG_THREAD_ENABLE=y
+CONFIG_OPENTHREAD_ENABLE=y
+CONFIG_IEEE802154_ENABLE=y
+
+# 裝置類型（擇一）
+CONFIG_OPENTHREAD_FTD=y                 # Full Thread Device
+# CONFIG_OPENTHREAD_MTD=y              # Minimal Thread Device
+
+# CLI 介面
+CONFIG_OPENTHREAD_CLI=y
+
+# 802.15.4 射頻
+CONFIG_IEEE802154_DEFAULT_TXPOWER=20    # TX 功率（dBm）
+
+# 功能啟用（依需求選擇）
+CONFIG_OPENTHREAD_COMMISSIONER=y        # Commissioner 角色
+CONFIG_OPENTHREAD_JOINER=y              # Joiner 角色
+CONFIG_OPENTHREAD_DHCP6_CLIENT=y        # DHCPv6 Client
+CONFIG_OPENTHREAD_DHCP6_SERVER=y        # DHCPv6 Server
+CONFIG_OPENTHREAD_DNS_CLIENT=y          # DNS Client
+CONFIG_OPENTHREAD_BORDER_ROUTER=y       # Border Router 功能
+
+# 記憶體配置
+CONFIG_OPENTHREAD_NUM_MESSAGE_BUFFERS=44
+CONFIG_OPENTHREAD_MESSAGE_BUFFER_SIZE=128
+CONFIG_OPENTHREAD_MLE_MAX_CHILDREN=16
+
+# 日誌等級（0=NONE, 1=CRIT, 2=WARN, 3=NOTE, 4=INFO, 5=DEBG）
+CONFIG_OPENTHREAD_LOG_LEVEL=3</code></pre>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡</strong> 停用未使用的功能可顯著節省記憶體：Commissioner/Joiner 約需 150KB（DTLS/SSL），Border Router 約需 30KB，ECDSA 約需 15KB，SRP Client 約需 20KB。
+            </div>
+
+            <h3>Matter over Thread vs WiFi 選擇</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">選擇傳輸層</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Matter over Thread（低功耗裝置）
+CONFIG_THREAD_ENABLE=y
+CONFIG_OPENTHREAD_ENABLE=y
+CONFIG_IEEE802154_ENABLE=y
+# CONFIG_WIFI6 is not set
+
+# Matter over WiFi（高頻寬裝置）
+CONFIG_WIFI6=y
+CONFIG_COMPONENTS_LWIP_ENABLE=y
+# CONFIG_THREAD_ENABLE is not set</code></pre>
+            </div>
+        </section>
+
+        <section id="dev-workflow">
+            <h2>開發流程</h2>
+
+            <h3>1. 選擇參考應用</h3>
+            <p>根據目標裝置類型選擇合適的參考應用作為起點：</p>
+            <ul>
+                <li><strong>照明裝置</strong> — 以 <code>apps/matter/lighting-app</code> 為基礎</li>
+                <li><strong>多功能裝置</strong> — 以 <code>apps/matter/all-clusters-app</code> 為基礎</li>
+                <li><strong>Thread 網路開發</strong> — 以 <code>apps/ipro_thread_ftd_cli</code> 為基礎</li>
+            </ul>
+
+            <h3>2. 建構韌體</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構步驟</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 建構 Matter Lighting App
+make -C apps/matter/lighting-app
+
+# 建構 Thread FTD CLI
+make -C apps/ipro_thread_ftd_cli
+
+# 清除建構
+make -C apps/ipro_thread_ftd_cli clean</code></pre>
+            </div>
+
+            <h3>3. 燒錄與測試</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">燒錄韌體</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 燒錄到開發板
+tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+    --chipname ipro7 \
+    --port /dev/cu.usbserial-2120 \
+    --firmware apps/ipro_thread_ftd_cli/build/build_out/ipro_thread_ftd_cli_IPRO7.bin \
+    --baudrate 921600 \
+    --flash-pin 0x02
+
+# 連接序列埠監控
+python3 tools/serial_monitor.py /dev/cu.usbserial-2120</code></pre>
+            </div>
+
+            <h3>4. Matter 配網測試</h3>
+            <ol>
+                <li>使用 Google Home App、Apple Home App 或 chip-tool 進行配網</li>
+                <li>掃描裝置 QR Code 或手動輸入配對碼</li>
+                <li>裝置加入 Matter Fabric 後即可控制</li>
+            </ol>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">使用 chip-tool 測試（開發用）</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 配網（Commissioning）
+chip-tool pairing ble-thread &lt;node-id&gt; &lt;thread-dataset&gt; &lt;setup-pin-code&gt; &lt;discriminator&gt;
+
+# 控制 On/Off
+chip-tool onoff toggle &lt;node-id&gt; 1
+
+# 讀取屬性
+chip-tool onoff read on-off &lt;node-id&gt; 1
+
+# 設定亮度
+chip-tool levelcontrol move-to-level &lt;level&gt; 0 0 0 &lt;node-id&gt; 1</code></pre>
+            </div>
+        </section>
+
+    </article>
+</div>

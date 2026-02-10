@@ -1,6 +1,6 @@
 ---
 layout: default
-title: BLE Development Guide - IPRO SDK
+title: BLE Development Guide
 lang: en
 ---
 
@@ -9,71 +9,58 @@ lang: en
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">Table of Contents</h4>
             <ul class="sidebar-links">
-                <li><a href="#overview" class="sidebar-link">BLE 5.4 Overview</a></li>
-                <li><a href="#architecture" class="sidebar-link">Stack Architecture</a></li>
+                <li><a href="#stack-architecture" class="sidebar-link">Stack Architecture</a></li>
                 <li><a href="#controller-variants" class="sidebar-link">Controller Variants</a></li>
-                <li><a href="#getting-started" class="sidebar-link">Getting Started</a></li>
-                <li><a href="#gap-operations" class="sidebar-link">GAP Operations</a></li>
-                <li><a href="#gatt-services" class="sidebar-link">GATT Services</a></li>
+                <li><a href="#api-patterns" class="sidebar-link">API Patterns</a></li>
                 <li><a href="#le-audio" class="sidebar-link">LE Audio</a></li>
-                <li><a href="#throughput" class="sidebar-link">Throughput Optimization</a></li>
-                <li><a href="#prebuilt-libs" class="sidebar-link">Prebuilt Libraries</a></li>
-                <li><a href="#debugging" class="sidebar-link">Debugging Tips</a></li>
-                <li><a href="#best-practices" class="sidebar-link">Best Practices</a></li>
+                <li><a href="#app-framework" class="sidebar-link">App Framework</a></li>
                 <li><a href="#reference-apps" class="sidebar-link">Reference Applications</a></li>
+                <li><a href="#prebuilt-libs" class="sidebar-link">Prebuilt Libraries</a></li>
             </ul>
         </nav>
     </aside>
 
     <article class="doc-content">
         <h1>BLE Development Guide</h1>
-        <p>This guide explains how to develop Bluetooth Low Energy applications using the IPRO SDK's Zephyr BLE Host Stack. The SDK uses standard Zephyr <code>bt_*</code> APIs with a RivieraWaves controller, providing full BLE 5.4 functionality.</p>
+        <p>This guide covers BLE application development with the IPRO SDK's Bluetooth stack. The SDK uses the Zephyr BLE Host Stack paired with a RivieraWaves prebuilt controller, providing full BLE 5.4 support.</p>
 
-        <section id="overview">
-            <h2>BLE 5.4 Feature Overview</h2>
-            <p>IPRO SDK integrates the Zephyr BLE Host Stack with a RivieraWaves controller, providing comprehensive Bluetooth functionality:</p>
-
-            <div class="features-grid" style="margin: 2rem 0;">
-                <div class="feature-card">
-                    <div class="feature-icon">📡</div>
-                    <h3 class="feature-title">Core Features</h3>
-                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
-                        <li>BLE 5.4 Host Stack (Zephyr bt_* API)</li>
-                        <li>Up to 8 simultaneous connections (unified pool)</li>
-                        <li>23 GATT Profiles</li>
-                        <li>999 Kbps measured throughput</li>
-                    </ul>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🎵</div>
-                    <h3 class="feature-title">LE Audio</h3>
-                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
-                        <li>LC3 codec (32-320 kbps)</li>
-                        <li>BAP / CAP / VCP / MCP / CSIP</li>
-                        <li>&lt;20ms audio latency</li>
-                        <li>Isochronous Channels</li>
-                    </ul>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🔒</div>
-                    <h3 class="feature-title">Security</h3>
-                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
-                        <li>LE Secure Connections</li>
-                        <li>AES-CCM encryption</li>
-                        <li>Pairing & bonding management</li>
-                        <li>Privacy features (RPA)</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <section id="architecture">
+        <!-- ============================================================ -->
+        <!-- Stack Architecture -->
+        <!-- ============================================================ -->
+        <section id="stack-architecture">
             <h2>Stack Architecture</h2>
-            <p>The BLE stack uses a Zephyr Host + RivieraWaves Controller dual-layer architecture. Applications use the standard Zephyr <code>bt_*</code> APIs:</p>
+            <p>The BLE stack uses a Host + Controller dual-layer architecture, communicating through on-chip HCI (no UART HCI transport):</p>
 
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">BLE Stack Architecture</span>
+                    <span class="code-block-title">BLE Stack Layer Diagram</span>
+                </div>
+                <pre><code>┌──────────────────────────────────────────────┐
+│          Application Layer                    │
+│    GAP │ GATT Services │ Profiles             │
+├──────────────────────────────────────────────┤
+│          BLE Host (Zephyr-based)              │
+│    GAP │ GATT │ L2CAP │ SMP │ ISO            │
+├──────────────────────────────────────────────┤
+│          HCI (On-Chip)                        │
+├──────────────────────────────────────────────┤
+│          BLE Controller (RivieraWaves)        │
+│    Link Layer │ PHY (1M/2M/Coded)             │
+└──────────────────────────────────────────────┘</code></pre>
+            </div>
+
+            <h3>Core Concepts</h3>
+            <ul>
+                <li><strong>Zephyr BLE Host</strong>: The Zephyr BLE Host Stack is used even on FreeRTOS. Applications interact through the standard <code>bt_*</code> APIs</li>
+                <li><strong>RivieraWaves Controller</strong>: Provided as prebuilt static libraries, handling Link Layer and PHY management</li>
+                <li><strong>On-Chip HCI</strong>: Host and Controller communicate via on-chip HCI, no UART HCI transport layer required</li>
+                <li><strong>Callback-driven</strong>: All asynchronous events (connection, disconnection, notifications) are handled through callback functions</li>
+            </ul>
+
+            <h3>Source Code Structure</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">BLE Component Directory</span>
                 </div>
                 <pre><code>components/wireless/bluetooth/
 ├── blestack/                        # Zephyr BLE Host Stack (buildable source)
@@ -83,118 +70,171 @@ lang: en
 │       ├── gatt.h                   # bt_gatt_service_register(), bt_gatt_notify()
 │       ├── uuid.h                   # BT_UUID_DECLARE_16() etc.
 │       └── audio/                   # LE Audio APIs (BAP, CAP, VCP...)
-├── btblecontroller/                 # RivieraWaves Controller (prebuilt linkN variant libs)
-├── btprofile/                       # 23 GATT Profiles
+├── btblecontroller/                 # RivieraWaves Controller source (requires license)
+├── btblecontroller_ipro7_&lt;variant&gt;/ # Prebuilt controller static libraries
+├── btprofile/                       # 20+ GATT Profile implementations
 │   ├── bas/   dis/   hogp/          # Battery, Device Info, HID
 │   ├── csip/  otp/   find/          # CSIP, OTP, Find Me
 │   └── ...
+├── blemesh/                         # Bluetooth Mesh support
 ├── ble_common.cmake                 # Controller variant configuration
-└── btble_inc/                       # Legacy compatibility headers</code></pre>
+└── build_all_prebuilts.sh           # Prebuilt library build script</code></pre>
             </div>
-
-            <h3>Core Concepts</h3>
-            <ul>
-                <li><strong>Zephyr bt_* API</strong>: Applications use standard Zephyr BLE APIs (replacing deprecated ipro_ble_api.h)</li>
-                <li><strong>Callback-driven</strong>: Register connection callbacks with <code>bt_conn_cb_register()</code></li>
-                <li><strong>Static service definition</strong>: Define GATT services using <code>BT_GATT_SERVICE_DEFINE()</code> macro</li>
-                <li><strong>Unified connection pool</strong>: In linkN variants, N = total connections, any Central/Peripheral mix</li>
-            </ul>
         </section>
 
+        <!-- ============================================================ -->
+        <!-- Controller Variants -->
+        <!-- ============================================================ -->
         <section id="controller-variants">
-            <h2>Controller Variants (linkN Naming)</h2>
-            <p>The controller uses a unified connection pool architecture. In linkN, N represents the total simultaneous connection count. Each connection slot can be used as Central or Peripheral:</p>
+            <h2>Controller Variants</h2>
+            <p>The controller uses a unified connection pool architecture. In <code>linkN</code>, N represents the total simultaneous connection count. Each connection slot can be used as either Central or Peripheral (any role combination).</p>
 
+            <h3>Available Variants</h3>
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
                             <th>Variant</th>
-                            <th>Connections</th>
-                            <th>TX Buffers</th>
-                            <th>Role Support</th>
-                            <th>Description</th>
+                            <th>Max Links</th>
+                            <th>BLE Version</th>
+                            <th>LE Audio</th>
+                            <th>Use Case</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td><code>link1_periph</code></td>
                             <td>1</td>
-                            <td>2</td>
-                            <td>Peripheral only</td>
-                            <td>Minimal footprint, peripheral only</td>
+                            <td>5.0+</td>
+                            <td>No</td>
+                            <td>Simple peripheral (minimal footprint)</td>
                         </tr>
                         <tr>
                             <td><code>link1</code></td>
                             <td>1</td>
-                            <td>2</td>
-                            <td>All roles</td>
+                            <td>5.0+</td>
+                            <td>No</td>
                             <td>Single connection, all roles</td>
                         </tr>
                         <tr>
                             <td><code>link2</code></td>
                             <td>2</td>
-                            <td>4</td>
-                            <td>All roles</td>
+                            <td>5.0+</td>
+                            <td>No</td>
                             <td>Dual connection (2C+0P, 1C+1P, 0C+2P)</td>
                         </tr>
                         <tr>
                             <td><code>link4</code></td>
                             <td>4</td>
-                            <td>6</td>
-                            <td>All roles</td>
-                            <td>Four connections, any combination</td>
+                            <td>5.0+</td>
+                            <td>No</td>
+                            <td>Multi-connection applications</td>
                         </tr>
                         <tr>
                             <td><code>link8</code></td>
                             <td>8</td>
-                            <td>8</td>
-                            <td>All roles</td>
-                            <td>Eight connections, any combination</td>
+                            <td>5.0+</td>
+                            <td>No</td>
+                            <td>Hub / gateway</td>
+                        </tr>
+                        <tr>
+                            <td><code>link1_leaudio</code></td>
+                            <td>1</td>
+                            <td>5.2</td>
+                            <td>Yes</td>
+                            <td>LE Audio peripheral</td>
+                        </tr>
+                        <tr>
+                            <td><code>link2_leaudio</code></td>
+                            <td>2</td>
+                            <td>5.2</td>
+                            <td>Yes</td>
+                            <td>LE Audio with 2 links</td>
+                        </tr>
+                        <tr>
+                            <td><code>link1_leaudio_53_54</code></td>
+                            <td>1</td>
+                            <td>5.4</td>
+                            <td>Yes</td>
+                            <td>Latest BLE + LE Audio</td>
+                        </tr>
+                        <tr>
+                            <td><code>link2_leaudio_53_54</code></td>
+                            <td>2</td>
+                            <td>5.4</td>
+                            <td>Yes</td>
+                            <td>Latest BLE + LE Audio</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <h3>LE Audio and BLE 5.3/5.4 Suffixes</h3>
-            <p>Base variants can have suffixes appended to enable advanced features:</p>
-            <ul>
-                <li><code>_leaudio</code> — BLE 5.2 + LE Audio (BAP, CAP, VCP, MCP, CSIP)</li>
-                <li><code>_leaudio_53_54</code> — BLE 5.4 + LE Audio (most complete feature set)</li>
-            </ul>
-            <p>Examples: <code>link1_leaudio</code>, <code>link2_leaudio_53_54</code></p>
-
             <h3>Kconfig Configuration</h3>
+            <p>Select the controller variant in your application's <code>.config</code> via <code>CONFIG_BTBLECONTROLLER_LIB</code>:</p>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">.config Variant Selection</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># Select controller variant
+                <pre><code class="language-bash"># Specify variant name directly
 CONFIG_BTBLECONTROLLER_LIB="link2"
 
-# Or use boolean flag composition
+# Or use boolean flag composition (suffixes appended automatically)
 CONFIG_BTBLECONTROLLER_LIB="link2"
 CONFIG_BTBLECONTROLLER_LE_AUDIO=y     # Appends _leaudio
-CONFIG_BTBLECONTROLLER_BT_54=y        # Appends _53_54 (5.4 implies 5.3)</code></pre>
+CONFIG_BTBLECONTROLLER_BT_54=y        # Appends _53_54 (5.4 implies 5.3)
+# Resulting variant: link2_leaudio_53_54</code></pre>
             </div>
+
+            <p>Prebuilt libraries are located at: <code>components/wireless/bluetooth/btblecontroller_ipro7_&lt;variant&gt;/</code></p>
         </section>
 
-        <section id="getting-started">
-            <h2>Getting Started</h2>
+        <!-- ============================================================ -->
+        <!-- API Patterns -->
+        <!-- ============================================================ -->
+        <section id="api-patterns">
+            <h2>API Patterns</h2>
+            <p>Applications use Zephyr-style callback-based BLE APIs. The legacy RivieraWaves <code>ke_msg</code> message passing mechanism is internal to the controller only and is not exposed to applications.</p>
 
-            <h3>1. Initialize BLE Subsystem</h3>
+            <h3>GAP: Advertising and Scanning</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">BLE Initialization (Zephyr bt_* API)</span>
+                    <span class="code-block-title">GAP Advertising Operations</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">#include &lt;bluetooth/bluetooth.h&gt;
 #include &lt;bluetooth/conn.h&gt;
-#include &lt;bluetooth/gatt.h&gt;
 
-/* Connection callbacks */
-static void connected(struct bt_conn *conn, u8_t err)
+/* Advertising data */
+static const struct bt_data ad[] = {
+    BT_DATA_BYTES(BT_DATA_FLAGS,
+                  BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR),
+    BT_DATA_BYTES(BT_DATA_UUID16_ALL,
+                  0x0d, 0x18),  /* Heart Rate Service */
+};
+
+static const struct bt_data sd[] = {
+    BT_DATA(BT_DATA_NAME_COMPLETE, "IPRO Device", 11),
+};
+
+/* Start connectable advertising */
+bt_le_adv_start(BT_LE_ADV_CONN_NAME,
+                ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd));
+
+/* Stop advertising */
+bt_le_adv_stop();
+
+/* Start scanning (Central role) */
+bt_le_scan_start(BT_LE_SCAN_ACTIVE, scan_cb);</code></pre>
+            </div>
+
+            <h3>Connection Callbacks</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Connection Management</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">static void connected(struct bt_conn *conn, u8_t err)
 {
     if (err) {
         printk("Connection failed (err %u)\n", err);
@@ -213,232 +253,112 @@ static struct bt_conn_cb conn_callbacks = {
     .disconnected = disconnected,
 };
 
-/* BLE ready callback */
-static void bt_ready(int err)
-{
-    if (err) {
-        printk("Bluetooth init failed (err %d)\n", err);
-        return;
-    }
-    printk("Bluetooth initialized\n");
-
-    /* Start advertising */
-    start_advertising();
-}
-
 void app_init(void)
 {
-    /* Register connection callbacks */
-    bt_conn_cb_register(&conn_callbacks);
-
-    /* Enable Bluetooth */
-    int err = bt_enable(bt_ready);
-    if (err) {
-        printk("bt_enable failed (err %d)\n", err);
-    }
+    bt_conn_cb_register(&amp;conn_callbacks);
+    bt_enable(bt_ready);
 }</code></pre>
             </div>
 
-            <h3>2. Configure Advertising</h3>
+            <h3>GATT: Service Registration</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">Advertising Setup</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">static const struct bt_data ad[] = {
-    BT_DATA_BYTES(BT_DATA_FLAGS,
-                  BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR),
-    BT_DATA_BYTES(BT_DATA_UUID16_ALL,
-                  0x0d, 0x18),  /* Heart Rate Service */
-};
-
-static const struct bt_data sd[] = {
-    BT_DATA(BT_DATA_NAME_COMPLETE, "IPRO Device", 11),
-};
-
-void start_advertising(void)
-{
-    int err = bt_le_adv_start(BT_LE_ADV_CONN_NAME,
-                              ad, ARRAY_SIZE(ad),
-                              sd, ARRAY_SIZE(sd));
-    if (err) {
-        printk("Advertising failed to start (err %d)\n", err);
-    }
-}</code></pre>
-            </div>
-
-            <h3>3. Enable Configuration Options</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">.config</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Enable BLE
-CONFIG_BLUETOOTH_LE_ENABLE=y
-CONFIG_BTBLECONTROLLER_LIB="link2"
-
-# Enable debug output
-CONFIG_LOG_DEFAULT_LEVEL=4</code></pre>
-            </div>
-        </section>
-
-        <section id="gap-operations">
-            <h2>GAP Operations</h2>
-
-            <h3>Advertising Management</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Advertising Control</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">/* Start connectable advertising with default params */
-bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd));
-
-/* Use custom parameters */
-struct bt_le_adv_param param = {
-    .options = BT_LE_ADV_OPT_CONNECTABLE | BT_LE_ADV_OPT_USE_NAME,
-    .interval_min = BT_GAP_ADV_FAST_INT_MIN_2,
-    .interval_max = BT_GAP_ADV_FAST_INT_MAX_2,
-};
-bt_le_adv_start(&param, ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd));
-
-/* Stop advertising */
-bt_le_adv_stop();</code></pre>
-            </div>
-
-            <h3>Connection Management</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Connection Operations</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">/* Initiate connection (Central role) */
-struct bt_conn *conn = bt_conn_create_le(&peer_addr,
-                                          BT_LE_CONN_PARAM_DEFAULT);
-
-/* Update connection parameters */
-struct bt_le_conn_param param = {
-    .interval_min = 24,   /* 30ms */
-    .interval_max = 40,   /* 50ms */
-    .latency = 0,
-    .timeout = 400,       /* 4s */
-};
-bt_conn_le_param_update(conn, &param);
-
-/* Disconnect */
-bt_conn_disconnect(conn, BT_HCI_ERR_REMOTE_USER_TERM_CONN);</code></pre>
-            </div>
-        </section>
-
-        <section id="gatt-services">
-            <h2>GATT Services</h2>
-
-            <h3>Static Service Definition</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Custom GATT Service Example</span>
+                    <span class="code-block-title">Static GATT Service Definition</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">#include &lt;bluetooth/gatt.h&gt;
 #include &lt;bluetooth/uuid.h&gt;
 
-/* Define custom UUIDs */
-static struct bt_uuid_128 custom_svc_uuid = BT_UUID_INIT_128(
+/* Custom UUIDs */
+static struct bt_uuid_128 my_svc_uuid = BT_UUID_INIT_128(
     0xf0, 0xde, 0xbc, 0x9a, 0x78, 0x56, 0x34, 0x12,
     0x78, 0x56, 0x34, 0x12, 0x78, 0x56, 0x34, 0x12);
 
-static struct bt_uuid_128 custom_char_uuid = BT_UUID_INIT_128(
+static struct bt_uuid_128 my_char_uuid = BT_UUID_INIT_128(
     0xf1, 0xde, 0xbc, 0x9a, 0x78, 0x56, 0x34, 0x12,
     0x78, 0x56, 0x34, 0x12, 0x78, 0x56, 0x34, 0x12);
 
-static uint8_t custom_value[512];
+static uint8_t my_value[256];
 
 /* Read callback */
-static ssize_t read_custom(struct bt_conn *conn,
-                           const struct bt_gatt_attr *attr,
-                           void *buf, u16_t len, u16_t offset)
+static ssize_t read_my_char(struct bt_conn *conn,
+                            const struct bt_gatt_attr *attr,
+                            void *buf, u16_t len, u16_t offset)
 {
     return bt_gatt_attr_read(conn, attr, buf, len, offset,
-                             custom_value, sizeof(custom_value));
+                             my_value, sizeof(my_value));
 }
 
-/* Statically define service using macro */
-BT_GATT_SERVICE_DEFINE(custom_svc,
-    BT_GATT_PRIMARY_SERVICE(&custom_svc_uuid),
-    BT_GATT_CHARACTERISTIC(&custom_char_uuid.uuid,
+/* Define service using macro (compile-time static registration) */
+BT_GATT_SERVICE_DEFINE(my_svc,
+    BT_GATT_PRIMARY_SERVICE(&amp;my_svc_uuid),
+    BT_GATT_CHARACTERISTIC(&amp;my_char_uuid.uuid,
                            BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY,
                            BT_GATT_PERM_READ,
-                           read_custom, NULL, custom_value),
+                           read_my_char, NULL, my_value),
     BT_GATT_CCC(NULL, BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
 );
 
-/* Send notification */
-void notify_custom_value(struct bt_conn *conn)
-{
-    bt_gatt_notify(conn, &custom_svc.attrs[1],
-                   custom_value, sizeof(custom_value));
-}</code></pre>
+/* Send GATT notification */
+bt_gatt_notify(conn, &amp;my_svc.attrs[1], my_value, sizeof(my_value));</code></pre>
             </div>
 
-            <h3>Dynamic Service Registration</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Dynamic Registration</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">/* Dynamic service attribute array */
-static struct bt_gatt_attr svc_attrs[] = { /* ... */ };
-static struct bt_gatt_service svc = BT_GATT_SERVICE(svc_attrs);
-
-/* Register at runtime */
-int err = bt_gatt_service_register(&svc);</code></pre>
+            <div class="alert alert-info">
+                <strong>Note:</strong> The legacy <code>ipro_ble_api.h</code> and RivieraWaves <code>ke_msg</code> APIs are deprecated. All new applications should use the Zephyr <code>bt_*</code> APIs.
             </div>
+        </section>
 
-            <h3>Built-in Profiles (btprofile/)</h3>
-            <p>The SDK provides 23 GATT Profile implementations:</p>
+        <!-- ============================================================ -->
+        <!-- LE Audio -->
+        <!-- ============================================================ -->
+        <section id="le-audio">
+            <h2>LE Audio Ecosystem</h2>
+            <p>The SDK supports comprehensive LE Audio functionality, requiring controller variants with the <code>_leaudio</code> suffix. Headers are located at <code>bluetooth/audio/</code>.</p>
+
+            <h3>LE Audio Profiles</h3>
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
                             <th>Profile</th>
-                            <th>Description</th>
+                            <th>Full Name</th>
+                            <th>Function</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td><code>bas</code></td><td>Battery Service</td></tr>
-                        <tr><td><code>dis</code></td><td>Device Information Service</td></tr>
-                        <tr><td><code>hogp</code></td><td>HID over GATT Profile</td></tr>
-                        <tr><td><code>csip</code></td><td>Coordinated Set Identification Profile</td></tr>
-                        <tr><td><code>otp</code></td><td>Object Transfer Profile</td></tr>
-                        <tr><td><code>find</code></td><td>Find Me Profile</td></tr>
-                        <tr><td><code>tip</code></td><td>Time Profile</td></tr>
-                        <tr><td><code>anp</code></td><td>Alert Notification Profile</td></tr>
+                        <tr>
+                            <td><strong>BAP</strong></td>
+                            <td>Basic Audio Profile</td>
+                            <td>Audio stream management (unicast/broadcast)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CAP</strong></td>
+                            <td>Common Audio Profile</td>
+                            <td>Coordinated audio operations across device sets</td>
+                        </tr>
+                        <tr>
+                            <td><strong>VCP</strong></td>
+                            <td>Volume Control Profile</td>
+                            <td>Volume control</td>
+                        </tr>
+                        <tr>
+                            <td><strong>MCP</strong></td>
+                            <td>Media Control Profile</td>
+                            <td>Media playback control</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CSIP</strong></td>
+                            <td>Coordinated Set Identification Profile</td>
+                            <td>Coordinated device identification (e.g., left/right earbud pairing)</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
-        </section>
 
-        <section id="le-audio">
-            <h2>LE Audio</h2>
-            <p>The SDK supports complete LE Audio functionality, requiring controller variants with the <code>_leaudio</code> suffix. Headers are located at <code>bluetooth/audio/</code>.</p>
+            <h3>LC3 Codec Pipeline</h3>
+            <p>LE Audio uses LC3 (Low Complexity Communication Codec) as its mandatory codec, supporting 32-320 kbps bitrates with audio latency below 20ms. Audio data is transported over Isochronous Channels (CIS/BIS).</p>
 
-            <h3>Supported LE Audio Profiles</h3>
-            <ul>
-                <li><strong>BAP</strong> — Basic Audio Profile (unicast/broadcast audio streams)</li>
-                <li><strong>CAP</strong> — Common Audio Profile (coordinated audio operations)</li>
-                <li><strong>VCP</strong> — Volume Control Profile</li>
-                <li><strong>MCP</strong> — Media Control Profile</li>
-                <li><strong>CSIP</strong> — Coordinated Set Identification Profile</li>
-            </ul>
-
-            <h3>LE Audio Services</h3>
-            <ul>
-                <li><strong>ASCS</strong> (0x184E) - Audio Stream Control Service</li>
-                <li><strong>PACS</strong> (0x1850) - Published Audio Capabilities Service</li>
-                <li><strong>CAS</strong> (0x1853) - Common Audio Service</li>
-            </ul>
-
-            <h3>Configuration</h3>
+            <h3>Configuration Example</h3>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">.config LE Audio Configuration</span>
@@ -448,64 +368,126 @@ int err = bt_gatt_service_register(&svc);</code></pre>
 CONFIG_BTBLECONTROLLER_LIB="link2"
 CONFIG_BTBLECONTROLLER_LE_AUDIO=y
 CONFIG_BTBLECONTROLLER_BT_54=y
+# Resulting variant: link2_leaudio_53_54
 
-# Resulting variant: link2_leaudio_53_54</code></pre>
-            </div>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">LE Audio Advertising Data</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">static const struct bt_data le_audio_ad[] = {
-    BT_DATA_BYTES(BT_DATA_FLAGS,
-                  BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR),
-    BT_DATA_BYTES(BT_DATA_UUID16_ALL,
-                  0x4E, 0x18,  /* ASCS */
-                  0x50, 0x18,  /* PACS */
-                  0x53, 0x18), /* CAS */
-};</code></pre>
-            </div>
-        </section>
-
-        <section id="throughput">
-            <h2>Throughput Optimization</h2>
-
-            <h3>Connection Parameters and TX Descriptors</h3>
-            <p>Key parameters that affect throughput:</p>
-            <ul>
-                <li><strong>max_ce_len</strong>: Maximum connection event length; larger values allow more packets per event</li>
-                <li><strong>BLE_NB_TX_DESC_PER_CON</strong>: TX descriptors per connection</li>
-                <li><strong>CONFIG_BLE_TX_BUFF_DATA</strong>: TX buffer count (auto-scaled by linkN variant)</li>
-            </ul>
-
-            <h3>MTU Optimization</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">MTU and High-Speed Transfer</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">/* Calculate optimal payload after MTU negotiation */
-uint16_t mtu = bt_gatt_get_mtu(conn);
-uint16_t payload = (mtu > 3) ? (mtu - 3) : 20;  /* ATT header = 3 bytes */
-
-/* Send notification */
-bt_gatt_notify(conn, attr, data, payload);</code></pre>
+# Enable LE Audio Host features
+CONFIG_BT_AUDIO=y
+CONFIG_BT_BAP_UNICAST_SERVER=y
+CONFIG_BT_ASCS=y
+CONFIG_BT_PACS=y
+CONFIG_BT_VCP_VOL_REND=y
+CONFIG_BT_CSIP_SET_MEMBER=y</code></pre>
             </div>
 
             <div class="alert alert-info">
-                <strong>💡 Performance Benchmarks:</strong>
-                <ul style="margin-top: 0.5rem; margin-bottom: 0;">
-                    <li>MTU 517 + optimized TX descriptors: <strong>999 Kbps</strong> measured throughput</li>
-                    <li>Image transfer: 56KB in 542ms, achieving 101.4 KB/s (811 Kbps)</li>
-                    <li>TX buffers auto-scale by variant: link1=2, link2=4, link4=6, link8=8</li>
-                </ul>
+                <strong>Cross-reference:</strong> See the Audio &amp; Multimedia page for detailed audio pipeline documentation.
             </div>
         </section>
 
+        <!-- ============================================================ -->
+        <!-- App Framework -->
+        <!-- ============================================================ -->
+        <section id="app-framework">
+            <h2>App Framework</h2>
+            <p>BLE applications use the Mediator design pattern, decomposing complex Bluetooth functionality into reusable components:</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Role</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Mediator</strong></td>
+                            <td>Orchestrator</td>
+                            <td>Manages interactions and lifecycle of Applets, controls overall application flow</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Applets</strong></td>
+                            <td>Reusable components</td>
+                            <td>Encapsulate specific functionality (e.g., advertising management, GATT services, audio streams), shareable across applications</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Intermediaries</strong></td>
+                            <td>Protocol bridges</td>
+                            <td>Convert data formats between protocol layers, e.g., translating application-level commands into BLE GAP/GATT operations</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>This framework is primarily used in LE Audio applications (GAF, BAP, VCP, MCP, CAP) to modularize complex audio management logic.</p>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- Reference Applications -->
+        <!-- ============================================================ -->
+        <section id="reference-apps">
+            <h2>Reference Applications</h2>
+            <p>The SDK provides several BLE reference applications covering common Bluetooth use cases:</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Application</th>
+                            <th>Description</th>
+                            <th>Controller Variant</th>
+                            <th>Path</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>ipro_ble_remote</strong></td>
+                            <td>GATT services + OTA update, 6 services, image transfer at 101 KB/s</td>
+                            <td>link2</td>
+                            <td><code>apps/bluetooth/ipro_ble_remote/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_throughput_test</strong></td>
+                            <td>Throughput benchmark, up to 999 Kbps, native Zephyr bt_* API, Master/Slave roles</td>
+                            <td>link2</td>
+                            <td><code>apps/bluetooth/ipro_throughput_test/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_ble_transparent</strong></td>
+                            <td>UART transparent bridge, bidirectional BLE-to-serial passthrough</td>
+                            <td>link1</td>
+                            <td><code>apps/bluetooth/ipro_ble_transparent/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_ble_hid_keyboard</strong></td>
+                            <td>HOGP HID keyboard using HID over GATT Profile</td>
+                            <td>link1_periph</td>
+                            <td><code>apps/bluetooth/ipro_ble_hid_keyboard/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_le_audio_headset</strong></td>
+                            <td>GAF/BAP unicast audio headset with VCP and CSIP support</td>
+                            <td>link2_leaudio_53_54</td>
+                            <td><code>apps/bluetooth/ipro_le_audio_headset/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_walkie_talkie</strong></td>
+                            <td>BIS LE Audio broadcast walkie-talkie</td>
+                            <td>link2_leaudio</td>
+                            <td><code>apps/bluetooth/ipro_walkie_talkie/</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- Prebuilt Library Workflow -->
+        <!-- ============================================================ -->
         <section id="prebuilt-libs">
             <h2>Prebuilt Libraries</h2>
-            <p>The controller is provided as prebuilt static libraries. <code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> cannot be used in release builds.</p>
+            <p>The BLE controller is provided as prebuilt static libraries. <code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> cannot be used in release builds.</p>
 
             <h3>Build Script</h3>
             <div class="code-block">
@@ -519,125 +501,40 @@ components/wireless/bluetooth/build_all_prebuilts.sh link2
 # Build all variants
 components/wireless/bluetooth/build_all_prebuilts.sh all
 
-# Output: btblecontroller_ipro7_link2/libbtblecontroller_ipro7_link2.a</code></pre>
+# Output location
+# btblecontroller_ipro7_link2/libbtblecontroller_ipro7_link2.a</code></pre>
+            </div>
+
+            <h3>Source Build for Development</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">.config Enable Source Build (Development Only)</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Development and debugging only, not for release
+CONFIG_BLE_FORCE_SOURCE_BUILD=y</code></pre>
             </div>
 
             <div class="alert alert-warning">
-                <strong>⚠️ Important:</strong> <code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> is for development and debugging only. It cannot be used in release builds.
+                <strong>Important:</strong> <code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> is for development and debugging only. It cannot be used in release builds. Production releases must use prebuilt static libraries.
             </div>
-        </section>
 
-        <section id="debugging">
-            <h2>Debugging Tips</h2>
-
-            <h3>Enable Debug Logging</h3>
+            <h3>Library Locations</h3>
+            <p>Prebuilt libraries are stored under <code>components/wireless/bluetooth/</code> with the naming pattern:</p>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">.config</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                    <span class="code-block-title">Prebuilt Library Directories</span>
                 </div>
-                <pre><code class="language-bash"># Enable BLE debugging
-CONFIG_LOG_DEFAULT_LEVEL=4  # DEBUG level</code></pre>
-            </div>
-
-            <h3>Common Error Codes</h3>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Error Code</th>
-                            <th>Description</th>
-                            <th>Solution</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>0x0043</code></td>
-                            <td>Activity already stopped</td>
-                            <td>Check activity state before stopping</td>
-                        </tr>
-                        <tr>
-                            <td><code>0x004B</code></td>
-                            <td>Activity creation failed</td>
-                            <td>Ensure complete cleanup: Stop → Delete → Reset</td>
-                        </tr>
-                        <tr>
-                            <td><code>0x00A3</code></td>
-                            <td>Connection terminated</td>
-                            <td>Handle disconnect event, implement reconnection</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="best-practices">
-            <h2>Best Practices</h2>
-
-            <h3>1. Reconnection Mechanism</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Auto-Reconnection Implementation</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">static void disconnected(struct bt_conn *conn, u8_t reason)
-{
-    /* Delay before restarting advertising */
-    k_sleep(K_MSEC(500));
-
-    int err = bt_le_adv_start(BT_LE_ADV_CONN_NAME,
-                              ad, ARRAY_SIZE(ad),
-                              sd, ARRAY_SIZE(sd));
-    if (err) {
-        printk("Re-advertising failed (err %d)\n", err);
-    }
-}</code></pre>
-            </div>
-
-            <h3>2. Testing Validation</h3>
-            <ul>
-                <li>Multiple disconnect-reconnect cycle testing</li>
-                <li>Phone/central device can correctly discover and pair</li>
-                <li>LE Audio services (ASCS, PACS, CAS) are accessible</li>
-                <li>No 0x004B resource errors</li>
-                <li>Memory usage remains stable</li>
-            </ul>
-        </section>
-
-        <section id="reference-apps">
-            <h2>Reference Applications</h2>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Application</th>
-                            <th>Features</th>
-                            <th>Path</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>ipro_ble_remote</strong></td>
-                            <td>GATT + OTA update</td>
-                            <td><code>apps/bluetooth/ipro_ble_remote/</code></td>
-                        </tr>
-                        <tr>
-                            <td><strong>ipro_walkie_talkie</strong></td>
-                            <td>BIS LE Audio broadcast</td>
-                            <td><code>apps/bluetooth/ipro_walkie_talkie/</code></td>
-                        </tr>
-                        <tr>
-                            <td><strong>ipro_le_audio_headset</strong></td>
-                            <td>GAF/BAP unicast audio</td>
-                            <td><code>apps/bluetooth/ipro_le_audio_headset/</code></td>
-                        </tr>
-                        <tr>
-                            <td><strong>ipro_throughput_test</strong></td>
-                            <td>Throughput benchmark testing</td>
-                            <td><code>apps/bluetooth/ipro_throughput_test/</code></td>
-                        </tr>
-                    </tbody>
-                </table>
+                <pre><code>btblecontroller_ipro7_link1/
+btblecontroller_ipro7_link1_periph/
+btblecontroller_ipro7_link2/
+btblecontroller_ipro7_link4/
+btblecontroller_ipro7_link8/
+btblecontroller_ipro7_link1_leaudio/
+btblecontroller_ipro7_link2_leaudio/
+btblecontroller_ipro7_link1_leaudio_53_54/
+btblecontroller_ipro7_link2_leaudio_53_54/
+...</code></pre>
             </div>
         </section>
     </article>

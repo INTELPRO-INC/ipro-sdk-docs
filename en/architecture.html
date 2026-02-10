@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Architecture Overview - IPRO SDK
+title: Architecture Overview
 lang: en
 ---
 
@@ -9,119 +9,806 @@ lang: en
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">Table of Contents</h4>
             <ul class="sidebar-links">
-                <li><a href="#overview" class="sidebar-link">Architecture Overview</a></li>
-                <li><a href="#layers" class="sidebar-link">Layered Design</a></li>
+                <li><a href="#overview" class="sidebar-link">System Overview</a></li>
+                <li><a href="#soc-variants" class="sidebar-link">SoC Variants</a></li>
                 <li><a href="#memory-layout" class="sidebar-link">Memory Layout</a></li>
+                <li><a href="#build-pipeline" class="sidebar-link">Build Pipeline</a></li>
+                <li><a href="#components" class="sidebar-link">Component Architecture</a></li>
+                <li><a href="#configuration" class="sidebar-link">Configuration System</a></li>
+                <li><a href="#app-structure" class="sidebar-link">Application Structure</a></li>
                 <li><a href="#directory" class="sidebar-link">Directory Structure</a></li>
-                <li><a href="#build-system" class="sidebar-link">Build System</a></li>
-                <li><a href="#configuration" class="sidebar-link">Configuration</a></li>
-                <li><a href="#ble-controller" class="sidebar-link">BLE Controller</a></li>
-                <li><a href="#components" class="sidebar-link">Components</a></li>
+                <li><a href="#ble-stack" class="sidebar-link">BLE Stack Architecture</a></li>
+                <li><a href="#bsp" class="sidebar-link">BSP & Drivers</a></li>
             </ul>
         </nav>
     </aside>
 
     <article class="doc-content">
         <h1>Architecture Overview</h1>
-        <p>IPRO SDK adopts a clear layered architecture design, providing high modularity and portability, enabling developers to quickly build stable embedded applications.</p>
+        <p>IPRO SDK adopts a clear layered architecture design, providing high modularity and portability for building stable embedded applications. This page covers the system architecture, SoC specifications, build pipeline, and component organization in detail.</p>
 
+        <!-- Section 1: System Overview -->
         <section id="overview">
-            <h2>System Architecture Diagram</h2>
-            <p>The overall SDK architecture consists of five main layers:</p>
+            <h2>System Overview</h2>
+            <p>The overall SDK architecture consists of five main layers, from top to bottom: Application, Components, RTOS, BSP, and Hardware:</p>
 
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">IPRO SDK Architecture</span>
+                    <span class="code-block-title">IPRO SDK Layered Architecture</span>
                 </div>
-                <pre><code>+------------------------------------------------------+
-|                 Application Layer                    |
-|              (e.g., apps/ipro7_demo)                 |
-+------------------------------------------------------+
-|          Middleware & Reusable Components            |
-|   (lwIP, Mbed TLS, CherryUSB, File Systems, etc.)    |
-+------------------------------------------------------+
-|       Real-Time OS (FreeRTOS or Zephyr RTOS)        |
-+------------------------------------------------------+
-|             Board Support Package (BSP)              |
-|   +----------------------------------------------+   |
-|   | Hardware Abstraction Layer (HAL) & Drivers   |   |
-|   +----------------------------------------------+   |
-+------------------------------------------------------+
-|               IPRO Hardware Platform                 |
-+------------------------------------------------------+</code></pre>
+                <pre style="line-height:1.4;"><code>┌─────────────────────────────────────────────────────────┐
+│                  Applications (apps/)                    │
+│   bluetooth/ │ matter/ │ ipro7_demo │ ipro_unit_test     │
+├─────────────────────────────────────────────────────────┤
+│                Components (components/)                   │
+│  BLE 5.4 │ Matter │ WiFi 6 │ Thread │ Zigbee │ 802.15.4 │
+│  lwIP    │ mbedTLS│ CherryUSB │ Audio │ AI/NPU│ Codec   │
+│  LittleFS│ FatFS  │ Shell     │ Agora │ Opus  │ LC3     │
+├─────────────────────────────────────────────────────────┤
+│             RTOS (FreeRTOS / Zephyr)                     │
+│         FreeRTOS POSIX │ OSAL │ Zephyr Kernel            │
+├─────────────────────────────────────────────────────────┤
+│              BSP (bsp/)                                   │
+│  HAL │ Drivers │ Board Config │ Linker Scripts │ Startup │
+├─────────────────────────────────────────────────────────┤
+│           Hardware (IPRO7 / IPRO6 / IPRO6LE)             │
+│     RISC-V RV32IMAFC │ Cortex-M0+ │ BLE Radio │ NPU    │
+└─────────────────────────────────────────────────────────┘</code></pre>
             </div>
+
+            <p>Each layer has clear responsibility boundaries:</p>
+            <ul>
+                <li><strong>Application Layer</strong>: Self-contained projects, each with its own <code>.config</code> and <code>CMakeLists.txt</code></li>
+                <li><strong>Component Layer</strong>: Reusable middleware, enabled or disabled via Kconfig options</li>
+                <li><strong>RTOS Layer</strong>: Task scheduling, synchronization primitives, and timer services</li>
+                <li><strong>BSP Layer</strong>: Hardware abstraction and drivers, shielding differences between SoC variants</li>
+                <li><strong>Hardware Layer</strong>: IPRO series SoC platforms</li>
+            </ul>
         </section>
 
-        <section id="layers">
-            <h2>Layer Details</h2>
-
-            <h3>Application Layer</h3>
-            <p>Located in <code>apps/</code> directory, contains all application projects. Each application is an independent project with its own:</p>
-            <ul>
-                <li><code>CMakeLists.txt</code> - Build configuration</li>
-                <li><code>proj.conf</code> - Kconfig configuration overrides</li>
-                <li><code>main.c</code> - Application entry point</li>
-                <li><code>Kconfig.app</code> - Application-specific options</li>
-            </ul>
-
-            <h3>Middleware Layer</h3>
-            <p>Located in <code>components/</code> directory, provides reusable software components:</p>
+        <!-- Section 2: SoC Variants -->
+        <section id="soc-variants">
+            <h2>SoC Variants</h2>
+            <p>IPRO SDK supports multiple SoC variants, covering high-performance IoT to ultra-low-power scenarios:</p>
 
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
-                            <th>Component</th>
-                            <th>Directory</th>
-                            <th>Function</th>
+                            <th>SoC</th>
+                            <th>Core Architecture</th>
+                            <th>Clock</th>
+                            <th>Flash</th>
+                            <th>RAM</th>
+                            <th>Key Features</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>lwIP</td>
-                            <td><code>components/network/</code></td>
-                            <td>Lightweight TCP/IP Stack</td>
+                            <td><strong>IPRO7</strong></td>
+                            <td>RISC-V RV32IMAFC</td>
+                            <td>192 MHz</td>
+                            <td>4 MB</td>
+                            <td>16 MB PSRAM + 256 KB OCRAM</td>
+                            <td>BLE 5.4, WiFi 6, 0.1 TOPS NPU, ISP</td>
                         </tr>
                         <tr>
-                            <td>Mbed TLS</td>
-                            <td><code>components/crypto/</code></td>
-                            <td>Encryption & Secure Communication</td>
+                            <td><strong>IPRO6</strong></td>
+                            <td>RISC-V</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>Previous generation SoC, BLE + WiFi</td>
                         </tr>
                         <tr>
-                            <td>CherryUSB</td>
-                            <td><code>components/cherryusb/</code></td>
-                            <td>USB Device/Host Stack</td>
-                        </tr>
-                        <tr>
-                            <td>Wireless</td>
-                            <td><code>components/wireless/</code></td>
-                            <td>BLE 5.4, Zigbee, Thread</td>
-                        </tr>
-                        <tr>
-                            <td>File Systems</td>
-                            <td><code>components/fs/</code></td>
-                            <td>FAT, LittleFS, etc.</td>
+                            <td><strong>IPRO6LE</strong></td>
+                            <td>ARM Cortex-M0+</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>Ultra-low power, for simple sensors</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <h3>RTOS Layer</h3>
-            <p>SDK supports two real-time operating systems:</p>
-            <ul>
-                <li><strong>FreeRTOS</strong> - Located in <code>components/os/freertos/</code>, classic and stable RTOS choice</li>
-                <li><strong>Zephyr RTOS</strong> - Modern RTOS with Device Tree, West build system, and advanced features</li>
-            </ul>
+            <div class="alert alert-info">
+                <strong>💡 Tip:</strong> IPRO7 is the primary development platform. Most examples and documentation are based on IPRO7. Select the target SoC via <code>CONFIG_IPRO7=y</code> or <code>CONFIG_IPRO6=y</code> in Kconfig.
+            </div>
+        </section>
 
-            <h3>BSP Layer (Board Support Package)</h3>
-            <p>Located in <code>bsp/</code> directory, provides hardware abstraction:</p>
+        <!-- Section 3: Memory Layout -->
+        <section id="memory-layout">
+            <h2>Memory Layout (IPRO7)</h2>
+            <p>IPRO7's memory space is divided into four main regions, each with different access characteristics:</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Region</th>
+                            <th>Size</th>
+                            <th>Start Address</th>
+                            <th>Access Type</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Flash</strong></td>
+                            <td>4 MB</td>
+                            <td><code>0x00000000</code></td>
+                            <td>XIP Executable</td>
+                            <td>Code and read-only data storage</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PSRAM</strong></td>
+                            <td>16 MB</td>
+                            <td><code>0x20000000</code></td>
+                            <td>Random Access</td>
+                            <td>Main RAM (heap, data segments, large buffers)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>OCRAM</strong></td>
+                            <td>256 KB</td>
+                            <td><code>0x60000000</code></td>
+                            <td>High-speed SRAM</td>
+                            <td>Stack, interrupt handlers, performance-critical code</td>
+                        </tr>
+                        <tr>
+                            <td><strong>HBNRAM</strong></td>
+                            <td>4 KB</td>
+                            <td><code>0x50000000</code></td>
+                            <td>Hibernate Retention</td>
+                            <td>Critical data preserved during deep sleep</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Memory Map Diagram</span>
+                </div>
+                <pre><code>0x00000000 ┌──────────────────┐
+           │   Flash (4 MB)   │  Code + read-only data (XIP)
+0x003FFFFF └──────────────────┘
+              ...
+0x20000000 ┌──────────────────┐
+           │  PSRAM (16 MB)   │  Main RAM (heap, .data, .bss)
+0x20FFFFFF └──────────────────┘
+              ...
+0x50000000 ┌──────────────────┐
+           │  HBNRAM (4 KB)   │  Hibernate retention RAM
+0x50000FFF └──────────────────┘
+              ...
+0x60000000 ┌──────────────────┐
+           │  OCRAM (256 KB)  │  High-speed SRAM (stack, critical paths)
+0x6003FFFF └──────────────────┘</code></pre>
+            </div>
+        </section>
+
+        <!-- Section 4: Build Pipeline -->
+        <section id="build-pipeline">
+            <h2>Build Pipeline</h2>
+            <p>The SDK uses a <strong>Kconfig + CMake + Ninja</strong> build pipeline. The flow from configuration to final binary is as follows:</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build Pipeline</span>
+                </div>
+                <pre><code>.config (Kconfig)          CMakeLists.txt
+       │                         │
+       ▼                         ▼
+ ┌───────────┐          ┌──────────────┐
+ │ autoconf.h │◄────────│    CMake     │
+ │ (generated)│         │  Configure   │
+ └───────────┘          └──────┬───────┘
+                               │
+                               ▼
+                        ┌──────────────┐
+                        │    Ninja     │
+                        │   Compile    │
+                        └──────┬───────┘
+                               │
+                               ▼
+                   apps/&lt;project&gt;/build/build_out/
+                   &lt;project&gt;_IPRO7.bin</code></pre>
+            </div>
+
+            <h3>Standard Build Commands</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">FreeRTOS Build (Production)</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Method 1: Using Make wrapper (recommended)
+make -C apps/ipro7_demo
+
+# Method 2: Using build script
+./build_freertos.sh ipro7_demo build
+
+# Clean build
+make -C apps/ipro7_demo clean</code></pre>
+            </div>
+
+            <h3>Toolchain</h3>
+            <p>The SDK uses a RISC-V cross-compiler located at <code>/opt/toolchain/riscv_ipro7/bin/</code>:</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Compiler Prefix</td>
+                            <td><code>riscv64-unknown-elf-</code></td>
+                        </tr>
+                        <tr>
+                            <td>Target Architecture</td>
+                            <td><code>rv32imafc</code> / <code>ilp32f</code></td>
+                        </tr>
+                        <tr>
+                            <td>Toolchain Detection</td>
+                            <td><code>cmake/toolchain.cmake</code> auto-detects vendor GCC (with <code>_xxldsp</code> extensions) vs standard GCC</td>
+                        </tr>
+                        <tr>
+                            <td>Build Output</td>
+                            <td><code>apps/&lt;project&gt;/build/build_out/&lt;project&gt;_IPRO7.bin</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Zephyr Build (Experimental)</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Zephyr Build Commands</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Using the SDK-provided build script
+./tools/zephyr/build.sh -a &lt;app&gt; -b ipro7_fpga -c</code></pre>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>⚠️ Note:</strong> Zephyr build is currently experimental. Use the FreeRTOS build for production environments.
+            </div>
+        </section>
+
+        <!-- Section 5: Component Architecture -->
+        <section id="components">
+            <h2>Component Architecture</h2>
+            <p>The <code>components/</code> directory contains all reusable middleware and libraries, organized by functional category:</p>
+
+            <h3>Wireless Communication</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Path</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Bluetooth LE 5.4</strong></td>
+                            <td><code>wireless/bluetooth/</code></td>
+                            <td>Zephyr BLE Host + RivieraWaves Controller, 70+ Profiles, LE Audio</td>
+                        </tr>
+                        <tr>
+                            <td><strong>WiFi 6</strong></td>
+                            <td><code>wireless/wifi6/</code></td>
+                            <td>WiFi 6 (802.11ax) stack</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Thread</strong></td>
+                            <td><code>wireless/thread/</code></td>
+                            <td>Thread mesh networking protocol</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Zigbee</strong></td>
+                            <td><code>wireless/zigbee/</code></td>
+                            <td>Zigbee protocol stack</td>
+                        </tr>
+                        <tr>
+                            <td><strong>IEEE 802.15.4</strong></td>
+                            <td><code>wireless/ieee802154/</code></td>
+                            <td>802.15.4 MAC layer</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RF</strong></td>
+                            <td><code>wireless/rf/</code></td>
+                            <td>Radio frequency low-level driver</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Networking & Security</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Path</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>lwIP</strong></td>
+                            <td><code>network/lwip/</code></td>
+                            <td>Lightweight TCP/IP stack (IPv4/IPv6)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mbed TLS</strong></td>
+                            <td><code>crypto/mbedtls/</code></td>
+                            <td>TLS/SSL encrypted communication</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cipher Suite</strong></td>
+                            <td><code>crypto/cipher_suite/</code></td>
+                            <td>Cryptographic toolkit</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Operating System</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Path</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>FreeRTOS</strong></td>
+                            <td><code>os/freertos/</code></td>
+                            <td>Real-time OS (tasks, queues, semaphores, timers)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>FreeRTOS POSIX</strong></td>
+                            <td><code>os/freertos_posix/</code></td>
+                            <td>POSIX compatibility layer</td>
+                        </tr>
+                        <tr>
+                            <td><strong>OSAL</strong></td>
+                            <td><code>os/ipro_osal/</code></td>
+                            <td>OS Abstraction Layer, unified API interface</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Zephyr</strong></td>
+                            <td><code>os/zephyr/</code></td>
+                            <td>Zephyr RTOS kernel (experimental)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Multimedia & AI</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Path</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Audio</strong></td>
+                            <td><code>audio/</code></td>
+                            <td>Audio framework and codecs</td>
+                        </tr>
+                        <tr>
+                            <td><strong>AI / NPU</strong></td>
+                            <td><code>ai/</code></td>
+                            <td>AI inference engine, supporting 0.1 TOPS NPU acceleration</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ISP</strong></td>
+                            <td><code>isp_algorithm/</code>, <code>isp_firmware/</code>, <code>isp_iq_param/</code></td>
+                            <td>Image Signal Processor (algorithms, firmware, IQ parameters)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sensor</strong></td>
+                            <td><code>sensor/</code></td>
+                            <td>Camera sensor drivers (GC6133, SC101IOT, etc.)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>USB & Storage</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Path</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>CherryUSB</strong></td>
+                            <td><code>cherryusb/</code></td>
+                            <td>USB Device/Host stack (CDC, MSC, HID, UAC, UVC)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>LittleFS</strong></td>
+                            <td><code>fs/littlefs/</code></td>
+                            <td>Flash-optimized file system</td>
+                        </tr>
+                        <tr>
+                            <td><strong>FatFS</strong></td>
+                            <td><code>fs/fatfs/</code></td>
+                            <td>FAT file system (SD cards)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>EasyFlash</strong></td>
+                            <td><code>fs/easyflash4/</code></td>
+                            <td>Lightweight key-value storage</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ROMFS</strong></td>
+                            <td><code>fs/romfs/</code></td>
+                            <td>Read-only file system</td>
+                        </tr>
+                        <tr>
+                            <td><strong>EVFS</strong></td>
+                            <td><code>fs/evfs/</code></td>
+                            <td>Virtual file system abstraction layer</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Third-Party Libraries & Utilities</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Component</th>
+                            <th>Path</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Agora</strong></td>
+                            <td><code>3rdparty/agora/</code></td>
+                            <td>Agora real-time communication SDK</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Opus</strong></td>
+                            <td><code>3rdparty/opus/</code></td>
+                            <td>Opus audio codec</td>
+                        </tr>
+                        <tr>
+                            <td><strong>LC3</strong></td>
+                            <td><code>3rdparty/liblc3/</code></td>
+                            <td>LC3 audio codec (LE Audio)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>XZ</strong></td>
+                            <td><code>3rdparty/xz/</code></td>
+                            <td>XZ/LZMA compression</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Zmodem</strong></td>
+                            <td><code>3rdparty/zmodem/</code></td>
+                            <td>Zmodem file transfer protocol</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Shell</strong></td>
+                            <td><code>sys/shell/</code></td>
+                            <td>CLI command-line framework</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Event System</strong></td>
+                            <td><code>sys/ipro_event/</code></td>
+                            <td>Event system framework</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Utils</strong></td>
+                            <td><code>utils/</code></td>
+                            <td>General utilities and logging system</td>
+                        </tr>
+                        <tr>
+                            <td><strong>SoftCRC</strong></td>
+                            <td><code>softcrc/</code></td>
+                            <td>Software CRC computation</td>
+                        </tr>
+                        <tr>
+                            <td><strong>libc</strong></td>
+                            <td><code>libc/</code></td>
+                            <td>C standard library supplement</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Matter</strong></td>
+                            <td><code>matter/</code></td>
+                            <td>Matter (CHIP) smart home protocol</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section 6: Configuration System -->
+        <section id="configuration">
+            <h2>Configuration System (Kconfig)</h2>
+            <p>The SDK uses a <strong>Linux kernel-style Kconfig</strong> system for project configuration. Each application has its own <code>.config</code> file, and the build automatically generates <code>generated/autoconf.h</code> for use in C code.</p>
+
+            <h3>Configuration Hierarchy</h3>
+            <ol>
+                <li><strong>Root Config</strong>: <code>Kconfig</code> - Defines all available options and defaults</li>
+                <li><strong>Module Config</strong>: <code>kconfigs/*.config</code> - Default values for each module</li>
+                <li><strong>App Config</strong>: <code>apps/&lt;project&gt;/.config</code> - Application-specific configuration (highest priority)</li>
+            </ol>
+
+            <h3>Key Configuration Options</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">.config Example</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># SoC selection
+CONFIG_IPRO7=y
+CONFIG_CPU_ID="intelpro_ipro7"
+
+# RTOS selection
+CONFIG_FREERTOS_SUPPORT=y
+
+# Wireless features
+CONFIG_BLUETOOTH_LE_ENABLE=y
+
+# Component enables
+CONFIG_LWIP=y
+CONFIG_MBEDTLS=y
+
+# Test auto-run
+CONFIG_TEST_AUTO_RUN=y</code></pre>
+            </div>
+
+            <h3>Configuration to Code Relationship</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">generated/autoconf.h (auto-generated)</span>
+                </div>
+                <pre><code class="language-c">/* Auto-generated by Kconfig, do not edit manually */
+#define CONFIG_IPRO7 1
+#define CONFIG_CPU_ID "intelpro_ipro7"
+#define CONFIG_FREERTOS_SUPPORT 1
+#define CONFIG_BLUETOOTH_LE_ENABLE 1
+#define CONFIG_LWIP 1</code></pre>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡 Tip:</strong> <code>CONFIG_CPU_ID</code> must be correctly set in <code>.config</code> for <code>cmake/toolchain.cmake</code> to detect the proper architecture flags. The toolchain detection logic automatically distinguishes between vendor GCC (with <code>_xxldsp</code> DSP extension instructions) and standard GCC, adapting compiler flags accordingly.
+            </div>
+        </section>
+
+        <!-- Section 7: Application Structure -->
+        <section id="app-structure">
+            <h2>Application Structure</h2>
+            <p>Each application is a self-contained directory under <code>apps/</code>, containing all files needed for building and configuration:</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Typical Application Structure</span>
+                </div>
+                <pre><code>apps/&lt;project&gt;/
+├── .config              # Kconfig configuration (CONFIG_* variables)
+├── CMakeLists.txt       # CMake build definition
+├── main.c               # Application entry point
+├── src/                 # Source code directory
+├── include/             # Header files directory
+└── build/               # Build output (auto-generated)
+    ├── generated/
+    │   └── autoconf.h   # C header generated from .config
+    └── build_out/
+        └── &lt;project&gt;_IPRO7.bin  # Final binary</code></pre>
+            </div>
+
+            <h3>Application Categories</h3>
+            <p>Applications are organized into subdirectories by functional category:</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Path</th>
+                            <th>Example Applications</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Bluetooth</strong></td>
+                            <td><code>apps/bluetooth/</code></td>
+                            <td>ipro_ble_remote (GATT + OTA), ipro_le_audio_headset (GAF/BAP), ipro_walkie_talkie (BIS LE Audio)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Matter</strong></td>
+                            <td><code>apps/matter/</code></td>
+                            <td>Matter smart home devices</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Platform Demos</strong></td>
+                            <td><code>apps/</code></td>
+                            <td>ipro7_demo, ipro6_demo, ipro6le_demo</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Testing</strong></td>
+                            <td><code>apps/</code></td>
+                            <td>ipro_unit_test</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡 Tip:</strong> Applications in subdirectories (e.g., <code>apps/bluetooth/</code>) need to set <code>CONFIG_APP_CATEGORY</code> in their <code>.config</code> so the build system can correctly locate the project path.
+            </div>
+        </section>
+
+        <!-- Section 8: Directory Structure -->
+        <section id="directory">
+            <h2>Directory Structure</h2>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">SDK Directory Structure</span>
+                </div>
+                <pre><code>ipro_sdk/
+├── apps/                         # Application projects
+│   ├── bluetooth/                # BLE applications (10+ examples)
+│   ├── matter/                   # Matter smart home applications
+│   ├── ipro7_demo/               # IPRO7 comprehensive platform demo
+│   ├── ipro_unit_test/           # Unit test framework
+│   └── ...
+│
+├── bsp/                          # Board Support Package
+│   ├── board/                    # Board configuration (pin definitions, clock)
+│   ├── drivers/                  # Peripheral drivers
+│   ├── hal/                      # Hardware Abstraction Layer API
+│   └── common/                   # Shared startup code and linker scripts
+│
+├── components/                   # Reusable components
+│   ├── wireless/                 # Wireless: BLE, WiFi 6, Thread, Zigbee
+│   ├── network/                  # Network: lwIP
+│   ├── crypto/                   # Security: Mbed TLS, cipher suite
+│   ├── os/                       # RTOS: FreeRTOS, Zephyr, OSAL
+│   ├── fs/                       # File systems: LittleFS, FatFS, ROMFS
+│   ├── cherryusb/                # USB stack
+│   ├── audio/                    # Audio framework
+│   ├── ai/                       # AI/NPU inference
+│   ├── sensor/                   # Camera sensor drivers
+│   ├── sys/                      # System services (Shell, events)
+│   ├── 3rdparty/                 # Third-party: Agora, Opus, LC3, XZ
+│   ├── matter/                   # Matter protocol
+│   └── ...                       # libc, softcrc, utils, ISP, etc.
+│
+├── tools/                        # Development tools
+│   ├── ipro_iot_tool_lite/       # Flash tool
+│   ├── serial_monitor.py         # Serial monitor
+│   ├── board_test.sh             # Automated board testing
+│   └── vscode_extension/         # VS Code extension
+│
+├── cmake/                        # CMake config (toolchain.cmake)
+├── kconfigs/                     # Kconfig default configs
+├── build_freertos.sh             # FreeRTOS build script
+├── Kconfig                       # Root Kconfig
+└── west.yml                      # Zephyr west config</code></pre>
+            </div>
+        </section>
+
+        <!-- Section 9: BLE Stack -->
+        <section id="ble-stack">
+            <h2>BLE Stack Architecture</h2>
+            <p>The BLE 5.4 stack is located in <code>components/wireless/bluetooth/</code>, using Zephyr-style callback-based GAP/GATT APIs:</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">BLE Stack Layers</span>
+                </div>
+                <pre><code>┌──────────────────────────────────────────────┐
+│          Application (GAP/GATT Callbacks)    │
+├──────────────────────────────────────────────┤
+│  btprofile/          │  blemesh/ (optional)  │
+│  70+ BLE Profiles    │  Bluetooth Mesh       │
+├──────────────────────────────────────────────┤
+│              blestack/ (Zephyr BLE Host)      │
+│  GAP │ GATT │ L2CAP │ SMP │ ISO │ LE Audio  │
+├──────────────────────────────────────────────┤
+│        btblecontroller/ (RivieraWaves)       │
+│     Prebuilt linkN variant libraries         │
+├──────────────────────────────────────────────┤
+│               BLE Radio Hardware             │
+└──────────────────────────────────────────────┘</code></pre>
+            </div>
+
+            <h3>Controller Variants (linkN Naming)</h3>
+            <p>The controller uses a unified connection pool design with <code>linkN</code> naming (replaces the old <code>mXsY</code> naming):</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Variant</th>
+                            <th>BLE Version</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>link1_periph</code>, <code>link1</code>, <code>link2</code>, <code>link4</code>, <code>link8</code></td>
+                            <td>BLE 5.0+</td>
+                            <td>Base BLE, different connection counts (1/2/4/8 connections)</td>
+                        </tr>
+                        <tr>
+                            <td><code>link1_leaudio</code>, <code>link2_leaudio</code></td>
+                            <td>BLE 5.2</td>
+                            <td>With LE Audio support (ISO, CIS/BIS)</td>
+                        </tr>
+                        <tr>
+                            <td><code>link1_leaudio_53_54</code>, <code>link2_leaudio_53_54</code></td>
+                            <td>BLE 5.4</td>
+                            <td>Full LE Audio + BLE 5.3/5.4 features</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Prebuilt Libraries</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build Prebuilt Controller Libraries</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Build specific variant
+components/wireless/bluetooth/build_all_prebuilts.sh link2
+
+# Build all variants
+components/wireless/bluetooth/build_all_prebuilts.sh all
+
+# Output: btblecontroller_ipro7_&lt;variant&gt;/libbtblecontroller_ipro7_&lt;variant&gt;.a</code></pre>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>⚠️ Note:</strong> <code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> cannot be used in release builds. Release builds must use prebuilt libraries.
+            </div>
+
+            <h3>LE Audio Application Framework</h3>
+            <p>LE Audio applications use a three-layer framework design:</p>
+            <ul>
+                <li><strong>Mediator (Orchestrator)</strong>: Manages all components and state machines</li>
+                <li><strong>Applets (Reusable Components)</strong>: Encapsulate BLE Profile functionality (GAF, BAP, VCP, MCP, CAP)</li>
+                <li><strong>Intermediaries (Protocol Bridges)</strong>: Connect data flows between different protocol layers</li>
+            </ul>
+        </section>
+
+        <!-- Section 10: BSP & Drivers -->
+        <section id="bsp">
+            <h2>BSP & Drivers</h2>
+            <p>The Board Support Package is located in <code>bsp/</code>, providing hardware abstraction and peripheral drivers:</p>
+
             <ul>
                 <li><code>bsp/hal/</code> - Hardware Abstraction Layer API</li>
                 <li><code>bsp/drivers/</code> - Peripheral drivers</li>
-                <li><code>bsp/board/</code> - Board-level configuration</li>
+                <li><code>bsp/board/</code> - Board configuration (pin mapping, clock settings)</li>
+                <li><code>bsp/common/</code> - Startup code, linker scripts, shared code</li>
             </ul>
 
-            <h4>Supported Peripheral Drivers</h4>
+            <h3>Supported Peripheral Drivers</h3>
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -166,287 +853,6 @@ lang: en
                     </tbody>
                 </table>
             </div>
-        </section>
-
-        <section id="memory-layout">
-            <h2>Memory Layout (IPRO7)</h2>
-            <p>IPRO7 uses RISC-V <code>rv32imafc</code> / <code>ilp32f</code> architecture, running at 192MHz. Memory layout is as follows:</p>
-
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Region</th>
-                            <th>Size</th>
-                            <th>Start Address</th>
-                            <th>Purpose</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Flash</td>
-                            <td>4 MB</td>
-                            <td><code>0x00000000</code></td>
-                            <td>Code and read-only data storage</td>
-                        </tr>
-                        <tr>
-                            <td>PSRAM</td>
-                            <td>16 MB</td>
-                            <td><code>0x20000000</code></td>
-                            <td>Main RAM (heap, data segments)</td>
-                        </tr>
-                        <tr>
-                            <td>OCRAM</td>
-                            <td>256 KB</td>
-                            <td><code>0x60000000</code></td>
-                            <td>High-speed SRAM (stack, critical code)</td>
-                        </tr>
-                        <tr>
-                            <td>HBNRAM</td>
-                            <td>4 KB</td>
-                            <td><code>0x50000000</code></td>
-                            <td>Hibernate retention RAM</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="directory">
-            <h2>Directory Structure</h2>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">SDK Directory Structure</span>
-                </div>
-                <pre><code>ipro_sdk/
-├── apps/                         # Application projects
-│   ├── bluetooth/                # BLE applications
-│   │   ├── ipro_ble_remote/      # BLE remote (GATT + OTA)
-│   │   ├── ipro_throughput_test/ # BLE throughput test (999 Kbps)
-│   │   ├── ipro_walkie_talkie/   # BIS LE Audio walkie-talkie
-│   │   └── ipro_le_audio_headset/# GAF/BAP LE Audio headset
-│   ├── ipro7_demo/               # Comprehensive platform demo
-│   ├── ipro_unit_test/           # Unit tests
-│   └── ipro_zephyr_demo/         # Zephyr demo
-│
-├── bsp/                          # Board Support Package
-│   ├── board/                    # Board configuration
-│   ├── drivers/                  # Peripheral drivers
-│   ├── hal/                      # Hardware Abstraction Layer
-│   └── common/                   # Common code
-│
-├── components/                   # Reusable components (23 categories)
-│   ├── wireless/                 # Wireless stack
-│   │   └── bluetooth/            # BLE 5.4 stack
-│   │       ├── blestack/         # Zephyr BLE Host (GAP/GATT/L2CAP/SMP)
-│   │       ├── btblecontroller/  # Prebuilt controller libraries (linkN variants)
-│   │       └── btprofile/        # 70+ BLE Profiles
-│   ├── os/                       # RTOS components (FreeRTOS)
-│   ├── network/                  # Network stack (lwIP)
-│   ├── crypto/                   # Crypto components (Mbed TLS)
-│   ├── fs/                       # File systems (LittleFS, FatFS)
-│   ├── cherryusb/                # USB device/host stack
-│   └── ...
-│
-├── tools/                        # Development tools
-│   ├── ipro_iot_tool_lite/       # Flash tool
-│   ├── serial_monitor.py         # Serial monitor (Python3)
-│   ├── board_test.sh             # Automated board testing
-│   ├── zephyr/                   # Zephyr tool scripts
-│   ├── vscode_extension/         # VS Code extension
-│   └── cmake/                    # CI CMake
-│
-├── cmake/                        # CMake config (toolchain.cmake auto-detection)
-├── kconfigs/                     # Kconfig files
-│
-├── build_freertos.sh             # FreeRTOS build script
-├── CMakeLists.txt                # Root CMake config
-├── Kconfig                       # Root Kconfig
-└── west.yml                      # Zephyr west config</code></pre>
-            </div>
-        </section>
-
-        <section id="build-system">
-            <h2>Build System</h2>
-
-            <h3>CMake + Ninja</h3>
-            <p>SDK uses CMake as the build system, with Ninja as the build backend for optimal performance.</p>
-
-            <h4>Build Process</h4>
-            <ol>
-                <li><strong>Configuration Phase</strong>: CMake reads <code>CMakeLists.txt</code> and Kconfig, generates build rules</li>
-                <li><strong>Build Phase</strong>: Ninja executes compilation and linking, produces final binaries</li>
-            </ol>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build Command Parameters</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash">cmake -S . -B build \
-    -G "Ninja" \                      # Use Ninja builder
-    -DIPRO_SDK_BASE=$(pwd) \          # SDK root directory
-    -DCONFIG_BUILD_PORJECT=app_name \ # Target app name
-    -DCMAKE_PREFIX_PATH=$(pwd)/cmake \# CMake module path
-    -DCUSTOM_CONFIG_DIR=path/to/app \ # App config directory
-    -DCONFIG_APPS=1 \                 # Enable app build
-    -DCROSS_COMPILE=path/to/toolchain # Cross compiler prefix</code></pre>
-            </div>
-
-            <h3>West Build System (Zephyr)</h3>
-            <p>Zephyr projects use <code>west</code> as the build tool, providing a more modern development experience.</p>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">West Build Commands</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Initialize west workspace
-west init -m https://github.com/your-org/ipro_sdk --mr main
-west update
-
-# Build application
-west build -b ipro7_fpga apps/ipro_zephyr_demo
-
-# Flash
-west flash</code></pre>
-            </div>
-        </section>
-
-        <section id="configuration">
-            <h2>Configuration System (Kconfig)</h2>
-            <p>SDK uses Kconfig system for project configuration, providing both graphical and text-based configuration interfaces.</p>
-
-            <h3>Configuration Hierarchy</h3>
-            <p>The SDK uses Linux kernel-style Kconfig. Each app has its own <code>.config</code> file with <code>CONFIG_*</code> variables. The build generates <code>generated/autoconf.h</code> from <code>.config</code>.</p>
-            <ol>
-                <li><strong>Root Config</strong>: <code>Kconfig</code> - Defines all available options</li>
-                <li><strong>Default Config</strong>: <code>kconfigs/*.config</code> - Default values for each module</li>
-                <li><strong>App Config</strong>: <code>apps/*/.config</code> - Application-specific configuration</li>
-            </ol>
-
-            <h3>Key Configuration Options</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">.config Example</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># SoC selection
-CONFIG_IPRO7=y
-CONFIG_CPU_ID="intelpro_ipro7"
-
-# RTOS selection
-CONFIG_FREERTOS_SUPPORT=y
-
-# Wireless features
-CONFIG_BLUETOOTH_LE_ENABLE=y
-
-# Component enables
-CONFIG_LWIP=y
-CONFIG_MBEDTLS=y
-
-# Test auto-run
-CONFIG_TEST_AUTO_RUN=y</code></pre>
-            </div>
-
-            <div class="alert alert-info">
-                <strong>💡 Tip:</strong> <code>CONFIG_CPU_ID</code> must be set in <code>.config</code> for the toolchain to correctly detect architecture flags. <code>cmake/toolchain.cmake</code> auto-detects vendor GCC (with <code>_xxldsp</code> extensions) vs standard GCC and adapts compiler flags.
-            </div>
-        </section>
-
-        <section id="ble-controller">
-            <h2>BLE Controller & Prebuilt Libraries</h2>
-
-            <h3>BLE Stack Architecture</h3>
-            <p>The BLE 5.4 stack is located in <code>components/wireless/bluetooth/</code>, using Zephyr-style callback-based GAP/GATT APIs:</p>
-            <ul>
-                <li><code>blestack/</code> - Zephyr BLE Host (GAP, GATT, L2CAP, SMP, ISO, LE Audio) - buildable source</li>
-                <li><code>btblecontroller/</code> - RivieraWaves Controller (prebuilt linkN variant libraries)</li>
-                <li><code>btprofile/</code> - 70+ BLE Profiles</li>
-                <li><code>blemesh/</code> - Bluetooth Mesh support (optional)</li>
-            </ul>
-
-            <h3>Controller Variants (linkN naming)</h3>
-            <p>The controller uses a unified connection pool design with <code>linkN</code> naming (replaces old <code>mXsY</code> naming):</p>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Variant</th>
-                            <th>BLE Version</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>link1_periph</code>, <code>link1</code>, <code>link2</code>, <code>link4</code>, <code>link8</code></td>
-                            <td>BLE 5.0+</td>
-                            <td>Base BLE, different connection counts</td>
-                        </tr>
-                        <tr>
-                            <td><code>link1_leaudio</code>, <code>link2_leaudio</code></td>
-                            <td>BLE 5.2</td>
-                            <td>With LE Audio support</td>
-                        </tr>
-                        <tr>
-                            <td><code>link1_leaudio_53_54</code>, <code>link2_leaudio_53_54</code></td>
-                            <td>BLE 5.4</td>
-                            <td>With LE Audio + BLE 5.3/5.4 features</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <h3>Prebuilt Library System</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build Prebuilt Controller Libraries</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Build specific variant
-components/wireless/bluetooth/build_all_prebuilts.sh link2
-
-# Build all variants
-components/wireless/bluetooth/build_all_prebuilts.sh all
-
-# Output: btblecontroller_ipro7_&lt;variant&gt;/libbtblecontroller_ipro7_&lt;variant&gt;.a</code></pre>
-            </div>
-
-            <div class="alert alert-warning">
-                <strong>⚠️ Note:</strong> <code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> cannot be used in release builds. Release builds must use prebuilt libraries.
-            </div>
-        </section>
-
-        <section id="components">
-            <h2>Main Components Overview</h2>
-
-            <h3>BLE Stack (Zephyr-based, BLE 5.4)</h3>
-            <p>Complete BLE 5.4 implementation. Applications use Zephyr-style callback-based GAP/GATT APIs:</p>
-            <ul>
-                <li><strong>Host Layer</strong>: GAP/GATT management, connection control, security management (SMP), L2CAP</li>
-                <li><strong>Profile Layer</strong>: 70+ standard BLE Profiles</li>
-                <li><strong>Audio Layer</strong>: LE Audio (GAF, BAP, VCP, MCP, CAP), LC3 codec</li>
-                <li><strong>App Framework</strong>: Mediator (orchestrator) - Applets (reusable components) - Intermediaries (protocol bridges)</li>
-            </ul>
-
-            <h3>RTOS Components</h3>
-            <ul>
-                <li><strong>FreeRTOS</strong>: Task management, queues, semaphores, software timers</li>
-                <li><strong>Zephyr</strong>: Full RTOS features + Device Tree + West</li>
-            </ul>
-
-            <h3>Network Components</h3>
-            <ul>
-                <li><strong>lwIP</strong>: TCP/IP stack, supports IPv4/IPv6</li>
-                <li><strong>Mbed TLS</strong>: TLS/SSL, cryptographic algorithms</li>
-            </ul>
-
-            <h3>Storage Components</h3>
-            <ul>
-                <li><strong>LittleFS</strong>: Flash-optimized file system</li>
-                <li><strong>FatFS</strong>: FAT file system for SD cards</li>
-            </ul>
         </section>
     </article>
 </div>

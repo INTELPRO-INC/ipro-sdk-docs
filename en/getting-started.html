@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Getting Started - IPRO SDK
+title: Getting Started
 lang: en
 ---
 
@@ -11,13 +11,16 @@ lang: en
             <ul class="sidebar-links">
                 <li><a href="#prerequisites" class="sidebar-link">Prerequisites</a></li>
                 <li><a href="#installation" class="sidebar-link">Installation</a></li>
+                <li><a href="#directory-structure" class="sidebar-link">SDK Directory Structure</a></li>
                 <li><a href="#zephyr-quickstart" class="sidebar-link">Zephyr Quick Start</a></li>
                 <li><a href="#freertos-quickstart" class="sidebar-link">FreeRTOS Quick Start</a></li>
                 <li><a href="#first-build" class="sidebar-link">First Build</a></li>
+                <li><a href="#kconfig" class="sidebar-link">Configuration System</a></li>
                 <li><a href="#flashing" class="sidebar-link">Flashing Firmware</a></li>
                 <li><a href="#serial-monitor" class="sidebar-link">Serial Monitor</a></li>
                 <li><a href="#board-testing" class="sidebar-link">Board Testing</a></li>
                 <li><a href="#debugging" class="sidebar-link">Debugging</a></li>
+                <li><a href="#troubleshooting" class="sidebar-link">Troubleshooting</a></li>
                 <li><a href="#next-steps" class="sidebar-link">Next Steps</a></li>
             </ul>
         </nav>
@@ -42,7 +45,7 @@ lang: en
                 <li><strong>Operating System:</strong> Linux (Ubuntu 20.04+ recommended) or macOS</li>
                 <li><strong>Toolchain:</strong> RISC-V GCC Cross Compiler (<code>/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-*</code>)</li>
                 <li><strong>Build Tools:</strong> CMake 3.20+, Ninja, Make</li>
-                <li><strong>Python:</strong> Python 3.8+ (for west and tool scripts)</li>
+                <li><strong>Python:</strong> Python 3.8+ (for development tools and scripts)</li>
                 <li><strong>Git:</strong> Version control</li>
             </ul>
 
@@ -60,6 +63,20 @@ cmake --version
 ninja --version
 python3 --version</code></pre>
             </div>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Install Basic Tools (macOS)</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Install via Homebrew
+brew install cmake ninja python3 git
+
+# Verify installation
+cmake --version
+ninja --version
+python3 --version</code></pre>
+            </div>
         </section>
 
         <section id="installation">
@@ -67,7 +84,7 @@ python3 --version</code></pre>
 
             <h3>1. Get SDK Source Code</h3>
             <div class="alert alert-info">
-                <strong>📋 Note:</strong> IPRO SDK source code is hosted on internal GitLab. Please contact administrator for access.
+                <strong>📋 Note:</strong> IPRO SDK source code is hosted on internal GitLab. Please contact your administrator for access.
             </div>
             <div class="code-block">
                 <div class="code-block-header">
@@ -81,7 +98,7 @@ cd ipro_sdk</code></pre>
             </div>
 
             <h3>2. Setup Toolchain</h3>
-            <p>IPRO SDK uses RISC-V cross compiler. Default path is <code>/opt/toolchain/riscv_ipro7/</code>.</p>
+            <p>IPRO SDK uses a RISC-V cross compiler. The default path is <code>/opt/toolchain/riscv_ipro7/</code>.</p>
 
             <div class="code-block">
                 <div class="code-block-header">
@@ -95,11 +112,61 @@ ls /opt/toolchain/riscv_ipro7/bin/
 # riscv64-unknown-elf-gcc
 # riscv64-unknown-elf-g++
 # riscv64-unknown-elf-objcopy
-# ...</code></pre>
+# ...
+
+# Verify the compiler runs
+/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-gcc --version</code></pre>
             </div>
 
             <div class="alert alert-warning">
-                <strong>⚠️ Note:</strong> If your toolchain is in a different location, specify the <code>CROSS_COMPILE</code> parameter during build.
+                <strong>⚠️ Note:</strong> If your toolchain is in a different location, specify the <code>CROSS_COMPILE</code> parameter during build, e.g.: <code>CROSS_COMPILE=/your/path/bin/riscv64-unknown-elf-</code>.
+            </div>
+        </section>
+
+        <section id="directory-structure">
+            <h2>SDK Directory Structure</h2>
+            <p>Understanding the SDK directory layout helps you quickly locate files and understand the project architecture.</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">SDK Directory Structure</span>
+                </div>
+                <pre><code>ipro_sdk/
+├── apps/                         # Applications (each with .config + CMakeLists.txt)
+│   ├── bluetooth/                # BLE applications
+│   │   ├── ipro_ble_remote/      # BLE Remote (GATT + OTA)
+│   │   ├── ipro_throughput_test/ # BLE throughput test
+│   │   ├── ipro_walkie_talkie/   # BIS LE Audio walkie-talkie
+│   │   └── ipro_le_audio_headset/# GAF/BAP LE Audio headset
+│   ├── matter/                   # Matter applications
+│   │   ├── ipro_matter_light/    # Matter light control
+│   │   └── ipro_matter_switch/   # Matter switch
+│   ├── ipro7_demo/               # Comprehensive platform demo
+│   ├── ipro_unit_test/           # Unit tests
+│   └── ipro_zephyr_demo/         # Zephyr demo
+│
+├── bsp/                          # Board Support Package (HAL, drivers, linker scripts)
+│   ├── board/                    # Board configurations
+│   ├── drivers/                  # Peripheral drivers
+│   └── hal/                      # Hardware Abstraction Layer
+│
+├── components/                   # Shared middleware
+│   ├── wireless/bluetooth/       # BLE 5.4 stack (Host + Controller + Profiles)
+│   ├── os/freertos/              # FreeRTOS RTOS
+│   ├── network/                  # Network stack (lwIP)
+│   ├── crypto/                   # Crypto components (mbedTLS)
+│   ├── fs/                       # File systems (LittleFS, FatFS)
+│   └── cherryusb/                # USB device/host stack
+│
+├── cmake/                        # Build system (toolchain.cmake auto-detects GCC)
+├── tools/                        # Development tools
+│   ├── ipro_iot_tool_lite/       # Firmware flash tool
+│   ├── serial_monitor.py         # Serial monitor (Python3)
+│   ├── board_test.sh             # Automated board testing
+│   └── zephyr/                   # Zephyr build tools
+│
+├── build_freertos.sh             # FreeRTOS build script
+└── Kconfig                       # Root Kconfig configuration</code></pre>
             </div>
         </section>
 
@@ -236,6 +303,46 @@ ls -la apps/bluetooth/ipro_ble_remote/build/build_out/
             </div>
         </section>
 
+        <section id="kconfig">
+            <h2>Kconfig Configuration System</h2>
+            <p>The SDK uses a Linux kernel-style Kconfig system to manage project configuration. Each application has its own <code>.config</code> file, and the build system automatically generates a <code>generated/autoconf.h</code> header file.</p>
+
+            <h3>Configuration File Hierarchy</h3>
+            <ul>
+                <li><strong>Root config:</strong> <code>Kconfig</code> - defines all available options</li>
+                <li><strong>Default configs:</strong> <code>kconfigs/*.config</code> - default values for each feature module</li>
+                <li><strong>App config:</strong> <code>apps/&lt;project&gt;/.config</code> - per-application configuration overrides</li>
+            </ul>
+
+            <h3>Common Configuration Options</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">.config Example</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># SoC selection
+CONFIG_IPRO7=y
+CONFIG_CPU_ID="intelpro_ipro7"
+
+# RTOS selection
+CONFIG_FREERTOS_SUPPORT=y
+
+# Wireless features
+CONFIG_BLUETOOTH_LE_ENABLE=y
+
+# Component enables
+CONFIG_LWIP=y
+CONFIG_MBEDTLS=y
+
+# Auto-run tests on boot
+CONFIG_TEST_AUTO_RUN=y</code></pre>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡 Tip:</strong> <code>CONFIG_CPU_ID</code> must be correctly set in <code>.config</code> for the toolchain to detect the proper architecture flags. <code>cmake/toolchain.cmake</code> auto-detects vendor GCC vs standard GCC and adjusts compiler flags accordingly.
+            </div>
+        </section>
+
         <section id="flashing">
             <h2>Flashing Firmware</h2>
             <p>Use the SDK's built-in <code>ipro_iot_tool_lite</code> tool to flash firmware to the development board.</p>
@@ -308,6 +415,17 @@ tools/board_test.sh --project apps/ipro_unit_test
 # Exit codes: 0 = pass, 1 = fail, 2 = timeout</code></pre>
             </div>
 
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Quick Retest (reboot only, no rebuild/reflash)</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Reboot board and wait for test results
+python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
+    --send reboot --timeout 30 \
+    --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
+            </div>
+
             <div class="alert alert-info">
                 <strong>💡 Tip:</strong> Test applications need <code>CONFIG_TEST_AUTO_RUN=y</code> enabled. Tests run automatically on boot. Result markers are <code>ALL TESTS PASSED</code> or <code>SOME TESTS FAILED</code>.
             </div>
@@ -328,10 +446,92 @@ tools/board_test.sh --project apps/ipro_unit_test
             </div>
 
             <h3>Serial Debugging</h3>
-            <p>Most applications support real-time debugging via serial CLI. After connecting to serial, use commands like <code>reboot</code> (reset) or <code>reboot_dl</code> (enter download mode).</p>
+            <p>Most applications support real-time debugging via serial CLI. After connecting to the serial port, use the following commands:</p>
+            <ul>
+                <li><code>reboot</code> - Normal reset</li>
+                <li><code>reboot_dl</code> - Enter download mode (for reflashing)</li>
+            </ul>
 
             <h3>VS Code Debug Configuration</h3>
-            <p>The SDK provides VS Code extension for graphical debugging. See <code>tools/vscode_extension/</code> for detailed setup.</p>
+            <p>The SDK provides a VS Code extension for graphical debugging. See the <a href="{{ '/en/vscode-extension' | relative_url }}">VS Code Extension</a> page for detailed setup.</p>
+        </section>
+
+        <section id="troubleshooting">
+            <h2>Troubleshooting</h2>
+
+            <h3>macOS Serial Port Issues</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Problem</th>
+                            <th>Solution</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Serial connection unresponsive or blocked</td>
+                            <td>Use <code>/dev/cu.*</code> instead of <code>/dev/tty.*</code>. The <code>tty.*</code> devices block waiting for the DCD signal.</td>
+                        </tr>
+                        <tr>
+                            <td><code>cat</code> command shows no output</td>
+                            <td><code>cat</code> has buffering issues with serial ports on macOS. Use <code>python3 tools/serial_monitor.py</code> instead.</td>
+                        </tr>
+                        <tr>
+                            <td>Serial port shows "Resource busy"</td>
+                            <td>Ensure no other program is using the port (e.g., <code>stty</code>, other serial monitors). Try unplugging and replugging the USB cable if needed.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Toolchain Issues</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Problem</th>
+                            <th>Solution</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Toolchain not found</td>
+                            <td>Verify that <code>/opt/toolchain/riscv_ipro7/bin/</code> exists and contains <code>riscv64-unknown-elf-gcc</code>.</td>
+                        </tr>
+                        <tr>
+                            <td>Toolchain in a different path</td>
+                            <td>Set the <code>CROSS_COMPILE</code> environment variable to point to the correct path.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Build Errors</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Problem</th>
+                            <th>Solution</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Architecture flag detection fails</td>
+                            <td>Ensure <code>CONFIG_CPU_ID</code> is correctly set to <code>"intelpro_ipro7"</code> in the <code>.config</code> file.</td>
+                        </tr>
+                        <tr>
+                            <td>CMake configuration errors</td>
+                            <td>Try cleaning the build directory: <code>make -C apps/&lt;project&gt; clean</code>, then rebuild.</td>
+                        </tr>
+                        <tr>
+                            <td>CI CMake does not work on macOS</td>
+                            <td>The CMake in <code>tools/cmake/</code> is a Linux x86-64 ELF binary. On macOS, install CMake from the system package manager.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
 
         <section id="next-steps">
@@ -342,7 +542,7 @@ tools/board_test.sh --project apps/ipro_unit_test
                 <a href="{{ '/en/architecture' | relative_url }}" class="feature-card" style="text-decoration: none;">
                     <div class="feature-icon">🏗️</div>
                     <h3 class="feature-title">Understand Architecture</h3>
-                    <p class="feature-description">Deep dive into SDK's layered design and component relationships.</p>
+                    <p class="feature-description">Deep dive into the SDK's layered design and component relationships.</p>
                 </a>
                 <a href="{{ '/en/ble-development' | relative_url }}" class="feature-card" style="text-decoration: none;">
                     <div class="feature-icon">📡</div>
@@ -353,6 +553,11 @@ tools/board_test.sh --project apps/ipro_unit_test
                     <div class="feature-icon">📦</div>
                     <h3 class="feature-title">Explore Examples</h3>
                     <p class="feature-description">Study implementation details of various reference applications.</p>
+                </a>
+                <a href="{{ '/en/vscode-extension' | relative_url }}" class="feature-card" style="text-decoration: none;">
+                    <div class="feature-icon">🛠️</div>
+                    <h3 class="feature-title">Tools & Debugging</h3>
+                    <p class="feature-description">Boost productivity with VS Code extension and development tools.</p>
                 </a>
             </div>
         </section>

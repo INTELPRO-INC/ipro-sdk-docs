@@ -8,119 +8,806 @@ title: 架構概覽
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">本頁目錄</h4>
             <ul class="sidebar-links">
-                <li><a href="#overview" class="sidebar-link">架構概覽</a></li>
-                <li><a href="#layers" class="sidebar-link">分層設計</a></li>
-                <li><a href="#memory-layout" class="sidebar-link">記憶體佈局</a></li>
-                <li><a href="#directory" class="sidebar-link">目錄結構</a></li>
-                <li><a href="#build-system" class="sidebar-link">建構系統</a></li>
+                <li><a href="#overview" class="sidebar-link">系統總覽</a></li>
+                <li><a href="#soc-variants" class="sidebar-link">晶片變體</a></li>
+                <li><a href="#memory-layout" class="sidebar-link">記憶體配置</a></li>
+                <li><a href="#build-pipeline" class="sidebar-link">建構流程</a></li>
+                <li><a href="#components" class="sidebar-link">元件架構</a></li>
                 <li><a href="#configuration" class="sidebar-link">配置系統</a></li>
-                <li><a href="#ble-controller" class="sidebar-link">BLE 控制器</a></li>
-                <li><a href="#components" class="sidebar-link">元件概覽</a></li>
+                <li><a href="#app-structure" class="sidebar-link">應用程式結構</a></li>
+                <li><a href="#directory" class="sidebar-link">目錄結構</a></li>
+                <li><a href="#ble-stack" class="sidebar-link">BLE 棧架構</a></li>
+                <li><a href="#bsp" class="sidebar-link">BSP 與驅動</a></li>
             </ul>
         </nav>
     </aside>
 
     <article class="doc-content">
         <h1>架構概覽</h1>
-        <p>IPRO SDK 採用清晰的分層架構設計，提供高度模組化與可移植性，讓開發者能夠快速建構穩定的嵌入式應用。</p>
+        <p>IPRO SDK 採用清晰的分層架構設計，提供高度模組化與可移植性，讓開發者能夠快速建構穩定的嵌入式應用。本頁詳細介紹 SDK 的系統架構、晶片規格、建構流程與元件組成。</p>
 
+        <!-- Section 1: System Overview -->
         <section id="overview">
-            <h2>系統架構圖</h2>
-            <p>SDK 的整體架構由五個主要層次組成：</p>
+            <h2>系統總覽</h2>
+            <p>SDK 的整體架構由五個主要層次組成，從上至下分別為應用層、元件層、RTOS 層、BSP 層與硬體層：</p>
 
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">IPRO SDK 架構</span>
+                    <span class="code-block-title">IPRO SDK 分層架構</span>
                 </div>
-                <pre><code>+------------------------------------------------------+
-|                 Application Layer                    |
-|              (e.g., apps/ipro7_demo)                 |
-+------------------------------------------------------+
-|          Middleware & Reusable Components            |
-|   (lwIP, Mbed TLS, CherryUSB, File Systems, etc.)    |
-+------------------------------------------------------+
-|       Real-Time OS (FreeRTOS or Zephyr RTOS)        |
-+------------------------------------------------------+
-|             Board Support Package (BSP)              |
-|   +----------------------------------------------+   |
-|   | Hardware Abstraction Layer (HAL) & Drivers   |   |
-|   +----------------------------------------------+   |
-+------------------------------------------------------+
-|               IPRO Hardware Platform                 |
-+------------------------------------------------------+</code></pre>
+                <pre style="line-height:1.4;"><code>┌─────────────────────────────────────────────────────────┐
+│                  Applications (apps/)                    │
+│   bluetooth/ │ matter/ │ ipro7_demo │ ipro_unit_test     │
+├─────────────────────────────────────────────────────────┤
+│                Components (components/)                   │
+│  BLE 5.4 │ Matter │ WiFi 6 │ Thread │ Zigbee │ 802.15.4 │
+│  lwIP    │ mbedTLS│ CherryUSB │ Audio │ AI/NPU│ Codec   │
+│  LittleFS│ FatFS  │ Shell     │ Agora │ Opus  │ LC3     │
+├─────────────────────────────────────────────────────────┤
+│             RTOS (FreeRTOS / Zephyr)                     │
+│         FreeRTOS POSIX │ OSAL │ Zephyr Kernel            │
+├─────────────────────────────────────────────────────────┤
+│              BSP (bsp/)                                   │
+│  HAL │ Drivers │ Board Config │ Linker Scripts │ Startup │
+├─────────────────────────────────────────────────────────┤
+│           Hardware (IPRO7 / IPRO6 / IPRO6LE)             │
+│     RISC-V RV32IMAFC │ Cortex-M0+ │ BLE Radio │ NPU    │
+└─────────────────────────────────────────────────────────┘</code></pre>
             </div>
+
+            <p>每一層都有明確的職責邊界：</p>
+            <ul>
+                <li><strong>應用層</strong>：自包含的專案，每個專案擁有獨立的 <code>.config</code> 和 <code>CMakeLists.txt</code></li>
+                <li><strong>元件層</strong>：可重用的中間件，透過 Kconfig 選項啟用或停用</li>
+                <li><strong>RTOS 層</strong>：提供任務排程、同步原語與計時器服務</li>
+                <li><strong>BSP 層</strong>：硬體抽象層與驅動程式，屏蔽不同晶片的差異</li>
+                <li><strong>硬體層</strong>：IPRO 系列 SoC 平台</li>
+            </ul>
         </section>
 
-        <section id="layers">
-            <h2>各層詳細說明</h2>
-
-            <h3>應用層（Application Layer）</h3>
-            <p>位於 <code>apps/</code> 目錄，包含所有的應用程式專案。每個應用都是獨立的專案，擁有自己的：</p>
-            <ul>
-                <li><code>CMakeLists.txt</code> - 建構配置</li>
-                <li><code>proj.conf</code> - Kconfig 配置覆蓋</li>
-                <li><code>main.c</code> - 應用程式入口</li>
-                <li><code>Kconfig.app</code> - 應用專屬選項</li>
-            </ul>
-
-            <h3>中間件層（Middleware Layer）</h3>
-            <p>位於 <code>components/</code> 目錄，提供可重複使用的軟體元件：</p>
+        <!-- Section 2: SoC Variants -->
+        <section id="soc-variants">
+            <h2>晶片變體</h2>
+            <p>IPRO SDK 支援多款晶片，涵蓋高效能物聯網到超低功耗場景：</p>
 
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
-                            <th>元件</th>
-                            <th>目錄</th>
-                            <th>功能</th>
+                            <th>晶片</th>
+                            <th>核心架構</th>
+                            <th>主頻</th>
+                            <th>Flash</th>
+                            <th>RAM</th>
+                            <th>特殊功能</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>lwIP</td>
-                            <td><code>components/network/</code></td>
-                            <td>輕量級 TCP/IP 協定棧</td>
+                            <td><strong>IPRO7</strong></td>
+                            <td>RISC-V RV32IMAFC</td>
+                            <td>192 MHz</td>
+                            <td>4 MB</td>
+                            <td>16 MB PSRAM + 256 KB OCRAM</td>
+                            <td>BLE 5.4, WiFi 6, 0.1 TOPS NPU, ISP</td>
                         </tr>
                         <tr>
-                            <td>Mbed TLS</td>
-                            <td><code>components/crypto/</code></td>
-                            <td>加密與安全通訊</td>
+                            <td><strong>IPRO6</strong></td>
+                            <td>RISC-V</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>前代 SoC，BLE + WiFi</td>
                         </tr>
                         <tr>
-                            <td>CherryUSB</td>
-                            <td><code>components/cherryusb/</code></td>
-                            <td>USB 裝置/主機協定棧</td>
-                        </tr>
-                        <tr>
-                            <td>Wireless</td>
-                            <td><code>components/wireless/</code></td>
-                            <td>BLE 5.4、Zigbee、Thread</td>
-                        </tr>
-                        <tr>
-                            <td>File Systems</td>
-                            <td><code>components/fs/</code></td>
-                            <td>FAT、LittleFS 等檔案系統</td>
+                            <td><strong>IPRO6LE</strong></td>
+                            <td>ARM Cortex-M0+</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>超低功耗，適用於簡單感測器</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <h3>RTOS 層</h3>
-            <p>SDK 支援兩種即時作業系統：</p>
-            <ul>
-                <li><strong>FreeRTOS</strong> - 位於 <code>components/os/freertos/</code>，經典穩定的 RTOS 選擇</li>
-                <li><strong>Zephyr RTOS</strong> - 現代化 RTOS，提供 Device Tree、West 建構系統等進階功能</li>
-            </ul>
+            <div class="alert alert-info">
+                <strong>💡 提示：</strong>IPRO7 為目前主力開發平台，SDK 中大部分範例與文件皆以 IPRO7 為主。透過 Kconfig 中的 <code>CONFIG_IPRO7=y</code> 或 <code>CONFIG_IPRO6=y</code> 選擇目標晶片。
+            </div>
+        </section>
 
-            <h3>BSP 層（Board Support Package）</h3>
-            <p>位於 <code>bsp/</code> 目錄，提供硬體抽象：</p>
+        <!-- Section 3: Memory Layout -->
+        <section id="memory-layout">
+            <h2>記憶體配置（IPRO7）</h2>
+            <p>IPRO7 的記憶體空間分為四個主要區域，各有不同的存取特性與用途：</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>區域</th>
+                            <th>大小</th>
+                            <th>起始位址</th>
+                            <th>存取特性</th>
+                            <th>用途</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Flash</strong></td>
+                            <td>4 MB</td>
+                            <td><code>0x00000000</code></td>
+                            <td>XIP 可執行</td>
+                            <td>程式碼與唯讀資料儲存</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PSRAM</strong></td>
+                            <td>16 MB</td>
+                            <td><code>0x20000000</code></td>
+                            <td>隨機存取</td>
+                            <td>主要 RAM（堆積、資料段、大型緩衝區）</td>
+                        </tr>
+                        <tr>
+                            <td><strong>OCRAM</strong></td>
+                            <td>256 KB</td>
+                            <td><code>0x60000000</code></td>
+                            <td>高速 SRAM</td>
+                            <td>堆疊、中斷處理、效能關鍵程式碼</td>
+                        </tr>
+                        <tr>
+                            <td><strong>HBNRAM</strong></td>
+                            <td>4 KB</td>
+                            <td><code>0x50000000</code></td>
+                            <td>休眠保持</td>
+                            <td>深度休眠期間保留的關鍵資料</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">記憶體映射示意圖</span>
+                </div>
+                <pre><code>0x00000000 ┌──────────────────┐
+           │   Flash (4 MB)   │  程式碼 + 唯讀資料 (XIP)
+0x003FFFFF └──────────────────┘
+              ...
+0x20000000 ┌──────────────────┐
+           │  PSRAM (16 MB)   │  主要 RAM（堆積、.data、.bss）
+0x20FFFFFF └──────────────────┘
+              ...
+0x50000000 ┌──────────────────┐
+           │  HBNRAM (4 KB)   │  休眠保持 RAM
+0x50000FFF └──────────────────┘
+              ...
+0x60000000 ┌──────────────────┐
+           │  OCRAM (256 KB)  │  高速 SRAM（堆疊、關鍵路徑）
+0x6003FFFF └──────────────────┘</code></pre>
+            </div>
+        </section>
+
+        <!-- Section 4: Build Pipeline -->
+        <section id="build-pipeline">
+            <h2>建構流程</h2>
+            <p>SDK 使用 <strong>Kconfig + CMake + Ninja</strong> 建構管線，從配置到最終二進位的流程如下：</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構管線</span>
+                </div>
+                <pre><code>.config (Kconfig)          CMakeLists.txt
+       │                         │
+       ▼                         ▼
+ ┌───────────┐          ┌──────────────┐
+ │ autoconf.h │◄────────│    CMake     │
+ │ (generated)│         │  Configure   │
+ └───────────┘          └──────┬───────┘
+                               │
+                               ▼
+                        ┌──────────────┐
+                        │    Ninja     │
+                        │   Compile    │
+                        └──────┬───────┘
+                               │
+                               ▼
+                   apps/&lt;project&gt;/build/build_out/
+                   &lt;project&gt;_IPRO7.bin</code></pre>
+            </div>
+
+            <h3>標準建構命令</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">FreeRTOS 建構（生產環境）</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 方式一：使用 Make 包裝（推薦）
+make -C apps/ipro7_demo
+
+# 方式二：使用建構腳本
+./build_freertos.sh ipro7_demo build
+
+# 清除建構
+make -C apps/ipro7_demo clean</code></pre>
+            </div>
+
+            <h3>工具鏈</h3>
+            <p>SDK 使用 RISC-V 交叉編譯器，位於 <code>/opt/toolchain/riscv_ipro7/bin/</code>：</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>項目</th>
+                            <th>值</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>編譯器前綴</td>
+                            <td><code>riscv64-unknown-elf-</code></td>
+                        </tr>
+                        <tr>
+                            <td>目標架構</td>
+                            <td><code>rv32imafc</code> / <code>ilp32f</code></td>
+                        </tr>
+                        <tr>
+                            <td>工具鏈偵測</td>
+                            <td><code>cmake/toolchain.cmake</code> 自動偵測 vendor GCC（含 <code>_xxldsp</code> 擴充）與標準 GCC</td>
+                        </tr>
+                        <tr>
+                            <td>建構輸出</td>
+                            <td><code>apps/&lt;project&gt;/build/build_out/&lt;project&gt;_IPRO7.bin</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Zephyr 建構（實驗性）</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Zephyr 建構命令</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 使用 SDK 提供的建構腳本
+./tools/zephyr/build.sh -a &lt;app&gt; -b ipro7_fpga -c</code></pre>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>⚠️ 注意：</strong>Zephyr 建構目前為實驗性質，生產環境請使用 FreeRTOS 建構。
+            </div>
+        </section>
+
+        <!-- Section 5: Component Architecture -->
+        <section id="components">
+            <h2>元件架構</h2>
+            <p><code>components/</code> 目錄包含所有可重用的中間件與函式庫，依功能分類如下：</p>
+
+            <h3>無線通訊</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>元件</th>
+                            <th>路徑</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Bluetooth LE 5.4</strong></td>
+                            <td><code>wireless/bluetooth/</code></td>
+                            <td>Zephyr BLE Host + RivieraWaves 控制器，含 70+ Profiles、LE Audio</td>
+                        </tr>
+                        <tr>
+                            <td><strong>WiFi 6</strong></td>
+                            <td><code>wireless/wifi6/</code></td>
+                            <td>WiFi 6 (802.11ax) 協定棧</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Thread</strong></td>
+                            <td><code>wireless/thread/</code></td>
+                            <td>Thread 網狀網路協定</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Zigbee</strong></td>
+                            <td><code>wireless/zigbee/</code></td>
+                            <td>Zigbee 協定棧</td>
+                        </tr>
+                        <tr>
+                            <td><strong>IEEE 802.15.4</strong></td>
+                            <td><code>wireless/ieee802154/</code></td>
+                            <td>802.15.4 MAC 層</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RF</strong></td>
+                            <td><code>wireless/rf/</code></td>
+                            <td>射頻底層驅動</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>網路與安全</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>元件</th>
+                            <th>路徑</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>lwIP</strong></td>
+                            <td><code>network/lwip/</code></td>
+                            <td>輕量級 TCP/IP 協定棧（IPv4/IPv6）</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mbed TLS</strong></td>
+                            <td><code>crypto/mbedtls/</code></td>
+                            <td>TLS/SSL 加密通訊</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cipher Suite</strong></td>
+                            <td><code>crypto/cipher_suite/</code></td>
+                            <td>密碼學工具套件</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>作業系統</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>元件</th>
+                            <th>路徑</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>FreeRTOS</strong></td>
+                            <td><code>os/freertos/</code></td>
+                            <td>即時作業系統（任務、佇列、信號量、定時器）</td>
+                        </tr>
+                        <tr>
+                            <td><strong>FreeRTOS POSIX</strong></td>
+                            <td><code>os/freertos_posix/</code></td>
+                            <td>POSIX 相容層</td>
+                        </tr>
+                        <tr>
+                            <td><strong>OSAL</strong></td>
+                            <td><code>os/ipro_osal/</code></td>
+                            <td>作業系統抽象層，統一 API 介面</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Zephyr</strong></td>
+                            <td><code>os/zephyr/</code></td>
+                            <td>Zephyr RTOS 核心（實驗性）</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>多媒體與 AI</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>元件</th>
+                            <th>路徑</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Audio</strong></td>
+                            <td><code>audio/</code></td>
+                            <td>音訊框架與編解碼</td>
+                        </tr>
+                        <tr>
+                            <td><strong>AI / NPU</strong></td>
+                            <td><code>ai/</code></td>
+                            <td>AI 推論引擎，支援 0.1 TOPS NPU 加速</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ISP</strong></td>
+                            <td><code>isp_algorithm/</code>, <code>isp_firmware/</code>, <code>isp_iq_param/</code></td>
+                            <td>影像訊號處理器（演算法、韌體、IQ 參數）</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sensor</strong></td>
+                            <td><code>sensor/</code></td>
+                            <td>攝影機感測器驅動（GC6133、SC101IOT 等）</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>USB 與儲存</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>元件</th>
+                            <th>路徑</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>CherryUSB</strong></td>
+                            <td><code>cherryusb/</code></td>
+                            <td>USB Device/Host 協定棧（CDC, MSC, HID, UAC, UVC）</td>
+                        </tr>
+                        <tr>
+                            <td><strong>LittleFS</strong></td>
+                            <td><code>fs/littlefs/</code></td>
+                            <td>針對 Flash 優化的檔案系統</td>
+                        </tr>
+                        <tr>
+                            <td><strong>FatFS</strong></td>
+                            <td><code>fs/fatfs/</code></td>
+                            <td>FAT 檔案系統（SD 卡）</td>
+                        </tr>
+                        <tr>
+                            <td><strong>EasyFlash</strong></td>
+                            <td><code>fs/easyflash4/</code></td>
+                            <td>輕量級 KV 儲存</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ROMFS</strong></td>
+                            <td><code>fs/romfs/</code></td>
+                            <td>唯讀檔案系統</td>
+                        </tr>
+                        <tr>
+                            <td><strong>EVFS</strong></td>
+                            <td><code>fs/evfs/</code></td>
+                            <td>虛擬檔案系統抽象層</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>第三方函式庫與工具</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>元件</th>
+                            <th>路徑</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Agora</strong></td>
+                            <td><code>3rdparty/agora/</code></td>
+                            <td>Agora 即時通訊 SDK</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Opus</strong></td>
+                            <td><code>3rdparty/opus/</code></td>
+                            <td>Opus 音訊編解碼器</td>
+                        </tr>
+                        <tr>
+                            <td><strong>LC3</strong></td>
+                            <td><code>3rdparty/liblc3/</code></td>
+                            <td>LC3 音訊編解碼器（LE Audio）</td>
+                        </tr>
+                        <tr>
+                            <td><strong>XZ</strong></td>
+                            <td><code>3rdparty/xz/</code></td>
+                            <td>XZ/LZMA 壓縮解壓</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Zmodem</strong></td>
+                            <td><code>3rdparty/zmodem/</code></td>
+                            <td>Zmodem 檔案傳輸協定</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Shell</strong></td>
+                            <td><code>sys/shell/</code></td>
+                            <td>CLI 命令列框架</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Event System</strong></td>
+                            <td><code>sys/ipro_event/</code></td>
+                            <td>事件系統框架</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Utils</strong></td>
+                            <td><code>utils/</code></td>
+                            <td>通用工具函式、日誌系統</td>
+                        </tr>
+                        <tr>
+                            <td><strong>SoftCRC</strong></td>
+                            <td><code>softcrc/</code></td>
+                            <td>軟體 CRC 計算</td>
+                        </tr>
+                        <tr>
+                            <td><strong>libc</strong></td>
+                            <td><code>libc/</code></td>
+                            <td>C 標準函式庫補充</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Matter</strong></td>
+                            <td><code>matter/</code></td>
+                            <td>Matter (CHIP) 智慧家庭協定</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section 6: Configuration System -->
+        <section id="configuration">
+            <h2>配置系統（Kconfig）</h2>
+            <p>SDK 使用 <strong>Linux kernel 風格的 Kconfig</strong> 系統管理專案配置。每個應用擁有自己的 <code>.config</code> 檔案，建構時自動生成 <code>generated/autoconf.h</code> 供 C 程式碼使用。</p>
+
+            <h3>配置層次</h3>
+            <ol>
+                <li><strong>根配置</strong>：<code>Kconfig</code> - 定義所有可用選項與預設值</li>
+                <li><strong>模組配置</strong>：<code>kconfigs/*.config</code> - 各功能模組的預設值</li>
+                <li><strong>應用配置</strong>：<code>apps/&lt;project&gt;/.config</code> - 應用專屬配置（最高優先級）</li>
+            </ol>
+
+            <h3>關鍵配置選項</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">.config 範例</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># SoC 選擇
+CONFIG_IPRO7=y
+CONFIG_CPU_ID="intelpro_ipro7"
+
+# RTOS 選擇
+CONFIG_FREERTOS_SUPPORT=y
+
+# 無線功能
+CONFIG_BLUETOOTH_LE_ENABLE=y
+
+# 元件啟用
+CONFIG_LWIP=y
+CONFIG_MBEDTLS=y
+
+# 測試自動執行
+CONFIG_TEST_AUTO_RUN=y</code></pre>
+            </div>
+
+            <h3>配置與程式碼的關係</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">generated/autoconf.h（自動生成）</span>
+                </div>
+                <pre><code class="language-c">/* 由 Kconfig 自動生成，請勿手動編輯 */
+#define CONFIG_IPRO7 1
+#define CONFIG_CPU_ID "intelpro_ipro7"
+#define CONFIG_FREERTOS_SUPPORT 1
+#define CONFIG_BLUETOOTH_LE_ENABLE 1
+#define CONFIG_LWIP 1</code></pre>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡 提示：</strong><code>CONFIG_CPU_ID</code> 必須在 <code>.config</code> 中正確設定，<code>cmake/toolchain.cmake</code> 才能偵測到正確的架構旗標。工具鏈偵測邏輯會自動區分 vendor GCC（含 <code>_xxldsp</code> DSP 擴充指令）與標準 GCC，並據此調整編譯旗標。
+            </div>
+        </section>
+
+        <!-- Section 7: Application Structure -->
+        <section id="app-structure">
+            <h2>應用程式結構</h2>
+            <p>每個應用程式都是 <code>apps/</code> 下的獨立目錄，包含建構與配置所需的所有檔案：</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">典型應用程式結構</span>
+                </div>
+                <pre><code>apps/&lt;project&gt;/
+├── .config              # Kconfig 配置（CONFIG_* 變數）
+├── CMakeLists.txt       # CMake 建構定義
+├── main.c               # 應用程式入口點
+├── src/                 # 原始碼目錄
+├── include/             # 標頭檔目錄
+└── build/               # 建構輸出（自動生成）
+    ├── generated/
+    │   └── autoconf.h   # 由 .config 生成的 C 標頭
+    └── build_out/
+        └── &lt;project&gt;_IPRO7.bin  # 最終二進位檔</code></pre>
+            </div>
+
+            <h3>應用分類</h3>
+            <p>應用程式依功能分類組織在子目錄中：</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>分類</th>
+                            <th>路徑</th>
+                            <th>範例應用</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Bluetooth</strong></td>
+                            <td><code>apps/bluetooth/</code></td>
+                            <td>ipro_ble_remote（GATT + OTA）、ipro_le_audio_headset（GAF/BAP）、ipro_walkie_talkie（BIS LE Audio）</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Matter</strong></td>
+                            <td><code>apps/matter/</code></td>
+                            <td>Matter 智慧家庭裝置</td>
+                        </tr>
+                        <tr>
+                            <td><strong>平台展示</strong></td>
+                            <td><code>apps/</code></td>
+                            <td>ipro7_demo、ipro6_demo、ipro6le_demo</td>
+                        </tr>
+                        <tr>
+                            <td><strong>測試</strong></td>
+                            <td><code>apps/</code></td>
+                            <td>ipro_unit_test</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡 提示：</strong>位於子目錄（如 <code>apps/bluetooth/</code>）中的應用需要在 <code>.config</code> 設定 <code>CONFIG_APP_CATEGORY</code>，以便建構系統正確定位專案路徑。
+            </div>
+        </section>
+
+        <!-- Section 8: Directory Structure -->
+        <section id="directory">
+            <h2>目錄結構</h2>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">SDK 目錄結構</span>
+                </div>
+                <pre><code>ipro_sdk/
+├── apps/                         # 應用程式專案
+│   ├── bluetooth/                # BLE 應用（10+ 範例）
+│   ├── matter/                   # Matter 智慧家庭應用
+│   ├── ipro7_demo/               # IPRO7 綜合平台展示
+│   ├── ipro_unit_test/           # 單元測試框架
+│   └── ...
+│
+├── bsp/                          # Board Support Package
+│   ├── board/                    # 板級配置（腳位定義、時脈）
+│   ├── drivers/                  # 週邊驅動程式
+│   ├── hal/                      # 硬體抽象層 API
+│   └── common/                   # 共用啟動程式碼與連結腳本
+│
+├── components/                   # 可重用元件
+│   ├── wireless/                 # 無線：BLE、WiFi 6、Thread、Zigbee
+│   ├── network/                  # 網路：lwIP
+│   ├── crypto/                   # 安全：Mbed TLS、密碼套件
+│   ├── os/                       # RTOS：FreeRTOS、Zephyr、OSAL
+│   ├── fs/                       # 檔案系統：LittleFS、FatFS、ROMFS
+│   ├── cherryusb/                # USB 協定棧
+│   ├── audio/                    # 音訊框架
+│   ├── ai/                       # AI/NPU 推論
+│   ├── sensor/                   # 攝影機感測器驅動
+│   ├── sys/                      # 系統服務（Shell、事件）
+│   ├── 3rdparty/                 # 第三方：Agora、Opus、LC3、XZ
+│   ├── matter/                   # Matter 協定
+│   └── ...                       # libc、softcrc、utils、ISP 等
+│
+├── tools/                        # 開發工具
+│   ├── ipro_iot_tool_lite/       # 燒錄工具
+│   ├── serial_monitor.py         # 串口監控
+│   ├── board_test.sh             # 自動化板級測試
+│   └── vscode_extension/         # VS Code 擴充
+│
+├── cmake/                        # CMake 設定（toolchain.cmake）
+├── kconfigs/                     # Kconfig 預設配置檔
+├── build_freertos.sh             # FreeRTOS 建構腳本
+├── Kconfig                       # 根 Kconfig
+└── west.yml                      # Zephyr west 配置</code></pre>
+            </div>
+        </section>
+
+        <!-- Section 9: BLE Stack -->
+        <section id="ble-stack">
+            <h2>BLE 棧架構</h2>
+            <p>BLE 5.4 棧位於 <code>components/wireless/bluetooth/</code>，採用 Zephyr 風格回調式 GAP/GATT API：</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">BLE 棧分層</span>
+                </div>
+                <pre><code>┌──────────────────────────────────────────────┐
+│          Application (GAP/GATT Callbacks)    │
+├──────────────────────────────────────────────┤
+│  btprofile/          │  blemesh/ (optional)  │
+│  70+ BLE Profiles    │  Bluetooth Mesh       │
+├──────────────────────────────────────────────┤
+│              blestack/ (Zephyr BLE Host)      │
+│  GAP │ GATT │ L2CAP │ SMP │ ISO │ LE Audio  │
+├──────────────────────────────────────────────┤
+│        btblecontroller/ (RivieraWaves)       │
+│     預建 linkN 變體函式庫（二進位發佈）        │
+├──────────────────────────────────────────────┤
+│               BLE Radio Hardware             │
+└──────────────────────────────────────────────┘</code></pre>
+            </div>
+
+            <h3>控制器變體（linkN 命名）</h3>
+            <p>控制器使用統一連線池設計，以 <code>linkN</code> 命名（取代舊的 <code>mXsY</code> 命名）：</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>變體</th>
+                            <th>BLE 版本</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>link1_periph</code>, <code>link1</code>, <code>link2</code>, <code>link4</code>, <code>link8</code></td>
+                            <td>BLE 5.0+</td>
+                            <td>基礎 BLE，不同連線數（1/2/4/8 連線）</td>
+                        </tr>
+                        <tr>
+                            <td><code>link1_leaudio</code>, <code>link2_leaudio</code></td>
+                            <td>BLE 5.2</td>
+                            <td>含 LE Audio 支援（ISO、CIS/BIS）</td>
+                        </tr>
+                        <tr>
+                            <td><code>link1_leaudio_53_54</code>, <code>link2_leaudio_53_54</code></td>
+                            <td>BLE 5.4</td>
+                            <td>完整 LE Audio + BLE 5.3/5.4 功能</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>預建函式庫</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構預建控制器函式庫</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 建構指定變體
+components/wireless/bluetooth/build_all_prebuilts.sh link2
+
+# 建構所有變體
+components/wireless/bluetooth/build_all_prebuilts.sh all
+
+# 輸出：btblecontroller_ipro7_&lt;variant&gt;/libbtblecontroller_ipro7_&lt;variant&gt;.a</code></pre>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>⚠️ 注意：</strong><code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> 不可用於正式發布版本。正式版必須使用預建函式庫。
+            </div>
+
+            <h3>LE Audio 應用框架</h3>
+            <p>LE Audio 應用採用三層框架設計：</p>
+            <ul>
+                <li><strong>Mediator（協調器）</strong>：統籌管理所有元件與狀態機</li>
+                <li><strong>Applets（可重用元件）</strong>：封裝 BLE Profile 功能（GAF, BAP, VCP, MCP, CAP）</li>
+                <li><strong>Intermediaries（協定橋接）</strong>：連接不同協定層的資料流</li>
+            </ul>
+        </section>
+
+        <!-- Section 10: BSP & Drivers -->
+        <section id="bsp">
+            <h2>BSP 與驅動</h2>
+            <p>Board Support Package 位於 <code>bsp/</code> 目錄，提供硬體抽象與週邊驅動：</p>
+
             <ul>
                 <li><code>bsp/hal/</code> - 硬體抽象層 API</li>
                 <li><code>bsp/drivers/</code> - 週邊驅動程式</li>
-                <li><code>bsp/board/</code> - 板級配置</li>
+                <li><code>bsp/board/</code> - 板級配置（腳位映射、時脈設定）</li>
+                <li><code>bsp/common/</code> - 啟動程式碼、連結腳本、共用程式碼</li>
             </ul>
 
-            <h4>支援的週邊驅動</h4>
+            <h3>支援的週邊驅動</h3>
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -165,287 +852,6 @@ title: 架構概覽
                     </tbody>
                 </table>
             </div>
-        </section>
-
-        <section id="memory-layout">
-            <h2>記憶體佈局（IPRO7）</h2>
-            <p>IPRO7 採用 RISC-V <code>rv32imafc</code> / <code>ilp32f</code> 架構，處理器運行頻率 192MHz。記憶體佈局如下：</p>
-
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>區域</th>
-                            <th>大小</th>
-                            <th>起始位址</th>
-                            <th>用途</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Flash</td>
-                            <td>4 MB</td>
-                            <td><code>0x00000000</code></td>
-                            <td>程式碼與唯讀資料儲存</td>
-                        </tr>
-                        <tr>
-                            <td>PSRAM</td>
-                            <td>16 MB</td>
-                            <td><code>0x20000000</code></td>
-                            <td>主要 RAM（堆積、資料段）</td>
-                        </tr>
-                        <tr>
-                            <td>OCRAM</td>
-                            <td>256 KB</td>
-                            <td><code>0x60000000</code></td>
-                            <td>高速 SRAM（堆疊、關鍵程式碼）</td>
-                        </tr>
-                        <tr>
-                            <td>HBNRAM</td>
-                            <td>4 KB</td>
-                            <td><code>0x50000000</code></td>
-                            <td>休眠保持 RAM</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="directory">
-            <h2>目錄結構</h2>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">SDK 目錄結構</span>
-                </div>
-                <pre><code>ipro_sdk/
-├── apps/                         # 應用程式專案
-│   ├── bluetooth/                # BLE 應用
-│   │   ├── ipro_ble_remote/      # BLE 遙控器（GATT + OTA）
-│   │   ├── ipro_throughput_test/ # BLE 效能測試（999 Kbps）
-│   │   ├── ipro_walkie_talkie/   # BIS LE Audio 對講機
-│   │   └── ipro_le_audio_headset/# GAF/BAP LE Audio 耳機
-│   ├── ipro7_demo/               # 綜合平台展示
-│   ├── ipro_unit_test/           # 單元測試
-│   └── ipro_zephyr_demo/         # Zephyr 展示
-│
-├── bsp/                          # Board Support Package
-│   ├── board/                    # 板級配置
-│   ├── drivers/                  # 週邊驅動
-│   ├── hal/                      # 硬體抽象層
-│   └── common/                   # 共用程式碼
-│
-├── components/                   # 可重用元件（23 個分類）
-│   ├── wireless/                 # 無線協定棧
-│   │   └── bluetooth/            # BLE 5.4 棧
-│   │       ├── blestack/         # Zephyr BLE Host（GAP/GATT/L2CAP/SMP）
-│   │       ├── btblecontroller/  # 預建控制器函式庫（linkN 變體）
-│   │       └── btprofile/        # 70+ BLE Profiles
-│   ├── os/                       # RTOS 元件（FreeRTOS）
-│   ├── network/                  # 網路協定棧（lwIP）
-│   ├── crypto/                   # 加密元件（Mbed TLS）
-│   ├── fs/                       # 檔案系統（LittleFS, FatFS）
-│   ├── cherryusb/                # USB 裝置/主機協定棧
-│   └── ...
-│
-├── tools/                        # 開發工具
-│   ├── ipro_iot_tool_lite/       # 燒錄工具
-│   ├── serial_monitor.py         # 串口監控（Python3）
-│   ├── board_test.sh             # 自動化板級測試
-│   ├── zephyr/                   # Zephyr 工具腳本
-│   ├── vscode_extension/         # VS Code 擴充
-│   └── cmake/                    # CI 用 CMake
-│
-├── cmake/                        # CMake 配置（toolchain.cmake 自動偵測）
-├── kconfigs/                     # Kconfig 配置檔
-│
-├── build_freertos.sh             # FreeRTOS 建構腳本
-├── CMakeLists.txt                # 根 CMake 配置
-├── Kconfig                       # 根 Kconfig 配置
-└── west.yml                      # Zephyr west 配置</code></pre>
-            </div>
-        </section>
-
-        <section id="build-system">
-            <h2>建構系統</h2>
-
-            <h3>CMake + Ninja</h3>
-            <p>SDK 使用 CMake 作為建構系統，搭配 Ninja 作為建構後端以獲得最佳效能。</p>
-
-            <h4>建構流程</h4>
-            <ol>
-                <li><strong>配置階段</strong>：CMake 讀取 <code>CMakeLists.txt</code> 與 Kconfig，生成建構規則</li>
-                <li><strong>建構階段</strong>：Ninja 執行編譯、連結，生成最終二進位檔</li>
-            </ol>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">建構命令參數說明</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash">cmake -S . -B build \
-    -G "Ninja" \                      # 使用 Ninja 建構
-    -DIPRO_SDK_BASE=$(pwd) \          # SDK 根目錄
-    -DCONFIG_BUILD_PORJECT=app_name \ # 目標應用名稱
-    -DCMAKE_PREFIX_PATH=$(pwd)/cmake \# CMake 模組路徑
-    -DCUSTOM_CONFIG_DIR=path/to/app \ # 應用配置目錄
-    -DCONFIG_APPS=1 \                 # 啟用應用建構
-    -DCROSS_COMPILE=path/to/toolchain # 交叉編譯器前綴</code></pre>
-            </div>
-
-            <h3>West 建構系統（Zephyr）</h3>
-            <p>Zephyr 專案使用 <code>west</code> 作為建構工具，提供更現代化的開發體驗。</p>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">West 建構命令</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># 初始化 west workspace
-west init -m https://github.com/your-org/ipro_sdk --mr main
-west update
-
-# 建構應用
-west build -b ipro7_fpga apps/ipro_zephyr_demo
-
-# 燒錄
-west flash</code></pre>
-            </div>
-        </section>
-
-        <section id="configuration">
-            <h2>配置系統（Kconfig）</h2>
-            <p>SDK 使用 Kconfig 系統管理專案配置，提供圖形化與文字介面配置選項。</p>
-
-            <h3>配置層次</h3>
-            <p>SDK 使用 Linux kernel 風格的 Kconfig 系統。每個應用擁有自己的 <code>.config</code> 檔案，包含 <code>CONFIG_*</code> 變數。建構時自動生成 <code>generated/autoconf.h</code>。</p>
-            <ol>
-                <li><strong>根配置</strong>：<code>Kconfig</code> - 定義所有可用選項</li>
-                <li><strong>預設配置</strong>：<code>kconfigs/*.config</code> - 各功能模組的預設值</li>
-                <li><strong>應用配置</strong>：<code>apps/*/.config</code> - 應用專屬配置</li>
-            </ol>
-
-            <h3>關鍵配置選項</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">.config 範例</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># SoC 選擇
-CONFIG_IPRO7=y
-CONFIG_CPU_ID="intelpro_ipro7"
-
-# RTOS 選擇
-CONFIG_FREERTOS_SUPPORT=y
-
-# 無線功能
-CONFIG_BLUETOOTH_LE_ENABLE=y
-
-# 元件啟用
-CONFIG_LWIP=y
-CONFIG_MBEDTLS=y
-
-# 測試自動執行
-CONFIG_TEST_AUTO_RUN=y</code></pre>
-            </div>
-
-            <div class="alert alert-info">
-                <strong>💡 提示：</strong><code>CONFIG_CPU_ID</code> 必須在 <code>.config</code> 中設定，工具鏈才能正確偵測架構旗標。<code>cmake/toolchain.cmake</code> 會自動偵測 vendor GCC（含 <code>_xxldsp</code> 擴充）與標準 GCC 並調整編譯旗標。
-            </div>
-        </section>
-
-        <section id="ble-controller">
-            <h2>BLE 控制器與預建函式庫</h2>
-
-            <h3>BLE 棧架構</h3>
-            <p>BLE 5.4 棧位於 <code>components/wireless/bluetooth/</code>，採用 Zephyr 風格回調式 GAP/GATT API：</p>
-            <ul>
-                <li><code>blestack/</code> - Zephyr BLE Host（GAP, GATT, L2CAP, SMP, ISO, LE Audio）- 可建構原始碼</li>
-                <li><code>btblecontroller/</code> - RivieraWaves 控制器（預建 linkN 變體函式庫）</li>
-                <li><code>btprofile/</code> - 70+ BLE Profiles</li>
-                <li><code>blemesh/</code> - Bluetooth Mesh 支援（選用）</li>
-            </ul>
-
-            <h3>控制器變體（linkN 命名）</h3>
-            <p>控制器使用統一連線池設計，以 <code>linkN</code> 命名（取代舊的 <code>mXsY</code> 命名）：</p>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>變體</th>
-                            <th>BLE 版本</th>
-                            <th>說明</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>link1_periph</code>, <code>link1</code>, <code>link2</code>, <code>link4</code>, <code>link8</code></td>
-                            <td>BLE 5.0+</td>
-                            <td>基礎 BLE，不同連線數</td>
-                        </tr>
-                        <tr>
-                            <td><code>link1_leaudio</code>, <code>link2_leaudio</code></td>
-                            <td>BLE 5.2</td>
-                            <td>含 LE Audio 支援</td>
-                        </tr>
-                        <tr>
-                            <td><code>link1_leaudio_53_54</code>, <code>link2_leaudio_53_54</code></td>
-                            <td>BLE 5.4</td>
-                            <td>含 LE Audio + BLE 5.3/5.4 功能</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <h3>預建函式庫系統</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">建構預建控制器函式庫</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># 建構指定變體
-components/wireless/bluetooth/build_all_prebuilts.sh link2
-
-# 建構所有變體
-components/wireless/bluetooth/build_all_prebuilts.sh all
-
-# 輸出位置：btblecontroller_ipro7_&lt;variant&gt;/libbtblecontroller_ipro7_&lt;variant&gt;.a</code></pre>
-            </div>
-
-            <div class="alert alert-warning">
-                <strong>⚠️ 注意：</strong><code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> 不可用於正式發布版本。正式版必須使用預建函式庫。
-            </div>
-        </section>
-
-        <section id="components">
-            <h2>主要元件概覽</h2>
-
-            <h3>BLE 棧（Zephyr-based, BLE 5.4）</h3>
-            <p>完整的 BLE 5.4 實作，應用使用 Zephyr 風格回調式 GAP/GATT API：</p>
-            <ul>
-                <li><strong>Host 層</strong>：GAP/GATT 管理、連線控制、安全管理（SMP）、L2CAP</li>
-                <li><strong>Profile 層</strong>：70+ 標準 BLE Profiles</li>
-                <li><strong>Audio 層</strong>：LE Audio（GAF, BAP, VCP, MCP, CAP）、LC3 編解碼</li>
-                <li><strong>App Framework</strong>：Mediator（協調器）- Applets（可重用元件）- Intermediaries（協定橋接）</li>
-            </ul>
-
-            <h3>RTOS 元件</h3>
-            <ul>
-                <li><strong>FreeRTOS</strong>：任務管理、佇列、信號量、軟體定時器</li>
-                <li><strong>Zephyr</strong>：完整 RTOS 功能 + Device Tree + West</li>
-            </ul>
-
-            <h3>網路元件</h3>
-            <ul>
-                <li><strong>lwIP</strong>：TCP/IP 協定棧，支援 IPv4/IPv6</li>
-                <li><strong>Mbed TLS</strong>：TLS/SSL、加密演算法</li>
-            </ul>
-
-            <h3>儲存元件</h3>
-            <ul>
-                <li><strong>LittleFS</strong>：針對 Flash 優化的檔案系統</li>
-                <li><strong>FatFS</strong>：FAT 檔案系統，用於 SD 卡</li>
-            </ul>
         </section>
     </article>
 </div>

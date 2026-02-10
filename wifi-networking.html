@@ -1,0 +1,775 @@
+---
+layout: default
+title: WiFi 與網路開發
+---
+
+<div class="doc-layout">
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <h4 class="sidebar-title">本頁目錄</h4>
+            <ul class="sidebar-links">
+                <li><a href="#overview" class="sidebar-link">WiFi 6 概覽</a></li>
+                <li><a href="#architecture" class="sidebar-link">網路架構</a></li>
+                <li><a href="#wifi-config" class="sidebar-link">WiFi 配置</a></li>
+                <li><a href="#station-mode" class="sidebar-link">Station 模式</a></li>
+                <li><a href="#ap-mode" class="sidebar-link">Access Point 模式</a></li>
+                <li><a href="#wifi-events" class="sidebar-link">WiFi 事件處理</a></li>
+                <li><a href="#lwip" class="sidebar-link">lwIP 整合</a></li>
+                <li><a href="#emac" class="sidebar-link">乙太網路 (EMAC)</a></li>
+                <li><a href="#mbedtls" class="sidebar-link">安全加密 (mbedTLS)</a></li>
+                <li><a href="#provisioning" class="sidebar-link">網路配置與佈建</a></li>
+                <li><a href="#wifi-api" class="sidebar-link">WiFi API 參考</a></li>
+                <li><a href="#reference-apps" class="sidebar-link">參考應用</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <article class="doc-content">
+        <h1>WiFi 與網路開發</h1>
+        <p>IPRO SDK 提供完整的 WiFi 6 (802.11ax) 無線連線能力，整合 lwIP TCP/IP 協定堆疊與 mbedTLS 加密程式庫，支援從簡單的 HTTP 用戶端到複雜的 IoT 閘道器等各種網路應用場景。</p>
+
+        <!-- Overview -->
+        <section id="overview">
+            <h2>WiFi 6 功能概覽</h2>
+            <p>IPRO7 SoC 內建 WiFi 6 (802.11ax) 無線模組，結合高效能 RISC-V 處理器，提供低功耗、高吞吐量的無線網路解決方案。</p>
+
+            <div class="features-grid" style="margin: 2rem 0;">
+                <div class="feature-card">
+                    <h3 class="feature-title">WiFi 6 (802.11ax)</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>2.4 GHz 頻段支援</li>
+                        <li>OFDMA 多使用者排程</li>
+                        <li>TWT (Target Wake Time) 省電機制</li>
+                        <li>WPA2 / WPA3-SAE 安全認證</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">TCP/IP 協定堆疊</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>lwIP 輕量化 TCP/IP 堆疊</li>
+                        <li>TCP / UDP Socket API</li>
+                        <li>DHCP 用戶端與伺服器</li>
+                        <li>DNS / mDNS / SNTP</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">安全與加密</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>mbedTLS (TLS 1.2 / 1.3)</li>
+                        <li>DTLS 支援 (UDP 安全通訊)</li>
+                        <li>X.509 憑證管理</li>
+                        <li>硬體加密加速</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">運作模式</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>Station (STA) 模式</li>
+                        <li>Access Point (AP) 模式</li>
+                        <li>STA + AP 共存模式</li>
+                        <li>Sniffer 封包擷取模式</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture -->
+        <section id="architecture">
+            <h2>網路架構</h2>
+            <p>IPRO SDK 的網路子系統採用分層架構，從底層硬體到應用層之間透過明確定義的介面進行通訊：</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">網路協定堆疊架構</span>
+                </div>
+<pre><code>┌─────────────────────────────────────────────────┐
+│         應用層 (HTTP, MQTT, CoAP, WebSocket)     │
+├─────────────────────────────────────────────────┤
+│         TLS / DTLS (mbedTLS)                     │
+│         components/crypto/mbedtls/               │
+├─────────────────────────────────────────────────┤
+│         TCP / UDP (lwIP Socket API)              │
+│    ┌─────┬──────┬───────┬────────┐              │
+│    │DHCP │ DNS  │ mDNS  │  SNTP  │              │
+│    └─────┴──────┴───────┴────────┘              │
+│         components/network/lwip/                 │
+├──────────────────────┬──────────────────────────┤
+│  WiFi 6 Driver       │  EMAC Driver             │
+│  (802.11ax)          │  (Ethernet)              │
+│  wifi6_lwip_adapter/ │  bsp/drivers/drv_emac    │
+├──────────────────────┴──────────────────────────┤
+│         Hardware (RF + MAC / Ethernet PHY)       │
+└─────────────────────────────────────────────────┘</code></pre>
+            </div>
+
+            <h3>核心元件路徑</h3>
+            <table>
+                <thead>
+                    <tr><th>元件</th><th>SDK 路徑</th><th>說明</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>WiFi 6 驅動</td><td><code>components/wireless/wifi6/</code></td><td>802.11ax MAC/PHY 驅動與管理層</td></tr>
+                    <tr><td>WiFi Manager</td><td><code>components/wireless/wifi6/ipro_fhost/</code></td><td>WiFi 連線管理 API (wifi_mgmr)</td></tr>
+                    <tr><td>WPA Supplicant</td><td><code>components/wireless/wifi6/ipro_wpa_supplicant/</code></td><td>WPA2/WPA3 認證協定實作</td></tr>
+                    <tr><td>lwIP 適配層</td><td><code>components/wireless/wifi6/wifi6_lwip_adapter/</code></td><td>WiFi 與 lwIP 之間的橋接層</td></tr>
+                    <tr><td>lwIP 堆疊</td><td><code>components/network/lwip/</code></td><td>輕量化 TCP/IP 協定堆疊</td></tr>
+                    <tr><td>lwIP 應用</td><td><code>components/network/lwip/lwip_apps/</code></td><td>Ping 等網路工具</td></tr>
+                    <tr><td>mbedTLS</td><td><code>components/crypto/mbedtls/</code></td><td>TLS/DTLS 加密通訊程式庫</td></tr>
+                    <tr><td>EMAC 驅動</td><td><code>bsp/drivers/ipro7_soc/std_drv/src/drv_emac.c</code></td><td>乙太網路 MAC 控制器驅動</td></tr>
+                    <tr><td>OS 適配層</td><td><code>components/wireless/wifi6/ipro_os_adapter/</code></td><td>RTOS 抽象層 (FreeRTOS)</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- WiFi Configuration -->
+        <section id="wifi-config">
+            <h2>WiFi 配置</h2>
+            <p>在應用程式的 <code>.config</code> 檔案中啟用 WiFi 相關功能：</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">.config - WiFi 與網路配置</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-bash"># 啟用 WiFi 6
+CONFIG_WIFI6=y
+
+# 啟用 lwIP TCP/IP 堆疊
+CONFIG_COMPONENTS_LWIP_ENABLE=y
+CONFIG_COMPONENTS_LWIP_APP_ENABLE=y
+
+# 啟用 DHCP 伺服器 (AP 模式需要)
+CONFIG_DHCPD=y
+
+# 啟用 mbedTLS 加密支援
+CONFIG_COMPONENTS_MBEDTLS_ENABLE=y
+
+# 啟用乙太網路 (選用)
+CONFIG_ETHERNET=y</code></pre>
+            </div>
+
+            <h3>WiFi iperf 測試 (選用)</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">.config - iperf 吞吐量測試</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-bash"># 啟用 WiFi iperf 測試工具
+CONFIG_WIFI_IPERF=y</code></pre>
+            </div>
+        </section>
+
+        <!-- Station Mode -->
+        <section id="station-mode">
+            <h2>Station (STA) 模式</h2>
+            <p>Station 模式用於將裝置連線至現有的 WiFi 存取點。以下為完整的 STA 模式連線流程：</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">STA 模式 - 連線至 WiFi AP</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-c">#include "wifi_mgmr_ext.h"
+#include "wifi_mgmr.h"
+
+/* WiFi 事件回呼函式 */
+static void wifi_event_handler(int event, int code)
+{
+    wifi_conf_t conf = { .country_code = "TW" };
+
+    switch (code) {
+        case CODE_WIFI_ON_INIT_DONE:
+            printf("[WiFi] 初始化完成\r\n");
+            wifi_mgmr_init(&amp;conf);
+            break;
+
+        case CODE_WIFI_ON_MGMR_DONE:
+            printf("[WiFi] 管理層就緒，開始連線\r\n");
+            /* 連線至指定的 AP */
+            wifi_sta_connect("MySSID",    /* SSID */
+                           "MyPassword",  /* 密碼 */
+                           NULL,          /* BSSID (NULL = 自動) */
+                           NULL,          /* AKM (NULL = 自動偵測) */
+                           1,             /* PMF 設定 */
+                           0, 0,          /* 頻率 (0 = 自動掃描) */
+                           1);            /* 使用 DHCP */
+            break;
+
+        case CODE_WIFI_ON_CONNECTED:
+            printf("[WiFi] 已連線至 AP\r\n");
+            break;
+
+        case CODE_WIFI_ON_GOT_IP:
+            printf("[WiFi] 已取得 IP 位址\r\n");
+            /* 此時可以開始網路通訊 */
+            break;
+
+        case CODE_WIFI_ON_DISCONNECT:
+            printf("[WiFi] 連線已斷開\r\n");
+            break;
+    }
+}</code></pre>
+            </div>
+
+            <h3>進階連線參數</h3>
+            <p>使用 <code>wifi_mgmr_sta_connect()</code> 可以更精確地控制連線行為：</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">使用進階連線參數</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-c">wifi_mgmr_sta_connect_params_t params = {0};
+
+/* 基本連線資訊 */
+strncpy(params.ssid, "MySSID", MGMR_SSID_LEN);
+params.ssid_len = strlen("MySSID");
+strncpy(params.key, "MyPassword", MGMR_KEY_LEN);
+params.key_len = strlen("MyPassword");
+
+/* 進階選項 */
+params.use_dhcp = 1;              /* 使用 DHCP */
+params.listen_interval = 3;       /* Beacon 監聽間隔 (1-100) */
+params.scan_mode = 1;             /* 快速掃描 (連線至第一個符合的 AP) */
+params.quick_connect = 0;         /* 一般連線模式 */
+params.timeout_ms = 15000;        /* 連線逾時 (毫秒) */
+params.pmf_cfg = 1;               /* PMF 啟用 */
+
+int ret = wifi_mgmr_sta_connect(&amp;params);
+if (ret &lt; 0) {
+    printf("WiFi 連線失敗: %d\r\n", ret);
+}</code></pre>
+            </div>
+
+            <h3>手動 IP 設定</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">靜態 IP 配置</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-c">/* 使用靜態 IP（不啟用 DHCP 時） */
+uint32_t ip   = ipaddr_addr("192.168.1.100");
+uint32_t mask = ipaddr_addr("255.255.255.0");
+uint32_t gw   = ipaddr_addr("192.168.1.1");
+uint32_t dns  = ipaddr_addr("8.8.8.8");
+
+wifi_mgmr_sta_ip_set(ip, mask, gw, dns);
+
+/* 查詢目前 IP 資訊 */
+uint32_t cur_ip, cur_mask, cur_gw, cur_dns;
+wifi_sta_ip4_addr_get(&amp;cur_ip, &amp;cur_mask, &amp;cur_gw, &amp;cur_dns);</code></pre>
+            </div>
+        </section>
+
+        <!-- AP Mode -->
+        <section id="ap-mode">
+            <h2>Access Point (AP) 模式</h2>
+            <p>AP 模式讓裝置作為 WiFi 存取點，允許其他裝置連線。常用於裝置佈建 (provisioning) 或本地網路通訊。</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">AP 模式啟動</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-c">#include "wifi_mgmr_ext.h"
+
+void start_soft_ap(void)
+{
+    wifi_mgmr_ap_params_t ap_config = {
+        .ssid      = "IPRO_AP",
+        .key       = "12345678",
+        .akm       = "WPA2",
+        .channel   = 6,
+        .use_dhcpd = true,        /* 啟用 DHCP 伺服器 */
+        .start     = 100,         /* DHCP 起始位址偏移 */
+        .limit     = 50,          /* DHCP 位址數量上限 */
+        .ap_ipaddr = ipaddr_addr("192.168.4.1"),
+        .ap_mask   = ipaddr_addr("255.255.255.0"),
+        .hidden_ssid = false,     /* 不隱藏 SSID */
+        .isolation   = false,     /* 允許 STA 之間互相通訊 */
+    };
+
+    int ret = wifi_mgmr_ap_start(&amp;ap_config);
+    if (ret == 0) {
+        printf("AP 模式已啟動: SSID=%s\r\n", ap_config.ssid);
+    }
+}
+
+/* 停止 AP */
+void stop_soft_ap(void)
+{
+    wifi_mgmr_ap_stop();
+}
+
+/* 查詢已連線的 STA 資訊 */
+void list_connected_stations(void)
+{
+    wifi_sta_basic_info_t info;
+    for (uint8_t i = 0; i &lt; 4; i++) {
+        if (wifi_mgmr_ap_sta_info_get(&amp;info, i) == 0 &amp;&amp; info.is_used) {
+            printf("STA[%d] MAC=%02X:%02X:%02X:%02X:%02X:%02X\r\n",
+                   i, info.sta_mac[0], info.sta_mac[1], info.sta_mac[2],
+                   info.sta_mac[3], info.sta_mac[4], info.sta_mac[5]);
+        }
+    }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- WiFi Events -->
+        <section id="wifi-events">
+            <h2>WiFi 事件處理</h2>
+            <p>WiFi 子系統透過非同步事件通知應用層狀態變更。應用程式需註冊事件處理函式以回應各種 WiFi 狀態變化。</p>
+
+            <table>
+                <thead>
+                    <tr><th>事件碼</th><th>定義</th><th>說明</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>CODE_WIFI_ON_INIT_DONE</code></td><td>1</td><td>WiFi 硬體初始化完成，應呼叫 <code>wifi_mgmr_init()</code></td></tr>
+                    <tr><td><code>CODE_WIFI_ON_MGMR_DONE</code></td><td>2</td><td>WiFi Manager 就緒，可以開始連線</td></tr>
+                    <tr><td><code>CODE_WIFI_ON_CONNECTED</code></td><td>4</td><td>已連線至 AP (L2 層連線建立)</td></tr>
+                    <tr><td><code>CODE_WIFI_ON_DISCONNECT</code></td><td>5</td><td>與 AP 斷開連線</td></tr>
+                    <tr><td><code>CODE_WIFI_ON_GOT_IP</code></td><td>7</td><td>已透過 DHCP 取得 IP 位址</td></tr>
+                    <tr><td><code>CODE_WIFI_ON_GOT_IP6</code></td><td>25</td><td>已取得 IPv6 位址</td></tr>
+                    <tr><td><code>CODE_WIFI_ON_SCAN_DONE</code></td><td>9</td><td>WiFi 掃描完成</td></tr>
+                    <tr><td><code>CODE_WIFI_ON_AP_STARTED</code></td><td>11</td><td>AP 模式已啟動</td></tr>
+                    <tr><td><code>CODE_WIFI_ON_AP_STOPPED</code></td><td>12</td><td>AP 模式已停止</td></tr>
+                    <tr><td><code>CODE_WIFI_ON_AP_STA_ADD</code></td><td>21</td><td>有 STA 連線至 AP</td></tr>
+                    <tr><td><code>CODE_WIFI_ON_AP_STA_DEL</code></td><td>22</td><td>STA 從 AP 斷線</td></tr>
+                </tbody>
+            </table>
+
+            <h3>WiFi 掃描</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">掃描周圍的 WiFi AP</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-c">/* 啟動掃描 */
+wifi_mgmr_scan_params_t scan = {0};
+scan.channels_cnt = 0;  /* 0 = 掃描所有頻道 */
+scan.passive = false;   /* 主動掃描 */
+wifi_mgmr_sta_scan(&amp;scan);
+
+/* 在 CODE_WIFI_ON_SCAN_DONE 事件中讀取結果 */
+static void on_scan_complete(void *env, void *arg, wifi_mgmr_scan_item_t *item)
+{
+    if (item-&gt;is_used) {
+        printf("SSID: %-32s  RSSI: %d  CH: %d  Auth: %s\r\n",
+               item-&gt;ssid, item-&gt;rssi, item-&gt;channel,
+               wifi_mgmr_auth_to_str(item-&gt;auth));
+    }
+}
+
+wifi_mgmr_scan_ap_all(NULL, NULL, on_scan_complete);</code></pre>
+            </div>
+        </section>
+
+        <!-- lwIP Integration -->
+        <section id="lwip">
+            <h2>lwIP 整合</h2>
+            <p>IPRO SDK 整合 lwIP (Lightweight IP) 作為 TCP/IP 協定堆疊，提供標準的 BSD Socket API，讓開發者可以使用熟悉的 socket 程式設計介面。</p>
+
+            <h3>Socket API 範例</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">TCP 用戶端連線</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-c">#include &lt;lwip/sockets.h&gt;
+#include &lt;lwip/netdb.h&gt;
+
+int tcp_client_example(const char *host, uint16_t port)
+{
+    struct sockaddr_in server_addr;
+    int sock;
+
+    /* 建立 TCP socket */
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock &lt; 0) {
+        printf("Socket 建立失敗\r\n");
+        return -1;
+    }
+
+    /* DNS 解析主機名稱 */
+    struct hostent *hp = gethostbyname(host);
+    if (!hp) {
+        printf("DNS 解析失敗: %s\r\n", host);
+        close(sock);
+        return -1;
+    }
+
+    /* 連線至伺服器 */
+    memset(&amp;server_addr, 0, sizeof(server_addr));
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(port);
+    memcpy(&amp;server_addr.sin_addr, hp-&gt;h_addr, hp-&gt;h_length);
+
+    if (connect(sock, (struct sockaddr *)&amp;server_addr,
+                sizeof(server_addr)) &lt; 0) {
+        printf("連線失敗\r\n");
+        close(sock);
+        return -1;
+    }
+
+    /* 傳送資料 */
+    const char *msg = "Hello from IPRO7!";
+    send(sock, msg, strlen(msg), 0);
+
+    /* 接收回應 */
+    char buf[256];
+    int len = recv(sock, buf, sizeof(buf) - 1, 0);
+    if (len &gt; 0) {
+        buf[len] = '\0';
+        printf("收到回應: %s\r\n", buf);
+    }
+
+    close(sock);
+    return 0;
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">UDP 傳送範例</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-c">#include &lt;lwip/sockets.h&gt;
+
+int udp_send_example(const char *dest_ip, uint16_t port)
+{
+    int sock = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sock &lt; 0) return -1;
+
+    struct sockaddr_in dest;
+    memset(&amp;dest, 0, sizeof(dest));
+    dest.sin_family = AF_INET;
+    dest.sin_port = htons(port);
+    inet_aton(dest_ip, &amp;dest.sin_addr);
+
+    const char *data = "UDP packet from IPRO7";
+    sendto(sock, data, strlen(data), 0,
+           (struct sockaddr *)&amp;dest, sizeof(dest));
+
+    close(sock);
+    return 0;
+}</code></pre>
+            </div>
+
+            <h3>lwIP 元件</h3>
+            <table>
+                <thead>
+                    <tr><th>元件</th><th>說明</th><th>預設狀態</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>DHCP Client</td><td>自動取得 IP 位址</td><td>STA 模式預設啟用</td></tr>
+                    <tr><td>DHCP Server</td><td>為 AP 模式下的 STA 分配 IP</td><td>需 <code>CONFIG_DHCPD=y</code></td></tr>
+                    <tr><td>DNS</td><td>域名解析 (<code>gethostbyname()</code>)</td><td>隨 lwIP 啟用</td></tr>
+                    <tr><td>mDNS</td><td>本地服務發現 (Bonjour)</td><td>選用</td></tr>
+                    <tr><td>SNTP</td><td>網路時間同步</td><td>選用</td></tr>
+                    <tr><td>Ping</td><td>ICMP 連通性測試</td><td>需 <code>CONFIG_COMPONENTS_LWIP_APP_ENABLE=y</code></td></tr>
+                    <tr><td>IPv6</td><td>IPv6 位址支援</td><td>選用</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- EMAC -->
+        <section id="emac">
+            <h2>乙太網路 (EMAC)</h2>
+            <p>IPRO7 內建 EMAC (Ethernet MAC) 控制器，支援有線乙太網路連線。與 WiFi 共用同一個 lwIP 堆疊，適用於閘道器、工業控制等需要有線網路的應用場景。</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">EMAC 初始化與 lwIP 註冊</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-c">#include &lt;hal_emac.h&gt;
+#include &lt;hal_ethernetif.h&gt;
+#include &lt;lwip/tcpip.h&gt;
+
+static struct netif emac_netif;
+
+static void emac_netif_setup(void *arg)
+{
+    struct netif *netif = (struct netif *)arg;
+    ip4_addr_t ipaddr, netmask, gw;
+
+    /* 使用 DHCP (位址設為 0) */
+    ip_addr_set_zero(&amp;ipaddr);
+    ip_addr_set_zero(&amp;netmask);
+    ip_addr_set_zero(&amp;gw);
+
+    /* 註冊網路介面 */
+    netif_add(netif, &amp;ipaddr, &amp;netmask, &amp;gw,
+              NULL, ethernetif_init, tcpip_input);
+    netif_set_default(netif);
+    ethernet_link_status_updated(netif);
+
+    /* 啟動 DHCP 用戶端 */
+    netifapi_dhcp_start(netif);
+}
+
+void emac_init(void)
+{
+    memset(&amp;emac_netif, 0, sizeof(emac_netif));
+    tcpip_init(emac_netif_setup, &amp;emac_netif);
+}</code></pre>
+            </div>
+
+            <p>啟用乙太網路需在 <code>.config</code> 中設定 <code>CONFIG_ETHERNET=y</code>，驅動位於 <code>bsp/drivers/ipro7_soc/std_drv/src/drv_emac.c</code>。</p>
+        </section>
+
+        <!-- mbedTLS -->
+        <section id="mbedtls">
+            <h2>安全加密 (mbedTLS)</h2>
+            <p>IPRO SDK 整合 mbedTLS 程式庫，提供 TLS/DTLS 安全通訊能力以及各種密碼學演算法。</p>
+
+            <h3>功能特性</h3>
+            <ul>
+                <li><strong>TLS 1.2 / 1.3</strong> - 安全的 TCP 連線加密</li>
+                <li><strong>DTLS</strong> - 基於 UDP 的安全通訊 (適用於 CoAP 等協定)</li>
+                <li><strong>X.509 憑證</strong> - 伺服器與用戶端憑證驗證</li>
+                <li><strong>對稱加密</strong> - AES-128/192/256, ChaCha20-Poly1305</li>
+                <li><strong>雜湊函式</strong> - SHA-256, SHA-384, SHA-512</li>
+                <li><strong>非對稱加密</strong> - RSA, ECDSA, ECDH (secp256r1, secp384r1)</li>
+                <li><strong>隨機數產生</strong> - CTR-DRBG (硬體熵源)</li>
+            </ul>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">TLS 用戶端連線範例</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-c">#include "mbedtls/net_sockets.h"
+#include "mbedtls/ssl.h"
+#include "mbedtls/entropy.h"
+#include "mbedtls/ctr_drbg.h"
+
+int tls_connect_example(const char *hostname, const char *port)
+{
+    mbedtls_net_context server_fd;
+    mbedtls_ssl_context ssl;
+    mbedtls_ssl_config conf;
+    mbedtls_entropy_context entropy;
+    mbedtls_ctr_drbg_context ctr_drbg;
+
+    /* 初始化 */
+    mbedtls_net_init(&amp;server_fd);
+    mbedtls_ssl_init(&amp;ssl);
+    mbedtls_ssl_config_init(&amp;conf);
+    mbedtls_entropy_init(&amp;entropy);
+    mbedtls_ctr_drbg_init(&amp;ctr_drbg);
+
+    /* 設定亂數產生器 */
+    mbedtls_ctr_drbg_seed(&amp;ctr_drbg, mbedtls_entropy_func,
+                          &amp;entropy, NULL, 0);
+
+    /* TCP 連線 */
+    mbedtls_net_connect(&amp;server_fd, hostname, port,
+                        MBEDTLS_NET_PROTO_TCP);
+
+    /* TLS 設定 */
+    mbedtls_ssl_config_defaults(&amp;conf, MBEDTLS_SSL_IS_CLIENT,
+                                MBEDTLS_SSL_TRANSPORT_STREAM,
+                                MBEDTLS_SSL_PRESET_DEFAULT);
+    mbedtls_ssl_conf_rng(&amp;conf, mbedtls_ctr_drbg_random, &amp;ctr_drbg);
+    mbedtls_ssl_setup(&amp;ssl, &amp;conf);
+    mbedtls_ssl_set_hostname(&amp;ssl, hostname);
+
+    /* 綁定 socket */
+    mbedtls_ssl_set_bio(&amp;ssl, &amp;server_fd,
+                        mbedtls_net_send, mbedtls_net_recv, NULL);
+
+    /* 執行 TLS 交握 */
+    int ret = mbedtls_ssl_handshake(&amp;ssl);
+    if (ret != 0) {
+        printf("TLS 交握失敗: -0x%04X\r\n", -ret);
+        goto cleanup;
+    }
+
+    /* 透過 TLS 傳送資料 */
+    const char *request = "GET / HTTP/1.1\r\nHost: example.com\r\n\r\n";
+    mbedtls_ssl_write(&amp;ssl, (const unsigned char *)request,
+                      strlen(request));
+
+cleanup:
+    mbedtls_ssl_close_notify(&amp;ssl);
+    mbedtls_net_free(&amp;server_fd);
+    mbedtls_ssl_free(&amp;ssl);
+    mbedtls_ssl_config_free(&amp;conf);
+    mbedtls_entropy_free(&amp;entropy);
+    mbedtls_ctr_drbg_free(&amp;ctr_drbg);
+    return ret;
+}</code></pre>
+            </div>
+
+            <h3>mbedTLS 配置檔案</h3>
+            <p>mbedTLS 的功能可透過配置標頭檔進行裁剪，SDK 提供範例配置：</p>
+            <ul>
+                <li><code>components/crypto/mbedtls/mbedtls_sample_config.h</code> - 通用範例配置</li>
+                <li><code>components/crypto/mbedtls/kvs_webrtc_mbedtls_config.h</code> - WebRTC 專用配置</li>
+                <li>應用程式可自訂 <code>mbedtls_config.h</code> 以啟用/停用特定演算法</li>
+            </ul>
+        </section>
+
+        <!-- Provisioning -->
+        <section id="provisioning">
+            <h2>網路配置與佈建</h2>
+            <p>IPRO SDK 支援多種將 WiFi 憑證傳送至裝置的佈建方式：</p>
+
+            <h3>SoftAP 佈建</h3>
+            <p>裝置以 AP 模式啟動，使用者透過手機或電腦連線至裝置的 AP，再透過 HTTP 或自訂協定傳送目標網路的 SSID 與密碼。</p>
+            <ol>
+                <li>裝置啟動 SoftAP（如 SSID: <code>IPRO_PROV_XXXX</code>）</li>
+                <li>使用者手機連線至此 AP</li>
+                <li>透過 HTTP 介面或自訂 TCP 協定輸入目標 WiFi 資訊</li>
+                <li>裝置收到資訊後切換為 STA 模式並連線至目標 AP</li>
+            </ol>
+
+            <h3>BLE 佈建</h3>
+            <p>利用 BLE 連線傳送 WiFi 憑證，這是 IoT 裝置最常見的佈建方式。WiFi 事件系統已內建佈建相關的事件碼：</p>
+            <ul>
+                <li><code>CODE_WIFI_ON_PROV_SSID</code> - 收到佈建 SSID</li>
+                <li><code>CODE_WIFI_ON_PROV_PASSWD</code> - 收到佈建密碼</li>
+                <li><code>CODE_WIFI_ON_PROV_CONNECT</code> - 佈建連線請求</li>
+                <li><code>CODE_WIFI_ON_PROV_DISCONNECT</code> - 佈建斷線</li>
+            </ul>
+
+            <h3>SmartConfig</h3>
+            <p>透過 WiFi Sniffer 模式從特殊編碼的封包中擷取 SSID 與密碼。裝置進入 Sniffer 模式監聽廣播封包，手機 App 將 WiFi 憑證編碼後透過 UDP 廣播發送。</p>
+        </section>
+
+        <!-- WiFi API Reference -->
+        <section id="wifi-api">
+            <h2>WiFi API 參考</h2>
+            <p>以下列出 WiFi Manager (<code>wifi_mgmr</code>) 提供的主要 API 函式，定義於 <code>components/wireless/wifi6/ipro_fhost/include/wifi_mgmr_ext.h</code>。</p>
+
+            <h3>連線管理</h3>
+            <table>
+                <thead>
+                    <tr><th>函式</th><th>說明</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>wifi_mgmr_init()</code></td><td>初始化 WiFi Manager</td></tr>
+                    <tr><td><code>wifi_sta_connect()</code></td><td>連線至 AP（簡易版）</td></tr>
+                    <tr><td><code>wifi_mgmr_sta_connect()</code></td><td>連線至 AP（進階參數版）</td></tr>
+                    <tr><td><code>wifi_mgmr_sta_quickconnect()</code></td><td>快速連線至 AP</td></tr>
+                    <tr><td><code>wifi_sta_disconnect()</code></td><td>斷開與 AP 的連線</td></tr>
+                    <tr><td><code>wifi_mgmr_sta_autoconnect_enable()</code></td><td>啟用自動重連</td></tr>
+                    <tr><td><code>wifi_mgmr_sta_autoconnect_disable()</code></td><td>停用自動重連</td></tr>
+                </tbody>
+            </table>
+
+            <h3>狀態查詢</h3>
+            <table>
+                <thead>
+                    <tr><th>函式</th><th>說明</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>wifi_mgmr_state_get()</code></td><td>取得 WiFi 整體狀態</td></tr>
+                    <tr><td><code>wifi_mgmr_sta_state_get()</code></td><td>取得 STA 狀態</td></tr>
+                    <tr><td><code>wifi_mgmr_ap_state_get()</code></td><td>取得 AP 狀態</td></tr>
+                    <tr><td><code>wifi_mgmr_sta_rssi_get()</code></td><td>取得目前 RSSI 值</td></tr>
+                    <tr><td><code>wifi_mgmr_sta_channel_get()</code></td><td>取得目前頻道</td></tr>
+                    <tr><td><code>wifi_mgmr_connection_info()</code></td><td>取得連線詳細資訊</td></tr>
+                    <tr><td><code>wifi_sta_ip4_addr_get()</code></td><td>取得 IPv4 位址資訊</td></tr>
+                    <tr><td><code>wifi_mgmr_sta_get_bssid()</code></td><td>取得已連線 AP 的 BSSID</td></tr>
+                </tbody>
+            </table>
+
+            <h3>AP 模式</h3>
+            <table>
+                <thead>
+                    <tr><th>函式</th><th>說明</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>wifi_mgmr_ap_start()</code></td><td>啟動 AP 模式</td></tr>
+                    <tr><td><code>wifi_mgmr_ap_stop()</code></td><td>停止 AP 模式</td></tr>
+                    <tr><td><code>wifi_mgmr_ap_sta_info_get()</code></td><td>取得已連線 STA 資訊</td></tr>
+                    <tr><td><code>wifi_mgmr_ap_sta_delete()</code></td><td>強制斷開指定 STA</td></tr>
+                    <tr><td><code>wifi_mgmr_conf_max_sta()</code></td><td>設定最大 STA 連線數</td></tr>
+                </tbody>
+            </table>
+
+            <h3>掃描</h3>
+            <table>
+                <thead>
+                    <tr><th>函式</th><th>說明</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>wifi_mgmr_sta_scan()</code></td><td>啟動 WiFi 掃描</td></tr>
+                    <tr><td><code>wifi_mgmr_sta_scanlist()</code></td><td>列印掃描結果</td></tr>
+                    <tr><td><code>wifi_mgmr_scan_ap_all()</code></td><td>取得所有掃描結果 (回呼方式)</td></tr>
+                    <tr><td><code>wifi_mgmr_scan_filter_hidden_ssid()</code></td><td>設定是否過濾隱藏 SSID</td></tr>
+                </tbody>
+            </table>
+
+            <h3>系統與電源</h3>
+            <table>
+                <thead>
+                    <tr><th>函式</th><th>說明</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>wifi_mgmr_sta_ps_enter()</code></td><td>進入省電模式</td></tr>
+                    <tr><td><code>wifi_mgmr_sta_ps_exit()</code></td><td>退出省電模式</td></tr>
+                    <tr><td><code>wifi_mgmr_wifi_pwr_off()</code></td><td>關閉 WiFi 電源</td></tr>
+                    <tr><td><code>wifi_mgmr_wifi_pwr_on()</code></td><td>開啟 WiFi 電源</td></tr>
+                    <tr><td><code>wifi_mgmr_set_country_code()</code></td><td>設定國家碼 (影響可用頻道)</td></tr>
+                    <tr><td><code>wifi_mgmr_mac_set()</code></td><td>設定 MAC 位址</td></tr>
+                    <tr><td><code>wifi_mgmr_tpc_pwr_set()</code></td><td>設定 TX 功率表</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Reference Apps -->
+        <section id="reference-apps">
+            <h2>參考應用</h2>
+
+            <h3>WiFi 參考應用</h3>
+            <table>
+                <thead>
+                    <tr><th>應用</th><th>路徑</th><th>說明</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>IPRO6 Demo</td><td><code>apps/ipro6_demo/</code></td><td>WiFi STA 連線範例，含事件處理</td></tr>
+                    <tr><td>IPRO6LE Demo</td><td><code>apps/ipro6le_demo/</code></td><td>WiFi + iperf 吞吐量測試</td></tr>
+                    <tr><td>IPRO7 Demo</td><td><code>apps/ipro7_demo/</code></td><td>EMAC 乙太網路 + lwIP 範例</td></tr>
+                </tbody>
+            </table>
+
+            <h3>建置指令</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建置 WiFi 範例應用</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-bash"># 建置 WiFi Demo (確保 .config 中 CONFIG_WIFI6=y)
+make -C apps/ipro6le_demo
+
+# 清除建置
+make -C apps/ipro6le_demo clean
+
+# 輸出韌體路徑
+# apps/ipro6le_demo/build/build_out/ipro6le_demo_IPRO6LE.bin</code></pre>
+            </div>
+
+            <h3>Shell 指令</h3>
+            <p>WiFi 範例應用通常註冊下列 Shell 指令，可透過序列埠執行：</p>
+            <table>
+                <thead>
+                    <tr><th>指令</th><th>說明</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>wifi_sta_connect &lt;ssid&gt; &lt;password&gt;</code></td><td>連線至指定 AP</td></tr>
+                    <tr><td><code>wifi_sta_disconnect</code></td><td>斷開 WiFi 連線</td></tr>
+                    <tr><td><code>wifi_scan</code></td><td>掃描周圍 AP</td></tr>
+                    <tr><td><code>wifi_ap_start &lt;ssid&gt; &lt;password&gt;</code></td><td>啟動 SoftAP</td></tr>
+                    <tr><td><code>ping &lt;ip&gt;</code></td><td>Ping 測試</td></tr>
+                    <tr><td><code>emac_lwip</code></td><td>啟動 EMAC + lwIP</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+    </article>
+</div>

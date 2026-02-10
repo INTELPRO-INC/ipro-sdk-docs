@@ -1,0 +1,776 @@
+---
+layout: default
+title: WiFi & Networking
+lang: en
+---
+
+<div class="doc-layout">
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <h4 class="sidebar-title">Table of Contents</h4>
+            <ul class="sidebar-links">
+                <li><a href="#overview" class="sidebar-link">WiFi 6 Overview</a></li>
+                <li><a href="#architecture" class="sidebar-link">Network Architecture</a></li>
+                <li><a href="#wifi-config" class="sidebar-link">WiFi Configuration</a></li>
+                <li><a href="#station-mode" class="sidebar-link">Station Mode</a></li>
+                <li><a href="#ap-mode" class="sidebar-link">Access Point Mode</a></li>
+                <li><a href="#wifi-events" class="sidebar-link">WiFi Event Handling</a></li>
+                <li><a href="#lwip" class="sidebar-link">lwIP Integration</a></li>
+                <li><a href="#emac" class="sidebar-link">Ethernet (EMAC)</a></li>
+                <li><a href="#mbedtls" class="sidebar-link">Security (mbedTLS)</a></li>
+                <li><a href="#provisioning" class="sidebar-link">Network Provisioning</a></li>
+                <li><a href="#wifi-api" class="sidebar-link">WiFi API Reference</a></li>
+                <li><a href="#reference-apps" class="sidebar-link">Reference Applications</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <article class="doc-content">
+        <h1>WiFi & Networking</h1>
+        <p>The IPRO SDK provides comprehensive WiFi 6 (802.11ax) wireless connectivity, integrated with the lwIP TCP/IP stack and mbedTLS cryptographic library. This enables a wide range of network applications from simple HTTP clients to complex IoT gateways.</p>
+
+        <!-- Overview -->
+        <section id="overview">
+            <h2>WiFi 6 Overview</h2>
+            <p>The IPRO7 SoC features an integrated WiFi 6 (802.11ax) radio module combined with a high-performance RISC-V processor, delivering a low-power, high-throughput wireless networking solution.</p>
+
+            <div class="features-grid" style="margin: 2rem 0;">
+                <div class="feature-card">
+                    <h3 class="feature-title">WiFi 6 (802.11ax)</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>2.4 GHz band support</li>
+                        <li>OFDMA multi-user scheduling</li>
+                        <li>TWT (Target Wake Time) power saving</li>
+                        <li>WPA2 / WPA3-SAE security</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">TCP/IP Stack</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>lwIP lightweight TCP/IP stack</li>
+                        <li>TCP / UDP Socket API</li>
+                        <li>DHCP client and server</li>
+                        <li>DNS / mDNS / SNTP</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">Security & Encryption</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>mbedTLS (TLS 1.2 / 1.3)</li>
+                        <li>DTLS support (secure UDP)</li>
+                        <li>X.509 certificate management</li>
+                        <li>Hardware crypto acceleration</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">Operating Modes</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>Station (STA) mode</li>
+                        <li>Access Point (AP) mode</li>
+                        <li>STA + AP concurrent mode</li>
+                        <li>Sniffer / monitor mode</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture -->
+        <section id="architecture">
+            <h2>Network Architecture</h2>
+            <p>The IPRO SDK networking subsystem uses a layered architecture with well-defined interfaces between the hardware and application layers:</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Network Protocol Stack Architecture</span>
+                </div>
+<pre><code>┌─────────────────────────────────────────────────┐
+│      Application (HTTP, MQTT, CoAP, WebSocket)   │
+├─────────────────────────────────────────────────┤
+│      TLS / DTLS (mbedTLS)                        │
+│      components/crypto/mbedtls/                  │
+├─────────────────────────────────────────────────┤
+│      TCP / UDP (lwIP Socket API)                 │
+│    ┌─────┬──────┬───────┬────────┐              │
+│    │DHCP │ DNS  │ mDNS  │  SNTP  │              │
+│    └─────┴──────┴───────┴────────┘              │
+│      components/network/lwip/                    │
+├──────────────────────┬──────────────────────────┤
+│  WiFi 6 Driver       │  EMAC Driver             │
+│  (802.11ax)          │  (Ethernet)              │
+│  wifi6_lwip_adapter/ │  bsp/drivers/drv_emac    │
+├──────────────────────┴──────────────────────────┤
+│      Hardware (RF + MAC / Ethernet PHY)          │
+└─────────────────────────────────────────────────┘</code></pre>
+            </div>
+
+            <h3>Core Component Paths</h3>
+            <table>
+                <thead>
+                    <tr><th>Component</th><th>SDK Path</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>WiFi 6 Driver</td><td><code>components/wireless/wifi6/</code></td><td>802.11ax MAC/PHY driver and management layer</td></tr>
+                    <tr><td>WiFi Manager</td><td><code>components/wireless/wifi6/ipro_fhost/</code></td><td>WiFi connection management API (wifi_mgmr)</td></tr>
+                    <tr><td>WPA Supplicant</td><td><code>components/wireless/wifi6/ipro_wpa_supplicant/</code></td><td>WPA2/WPA3 authentication protocol implementation</td></tr>
+                    <tr><td>lwIP Adapter</td><td><code>components/wireless/wifi6/wifi6_lwip_adapter/</code></td><td>Bridge layer between WiFi and lwIP</td></tr>
+                    <tr><td>lwIP Stack</td><td><code>components/network/lwip/</code></td><td>Lightweight TCP/IP protocol stack</td></tr>
+                    <tr><td>lwIP Apps</td><td><code>components/network/lwip/lwip_apps/</code></td><td>Network utilities (ping, etc.)</td></tr>
+                    <tr><td>mbedTLS</td><td><code>components/crypto/mbedtls/</code></td><td>TLS/DTLS cryptographic library</td></tr>
+                    <tr><td>EMAC Driver</td><td><code>bsp/drivers/ipro7_soc/std_drv/src/drv_emac.c</code></td><td>Ethernet MAC controller driver</td></tr>
+                    <tr><td>OS Adapter</td><td><code>components/wireless/wifi6/ipro_os_adapter/</code></td><td>RTOS abstraction layer (FreeRTOS)</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- WiFi Configuration -->
+        <section id="wifi-config">
+            <h2>WiFi Configuration</h2>
+            <p>Enable WiFi and networking features in your application's <code>.config</code> file:</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">.config - WiFi & Network Configuration</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-bash"># Enable WiFi 6
+CONFIG_WIFI6=y
+
+# Enable lwIP TCP/IP stack
+CONFIG_COMPONENTS_LWIP_ENABLE=y
+CONFIG_COMPONENTS_LWIP_APP_ENABLE=y
+
+# Enable DHCP server (required for AP mode)
+CONFIG_DHCPD=y
+
+# Enable mbedTLS encryption support
+CONFIG_COMPONENTS_MBEDTLS_ENABLE=y
+
+# Enable Ethernet (optional)
+CONFIG_ETHERNET=y</code></pre>
+            </div>
+
+            <h3>WiFi iperf Testing (Optional)</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">.config - iperf Throughput Testing</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-bash"># Enable WiFi iperf testing tool
+CONFIG_WIFI_IPERF=y</code></pre>
+            </div>
+        </section>
+
+        <!-- Station Mode -->
+        <section id="station-mode">
+            <h2>Station (STA) Mode</h2>
+            <p>Station mode connects your device to an existing WiFi access point. Below is the complete STA mode connection flow:</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">STA Mode - Connect to a WiFi AP</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-c">#include "wifi_mgmr_ext.h"
+#include "wifi_mgmr.h"
+
+/* WiFi event callback */
+static void wifi_event_handler(int event, int code)
+{
+    wifi_conf_t conf = { .country_code = "US" };
+
+    switch (code) {
+        case CODE_WIFI_ON_INIT_DONE:
+            printf("[WiFi] Init done\r\n");
+            wifi_mgmr_init(&amp;conf);
+            break;
+
+        case CODE_WIFI_ON_MGMR_DONE:
+            printf("[WiFi] Manager ready, connecting\r\n");
+            /* Connect to the specified AP */
+            wifi_sta_connect("MySSID",    /* SSID */
+                           "MyPassword",  /* Password */
+                           NULL,          /* BSSID (NULL = auto) */
+                           NULL,          /* AKM (NULL = auto-detect) */
+                           1,             /* PMF config */
+                           0, 0,          /* Frequency (0 = auto scan) */
+                           1);            /* Use DHCP */
+            break;
+
+        case CODE_WIFI_ON_CONNECTED:
+            printf("[WiFi] Connected to AP\r\n");
+            break;
+
+        case CODE_WIFI_ON_GOT_IP:
+            printf("[WiFi] Got IP address\r\n");
+            /* Network communication can begin now */
+            break;
+
+        case CODE_WIFI_ON_DISCONNECT:
+            printf("[WiFi] Disconnected\r\n");
+            break;
+    }
+}</code></pre>
+            </div>
+
+            <h3>Advanced Connection Parameters</h3>
+            <p>Use <code>wifi_mgmr_sta_connect()</code> for finer control over connection behavior:</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Advanced Connection Parameters</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-c">wifi_mgmr_sta_connect_params_t params = {0};
+
+/* Basic connection info */
+strncpy(params.ssid, "MySSID", MGMR_SSID_LEN);
+params.ssid_len = strlen("MySSID");
+strncpy(params.key, "MyPassword", MGMR_KEY_LEN);
+params.key_len = strlen("MyPassword");
+
+/* Advanced options */
+params.use_dhcp = 1;              /* Use DHCP */
+params.listen_interval = 3;       /* Beacon listen interval (1-100) */
+params.scan_mode = 1;             /* Quick scan (connect to first match) */
+params.quick_connect = 0;         /* Normal connection mode */
+params.timeout_ms = 15000;        /* Connection timeout (ms) */
+params.pmf_cfg = 1;               /* Enable PMF */
+
+int ret = wifi_mgmr_sta_connect(&amp;params);
+if (ret &lt; 0) {
+    printf("WiFi connect failed: %d\r\n", ret);
+}</code></pre>
+            </div>
+
+            <h3>Static IP Configuration</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Static IP Setup</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-c">/* Set static IP (when DHCP is not used) */
+uint32_t ip   = ipaddr_addr("192.168.1.100");
+uint32_t mask = ipaddr_addr("255.255.255.0");
+uint32_t gw   = ipaddr_addr("192.168.1.1");
+uint32_t dns  = ipaddr_addr("8.8.8.8");
+
+wifi_mgmr_sta_ip_set(ip, mask, gw, dns);
+
+/* Query current IP information */
+uint32_t cur_ip, cur_mask, cur_gw, cur_dns;
+wifi_sta_ip4_addr_get(&amp;cur_ip, &amp;cur_mask, &amp;cur_gw, &amp;cur_dns);</code></pre>
+            </div>
+        </section>
+
+        <!-- AP Mode -->
+        <section id="ap-mode">
+            <h2>Access Point (AP) Mode</h2>
+            <p>AP mode allows the device to act as a WiFi access point, letting other devices connect. This is commonly used for device provisioning or local network communication.</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Starting the Access Point</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-c">#include "wifi_mgmr_ext.h"
+
+void start_soft_ap(void)
+{
+    wifi_mgmr_ap_params_t ap_config = {
+        .ssid      = "IPRO_AP",
+        .key       = "12345678",
+        .akm       = "WPA2",
+        .channel   = 6,
+        .use_dhcpd = true,        /* Enable DHCP server */
+        .start     = 100,         /* DHCP pool start offset */
+        .limit     = 50,          /* DHCP pool size */
+        .ap_ipaddr = ipaddr_addr("192.168.4.1"),
+        .ap_mask   = ipaddr_addr("255.255.255.0"),
+        .hidden_ssid = false,     /* Broadcast SSID */
+        .isolation   = false,     /* Allow inter-STA communication */
+    };
+
+    int ret = wifi_mgmr_ap_start(&amp;ap_config);
+    if (ret == 0) {
+        printf("AP started: SSID=%s\r\n", ap_config.ssid);
+    }
+}
+
+/* Stop AP */
+void stop_soft_ap(void)
+{
+    wifi_mgmr_ap_stop();
+}
+
+/* List connected stations */
+void list_connected_stations(void)
+{
+    wifi_sta_basic_info_t info;
+    for (uint8_t i = 0; i &lt; 4; i++) {
+        if (wifi_mgmr_ap_sta_info_get(&amp;info, i) == 0 &amp;&amp; info.is_used) {
+            printf("STA[%d] MAC=%02X:%02X:%02X:%02X:%02X:%02X\r\n",
+                   i, info.sta_mac[0], info.sta_mac[1], info.sta_mac[2],
+                   info.sta_mac[3], info.sta_mac[4], info.sta_mac[5]);
+        }
+    }
+}</code></pre>
+            </div>
+        </section>
+
+        <!-- WiFi Events -->
+        <section id="wifi-events">
+            <h2>WiFi Event Handling</h2>
+            <p>The WiFi subsystem uses asynchronous events to notify the application of state changes. Applications must register an event handler to respond to WiFi state transitions.</p>
+
+            <table>
+                <thead>
+                    <tr><th>Event Code</th><th>Value</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>CODE_WIFI_ON_INIT_DONE</code></td><td>1</td><td>WiFi hardware initialized, call <code>wifi_mgmr_init()</code></td></tr>
+                    <tr><td><code>CODE_WIFI_ON_MGMR_DONE</code></td><td>2</td><td>WiFi Manager ready, can start connecting</td></tr>
+                    <tr><td><code>CODE_WIFI_ON_CONNECTED</code></td><td>4</td><td>Connected to AP (L2 link established)</td></tr>
+                    <tr><td><code>CODE_WIFI_ON_DISCONNECT</code></td><td>5</td><td>Disconnected from AP</td></tr>
+                    <tr><td><code>CODE_WIFI_ON_GOT_IP</code></td><td>7</td><td>IP address obtained via DHCP</td></tr>
+                    <tr><td><code>CODE_WIFI_ON_GOT_IP6</code></td><td>25</td><td>IPv6 address obtained</td></tr>
+                    <tr><td><code>CODE_WIFI_ON_SCAN_DONE</code></td><td>9</td><td>WiFi scan completed</td></tr>
+                    <tr><td><code>CODE_WIFI_ON_AP_STARTED</code></td><td>11</td><td>AP mode started</td></tr>
+                    <tr><td><code>CODE_WIFI_ON_AP_STOPPED</code></td><td>12</td><td>AP mode stopped</td></tr>
+                    <tr><td><code>CODE_WIFI_ON_AP_STA_ADD</code></td><td>21</td><td>A station connected to our AP</td></tr>
+                    <tr><td><code>CODE_WIFI_ON_AP_STA_DEL</code></td><td>22</td><td>A station disconnected from our AP</td></tr>
+                </tbody>
+            </table>
+
+            <h3>WiFi Scanning</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Scanning for Nearby APs</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-c">/* Start scanning */
+wifi_mgmr_scan_params_t scan = {0};
+scan.channels_cnt = 0;  /* 0 = scan all channels */
+scan.passive = false;   /* Active scan */
+wifi_mgmr_sta_scan(&amp;scan);
+
+/* Read results in CODE_WIFI_ON_SCAN_DONE event handler */
+static void on_scan_complete(void *env, void *arg, wifi_mgmr_scan_item_t *item)
+{
+    if (item-&gt;is_used) {
+        printf("SSID: %-32s  RSSI: %d  CH: %d  Auth: %s\r\n",
+               item-&gt;ssid, item-&gt;rssi, item-&gt;channel,
+               wifi_mgmr_auth_to_str(item-&gt;auth));
+    }
+}
+
+wifi_mgmr_scan_ap_all(NULL, NULL, on_scan_complete);</code></pre>
+            </div>
+        </section>
+
+        <!-- lwIP Integration -->
+        <section id="lwip">
+            <h2>lwIP Integration</h2>
+            <p>The IPRO SDK integrates lwIP (Lightweight IP) as its TCP/IP stack, providing a standard BSD Socket API that allows developers to use familiar socket programming interfaces.</p>
+
+            <h3>Socket API Example</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">TCP Client Connection</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-c">#include &lt;lwip/sockets.h&gt;
+#include &lt;lwip/netdb.h&gt;
+
+int tcp_client_example(const char *host, uint16_t port)
+{
+    struct sockaddr_in server_addr;
+    int sock;
+
+    /* Create TCP socket */
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (sock &lt; 0) {
+        printf("Socket creation failed\r\n");
+        return -1;
+    }
+
+    /* DNS resolve hostname */
+    struct hostent *hp = gethostbyname(host);
+    if (!hp) {
+        printf("DNS resolution failed: %s\r\n", host);
+        close(sock);
+        return -1;
+    }
+
+    /* Connect to server */
+    memset(&amp;server_addr, 0, sizeof(server_addr));
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(port);
+    memcpy(&amp;server_addr.sin_addr, hp-&gt;h_addr, hp-&gt;h_length);
+
+    if (connect(sock, (struct sockaddr *)&amp;server_addr,
+                sizeof(server_addr)) &lt; 0) {
+        printf("Connection failed\r\n");
+        close(sock);
+        return -1;
+    }
+
+    /* Send data */
+    const char *msg = "Hello from IPRO7!";
+    send(sock, msg, strlen(msg), 0);
+
+    /* Receive response */
+    char buf[256];
+    int len = recv(sock, buf, sizeof(buf) - 1, 0);
+    if (len &gt; 0) {
+        buf[len] = '\0';
+        printf("Received: %s\r\n", buf);
+    }
+
+    close(sock);
+    return 0;
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">UDP Send Example</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-c">#include &lt;lwip/sockets.h&gt;
+
+int udp_send_example(const char *dest_ip, uint16_t port)
+{
+    int sock = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sock &lt; 0) return -1;
+
+    struct sockaddr_in dest;
+    memset(&amp;dest, 0, sizeof(dest));
+    dest.sin_family = AF_INET;
+    dest.sin_port = htons(port);
+    inet_aton(dest_ip, &amp;dest.sin_addr);
+
+    const char *data = "UDP packet from IPRO7";
+    sendto(sock, data, strlen(data), 0,
+           (struct sockaddr *)&amp;dest, sizeof(dest));
+
+    close(sock);
+    return 0;
+}</code></pre>
+            </div>
+
+            <h3>lwIP Components</h3>
+            <table>
+                <thead>
+                    <tr><th>Component</th><th>Description</th><th>Default State</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>DHCP Client</td><td>Automatic IP address assignment</td><td>Enabled by default in STA mode</td></tr>
+                    <tr><td>DHCP Server</td><td>Assigns IPs to STAs in AP mode</td><td>Requires <code>CONFIG_DHCPD=y</code></td></tr>
+                    <tr><td>DNS</td><td>Domain name resolution (<code>gethostbyname()</code>)</td><td>Enabled with lwIP</td></tr>
+                    <tr><td>mDNS</td><td>Local service discovery (Bonjour)</td><td>Optional</td></tr>
+                    <tr><td>SNTP</td><td>Network time synchronization</td><td>Optional</td></tr>
+                    <tr><td>Ping</td><td>ICMP connectivity testing</td><td>Requires <code>CONFIG_COMPONENTS_LWIP_APP_ENABLE=y</code></td></tr>
+                    <tr><td>IPv6</td><td>IPv6 address support</td><td>Optional</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- EMAC -->
+        <section id="emac">
+            <h2>Ethernet (EMAC)</h2>
+            <p>The IPRO7 features a built-in EMAC (Ethernet MAC) controller for wired Ethernet connectivity. It shares the same lwIP stack with WiFi, making it suitable for gateways, industrial controllers, and other applications requiring wired networking.</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">EMAC Initialization with lwIP</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-c">#include &lt;hal_emac.h&gt;
+#include &lt;hal_ethernetif.h&gt;
+#include &lt;lwip/tcpip.h&gt;
+
+static struct netif emac_netif;
+
+static void emac_netif_setup(void *arg)
+{
+    struct netif *netif = (struct netif *)arg;
+    ip4_addr_t ipaddr, netmask, gw;
+
+    /* Use DHCP (set addresses to zero) */
+    ip_addr_set_zero(&amp;ipaddr);
+    ip_addr_set_zero(&amp;netmask);
+    ip_addr_set_zero(&amp;gw);
+
+    /* Register network interface */
+    netif_add(netif, &amp;ipaddr, &amp;netmask, &amp;gw,
+              NULL, ethernetif_init, tcpip_input);
+    netif_set_default(netif);
+    ethernet_link_status_updated(netif);
+
+    /* Start DHCP client */
+    netifapi_dhcp_start(netif);
+}
+
+void emac_init(void)
+{
+    memset(&amp;emac_netif, 0, sizeof(emac_netif));
+    tcpip_init(emac_netif_setup, &amp;emac_netif);
+}</code></pre>
+            </div>
+
+            <p>To enable Ethernet, set <code>CONFIG_ETHERNET=y</code> in your <code>.config</code>. The driver is located at <code>bsp/drivers/ipro7_soc/std_drv/src/drv_emac.c</code>.</p>
+        </section>
+
+        <!-- mbedTLS -->
+        <section id="mbedtls">
+            <h2>Security (mbedTLS)</h2>
+            <p>The IPRO SDK integrates the mbedTLS library, providing TLS/DTLS secure communication and various cryptographic algorithms.</p>
+
+            <h3>Features</h3>
+            <ul>
+                <li><strong>TLS 1.2 / 1.3</strong> - Secure TCP connection encryption</li>
+                <li><strong>DTLS</strong> - Secure UDP communication (for CoAP and similar protocols)</li>
+                <li><strong>X.509 Certificates</strong> - Server and client certificate verification</li>
+                <li><strong>Symmetric Encryption</strong> - AES-128/192/256, ChaCha20-Poly1305</li>
+                <li><strong>Hash Functions</strong> - SHA-256, SHA-384, SHA-512</li>
+                <li><strong>Asymmetric Encryption</strong> - RSA, ECDSA, ECDH (secp256r1, secp384r1)</li>
+                <li><strong>Random Number Generation</strong> - CTR-DRBG (hardware entropy source)</li>
+            </ul>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">TLS Client Connection Example</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-c">#include "mbedtls/net_sockets.h"
+#include "mbedtls/ssl.h"
+#include "mbedtls/entropy.h"
+#include "mbedtls/ctr_drbg.h"
+
+int tls_connect_example(const char *hostname, const char *port)
+{
+    mbedtls_net_context server_fd;
+    mbedtls_ssl_context ssl;
+    mbedtls_ssl_config conf;
+    mbedtls_entropy_context entropy;
+    mbedtls_ctr_drbg_context ctr_drbg;
+
+    /* Initialize */
+    mbedtls_net_init(&amp;server_fd);
+    mbedtls_ssl_init(&amp;ssl);
+    mbedtls_ssl_config_init(&amp;conf);
+    mbedtls_entropy_init(&amp;entropy);
+    mbedtls_ctr_drbg_init(&amp;ctr_drbg);
+
+    /* Seed the random number generator */
+    mbedtls_ctr_drbg_seed(&amp;ctr_drbg, mbedtls_entropy_func,
+                          &amp;entropy, NULL, 0);
+
+    /* TCP connection */
+    mbedtls_net_connect(&amp;server_fd, hostname, port,
+                        MBEDTLS_NET_PROTO_TCP);
+
+    /* TLS configuration */
+    mbedtls_ssl_config_defaults(&amp;conf, MBEDTLS_SSL_IS_CLIENT,
+                                MBEDTLS_SSL_TRANSPORT_STREAM,
+                                MBEDTLS_SSL_PRESET_DEFAULT);
+    mbedtls_ssl_conf_rng(&amp;conf, mbedtls_ctr_drbg_random, &amp;ctr_drbg);
+    mbedtls_ssl_setup(&amp;ssl, &amp;conf);
+    mbedtls_ssl_set_hostname(&amp;ssl, hostname);
+
+    /* Bind socket */
+    mbedtls_ssl_set_bio(&amp;ssl, &amp;server_fd,
+                        mbedtls_net_send, mbedtls_net_recv, NULL);
+
+    /* Perform TLS handshake */
+    int ret = mbedtls_ssl_handshake(&amp;ssl);
+    if (ret != 0) {
+        printf("TLS handshake failed: -0x%04X\r\n", -ret);
+        goto cleanup;
+    }
+
+    /* Send data over TLS */
+    const char *request = "GET / HTTP/1.1\r\nHost: example.com\r\n\r\n";
+    mbedtls_ssl_write(&amp;ssl, (const unsigned char *)request,
+                      strlen(request));
+
+cleanup:
+    mbedtls_ssl_close_notify(&amp;ssl);
+    mbedtls_net_free(&amp;server_fd);
+    mbedtls_ssl_free(&amp;ssl);
+    mbedtls_ssl_config_free(&amp;conf);
+    mbedtls_entropy_free(&amp;entropy);
+    mbedtls_ctr_drbg_free(&amp;ctr_drbg);
+    return ret;
+}</code></pre>
+            </div>
+
+            <h3>mbedTLS Configuration Files</h3>
+            <p>mbedTLS features can be customized through configuration header files. The SDK provides sample configurations:</p>
+            <ul>
+                <li><code>components/crypto/mbedtls/mbedtls_sample_config.h</code> - General-purpose sample configuration</li>
+                <li><code>components/crypto/mbedtls/kvs_webrtc_mbedtls_config.h</code> - WebRTC-specific configuration</li>
+                <li>Applications can provide a custom <code>mbedtls_config.h</code> to enable/disable specific algorithms</li>
+            </ul>
+        </section>
+
+        <!-- Provisioning -->
+        <section id="provisioning">
+            <h2>Network Provisioning</h2>
+            <p>The IPRO SDK supports multiple methods for delivering WiFi credentials to devices:</p>
+
+            <h3>SoftAP Provisioning</h3>
+            <p>The device starts in AP mode, allowing users to connect from a phone or computer and transmit the target network's SSID and password via HTTP or a custom protocol.</p>
+            <ol>
+                <li>Device starts a SoftAP (e.g., SSID: <code>IPRO_PROV_XXXX</code>)</li>
+                <li>User connects their phone to this AP</li>
+                <li>WiFi credentials are entered via an HTTP interface or custom TCP protocol</li>
+                <li>Device switches to STA mode and connects to the target AP</li>
+            </ol>
+
+            <h3>BLE Provisioning</h3>
+            <p>WiFi credentials are transmitted over a BLE connection. This is the most common provisioning method for IoT devices. The WiFi event system includes built-in provisioning event codes:</p>
+            <ul>
+                <li><code>CODE_WIFI_ON_PROV_SSID</code> - Provisioning SSID received</li>
+                <li><code>CODE_WIFI_ON_PROV_PASSWD</code> - Provisioning password received</li>
+                <li><code>CODE_WIFI_ON_PROV_CONNECT</code> - Provisioning connect request</li>
+                <li><code>CODE_WIFI_ON_PROV_DISCONNECT</code> - Provisioning disconnect</li>
+            </ul>
+
+            <h3>SmartConfig</h3>
+            <p>The SSID and password are extracted from specially encoded packets using WiFi sniffer mode. The device enters sniffer mode to listen for broadcast packets while a phone app encodes and broadcasts the WiFi credentials via UDP.</p>
+        </section>
+
+        <!-- WiFi API Reference -->
+        <section id="wifi-api">
+            <h2>WiFi API Reference</h2>
+            <p>The following lists the main WiFi Manager (<code>wifi_mgmr</code>) API functions, defined in <code>components/wireless/wifi6/ipro_fhost/include/wifi_mgmr_ext.h</code>.</p>
+
+            <h3>Connection Management</h3>
+            <table>
+                <thead>
+                    <tr><th>Function</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>wifi_mgmr_init()</code></td><td>Initialize WiFi Manager</td></tr>
+                    <tr><td><code>wifi_sta_connect()</code></td><td>Connect to AP (simple version)</td></tr>
+                    <tr><td><code>wifi_mgmr_sta_connect()</code></td><td>Connect to AP (advanced parameters)</td></tr>
+                    <tr><td><code>wifi_mgmr_sta_quickconnect()</code></td><td>Quick connect to AP</td></tr>
+                    <tr><td><code>wifi_sta_disconnect()</code></td><td>Disconnect from AP</td></tr>
+                    <tr><td><code>wifi_mgmr_sta_autoconnect_enable()</code></td><td>Enable auto-reconnect</td></tr>
+                    <tr><td><code>wifi_mgmr_sta_autoconnect_disable()</code></td><td>Disable auto-reconnect</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Status Queries</h3>
+            <table>
+                <thead>
+                    <tr><th>Function</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>wifi_mgmr_state_get()</code></td><td>Get overall WiFi state</td></tr>
+                    <tr><td><code>wifi_mgmr_sta_state_get()</code></td><td>Get STA state</td></tr>
+                    <tr><td><code>wifi_mgmr_ap_state_get()</code></td><td>Get AP state</td></tr>
+                    <tr><td><code>wifi_mgmr_sta_rssi_get()</code></td><td>Get current RSSI value</td></tr>
+                    <tr><td><code>wifi_mgmr_sta_channel_get()</code></td><td>Get current channel</td></tr>
+                    <tr><td><code>wifi_mgmr_connection_info()</code></td><td>Get detailed connection info</td></tr>
+                    <tr><td><code>wifi_sta_ip4_addr_get()</code></td><td>Get IPv4 address info</td></tr>
+                    <tr><td><code>wifi_mgmr_sta_get_bssid()</code></td><td>Get connected AP's BSSID</td></tr>
+                </tbody>
+            </table>
+
+            <h3>AP Mode</h3>
+            <table>
+                <thead>
+                    <tr><th>Function</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>wifi_mgmr_ap_start()</code></td><td>Start AP mode</td></tr>
+                    <tr><td><code>wifi_mgmr_ap_stop()</code></td><td>Stop AP mode</td></tr>
+                    <tr><td><code>wifi_mgmr_ap_sta_info_get()</code></td><td>Get connected STA info</td></tr>
+                    <tr><td><code>wifi_mgmr_ap_sta_delete()</code></td><td>Force-disconnect a STA</td></tr>
+                    <tr><td><code>wifi_mgmr_conf_max_sta()</code></td><td>Set maximum STA connections</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Scanning</h3>
+            <table>
+                <thead>
+                    <tr><th>Function</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>wifi_mgmr_sta_scan()</code></td><td>Start WiFi scan</td></tr>
+                    <tr><td><code>wifi_mgmr_sta_scanlist()</code></td><td>Print scan results</td></tr>
+                    <tr><td><code>wifi_mgmr_scan_ap_all()</code></td><td>Get all scan results (callback-based)</td></tr>
+                    <tr><td><code>wifi_mgmr_scan_filter_hidden_ssid()</code></td><td>Configure hidden SSID filtering</td></tr>
+                </tbody>
+            </table>
+
+            <h3>System & Power</h3>
+            <table>
+                <thead>
+                    <tr><th>Function</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>wifi_mgmr_sta_ps_enter()</code></td><td>Enter power save mode</td></tr>
+                    <tr><td><code>wifi_mgmr_sta_ps_exit()</code></td><td>Exit power save mode</td></tr>
+                    <tr><td><code>wifi_mgmr_wifi_pwr_off()</code></td><td>Power off WiFi</td></tr>
+                    <tr><td><code>wifi_mgmr_wifi_pwr_on()</code></td><td>Power on WiFi</td></tr>
+                    <tr><td><code>wifi_mgmr_set_country_code()</code></td><td>Set country code (affects available channels)</td></tr>
+                    <tr><td><code>wifi_mgmr_mac_set()</code></td><td>Set MAC address</td></tr>
+                    <tr><td><code>wifi_mgmr_tpc_pwr_set()</code></td><td>Set TX power table</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Reference Apps -->
+        <section id="reference-apps">
+            <h2>Reference Applications</h2>
+
+            <h3>WiFi Reference Applications</h3>
+            <table>
+                <thead>
+                    <tr><th>Application</th><th>Path</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>IPRO6 Demo</td><td><code>apps/ipro6_demo/</code></td><td>WiFi STA connection with event handling</td></tr>
+                    <tr><td>IPRO6LE Demo</td><td><code>apps/ipro6le_demo/</code></td><td>WiFi + iperf throughput testing</td></tr>
+                    <tr><td>IPRO7 Demo</td><td><code>apps/ipro7_demo/</code></td><td>EMAC Ethernet + lwIP example</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Build Commands</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Building WiFi Example Applications</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+<pre><code class="language-bash"># Build WiFi demo (ensure CONFIG_WIFI6=y in .config)
+make -C apps/ipro6le_demo
+
+# Clean build
+make -C apps/ipro6le_demo clean
+
+# Output firmware path
+# apps/ipro6le_demo/build/build_out/ipro6le_demo_IPRO6LE.bin</code></pre>
+            </div>
+
+            <h3>Shell Commands</h3>
+            <p>WiFi example applications typically register the following shell commands, accessible via serial port:</p>
+            <table>
+                <thead>
+                    <tr><th>Command</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>wifi_sta_connect &lt;ssid&gt; &lt;password&gt;</code></td><td>Connect to specified AP</td></tr>
+                    <tr><td><code>wifi_sta_disconnect</code></td><td>Disconnect from WiFi</td></tr>
+                    <tr><td><code>wifi_scan</code></td><td>Scan nearby APs</td></tr>
+                    <tr><td><code>wifi_ap_start &lt;ssid&gt; &lt;password&gt;</code></td><td>Start SoftAP</td></tr>
+                    <tr><td><code>ping &lt;ip&gt;</code></td><td>Ping test</td></tr>
+                    <tr><td><code>emac_lwip</code></td><td>Start EMAC + lwIP</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+    </article>
+</div>

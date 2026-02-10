@@ -1,0 +1,741 @@
+---
+layout: default
+title: 工具與除錯
+---
+
+<div class="doc-layout">
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <h4 class="sidebar-title">本頁目錄</h4>
+            <ul class="sidebar-links">
+                <li><a href="#overview" class="sidebar-link">概述</a></li>
+                <li><a href="#flash-tool" class="sidebar-link">燒錄工具</a></li>
+                <li><a href="#serial-monitor" class="sidebar-link">串口監控</a></li>
+                <li><a href="#automated-testing" class="sidebar-link">自動化測試</a></li>
+                <li><a href="#gdb-debugging" class="sidebar-link">GDB 除錯</a></li>
+                <li><a href="#crash-analysis" class="sidebar-link">當機分析</a></li>
+                <li><a href="#size-analysis" class="sidebar-link">建構分析</a></li>
+                <li><a href="#ci-cd" class="sidebar-link">CI/CD 流程</a></li>
+                <li><a href="#macos-notes" class="sidebar-link">macOS 注意事項</a></li>
+                <li><a href="#dev-workflow" class="sidebar-link">開發者工作流程</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <article class="doc-content">
+        <h1>工具與除錯</h1>
+        <p>IPRO SDK 提供了完整的開發工具鏈，涵蓋從建構、燒錄、監控到除錯的完整開發週期。</p>
+
+        <!-- ============================================================ -->
+        <section id="overview">
+            <h2>概述</h2>
+            <p>典型的嵌入式開發流程如下：</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">開發流程</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-text">編輯程式碼 → 建構 → 燒錄 → 監控 → 除錯 → 重複
+  Edit    → Build → Flash → Monitor → Debug → Repeat</code></pre>
+            </div>
+
+            <p>SDK 在 <code>tools/</code> 目錄下提供了以下工具：</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>工具</th>
+                        <th>路徑</th>
+                        <th>用途</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>燒錄工具</td>
+                        <td><code>tools/ipro_iot_tool_lite/</code></td>
+                        <td>將韌體燒錄到開發板 Flash</td>
+                    </tr>
+                    <tr>
+                        <td>串口監控</td>
+                        <td><code>tools/serial_monitor.py</code></td>
+                        <td>串口通訊與日誌擷取</td>
+                    </tr>
+                    <tr>
+                        <td>板級測試</td>
+                        <td><code>tools/board_test.sh</code></td>
+                        <td>自動化建構、燒錄與測試</td>
+                    </tr>
+                    <tr>
+                        <td>當機分析</td>
+                        <td><code>tools/parse_backtrace.py</code></td>
+                        <td>將當機位址轉為原始碼位置</td>
+                    </tr>
+                    <tr>
+                        <td>記憶體分析</td>
+                        <td><code>tools/size_analysis.sh</code></td>
+                        <td>分析韌體記憶體使用情況</td>
+                    </tr>
+                    <tr>
+                        <td>OpenOCD 配置</td>
+                        <td><code>tools/openocd/</code></td>
+                        <td>JTAG 除錯介面配置</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- ============================================================ -->
+        <section id="flash-tool">
+            <h2>燒錄工具</h2>
+            <p>IPRO SDK 使用 <code>ipro_iot_tool_lite</code> 將編譯好的韌體燒錄到開發板的 Flash 記憶體中。</p>
+
+            <h3>基本用法</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">燒錄韌體</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+    --chipname ipro7 \
+    --port /dev/cu.usbserial-2120 \
+    --firmware apps/bluetooth/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
+    --baudrate 921600 \
+    --flash-pin 0x02</code></pre>
+            </div>
+
+            <h3>參數說明</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>參數</th>
+                        <th>說明</th>
+                        <th>範例值</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>--chipname</code></td>
+                        <td>目標晶片型號</td>
+                        <td><code>ipro7</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>--port</code></td>
+                        <td>串口裝置路徑</td>
+                        <td><code>/dev/cu.usbserial-2120</code> (macOS)<br><code>/dev/ttyUSB0</code> (Linux)</td>
+                    </tr>
+                    <tr>
+                        <td><code>--firmware</code></td>
+                        <td>韌體二進位檔路徑</td>
+                        <td><code>apps/.../build/build_out/*.bin</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>--baudrate</code></td>
+                        <td>燒錄傳輸速率</td>
+                        <td><code>921600</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>--flash-pin</code></td>
+                        <td>Flash 控制腳位</td>
+                        <td><code>0x02</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>進入下載模式</h3>
+            <p>燒錄前需要讓開發板進入下載模式。可以透過串口發送 <code>reboot_dl</code> 指令：</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">進入下載模式</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 透過串口監控工具發送指令
+python3 tools/serial_monitor.py /dev/cu.usbserial-2120 --send reboot_dl --timeout 1</code></pre>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>&#9888;&#65039;</strong> macOS 上必須使用 <code>/dev/cu.*</code> 裝置路徑，不要使用 <code>/dev/tty.*</code>，否則會因為等待 DCD 訊號而無限阻塞。
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section id="serial-monitor">
+            <h2>串口監控</h2>
+            <p><code>serial_monitor.py</code> 是一個基於 Python3 termios 的串口監控工具，不需要安裝 pyserial 等額外依賴。</p>
+
+            <h3>基本監控</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">基本串口監控</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 預設 115200 baud
+python3 tools/serial_monitor.py /dev/cu.usbserial-2120</code></pre>
+            </div>
+
+            <h3>發送指令並等待回應</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">發送指令並等待特定輸出</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 發送 reboot 並等待測試結果
+python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
+    --send reboot \
+    --timeout 30 \
+    --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
+            </div>
+
+            <h3>參數說明</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>參數</th>
+                        <th>說明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>PORT</code></td>
+                        <td>串口裝置路徑（位置參數）</td>
+                    </tr>
+                    <tr>
+                        <td><code>--send CMD</code></td>
+                        <td>連線後發送的指令</td>
+                    </tr>
+                    <tr>
+                        <td><code>--timeout SEC</code></td>
+                        <td>逾時秒數</td>
+                    </tr>
+                    <tr>
+                        <td><code>--wait-for PATTERN</code></td>
+                        <td>等待匹配的正規表達式（支援 <code>|</code> 分隔多個模式）</td>
+                    </tr>
+                    <tr>
+                        <td><code>--log FILE</code></td>
+                        <td>將輸出儲存至檔案</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>板上 Shell 指令</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>指令</th>
+                        <th>說明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>reboot</code></td>
+                        <td>正常重啟開發板</td>
+                    </tr>
+                    <tr>
+                        <td><code>reboot_dl</code></td>
+                        <td>重啟並進入下載模式（用於燒錄）</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- ============================================================ -->
+        <section id="automated-testing">
+            <h2>自動化測試</h2>
+            <p><code>board_test.sh</code> 整合了建構、燒錄與測試的完整流程，適用於 CI/CD 與本地開發。</p>
+
+            <h3>完整測試流程</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">完整建構、燒錄與測試</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 完整流程：建構 → 燒錄 → 串口擷取 → 結果解析
+tools/board_test.sh --project apps/ipro_unit_test</code></pre>
+            </div>
+
+            <h3>選項說明</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>選項</th>
+                        <th>說明</th>
+                        <th>預設值</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>--project PATH</code></td>
+                        <td>專案目錄路徑</td>
+                        <td><code>apps/ipro_unit_test</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>--port PORT</code></td>
+                        <td>串口裝置路徑</td>
+                        <td><code>/dev/cu.usbserial-2120</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>--skip-build</code></td>
+                        <td>跳過建構步驟</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><code>--skip-flash</code></td>
+                        <td>跳過燒錄步驟</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><code>--timeout SEC</code></td>
+                        <td>串口監控逾時秒數</td>
+                        <td><code>30</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>--report DIR</code></td>
+                        <td>產生測試報告至指定目錄</td>
+                        <td>不產生報告</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>退出碼</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>退出碼</th>
+                        <th>意義</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>0</code></td>
+                        <td>所有測試通過（<code>ALL TESTS PASSED</code>）</td>
+                    </tr>
+                    <tr>
+                        <td><code>1</code></td>
+                        <td>部分測試失敗（<code>SOME TESTS FAILED</code>）</td>
+                    </tr>
+                    <tr>
+                        <td><code>2</code></td>
+                        <td>逾時 - 未偵測到測試結果</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>快速重測（不重新建構與燒錄）</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">快速重測</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 僅重啟開發板並擷取測試結果
+python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
+    --send reboot \
+    --timeout 30 \
+    --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>&#128161;</strong> 設定 <code>CONFIG_TEST_AUTO_RUN=y</code>（在 <code>.config</code> 中）可以讓測試在開機時自動執行，無需手動觸發。
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section id="gdb-debugging">
+            <h2>GDB 除錯</h2>
+            <p>IPRO SDK 支援透過 OpenOCD + GDB 進行 JTAG 除錯。</p>
+
+            <h3>啟動 OpenOCD</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">啟動 OpenOCD 伺服器</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 使用 SDK 提供的 OpenOCD 配置檔
+openocd -f tools/openocd/openocd_ipro6.cfg</code></pre>
+            </div>
+
+            <h3>連接 GDB</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">啟動 GDB 並連接</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 使用 SDK 工具鏈中的 GDB
+/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-gdb \
+    apps/ipro7_demo/build/build_out/ipro7_demo_IPRO7.elf
+
+# 在 GDB 中連接 OpenOCD
+(gdb) target remote :3333
+(gdb) monitor reset halt
+(gdb) load</code></pre>
+            </div>
+
+            <h3>常用 GDB 指令</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>指令</th>
+                        <th>說明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>b main</code></td>
+                        <td>在 main 函式設定中斷點</td>
+                    </tr>
+                    <tr>
+                        <td><code>b file.c:42</code></td>
+                        <td>在指定檔案行號設定中斷點</td>
+                    </tr>
+                    <tr>
+                        <td><code>c</code></td>
+                        <td>繼續執行</td>
+                    </tr>
+                    <tr>
+                        <td><code>s</code> / <code>n</code></td>
+                        <td>單步進入 / 單步跳過</td>
+                    </tr>
+                    <tr>
+                        <td><code>p variable</code></td>
+                        <td>列印變數值</td>
+                    </tr>
+                    <tr>
+                        <td><code>x/16xw 0x60000000</code></td>
+                        <td>檢視記憶體內容（16 個 word）</td>
+                    </tr>
+                    <tr>
+                        <td><code>bt</code></td>
+                        <td>顯示呼叫堆疊</td>
+                    </tr>
+                    <tr>
+                        <td><code>info reg</code></td>
+                        <td>顯示暫存器狀態</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- ============================================================ -->
+        <section id="crash-analysis">
+            <h2>當機分析</h2>
+            <p>當韌體發生異常（exception）時，異常處理程式會輸出暫存器狀態與堆疊回溯資訊。<code>parse_backtrace.py</code> 可以將這些位址轉換為對應的原始碼檔案與行號。</p>
+
+            <h3>使用方式</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">從檔案解析</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 從檔案讀取當機日誌
+python3 tools/parse_backtrace.py \
+    /opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf- \
+    apps/ipro7_demo/build/build_out/ipro7_demo_IPRO7.elf \
+    backtrace.txt</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">從管線輸入</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 從剪貼簿或管線輸入
+cat backtrace.txt | python3 tools/parse_backtrace.py \
+    /opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf- \
+    apps/ipro7_demo/build/build_out/ipro7_demo_IPRO7.elf</code></pre>
+            </div>
+
+            <h3>參數說明</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>參數</th>
+                        <th>說明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>toolchain_prefix</code></td>
+                        <td>工具鏈前綴路徑（含尾部 <code>-</code>）</td>
+                    </tr>
+                    <tr>
+                        <td><code>elf_file</code></td>
+                        <td>對應的 ELF 檔案（包含除錯符號）</td>
+                    </tr>
+                    <tr>
+                        <td><code>backtrace_file</code></td>
+                        <td>當機日誌檔案（選擇性，可從 stdin 讀取）</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="alert alert-info">
+                <strong>&#128161;</strong> 解析需要帶有除錯符號的 ELF 檔案（<code>.elf</code>），不是燒錄用的 <code>.bin</code> 檔。ELF 檔案位於 <code>build/build_out/</code> 目錄。
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section id="size-analysis">
+            <h2>建構分析</h2>
+            <p><code>size_analysis.sh</code> 可以分析韌體的記憶體使用情況，幫助您了解各模組佔用了多少 Flash 與 RAM。</p>
+
+            <h3>使用方式</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">記憶體分析</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 分析指定專案的記憶體使用
+./tools/size_analysis.sh ipro7_demo</code></pre>
+            </div>
+
+            <p>分析報告包含以下資訊：</p>
+            <ul>
+                <li><strong>text</strong> - 程式碼區段（存放於 Flash）</li>
+                <li><strong>data</strong> - 已初始化資料（佔用 Flash + RAM）</li>
+                <li><strong>bss</strong> - 未初始化資料（僅佔用 RAM）</li>
+                <li>各元件（component）與函式庫的記憶體佔用分佈</li>
+            </ul>
+
+            <p>分析結果會輸出至專案目錄下的 <code>SIZE_ANALYSIS.md</code>。</p>
+
+            <h3>IPRO7 記憶體配置</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>區域</th>
+                        <th>大小</th>
+                        <th>起始位址</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Flash</td>
+                        <td>4 MB</td>
+                        <td><code>0x00000000</code></td>
+                    </tr>
+                    <tr>
+                        <td>PSRAM</td>
+                        <td>16 MB</td>
+                        <td><code>0x20000000</code></td>
+                    </tr>
+                    <tr>
+                        <td>OCRAM</td>
+                        <td>256 KB</td>
+                        <td><code>0x60000000</code></td>
+                    </tr>
+                    <tr>
+                        <td>HBNRAM</td>
+                        <td>4 KB</td>
+                        <td><code>0x50000000</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- ============================================================ -->
+        <section id="ci-cd">
+            <h2>CI/CD 流程</h2>
+            <p>IPRO SDK 使用 GitLab CI 進行持續整合與持續部署，配置檔位於 <code>.gitlab-ci.yml</code>。</p>
+
+            <h3>Pipeline 階段</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">CI/CD 階段</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-text">prepare → build → test → security → notify → merge</code></pre>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>階段</th>
+                        <th>說明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>prepare</strong></td>
+                        <td>檢查建構環境（CMake、Ninja、Python3、Git）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>build</strong></td>
+                        <td>編譯所有目標應用程式（BLE、通用等）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>test</strong></td>
+                        <td>執行自動化測試</td>
+                    </tr>
+                    <tr>
+                        <td><strong>security</strong></td>
+                        <td>安全掃描</td>
+                    </tr>
+                    <tr>
+                        <td><strong>notify</strong></td>
+                        <td>發送建構結果通知（Teams webhook）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>merge</strong></td>
+                        <td>自動合併處理</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>CI 環境設定</h3>
+            <ul>
+                <li><strong>工具鏈路徑：</strong><code>/opt/toolchain/riscv_ipro7/</code></li>
+                <li><strong>CMake：</strong>使用 <code>tools/cmake/</code> 中綁定的 Linux x86-64 版本</li>
+                <li><strong>平行建構：</strong>預設 4 個並行任務（<code>CMAKE_BUILD_PARALLEL_LEVEL=4</code>）</li>
+                <li><strong>快取策略：</strong>依分支與工作名稱建立快取</li>
+            </ul>
+
+            <div class="alert alert-warning">
+                <strong>&#9888;&#65039;</strong> CI 綁定的 CMake（<code>tools/cmake/</code>）為 Linux x86-64 ELF 二進位檔，無法在 macOS 上使用。macOS 開發請安裝系統 CMake。
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section id="macos-notes">
+            <h2>macOS 開發注意事項</h2>
+            <p>在 macOS 上進行開發時，有一些平台特定的注意事項需要留意。</p>
+
+            <h3>串口裝置</h3>
+            <div class="alert alert-warning">
+                <strong>&#9888;&#65039;</strong> macOS 上<strong>務必使用 <code>/dev/cu.*</code></strong> 而非 <code>/dev/tty.*</code>。<code>tty.*</code> 裝置會等待 DCD（Data Carrier Detect）訊號，導致程式無限阻塞。
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>作業系統</th>
+                        <th>串口裝置路徑</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>macOS</td>
+                        <td><code>/dev/cu.usbserial-2120</code></td>
+                    </tr>
+                    <tr>
+                        <td>Linux</td>
+                        <td><code>/dev/ttyUSB0</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>常見問題與解決方案</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>問題</th>
+                        <th>原因</th>
+                        <th>解決方案</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>串口程式阻塞不動</td>
+                        <td>使用了 <code>/dev/tty.*</code></td>
+                        <td>改用 <code>/dev/cu.*</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>cat</code> 串口輸出不完整</td>
+                        <td>macOS 緩衝問題</td>
+                        <td>使用 <code>serial_monitor.py</code></td>
+                    </tr>
+                    <tr>
+                        <td>"Resource busy" 錯誤</td>
+                        <td><code>stty -f</code> 佔用串口</td>
+                        <td>關閉佔用程序，使用 Python 方案</td>
+                    </tr>
+                    <tr>
+                        <td>CI CMake 無法執行</td>
+                        <td>綁定版本為 Linux ELF</td>
+                        <td>使用 <code>brew install cmake</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>串口開啟建議旗標</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Python 串口開啟範例</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-python">import os
+
+# 正確的串口開啟方式（macOS）
+fd = os.open("/dev/cu.usbserial-2120", os.O_RDWR | os.O_NOCTTY | os.O_NONBLOCK)</code></pre>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <section id="dev-workflow">
+            <h2>開發者工作流程</h2>
+            <p>以下是日常開發中常用的指令與流程。</p>
+
+            <h3>完整建構與燒錄</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">標準開發流程</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 1. 建構專案
+make -C apps/ipro7_demo
+
+# 2. 燒錄到開發板
+python3 tools/serial_monitor.py /dev/cu.usbserial-2120 --send reboot_dl --timeout 1
+tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+    --chipname ipro7 \
+    --port /dev/cu.usbserial-2120 \
+    --firmware apps/ipro7_demo/build/build_out/ipro7_demo_IPRO7.bin \
+    --baudrate 921600 \
+    --flash-pin 0x02
+
+# 3. 監控輸出
+python3 tools/serial_monitor.py /dev/cu.usbserial-2120</code></pre>
+            </div>
+
+            <h3>快速重測（不重新建構）</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">僅重啟開發板</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 重啟並等待結果
+python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
+    --send reboot \
+    --timeout 30 \
+    --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
+            </div>
+
+            <h3>乾淨建構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">清除後重新建構</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 清除建構產物後重新建構
+make -C apps/ipro7_demo clean
+make -C apps/ipro7_demo</code></pre>
+            </div>
+
+            <h3>自動化測試流程</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">一鍵測試（建構 + 燒錄 + 驗證）</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 完整測試流程（含報告產生）
+tools/board_test.sh --project apps/ipro_unit_test --report test_results/
+
+# 跳過建構，僅燒錄與測試
+tools/board_test.sh --project apps/ipro_unit_test --skip-build
+
+# 跳過建構與燒錄，僅測試
+tools/board_test.sh --project apps/ipro_unit_test --skip-build --skip-flash</code></pre>
+            </div>
+        </section>
+
+    </article>
+</div>

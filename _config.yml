@@ -48,22 +48,24 @@ nav:
     url: /
   - title: 快速開始
     url: /getting-started
-  - title: 架構概覽
+  - title: 系統架構
     url: /architecture
   - title: BLE 開發
     url: /ble-development
-  - title: Zephyr RTOS
-    url: /zephyr-rtos
-  - title: 應用程式
-    url: /applications
-  - title: API 參考
-    url: /api-reference
-  - title: 教學系列
-    url: /tutorials
+  - title: Matter & Thread
+    url: /matter-thread
+  - title: WiFi 與網路
+    url: /wifi-networking
+  - title: AI & NPU
+    url: /ai-npu
+  - title: 音訊與多媒體
+    url: /audio-multimedia
+  - title: 工具與除錯
+    url: /tools-debugging
   - title: FAQ
     url: /faq
-  - title: 硬體參考
-    url: /hardware
+  - title: 更新日誌
+    url: /changelog
 
 # Navigation (English)
 nav_en:
@@ -75,12 +77,20 @@ nav_en:
     url: /en/architecture
   - title: BLE Development
     url: /en/ble-development
-  - title: Tutorials
-    url: /en/tutorials
+  - title: Matter & Thread
+    url: /en/matter-thread
+  - title: WiFi & Networking
+    url: /en/wifi-networking
+  - title: AI & NPU
+    url: /en/ai-npu
+  - title: Audio & Multimedia
+    url: /en/audio-multimedia
+  - title: Tools & Debugging
+    url: /en/tools-debugging
   - title: FAQ
     url: /en/faq
-  - title: Hardware
-    url: /en/hardware
+  - title: Changelog
+    url: /en/changelog
 
 # Languages
 languages:
@@ -103,4 +113,3 @@ exclude:
   - Gemfile.lock
   - node_modules
   - vendor
-

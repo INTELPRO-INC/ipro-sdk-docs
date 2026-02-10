@@ -1,0 +1,539 @@
+---
+layout: default
+title: AI 與 NPU
+---
+
+<div class="doc-layout">
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <h4 class="sidebar-title">本頁目錄</h4>
+            <ul class="sidebar-links">
+                <li><a href="#overview" class="sidebar-link">概述</a></li>
+                <li><a href="#architecture" class="sidebar-link">NPU 架構</a></li>
+                <li><a href="#model-pipeline" class="sidebar-link">模型部署流程</a></li>
+                <li><a href="#iproai-framework" class="sidebar-link">IPROAI 框架</a></li>
+                <li><a href="#supported-models" class="sidebar-link">支援模型</a></li>
+                <li><a href="#reference-apps" class="sidebar-link">參考應用</a></li>
+                <li><a href="#dev-guide" class="sidebar-link">開發指南</a></li>
+                <li><a href="#performance" class="sidebar-link">效能與優化</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <article class="doc-content">
+        <h1>AI 與 NPU</h1>
+        <p>IPRO7AI 內建 0.1 TOPS 神經網路處理器 (NPU)，專為邊緣 AI 推理設計。搭配 IPROAI 推理框架與 YOLOv8 後處理引擎，可在低功耗環境下實現物件偵測、影像分類與關鍵字辨識等應用。</p>
+
+        <section id="overview">
+            <h2>功能概覽</h2>
+            <p>IPRO SDK 提供完整的 AI 開發工具鏈，從模型載入到推理輸出一站式完成：</p>
+
+            <div class="features-grid" style="margin: 2rem 0;">
+                <div class="feature-card">
+                    <div class="feature-icon">NPU</div>
+                    <h3 class="feature-title">硬體加速</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>0.1 TOPS 峰值算力</li>
+                        <li>INT8 量化推理</li>
+                        <li>CPU + NPU 混合排程</li>
+                        <li>DMA 直接記憶體存取</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">AI</div>
+                    <h3 class="feature-title">IPROAI 框架</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>自研推理引擎（非 TinyMaix）</li>
+                        <li>.blai 模型格式</li>
+                        <li>YOLOv8 後處理內建</li>
+                        <li>支援 SD 卡 / Flash 載入</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">APP</div>
+                    <h3 class="feature-title">應用場景</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>人形偵測 (Person Detection)</li>
+                        <li>人形 + 寵物偵測</li>
+                        <li>人臉偵測 (Face Detection)</li>
+                        <li>PIR + AI 智慧攝影機</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="architecture">
+            <h2>NPU 架構</h2>
+            <p>IPRO7 的 NPU 與 RISC-V CPU 協同工作，支援 CPU 與 NPU 混合執行模式。每一層 (layer) 可依據其算子類型自動分配至最佳執行裝置：</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">AI 系統架構</span>
+                </div>
+                <pre><code>┌──────────────────────────────────────────────────┐
+│              Application Layer                    │
+│   ipro7_pircam  │  ipro7_demo  │  Custom App     │
+├──────────────────────────────────────────────────┤
+│          IPROAI Framework (components/ai/)        │
+│   iproai_core  │  iproai_inst  │  postprocess    │
+│   Model Load   │  Layer Sched  │  YOLOv8 / NMS   │
+├──────────────────────────────────────────────────┤
+│         Execution Backend                         │
+│   ┌─────────────────┐  ┌──────────────────────┐  │
+│   │   CPU Backend    │  │    NPU Backend       │  │
+│   │   Softmax, YOLO  │  │    Conv, Pool, FC    │  │
+│   │   Route, Reshape │  │    DW-Conv, MatMul   │  │
+│   │   NMSIS DSP Ops  │  │    Activation (HW)   │  │
+│   └─────────────────┘  └──────────────────────┘  │
+├──────────────────────────────────────────────────┤
+│         Memory / DMA Interface                    │
+│   PSRAM (16 MB)  │  OCRAM (256 KB)  │  Flash     │
+└──────────────────────────────────────────────────┘</code></pre>
+            </div>
+
+            <h3>支援的算子</h3>
+            <p>NPU 硬體加速支援以下算子，其餘算子由 CPU 端 fallback 執行：</p>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color);">
+                        <th style="padding: 0.75rem; text-align: left;">執行端</th>
+                        <th style="padding: 0.75rem; text-align: left;">支援算子</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>NPU</strong></td>
+                        <td style="padding: 0.75rem;">Convolution, Depthwise Conv, MaxPool, AvgPool, Fully Connected, MatMul, Activation (ReLU/ReLU6/Leaky)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>CPU</strong></td>
+                        <td style="padding: 0.75rem;">Softmax, YOLO, Route, Shortcut, Upsample, Reshape, Transpose, Pad, ArgMax, Resize Bilinear, SSD, Gather, Mean, Dequantize</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>Activation</strong></td>
+                        <td style="padding: 0.75rem;">Leaky, ReLU, Linear, ReLU6, Mish, ELU, Logistic, Swish, GELU, Tanh, PReLU</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>量化格式</h3>
+            <p>IPROAI 使用 INT8 定點 (<code>fixed_point_t = int8_t</code>) 進行推理。支援 TFLite 風格的 per-channel 量化參數（multiplier + shift），可直接從 TensorFlow Lite 量化模型轉換。</p>
+        </section>
+
+        <section id="model-pipeline">
+            <h2>模型部署流程</h2>
+            <p>從訓練到裝置端部署的完整工作流程：</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">模型部署流程</span>
+                </div>
+                <pre><code>  ┌─────────────┐     ┌──────────────┐     ┌─────────────┐     ┌───────────────┐
+  │  Training    │────&gt;│ Quantization │────&gt;│  Conversion │────&gt;│  Deployment   │
+  │  (PyTorch /  │     │  (INT8)      │     │  (.blai)    │     │  (SD / Flash) │
+  │  TensorFlow) │     │              │     │             │     │               │
+  └─────────────┘     └──────────────┘     └─────────────┘     └───────────────┘
+        │                    │                    │                     │
+   Float32 模型        TFLite INT8 模型      .blai 二進位檔        載入至 PSRAM
+   (YOLO, MobileNet)  (per-channel quant)   (NPU 指令+權重)     NPU 推理執行</code></pre>
+            </div>
+
+            <h3>.blai 模型格式</h3>
+            <p>IPROAI 使用自訂的 <code>.blai</code> 二進位模型格式。模型檔案包含以下區段：</p>
+            <ul>
+                <li><strong>Header（32 bytes）</strong>：8 個 uint32 欄位，記錄各區段大小</li>
+                <li><strong>CPU 指令區段</strong>：層定義、連接關係、量化參數</li>
+                <li><strong>NPU 指令區段</strong>：NPU 硬體指令（每條 16 bytes）</li>
+                <li><strong>權重區段</strong>：INT8 量化權重資料</li>
+                <li><strong>偏置區段</strong>：INT32 偏置資料</li>
+                <li><strong>Multiplier/Shift 區段</strong>：per-channel 量化參數</li>
+            </ul>
+
+            <h3>模型載入方式</h3>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">從 SD 卡載入</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/* 模型儲存於 SD 卡 /sdcard/ai_model/person_pet_detect.blai */
+iproai_model_hdl_t hdl = iproai_create();
+uint8_t *buf = load_file_to_buffer("/sdcard/ai_model/person_pet_detect.blai");
+IPROAI_Status_e status = iproai_load_model_from_buffer(hdl, buf);
+vPortFree(buf);  /* 載入後可釋放暫存區 */</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">從 Flash 分割區載入</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/* 模型燒錄於 Flash 分割區，跳過 0x1000 header */
+uint32_t flash_addr, part_size;
+hal_boot2_partition_addr_active("ai_model", &amp;flash_addr, &amp;part_size);
+
+uint8_t *buf = pvPortMalloc(model_size);
+flash_read(flash_addr + 0x1000, buf, model_size);
+
+iproai_model_hdl_t hdl = iproai_create();
+iproai_load_model_from_buffer(hdl, buf);
+vPortFree(buf);</code></pre>
+            </div>
+        </section>
+
+        <section id="iproai-framework">
+            <h2>IPROAI 框架</h2>
+            <p>IPROAI 是 IPRO SDK 自研的 AI 推理框架，位於 <code>components/ai/</code>。提供模型載入、層排程、NPU 加速與後處理等完整功能。</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">框架原始碼結構</span>
+                </div>
+                <pre><code>components/ai/
+├── iproai_def.h                    # 公開型別定義（層類型、啟動函式、結果結構）
+├── iproai_def_internal.h           # 內部除錯旗標
+├── Kconfig                         # CONFIG_AI_SUPPORT, CONFIG_AI_DEBUG
+├── CMakeLists.txt                  # 建構設定（支援 prebuilt .a）
+└── src/
+    ├── core/
+    │   ├── include/iproai_core.h   # 核心 API（create, load, compute, free）
+    │   └── iproai_core.c           # 核心實作
+    └── inst/
+        ├── include/
+        │   ├── detect/
+        │   │   ├── yolov8_detect.h             # YOLOv8 通用偵測
+        │   │   └── yolov8_person_pet_detect.h  # 人形+寵物偵測
+        │   ├── iproai_inst_npu.h               # NPU 驅動介面
+        │   ├── iproai_inst_cpu.h               # CPU 後端
+        │   └── iproai_inst_postprocess.h       # 後處理
+        ├── iproai_inst_npu.c           # NPU 指令執行
+        ├── iproai_inst_npu_ops.c       # NPU 算子實作
+        ├── iproai_inst_cpu.c           # CPU 層執行
+        ├── iproai_inst_cpu_ops.c       # CPU 算子（通用）
+        ├── iproai_inst_cpu_ops_yolo.c  # CPU 算子（YOLO 專用）
+        ├── iproai_inst_process.c       # 推理排程器
+        ├── iproai_inst_postprocess.c   # 後處理
+        ├── iproai_nmsis_ops.c          # NMSIS DSP 加速算子
+        └── detect/
+            ├── yolov8_detect.c                 # YOLOv8 6-output 後處理
+            └── yolov8_person_pet_detect.c      # Person+Pet 偵測封裝</code></pre>
+            </div>
+
+            <h3>核心 API</h3>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">IPROAI 核心 API (iproai_core.h)</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/* 建立模型實例 */
+iproai_model_hdl_t iproai_create(void);
+
+/* 從記憶體緩衝區載入 .blai 模型 */
+IPROAI_Status_e iproai_load_model_from_buffer(iproai_model_hdl_t hdl, const uint8_t *buffer);
+
+/* 從檔案載入 .blai 模型 */
+IPROAI_Status_e iproai_load_model_from_file(iproai_model_hdl_t hdl, const char *name);
+
+/* 取得模型輸入解析度 */
+IPROAI_Status_e iproai_getInputResolution(iproai_model_hdl_t hdl, uint32_t *width, uint32_t *height);
+
+/* 設定來源影像解析度（用於座標映射） */
+IPROAI_Status_e iproai_setSourceResolution(iproai_model_hdl_t hdl, uint32_t width, uint32_t height);
+
+/* 取得輸入緩衝區位址（用於填入影像資料） */
+uint8_t* iproai_getInputBuffer(iproai_model_hdl_t hdl);
+
+/* 取得輸出緩衝區位址 */
+uint8_t* iproai_getOutputBuffer(iproai_model_hdl_t hdl, uint32_t *size);
+
+/* 執行推理（同步，阻塞直到完成） */
+IPROAI_Status_e iproai_startCompute(iproai_model_hdl_t hdl);
+
+/* 取得網路資訊（用於後處理） */
+struct iproai_net_info_t *iproai_getNetInfo(iproai_model_hdl_t hdl);
+
+/* 設定推理結果回呼 */
+IPROAI_Status_e iproai_setResultCB(iproai_model_hdl_t hdl, iproai_inference_cb cb);
+
+/* 釋放模型資源 */
+IPROAI_Status_e iproai_free(iproai_model_hdl_t hdl);</code></pre>
+            </div>
+
+            <h3>Kconfig 設定</h3>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">.config 相關設定</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 啟用 AI/NPU 支援（自動啟用 PSRAM）
+CONFIG_AI_SUPPORT=y
+
+# 啟用 AI 除錯輸出
+CONFIG_AI_DEBUG=y
+
+# 使用預建構靜態庫（無需原始碼）
+CONFIG_AI_PREBUILT=y
+CONFIG_AI_PREBUILT_PATH="components/ai/prebuilt/libai.a"</code></pre>
+            </div>
+        </section>
+
+        <section id="supported-models">
+            <h2>支援模型</h2>
+            <p>SDK 內建多種 YOLOv8 偵測模型，使用 <code>.blai</code> 格式。所有模型接受 640x360 RGB888 輸入：</p>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color);">
+                        <th style="padding: 0.75rem; text-align: left;">模型</th>
+                        <th style="padding: 0.75rem; text-align: left;">類別</th>
+                        <th style="padding: 0.75rem; text-align: left;">輸出層</th>
+                        <th style="padding: 0.75rem; text-align: left;">說明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><code>person_detect.blai</code></td>
+                        <td style="padding: 0.75rem;">person (1)</td>
+                        <td style="padding: 0.75rem;">4</td>
+                        <td style="padding: 0.75rem;">人形偵測</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><code>person_pet_detect.blai</code></td>
+                        <td style="padding: 0.75rem;">person, pet (2)</td>
+                        <td style="padding: 0.75rem;">6</td>
+                        <td style="padding: 0.75rem;">人形 + 寵物偵測（3 box + 3 class）</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><code>pet_detect.blai</code></td>
+                        <td style="padding: 0.75rem;">pet (1)</td>
+                        <td style="padding: 0.75rem;">4</td>
+                        <td style="padding: 0.75rem;">寵物偵測</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><code>face_detect.blai</code></td>
+                        <td style="padding: 0.75rem;">face (1)</td>
+                        <td style="padding: 0.75rem;">4</td>
+                        <td style="padding: 0.75rem;">人臉偵測</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>支援的應用類型</h3>
+            <p>IPROAI 框架的 <code>APPLICATION_TYPE</code> 列舉定義了以下應用場景：</p>
+            <ul>
+                <li><strong>CLASSIFICATION</strong> - 影像分類</li>
+                <li><strong>OBJECT_DETECTION</strong> - 物件偵測（YOLO 系列）</li>
+                <li><strong>KEYPOINT_DETECTION</strong> - 關鍵點偵測</li>
+                <li><strong>FACE_RECONGNITION</strong> - 人臉辨識（含特徵比對）</li>
+                <li><strong>FACE_LANDMARK</strong> - 人臉特徵點</li>
+                <li><strong>KEYWORD_SPOTTING</strong> - 關鍵字辨識（語音觸發）</li>
+                <li><strong>SEGMENTATION</strong> - 語義分割</li>
+                <li><strong>RETINA_FACE / RETINA_PERSON</strong> - RetinaNet 偵測</li>
+                <li><strong>CUSTOM</strong> - 自訂後處理</li>
+            </ul>
+        </section>
+
+        <section id="reference-apps">
+            <h2>參考應用</h2>
+
+            <h3>ipro7_pircam - PIR + AI 智慧攝影機</h3>
+            <p>位於 <code>apps/ipro7_pircam/</code>，展示 PIR 感測器觸發結合 AI 推理的完整低功耗工作流程：</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">PIRCam 工作流程</span>
+                </div>
+                <pre><code>  ┌─────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐     ┌───────────┐
+  │  Sleep   │────&gt;│ PIR      │────&gt;│ ISP      │────&gt;│ NPU      │────&gt;│ BLE       │
+  │  (LP)    │     │ Wakeup   │     │ Capture  │     │ Inference│     │ Report    │
+  └─────────┘     └──────────┘     └──────────┘     └──────────┘     └───────────┘
+       ^                                                                    │
+       └────────────────────────────────────────────────────────────────────┘
+                                   回到低功耗睡眠</code></pre>
+            </div>
+
+            <p>關鍵特性：</p>
+            <ul>
+                <li>模型一次載入至 PSRAM，睡眠期間保留（<code>pircam_ai_init()</code> 僅啟動時呼叫一次）</li>
+                <li>ISP Channel 1 回呼透過 <code>pircam_ai_push_buffer()</code> 推送影像至推理佇列（ISR-safe）</li>
+                <li>喚醒後呼叫 <code>pircam_ai_resume()</code> 恢復 NPU 時脈與暫存器</li>
+                <li>使用 YOLOv8 Person+Pet 模型，輸入 640x360 ARGB</li>
+                <li>支援 SD 卡載入（<code>CONFIG_PIRCAM_AI_MODEL_FROM_SD</code>）或 Flash 分割區載入</li>
+            </ul>
+
+            <h3>ipro7_demo - AI 互動展示</h3>
+            <p>位於 <code>apps/ipro7_demo/demo/ai/</code>，提供 Shell 命令列互動式 AI 推理：</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Shell 命令</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 載入模型並執行單次推理（從 SD 卡讀取模型 + 測試影像）
+ai_sd_run
+
+# 執行特定模型的推理展示
+ai_run_demo 0    # Person Detection
+ai_run_demo 1    # Person + Pet Detection
+ai_run_demo 2    # Pet Detection
+ai_run_demo 3    # Face Detection
+
+# 啟動 External Buffer 連續推理模式
+ai_run_ext 1              # 啟動 Person+Pet 連續推理
+ai_run_ext stop           # 停止推理
+
+# 查看 AI 狀態
+ai_status</code></pre>
+            </div>
+        </section>
+
+        <section id="dev-guide">
+            <h2>開發指南</h2>
+
+            <h3>將 AI 推理加入你的應用</h3>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">完整推理範例</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">#include &lt;iproai_core.h&gt;
+#include &lt;iproai_def.h&gt;
+#include "hal_npu.h"
+#include "detect/yolov8_person_pet_detect.h"
+
+static iproai_model_hdl_t g_hdl = NULL;
+
+int my_ai_init(const uint8_t *model_data)
+{
+    /* Step 1: 啟用 NPU 時脈 */
+    GLB_PER_Clock_UnGate(GLB_AHB_CLOCK_MM);
+
+    /* Step 2: 建立模型實例 */
+    g_hdl = iproai_create();
+    if (!g_hdl) return -1;
+
+    /* Step 3: 載入模型 */
+    IPROAI_Status_e status = iproai_load_model_from_buffer(g_hdl, model_data);
+    if (status != IPROAI_STATUS_NO_ERROR) return -2;
+
+    return 0;
+}
+
+int my_ai_inference(uint32_t image_addr)
+{
+    /* Step 4: 設定外部影像位址（NPU 直接讀取） */
+    NPU_Img_Ext_Addr_Cfg(image_addr);
+
+    /* Step 5: 執行推理 */
+    IPROAI_Status_e status = iproai_startCompute(g_hdl);
+    if (status != IPROAI_STATUS_NO_ERROR) return -1;
+
+    /* Step 6: 後處理 */
+    struct iproai_net_info_t *net = iproai_getNetInfo(g_hdl);
+    uint8_t *data_buf = iproai_getInputBuffer(g_hdl);
+
+    yolov8_config_t yolo_cfg;
+    yolov8_result_t result;
+
+    yolov8_person_pet_init(&amp;yolo_cfg, net);
+    yolov8_person_pet_process(&amp;yolo_cfg, net, data_buf, &amp;result);
+    yolov8_person_pet_print_results(&amp;result);
+    yolov8_person_pet_deinit(&amp;yolo_cfg);
+
+    return result.num_detections;
+}</code></pre>
+            </div>
+
+            <h3>External Buffer 連續推理模式</h3>
+            <p>適用於 ISP 連續輸出影像的場景。使用 FreeRTOS Queue 將影像位址推送至推理任務：</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">ISP + AI 連續推理</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/* ISP 回呼中推送影像（ISR-safe） */
+void isp_frame_callback(uint32_t buffer_addr)
+{
+    pircam_ai_push_buffer(buffer_addr);  /* 使用 xQueueSendFromISR */
+}
+
+/* 推理任務會自動從 Queue 取得影像並執行推理 */</code></pre>
+            </div>
+
+            <h3>記憶體考量</h3>
+            <ul>
+                <li><strong>PSRAM 為必要</strong>：<code>CONFIG_AI_SUPPORT</code> 會自動啟用 <code>CONFIG_USE_PSRAM</code>，模型權重與中間結果存放於 16 MB PSRAM</li>
+                <li><strong>模型大小</strong>：典型 YOLOv8 模型約 200 KB - 2 MB（.blai 格式）</li>
+                <li><strong>推理暫存</strong>：推理過程中需要額外的中間 buffer（自動管理），建議確保有足夠的 heap 空間</li>
+                <li><strong>睡眠保留</strong>：PSRAM 在低功耗睡眠期間保留內容，模型無需重新載入</li>
+            </ul>
+        </section>
+
+        <section id="performance">
+            <h2>效能與優化</h2>
+
+            <h3>效能參考</h3>
+            <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color);">
+                        <th style="padding: 0.75rem; text-align: left;">指標</th>
+                        <th style="padding: 0.75rem; text-align: left;">數值</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">NPU 峰值算力</td>
+                        <td style="padding: 0.75rem;">0.1 TOPS (INT8)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">量化精度</td>
+                        <td style="padding: 0.75rem;">INT8 (per-channel)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">輸入格式</td>
+                        <td style="padding: 0.75rem;">640x360 RGB888 / ARGB</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">YOLOv8 偵測閾值</td>
+                        <td style="padding: 0.75rem;">Confidence: 0.25, IoU: 0.45</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">最大偵測數量</td>
+                        <td style="padding: 0.75rem;">50（NMS 後）</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>優化建議</h3>
+            <ul>
+                <li><strong>使用 NPU 加速層</strong>：確保 Conv / Pool / FC 層在 NPU 上執行，避免不必要的 CPU fallback</li>
+                <li><strong>減少模型大小</strong>：使用更小的輸入解析度、減少通道數、裁剪不需要的類別</li>
+                <li><strong>啟用 PSRAM 睡眠保留</strong>：避免每次喚醒都重新載入模型</li>
+                <li><strong>使用 External Buffer 模式</strong>：透過 <code>NPU_Img_Ext_Addr_Cfg()</code> 讓 NPU 直接讀取 ISP 輸出，減少記憶體拷貝</li>
+                <li><strong>預分配記憶體池</strong>：YOLOv8 後處理使用 <code>mem_pool</code> 預分配 buffer，避免推理期間動態配置</li>
+                <li><strong>啟用 Profiling</strong>：設定 <code>CONFIG_AI_DEBUG=y</code> 可查看每層的執行時間與裝置分配</li>
+            </ul>
+
+            <h3>除錯工具</h3>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">啟用 AI 除錯</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 在 .config 中啟用
+CONFIG_AI_DEBUG=y
+
+# 將會啟用以下除錯資訊：
+# - IPROAI_NPU_OPS_DEBUG: NPU 算子執行細節
+# - IPROAI_SHOW_INST: 顯示每層指令
+# - IPROAI_PROFILING_EACH_LAYER: 每層執行時間</code></pre>
+            </div>
+        </section>
+    </article>
+</div>

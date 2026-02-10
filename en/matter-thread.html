@@ -1,0 +1,621 @@
+---
+layout: default
+title: Matter & Thread Development Guide
+lang: en
+---
+
+<div class="doc-layout">
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <h4 class="sidebar-title">Table of Contents</h4>
+            <ul class="sidebar-links">
+                <li><a href="#overview" class="sidebar-link">Overview</a></li>
+                <li><a href="#matter-architecture" class="sidebar-link">Matter Architecture</a></li>
+                <li><a href="#matter-over-thread" class="sidebar-link">Matter over Thread</a></li>
+                <li><a href="#matter-over-wifi" class="sidebar-link">Matter over WiFi</a></li>
+                <li><a href="#openthread" class="sidebar-link">OpenThread</a></li>
+                <li><a href="#reference-apps" class="sidebar-link">Reference Applications</a></li>
+                <li><a href="#configuration" class="sidebar-link">Configuration</a></li>
+                <li><a href="#dev-workflow" class="sidebar-link">Development Workflow</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <article class="doc-content">
+        <h1>Matter & Thread Development Guide</h1>
+        <p>IPRO SDK supports Matter 1.4, the unified smart home protocol, and Thread 1.2 low-power mesh networking, enabling your devices to seamlessly interoperate with Apple Home, Google Home, Amazon Alexa, and other ecosystems.</p>
+
+        <section id="overview">
+            <h2>Overview</h2>
+            <p>Matter is the unified smart home standard driven by the Connectivity Standards Alliance (CSA), designed to solve interoperability issues between IoT devices. IPRO SDK provides comprehensive Matter and Thread support:</p>
+
+            <div class="features-grid" style="margin: 2rem 0;">
+                <div class="feature-card">
+                    <div class="feature-icon">🏠</div>
+                    <h3 class="feature-title">Matter 1.4</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>CSA unified smart home standard</li>
+                        <li>Multi-ecosystem interoperability</li>
+                        <li>Secure commissioning and control</li>
+                        <li>Data Model / Interaction Model</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🕸️</div>
+                    <h3 class="feature-title">Thread 1.2</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>IEEE 802.15.4 low-power mesh network</li>
+                        <li>Self-healing topology</li>
+                        <li>Native IPv6 support</li>
+                        <li>FTD / MTD / RCP device types</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📶</div>
+                    <h3 class="feature-title">Multi-Transport</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>Matter over Thread (low power)</li>
+                        <li>Matter over WiFi (high bandwidth)</li>
+                        <li>BLE commissioning channel</li>
+                        <li>Border Router bridging</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="matter-architecture">
+            <h2>Matter Architecture</h2>
+            <p>The Matter protocol is built on top of IP networking, using Thread or WiFi as the transport layer, and BLE for device commissioning:</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Matter Protocol Stack Architecture</span>
+                </div>
+                <pre><code>┌─────────────────────────────────────────┐
+│          Application Layer              │
+│     Lighting │ Switch │ Sensor          │
+├─────────────────────────────────────────┤
+│          Matter SDK (1.4)               │
+│   Data Model │ Interaction Model        │
+│   Commissioning │ Security (CASE/PASE)  │
+├──────────────────┬──────────────────────┤
+│   Thread 1.2     │      WiFi 6          │
+│   (802.15.4)     │    (802.11ax)         │
+├──────────────────┴──────────────────────┤
+│          BLE (Commissioning)            │
+├─────────────────────────────────────────┤
+│          IPRO7 Hardware                 │
+│   802.15.4 Radio │ WiFi │ BLE Radio     │
+└─────────────────────────────────────────┘</code></pre>
+            </div>
+
+            <h3>Matter Data Model</h3>
+            <p>Matter uses a hierarchical data model to describe device capabilities:</p>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 1.5rem 0;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color);">
+                        <th style="padding: 0.75rem; text-align: left;">Concept</th>
+                        <th style="padding: 0.75rem; text-align: left;">Description</th>
+                        <th style="padding: 0.75rem; text-align: left;">Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>Node</strong></td>
+                        <td style="padding: 0.75rem;">An addressable Matter device</td>
+                        <td style="padding: 0.75rem;">A smart light bulb</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>Endpoint</strong></td>
+                        <td style="padding: 0.75rem;">A functional unit on a Node</td>
+                        <td style="padding: 0.75rem;">Endpoint 0 (Root), Endpoint 1 (Light)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>Cluster</strong></td>
+                        <td style="padding: 0.75rem;">A collection of related features</td>
+                        <td style="padding: 0.75rem;">OnOff, LevelControl, ColorControl</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>Attribute</strong></td>
+                        <td style="padding: 0.75rem;">A readable/writable state value</td>
+                        <td style="padding: 0.75rem;">OnOff.onOff, LevelControl.currentLevel</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>Command</strong></td>
+                        <td style="padding: 0.75rem;">An executable action</td>
+                        <td style="padding: 0.75rem;">OnOff.Toggle(), LevelControl.MoveToLevel()</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Interaction Model</h3>
+            <p>Matter devices communicate through the following interaction patterns:</p>
+            <ul>
+                <li><strong>Read</strong> -- Read attribute values (e.g., query if a light is on)</li>
+                <li><strong>Write</strong> -- Write attribute values (e.g., set brightness level)</li>
+                <li><strong>Invoke</strong> -- Invoke commands (e.g., Toggle switch)</li>
+                <li><strong>Subscribe</strong> -- Subscribe to attribute change notifications (e.g., monitor temperature changes)</li>
+            </ul>
+
+            <h3>Commissioning Flow</h3>
+            <p>Matter uses BLE as the commissioning channel. The process is as follows:</p>
+            <ol>
+                <li>Device boots into commissioning mode and starts BLE advertising</li>
+                <li>Phone app scans the QR Code or enters the pairing code</li>
+                <li>Secure connection established via PASE (Passcode-Authenticated Session Establishment)</li>
+                <li>App sends Thread/WiFi network credentials to the device</li>
+                <li>Device joins the IP network and establishes CASE (Certificate-Authenticated Session Establishment)</li>
+                <li>Device is added to the Matter Fabric and can be controlled</li>
+            </ol>
+        </section>
+
+        <section id="matter-over-thread">
+            <h2>Matter over Thread</h2>
+            <p>Thread is a mesh networking protocol designed for low-power IoT devices. Matter over Thread is ideal for battery-powered sensors, switches, and lighting devices.</p>
+
+            <div class="alert alert-info">
+                <strong>💡</strong> Thread uses IEEE 802.15.4 radio, which operates in the 2.4 GHz ISM band with a different modulation scheme than WiFi/BLE. IPRO7 supports 802.15.4, WiFi, and BLE radios simultaneously.
+            </div>
+
+            <h3>Thread Network Topology</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Thread Mesh Network Topology</span>
+                </div>
+                <pre><code>                    ┌──────────┐
+                    │  Border  │←── WiFi/Ethernet ──→ Internet
+                    │  Router  │
+                    └────┬─────┘
+                         │ Thread
+              ┌──────────┼──────────┐
+              │          │          │
+         ┌────┴───┐ ┌───┴────┐ ┌──┴─────┐
+         │ Router │ │ Leader │ │ Router │
+         │ (FTD)  │ │ (FTD)  │ │ (FTD)  │
+         └───┬────┘ └───┬────┘ └───┬────┘
+             │          │          │
+        ┌────┴───┐ ┌───┴────┐ ┌──┴─────┐
+        │  End   │ │  End   │ │ Sleepy │
+        │ Device │ │ Device │ │  End   │
+        │ (MTD)  │ │ (MTD)  │ │ Device │
+        └────────┘ └────────┘ └────────┘</code></pre>
+            </div>
+
+            <h3>Device Roles</h3>
+            <table style="width: 100%; border-collapse: collapse; margin: 1.5rem 0;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color);">
+                        <th style="padding: 0.75rem; text-align: left;">Role</th>
+                        <th style="padding: 0.75rem; text-align: left;">Type</th>
+                        <th style="padding: 0.75rem; text-align: left;">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>Leader</strong></td>
+                        <td style="padding: 0.75rem;">FTD</td>
+                        <td style="padding: 0.75rem;">Manages routing table and address allocation; one per partition</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>Router</strong></td>
+                        <td style="padding: 0.75rem;">FTD</td>
+                        <td style="padding: 0.75rem;">Forwards packets, maintains routing tables, supports child devices</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>End Device</strong></td>
+                        <td style="padding: 0.75rem;">MTD</td>
+                        <td style="padding: 0.75rem;">Communicates only with parent router; does not forward packets</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>Sleepy End Device</strong></td>
+                        <td style="padding: 0.75rem;">MTD</td>
+                        <td style="padding: 0.75rem;">Sleeps most of the time; ideal for battery-powered devices</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;"><strong>Border Router</strong></td>
+                        <td style="padding: 0.75rem;">FTD</td>
+                        <td style="padding: 0.75rem;">Bridges Thread and WiFi/Ethernet networks</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Typical Use Cases</h3>
+            <ul>
+                <li>Smart lights and luminaires (Router / End Device)</li>
+                <li>Door/window sensors (Sleepy End Device)</li>
+                <li>Temperature and humidity sensors (Sleepy End Device)</li>
+                <li>Smart switches and plugs (Router)</li>
+                <li>Motion sensors (Sleepy End Device)</li>
+            </ul>
+        </section>
+
+        <section id="matter-over-wifi">
+            <h2>Matter over WiFi</h2>
+            <p>Matter over WiFi provides direct IP connectivity through WiFi, suitable for devices requiring higher bandwidth. No Border Router is needed to connect to the home network.</p>
+
+            <h3>Use Cases</h3>
+            <ul>
+                <li>Smart cameras (require high-bandwidth video streaming)</li>
+                <li>Smart displays</li>
+                <li>Smart speakers</li>
+                <li>Home appliances (refrigerators, washing machines, etc.)</li>
+                <li>Devices requiring fast response times</li>
+            </ul>
+
+            <h3>Matter over Thread vs WiFi Comparison</h3>
+            <table style="width: 100%; border-collapse: collapse; margin: 1.5rem 0;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--border-color);">
+                        <th style="padding: 0.75rem; text-align: left;">Feature</th>
+                        <th style="padding: 0.75rem; text-align: left;">Thread</th>
+                        <th style="padding: 0.75rem; text-align: left;">WiFi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">Power Consumption</td>
+                        <td style="padding: 0.75rem;">Very low (battery-friendly)</td>
+                        <td style="padding: 0.75rem;">Higher (requires stable power)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">Bandwidth</td>
+                        <td style="padding: 0.75rem;">250 kbps</td>
+                        <td style="padding: 0.75rem;">Hundreds of Mbps</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">Network Topology</td>
+                        <td style="padding: 0.75rem;">Mesh (self-healing)</td>
+                        <td style="padding: 0.75rem;">Star (AP-dependent)</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">Border Router</td>
+                        <td style="padding: 0.75rem;">Required</td>
+                        <td style="padding: 0.75rem;">Not required</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">Max Nodes</td>
+                        <td style="padding: 0.75rem;">250+ (mesh scaling)</td>
+                        <td style="padding: 0.75rem;">Limited by AP capacity</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--border-color);">
+                        <td style="padding: 0.75rem;">Ideal Devices</td>
+                        <td style="padding: 0.75rem;">Sensors, switches, lights</td>
+                        <td style="padding: 0.75rem;">Cameras, displays, speakers</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="openthread">
+            <h2>OpenThread</h2>
+            <p>IPRO SDK integrates Google's open-source OpenThread implementation, providing a full Thread protocol stack. Source code is located at <code>components/wireless/thread/</code>.</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">OpenThread Component Structure</span>
+                </div>
+                <pre><code>components/wireless/thread/
+├── CMakeLists.txt              # Build configuration
+├── Kconfig                     # Device type selection (FTD/MTD/RCP)
+├── openthread/                 # OpenThread open-source stack
+│   ├── src/                    # Core implementation
+│   │   ├── core/               #   Thread protocol core
+│   │   └── cli/                #   CLI command interface
+│   ├── include/                # Public API headers
+│   └── examples/               # Examples and platform ports
+└── openthread_port/            # IPRO7 platform abstraction layer
+    └── Kconfig                 #   Platform-specific config options</code></pre>
+            </div>
+
+            <h3>Device Types</h3>
+            <p>Select the OpenThread device type via Kconfig:</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Device Type Configuration</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Full Thread Device -- can route, can become Leader/Router
+CONFIG_OPENTHREAD_FTD=y
+
+# Minimal Thread Device -- End Device only, saves power and memory
+CONFIG_OPENTHREAD_MTD=y
+
+# Radio Co-processor -- 802.15.4 radio controlled by external host
+CONFIG_OPENTHREAD_RADIO=y</code></pre>
+            </div>
+
+            <h3>OpenThread CLI</h3>
+            <p>With <code>CONFIG_OPENTHREAD_CLI=y</code> enabled, you can use <code>ot</code> commands via serial port for development and debugging:</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Common OpenThread CLI Commands</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Create a new Thread network
+ot dataset init new
+ot dataset networkname MyThreadNet
+ot dataset channel 15
+ot dataset panid 0x1234
+ot dataset commit active
+ot ifconfig up
+ot thread start
+
+# Query status
+ot state                  # Show role: disabled/detached/child/router/leader
+ot ipaddr                 # Show IPv6 addresses
+ot neighbor table         # Show neighbor table
+ot router table           # Show router table (FTD only)
+
+# Network diagnostics
+ot ping &lt;ipv6_address&gt;    # Ping another device
+ot child table            # Child device list
+ot parent                 # Parent device info</code></pre>
+            </div>
+
+            <h3>Commissioner and Joiner</h3>
+            <p>Thread uses the Commissioner/Joiner mechanism to securely add new devices to the network:</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Commissioner Operations (device already in network)</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Start Commissioner
+ot commissioner start
+
+# Allow new devices to join (* accepts any device, J01NME is the pre-shared key)
+ot commissioner joiner add * J01NME
+
+# Check Commissioner state
+ot commissioner state</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Joiner Operations (new device joining)</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Join using pre-shared key
+ot joiner start J01NME
+
+# After join success message
+ot ifconfig up
+ot thread start</code></pre>
+            </div>
+        </section>
+
+        <section id="reference-apps">
+            <h2>Reference Applications</h2>
+            <p>IPRO SDK provides several Matter and Thread reference applications:</p>
+
+            <h3>Matter Lighting App</h3>
+            <p>Implements a Matter On/Off Light device type with on/off and level control clusters.</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build Matter Lighting App</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Build
+make -C apps/matter/lighting-app
+
+# Source locations
+apps/matter/lighting-app/ipro/main.c       # Application entry point
+apps/matter/lighting-app/ipro/defconfig     # Configuration file</code></pre>
+            </div>
+            <p>Key features:</p>
+            <ul>
+                <li>OnOff Cluster -- on/off control</li>
+                <li>LevelControl Cluster -- brightness adjustment (0-254)</li>
+                <li>Matter commissioning (BLE)</li>
+                <li>Vendor ID: 0xFFF1 / Product ID: 0x8000 / Device Type: 256 (On/Off Light)</li>
+            </ul>
+
+            <h3>Matter All-Clusters App</h3>
+            <p>A test application containing all standard Matter clusters, used for development and validation.</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build All-Clusters App</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Build
+make -C apps/matter/all-clusters-app
+
+# Source locations
+apps/matter/all-clusters-app/ipro/main.c    # Application entry point
+apps/matter/all-clusters-app/ipro/defconfig  # Configuration file</code></pre>
+            </div>
+            <p>Key features:</p>
+            <ul>
+                <li>Root Node (Device Type: 17) -- includes all standard clusters</li>
+                <li>Suitable for Matter certification testing and feature validation</li>
+                <li>Vendor ID: 0xFFF1 / Product ID: 0x8001</li>
+            </ul>
+
+            <h3>Thread FTD CLI</h3>
+            <p>A Full Thread Device reference application with a complete OpenThread CLI interface, ideal for Thread network development and testing.</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build Thread FTD CLI</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Using Make
+make -C apps/ipro_thread_ftd_cli
+
+# Using build script
+./build_freertos.sh ipro_thread_ftd_cli build
+
+# Build output
+apps/ipro_thread_ftd_cli/build/build_out/ipro_thread_ftd_cli_IPRO7.bin</code></pre>
+            </div>
+            <p>Key features:</p>
+            <ul>
+                <li>Full Thread Device (Router / Leader)</li>
+                <li>Complete OpenThread CLI commands</li>
+                <li>IEEE 802.15.4 radio support (TX Power: 20 dBm)</li>
+                <li>mbedTLS hardware acceleration (SHA-1/SHA-256/SHA-512)</li>
+                <li>Flash: 377KB / OCRAM: 96KB</li>
+            </ul>
+        </section>
+
+        <section id="configuration">
+            <h2>Configuration</h2>
+
+            <h3>Matter Configuration</h3>
+            <p>Set Matter options in the application's <code>defconfig</code> or <code>.config</code> file:</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Matter Configuration Options</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Enable Matter
+CONFIG_MATTER_ENABLE=y
+CONFIG_COMPONENTS_MATTER_ENABLE=y
+
+# Device information
+CONFIG_MATTER_VENDOR_ID=0xFFF1          # CSA test Vendor ID
+CONFIG_MATTER_PRODUCT_ID=0x8000         # Product ID
+CONFIG_MATTER_DEVICE_TYPE=256           # Device type (256 = On/Off Light)
+
+# Required dependencies
+CONFIG_FREERTOS_SUPPORT=y               # FreeRTOS
+CONFIG_COMPONENTS_MBEDTLS_ENABLE=y      # Security layer
+CONFIG_COMPONENTS_LWIP_ENABLE=y         # IP network stack</code></pre>
+            </div>
+
+            <h3>Thread / OpenThread Configuration</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">OpenThread Configuration Options</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Enable Thread
+CONFIG_THREAD_ENABLE=y
+CONFIG_OPENTHREAD_ENABLE=y
+CONFIG_IEEE802154_ENABLE=y
+
+# Device type (choose one)
+CONFIG_OPENTHREAD_FTD=y                 # Full Thread Device
+# CONFIG_OPENTHREAD_MTD=y              # Minimal Thread Device
+
+# CLI interface
+CONFIG_OPENTHREAD_CLI=y
+
+# 802.15.4 radio
+CONFIG_IEEE802154_DEFAULT_TXPOWER=20    # TX power (dBm)
+
+# Feature enables (select as needed)
+CONFIG_OPENTHREAD_COMMISSIONER=y        # Commissioner role
+CONFIG_OPENTHREAD_JOINER=y              # Joiner role
+CONFIG_OPENTHREAD_DHCP6_CLIENT=y        # DHCPv6 Client
+CONFIG_OPENTHREAD_DHCP6_SERVER=y        # DHCPv6 Server
+CONFIG_OPENTHREAD_DNS_CLIENT=y          # DNS Client
+CONFIG_OPENTHREAD_BORDER_ROUTER=y       # Border Router functionality
+
+# Memory configuration
+CONFIG_OPENTHREAD_NUM_MESSAGE_BUFFERS=44
+CONFIG_OPENTHREAD_MESSAGE_BUFFER_SIZE=128
+CONFIG_OPENTHREAD_MLE_MAX_CHILDREN=16
+
+# Log level (0=NONE, 1=CRIT, 2=WARN, 3=NOTE, 4=INFO, 5=DEBG)
+CONFIG_OPENTHREAD_LOG_LEVEL=3</code></pre>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡</strong> Disabling unused features can significantly save memory: Commissioner/Joiner requires ~150KB (DTLS/SSL), Border Router ~30KB, ECDSA ~15KB, SRP Client ~20KB.
+            </div>
+
+            <h3>Selecting Matter over Thread vs WiFi</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Transport Layer Selection</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Matter over Thread (low-power devices)
+CONFIG_THREAD_ENABLE=y
+CONFIG_OPENTHREAD_ENABLE=y
+CONFIG_IEEE802154_ENABLE=y
+# CONFIG_WIFI6 is not set
+
+# Matter over WiFi (high-bandwidth devices)
+CONFIG_WIFI6=y
+CONFIG_COMPONENTS_LWIP_ENABLE=y
+# CONFIG_THREAD_ENABLE is not set</code></pre>
+            </div>
+        </section>
+
+        <section id="dev-workflow">
+            <h2>Development Workflow</h2>
+
+            <h3>1. Choose a Reference Application</h3>
+            <p>Select an appropriate reference application as your starting point based on your target device type:</p>
+            <ul>
+                <li><strong>Lighting devices</strong> -- Start with <code>apps/matter/lighting-app</code></li>
+                <li><strong>Multi-function devices</strong> -- Start with <code>apps/matter/all-clusters-app</code></li>
+                <li><strong>Thread network development</strong> -- Start with <code>apps/ipro_thread_ftd_cli</code></li>
+            </ul>
+
+            <h3>2. Build Firmware</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build Steps</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Build Matter Lighting App
+make -C apps/matter/lighting-app
+
+# Build Thread FTD CLI
+make -C apps/ipro_thread_ftd_cli
+
+# Clean build
+make -C apps/ipro_thread_ftd_cli clean</code></pre>
+            </div>
+
+            <h3>3. Flash and Test</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Flash Firmware</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Flash to development board
+tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+    --chipname ipro7 \
+    --port /dev/cu.usbserial-2120 \
+    --firmware apps/ipro_thread_ftd_cli/build/build_out/ipro_thread_ftd_cli_IPRO7.bin \
+    --baudrate 921600 \
+    --flash-pin 0x02
+
+# Connect serial monitor
+python3 tools/serial_monitor.py /dev/cu.usbserial-2120</code></pre>
+            </div>
+
+            <h3>4. Matter Commissioning Test</h3>
+            <ol>
+                <li>Use Google Home App, Apple Home App, or chip-tool for commissioning</li>
+                <li>Scan the device QR Code or manually enter the pairing code</li>
+                <li>Once the device joins the Matter Fabric, it can be controlled</li>
+            </ol>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Testing with chip-tool (Development)</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Commissioning
+chip-tool pairing ble-thread &lt;node-id&gt; &lt;thread-dataset&gt; &lt;setup-pin-code&gt; &lt;discriminator&gt;
+
+# Control On/Off
+chip-tool onoff toggle &lt;node-id&gt; 1
+
+# Read attributes
+chip-tool onoff read on-off &lt;node-id&gt; 1
+
+# Set brightness
+chip-tool levelcontrol move-to-level &lt;level&gt; 0 0 0 &lt;node-id&gt; 1</code></pre>
+            </div>
+        </section>
+
+    </article>
+</div>

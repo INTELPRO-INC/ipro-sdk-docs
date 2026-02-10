@@ -138,6 +138,13 @@ title: 首頁
                     內建 GitLab CI/CD 流程，自動化建構測試、記憶體分析、安全掃描，確保程式碼品質與穩定性。
                 </p>
             </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎵</div>
+                <h3 class="feature-title">LE Audio 就緒</h3>
+                <p class="feature-description">
+                    完整 LC3 編解碼器支援，Unicast 與 Broadcast 音訊功能，適用於下一代藍牙音訊裝置開發。
+                </p>
+            </div>
         </div>
     </div>
 </section>
@@ -345,30 +352,51 @@ cmake --build build</code></pre>
         <div class="features-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
             <a href="{{ '/architecture' | relative_url }}" class="feature-card" style="text-decoration: none;">
                 <div class="feature-icon">🏗️</div>
-                <h3 class="feature-title">架構概覽</h3>
+                <h3 class="feature-title">系統架構</h3>
                 <p class="feature-description">
                     深入了解 SDK 的分層架構設計、元件組織與建構系統。
                 </p>
             </a>
             <a href="{{ '/ble-development' | relative_url }}" class="feature-card" style="text-decoration: none;">
                 <div class="feature-icon">📡</div>
-                <h3 class="feature-title">BLE 開發指南</h3>
+                <h3 class="feature-title">BLE 開發</h3>
                 <p class="feature-description">
-                    完整的 BLE 5.4 開發教學，從基礎到 LE Audio 進階功能。
+                    BLE 5.4 協定棧、控制器變體、LE Audio 與應用框架。
                 </p>
             </a>
-            <a href="{{ '/zephyr-rtos' | relative_url }}" class="feature-card" style="text-decoration: none;">
-                <div class="feature-icon">🌊</div>
-                <h3 class="feature-title">Zephyr RTOS</h3>
+            <a href="{{ '/matter-thread' | relative_url }}" class="feature-card" style="text-decoration: none;">
+                <div class="feature-icon">🏠</div>
+                <h3 class="feature-title">Matter & Thread</h3>
                 <p class="feature-description">
-                    現代 RTOS 整合指南，Device Tree 配置與最佳實踐。
+                    Matter 1.4 智慧家庭協定與 Thread 1.2 網狀網路整合。
                 </p>
             </a>
-            <a href="{{ '/applications' | relative_url }}" class="feature-card" style="text-decoration: none;">
-                <div class="feature-icon">📦</div>
-                <h3 class="feature-title">應用範例</h3>
+            <a href="{{ '/wifi-networking' | relative_url }}" class="feature-card" style="text-decoration: none;">
+                <div class="feature-icon">📶</div>
+                <h3 class="feature-title">WiFi 與網路</h3>
                 <p class="feature-description">
-                    多個完整參考應用的詳細說明與使用方式。
+                    WiFi 6 連線、lwIP 協定棧、mbedTLS 安全加密。
+                </p>
+            </a>
+            <a href="{{ '/ai-npu' | relative_url }}" class="feature-card" style="text-decoration: none;">
+                <div class="feature-icon">🧠</div>
+                <h3 class="feature-title">AI & NPU</h3>
+                <p class="feature-description">
+                    0.1 TOPS NPU 加速器、模型部署與邊緣 AI 應用。
+                </p>
+            </a>
+            <a href="{{ '/audio-multimedia' | relative_url }}" class="feature-card" style="text-decoration: none;">
+                <div class="feature-icon">🎵</div>
+                <h3 class="feature-title">音訊與多媒體</h3>
+                <p class="feature-description">
+                    LE Audio、USB 音訊、ISP 攝影機與視訊處理。
+                </p>
+            </a>
+            <a href="{{ '/tools-debugging' | relative_url }}" class="feature-card" style="text-decoration: none;">
+                <div class="feature-icon">🛠️</div>
+                <h3 class="feature-title">工具與除錯</h3>
+                <p class="feature-description">
+                    燒錄工具、串口監控、GDB 除錯與 CI/CD 流程。
                 </p>
             </a>
         </div>

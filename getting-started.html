@@ -10,13 +10,16 @@ title: 快速開始
             <ul class="sidebar-links">
                 <li><a href="#prerequisites" class="sidebar-link">系統需求</a></li>
                 <li><a href="#installation" class="sidebar-link">安裝設置</a></li>
+                <li><a href="#directory-structure" class="sidebar-link">SDK 目錄結構</a></li>
                 <li><a href="#zephyr-quickstart" class="sidebar-link">Zephyr 快速開始</a></li>
                 <li><a href="#freertos-quickstart" class="sidebar-link">FreeRTOS 快速開始</a></li>
                 <li><a href="#first-build" class="sidebar-link">第一次建構</a></li>
+                <li><a href="#kconfig" class="sidebar-link">配置系統</a></li>
                 <li><a href="#flashing" class="sidebar-link">燒錄韌體</a></li>
                 <li><a href="#serial-monitor" class="sidebar-link">串口監控</a></li>
                 <li><a href="#board-testing" class="sidebar-link">板級測試</a></li>
                 <li><a href="#debugging" class="sidebar-link">除錯設置</a></li>
+                <li><a href="#troubleshooting" class="sidebar-link">疑難排解</a></li>
                 <li><a href="#next-steps" class="sidebar-link">下一步</a></li>
             </ul>
         </nav>
@@ -41,7 +44,7 @@ title: 快速開始
                 <li><strong>作業系統：</strong>Linux（Ubuntu 20.04+ 建議）或 macOS</li>
                 <li><strong>工具鏈：</strong>RISC-V GCC 交叉編譯器（<code>/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-*</code>）</li>
                 <li><strong>建構工具：</strong>CMake 3.20+, Ninja, Make</li>
-                <li><strong>Python：</strong>Python 3.8+（用於 west 與腳本工具）</li>
+                <li><strong>Python：</strong>Python 3.8+（用於開發工具與腳本）</li>
                 <li><strong>Git：</strong>版本控制</li>
             </ul>
 
@@ -53,6 +56,20 @@ title: 快速開始
                 <pre><code class="language-bash"># 安裝建構工具
 sudo apt update
 sudo apt install -y cmake ninja-build python3 python3-pip git
+
+# 驗證安裝
+cmake --version
+ninja --version
+python3 --version</code></pre>
+            </div>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">安裝基本工具（macOS）</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 使用 Homebrew 安裝
+brew install cmake ninja python3 git
 
 # 驗證安裝
 cmake --version
@@ -94,11 +111,61 @@ ls /opt/toolchain/riscv_ipro7/bin/
 # riscv64-unknown-elf-gcc
 # riscv64-unknown-elf-g++
 # riscv64-unknown-elf-objcopy
-# ...</code></pre>
+# ...
+
+# 驗證編譯器可以執行
+/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-gcc --version</code></pre>
             </div>
 
             <div class="alert alert-warning">
-                <strong>⚠️ 注意：</strong>如果您的工具鏈位於不同路徑，請在建構時指定 <code>CROSS_COMPILE</code> 參數。
+                <strong>⚠️ 注意：</strong>如果您的工具鏈位於不同路徑，請在建構時指定 <code>CROSS_COMPILE</code> 參數，例如：<code>CROSS_COMPILE=/your/path/bin/riscv64-unknown-elf-</code>。
+            </div>
+        </section>
+
+        <section id="directory-structure">
+            <h2>SDK 目錄結構</h2>
+            <p>了解 SDK 的目錄結構有助於快速定位檔案與理解專案架構。</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">SDK 目錄結構</span>
+                </div>
+                <pre><code>ipro_sdk/
+├── apps/                         # 應用程式專案（每個應用含 .config + CMakeLists.txt）
+│   ├── bluetooth/                # BLE 應用
+│   │   ├── ipro_ble_remote/      # BLE 遙控器（GATT + OTA）
+│   │   ├── ipro_throughput_test/ # BLE 效能測試
+│   │   ├── ipro_walkie_talkie/   # BIS LE Audio 對講機
+│   │   └── ipro_le_audio_headset/# GAF/BAP LE Audio 耳機
+│   ├── matter/                   # Matter 應用
+│   │   ├── ipro_matter_light/    # Matter 燈光控制
+│   │   └── ipro_matter_switch/   # Matter 開關
+│   ├── ipro7_demo/               # 綜合平台展示
+│   ├── ipro_unit_test/           # 單元測試
+│   └── ipro_zephyr_demo/         # Zephyr 展示
+│
+├── bsp/                          # Board Support Package（HAL、驅動、連結腳本）
+│   ├── board/                    # 板級配置
+│   ├── drivers/                  # 週邊驅動
+│   └── hal/                      # 硬體抽象層
+│
+├── components/                   # 共享中間件
+│   ├── wireless/bluetooth/       # BLE 5.4 棧（Host + Controller + Profiles）
+│   ├── os/freertos/              # FreeRTOS RTOS
+│   ├── network/                  # 網路棧（lwIP）
+│   ├── crypto/                   # 加密元件（mbedTLS）
+│   ├── fs/                       # 檔案系統（LittleFS, FatFS）
+│   └── cherryusb/                # USB 裝置/主機棧
+│
+├── cmake/                        # 建構系統（toolchain.cmake 自動偵測 GCC）
+├── tools/                        # 開發工具
+│   ├── ipro_iot_tool_lite/       # 韌體燒錄工具
+│   ├── serial_monitor.py         # 串口監控（Python3）
+│   ├── board_test.sh             # 自動化板級測試
+│   └── zephyr/                   # Zephyr 建構工具
+│
+├── build_freertos.sh             # FreeRTOS 建構腳本
+└── Kconfig                       # 根 Kconfig 配置</code></pre>
             </div>
         </section>
 
@@ -235,6 +302,46 @@ ls -la apps/bluetooth/ipro_ble_remote/build/build_out/
             </div>
         </section>
 
+        <section id="kconfig">
+            <h2>Kconfig 配置系統</h2>
+            <p>SDK 使用 Linux kernel 風格的 Kconfig 系統管理專案配置。每個應用擁有自己的 <code>.config</code> 檔案，建構時自動生成 <code>generated/autoconf.h</code> 標頭檔。</p>
+
+            <h3>配置檔案結構</h3>
+            <ul>
+                <li><strong>根配置：</strong><code>Kconfig</code> - 定義所有可用選項</li>
+                <li><strong>預設配置：</strong><code>kconfigs/*.config</code> - 各功能模組的預設值</li>
+                <li><strong>應用配置：</strong><code>apps/&lt;project&gt;/.config</code> - 應用專屬配置覆蓋</li>
+            </ul>
+
+            <h3>常用配置選項</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">.config 範例</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># SoC 選擇
+CONFIG_IPRO7=y
+CONFIG_CPU_ID="intelpro_ipro7"
+
+# RTOS 選擇
+CONFIG_FREERTOS_SUPPORT=y
+
+# 無線功能
+CONFIG_BLUETOOTH_LE_ENABLE=y
+
+# 元件啟用
+CONFIG_LWIP=y
+CONFIG_MBEDTLS=y
+
+# 測試自動執行
+CONFIG_TEST_AUTO_RUN=y</code></pre>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡 提示：</strong><code>CONFIG_CPU_ID</code> 必須在 <code>.config</code> 中正確設定，工具鏈才能偵測對應的架構旗標。<code>cmake/toolchain.cmake</code> 會自動偵測 vendor GCC 與標準 GCC 並調整編譯選項。
+            </div>
+        </section>
+
         <section id="flashing">
             <h2>燒錄韌體</h2>
             <p>使用 SDK 內建的 <code>ipro_iot_tool_lite</code> 工具燒錄韌體到開發板。</p>
@@ -307,6 +414,17 @@ tools/board_test.sh --project apps/ipro_unit_test
 # 退出碼：0 = 通過, 1 = 失敗, 2 = 逾時</code></pre>
             </div>
 
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">快速重測（僅重啟板子，不重建不燒錄）</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 重啟板子並等待測試結果
+python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
+    --send reboot --timeout 30 \
+    --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
+            </div>
+
             <div class="alert alert-info">
                 <strong>💡 提示：</strong>測試應用需啟用 <code>CONFIG_TEST_AUTO_RUN=y</code>，測試會在開機後自動執行。測試結果標記為 <code>ALL TESTS PASSED</code> 或 <code>SOME TESTS FAILED</code>。
             </div>
@@ -327,10 +445,92 @@ tools/board_test.sh --project apps/ipro_unit_test
             </div>
 
             <h3>串口除錯</h3>
-            <p>大多數應用支援透過串口 CLI 進行即時除錯。連接串口後可使用 <code>reboot</code>（重啟）或 <code>reboot_dl</code>（進入下載模式）等指令。</p>
+            <p>大多數應用支援透過串口 CLI 進行即時除錯。連接串口後可使用以下指令：</p>
+            <ul>
+                <li><code>reboot</code> - 正常重啟</li>
+                <li><code>reboot_dl</code> - 進入下載模式（用於重新燒錄）</li>
+            </ul>
 
             <h3>VS Code 除錯配置</h3>
-            <p>SDK 提供 VS Code 擴充套件，支援圖形化除錯。詳細設定請參考 <code>tools/vscode_extension/</code>。</p>
+            <p>SDK 提供 VS Code 擴充套件，支援圖形化除錯。詳細設定請參考 <a href="{{ '/vscode-extension' | relative_url }}">VS Code 擴充套件</a> 頁面。</p>
+        </section>
+
+        <section id="troubleshooting">
+            <h2>疑難排解</h2>
+
+            <h3>macOS 串口問題</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>問題</th>
+                            <th>解決方案</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>串口連線無回應或阻塞</td>
+                            <td>使用 <code>/dev/cu.*</code> 而非 <code>/dev/tty.*</code>。<code>tty.*</code> 會等待 DCD 信號。</td>
+                        </tr>
+                        <tr>
+                            <td><code>cat</code> 指令無輸出</td>
+                            <td><code>cat</code> 在 macOS 上對串口有緩衝問題，請使用 <code>python3 tools/serial_monitor.py</code>。</td>
+                        </tr>
+                        <tr>
+                            <td>串口顯示 "Resource busy"</td>
+                            <td>確認沒有其他程式佔用串口（如 <code>stty</code>、其他串口監控工具），必要時重新插拔 USB。</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>工具鏈問題</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>問題</th>
+                            <th>解決方案</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>找不到工具鏈</td>
+                            <td>確認 <code>/opt/toolchain/riscv_ipro7/bin/</code> 存在且包含 <code>riscv64-unknown-elf-gcc</code>。</td>
+                        </tr>
+                        <tr>
+                            <td>工具鏈路徑不同</td>
+                            <td>設定 <code>CROSS_COMPILE</code> 環境變數指向正確路徑。</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>建構錯誤</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>問題</th>
+                            <th>解決方案</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>架構旗標偵測失敗</td>
+                            <td>確認 <code>.config</code> 檔案中 <code>CONFIG_CPU_ID</code> 已正確設定為 <code>"intelpro_ipro7"</code>。</td>
+                        </tr>
+                        <tr>
+                            <td>CMake 配置錯誤</td>
+                            <td>嘗試清除建構目錄：<code>make -C apps/&lt;project&gt; clean</code>，然後重新建構。</td>
+                        </tr>
+                        <tr>
+                            <td>CI 環境的 CMake 在 macOS 上無法使用</td>
+                            <td><code>tools/cmake/</code> 中的 CMake 是 Linux x86-64 ELF 格式，macOS 請安裝系統 CMake。</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
 
         <section id="next-steps">
@@ -352,6 +552,11 @@ tools/board_test.sh --project apps/ipro_unit_test
                     <div class="feature-icon">📦</div>
                     <h3 class="feature-title">研究範例</h3>
                     <p class="feature-description">探索各種參考應用的實作細節。</p>
+                </a>
+                <a href="{{ '/vscode-extension' | relative_url }}" class="feature-card" style="text-decoration: none;">
+                    <div class="feature-icon">🛠️</div>
+                    <h3 class="feature-title">工具與除錯</h3>
+                    <p class="feature-description">使用 VS Code 擴充套件與開發工具提升效率。</p>
                 </a>
             </div>
         </section>
