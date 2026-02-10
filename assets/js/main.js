@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', function() {
     initTableOfContents();
     initKeyboardNavigation();
     initImageLightbox();
+    initHeroParallax();
+    initCardTilt();
 });
 
 // Navigation Toggle
@@ -335,86 +337,129 @@ function initActiveNavigation() {
     });
 }
 
-// Particle Background Effect
+// Particle Background Effect with Mouse Interaction
 function initParticleBackground() {
     const hero = document.querySelector('.hero');
     if (!hero) return;
-    
+
+    // Skip on mobile for performance
+    if (window.innerWidth <= 768) return;
+
+    // Respect prefers-reduced-motion
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
     const canvas = document.createElement('canvas');
     canvas.className = 'particle-canvas';
-    canvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;';
+    canvas.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;';
     hero.insertBefore(canvas, hero.firstChild);
-    
+
     const ctx = canvas.getContext('2d');
     let particles = [];
     let animationId;
-    
+    let mouse = { x: -1000, y: -1000 };
+    const mouseRadius = 120;
+
     function resizeCanvas() {
         canvas.width = hero.offsetWidth;
         canvas.height = hero.offsetHeight;
     }
-    
+
     function createParticle() {
         return {
             x: Math.random() * canvas.width,
             y: Math.random() * canvas.height,
-            size: Math.random() * 2 + 1,
-            speedX: (Math.random() - 0.5) * 0.5,
-            speedY: (Math.random() - 0.5) * 0.5,
-            opacity: Math.random() * 0.5 + 0.2
+            size: Math.random() * 2 + 0.5,
+            speedX: (Math.random() - 0.5) * 0.4,
+            speedY: (Math.random() - 0.5) * 0.4,
+            opacity: Math.random() * 0.4 + 0.1
         };
     }
-    
+
     function initParticles() {
         particles = [];
-        const particleCount = Math.floor((canvas.width * canvas.height) / 15000);
+        const particleCount = Math.min(Math.floor((canvas.width * canvas.height) / 18000), 80);
         for (let i = 0; i < particleCount; i++) {
             particles.push(createParticle());
         }
     }
-    
+
     function drawParticles() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
+
         particles.forEach((p, i) => {
+            // Mouse interaction - gentle repulsion
+            const mdx = p.x - mouse.x;
+            const mdy = p.y - mouse.y;
+            const mDist = Math.sqrt(mdx * mdx + mdy * mdy);
+            if (mDist < mouseRadius && mDist > 0) {
+                const force = (mouseRadius - mDist) / mouseRadius * 0.8;
+                p.x += (mdx / mDist) * force;
+                p.y += (mdy / mDist) * force;
+            }
+
             ctx.beginPath();
             ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
             ctx.fillStyle = `rgba(16, 185, 129, ${p.opacity})`;
             ctx.fill();
-            
-            // Draw connections
-            particles.slice(i + 1).forEach(p2 => {
+
+            // Draw constellation connections
+            for (let j = i + 1; j < particles.length; j++) {
+                const p2 = particles[j];
                 const dx = p.x - p2.x;
                 const dy = p.y - p2.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
-                
-                if (dist < 100) {
+
+                if (dist < 120) {
                     ctx.beginPath();
                     ctx.moveTo(p.x, p.y);
                     ctx.lineTo(p2.x, p2.y);
-                    ctx.strokeStyle = `rgba(16, 185, 129, ${0.1 * (1 - dist / 100)})`;
+                    ctx.strokeStyle = `rgba(16, 185, 129, ${0.08 * (1 - dist / 120)})`;
+                    ctx.lineWidth = 0.5;
                     ctx.stroke();
                 }
-            });
-            
+            }
+
+            // Also draw connection to mouse if close
+            if (mDist < mouseRadius * 1.5) {
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(mouse.x, mouse.y);
+                ctx.strokeStyle = `rgba(16, 185, 129, ${0.15 * (1 - mDist / (mouseRadius * 1.5))})`;
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+            }
+
             // Update position
             p.x += p.speedX;
             p.y += p.speedY;
-            
+
             // Wrap around edges
             if (p.x < 0) p.x = canvas.width;
             if (p.x > canvas.width) p.x = 0;
             if (p.y < 0) p.y = canvas.height;
             if (p.y > canvas.height) p.y = 0;
         });
-        
+
         animationId = requestAnimationFrame(drawParticles);
     }
-    
+
+    // Track mouse position within hero
+    hero.style.pointerEvents = 'auto';
+    hero.addEventListener('mousemove', (e) => {
+        const rect = hero.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+    });
+
+    hero.addEventListener('mouseleave', () => {
+        mouse.x = -1000;
+        mouse.y = -1000;
+    });
+
     resizeCanvas();
     initParticles();
     drawParticles();
-    
+
     window.addEventListener('resize', () => {
         resizeCanvas();
         initParticles();
@@ -1156,6 +1201,55 @@ function initEnhancedCodeBlocks() {
                 block.appendChild(badge);
             }
         }
+    });
+}
+
+// Hero Parallax Effect
+function initHeroParallax() {
+    const hero = document.querySelector('.hero');
+    if (!hero || window.innerWidth <= 768) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const heroContent = hero.querySelector('.hero-content');
+    const heroVisual = hero.querySelector('.hero-visual');
+
+    window.addEventListener('scroll', () => {
+        const scrolled = window.scrollY;
+        const heroHeight = hero.offsetHeight;
+
+        if (scrolled < heroHeight) {
+            const offset = scrolled * 0.15;
+            if (heroContent) heroContent.style.transform = `translateY(${offset}px)`;
+            if (heroVisual) heroVisual.style.transform = `translateY(${offset * 0.6}px)`;
+        }
+    }, { passive: true });
+}
+
+// Card Tilt Effect
+function initCardTilt() {
+    if (window.innerWidth <= 768) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const cards = document.querySelectorAll('.feature-card, .app-card');
+
+    cards.forEach(card => {
+        card.style.transformStyle = 'preserve-3d';
+
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = (y - centerY) / centerY * -4;
+            const rotateY = (x - centerX) / centerX * 4;
+
+            card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-5px)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = '';
+        });
     });
 }
 
