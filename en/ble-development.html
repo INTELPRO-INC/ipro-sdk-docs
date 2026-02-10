@@ -10,34 +10,38 @@ lang: en
             <h4 class="sidebar-title">Table of Contents</h4>
             <ul class="sidebar-links">
                 <li><a href="#overview" class="sidebar-link">BLE 5.4 Overview</a></li>
-                <li><a href="#architecture" class="sidebar-link">Library Architecture</a></li>
+                <li><a href="#architecture" class="sidebar-link">Stack Architecture</a></li>
+                <li><a href="#controller-variants" class="sidebar-link">Controller Variants</a></li>
                 <li><a href="#getting-started" class="sidebar-link">Getting Started</a></li>
                 <li><a href="#gap-operations" class="sidebar-link">GAP Operations</a></li>
                 <li><a href="#gatt-services" class="sidebar-link">GATT Services</a></li>
                 <li><a href="#le-audio" class="sidebar-link">LE Audio</a></li>
+                <li><a href="#throughput" class="sidebar-link">Throughput Optimization</a></li>
+                <li><a href="#prebuilt-libs" class="sidebar-link">Prebuilt Libraries</a></li>
                 <li><a href="#debugging" class="sidebar-link">Debugging Tips</a></li>
                 <li><a href="#best-practices" class="sidebar-link">Best Practices</a></li>
+                <li><a href="#reference-apps" class="sidebar-link">Reference Applications</a></li>
             </ul>
         </nav>
     </aside>
 
     <article class="doc-content">
         <h1>BLE Development Guide</h1>
-        <p>This guide explains how to develop Bluetooth Low Energy applications using the IPRO SDK's BLE 5.4 library.</p>
+        <p>This guide explains how to develop Bluetooth Low Energy applications using the IPRO SDK's Zephyr BLE Host Stack. The SDK uses standard Zephyr <code>bt_*</code> APIs with a RivieraWaves controller, providing full BLE 5.4 functionality.</p>
 
         <section id="overview">
             <h2>BLE 5.4 Feature Overview</h2>
-            <p>IPRO SDK integrates the RivieraWaves BLE 5.4 protocol stack, providing comprehensive Bluetooth functionality:</p>
+            <p>IPRO SDK integrates the Zephyr BLE Host Stack with a RivieraWaves controller, providing comprehensive Bluetooth functionality:</p>
 
             <div class="features-grid" style="margin: 2rem 0;">
                 <div class="feature-card">
                     <div class="feature-icon">📡</div>
                     <h3 class="feature-title">Core Features</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
-                        <li>BLE 5.4 Host Stack</li>
-                        <li>Up to 4 simultaneous connections</li>
-                        <li>20+ BLE Profiles</li>
-                        <li>10-15m communication range</li>
+                        <li>BLE 5.4 Host Stack (Zephyr bt_* API)</li>
+                        <li>Up to 8 simultaneous connections (unified pool)</li>
+                        <li>23 GATT Profiles</li>
+                        <li>999 Kbps measured throughput</li>
                     </ul>
                 </div>
                 <div class="feature-card">
@@ -45,7 +49,7 @@ lang: en
                     <h3 class="feature-title">LE Audio</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
                         <li>LC3 codec (32-320 kbps)</li>
-                        <li>SBC fallback encoding</li>
+                        <li>BAP / CAP / VCP / MCP / CSIP</li>
                         <li>&lt;20ms audio latency</li>
                         <li>Isochronous Channels</li>
                     </ul>
@@ -64,38 +68,116 @@ lang: en
         </section>
 
         <section id="architecture">
-            <h2>Library Architecture</h2>
-            <p><code>ipro_ble_lib</code> adopts a Core/Profile separation architecture, providing clear abstraction layers:</p>
+            <h2>Stack Architecture</h2>
+            <p>The BLE stack uses a Zephyr Host + RivieraWaves Controller dual-layer architecture. Applications use the standard Zephyr <code>bt_*</code> APIs:</p>
 
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">BLE Library Architecture</span>
+                    <span class="code-block-title">BLE Stack Architecture</span>
                 </div>
-                <pre><code>components/wireless/ipro_ble_lib/
-├── inc/
-│   ├── core/                 # Core BLE functionality APIs
-│   │   ├── ipro_ble_gap.h    # GAP operations
-│   │   ├── ipro_ble_gatt.h   # GATT operations
-│   │   └── ipro_ble_sm.h     # Security management
-│   ├── services/             # Standard BLE services
-│   │   ├── ipro_ble_bas.h    # Battery Service
-│   │   ├── ipro_ble_hrs.h    # Heart Rate Service
-│   │   └── ipro_ble_dis.h    # Device Information Service
-│   ├── audio/                # LE Audio APIs
-│   └── ipro_ble_api.h        # Main public API
-└── src/
-    ├── core/                 # Core implementation
-    ├── services/             # Service implementation
-    └── audio/                # LE Audio implementation</code></pre>
+                <pre><code>components/wireless/bluetooth/
+├── blestack/                        # Zephyr BLE Host Stack (buildable source)
+│   └── src/include/bluetooth/       # Public headers
+│       ├── bluetooth.h              # bt_enable(), bt_le_adv_start()
+│       ├── conn.h                   # bt_conn_create_le(), bt_conn_cb_register()
+│       ├── gatt.h                   # bt_gatt_service_register(), bt_gatt_notify()
+│       ├── uuid.h                   # BT_UUID_DECLARE_16() etc.
+│       └── audio/                   # LE Audio APIs (BAP, CAP, VCP...)
+├── btblecontroller/                 # RivieraWaves Controller (prebuilt linkN variant libs)
+├── btprofile/                       # 23 GATT Profiles
+│   ├── bas/   dis/   hogp/          # Battery, Device Info, HID
+│   ├── csip/  otp/   find/          # CSIP, OTP, Find Me
+│   └── ...
+├── ble_common.cmake                 # Controller variant configuration
+└── btble_inc/                       # Legacy compatibility headers</code></pre>
             </div>
 
             <h3>Core Concepts</h3>
             <ul>
-                <li><strong>Core Layer</strong>: Handles GAP, GATT, L2CAP, SMP and other protocol operations</li>
-                <li><strong>Profile Layer</strong>: Implements standard and custom BLE services</li>
-                <li><strong>Event-Driven</strong>: Uses asynchronous callbacks to handle BLE events</li>
-                <li><strong>Message Passing</strong>: Communicates with BLE protocol stack via ke_msg system</li>
+                <li><strong>Zephyr bt_* API</strong>: Applications use standard Zephyr BLE APIs (replacing deprecated ipro_ble_api.h)</li>
+                <li><strong>Callback-driven</strong>: Register connection callbacks with <code>bt_conn_cb_register()</code></li>
+                <li><strong>Static service definition</strong>: Define GATT services using <code>BT_GATT_SERVICE_DEFINE()</code> macro</li>
+                <li><strong>Unified connection pool</strong>: In linkN variants, N = total connections, any Central/Peripheral mix</li>
             </ul>
+        </section>
+
+        <section id="controller-variants">
+            <h2>Controller Variants (linkN Naming)</h2>
+            <p>The controller uses a unified connection pool architecture. In linkN, N represents the total simultaneous connection count. Each connection slot can be used as Central or Peripheral:</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Variant</th>
+                            <th>Connections</th>
+                            <th>TX Buffers</th>
+                            <th>Role Support</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>link1_periph</code></td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>Peripheral only</td>
+                            <td>Minimal footprint, peripheral only</td>
+                        </tr>
+                        <tr>
+                            <td><code>link1</code></td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>All roles</td>
+                            <td>Single connection, all roles</td>
+                        </tr>
+                        <tr>
+                            <td><code>link2</code></td>
+                            <td>2</td>
+                            <td>4</td>
+                            <td>All roles</td>
+                            <td>Dual connection (2C+0P, 1C+1P, 0C+2P)</td>
+                        </tr>
+                        <tr>
+                            <td><code>link4</code></td>
+                            <td>4</td>
+                            <td>6</td>
+                            <td>All roles</td>
+                            <td>Four connections, any combination</td>
+                        </tr>
+                        <tr>
+                            <td><code>link8</code></td>
+                            <td>8</td>
+                            <td>8</td>
+                            <td>All roles</td>
+                            <td>Eight connections, any combination</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>LE Audio and BLE 5.3/5.4 Suffixes</h3>
+            <p>Base variants can have suffixes appended to enable advanced features:</p>
+            <ul>
+                <li><code>_leaudio</code> — BLE 5.2 + LE Audio (BAP, CAP, VCP, MCP, CSIP)</li>
+                <li><code>_leaudio_53_54</code> — BLE 5.4 + LE Audio (most complete feature set)</li>
+            </ul>
+            <p>Examples: <code>link1_leaudio</code>, <code>link2_leaudio_53_54</code></p>
+
+            <h3>Kconfig Configuration</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">.config Variant Selection</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Select controller variant
+CONFIG_BTBLECONTROLLER_LIB="link2"
+
+# Or use boolean flag composition
+CONFIG_BTBLECONTROLLER_LIB="link2"
+CONFIG_BTBLECONTROLLER_LE_AUDIO=y     # Appends _leaudio
+CONFIG_BTBLECONTROLLER_BT_54=y        # Appends _53_54 (5.4 implies 5.3)</code></pre>
+            </div>
         </section>
 
         <section id="getting-started">
@@ -104,42 +186,56 @@ lang: en
             <h3>1. Initialize BLE Subsystem</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">BLE Initialization</span>
+                    <span class="code-block-title">BLE Initialization (Zephyr bt_* API)</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">#include "ipro_ble_api.h"
+                <pre><code class="language-c">#include &lt;bluetooth/bluetooth.h&gt;
+#include &lt;bluetooth/conn.h&gt;
+#include &lt;bluetooth/gatt.h&gt;
 
-// BLE event callback
-void ble_event_handler(ipro_ble_event_t *event)
+/* Connection callbacks */
+static void connected(struct bt_conn *conn, u8_t err)
 {
-    switch (event->type) {
-        case IPRO_BLE_EVT_READY:
-            IPRO_LOG_INFO("BLE stack ready");
-            // Start advertising
-            start_advertising();
-            break;
-            
-        case IPRO_BLE_EVT_CONNECTED:
-            IPRO_LOG_INFO("Device connected");
-            break;
-            
-        case IPRO_BLE_EVT_DISCONNECTED:
-            IPRO_LOG_INFO("Device disconnected");
-            // Restart advertising
-            start_advertising();
-            break;
+    if (err) {
+        printk("Connection failed (err %u)\n", err);
+        return;
     }
+    printk("Connected\n");
+}
+
+static void disconnected(struct bt_conn *conn, u8_t reason)
+{
+    printk("Disconnected (reason %u)\n", reason);
+}
+
+static struct bt_conn_cb conn_callbacks = {
+    .connected = connected,
+    .disconnected = disconnected,
+};
+
+/* BLE ready callback */
+static void bt_ready(int err)
+{
+    if (err) {
+        printk("Bluetooth init failed (err %d)\n", err);
+        return;
+    }
+    printk("Bluetooth initialized\n");
+
+    /* Start advertising */
+    start_advertising();
 }
 
 void app_init(void)
 {
-    // Initialize BLE library
-    ipro_ble_config_t config = {
-        .device_name = "IPRO Device",
-        .event_handler = ble_event_handler,
-    };
-    
-    ipro_ble_init(&config);
+    /* Register connection callbacks */
+    bt_conn_cb_register(&conn_callbacks);
+
+    /* Enable Bluetooth */
+    int err = bt_enable(bt_ready);
+    if (err) {
+        printk("bt_enable failed (err %d)\n", err);
+    }
 }</code></pre>
             </div>
 
@@ -149,46 +245,40 @@ void app_init(void)
                     <span class="code-block-title">Advertising Setup</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">void start_advertising(void)
+                <pre><code class="language-c">static const struct bt_data ad[] = {
+    BT_DATA_BYTES(BT_DATA_FLAGS,
+                  BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR),
+    BT_DATA_BYTES(BT_DATA_UUID16_ALL,
+                  0x0d, 0x18),  /* Heart Rate Service */
+};
+
+static const struct bt_data sd[] = {
+    BT_DATA(BT_DATA_NAME_COMPLETE, "IPRO Device", 11),
+};
+
+void start_advertising(void)
 {
-    ipro_ble_adv_params_t adv_params = {
-        .interval_min = 160,  // 100ms
-        .interval_max = 320,  // 200ms
-        .type = IPRO_BLE_ADV_TYPE_CONNECTABLE,
-        .own_addr_type = IPRO_BLE_ADDR_TYPE_PUBLIC,
-    };
-    
-    // Advertising data
-    uint8_t adv_data[] = {
-        // Flags
-        0x02, 0x01, 0x06,
-        // Complete Local Name
-        0x0C, 0x09, 'I', 'P', 'R', 'O', ' ', 'D', 'e', 'v', 'i', 'c', 'e',
-        // Service UUIDs (Heart Rate Service)
-        0x03, 0x03, 0x0D, 0x18,
-    };
-    
-    ipro_ble_gap_set_adv_data(adv_data, sizeof(adv_data));
-    ipro_ble_gap_start_advertising(&adv_params);
+    int err = bt_le_adv_start(BT_LE_ADV_CONN_NAME,
+                              ad, ARRAY_SIZE(ad),
+                              sd, ARRAY_SIZE(sd));
+    if (err) {
+        printk("Advertising failed to start (err %d)\n", err);
+    }
 }</code></pre>
             </div>
 
             <h3>3. Enable Configuration Options</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">proj.conf</span>
+                    <span class="code-block-title">.config</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># Enable BLE library
-CONFIG_IPRO_BLE_LIB_ENABLE=y
+                <pre><code class="language-bash"># Enable BLE
+CONFIG_BLUETOOTH_LE_ENABLE=y
+CONFIG_BTBLECONTROLLER_LIB="link2"
 
 # Enable debug output
-CONFIG_IPRO_BLE_LIB_DEBUG_ENABLE=y
-
-# Enable required services
-CONFIG_IPRO_BLE_HRS_ENABLE=y
-CONFIG_IPRO_BLE_BAS_ENABLE=y
-CONFIG_IPRO_BLE_DIS_ENABLE=y</code></pre>
+CONFIG_LOG_DEFAULT_LEVEL=4</code></pre>
             </div>
         </section>
 
@@ -201,17 +291,19 @@ CONFIG_IPRO_BLE_DIS_ENABLE=y</code></pre>
                     <span class="code-block-title">Advertising Control</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">// Start advertising
-ipro_ble_gap_start_advertising(&adv_params);
+                <pre><code class="language-c">/* Start connectable advertising with default params */
+bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd));
 
-// Stop advertising
-ipro_ble_gap_stop_advertising();
+/* Use custom parameters */
+struct bt_le_adv_param param = {
+    .options = BT_LE_ADV_OPT_CONNECTABLE | BT_LE_ADV_OPT_USE_NAME,
+    .interval_min = BT_GAP_ADV_FAST_INT_MIN_2,
+    .interval_max = BT_GAP_ADV_FAST_INT_MAX_2,
+};
+bt_le_adv_start(&param, ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd));
 
-// Update advertising data
-ipro_ble_gap_set_adv_data(new_data, data_len);
-
-// Set scan response data
-ipro_ble_gap_set_scan_rsp_data(rsp_data, rsp_len);</code></pre>
+/* Stop advertising */
+bt_le_adv_stop();</code></pre>
             </div>
 
             <h3>Connection Management</h3>
@@ -220,94 +312,124 @@ ipro_ble_gap_set_scan_rsp_data(rsp_data, rsp_len);</code></pre>
                     <span class="code-block-title">Connection Operations</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">// Update connection parameters
-ipro_ble_conn_params_t params = {
-    .interval_min = 24,   // 30ms
-    .interval_max = 40,   // 50ms
+                <pre><code class="language-c">/* Initiate connection (Central role) */
+struct bt_conn *conn = bt_conn_create_le(&peer_addr,
+                                          BT_LE_CONN_PARAM_DEFAULT);
+
+/* Update connection parameters */
+struct bt_le_conn_param param = {
+    .interval_min = 24,   /* 30ms */
+    .interval_max = 40,   /* 50ms */
     .latency = 0,
-    .timeout = 400,       // 4s
+    .timeout = 400,       /* 4s */
 };
-ipro_ble_gap_update_conn_params(conn_idx, &params);
+bt_conn_le_param_update(conn, &param);
 
-// Disconnect
-ipro_ble_gap_disconnect(conn_idx, IPRO_BLE_REASON_REMOTE_USER);</code></pre>
-            </div>
-
-            <div class="alert alert-warning">
-                <strong>⚠️ Important:</strong> Advertising activity management must follow the complete lifecycle: Stop → Delete → Reset actv_idx, to avoid resource conflicts (error code 0x004B).
+/* Disconnect */
+bt_conn_disconnect(conn, BT_HCI_ERR_REMOTE_USER_TERM_CONN);</code></pre>
             </div>
         </section>
 
         <section id="gatt-services">
             <h2>GATT Services</h2>
 
-            <h3>Using Standard Services</h3>
+            <h3>Static Service Definition</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">Heart Rate Service Example</span>
+                    <span class="code-block-title">Custom GATT Service Example</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">#include "ipro_ble_hrs.h"
+                <pre><code class="language-c">#include &lt;bluetooth/gatt.h&gt;
+#include &lt;bluetooth/uuid.h&gt;
 
-// Initialize Heart Rate Service
-ipro_ble_hrs_init_t hrs_init = {
-    .initial_hr = 75,
-    .body_sensor_location = IPRO_BLE_HRS_BODY_SENSOR_WRIST,
-};
-ipro_ble_hrs_init(&hrs_init);
+/* Define custom UUIDs */
+static struct bt_uuid_128 custom_svc_uuid = BT_UUID_INIT_128(
+    0xf0, 0xde, 0xbc, 0x9a, 0x78, 0x56, 0x34, 0x12,
+    0x78, 0x56, 0x34, 0x12, 0x78, 0x56, 0x34, 0x12);
 
-// Update heart rate value
-void update_heart_rate(uint16_t hr_value)
+static struct bt_uuid_128 custom_char_uuid = BT_UUID_INIT_128(
+    0xf1, 0xde, 0xbc, 0x9a, 0x78, 0x56, 0x34, 0x12,
+    0x78, 0x56, 0x34, 0x12, 0x78, 0x56, 0x34, 0x12);
+
+static uint8_t custom_value[512];
+
+/* Read callback */
+static ssize_t read_custom(struct bt_conn *conn,
+                           const struct bt_gatt_attr *attr,
+                           void *buf, u16_t len, u16_t offset)
 {
-    ipro_ble_hrs_measurement_t measurement = {
-        .hr_value = hr_value,
-        .flags = IPRO_BLE_HRS_FLAG_VALUE_FORMAT_UINT8,
-    };
-    ipro_ble_hrs_send_measurement(&measurement);
+    return bt_gatt_attr_read(conn, attr, buf, len, offset,
+                             custom_value, sizeof(custom_value));
+}
+
+/* Statically define service using macro */
+BT_GATT_SERVICE_DEFINE(custom_svc,
+    BT_GATT_PRIMARY_SERVICE(&custom_svc_uuid),
+    BT_GATT_CHARACTERISTIC(&custom_char_uuid.uuid,
+                           BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY,
+                           BT_GATT_PERM_READ,
+                           read_custom, NULL, custom_value),
+    BT_GATT_CCC(NULL, BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
+);
+
+/* Send notification */
+void notify_custom_value(struct bt_conn *conn)
+{
+    bt_gatt_notify(conn, &custom_svc.attrs[1],
+                   custom_value, sizeof(custom_value));
 }</code></pre>
             </div>
 
-            <h3>Custom Services</h3>
+            <h3>Dynamic Service Registration</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">Custom Service Example</span>
+                    <span class="code-block-title">Dynamic Registration</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">// Define custom UUIDs
-#define CUSTOM_SERVICE_UUID     0x1234
-#define CUSTOM_CHAR_RX_UUID     0x1235
-#define CUSTOM_CHAR_TX_UUID     0x1236
+                <pre><code class="language-c">/* Dynamic service attribute array */
+static struct bt_gatt_attr svc_attrs[] = { /* ... */ };
+static struct bt_gatt_service svc = BT_GATT_SERVICE(svc_attrs);
 
-// Service characteristic definitions
-static const ipro_ble_gatt_char_t custom_chars[] = {
-    {
-        .uuid = CUSTOM_CHAR_RX_UUID,
-        .properties = IPRO_BLE_GATT_PROP_WRITE | IPRO_BLE_GATT_PROP_WRITE_NO_RSP,
-        .permissions = IPRO_BLE_GATT_PERM_WRITE,
-        .max_len = 512,
-    },
-    {
-        .uuid = CUSTOM_CHAR_TX_UUID,
-        .properties = IPRO_BLE_GATT_PROP_READ | IPRO_BLE_GATT_PROP_NOTIFY,
-        .permissions = IPRO_BLE_GATT_PERM_READ,
-        .max_len = 512,
-    },
-};
+/* Register at runtime */
+int err = bt_gatt_service_register(&svc);</code></pre>
+            </div>
 
-// Register service
-ipro_ble_gatt_service_t service = {
-    .uuid = CUSTOM_SERVICE_UUID,
-    .chars = custom_chars,
-    .char_count = 2,
-    .handler = custom_service_handler,
-};
-ipro_ble_gatt_register_service(&service);</code></pre>
+            <h3>Built-in Profiles (btprofile/)</h3>
+            <p>The SDK provides 23 GATT Profile implementations:</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Profile</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>bas</code></td><td>Battery Service</td></tr>
+                        <tr><td><code>dis</code></td><td>Device Information Service</td></tr>
+                        <tr><td><code>hogp</code></td><td>HID over GATT Profile</td></tr>
+                        <tr><td><code>csip</code></td><td>Coordinated Set Identification Profile</td></tr>
+                        <tr><td><code>otp</code></td><td>Object Transfer Profile</td></tr>
+                        <tr><td><code>find</code></td><td>Find Me Profile</td></tr>
+                        <tr><td><code>tip</code></td><td>Time Profile</td></tr>
+                        <tr><td><code>anp</code></td><td>Alert Notification Profile</td></tr>
+                    </tbody>
+                </table>
             </div>
         </section>
 
         <section id="le-audio">
             <h2>LE Audio</h2>
-            <p>The SDK supports complete LE Audio functionality, including LC3 codec and GAF framework.</p>
+            <p>The SDK supports complete LE Audio functionality, requiring controller variants with the <code>_leaudio</code> suffix. Headers are located at <code>bluetooth/audio/</code>.</p>
+
+            <h3>Supported LE Audio Profiles</h3>
+            <ul>
+                <li><strong>BAP</strong> — Basic Audio Profile (unicast/broadcast audio streams)</li>
+                <li><strong>CAP</strong> — Common Audio Profile (coordinated audio operations)</li>
+                <li><strong>VCP</strong> — Volume Control Profile</li>
+                <li><strong>MCP</strong> — Media Control Profile</li>
+                <li><strong>CSIP</strong> — Coordinated Set Identification Profile</li>
+            </ul>
 
             <h3>LE Audio Services</h3>
             <ul>
@@ -316,40 +438,92 @@ ipro_ble_gatt_register_service(&service);</code></pre>
                 <li><strong>CAS</strong> (0x1853) - Common Audio Service</li>
             </ul>
 
+            <h3>Configuration</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">LE Audio Advertising Configuration</span>
+                    <span class="code-block-title">.config LE Audio Configuration</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">// LE Audio device advertising data
-uint8_t le_audio_adv_data[] = {
-    // Flags
-    0x02, 0x01, 0x06,
-    // Device Appearance (Generic Audio Device)
-    0x03, 0x19, 0x41, 0x08,
-    // Complete list of 16-bit Service UUIDs
-    0x07, 0x03,
-    0x4E, 0x18,  // ASCS UUID
-    0x50, 0x18,  // PACS UUID
-    0x53, 0x18,  // CAS UUID
-};</code></pre>
+                <pre><code class="language-bash"># Enable LE Audio controller
+CONFIG_BTBLECONTROLLER_LIB="link2"
+CONFIG_BTBLECONTROLLER_LE_AUDIO=y
+CONFIG_BTBLECONTROLLER_BT_54=y
+
+# Resulting variant: link2_leaudio_53_54</code></pre>
             </div>
 
-            <h3>GAF/BAP Integration</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">BAP Configuration</span>
+                    <span class="code-block-title">LE Audio Advertising Data</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">// BAP configuration request
-bap_configure_req_t *req = ke_msg_alloc(
-    BAP_CONFIGURE_REQ,
-    prf_get_task_from_id(TASK_ID_BAP),
-    task_id,
-    sizeof(bap_configure_req_t)
-);
-req->role_bf = BAP_ROLE_UNICAST_SERVER;
-ke_msg_send(req);</code></pre>
+                <pre><code class="language-c">static const struct bt_data le_audio_ad[] = {
+    BT_DATA_BYTES(BT_DATA_FLAGS,
+                  BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR),
+    BT_DATA_BYTES(BT_DATA_UUID16_ALL,
+                  0x4E, 0x18,  /* ASCS */
+                  0x50, 0x18,  /* PACS */
+                  0x53, 0x18), /* CAS */
+};</code></pre>
+            </div>
+        </section>
+
+        <section id="throughput">
+            <h2>Throughput Optimization</h2>
+
+            <h3>Connection Parameters and TX Descriptors</h3>
+            <p>Key parameters that affect throughput:</p>
+            <ul>
+                <li><strong>max_ce_len</strong>: Maximum connection event length; larger values allow more packets per event</li>
+                <li><strong>BLE_NB_TX_DESC_PER_CON</strong>: TX descriptors per connection</li>
+                <li><strong>CONFIG_BLE_TX_BUFF_DATA</strong>: TX buffer count (auto-scaled by linkN variant)</li>
+            </ul>
+
+            <h3>MTU Optimization</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">MTU and High-Speed Transfer</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/* Calculate optimal payload after MTU negotiation */
+uint16_t mtu = bt_gatt_get_mtu(conn);
+uint16_t payload = (mtu > 3) ? (mtu - 3) : 20;  /* ATT header = 3 bytes */
+
+/* Send notification */
+bt_gatt_notify(conn, attr, data, payload);</code></pre>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡 Performance Benchmarks:</strong>
+                <ul style="margin-top: 0.5rem; margin-bottom: 0;">
+                    <li>MTU 517 + optimized TX descriptors: <strong>999 Kbps</strong> measured throughput</li>
+                    <li>Image transfer: 56KB in 542ms, achieving 101.4 KB/s (811 Kbps)</li>
+                    <li>TX buffers auto-scale by variant: link1=2, link2=4, link4=6, link8=8</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="prebuilt-libs">
+            <h2>Prebuilt Libraries</h2>
+            <p>The controller is provided as prebuilt static libraries. <code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> cannot be used in release builds.</p>
+
+            <h3>Build Script</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Building Prebuilt Libraries</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Build a specific variant
+components/wireless/bluetooth/build_all_prebuilts.sh link2
+
+# Build all variants
+components/wireless/bluetooth/build_all_prebuilts.sh all
+
+# Output: btblecontroller_ipro7_link2/libbtblecontroller_ipro7_link2.a</code></pre>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>⚠️ Important:</strong> <code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> is for development and debugging only. It cannot be used in release builds.
             </div>
         </section>
 
@@ -359,11 +533,10 @@ ke_msg_send(req);</code></pre>
             <h3>Enable Debug Logging</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">proj.conf</span>
+                    <span class="code-block-title">.config</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># Enable BLE debugging
-CONFIG_IPRO_BLE_LIB_DEBUG_ENABLE=y
 CONFIG_LOG_DEFAULT_LEVEL=4  # DEBUG level</code></pre>
             </div>
 
@@ -396,90 +569,76 @@ CONFIG_LOG_DEFAULT_LEVEL=4  # DEBUG level</code></pre>
                     </tbody>
                 </table>
             </div>
-
-            <h3>Using CLI for Debugging</h3>
-            <p><code>ipro_ble_demo</code> provides 40+ CLI commands for debugging:</p>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">CLI Command Examples</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># View BLE status
-ble status
-
-# Start/stop advertising
-ble adv start
-ble adv stop
-
-# Connection management
-ble conn list
-ble conn disconnect 0
-
-# Service operations
-ble hrs update 80
-ble bas update 75</code></pre>
-            </div>
         </section>
 
         <section id="best-practices">
             <h2>Best Practices</h2>
 
-            <h3>1. Activity Resource Management</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Complete Advertising Cleanup Flow</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">// Correct activity cleanup sequence
-void cleanup_advertising(void)
-{
-    // 1. Stop activity
-    gapm_activity_stop_cmd_t *stop = ke_msg_alloc(
-        GAPM_ACTIVITY_STOP_CMD, ...);
-    stop->actv_idx = adv_actv_idx;
-    ke_msg_send(stop);
-    
-    // 2. Wait for GAPM_ACTIVITY_STOPPED_IND
-    
-    // 3. Delete activity
-    gapm_activity_delete_cmd_t *del = ke_msg_alloc(
-        GAPM_ACTIVITY_DELETE_CMD, ...);
-    del->actv_idx = adv_actv_idx;
-    ke_msg_send(del);
-    
-    // 4. Reset index
-    adv_actv_idx = GAP_INVALID_IDX;
-}</code></pre>
-            </div>
-
-            <h3>2. Reconnection Mechanism</h3>
+            <h3>1. Reconnection Mechanism</h3>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">Auto-Reconnection Implementation</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">void on_disconnect(uint8_t reason)
+                <pre><code class="language-c">static void disconnected(struct bt_conn *conn, u8_t reason)
 {
-    // Delay before restarting advertising
-    vTaskDelay(pdMS_TO_TICKS(500));
-    
-    for (int retry = 0; retry < 3; retry++) {
-        if (restart_advertising() == 0) {
-            break;
-        }
-        vTaskDelay(pdMS_TO_TICKS(1000 * (retry + 1)));
+    /* Delay before restarting advertising */
+    k_sleep(K_MSEC(500));
+
+    int err = bt_le_adv_start(BT_LE_ADV_CONN_NAME,
+                              ad, ARRAY_SIZE(ad),
+                              sd, ARRAY_SIZE(sd));
+    if (err) {
+        printk("Re-advertising failed (err %d)\n", err);
     }
 }</code></pre>
             </div>
 
-            <h3>3. Testing Validation</h3>
+            <h3>2. Testing Validation</h3>
             <ul>
-                <li>✅ Multiple disconnect-reconnect cycle testing</li>
-                <li>✅ Phone/central device can correctly discover and pair</li>
-                <li>✅ LE Audio services (ASCS, PACS, CAS) are accessible</li>
-                <li>✅ No 0x004B resource errors</li>
-                <li>✅ Memory usage remains stable</li>
+                <li>Multiple disconnect-reconnect cycle testing</li>
+                <li>Phone/central device can correctly discover and pair</li>
+                <li>LE Audio services (ASCS, PACS, CAS) are accessible</li>
+                <li>No 0x004B resource errors</li>
+                <li>Memory usage remains stable</li>
             </ul>
+        </section>
+
+        <section id="reference-apps">
+            <h2>Reference Applications</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Application</th>
+                            <th>Features</th>
+                            <th>Path</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>ipro_ble_remote</strong></td>
+                            <td>GATT + OTA update</td>
+                            <td><code>apps/bluetooth/ipro_ble_remote/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_walkie_talkie</strong></td>
+                            <td>BIS LE Audio broadcast</td>
+                            <td><code>apps/bluetooth/ipro_walkie_talkie/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_le_audio_headset</strong></td>
+                            <td>GAF/BAP unicast audio</td>
+                            <td><code>apps/bluetooth/ipro_le_audio_headset/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_throughput_test</strong></td>
+                            <td>Throughput benchmark testing</td>
+                            <td><code>apps/bluetooth/ipro_throughput_test/</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
     </article>
 </div>

@@ -8,6 +8,9 @@ title: 更新日誌
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">版本</h4>
             <ul class="sidebar-links">
+                <li><a href="#feb-2026" class="sidebar-link">2026 年 2 月</a></li>
+                <li><a href="#dec-2025" class="sidebar-link">2025 年 12 月</a></li>
+                <li><a href="#sep-dec-2025" class="sidebar-link">2025 年 9-12 月</a></li>
                 <li><a href="#aug-2025" class="sidebar-link">2025 年 8 月</a></li>
                 <li><a href="#earlier" class="sidebar-link">更早版本</a></li>
             </ul>
@@ -17,6 +20,53 @@ title: 更新日誌
     <article class="doc-content">
         <h1>更新日誌</h1>
         <p>IPRO SDK 的版本更新記錄。</p>
+
+        <section id="feb-2026">
+            <h2>2026 年 2 月</h2>
+
+            <h3>BLE 吞吐量優化</h3>
+            <ul>
+                <li><strong>feat:</strong> BLE 吞吐量優化至 999 Kbps
+                    <ul>
+                        <li>從約 600 Kbps 提升至 999 Kbps</li>
+                        <li>連線參數調整與 TX Descriptor 優化</li>
+                        <li><code>BLE_NB_TX_DESC_PER_CON</code> 參數最佳化</li>
+                    </ul>
+                </li>
+                <li><strong>fix:</strong> 重建 link2 預編譯 BLE Controller 函式庫
+                    <ul>
+                        <li>包含 TX Descriptor 優化</li>
+                        <li>使用 <code>build_all_prebuilts.sh</code> 自動化重建</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3>ipro_throughput_test 應用程式</h3>
+            <ul>
+                <li><strong>refactor:</strong> 從 ipro_ble_lib 遷移至原生 Zephyr bt_* API
+                    <ul>
+                        <li>使用標準 Zephyr BLE API 取代自訂封裝</li>
+                        <li>更好的可維護性和程式碼可讀性</li>
+                    </ul>
+                </li>
+                <li><strong>docs:</strong> 新增完整的 README 和操作手冊
+                    <ul>
+                        <li>詳細的使用說明和 CLI 指令參考</li>
+                        <li>效能調校指南</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h3>工具與基礎設施</h3>
+            <ul>
+                <li><strong>feat:</strong> 新增 <code>build_all_prebuilts.sh</code> 自動化預編譯函式庫生成腳本
+                    <ul>
+                        <li>支援單一變體或全部變體重建</li>
+                        <li>自動剝離除錯資訊、寫入版本中繼資料</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
 
         <section id="dec-2025">
             <h2>2025 年 12 月</h2>

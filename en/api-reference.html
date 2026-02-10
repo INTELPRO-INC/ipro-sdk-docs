@@ -7,11 +7,25 @@ title: API Reference - IPRO SDK
 <div class="doc-layout">
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
-            <h4 class="sidebar-title">Table of Contents</h4>
+            <h4 class="sidebar-title">API Categories</h4>
             <ul class="sidebar-links">
-                <li><a href="#ble-api" class="sidebar-link">BLE API</a></li>
-                <li><a href="#hal-api" class="sidebar-link">HAL API</a></li>
-                <li><a href="#rtos-api" class="sidebar-link">RTOS API</a></li>
+                <li class="sidebar-section-title">BLE API</li>
+                <li><a href="#ble-core" class="sidebar-link">Core Initialization</a></li>
+                <li><a href="#ble-adv" class="sidebar-link">Advertising</a></li>
+                <li><a href="#ble-conn" class="sidebar-link">Connection Management</a></li>
+                <li><a href="#ble-gatt-server" class="sidebar-link">GATT Server</a></li>
+                <li><a href="#ble-gatt-client" class="sidebar-link">GATT Client</a></li>
+                <li class="sidebar-section-title">HAL API</li>
+                <li><a href="#hal-gpio" class="sidebar-link">GPIO</a></li>
+                <li><a href="#hal-uart" class="sidebar-link">UART</a></li>
+                <li><a href="#hal-spi" class="sidebar-link">SPI</a></li>
+                <li><a href="#hal-i2c" class="sidebar-link">I2C</a></li>
+                <li><a href="#hal-pwm" class="sidebar-link">PWM</a></li>
+                <li><a href="#hal-adc" class="sidebar-link">ADC</a></li>
+                <li class="sidebar-section-title">RTOS API</li>
+                <li><a href="#rtos-freertos" class="sidebar-link">FreeRTOS</a></li>
+                <li><a href="#rtos-zephyr" class="sidebar-link">Zephyr</a></li>
+                <li class="sidebar-section-title">Other</li>
                 <li><a href="#log-api" class="sidebar-link">Log API</a></li>
             </ul>
         </nav>
@@ -19,191 +33,582 @@ title: API Reference - IPRO SDK
 
     <article class="doc-content">
         <h1>API Reference</h1>
-        <p>This page provides a quick reference for the main IPRO SDK APIs. For complete API documentation, please refer to the header file comments in the source code.</p>
+        <p>This page provides a reference for the main IPRO SDK APIs. The BLE API uses Zephyr-style <code>bt_*</code> callback-based APIs, and the HAL API provides low-level hardware access. For complete API documentation, please refer to the header file comments in the source code.</p>
 
-        <section id="ble-api">
-            <h2>BLE API</h2>
-            <p>The BLE library provides comprehensive Bluetooth Low Energy functionality.</p>
+        <!-- ==================== BLE Core ==================== -->
 
-            <h3>Initialization API</h3>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Function</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>ipro_ble_init()</code></td>
-                            <td>Initialize the BLE subsystem</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_ble_deinit()</code></td>
-                            <td>Deinitialize the BLE subsystem</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <h3>GAP API</h3>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Function</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>ipro_ble_gap_start_advertising()</code></td>
-                            <td>Start advertising</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_ble_gap_stop_advertising()</code></td>
-                            <td>Stop advertising</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_ble_gap_set_adv_data()</code></td>
-                            <td>Set advertising data</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_ble_gap_disconnect()</code></td>
-                            <td>Disconnect connection</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_ble_gap_update_conn_params()</code></td>
-                            <td>Update connection parameters</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <h3>GATT API</h3>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Function</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>ipro_ble_gatt_register_service()</code></td>
-                            <td>Register GATT service</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_ble_gatt_notify()</code></td>
-                            <td>Send notification</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_ble_gatt_indicate()</code></td>
-                            <td>Send indication</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <h3>Service API</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Heart Rate Service</span>
-                </div>
-                <pre><code class="language-c">// Initialize heart rate service
-int ipro_ble_hrs_init(ipro_ble_hrs_init_t *init);
-
-// Send heart rate measurement
-int ipro_ble_hrs_send_measurement(ipro_ble_hrs_measurement_t *measurement);
-
-// Set body sensor location
-int ipro_ble_hrs_set_body_sensor_location(uint8_t location);</code></pre>
-            </div>
+        <section id="ble-core">
+            <h2>BLE Core Initialization</h2>
+            <p>The BLE subsystem uses Zephyr-style <code>bt_*</code> APIs. <code>bt_enable()</code> must be called before any BLE operations.</p>
 
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">Battery Service</span>
+                    <span class="code-block-title">bluetooth/bluetooth.h</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">// Initialize battery service
-int ipro_ble_bas_init(void);
+                <pre><code class="language-c">/** Enable the Bluetooth subsystem
+ *  @param cb  Completion callback, NULL for synchronous enable
+ *  @return 0 on success, negative error code on failure
+ */
+int bt_enable(bt_ready_cb_t cb);
 
-// Update battery level
-int ipro_ble_bas_update_level(uint8_t level);</code></pre>
+/** Set the Bluetooth device name
+ *  @param name  New name string
+ *  @return 0 on success, negative error code on failure
+ */
+int bt_set_name(const char *name);
+
+/** Get the Bluetooth device name
+ *  @return Device name string
+ */
+const char *bt_get_name(void);</code></pre>
+            </div>
+
+            <h3>Usage Example</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">BLE Initialization Example</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">#include &lt;bluetooth/bluetooth.h&gt;
+
+static void bt_ready(int err)
+{
+    if (err) {
+        printk("BLE init failed (err %d)\n", err);
+        return;
+    }
+    printk("BLE initialized\n");
+    // Can start advertising or scanning
+}
+
+void main(void)
+{
+    int err = bt_enable(bt_ready);
+    if (err) {
+        printk("bt_enable failed (err %d)\n", err);
+    }
+}</code></pre>
             </div>
         </section>
 
-        <section id="hal-api">
-            <h2>HAL API</h2>
-            <p>The Hardware Abstraction Layer API provides a unified peripheral access interface.</p>
+        <!-- ==================== BLE Advertising ==================== -->
 
-            <h3>GPIO API</h3>
+        <section id="ble-adv">
+            <h2>BLE Advertising</h2>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">bluetooth/bluetooth.h</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/** Start BLE advertising
+ *  @param param  Advertising parameters (interval, type, options)
+ *  @param ad     Advertising data array
+ *  @param ad_len Advertising data count
+ *  @param sd     Scan response data array
+ *  @param sd_len Scan response data count
+ *  @return 0 on success, negative error code on failure
+ */
+int bt_le_adv_start(const struct bt_le_adv_param *param,
+                    const struct bt_data *ad, size_t ad_len,
+                    const struct bt_data *sd, size_t sd_len);
+
+/** Stop BLE advertising
+ *  @return 0 on success, negative error code on failure
+ */
+int bt_le_adv_stop(void);</code></pre>
+            </div>
+
+            <h3>Common Advertising Macros</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Common Advertising Configuration</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">// Connectable advertising (default interval)
+BT_LE_ADV_CONN
+
+// Custom advertising parameters
+BT_LE_ADV_PARAM(options, int_min, int_max, peer)
+
+// Advertising data construction
+BT_DATA_BYTES(type, ...)        // Byte data
+BT_DATA(type, data, data_len)   // Buffer data</code></pre>
+            </div>
+
+            <h3>Usage Example</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Advertising Example</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">static const struct bt_data ad[] = {
+    BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
+    BT_DATA_BYTES(BT_DATA_UUID16_ALL, 0x0d, 0x18),  // Heart Rate Service
+};
+
+static const struct bt_data sd[] = {
+    BT_DATA(BT_DATA_NAME_COMPLETE, "IPRO-Device", 11),
+};
+
+// Start connectable advertising
+int err = bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd));</code></pre>
+            </div>
+        </section>
+
+        <!-- ==================== BLE Connection ==================== -->
+
+        <section id="ble-conn">
+            <h2>BLE Connection Management</h2>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">bluetooth/conn.h</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/** Create an LE connection (Central role)
+ *  @param peer   Remote device address
+ *  @param param  Connection parameters
+ *  @return Connection object pointer, NULL on failure
+ */
+struct bt_conn *bt_conn_create_le(const bt_addr_le_t *peer,
+                                  const struct bt_le_conn_param *param);
+
+/** Disconnect a connection
+ *  @param conn    Connection object
+ *  @param reason  Disconnect reason code (BT_HCI_ERR_*)
+ *  @return 0 on success, negative error code on failure
+ */
+int bt_conn_disconnect(struct bt_conn *conn, u8_t reason);
+
+/** Increment connection reference count */
+struct bt_conn *bt_conn_ref(struct bt_conn *conn);
+
+/** Decrement connection reference count */
+void bt_conn_unref(struct bt_conn *conn);
+
+/** Update connection parameters
+ *  @param conn   Connection object
+ *  @param param  New connection parameters
+ *  @return 0 on success, negative error code on failure
+ */
+int bt_conn_le_param_update(struct bt_conn *conn,
+                            const struct bt_le_conn_param *param);</code></pre>
+            </div>
+
+            <h3>Connection Callbacks</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Connection Event Callbacks</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">static void connected(struct bt_conn *conn, u8_t err)
+{
+    if (err) {
+        printk("Connection failed (err 0x%02x)\n", err);
+    } else {
+        printk("Connected\n");
+    }
+}
+
+static void disconnected(struct bt_conn *conn, u8_t reason)
+{
+    printk("Disconnected (reason 0x%02x)\n", reason);
+}
+
+static struct bt_conn_cb conn_callbacks = {
+    .connected = connected,
+    .disconnected = disconnected,
+};
+
+// Register callbacks
+bt_conn_cb_register(&conn_callbacks);</code></pre>
+            </div>
+        </section>
+
+        <!-- ==================== GATT Server ==================== -->
+
+        <section id="ble-gatt-server">
+            <h2>GATT Server</h2>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">bluetooth/gatt.h - Server API</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/** Register a GATT service
+ *  @param svc  Service definition structure
+ *  @return 0 on success, negative error code on failure
+ */
+int bt_gatt_service_register(struct bt_gatt_service *svc);
+
+/** Send a GATT Notification
+ *  @param conn   Connection object (NULL = all subscribed connections)
+ *  @param params Notification parameters (attribute, data, length, callback)
+ *  @return 0 on success, negative error code on failure
+ */
+int bt_gatt_notify_cb(struct bt_conn *conn,
+                      struct bt_gatt_notify_params *params);
+
+/** Simplified Notify (no callback)
+ *  @param conn  Connection object
+ *  @param attr  Attribute pointer
+ *  @param data  Data pointer
+ *  @param len   Data length
+ *  @return 0 on success, negative error code on failure
+ */
+int bt_gatt_notify(struct bt_conn *conn, const struct bt_gatt_attr *attr,
+                   const void *data, u16_t len);
+
+/** Send a GATT Indication
+ *  @param conn   Connection object
+ *  @param params Indication parameters
+ *  @return 0 on success, negative error code on failure
+ */
+int bt_gatt_indicate(struct bt_conn *conn,
+                     struct bt_gatt_indicate_params *params);</code></pre>
+            </div>
+
+            <h3>Service Definition Example</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Custom GATT Service</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">// Custom service UUID
+static struct bt_uuid_128 my_svc_uuid = BT_UUID_INIT_128(
+    0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
+    0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef);
+
+// Read callback
+static ssize_t read_value(struct bt_conn *conn,
+                          const struct bt_gatt_attr *attr,
+                          void *buf, u16_t len, u16_t offset)
+{
+    return bt_gatt_attr_read(conn, attr, buf, len, offset,
+                             &my_value, sizeof(my_value));
+}
+
+// Service definition
+BT_GATT_SERVICE_DEFINE(my_svc,
+    BT_GATT_PRIMARY_SERVICE(&my_svc_uuid),
+    BT_GATT_CHARACTERISTIC(&my_char_uuid.uuid,
+        BT_GATT_CHRC_READ | BT_GATT_CHRC_NOTIFY,
+        BT_GATT_PERM_READ,
+        read_value, NULL, NULL),
+    BT_GATT_CCC(NULL, BT_GATT_PERM_READ | BT_GATT_PERM_WRITE),
+);</code></pre>
+            </div>
+        </section>
+
+        <!-- ==================== GATT Client ==================== -->
+
+        <section id="ble-gatt-client">
+            <h2>GATT Client</h2>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">bluetooth/gatt.h - Client API</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/** Discover services/characteristics
+ *  @param conn   Connection object
+ *  @param params Discovery parameters (UUID, callback, range)
+ *  @return 0 on success, negative error code on failure
+ */
+int bt_gatt_discover(struct bt_conn *conn,
+                     struct bt_gatt_discover_params *params);
+
+/** Read a remote attribute
+ *  @param conn   Connection object
+ *  @param params Read parameters (handle, callback)
+ *  @return 0 on success, negative error code on failure
+ */
+int bt_gatt_read(struct bt_conn *conn,
+                 struct bt_gatt_read_params *params);
+
+/** Write to a remote attribute (with response)
+ *  @param conn   Connection object
+ *  @param params Write parameters (handle, data, callback)
+ *  @return 0 on success, negative error code on failure
+ */
+int bt_gatt_write(struct bt_conn *conn,
+                  struct bt_gatt_write_params *params);
+
+/** Write to a remote attribute (without response, high throughput)
+ *  @param conn   Connection object
+ *  @param handle Attribute handle
+ *  @param data   Data pointer
+ *  @param length Data length
+ *  @param sign   Whether to sign
+ *  @return 0 on success, negative error code on failure
+ */
+int bt_gatt_write_without_response_cb(struct bt_conn *conn,
+    u16_t handle, const void *data, u16_t length, bool sign);</code></pre>
+            </div>
+        </section>
+
+        <!-- ==================== HAL GPIO ==================== -->
+
+        <section id="hal-gpio">
+            <h2>GPIO API</h2>
+            <p>Header: <code>bsp/hal/inc/hal_gpio.h</code></p>
+
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">GPIO Functions</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">// Initialize GPIO
-int ipro_hal_gpio_init(uint32_t pin, ipro_gpio_config_t *config);
+                <pre><code class="language-c">/** Set GPIO mode
+ *  @param pin   Pin number (GPIO_PIN_0 ~ GPIO_PIN_31)
+ *  @param mode  Mode (GPIO_OUTPUT_MODE, GPIO_INPUT_PP_MODE, ...)
+ */
+void gpio_set_mode(uint32_t pin, uint32_t mode);
 
-// Set output value
-int ipro_hal_gpio_write(uint32_t pin, uint8_t value);
+/** Write GPIO output value
+ *  @param pin    Pin number
+ *  @param value  0 (low) or 1 (high)
+ */
+void gpio_write(uint32_t pin, uint32_t value);
 
-// Read input value
-uint8_t ipro_hal_gpio_read(uint32_t pin);
+/** Toggle GPIO output */
+void gpio_toggle(uint32_t pin);
 
-// Toggle output
-int ipro_hal_gpio_toggle(uint32_t pin);
+/** Read GPIO input value
+ *  @return 0 or 1
+ */
+int gpio_read(uint32_t pin);
 
-// Set interrupt
-int ipro_hal_gpio_set_interrupt(uint32_t pin, ipro_gpio_isr_t handler);</code></pre>
+/** Attach interrupt callback
+ *  @param pin    Pin number
+ *  @param cbfun  Interrupt callback function
+ */
+void gpio_attach_irq(uint32_t pin, void (*cbfun)(uint32_t pin));
+
+/** Enable/disable GPIO interrupt
+ *  @param pin     Pin number
+ *  @param enabled 1=enable, 0=disable
+ */
+void gpio_irq_enable(uint32_t pin, uint8_t enabled);</code></pre>
             </div>
 
-            <h3>UART API</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">UART Functions</span>
-                </div>
-                <pre><code class="language-c">// Initialize UART
-int ipro_hal_uart_init(uint8_t port, ipro_uart_config_t *config);
-
-// Send data
-int ipro_hal_uart_write(uint8_t port, const uint8_t *data, size_t len);
-
-// Receive data
-int ipro_hal_uart_read(uint8_t port, uint8_t *buffer, size_t len);
-
-// Set receive callback
-int ipro_hal_uart_set_rx_callback(uint8_t port, ipro_uart_rx_cb_t callback);</code></pre>
-            </div>
-
-            <h3>SPI API</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">SPI Functions</span>
-                </div>
-                <pre><code class="language-c">// Initialize SPI
-int ipro_hal_spi_init(uint8_t port, ipro_spi_config_t *config);
-
-// Transfer data
-int ipro_hal_spi_transfer(uint8_t port, const uint8_t *tx, uint8_t *rx, size_t len);
-
-// Write only
-int ipro_hal_spi_write(uint8_t port, const uint8_t *data, size_t len);
-
-// Read only
-int ipro_hal_spi_read(uint8_t port, uint8_t *buffer, size_t len);</code></pre>
+            <h3>GPIO Mode Constants</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Constant</th>
+                            <th>Value</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>GPIO_OUTPUT_MODE</code></td><td>0</td><td>Push-pull output</td></tr>
+                        <tr><td><code>GPIO_OUTPUT_PP_MODE</code></td><td>1</td><td>Pull-up output</td></tr>
+                        <tr><td><code>GPIO_OUTPUT_PD_MODE</code></td><td>2</td><td>Pull-down output</td></tr>
+                        <tr><td><code>GPIO_INPUT_MODE</code></td><td>3</td><td>Floating input</td></tr>
+                        <tr><td><code>GPIO_INPUT_PP_MODE</code></td><td>4</td><td>Pull-up input</td></tr>
+                        <tr><td><code>GPIO_INPUT_PD_MODE</code></td><td>5</td><td>Pull-down input</td></tr>
+                        <tr><td><code>GPIO_ASYNC_RISING_TRIGER_INT_MODE</code></td><td>6</td><td>Async rising edge interrupt</td></tr>
+                        <tr><td><code>GPIO_ASYNC_FALLING_TRIGER_INT_MODE</code></td><td>7</td><td>Async falling edge interrupt</td></tr>
+                    </tbody>
+                </table>
             </div>
         </section>
 
-        <section id="rtos-api">
-            <h2>RTOS API</h2>
-            <p>The SDK supports FreeRTOS and Zephyr RTOS.</p>
+        <!-- ==================== HAL UART ==================== -->
 
-            <h3>FreeRTOS Common API</h3>
+        <section id="hal-uart">
+            <h2>UART API</h2>
+            <p>Header: <code>bsp/hal/inc/hal_uart.h</code></p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">UART Functions</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/** Initialize UART
+ *  @param uart_id  UART index (UART0_INDEX, UART1_INDEX)
+ *  @param oflag    Open flags
+ *  @return 0 on success
+ */
+int uart_init(int uart_id, uint16_t oflag);
+
+/** Deinitialize UART */
+int uart_uninit(int uart_id);
+
+/** Send data
+ *  @param uart_id  UART index
+ *  @param buffer   Data buffer
+ *  @param size     Data length
+ *  @return Number of bytes actually sent
+ */
+int uart_write(int uart_id, const void *buffer, uint32_t size);
+
+/** Receive data
+ *  @param uart_id  UART index
+ *  @param buffer   Receive buffer
+ *  @param size     Maximum receive length
+ *  @return Number of bytes actually received
+ */
+int uart_read(int uart_id, void *buffer, uint32_t size);
+
+/** Non-blocking read of available data */
+int uart_read_available(int uart_id, void *buffer, uint32_t max_size);
+
+/** Set baud rate */
+void uart_set_baudrate(int uart_id, int baudrate);
+
+/** Set callback function */
+void uart_set_callback(int uart_id, void *args);
+
+/** UART IO control */
+int uart_ioctl(int uart_id, int cmd, void *args);</code></pre>
+            </div>
+        </section>
+
+        <!-- ==================== HAL SPI ==================== -->
+
+        <section id="hal-spi">
+            <h2>SPI API</h2>
+            <p>Header: <code>bsp/hal/inc/hal_spi.h</code></p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">SPI Functions</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/** Initialize SPI */
+int spi_init(int spi_id);
+
+/** Deinitialize SPI */
+int spi_deinit(int spi_id);
+
+/** Set SPI configuration */
+void spi_setConfig(spi_device_t *dev);
+
+/** Enable/disable SPI */
+int spi_enable(int spi_id, int en);
+
+/** Transmit data */
+int spi_transmit(int spi_id, void *buffer, uint32_t size);
+
+/** Receive data */
+int spi_receive(int spi_id, void *buffer, uint32_t size);
+
+/** Full-duplex transfer */
+int spi_transmit_receive(int spi_id, const void *send_buf,
+                         void *recv_buf, uint32_t length);</code></pre>
+            </div>
+        </section>
+
+        <!-- ==================== HAL I2C ==================== -->
+
+        <section id="hal-i2c">
+            <h2>I2C API</h2>
+            <p>Header: <code>bsp/hal/inc/hal_i2c.h</code></p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">I2C Functions</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/** Initialize I2C */
+int i2c_init(int i2c_id);
+
+/** I2C message transfer
+ *  @param i2c_id  I2C index (I2C0_INDEX, I2C1_INDEX)
+ *  @param msgs    Message array
+ *  @param num     Number of messages
+ *  @return 0 on success
+ */
+int i2c_transfer(int i2c_id, i2c_msg_t msgs[], uint32_t num);
+
+// i2c_msg_t structure
+typedef struct i2c_msg {
+    uint8_t  slaveaddr;  // Slave address
+    uint32_t subaddr;    // Register/sub-address
+    uint16_t flags;      // I2C_WR(0) or I2C_RD(1) | SUB_ADDR_xBYTE
+    uint16_t len;        // Data length
+    uint8_t  *buf;       // Data buffer
+} i2c_msg_t;</code></pre>
+            </div>
+        </section>
+
+        <!-- ==================== HAL PWM ==================== -->
+
+        <section id="hal-pwm">
+            <h2>PWM API</h2>
+            <p>Header: <code>bsp/hal/inc/hal_pwm.h</code></p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">PWM Functions</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/** Initialize PWM channel */
+int pwm_init(int pwm_id, uint16_t caps);
+
+/** PWM IO control */
+int pwm_ioctl(int pwm_id, int cmd, void *args);
+
+/** Close PWM channel */
+int pwm_close(int pwm_id, int ch);
+
+// Convenience macros
+pwm_channel_start(dev)                  // Start PWM
+pwm_channel_stop(dev)                   // Stop PWM
+pwm_channel_freq_update(dev, count)     // Update frequency
+pwm_channel_dutycycle_update(dev, cfg)  // Update duty cycle</code></pre>
+            </div>
+        </section>
+
+        <!-- ==================== HAL ADC ==================== -->
+
+        <section id="hal-adc">
+            <h2>ADC API</h2>
+            <p>Header: <code>bsp/hal/inc/hal_adc.h</code></p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">ADC Functions</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/** Initialize ADC */
+int hal_adc_init(int adc_id);
+
+/** Read ADC data
+ *  @param adc_id  ADC index
+ *  @param buffer  Data buffer
+ *  @param size    Read size
+ *  @return Number of bytes actually read
+ */
+int hal_adc_read(int adc_id, void *buffer, uint32_t size);
+
+/** ADC IO control */
+int hal_adc_ioctl(int adc_id, int cmd, void *args);
+
+/** Get temperature sensor value */
+float hal_adc_get_tsen(uint16_t tsen_offset);
+
+// Convenience macros
+adc_channel_start(index)          // Start ADC channel
+adc_channel_stop(index)           // Stop ADC channel
+adc_channel_config(index, list)   // Configure ADC channel</code></pre>
+            </div>
+        </section>
+
+        <!-- ==================== RTOS ==================== -->
+
+        <section id="rtos-freertos">
+            <h2>FreeRTOS API</h2>
+            <p>The SDK primarily uses FreeRTOS as the real-time operating system.</p>
+
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">Task Management</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">// Create task
 BaseType_t xTaskCreate(TaskFunction_t pvTaskCode,
@@ -217,13 +622,29 @@ BaseType_t xTaskCreate(TaskFunction_t pvTaskCode,
 void vTaskDelay(const TickType_t xTicksToDelay);
 
 // Convert milliseconds to ticks
-#define pdMS_TO_TICKS(xTimeInMs)</code></pre>
-            </div>
+#define pdMS_TO_TICKS(xTimeInMs)
 
-            <h3>Zephyr Common API</h3>
+// Semaphores
+SemaphoreHandle_t xSemaphoreCreateBinary(void);
+SemaphoreHandle_t xSemaphoreCreateMutex(void);
+BaseType_t xSemaphoreTake(SemaphoreHandle_t sem, TickType_t timeout);
+BaseType_t xSemaphoreGive(SemaphoreHandle_t sem);
+
+// Queues
+QueueHandle_t xQueueCreate(UBaseType_t length, UBaseType_t itemSize);
+BaseType_t xQueueSend(QueueHandle_t queue, const void *item, TickType_t timeout);
+BaseType_t xQueueReceive(QueueHandle_t queue, void *buffer, TickType_t timeout);</code></pre>
+            </div>
+        </section>
+
+        <section id="rtos-zephyr">
+            <h2>Zephyr API</h2>
+            <p>Some applications (Thread, Zephyr Demo) use Zephyr RTOS.</p>
+
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">Kernel API</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">// Sleep
 void k_sleep(k_timeout_t timeout);
@@ -234,8 +655,7 @@ k_tid_t k_thread_create(struct k_thread *new_thread,
                         size_t stack_size,
                         k_thread_entry_t entry,
                         void *p1, void *p2, void *p3,
-                        int prio,
-                        uint32_t options,
+                        int prio, uint32_t options,
                         k_timeout_t delay);
 
 // Time macros
@@ -245,6 +665,8 @@ K_FOREVER</code></pre>
             </div>
         </section>
 
+        <!-- ==================== Log ==================== -->
+
         <section id="log-api">
             <h2>Log API</h2>
             <p>Unified logging output interface.</p>
@@ -253,6 +675,7 @@ K_FOREVER</code></pre>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">Logging Functions</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">// Logging macros
 IPRO_LOG_ERROR(tag, fmt, ...)   // Error level
@@ -270,6 +693,7 @@ IPRO_LOG_INFO(TAG, "System started, version %d.%d", major, minor);</code></pre>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">Zephyr Logging</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">#include &lt;zephyr/logging/log.h&gt;
 

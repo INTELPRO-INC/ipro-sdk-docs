@@ -6,340 +6,359 @@ lang: en
 
 <section class="page-header-section">
     <div class="container">
-        <h1 class="page-title">📖 Tutorials</h1>
+        <h1 class="page-title">Tutorials</h1>
         <p class="page-subtitle">Step-by-step guides to master IPRO SDK development from scratch</p>
     </div>
 </section>
 
 <section class="tutorials-section">
     <div class="container">
-        
-        <!-- Tutorial Cards Grid -->
-        <div class="tutorials-grid">
-            
-            <!-- BLE Tutorial -->
-            <div class="tutorial-card">
-                <div class="tutorial-header ble">
-                    <div class="tutorial-icon">📱</div>
-                    <span class="tutorial-level beginner">Beginner</span>
-                </div>
-                <div class="tutorial-content">
-                    <h2>Building BLE Applications from Scratch</h2>
-                    <p>Learn how to create your first BLE application with IPRO SDK, including Advertising, Connection Management, and GATT Services.</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> ~45 minutes</span>
-                        <span><i class="fas fa-list-ol"></i> 6 steps</span>
-                    </div>
-                </div>
-                <div class="tutorial-steps">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h4>Environment Setup</h4>
-                            <p>Install toolchain, configure development environment</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h4>Project Structure</h4>
-                            <p>Create CMakeLists.txt, proj.conf, and main program</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h4>Initialize BLE Stack</h4>
-                            <p>Configure BLE Controller and Host</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <div class="step-content">
-                            <h4>Implement Advertising</h4>
-                            <p>Set up Advertising Data and start broadcasting</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">5</div>
-                        <div class="step-content">
-                            <h4>Handle Connection Events</h4>
-                            <p>Implement connect and disconnect callbacks</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">6</div>
-                        <div class="step-content">
-                            <h4>Create GATT Services</h4>
-                            <p>Add custom Characteristics and handle read/write</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="tutorial-code-preview">
-                    <h4><i class="fas fa-code"></i> Code Preview</h4>
-                    <pre><code class="language-c">// main.c - BLE Application Entry Point
-#include "ble_lib_api.h"
-#include "FreeRTOS.h"
-#include "task.h"
 
-int main(void) {
+        <!-- Tutorial 1: First BLE Application -->
+        <div class="tutorial-card">
+            <div class="tutorial-header ble" onclick="toggleTutorial('tut1')">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <span class="tutorial-level beginner">Beginner</span>
+                    <h2 style="margin:0;">Tutorial 1: Your First BLE Application</h2>
+                </div>
+                <i class="fas fa-chevron-down tutorial-toggle" id="tut1-icon"></i>
+            </div>
+            <div class="tutorial-body" id="tut1" style="display:none;">
+                <p>Learn how to create your first BLE application with IPRO SDK. This tutorial covers <code>bt_enable()</code> initialization, advertising setup, and connection callbacks.</p>
+
+                <h3>Step 1: Project Structure</h3>
+                <p>Each IPRO SDK application is a standalone directory under <code>apps/</code>, containing <code>.config</code>, <code>CMakeLists.txt</code>, and source code. You can copy <code>apps/bluetooth/ipro_ble_remote/</code> as a template.</p>
+                <pre><code class="language-bash">apps/my_ble_app/
+  .config            # Kconfig settings (CONFIG_BLUETOOTH_LE_ENABLE=y etc.)
+  CMakeLists.txt     # Build configuration
+  main.c             # Application entry point</code></pre>
+
+                <h3>Step 2: .config Settings</h3>
+                <p>Enable BLE features in <code>.config</code>:</p>
+                <pre><code class="language-bash">CONFIG_IPRO7=y
+CONFIG_CPU_ID="intelpro_ipro7"
+CONFIG_FREERTOS_SUPPORT=y
+CONFIG_BLUETOOTH_LE_ENABLE=y
+CONFIG_SHELL=y</code></pre>
+
+                <h3>Step 3: Initialize BLE Stack</h3>
+                <p>In <code>main()</code>, initialize the platform and BLE Controller, then start the FreeRTOS scheduler:</p>
+                <pre><code class="language-c">#include &lt;FreeRTOS.h&gt;
+#include &lt;task.h&gt;
+#include "ble_lib_api.h"
+#include "platform_common.h"
+
+// Called when BLE stack initialization completes
+void app_init(void)
+{
+    printf("BLE 5.4 stack initialized\r\n");
+}
+
+int main(void)
+{
     // 1. Platform initialization
     platform_init(0);
     setup_heap();
-    
+
     // 2. Initialize BLE Controller
-    ble_controller_init(configMAX_PRIORITIES - 3, 1);
-    
-    // 3. Start FreeRTOS
+    ble_controller_init(configMAX_PRIORITIES - 3);
+
+    // 3. Create application task
+    xTaskCreateStatic(app_task, "app", 2048, NULL, 3,
+                      app_stack, &app_tcb);
+
+    // 4. Start FreeRTOS
     vTaskStartScheduler();
-    
     return 0;
 }</code></pre>
-                </div>
-                <a href="tutorials/ble-getting-started.html" class="tutorial-btn">
-                    <i class="fas fa-play-circle"></i> Start Learning
-                </a>
-            </div>
 
-            <!-- LE Audio Tutorial -->
-            <div class="tutorial-card">
-                <div class="tutorial-header audio">
-                    <div class="tutorial-icon">🎵</div>
-                    <span class="tutorial-level intermediate">Intermediate</span>
-                </div>
-                <div class="tutorial-content">
-                    <h2>LE Audio Streaming Implementation</h2>
-                    <p>Deep dive into BLE 5.4 LE Audio features, implement LC3 codec, Isochronous Channels, and audio synchronization.</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> ~90 minutes</span>
-                        <span><i class="fas fa-list-ol"></i> 8 steps</span>
-                    </div>
-                </div>
-                <div class="tutorial-steps">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h4>LE Audio Architecture</h4>
-                            <p>Understand BAP, PACS, ASCS services</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h4>GAF Configuration</h4>
-                            <p>Initialize Generic Audio Framework</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h4>CIS Connection Setup</h4>
-                            <p>Configure Connected Isochronous Stream</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <div class="step-content">
-                            <h4>LC3 Encoder Setup</h4>
-                            <p>Configure sample rate, bitrate, Frame Duration</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">5</div>
-                        <div class="step-content">
-                            <h4>Audio Data Transmission</h4>
-                            <p>Send audio via ISO Data Path</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">6</div>
-                        <div class="step-content">
-                            <h4>Sync & Latency Optimization</h4>
-                            <p>Adjust Presentation Delay</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">7</div>
-                        <div class="step-content">
-                            <h4>Broadcast Audio (Auracast)</h4>
-                            <p>Implement Broadcast Audio Streaming</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">8</div>
-                        <div class="step-content">
-                            <h4>Quality Monitoring & Debug</h4>
-                            <p>Analyze audio quality metrics</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="tutorial-code-preview">
-                    <h4><i class="fas fa-code"></i> Code Preview</h4>
-                    <pre><code class="language-c">// LE Audio Configuration Example
-struct bap_unicast_config audio_cfg = {
-    .sampling_freq = 48000,      // 48kHz
-    .frame_duration = 10000,     // 10ms
-    .octets_per_frame = 120,     // 96kbps
-    .codec_id = LC3_CODEC_ID,
+                <h3>Step 4: Set Up Advertising</h3>
+                <p>Use Zephyr-style BLE APIs to configure advertising data and start broadcasting:</p>
+                <pre><code class="language-c">#include &lt;bluetooth/bluetooth.h&gt;
+#include &lt;bluetooth/conn.h&gt;
+
+static const struct bt_data ad[] = {
+    BT_DATA_BYTES(BT_DATA_FLAGS,
+                  BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR),
+    BT_DATA_BYTES(BT_DATA_NAME_COMPLETE, 'I','P','R','O'),
 };
 
-// Create CIS
-bap_uc_cli_create_cis(conhdl, &audio_cfg);</code></pre>
-                </div>
-                <a href="tutorials/le-audio-streaming.html" class="tutorial-btn">
-                    <i class="fas fa-play-circle"></i> Start Learning
-                </a>
-            </div>
-
-            <!-- RF Tutorial -->
-            <div class="tutorial-card">
-                <div class="tutorial-header rf">
-                    <div class="tutorial-icon">📡</div>
-                    <span class="tutorial-level intermediate">Intermediate</span>
-                </div>
-                <div class="tutorial-content">
-                    <h2>RF Testing & Calibration Guide</h2>
-                    <p>Learn RF parameter tuning, CMW500 testing, and troubleshooting CFO and power issues.</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> ~60 minutes</span>
-                        <span><i class="fas fa-list-ol"></i> 5 steps</span>
-                    </div>
-                </div>
-                <div class="tutorial-steps">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h4>RF Calibration Process</h4>
-                            <p>rf_acal, rf_kcal, rf_roscal, rf_rccal</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h4>DTM Test Mode</h4>
-                            <p>Direct Test Mode operation guide</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h4>CFO Adjustment</h4>
-                            <p>XTAL capcode and frequency offset correction</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <div class="step-content">
-                            <h4>TX Power Calibration</h4>
-                            <p>Power level configuration and measurement</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">5</div>
-                        <div class="step-content">
-                            <h4>CMW500 Integration</h4>
-                            <p>Automated RF certification testing</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="tutorial-code-preview">
-                    <h4><i class="fas fa-code"></i> CLI Commands</h4>
-                    <pre><code class="language-bash"># RF Test CLI Commands
-le_tx 0 37 0      # TX test: ch=0, len=37, type=PRBS9
-le_rx 0 0         # RX test: ch=0, phy=1M
-le_test_stop      # Stop test and show packet count
-
-# Set TX Power
-rf_set_pwr 12     # Set to +5dBm
-
-# Show calibration results
-rf_show_cal       # Display calibration values</code></pre>
-                </div>
-                <a href="tutorials/rf-testing-calibration.html" class="tutorial-btn">
-                    <i class="fas fa-play-circle"></i> Start Learning
-                </a>
-            </div>
-
-            <!-- Low Power Tutorial -->
-            <div class="tutorial-card">
-                <div class="tutorial-header power">
-                    <div class="tutorial-icon">🔋</div>
-                    <span class="tutorial-level advanced">Advanced</span>
-                </div>
-                <div class="tutorial-content">
-                    <h2>Low Power Optimization Techniques</h2>
-                    <p>Master IPRO7 power saving modes, optimize battery life, and achieve μA-level standby current.</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> ~75 minutes</span>
-                        <span><i class="fas fa-list-ol"></i> 6 steps</span>
-                    </div>
-                </div>
-                <div class="tutorial-steps">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h4>Power Architecture Overview</h4>
-                            <p>Understand IPRO7 power domains and clock tree</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h4>Sleep Mode Configuration</h4>
-                            <p>Light Sleep, Deep Sleep, Hibernate</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h4>BLE Connection Optimization</h4>
-                            <p>Adjust Connection Interval and Latency</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <div class="step-content">
-                            <h4>Peripheral Power Management</h4>
-                            <p>Dynamic control of GPIO, ADC, Timer</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">5</div>
-                        <div class="step-content">
-                            <h4>Wake-up Mechanisms</h4>
-                            <p>RTC, GPIO, BLE Event wake-up</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">6</div>
-                        <div class="step-content">
-                            <h4>Current Measurement & Analysis</h4>
-                            <p>Use Power Profiler for analysis</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="tutorial-code-preview">
-                    <h4><i class="fas fa-code"></i> Code Preview</h4>
-                    <pre><code class="language-c">// Enter Deep Sleep
-void enter_deep_sleep(void) {
-    // Set wake-up source
-    hal_pmu_set_wakeup_source(PMU_WAKEUP_RTC);
-    hal_rtc_set_alarm(60);  // Wake up after 60 seconds
-    
-    // Disable unnecessary peripherals
-    hal_gpio_set_all_analog();
-    
-    // Enter Deep Sleep
-    hal_pmu_enter_deep_sleep();
+static void bt_ready(int err)
+{
+    if (err) {
+        printf("BLE init failed (err %d)\n", err);
+        return;
+    }
+    // Start advertising
+    err = bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad),
+                          NULL, 0);
+    if (err) {
+        printf("Advertising failed (err %d)\n", err);
+    }
 }
 
-// Expected standby current: < 5μA</code></pre>
-                </div>
-                <a href="tutorials/low-power-optimization.html" class="tutorial-btn">
-                    <i class="fas fa-play-circle"></i> Start Learning
-                </a>
-            </div>
+// Call in your application task
+bt_enable(bt_ready);</code></pre>
 
+                <h3>Step 5: Connection Callbacks</h3>
+                <p>Register connection and disconnection callbacks to handle connection events:</p>
+                <pre><code class="language-c">static void connected(struct bt_conn *conn, uint8_t err)
+{
+    if (err) {
+        printf("Connection failed (err 0x%02x)\n", err);
+        return;
+    }
+    printf("Connected\n");
+}
+
+static void disconnected(struct bt_conn *conn, uint8_t reason)
+{
+    printf("Disconnected (reason 0x%02x)\n", reason);
+    // Restart advertising
+    bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad),
+                    NULL, 0);
+}
+
+BT_CONN_CB_DEFINE(conn_callbacks) = {
+    .connected = connected,
+    .disconnected = disconnected,
+};</code></pre>
+
+                <h3>Step 6: Build and Flash</h3>
+                <pre><code class="language-bash"># Build
+make -C apps/my_ble_app
+
+# Flash
+tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+    --chipname ipro7 \
+    --port /dev/cu.usbserial-2120 \
+    --firmware apps/my_ble_app/build/build_out/my_ble_app_IPRO7.bin \
+    --baudrate 921600 --flash-pin 0x02</code></pre>
+
+                <div class="info-box">
+                    <h4>Reference Example</h4>
+                    <p>For a complete BLE application example, see <code>apps/bluetooth/ipro_ble_remote/</code>, which includes LED control, button detection, environment sensing, UART bridge, and OTA upgrade features.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tutorial 2: Build & Flash Workflow -->
+        <div class="tutorial-card">
+            <div class="tutorial-header build" onclick="toggleTutorial('tut2')">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <span class="tutorial-level beginner">Beginner</span>
+                    <h2 style="margin:0;">Tutorial 2: Build & Flash Workflow</h2>
+                </div>
+                <i class="fas fa-chevron-down tutorial-toggle" id="tut2-icon"></i>
+            </div>
+            <div class="tutorial-body" id="tut2" style="display:none;">
+                <p>Master the IPRO SDK build system and firmware flashing workflow.</p>
+
+                <h3>Build Methods</h3>
+                <p>IPRO SDK provides two build methods:</p>
+                <pre><code class="language-bash"># Method 1: Using Make (recommended)
+make -C apps/ipro_ble_remote
+
+# Method 2: Using build_freertos.sh
+./build_freertos.sh ipro_ble_remote build
+
+# Clean build
+make -C apps/ipro_ble_remote clean</code></pre>
+                <p>Build output is located at <code>apps/&lt;project&gt;/build/build_out/</code>. Binary names include a chip suffix, e.g., <code>ipro_ble_remote_IPRO7.bin</code>.</p>
+
+                <h3>.config Settings</h3>
+                <p>Each application has its own <code>.config</code> file using Linux Kernel Kconfig format:</p>
+                <pre><code class="language-bash"># SoC selection
+CONFIG_IPRO7=y
+CONFIG_CPU_ID="intelpro_ipro7"
+
+# RTOS selection
+CONFIG_FREERTOS_SUPPORT=y
+
+# Feature enables
+CONFIG_BLUETOOTH_LE_ENABLE=y
+CONFIG_SHELL=y
+CONFIG_LWIP=y
+CONFIG_MBEDTLS=y</code></pre>
+
+                <h3>Flash Firmware</h3>
+                <p>Use the SDK's built-in flash tool <code>ipro_iot_tool_lite</code>:</p>
+                <pre><code class="language-bash"># Basic flash command
+tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+    --chipname ipro7 \
+    --port /dev/cu.usbserial-2120 \
+    --firmware apps/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
+    --baudrate 921600 \
+    --flash-pin 0x02</code></pre>
+
+                <div class="warning-box">
+                    <h4>macOS Serial Port Notes</h4>
+                    <p>On macOS, you must use <code>/dev/cu.*</code> instead of <code>/dev/tty.*</code>. The <code>tty.*</code> devices block waiting for the DCD signal and will not work.</p>
+                </div>
+
+                <h3>Serial Monitor</h3>
+                <p>Use <code>serial_monitor.py</code> to monitor serial output:</p>
+                <pre><code class="language-bash"># Monitor serial port
+python3 tools/serial_monitor.py /dev/cu.usbserial-2120
+
+# Send reboot command and wait for output
+python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
+    --send reboot --timeout 30 \
+    --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
+
+                <h3>Automated Testing</h3>
+                <p>Use <code>board_test.sh</code> for a complete build+flash+test cycle:</p>
+                <pre><code class="language-bash"># Full build, flash, and test cycle
+tools/board_test.sh --project apps/ipro_unit_test
+
+# Exit codes: 0=pass, 1=fail, 2=timeout</code></pre>
+            </div>
+        </div>
+
+        <!-- Tutorial 3: BLE Throughput Testing -->
+        <div class="tutorial-card">
+            <div class="tutorial-header ble" onclick="toggleTutorial('tut3')">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <span class="tutorial-level intermediate">Intermediate</span>
+                    <h2 style="margin:0;">Tutorial 3: BLE Throughput Testing</h2>
+                </div>
+                <i class="fas fa-chevron-down tutorial-toggle" id="tut3-icon"></i>
+            </div>
+            <div class="tutorial-body" id="tut3" style="display:none;">
+                <p>Use the <code>ipro_throughput_test</code> application to measure BLE data throughput, achieving up to 999 Kbps.</p>
+
+                <h3>Overview</h3>
+                <p>The throughput test runs between two IPRO7 development boards -- one as Slave (Peripheral) and the other as Master (Central). The application uses native Zephyr <code>bt_*</code> APIs.</p>
+
+                <h3>Step 1: Build and Flash</h3>
+                <p>Flash the same firmware to both development boards:</p>
+                <pre><code class="language-bash"># Build throughput test application
+make -C apps/bluetooth/ipro_throughput_test
+
+# Flash to both boards
+tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+    --chipname ipro7 --port /dev/cu.usbserial-2120 \
+    --firmware apps/bluetooth/ipro_throughput_test/build/build_out/ipro_throughput_test_IPRO7.bin \
+    --baudrate 921600 --flash-pin 0x02</code></pre>
+
+                <h3>Step 2: Start Test</h3>
+                <pre><code class="language-bash"># On the Slave board:
+tp slave
+
+# On the Master board (auto-scan and connect):
+tp master
+
+# Or specify MAC address:
+tp master XX:XX:XX:XX:XX:XX</code></pre>
+
+                <h3>Step 3: Run Throughput Test</h3>
+                <pre><code class="language-bash"># After connection, start test (default 244 bytes/packet, 10 seconds)
+tp start
+
+# Custom packet size and duration
+tp start 244 30    # 244 bytes, 30 seconds
+
+# View real-time statistics
+tp stats
+
+# Stop test
+tp stop</code></pre>
+
+                <h3>Performance Optimization</h3>
+                <p>IPRO SDK achieves 999 Kbps throughput through the following optimizations:</p>
+                <ul>
+                    <li><strong>Connection parameter tuning</strong>: Minimum connection interval, zero Slave Latency</li>
+                    <li><strong>MTU negotiation</strong>: Maximum MTU to reduce per-packet overhead</li>
+                    <li><strong>TX Descriptor optimization</strong>: <code>BLE_NB_TX_DESC_PER_CON</code> parameter tuning</li>
+                    <li><strong>DLE (Data Length Extension)</strong>: Enable maximum transmission length</li>
+                    <li><strong>2M PHY</strong>: Use BLE 2M PHY for faster data rate</li>
+                </ul>
+
+                <h3>Expected Results</h3>
+                <pre><code>========== Throughput Result ==========
+Direction:  Master -> Slave (Write Without Response)
+Duration:   10.00 seconds
+Data Sent:  1,223,968 bytes
+Throughput: 999.15 Kbps
+Packets:    5,016
+Avg Size:   244 bytes/packet
+=======================================</code></pre>
+
+                <div class="info-box">
+                    <h4>Reference</h4>
+                    <p>For the complete operation manual, see <code>apps/bluetooth/ipro_throughput_test/README.md</code>.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tutorial 4: LE Audio Getting Started -->
+        <div class="tutorial-card">
+            <div class="tutorial-header audio" onclick="toggleTutorial('tut4')">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <span class="tutorial-level intermediate">Intermediate</span>
+                    <h2 style="margin:0;">Tutorial 4: LE Audio Getting Started</h2>
+                </div>
+                <i class="fas fa-chevron-down tutorial-toggle" id="tut4-icon"></i>
+            </div>
+            <div class="tutorial-body" id="tut4" style="display:none;">
+                <p>Understand the core concepts of BLE 5.4 LE Audio, including BAP/BIS architecture, and how to use IPRO SDK's LE Audio example applications.</p>
+
+                <h3>LE Audio Core Concepts</h3>
+                <ul>
+                    <li><strong>BAP (Basic Audio Profile)</strong>: Defines audio stream establishment and management</li>
+                    <li><strong>CIS (Connected Isochronous Stream)</strong>: Point-to-point audio, used for headsets</li>
+                    <li><strong>BIS (Broadcast Isochronous Stream)</strong>: One-to-many broadcast audio, used for Auracast</li>
+                    <li><strong>LC3 Codec</strong>: LE Audio standard codec, low latency and high quality</li>
+                    <li><strong>GAF (Generic Audio Framework)</strong>: Unified audio framework integrating BAP, VCP, MCP, CAP profiles</li>
+                </ul>
+
+                <h3>Controller Variant Selection</h3>
+                <p>LE Audio requires controller variants with <code>_leaudio</code> suffix:</p>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr><th>Variant</th><th>Description</th><th>Use Case</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>link1_leaudio</code></td><td>BLE 5.2 + LE Audio, 1 connection</td><td>Simple headset</td></tr>
+                            <tr><td><code>link2_leaudio</code></td><td>BLE 5.2 + LE Audio, 2 connections</td><td>TWS earbuds</td></tr>
+                            <tr><td><code>link1_leaudio_53_54</code></td><td>BLE 5.4 + LE Audio, 1 connection</td><td>Latest features</td></tr>
+                            <tr><td><code>link2_leaudio_53_54</code></td><td>BLE 5.4 + LE Audio, 2 connections</td><td>Latest TWS</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>BIS Broadcast Example (Source)</h3>
+                <p>Use <code>ipro_walkie_talkie</code> or <code>ipro_le_audio_bis_source</code> as broadcast source:</p>
+                <pre><code class="language-bash"># Build BIS Source example
+make -C apps/bluetooth/ipro_le_audio_bis_source
+
+# Build BIS Sink example
+make -C apps/bluetooth/ipro_le_audio_bis_sink</code></pre>
+
+                <h3>CIS Unicast Example (Headset)</h3>
+                <p>Use <code>ipro_le_audio_headset</code> as an LE Audio headset:</p>
+                <pre><code class="language-bash"># Build LE Audio Headset example
+make -C apps/bluetooth/ipro_le_audio_headset</code></pre>
+
+                <h3>.config Key Settings</h3>
+                <pre><code class="language-bash"># Required LE Audio settings
+CONFIG_BLUETOOTH_LE_ENABLE=y
+CONFIG_BLE_LE_AUDIO_ENABLE=y
+
+# Controller variant (choose leaudio version)
+CONFIG_BLE_CONTROLLER_VARIANT="link2_leaudio_53_54"</code></pre>
+
+                <div class="info-box">
+                    <h4>Reference Applications</h4>
+                    <ul>
+                        <li><code>apps/bluetooth/ipro_le_audio_headset/</code> - GAF/BAP Unicast headset</li>
+                        <li><code>apps/bluetooth/ipro_walkie_talkie/</code> - BIS broadcast walkie-talkie</li>
+                        <li><code>apps/bluetooth/ipro_le_audio_bis_source/</code> - BIS audio source</li>
+                        <li><code>apps/bluetooth/ipro_le_audio_bis_sink/</code> - BIS audio sink</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <!-- Learning Path -->
@@ -347,34 +366,30 @@ void enter_deep_sleep(void) {
             <h2><i class="fas fa-route"></i> Recommended Learning Path</h2>
             <div class="path-container">
                 <div class="path-item">
-                    <div class="path-icon">🚀</div>
                     <div class="path-content">
                         <h4>Week 1</h4>
-                        <p>Environment Setup + BLE Basics</p>
+                        <p>Tutorial 2: Build & Flash</p>
                     </div>
                 </div>
                 <div class="path-arrow"><i class="fas fa-arrow-right"></i></div>
                 <div class="path-item">
-                    <div class="path-icon">📱</div>
                     <div class="path-content">
                         <h4>Week 2</h4>
-                        <p>GATT Services + Phone Connection</p>
+                        <p>Tutorial 1: First BLE App</p>
                     </div>
                 </div>
                 <div class="path-arrow"><i class="fas fa-arrow-right"></i></div>
                 <div class="path-item">
-                    <div class="path-icon">🎵</div>
                     <div class="path-content">
                         <h4>Week 3</h4>
-                        <p>LE Audio Features</p>
+                        <p>Tutorial 3: Throughput Test</p>
                     </div>
                 </div>
                 <div class="path-arrow"><i class="fas fa-arrow-right"></i></div>
                 <div class="path-item">
-                    <div class="path-icon">🔋</div>
                     <div class="path-content">
                         <h4>Week 4</h4>
-                        <p>Low Power + Production</p>
+                        <p>Tutorial 4: LE Audio</p>
                     </div>
                 </div>
             </div>
@@ -384,18 +399,17 @@ void enter_deep_sleep(void) {
 </section>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Tutorial cards hover effect for steps
-    const tutorialCards = document.querySelectorAll('.tutorial-card');
-    tutorialCards.forEach(card => {
-        card.addEventListener('mouseenter', () => {
-            const steps = card.querySelector('.tutorial-steps');
-            if (steps) steps.style.maxHeight = '500px';
-        });
-        card.addEventListener('mouseleave', () => {
-            const steps = card.querySelector('.tutorial-steps');
-            if (steps) steps.style.maxHeight = '0';
-        });
-    });
-});
+function toggleTutorial(id) {
+    var body = document.getElementById(id);
+    var icon = document.getElementById(id + '-icon');
+    if (body.style.display === 'none') {
+        body.style.display = 'block';
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-up');
+    } else {
+        body.style.display = 'none';
+        icon.classList.remove('fa-chevron-up');
+        icon.classList.add('fa-chevron-down');
+    }
+}
 </script>

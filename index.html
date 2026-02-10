@@ -39,14 +39,14 @@ title: 首頁
                     <span class="code-title">terminal</span>
                 </div>
                 <pre><code class="language-bash"><span style="color: #64748b;"># 快速建構 BLE 應用</span>
-                ./build_freertos.sh ipro_ble_demo build
+                make -C apps/bluetooth/ipro_ble_remote
 
                 <span style="color: #64748b;"># 或使用 Zephyr RTOS</span>
                 ./tools/zephyr/bootstrap.sh
                 ./tools/zephyr/build.sh -a ipro_zephyr_demo -b ipro7_fpga -c
 
                 <span style="color: #10b981;">✓ Build successful!</span>
-                <span style="color: #94a3b8;">Output: apps/bluetooth/ipro_ble_demo/build/build_out/</span></code></pre>
+                <span style="color: #94a3b8;">Output: apps/bluetooth/ipro_ble_remote/build/build_out/</span></code></pre>
             </div>
         </div>
     </div>
@@ -67,8 +67,8 @@ title: 首頁
             <div class="stat-value">0.1 TOPS</div>
             <div class="stat-label">AI NPU 算力</div>
         </div>
-        <div class="stat-item" data-tooltip="BLE 5.4 + Zigbee 3.0 + Thread 1.2">
-            <div class="stat-value">4 協定</div>
+        <div class="stat-item" data-tooltip="BLE 5.4 + WiFi 6 + Zigbee 3.0 + Thread 1.2">
+            <div class="stat-value">5 協定</div>
             <div class="stat-label">多模無線</div>
         </div>
     </div>
@@ -88,7 +88,7 @@ title: 首頁
                 <div class="feature-icon">🌐</div>
                 <h3 class="feature-title">Matter 多協定支援</h3>
                 <p class="feature-description">
-                    完整支援 Matter 1.4 智慧家庭協定，整合 BLE 5.4（最多 16 連線、MTU 517）、Zigbee 3.0、Thread 1.2，支援藍牙/Zigbee/Thread 共存。
+                    完整支援 Matter 1.4 智慧家庭協定，整合 BLE 5.4（最高 999 Kbps 吞吐量）、WiFi 6、Zigbee 3.0、Thread 1.2，支援多協定共存。
                 </p>
             </div>
             <div class="feature-card">
@@ -116,7 +116,7 @@ title: 首頁
                 <div class="feature-icon">🛠️</div>
                 <h3 class="feature-title">開發工具鏈</h3>
                 <p class="feature-description">
-                    提供 `build_freertos.sh` 快速建構、Zephyr `bootstrap/menu/build` 腳本、size 分析與 backtrace 工具，支援日常開發除錯。
+                    提供 <code>make -C apps/&lt;project&gt;</code> 快速建構、Zephyr 腳本、board_test.sh 自動化測試、serial_monitor.py 串口監控，支援日常開發除錯。
                 </p>
             </div>
             <div class="feature-card">
@@ -182,12 +182,13 @@ title: 首頁
                 <div class="app-header">
                     <span class="app-icon">📊</span>
                     <span class="app-name">ipro_throughput_test</span>
+                    <span class="app-badge">高效能</span>
                 </div>
                 <p class="app-description">
-                    BLE 效能測試工具，支援 Master/Slave 模式、PHY 選擇、連線參數調整，最高可達 600+ Kbps。
+                    BLE 效能測試工具，使用原生 Zephyr bt_* API，支援 Master/Slave 模式、PHY 選擇、連線參數調整，最高可達 999 Kbps。
                 </p>
                 <div class="app-features">
-                    <span class="app-feature-tag">600+ Kbps</span>
+                    <span class="app-feature-tag">999 Kbps</span>
                     <span class="app-feature-tag">2M PHY</span>
                     <span class="app-feature-tag">效能測試</span>
                 </div>
@@ -208,16 +209,32 @@ title: 首頁
             </div>
             <div class="app-card">
                 <div class="app-header">
-                    <span class="app-icon">🌊</span>
-                    <span class="app-name">ipro_zephyr_demo</span>
+                    <span class="app-icon">🎧</span>
+                    <span class="app-name">ipro_le_audio_headset</span>
+                    <span class="app-badge">LE Audio</span>
                 </div>
                 <p class="app-description">
-                    Zephyr RTOS 整合展示，記憶體優化（33KB ROM, 27KB RAM），快速建構（~30 秒）。
+                    LE Audio 耳機參考應用，基於 GAF/BAP 框架，支援 Unicast/Broadcast 音訊、VCP 音量控制、MCP 媒體控制。
                 </p>
                 <div class="app-features">
-                    <span class="app-feature-tag">Zephyr v3.4.0</span>
-                    <span class="app-feature-tag">Device Tree</span>
-                    <span class="app-feature-tag">West</span>
+                    <span class="app-feature-tag">GAF/BAP</span>
+                    <span class="app-feature-tag">LC3 編解碼</span>
+                    <span class="app-feature-tag">Unicast</span>
+                    <span class="app-feature-tag">Broadcast</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">📻</span>
+                    <span class="app-name">ipro_walkie_talkie</span>
+                </div>
+                <p class="app-description">
+                    BIS LE Audio 對講機應用，展示 Broadcast Isochronous Stream 廣播音訊功能，適用於群組通訊場景。
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">BIS</span>
+                    <span class="app-feature-tag">LE Audio</span>
+                    <span class="app-feature-tag">廣播音訊</span>
                 </div>
             </div>
             <div class="app-card">
@@ -286,8 +303,11 @@ west build -b ipro7_fpga ../apps/ipro_zephyr_demo</code></pre>
                     <span class="code-block-title">FreeRTOS 建構指令</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 使用簡化建構腳本
-./build_freertos.sh ipro_ble_demo
+                <pre><code class="language-bash"># 使用 Make 建構（推薦）
+make -C apps/bluetooth/ipro_ble_remote
+
+# 或使用建構腳本
+./build_freertos.sh ipro_ble_remote build
 
 # 或手動使用 CMake
 cmake -S . -B build \

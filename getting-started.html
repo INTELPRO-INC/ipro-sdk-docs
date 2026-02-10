@@ -13,6 +13,9 @@ title: 快速開始
                 <li><a href="#zephyr-quickstart" class="sidebar-link">Zephyr 快速開始</a></li>
                 <li><a href="#freertos-quickstart" class="sidebar-link">FreeRTOS 快速開始</a></li>
                 <li><a href="#first-build" class="sidebar-link">第一次建構</a></li>
+                <li><a href="#flashing" class="sidebar-link">燒錄韌體</a></li>
+                <li><a href="#serial-monitor" class="sidebar-link">串口監控</a></li>
+                <li><a href="#board-testing" class="sidebar-link">板級測試</a></li>
                 <li><a href="#debugging" class="sidebar-link">除錯設置</a></li>
                 <li><a href="#next-steps" class="sidebar-link">下一步</a></li>
             </ul>
@@ -30,16 +33,15 @@ title: 快速開始
             <h3>硬體需求</h3>
             <ul>
                 <li>IPRO7 開發板（EVB 或 FPGA 版本）</li>
-                <li>JTAG 除錯器（用於燒錄與除錯）</li>
-                <li>USB 連接線</li>
+                <li>USB 連接線（用於燒錄與串口通訊）</li>
             </ul>
 
             <h3>軟體需求</h3>
             <ul>
-                <li><strong>作業系統：</strong>Linux（Ubuntu 20.04+ 建議）</li>
-                <li><strong>工具鏈：</strong>RISC-V GCC 交叉編譯器</li>
-                <li><strong>建構工具：</strong>CMake 3.20+, Ninja</li>
-                <li><strong>Python：</strong>Python 3.8+（用於 west 與腳本）</li>
+                <li><strong>作業系統：</strong>Linux（Ubuntu 20.04+ 建議）或 macOS</li>
+                <li><strong>工具鏈：</strong>RISC-V GCC 交叉編譯器（<code>/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-*</code>）</li>
+                <li><strong>建構工具：</strong>CMake 3.20+, Ninja, Make</li>
+                <li><strong>Python：</strong>Python 3.8+（用於 west 與腳本工具）</li>
                 <li><strong>Git：</strong>版本控制</li>
             </ul>
 
@@ -150,20 +152,33 @@ west build -b ipro7_fpga ../apps/ipro_zephyr_demo</code></pre>
             <h2>FreeRTOS 快速開始</h2>
             <p>傳統的 FreeRTOS 開發方式，適合熟悉 FreeRTOS 的開發者。</p>
 
-            <h3>使用簡化建構腳本</h3>
+            <h3>使用 Make 建構（推薦）</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">FreeRTOS 建構</span>
+                    <span class="code-block-title">Make 建構</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 建構 BLE Demo 應用
-./build_freertos.sh ipro_ble_demo
+                <pre><code class="language-bash"># 建構 BLE Remote 應用
+make -C apps/bluetooth/ipro_ble_remote
+
+# 建構單元測試
+make -C apps/ipro_unit_test
+
+# 清除建構
+make -C apps/bluetooth/ipro_ble_remote clean</code></pre>
+            </div>
+
+            <h3>使用建構腳本</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">FreeRTOS 建構腳本</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 建構 BLE Remote 應用
+./build_freertos.sh ipro_ble_remote build
 
 # 建構 IPRO7 Demo 應用
-./build_freertos.sh ipro7_demo
-
-# 建構 FPGA BLE 5.4 應用
-./build_freertos.sh ipro7_fpga_ble_5p4</code></pre>
+./build_freertos.sh ipro7_demo build</code></pre>
             </div>
 
             <h3>手動 CMake 建構</h3>
@@ -189,15 +204,15 @@ cmake --build build</code></pre>
 
         <section id="first-build">
             <h2>第一次建構</h2>
-            <p>讓我們建構並驗證 BLE Demo 應用。</p>
+            <p>讓我們建構並驗證 BLE Remote 應用。</p>
 
             <h3>步驟 1：建構應用</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">建構 BLE Demo</span>
+                    <span class="code-block-title">建構 BLE Remote</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">./build_freertos.sh ipro_ble_demo</code></pre>
+                <pre><code class="language-bash">make -C apps/bluetooth/ipro_ble_remote</code></pre>
             </div>
 
             <h3>步驟 2：檢查建構輸出</h3>
@@ -207,23 +222,12 @@ cmake --build build</code></pre>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 列出建構產出
-ls -la apps/ipro_ble_demo/build/build_out/
+ls -la apps/bluetooth/ipro_ble_remote/build/build_out/
 
 # 應該看到：
-# ipro_ble_demo.elf  - ELF 執行檔
-# ipro_ble_demo.bin  - 二進位燒錄檔
-# ipro_ble_demo.map  - 記憶體映射檔</code></pre>
-            </div>
-
-            <h3>步驟 3：燒錄到開發板</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">使用 OpenOCD 燒錄</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># 使用 OpenOCD 燒錄（需連接 JTAG）
-openocd -f apps/ipro_ble_demo/debug.cfg \
-    -c "program apps/ipro_ble_demo/build/build_out/ipro_ble_demo.elf verify reset exit"</code></pre>
+# ipro_ble_remote_IPRO7.bin  - 二進位燒錄檔（檔名包含晶片後綴）
+# ipro_ble_remote.elf        - ELF 執行檔
+# ipro_ble_remote.map        - 記憶體映射檔</code></pre>
             </div>
 
             <div class="alert alert-success">
@@ -231,24 +235,99 @@ openocd -f apps/ipro_ble_demo/debug.cfg \
             </div>
         </section>
 
+        <section id="flashing">
+            <h2>燒錄韌體</h2>
+            <p>使用 SDK 內建的 <code>ipro_iot_tool_lite</code> 工具燒錄韌體到開發板。</p>
+
+            <h3>使用燒錄工具</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">燒錄韌體到開發板</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 燒錄 BLE Remote 應用
+tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+    --chipname ipro7 \
+    --port /dev/cu.usbserial-2120 \
+    --firmware apps/bluetooth/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
+    --baudrate 921600 \
+    --flash-pin 0x02</code></pre>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>⚠️ macOS 注意：</strong>串口必須使用 <code>/dev/cu.*</code> 裝置，而不是 <code>/dev/tty.*</code>。<code>tty.*</code> 裝置會等待 DCD 信號而造成阻塞。Linux 使用者請使用 <code>/dev/ttyUSB0</code> 或類似裝置。
+            </div>
+
+            <h3>使用自動化測試腳本</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">一鍵建構+燒錄+測試</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 完整流程：建構 + 燒錄 + 擷取串口測試結果
+tools/board_test.sh --project apps/ipro_unit_test</code></pre>
+            </div>
+        </section>
+
+        <section id="serial-monitor">
+            <h2>串口監控</h2>
+            <p>使用 SDK 內建的 <code>serial_monitor.py</code> 監控開發板串口輸出。此工具使用 Python3 termios，無需安裝 pyserial。</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">串口監控</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 基本串口監控（115200 baud）
+python3 tools/serial_monitor.py /dev/cu.usbserial-2120
+
+# 發送重啟命令並等待測試結果
+python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
+    --send reboot --timeout 30 \
+    --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡 提示：</strong>在 macOS 上，<code>cat</code> 對串口有緩衝問題，建議使用 <code>serial_monitor.py</code> 替代。
+            </div>
+        </section>
+
+        <section id="board-testing">
+            <h2>板級測試</h2>
+            <p>SDK 提供完整的板級自動化測試流程，透過 <code>board_test.sh</code> 一鍵完成建構、燒錄、串口擷取與結果分析。</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">自動化測試流程</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 完整測試流程（建構 + 燒錄 + 監控 + 結果解析）
+tools/board_test.sh --project apps/ipro_unit_test
+
+# 退出碼：0 = 通過, 1 = 失敗, 2 = 逾時</code></pre>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡 提示：</strong>測試應用需啟用 <code>CONFIG_TEST_AUTO_RUN=y</code>，測試會在開機後自動執行。測試結果標記為 <code>ALL TESTS PASSED</code> 或 <code>SOME TESTS FAILED</code>。
+            </div>
+        </section>
+
         <section id="debugging">
             <h2>除錯設置</h2>
 
-            <h3>使用 GDB + OpenOCD</h3>
+            <h3>使用 GDB</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">啟動除錯</span>
+                    <span class="code-block-title">啟動 GDB 除錯</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 終端機 1：啟動 OpenOCD
-openocd -f apps/ipro_ble_demo/debug.cfg
-
-# 終端機 2：啟動 GDB
+                <pre><code class="language-bash"># 使用 RISC-V GDB 除錯
 /opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-gdb \
-    apps/ipro_ble_demo/build/build_out/ipro_ble_demo.elf \
-    -ex "target remote :3333" \
-    -ex "monitor reset halt"</code></pre>
+    apps/bluetooth/ipro_ble_remote/build/build_out/ipro_ble_remote.elf</code></pre>
             </div>
+
+            <h3>串口除錯</h3>
+            <p>大多數應用支援透過串口 CLI 進行即時除錯。連接串口後可使用 <code>reboot</code>（重啟）或 <code>reboot_dl</code>（進入下載模式）等指令。</p>
 
             <h3>VS Code 除錯配置</h3>
             <p>SDK 提供 VS Code 擴充套件，支援圖形化除錯。詳細設定請參考 <code>tools/vscode_extension/</code>。</p>

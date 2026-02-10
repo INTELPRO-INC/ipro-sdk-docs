@@ -11,9 +11,11 @@ lang: en
             <ul class="sidebar-links">
                 <li><a href="#overview" class="sidebar-link">Architecture Overview</a></li>
                 <li><a href="#layers" class="sidebar-link">Layered Design</a></li>
+                <li><a href="#memory-layout" class="sidebar-link">Memory Layout</a></li>
                 <li><a href="#directory" class="sidebar-link">Directory Structure</a></li>
                 <li><a href="#build-system" class="sidebar-link">Build System</a></li>
                 <li><a href="#configuration" class="sidebar-link">Configuration</a></li>
+                <li><a href="#ble-controller" class="sidebar-link">BLE Controller</a></li>
                 <li><a href="#components" class="sidebar-link">Components</a></li>
             </ul>
         </nav>
@@ -166,6 +168,50 @@ lang: en
             </div>
         </section>
 
+        <section id="memory-layout">
+            <h2>Memory Layout (IPRO7)</h2>
+            <p>IPRO7 uses RISC-V <code>rv32imafc</code> / <code>ilp32f</code> architecture, running at 192MHz. Memory layout is as follows:</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Region</th>
+                            <th>Size</th>
+                            <th>Start Address</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Flash</td>
+                            <td>4 MB</td>
+                            <td><code>0x00000000</code></td>
+                            <td>Code and read-only data storage</td>
+                        </tr>
+                        <tr>
+                            <td>PSRAM</td>
+                            <td>16 MB</td>
+                            <td><code>0x20000000</code></td>
+                            <td>Main RAM (heap, data segments)</td>
+                        </tr>
+                        <tr>
+                            <td>OCRAM</td>
+                            <td>256 KB</td>
+                            <td><code>0x60000000</code></td>
+                            <td>High-speed SRAM (stack, critical code)</td>
+                        </tr>
+                        <tr>
+                            <td>HBNRAM</td>
+                            <td>4 KB</td>
+                            <td><code>0x50000000</code></td>
+                            <td>Hibernate retention RAM</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
         <section id="directory">
             <h2>Directory Structure</h2>
 
@@ -175,10 +221,13 @@ lang: en
                 </div>
                 <pre><code>ipro_sdk/
 ├── apps/                         # Application projects
-│   ├── ipro7_demo/               # Basic platform demo
-│   ├── ipro_ble_demo/            # BLE demo application
-│   ├── ipro7_fpga_ble_5p4/       # FPGA BLE 5.4
-│   ├── ipro7_phyrf_test/         # RF test
+│   ├── bluetooth/                # BLE applications
+│   │   ├── ipro_ble_remote/      # BLE remote (GATT + OTA)
+│   │   ├── ipro_throughput_test/ # BLE throughput test (999 Kbps)
+│   │   ├── ipro_walkie_talkie/   # BIS LE Audio walkie-talkie
+│   │   └── ipro_le_audio_headset/# GAF/BAP LE Audio headset
+│   ├── ipro7_demo/               # Comprehensive platform demo
+│   ├── ipro_unit_test/           # Unit tests
 │   └── ipro_zephyr_demo/         # Zephyr demo
 │
 ├── bsp/                          # Board Support Package
@@ -187,28 +236,29 @@ lang: en
 │   ├── hal/                      # Hardware Abstraction Layer
 │   └── common/                   # Common code
 │
-├── components/                   # Reusable components
+├── components/                   # Reusable components (23 categories)
 │   ├── wireless/                 # Wireless stack
-│   │   └── ipro_ble_lib/         # BLE library
-│   ├── os/                       # RTOS components
-│   ├── network/                  # Network stack
-│   ├── crypto/                   # Crypto components
-│   ├── fs/                       # File systems
+│   │   └── bluetooth/            # BLE 5.4 stack
+│   │       ├── blestack/         # Zephyr BLE Host (GAP/GATT/L2CAP/SMP)
+│   │       ├── btblecontroller/  # Prebuilt controller libraries (linkN variants)
+│   │       └── btprofile/        # 70+ BLE Profiles
+│   ├── os/                       # RTOS components (FreeRTOS)
+│   ├── network/                  # Network stack (lwIP)
+│   ├── crypto/                   # Crypto components (Mbed TLS)
+│   ├── fs/                       # File systems (LittleFS, FatFS)
+│   ├── cherryusb/                # USB device/host stack
 │   └── ...
 │
 ├── tools/                        # Development tools
+│   ├── ipro_iot_tool_lite/       # Flash tool
+│   ├── serial_monitor.py         # Serial monitor (Python3)
+│   ├── board_test.sh             # Automated board testing
 │   ├── zephyr/                   # Zephyr tool scripts
-│   │   ├── bootstrap.sh          # Environment setup
-│   │   ├── build.sh              # Build script
-│   │   ├── menu.sh               # Interactive menu
-│   │   └── apps.sh               # App management
-│   ├── mcp_server/               # MCP server
 │   ├── vscode_extension/         # VS Code extension
-│   └── openocd/                  # Debug tool config
+│   └── cmake/                    # CI CMake
 │
-├── cmake/                        # CMake configuration
+├── cmake/                        # CMake config (toolchain.cmake auto-detection)
 ├── kconfigs/                     # Kconfig files
-├── docs/                         # Documentation
 │
 ├── build_freertos.sh             # FreeRTOS build script
 ├── CMakeLists.txt                # Root CMake config
@@ -269,47 +319,115 @@ west flash</code></pre>
             <p>SDK uses Kconfig system for project configuration, providing both graphical and text-based configuration interfaces.</p>
 
             <h3>Configuration Hierarchy</h3>
+            <p>The SDK uses Linux kernel-style Kconfig. Each app has its own <code>.config</code> file with <code>CONFIG_*</code> variables. The build generates <code>generated/autoconf.h</code> from <code>.config</code>.</p>
             <ol>
                 <li><strong>Root Config</strong>: <code>Kconfig</code> - Defines all available options</li>
                 <li><strong>Default Config</strong>: <code>kconfigs/*.config</code> - Default values for each module</li>
-                <li><strong>App Config</strong>: <code>apps/*/proj.conf</code> - Application-specific overrides</li>
+                <li><strong>App Config</strong>: <code>apps/*/.config</code> - Application-specific configuration</li>
             </ol>
 
-            <h3>Common Configuration Options</h3>
+            <h3>Key Configuration Options</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">proj.conf Example</span>
+                    <span class="code-block-title">.config Example</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># Enable BLE features
-CONFIG_IPRO_BLE_LIB_ENABLE=y
-CONFIG_IPRO_BLE_LIB_DEBUG_ENABLE=y
+                <pre><code class="language-bash"># SoC selection
+CONFIG_IPRO7=y
+CONFIG_CPU_ID="intelpro_ipro7"
 
-# Memory configuration
-CONFIG_HEAP_SIZE=32768
+# RTOS selection
+CONFIG_FREERTOS_SUPPORT=y
 
-# Log level
-CONFIG_LOG_DEFAULT_LEVEL=3
+# Wireless features
+CONFIG_BLUETOOTH_LE_ENABLE=y
 
-# Component selection
-CONFIG_LWIP_ENABLE=n
-CONFIG_MBEDTLS_ENABLE=y</code></pre>
+# Component enables
+CONFIG_LWIP=y
+CONFIG_MBEDTLS=y
+
+# Test auto-run
+CONFIG_TEST_AUTO_RUN=y</code></pre>
             </div>
 
             <div class="alert alert-info">
-                <strong>💡 Tip:</strong> Use <code>make menuconfig</code> or modify <code>proj.conf</code> to adjust configuration.
+                <strong>💡 Tip:</strong> <code>CONFIG_CPU_ID</code> must be set in <code>.config</code> for the toolchain to correctly detect architecture flags. <code>cmake/toolchain.cmake</code> auto-detects vendor GCC (with <code>_xxldsp</code> extensions) vs standard GCC and adapts compiler flags.
+            </div>
+        </section>
+
+        <section id="ble-controller">
+            <h2>BLE Controller & Prebuilt Libraries</h2>
+
+            <h3>BLE Stack Architecture</h3>
+            <p>The BLE 5.4 stack is located in <code>components/wireless/bluetooth/</code>, using Zephyr-style callback-based GAP/GATT APIs:</p>
+            <ul>
+                <li><code>blestack/</code> - Zephyr BLE Host (GAP, GATT, L2CAP, SMP, ISO, LE Audio) - buildable source</li>
+                <li><code>btblecontroller/</code> - RivieraWaves Controller (prebuilt linkN variant libraries)</li>
+                <li><code>btprofile/</code> - 70+ BLE Profiles</li>
+                <li><code>blemesh/</code> - Bluetooth Mesh support (optional)</li>
+            </ul>
+
+            <h3>Controller Variants (linkN naming)</h3>
+            <p>The controller uses a unified connection pool design with <code>linkN</code> naming (replaces old <code>mXsY</code> naming):</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Variant</th>
+                            <th>BLE Version</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>link1_periph</code>, <code>link1</code>, <code>link2</code>, <code>link4</code>, <code>link8</code></td>
+                            <td>BLE 5.0+</td>
+                            <td>Base BLE, different connection counts</td>
+                        </tr>
+                        <tr>
+                            <td><code>link1_leaudio</code>, <code>link2_leaudio</code></td>
+                            <td>BLE 5.2</td>
+                            <td>With LE Audio support</td>
+                        </tr>
+                        <tr>
+                            <td><code>link1_leaudio_53_54</code>, <code>link2_leaudio_53_54</code></td>
+                            <td>BLE 5.4</td>
+                            <td>With LE Audio + BLE 5.3/5.4 features</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Prebuilt Library System</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build Prebuilt Controller Libraries</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Build specific variant
+components/wireless/bluetooth/build_all_prebuilts.sh link2
+
+# Build all variants
+components/wireless/bluetooth/build_all_prebuilts.sh all
+
+# Output: btblecontroller_ipro7_&lt;variant&gt;/libbtblecontroller_ipro7_&lt;variant&gt;.a</code></pre>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>⚠️ Note:</strong> <code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> cannot be used in release builds. Release builds must use prebuilt libraries.
             </div>
         </section>
 
         <section id="components">
             <h2>Main Components Overview</h2>
 
-            <h3>BLE Library (<code>ipro_ble_lib</code>)</h3>
-            <p>Complete BLE 5.4 implementation with Core/Profile separation architecture:</p>
+            <h3>BLE Stack (Zephyr-based, BLE 5.4)</h3>
+            <p>Complete BLE 5.4 implementation. Applications use Zephyr-style callback-based GAP/GATT APIs:</p>
             <ul>
-                <li><strong>Core Layer</strong>: GAP/GATT management, connection control, security management</li>
-                <li><strong>Profile Layer</strong>: Standard services (HRS, BAS, DIS), custom services</li>
-                <li><strong>Audio Layer</strong>: LE Audio, LC3 codec, GAF framework</li>
+                <li><strong>Host Layer</strong>: GAP/GATT management, connection control, security management (SMP), L2CAP</li>
+                <li><strong>Profile Layer</strong>: 70+ standard BLE Profiles</li>
+                <li><strong>Audio Layer</strong>: LE Audio (GAF, BAP, VCP, MCP, CAP), LC3 codec</li>
+                <li><strong>App Framework</strong>: Mediator (orchestrator) - Applets (reusable components) - Intermediaries (protocol bridges)</li>
             </ul>
 
             <h3>RTOS Components</h3>

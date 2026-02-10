@@ -9,18 +9,29 @@ title: 應用範例
             <h4 class="sidebar-title">本頁目錄</h4>
             <ul class="sidebar-links">
                 <li><a href="#overview" class="sidebar-link">應用概覽</a></li>
-                <li><a href="#ipro-ble-demo" class="sidebar-link">ipro_ble_demo</a></li>
-                <li><a href="#ipro-ble-remote" class="sidebar-link">ipro_ble_remote</a></li>
-                <li><a href="#ipro-throughput-test" class="sidebar-link">ipro_throughput_test</a></li>
-                <li><a href="#ipro-ble-hid-keyboard" class="sidebar-link">ipro_ble_hid_keyboard</a></li>
-                <li><a href="#ipro-blecontroller-test" class="sidebar-link">ipro_blecontroller_test</a></li>
+                <li class="sidebar-section-title">一般應用</li>
                 <li><a href="#ipro7-demo" class="sidebar-link">ipro7_demo</a></li>
                 <li><a href="#ipro7-pircam" class="sidebar-link">ipro7_pircam</a></li>
+                <li><a href="#ipro-unit-test" class="sidebar-link">ipro_unit_test</a></li>
+                <li><a href="#ipro-agora-audio" class="sidebar-link">ipro_agora_audio</a></li>
+                <li><a href="#ipro-aosl-test" class="sidebar-link">ipro_aosl_test</a></li>
+                <li><a href="#ipro-thread-ftd-cli" class="sidebar-link">ipro_thread_ftd_cli</a></li>
                 <li><a href="#ipro6-demo" class="sidebar-link">ipro6_demo</a></li>
                 <li><a href="#ipro6le-demo" class="sidebar-link">ipro6le_demo</a></li>
-                <li><a href="#ipro-thread-ftd-cli" class="sidebar-link">ipro_thread_ftd_cli</a></li>
-                <li><a href="#ipro-zephyr-demo" class="sidebar-link">ipro_zephyr_demo</a></li>
                 <li><a href="#ipro7-bootrom" class="sidebar-link">ipro7_bootrom</a></li>
+                <li><a href="#ipro7-fpga-ble" class="sidebar-link">ipro7_fpga_ble_5p4</a></li>
+                <li class="sidebar-section-title">藍牙應用</li>
+                <li><a href="#ipro-throughput-test" class="sidebar-link">ipro_throughput_test</a></li>
+                <li><a href="#ipro-ble-remote" class="sidebar-link">ipro_ble_remote</a></li>
+                <li><a href="#ipro-le-audio-headset" class="sidebar-link">ipro_le_audio_headset</a></li>
+                <li><a href="#ipro-walkie-talkie" class="sidebar-link">ipro_walkie_talkie</a></li>
+                <li><a href="#ipro-le-audio-bis-source" class="sidebar-link">ipro_le_audio_bis_source</a></li>
+                <li><a href="#ipro-le-audio-bis-sink" class="sidebar-link">ipro_le_audio_bis_sink</a></li>
+                <li><a href="#ipro-esl-tag" class="sidebar-link">ipro_esl_tag</a></li>
+                <li><a href="#ipro-ble-hid-keyboard" class="sidebar-link">ipro_ble_hid_keyboard</a></li>
+                <li><a href="#ipro-ble-transparent" class="sidebar-link">ipro_ble_transparent</a></li>
+                <li><a href="#ipro-blecontroller-test" class="sidebar-link">ipro_blecontroller_test</a></li>
+                <li class="sidebar-section-title">其他</li>
                 <li><a href="#creating-apps" class="sidebar-link">建立新應用</a></li>
             </ul>
         </nav>
@@ -32,8 +43,9 @@ title: 應用範例
 
         <section id="overview">
             <h2>應用概覽</h2>
-            <p>SDK 包含 <strong>11 個參考應用</strong>，展示不同功能領域的最佳實踐：</p>
+            <p>SDK 包含 <strong>20 個參考應用</strong>，分為一般應用（10 個）與藍牙應用（10 個）兩大類：</p>
 
+            <h3>一般應用</h3>
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -46,36 +58,6 @@ title: 應用範例
                     </thead>
                     <tbody>
                         <tr>
-                            <td><code>ipro_ble_demo</code></td>
-                            <td>FreeRTOS</td>
-                            <td>BLE 5.4, LE Audio, HRS/BAS/UART/DIS</td>
-                            <td>BLE 多服務應用開發</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_ble_remote</code></td>
-                            <td>FreeRTOS</td>
-                            <td>LED/Button/Env/UART/PIR/OTA</td>
-                            <td>手機 App 互動開發</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_throughput_test</code></td>
-                            <td>FreeRTOS</td>
-                            <td>Master/Slave 模式，600+ Kbps</td>
-                            <td>BLE 效能測試</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_ble_hid_keyboard</code></td>
-                            <td>FreeRTOS</td>
-                            <td>HOGP 標準 HID 鍵盤</td>
-                            <td>HID 裝置開發</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_blecontroller_test</code></td>
-                            <td>FreeRTOS</td>
-                            <td>BLE Controller 底層測試</td>
-                            <td>BLE 協定棧驗證</td>
-                        </tr>
-                        <tr>
                             <td><code>ipro7_demo</code></td>
                             <td>FreeRTOS</td>
                             <td>USB/LCD/Camera/Audio/Ethernet/SD</td>
@@ -86,6 +68,30 @@ title: 應用範例
                             <td>FreeRTOS</td>
                             <td>PIR 觸發攝影 + JPEG 流程</td>
                             <td>安防/影像觸發應用</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_unit_test</code></td>
+                            <td>FreeRTOS</td>
+                            <td>單元測試框架</td>
+                            <td>SDK 功能驗證與回歸測試</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_agora_audio</code></td>
+                            <td>FreeRTOS</td>
+                            <td>Agora 聲網音訊整合</td>
+                            <td>雲端即時語音通訊</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_aosl_test</code></td>
+                            <td>FreeRTOS</td>
+                            <td>AOSL 平台抽象層測試</td>
+                            <td>平台適配層驗證</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_thread_ftd_cli</code></td>
+                            <td>Zephyr</td>
+                            <td>Thread FTD CLI 範例</td>
+                            <td>Thread 網路建置</td>
                         </tr>
                         <tr>
                             <td><code>ipro6_demo</code></td>
@@ -100,135 +106,388 @@ title: 應用範例
                             <td>IPRO6LE 無線網路開發</td>
                         </tr>
                         <tr>
-                            <td><code>ipro_thread_ftd_cli</code></td>
-                            <td>Zephyr</td>
-                            <td>Thread FTD CLI 範例</td>
-                            <td>Thread 網路建置</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_zephyr_demo</code></td>
-                            <td>Zephyr</td>
-                            <td>GPIO/UART/Threading/Device Tree</td>
-                            <td>現代 RTOS 開發</td>
-                        </tr>
-                        <tr>
                             <td><code>ipro7_bootrom</code></td>
                             <td>N/A</td>
                             <td>Boot Loader</td>
                             <td>開機載入與配置</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro7_fpga_ble_5p4</code></td>
+                            <td>FreeRTOS</td>
+                            <td>FPGA BLE 5.4 驗證</td>
+                            <td>FPGA 環境 BLE 測試</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>藍牙應用</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>應用名稱</th>
+                            <th>RTOS</th>
+                            <th>主要功能</th>
+                            <th>適用場景</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>ipro_throughput_test</code></td>
+                            <td>FreeRTOS</td>
+                            <td>原生 Zephyr bt_* API, 999 Kbps</td>
+                            <td>BLE 效能測試與基準</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_ble_remote</code></td>
+                            <td>FreeRTOS</td>
+                            <td>LED/Button/Env/UART/PIR/OTA (6 GATT 服務)</td>
+                            <td>手機 App 互動開發</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_le_audio_headset</code></td>
+                            <td>FreeRTOS</td>
+                            <td>GAF/BAP LE Audio 耳機</td>
+                            <td>LE Audio 耳機/音訊裝置</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_walkie_talkie</code></td>
+                            <td>FreeRTOS</td>
+                            <td>BIS LE Audio 對講機</td>
+                            <td>廣播音訊對講通訊</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_le_audio_bis_source</code></td>
+                            <td>FreeRTOS</td>
+                            <td>BIS 廣播音訊來源</td>
+                            <td>LE Audio 廣播發射端</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_le_audio_bis_sink</code></td>
+                            <td>FreeRTOS</td>
+                            <td>BIS 廣播音訊接收</td>
+                            <td>LE Audio 廣播接收端</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_esl_tag</code></td>
+                            <td>FreeRTOS</td>
+                            <td>BLE 5.4 PAwR 電子貨架標籤</td>
+                            <td>ESL 電子價格標籤</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_ble_hid_keyboard</code></td>
+                            <td>FreeRTOS</td>
+                            <td>HOGP 標準 HID 鍵盤</td>
+                            <td>HID 裝置開發</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_ble_transparent</code></td>
+                            <td>FreeRTOS</td>
+                            <td>BLE 透傳通訊</td>
+                            <td>串口透傳/資料橋接</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_blecontroller_test</code></td>
+                            <td>FreeRTOS</td>
+                            <td>BLE Controller 底層測試</td>
+                            <td>BLE 協定棧驗證</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <section id="ipro-ble-demo">
-            <h2>ipro_ble_demo ⭐</h2>
-            <p>最完整的 BLE 展示應用，推薦作為 BLE 開發的起點。</p>
+        <!-- ==================== General Apps ==================== -->
+
+        <section id="ipro7-demo">
+            <h2>ipro7_demo</h2>
+            <p>綜合平台展示應用，展示 SDK 完整功能，包含多媒體、USB 和週邊驅動。</p>
 
             <h3>功能特色</h3>
             <ul>
-                <li><strong>Core/Profile 架構</strong>：清晰的層次分離，易於擴展</li>
-                <li><strong>多服務支援</strong>：Heart Rate, Battery, UART, Device Info</li>
-                <li><strong>LE Audio</strong>：GAF 框架整合，LC3 編解碼支援</li>
-                <li><strong>完整 CLI</strong>：40+ 互動指令用於測試與除錯</li>
-                <li><strong>自動重連</strong>：斷線後自動恢復廣播</li>
-                <li><strong>OTA 更新</strong>：支援無線韌體更新（MTU 517，12.3 KB/s）</li>
-                <li><strong>MTU 優化</strong>：動態 MTU 適配，最高支援 517 bytes</li>
+                <li><strong>週邊驅動</strong>：GPIO, UART, SPI (主/從), I2C, PWM, ADC, DAC</li>
+                <li><strong>USB 裝置</strong>：CDC, MSC, HID, UAC (音訊), UVC (視訊) via CherryUSB</li>
+                <li><strong>多媒體</strong>：ISP 攝影機, MJPEG 編解碼, LCD 顯示 (ILI9488)</li>
+                <li><strong>音訊</strong>：AUADC 音訊輸入, DAC 喇叭輸出</li>
+                <li><strong>網路</strong>：EMAC 乙太網, lwIP 協定棧, iPerf 測試</li>
+                <li><strong>儲存</strong>：SD 卡 (SDH), FatFS 檔案系統</li>
+                <li><strong>FreeRTOS</strong>：多任務管理與執行時間統計</li>
             </ul>
 
-            <h3>目錄結構</h3>
+            <h3>建構</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">ipro_ble_demo 結構</span>
-                </div>
-                <pre><code>apps/ipro_ble_demo/
-├── main.c                    # 應用入口
-├── ipro_ble_demo_app.c       # BLE 應用邏輯
-├── ipro_ble_demo_cli.c       # CLI 指令實作
-├── include/
-│   └── ipro_ble_demo_app.h   # 頭文件
-├── CMakeLists.txt            # 建構配置
-├── proj.conf                 # Kconfig 配置
-├── debug.cfg                 # OpenOCD 除錯配置
-├── README.md                 # 應用文件
-├── BLE_DEMO_CLI_GUIDE.md     # CLI 使用指南
-└── CLI_QUICK_REFERENCE.md    # CLI 快速參考</code></pre>
-            </div>
-
-            <h3>建構與執行</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">建構 BLE Demo</span>
+                    <span class="code-block-title">建構平台 Demo</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 建構
-./build_freertos.sh ipro_ble_demo
-
-# 燒錄
-openocd -f apps/ipro_ble_demo/debug.cfg \
-    -c "program apps/ipro_ble_demo/build/build_out/ipro_ble_demo.elf verify reset exit"</code></pre>
+                <pre><code class="language-bash">make -C apps/ipro7_demo</code></pre>
             </div>
 
-            <h3>CLI 指令範例</h3>
+            <h3>程式碼範例</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">常用 CLI 指令</span>
+                    <span class="code-block-title">GPIO 使用範例</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 系統資訊
-help                  # 顯示所有指令
-ble status            # BLE 狀態
+                <pre><code class="language-c">#include "hal_gpio.h"
 
-# 廣播控制
-ble adv start         # 開始廣播
-ble adv stop          # 停止廣播
-ble adv data          # 顯示廣播資料
+void gpio_example(void)
+{
+    // 配置 GPIO 為輸出
+    gpio_set_mode(GPIO_PIN_0, GPIO_OUTPUT_MODE);
 
-# 連線管理
-ble conn list         # 列出連線
-ble conn info 0       # 連線詳情
-ble conn disconnect 0 # 斷開連線
+    // 設置輸出
+    gpio_write(GPIO_PIN_0, 1);
 
-# 服務操作
-ble hrs update 80     # 更新心率
-ble bas update 75     # 更新電量
-ble uart send "Hello" # 發送 UART 資料</code></pre>
+    // 讀取輸入
+    gpio_set_mode(GPIO_PIN_1, GPIO_INPUT_PP_MODE);
+    int value = gpio_read(GPIO_PIN_1);
+
+    // 切換輸出
+    gpio_toggle(GPIO_PIN_0);
+}</code></pre>
+            </div>
+        </section>
+
+        <section id="ipro7-pircam">
+            <h2>ipro7_pircam</h2>
+            <p>PIR 觸發的攝影範例，示範影像擷取、JPEG 流程與顯示/儲存。</p>
+
+            <h3>功能特色</h3>
+            <ul>
+                <li><strong>PIR 觸發</strong>：偵測動作事件後啟動拍攝</li>
+                <li><strong>影像管線</strong>：攝像頭輸入 → JPEG 處理 → LCD 預覽或儲存</li>
+                <li><strong>儲存輸出</strong>：支援 SD/PSRAM 緩衝</li>
+                <li><strong>事件掛鉤</strong>：可串接警示或無線上傳流程</li>
+            </ul>
+
+            <h3>建構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構 PIR Camera</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">make -C apps/ipro7_pircam</code></pre>
+            </div>
+        </section>
+
+        <section id="ipro-unit-test">
+            <h2>ipro_unit_test</h2>
+            <p>SDK 單元測試框架，支援自動化建構、燒錄與測試結果解析。</p>
+
+            <h3>功能特色</h3>
+            <ul>
+                <li><strong>自動執行</strong>：<code>CONFIG_TEST_AUTO_RUN=y</code> 啟動後自動跑測試</li>
+                <li><strong>自動化腳本</strong>：<code>tools/board_test.sh</code> 支援建構+燒錄+監控+解析完整流程</li>
+                <li><strong>結果判定</strong>：輸出 <code>ALL TESTS PASSED</code> 或 <code>SOME TESTS FAILED</code></li>
+            </ul>
+
+            <h3>建構與測試</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">完整測試流程</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 完整流程：建構 + 燒錄 + 抓取序列測試結果
+tools/board_test.sh --project apps/ipro_unit_test
+
+# 快速重測（重啟開發板，不重建/重燒）
+python3 tools/serial_monitor.py /dev/cu.usbserial-2120 --send reboot --timeout 30 \
+    --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
+            </div>
+        </section>
+
+        <section id="ipro-agora-audio">
+            <h2>ipro_agora_audio</h2>
+            <p>整合聲網 Agora SDK 的即時音訊通訊應用。</p>
+            <h3>建構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構 Agora Audio</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">make -C apps/ipro_agora_audio</code></pre>
+            </div>
+        </section>
+
+        <section id="ipro-aosl-test">
+            <h2>ipro_aosl_test</h2>
+            <p>AOSL (Agora OS Layer) 平台抽象層功能測試。</p>
+            <h3>建構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構 AOSL Test</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">make -C apps/ipro_aosl_test</code></pre>
+            </div>
+        </section>
+
+        <section id="ipro-thread-ftd-cli">
+            <h2>ipro_thread_ftd_cli</h2>
+            <p>Zephyr 基礎的 Thread Full Thread Device CLI 範例，用於 Thread 網路佈建與除錯。</p>
+
+            <h3>功能特色</h3>
+            <ul>
+                <li><strong>FTD CLI</strong>：委任、連線、網路診斷</li>
+                <li><strong>Zephyr Device Tree</strong>：宣告式硬體配置</li>
+                <li><strong>UART 主控台</strong>：指令回應與日誌輸出</li>
+            </ul>
+
+            <h3>建構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構 Thread FTD CLI</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">./tools/zephyr/build.sh -a ipro_thread_ftd_cli -b ipro7_fpga -c</code></pre>
+            </div>
+        </section>
+
+        <section id="ipro6-demo">
+            <h2>ipro6_demo</h2>
+            <p>IPRO6 平台週邊與網路示範，包含基本 I/O 與 lwIP。</p>
+
+            <h3>功能特色</h3>
+            <ul>
+                <li><strong>週邊</strong>：GPIO、UART、SPI、I2C、PWM</li>
+                <li><strong>網路</strong>：lwIP + iPerf 測試</li>
+                <li><strong>USB</strong>：CherryUSB 裝置類別示例</li>
+            </ul>
+
+            <h3>建構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構 ipro6_demo</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">make -C apps/ipro6_demo</code></pre>
+            </div>
+        </section>
+
+        <section id="ipro6le-demo">
+            <h2>ipro6le_demo</h2>
+            <p>IPRO6LE 平台 WiFi/lwIP 與 USB 範例。</p>
+
+            <h3>功能特色</h3>
+            <ul>
+                <li><strong>WiFi 管理</strong>：連線、掃描與狀態管理</li>
+                <li><strong>lwIP</strong>：TCP/IP 連線與 iPerf 測試</li>
+                <li><strong>USB</strong>：常用裝置類別示例</li>
+            </ul>
+
+            <h3>建構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構 ipro6le_demo</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">make -C apps/ipro6le_demo</code></pre>
+            </div>
+        </section>
+
+        <section id="ipro7-bootrom">
+            <h2>ipro7_bootrom</h2>
+            <p>IPRO7 平台的 Boot ROM/Boot Loader 配置，負責開機與分割區管理。</p>
+        </section>
+
+        <section id="ipro7-fpga-ble">
+            <h2>ipro7_fpga_ble_5p4</h2>
+            <p>FPGA 環境的 BLE 5.4 驗證應用，用於早期硬體開發階段的 BLE 功能測試。</p>
+
+            <h3>建構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構 FPGA BLE</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">make -C apps/ipro7_fpga_ble_5p4</code></pre>
+            </div>
+        </section>
+
+        <!-- ==================== Bluetooth Apps ==================== -->
+
+        <section id="ipro-throughput-test">
+            <h2>ipro_throughput_test</h2>
+            <p>高效能 BLE 傳輸測試應用，使用原生 Zephyr <code>bt_*</code> API，在兩個 IPRO7 開發板之間達到 <strong>999 Kbps</strong> 傳輸速度。</p>
+
+            <h3>功能特色</h3>
+            <ul>
+                <li><strong>原生 Zephyr API</strong>：直接使用 <code>bt_gatt_notify</code>/<code>bt_gatt_write_without_response</code></li>
+                <li><strong>雙向資料傳輸</strong>：使用自訂 GATT 服務</li>
+                <li><strong>即時統計</strong>：顯示 Kbps 傳輸速度</li>
+                <li><strong>PHY 選擇</strong>：1M/2M/Coded</li>
+                <li><strong>DLE 最佳化</strong>：Data Length Extension 251 bytes</li>
+                <li><strong>TX Descriptor 最佳化</strong>：多重傳輸描述符提升吞吐量</li>
+            </ul>
+
+            <h3>效能測試結果</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>配置</th>
+                            <th>傳輸速度</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1M PHY, 7.5ms CI, 244B</td>
+                            <td>~180-200 Kbps</td>
+                        </tr>
+                        <tr>
+                            <td>2M PHY, 7.5ms CI, 244B</td>
+                            <td>~350-400 Kbps</td>
+                        </tr>
+                        <tr>
+                            <td>2M PHY + DLE 251B + TX Desc</td>
+                            <td><strong>999 Kbps</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
-            <h3>配置選項</h3>
+            <h3>快速開始</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">proj.conf 重要配置</span>
+                    <span class="code-block-title">測試流程</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># BLE 功能
-CONFIG_IPRO_BLE_LIB_ENABLE=y
-CONFIG_IPRO_BLE_LIB_DEBUG_ENABLE=y
+                <pre><code class="language-bash"># 開發板 1 (Slave)
+tp slave
 
-# 服務啟用
-CONFIG_IPRO_BLE_HRS_ENABLE=y
-CONFIG_IPRO_BLE_BAS_ENABLE=y
-CONFIG_IPRO_BLE_DIS_ENABLE=y
-CONFIG_IPRO_BLE_UART_ENABLE=y
+# 開發板 2 (Master)
+tp master
 
-# LE Audio（選用）
-CONFIG_IPRO_BLE_AUDIO_ENABLE=y</code></pre>
+# 連線後開始測試（244 bytes, 10 秒）
+tp start 244 10
+
+# 最佳化速度
+tp phy 2         # 使用 2M PHY
+tp conn 6 6      # 最小連線間隔</code></pre>
+            </div>
+
+            <h3>建構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構 Throughput Test</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">make -C apps/bluetooth/ipro_throughput_test</code></pre>
             </div>
         </section>
 
         <section id="ipro-ble-remote">
-            <h2>ipro_ble_remote 🎮 NEW</h2>
-            <p>互動式 BLE 遙控器應用，專為手機 App 開發設計。</p>
+            <h2>ipro_ble_remote</h2>
+            <p>互動式 BLE 遙控器應用，專為手機 App 開發設計，提供 6 個 GATT 服務。</p>
 
             <h3>功能特色</h3>
             <ul>
                 <li><strong>6 個 GATT 服務</strong>：LED 控制、按鈕、環境感測、UART、PIR 圖片、OTA 更新</li>
                 <li><strong>手機友好</strong>：完整的協定規格，適合 Android/iOS App 開發</li>
-                <li><strong>圖片傳輸</strong>：320×480 JPEG 透過 BLE 傳輸，MTU 517 支援</li>
+                <li><strong>圖片傳輸</strong>：320x480 JPEG 透過 BLE 傳輸，MTU 517 支援</li>
                 <li><strong>高速 OTA</strong>：MTU 517 自動協商，12.3 KB/s 傳輸速度</li>
-                <li><strong>影像傳輸</strong>：40 KB/s (320 Kbps) 圖片傳輸效能</li>
-                <li><strong>記憶體優化</strong>：390KB flash (37.24%)，零警告</li>
             </ul>
 
             <h3>服務列表</h3>
@@ -265,7 +524,7 @@ CONFIG_IPRO_BLE_AUDIO_ENABLE=y</code></pre>
                         <tr>
                             <td>PIR Image</td>
                             <td><code>0xFF50</code></td>
-                            <td>動態偵測 + JPEG 傳輸 (101 KB/s ⚡)</td>
+                            <td>動態偵測 + JPEG 傳輸</td>
                         </tr>
                         <tr>
                             <td>OTA</td>
@@ -276,124 +535,111 @@ CONFIG_IPRO_BLE_AUDIO_ENABLE=y</code></pre>
                 </table>
             </div>
 
-            <h3>OTA 效能規格</h3>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>MTU</th>
-                            <th>負載大小</th>
-                            <th>傳輸速度</th>
-                            <th>250KB 韌體時間</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>513+</td>
-                            <td>504 bytes</td>
-                            <td>12.3 KB/s</td>
-                            <td>~20 秒</td>
-                        </tr>
-                        <tr>
-                            <td>247</td>
-                            <td>244 bytes</td>
-                            <td>2.0 KB/s</td>
-                            <td>~125 秒</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="alert alert-info">
-                <strong>💡 建議：</strong>手機 App 連線後使用 <code>requestMtu(513)</code> 以獲得最佳效能。
-            </div>
-
-            <h3>建構與執行</h3>
+            <h3>建構</h3>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">建構 BLE Remote</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 建構
-./build_freertos.sh ipro_ble_remote build
-
-# 查看詳細文件
-cat apps/ipro_ble_remote/README.md
-cat apps/ipro_ble_remote/OTA_IMPLEMENTATION_GUIDE.md</code></pre>
+                <pre><code class="language-bash">make -C apps/bluetooth/ipro_ble_remote</code></pre>
             </div>
         </section>
 
-        <section id="ipro-throughput-test">
-            <h2>ipro_throughput_test 📊</h2>
-            <p>高效能 BLE 傳輸測試應用，用於兩個 IPRO7 開發板之間的效能測試。</p>
+        <section id="ipro-le-audio-headset">
+            <h2>ipro_le_audio_headset</h2>
+            <p>LE Audio 耳機參考應用，實作 GAF (Generic Audio Framework) 與 BAP (Basic Audio Profile)。</p>
 
             <h3>功能特色</h3>
             <ul>
-                <li><strong>雙向資料傳輸</strong>：使用自訂 GATT 服務</li>
-                <li><strong>即時統計</strong>：顯示 Kbps 傳輸速度</li>
-                <li><strong>可調封包大小</strong>：20-244 bytes</li>
-                <li><strong>PHY 選擇</strong>：1M/2M/Coded</li>
-                <li><strong>連線參數調整</strong>：優化傳輸效能</li>
+                <li><strong>GAF/BAP</strong>：完整的 LE Audio 通用音訊框架</li>
+                <li><strong>LC3 Codec</strong>：低複雜度通訊編解碼</li>
+                <li><strong>VCP</strong>：Volume Control Profile 音量控制</li>
+                <li><strong>MCP</strong>：Media Control Profile 媒體控制</li>
+                <li><strong>CAP</strong>：Common Audio Profile 公共音訊設定</li>
             </ul>
 
-            <h3>效能測試結果</h3>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>配置</th>
-                            <th>傳輸速度</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1M PHY, 7.5ms CI, 244B</td>
-                            <td>~180-200 Kbps</td>
-                        </tr>
-                        <tr>
-                            <td>2M PHY, 7.5ms CI, 244B</td>
-                            <td>~350-400 Kbps</td>
-                        </tr>
-                        <tr>
-                            <td>2M PHY + DLE 優化</td>
-                            <td><strong>600+ Kbps</strong></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <h3>快速開始</h3>
+            <h3>建構</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">測試流程</span>
+                    <span class="code-block-title">建構 LE Audio Headset</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 開發板 1 (Slave)
-tp slave
-
-# 開發板 2 (Master)
-tp master
-
-# 連線後開始測試（244 bytes, 10 秒）
-tp start 244 10
-
-# 優化速度
-tp phy 2         # 使用 2M PHY
-tp conn 6 6      # 最小連線間隔</code></pre>
+                <pre><code class="language-bash">make -C apps/bluetooth/ipro_le_audio_headset</code></pre>
             </div>
+        </section>
 
-            <h3>建構與執行</h3>
+        <section id="ipro-walkie-talkie">
+            <h2>ipro_walkie_talkie</h2>
+            <p>BIS (Broadcast Isochronous Stream) LE Audio 對講機應用，支援一對多廣播音訊。</p>
+
+            <h3>功能特色</h3>
+            <ul>
+                <li><strong>BIS 廣播</strong>：一對多音訊廣播</li>
+                <li><strong>LC3 編碼</strong>：低延遲音訊串流</li>
+                <li><strong>雙向通訊</strong>：切換發話/收話模式</li>
+            </ul>
+
+            <h3>建構</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">建構 Throughput Test</span>
+                    <span class="code-block-title">建構 Walkie Talkie</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">./build_freertos.sh ipro_throughput_test build</code></pre>
+                <pre><code class="language-bash">make -C apps/bluetooth/ipro_walkie_talkie</code></pre>
+            </div>
+        </section>
+
+        <section id="ipro-le-audio-bis-source">
+            <h2>ipro_le_audio_bis_source</h2>
+            <p>BIS 廣播音訊來源端，負責編碼並廣播 LE Audio 音訊串流。</p>
+
+            <h3>建構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構 BIS Source</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">make -C apps/bluetooth/ipro_le_audio_bis_source</code></pre>
+            </div>
+        </section>
+
+        <section id="ipro-le-audio-bis-sink">
+            <h2>ipro_le_audio_bis_sink</h2>
+            <p>BIS 廣播音訊接收端，接收並解碼 LE Audio 廣播串流。</p>
+
+            <h3>建構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構 BIS Sink</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">make -C apps/bluetooth/ipro_le_audio_bis_sink</code></pre>
+            </div>
+        </section>
+
+        <section id="ipro-esl-tag">
+            <h2>ipro_esl_tag</h2>
+            <p>BLE 5.4 PAwR (Periodic Advertising with Responses) 電子貨架標籤應用，展示最新 BLE 5.4 功能。</p>
+
+            <h3>功能特色</h3>
+            <ul>
+                <li><strong>PAwR</strong>：BLE 5.4 Periodic Advertising with Responses</li>
+                <li><strong>低功耗同步</strong>：電子價格標籤同步更新</li>
+                <li><strong>ESL Profile</strong>：Electronic Shelf Label 標準設定</li>
+            </ul>
+
+            <h3>建構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構 ESL Tag</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">make -C apps/bluetooth/ipro_esl_tag</code></pre>
             </div>
         </section>
 
         <section id="ipro-ble-hid-keyboard">
-            <h2>ipro_ble_hid_keyboard ⌨️</h2>
+            <h2>ipro_ble_hid_keyboard</h2>
             <p>HOGP (HID over GATT Profile) 標準 BLE 鍵盤實作。</p>
 
             <h3>功能特色</h3>
@@ -422,26 +668,32 @@ hid_type "Hello World!"
 hid_status</code></pre>
             </div>
 
-            <h3>配對流程</h3>
-            <ol>
-                <li>啟動裝置</li>
-                <li>在藍牙設定中搜尋 "IPRO-Keyboard"</li>
-                <li>配對並連線</li>
-                <li>裝置準備就緒，可發送按鍵</li>
-            </ol>
-
-            <h3>建構與執行</h3>
+            <h3>建構</h3>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">建構 HID Keyboard</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">./build_freertos.sh ipro_ble_hid_keyboard build</code></pre>
+                <pre><code class="language-bash">make -C apps/bluetooth/ipro_ble_hid_keyboard</code></pre>
+            </div>
+        </section>
+
+        <section id="ipro-ble-transparent">
+            <h2>ipro_ble_transparent</h2>
+            <p>BLE 透傳通訊應用，實作串口資料透過 BLE 的雙向傳輸。</p>
+
+            <h3>建構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構 BLE Transparent</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">make -C apps/bluetooth/ipro_ble_transparent</code></pre>
             </div>
         </section>
 
         <section id="ipro-blecontroller-test">
-            <h2>ipro_blecontroller_test 🧪</h2>
+            <h2>ipro_blecontroller_test</h2>
             <p>底層 BLE Controller 驗證範例，用於協定棧與射頻相關測試。</p>
 
             <h3>功能特色</h3>
@@ -457,226 +709,11 @@ hid_status</code></pre>
                     <span class="code-block-title">建構 Controller Test</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">./build_freertos.sh ipro_blecontroller_test build</code></pre>
+                <pre><code class="language-bash">make -C apps/bluetooth/ipro_blecontroller_test</code></pre>
             </div>
         </section>
 
-        <section id="ipro-zephyr-demo">
-            <h2>ipro_zephyr_demo 🌊</h2>
-            <p>Zephyr RTOS 整合展示，展示現代化 RTOS 開發方式。</p>
-
-            <h3>功能特色</h3>
-            <ul>
-                <li><strong>Zephyr v3.4.0</strong>：完整 RTOS 功能</li>
-                <li><strong>Device Tree</strong>：宣告式硬體配置</li>
-                <li><strong>West 建構</strong>：現代化專案管理</li>
-                <li><strong>記憶體優化</strong>：33KB ROM, 27KB RAM</li>
-                <li><strong>快速建構</strong>：約 30 秒完成</li>
-            </ul>
-
-            <h3>建構與執行</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">建構 Zephyr Demo</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># 使用建構腳本
-./tools/zephyr/build.sh -a ipro_zephyr_demo -b ipro7_fpga -c
-
-# 或使用 west
-cd zephyr-workspace
-source setup_env.sh
-west build -b ipro7_fpga ../apps/ipro_zephyr_demo</code></pre>
-            </div>
-
-            <h3>主程式範例</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">main.c</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">#include &lt;zephyr/kernel.h&gt;
-#include &lt;zephyr/logging/log.h&gt;
-
-LOG_MODULE_REGISTER(ipro_zephyr, LOG_LEVEL_INF);
-
-int main(void)
-{
-    LOG_INF("IPRO Zephyr Demo Started!");
-    LOG_INF("Board: %s", CONFIG_BOARD);
-    
-    while (1) {
-        LOG_INF("Running...");
-        k_sleep(K_SECONDS(1));
-    }
-    
-    return 0;
-}</code></pre>
-            </div>
-        </section>
-
-        <section id="ipro7-pircam">
-            <h2>ipro7_pircam 🎥</h2>
-            <p>PIR 觸發的攝影範例，示範影像擷取、JPEG 流程與顯示/儲存。</p>
-
-            <h3>功能特色</h3>
-            <ul>
-                <li><strong>PIR 觸發</strong>：偵測動作事件後啟動拍攝</li>
-                <li><strong>影像管線</strong>：攝像頭輸入 → JPEG 處理 → LCD 預覽或儲存</li>
-                <li><strong>儲存輸出</strong>：支援 SD/PSRAM 緩衝</li>
-                <li><strong>事件掛鉤</strong>：可串接警示或無線上傳流程</li>
-            </ul>
-
-            <h3>建構</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">建構 PIR Camera</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash">./build_freertos.sh ipro7_pircam build</code></pre>
-            </div>
-        </section>
-
-        <section id="ipro7-demo">
-            <h2>ipro7_demo</h2>
-            <p>綜合平台展示應用，展示 SDK 完整功能，包含多媒體、USB 和週邊驅動。</p>
-
-            <h3>功能特色</h3>
-            <ul>
-                <li><strong>週邊驅動</strong>：GPIO, UART, SPI (主/從), I2C, PWM, ADC, DAC</li>
-                <li><strong>USB 裝置</strong>：CDC, MSC, HID, UAC (音訊), UVC (視訊) via CherryUSB</li>
-                <li><strong>多媒體</strong>：ISP 攝影機, MJPEG 編解碼, LCD 顯示 (ILI9488)</li>
-                <li><strong>音訊</strong>：AUADC 音訊輸入, DAC 喇叭輸出</li>
-                <li><strong>網路</strong>：EMAC 乙太網, lwIP 協定棧, iPerf 測試</li>
-                <li><strong>儲存</strong>：SD 卡 (SDH), FatFS 檔案系統</li>
-                <li><strong>FreeRTOS</strong>：多任務管理與執行時間統計</li>
-            </ul>
-
-            <h3>建構</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">建構平台 Demo</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash">./build_freertos.sh ipro7_demo build</code></pre>
-            </div>
-
-            <h3>proj.conf 配置範例</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">啟用 USB 和多媒體功能</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-properties"># USB Device 配置
-CONFIG_COMPONENTS_CHERRYUSB_ENABLE=y
-CONFIG_CHERRYUSB_DEVICE=y
-CONFIG_CHERRYUSB_DEVICE_CDC=y
-CONFIG_CHERRYUSB_DEVICE_MSC=y
-CONFIG_CHERRYUSB_DEVICE_AUDIO=y
-CONFIG_CHERRYUSB_DEVICE_VIDEO=y
-
-# 檔案系統
-CONFIG_COMPONENTS_FATFS_ENABLE=y
-CONFIG_COMPONENTS_VFS_ENABLE=y
-
-# 感測器和工具
-CONFIG_COMPONENTS_SENSOR_ENABLE=y
-CONFIG_CLI_CMD_ENABLE=y</code></pre>
-            </div>
-
-            <h3>程式碼範例</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">GPIO 使用範例</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">#include "ipro_hal_gpio.h"
-
-void gpio_example(void)
-{
-    // 配置 GPIO 為輸出
-    ipro_gpio_config_t config = {
-        .mode = IPRO_GPIO_MODE_OUTPUT,
-        .pull = IPRO_GPIO_PULL_NONE,
-    };
-    ipro_hal_gpio_init(GPIO_PIN_0, &config);
-    
-    // 設置輸出
-    ipro_hal_gpio_write(GPIO_PIN_0, 1);
-    
-    // 讀取輸入
-    uint8_t value = ipro_hal_gpio_read(GPIO_PIN_1);
-}</code></pre>
-            </div>
-        </section>
-
-        <section id="ipro6-demo">
-            <h2>ipro6_demo 🛠️</h2>
-            <p>IPRO6 平台週邊與網路示範，包含基本 I/O 與 lwIP。</p>
-
-            <h3>功能特色</h3>
-            <ul>
-                <li><strong>週邊</strong>：GPIO、UART、SPI、I2C、PWM</li>
-                <li><strong>網路</strong>：lwIP + iPerf 測試</li>
-                <li><strong>USB</strong>：CherryUSB 裝置類別示例</li>
-            </ul>
-
-            <h3>建構</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">建構 ipro6_demo</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash">./build_freertos.sh ipro6_demo build</code></pre>
-            </div>
-        </section>
-
-        <section id="ipro6le-demo">
-            <h2>ipro6le_demo 📡</h2>
-            <p>IPRO6LE 平台 WiFi/lwIP 與 USB 範例。</p>
-
-            <h3>功能特色</h3>
-            <ul>
-                <li><strong>WiFi 管理</strong>：連線、掃描與狀態管理</li>
-                <li><strong>lwIP</strong>：TCP/IP 連線與 iPerf 測試</li>
-                <li><strong>USB</strong>：常用裝置類別示例</li>
-            </ul>
-
-            <h3>建構</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">建構 ipro6le_demo</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash">./build_freertos.sh ipro6le_demo build</code></pre>
-            </div>
-        </section>
-
-        <section id="ipro-thread-ftd-cli">
-            <h2>ipro_thread_ftd_cli 🌐</h2>
-            <p>Zephyr 基礎的 Thread Full Thread Device CLI 範例，用於 Thread 網路佈建與除錯。</p>
-
-            <h3>功能特色</h3>
-            <ul>
-                <li><strong>FTD CLI</strong>：委任、連線、網路診斷</li>
-                <li><strong>Zephyr Device Tree</strong>：宣告式硬體配置</li>
-                <li><strong>UART 主控台</strong>：指令回應與日誌輸出</li>
-            </ul>
-
-            <h3>建構</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">建構 Thread FTD CLI</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash">./tools/zephyr/build.sh -a ipro_thread_ftd_cli -b ipro7_fpga -c</code></pre>
-            </div>
-        </section>
-
-        <section id="ipro7-bootrom">
-            <h2>ipro7_bootrom 🚀</h2>
-            <p>IPRO7 平台的 Boot ROM/Boot Loader 配置，負責開機與分割區管理。</p>
-        </section>
+        <!-- ==================== Creating Apps ==================== -->
 
         <section id="creating-apps">
             <h2>建立新應用</h2>
@@ -716,21 +753,7 @@ target_include_directories(app PRIVATE
 )</code></pre>
             </div>
 
-            <h3>步驟 3：建立 proj.conf</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">apps/my_app/proj.conf</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># 基本配置
-CONFIG_LOG_DEFAULT_LEVEL=3
-
-# 根據需要啟用元件
-# CONFIG_IPRO_BLE_LIB_ENABLE=y
-# CONFIG_LWIP_ENABLE=y</code></pre>
-            </div>
-
-            <h3>步驟 4：建立主程式</h3>
+            <h3>步驟 3：建立主程式</h3>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">apps/my_app/main.c</span>
@@ -746,7 +769,7 @@ CONFIG_LOG_DEFAULT_LEVEL=3
 void app_task(void *params)
 {
     IPRO_LOG_INFO(TAG, "My App Started!");
-    
+
     while (1) {
         IPRO_LOG_INFO(TAG, "Running...");
         vTaskDelay(pdMS_TO_TICKS(1000));
@@ -757,28 +780,24 @@ int main(void)
 {
     // 系統初始化
     system_init();
-    
+
     // 建立應用任務
     xTaskCreate(app_task, "app", 4096, NULL, 5, NULL);
-    
+
     // 啟動排程器
     vTaskStartScheduler();
-    
+
     return 0;
 }</code></pre>
             </div>
 
-            <h3>步驟 5：建構</h3>
+            <h3>步驟 4：建構</h3>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">建構新應用</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">./build_freertos.sh my_app</code></pre>
-            </div>
-
-            <div class="alert alert-success">
-                <strong>✅ 完成！</strong>您的新應用已建立，可以開始開發了。
+                <pre><code class="language-bash">make -C apps/my_app</code></pre>
             </div>
         </section>
     </article>

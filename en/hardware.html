@@ -7,7 +7,7 @@ lang: en
 <section class="page-header-section">
     <div class="container">
         <h1 class="page-title">🔧 Hardware Reference</h1>
-        <p class="page-subtitle">IPRO7 Hardware Specifications, Pinout, and Evaluation Board Information</p>
+        <p class="page-subtitle">IPRO7AI AIOT Matter Chip Specifications, Pinout, and Evaluation Board Information</p>
     </div>
 </section>
 
@@ -19,6 +19,14 @@ lang: en
             <a href="#chip-overview" class="hw-nav-item">
                 <i class="fas fa-microchip"></i>
                 <span>Chip Overview</span>
+            </a>
+            <a href="#wireless" class="hw-nav-item">
+                <i class="fas fa-wifi"></i>
+                <span>Wireless</span>
+            </a>
+            <a href="#ai-multimedia" class="hw-nav-item">
+                <i class="fas fa-brain"></i>
+                <span>AI/Multimedia</span>
             </a>
             <a href="#pinout" class="hw-nav-item">
                 <i class="fas fa-th"></i>
@@ -32,26 +40,39 @@ lang: en
                 <i class="fas fa-plug"></i>
                 <span>Peripherals</span>
             </a>
-            <a href="#power" class="hw-nav-item">
-                <i class="fas fa-bolt"></i>
-                <span>Power Design</span>
-            </a>
         </div>
 
         <!-- Chip Overview -->
         <div id="chip-overview" class="hw-section">
-            <h2><i class="fas fa-microchip"></i> IPRO7 Chip Overview</h2>
+            <h2><i class="fas fa-microchip"></i> IPRO7AI Chip Overview</h2>
+
+            <div class="chip-intro" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1)); border-radius: 16px; padding: 2rem; margin-bottom: 2rem;">
+                <h3 style="margin-top: 0; color: var(--primary);">AIOT 2.4G Multi-mode Wireless Chip</h3>
+                <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                    IPRO7AI is a multi-mode wireless chip designed for low-power AIOT applications, integrating Matter 1.4, BLE 5.4, Zigbee 3.0 and Thread 1.2,
+                    with a built-in AI NPU accelerator for smart home, image recognition, and IoT edge computing devices.
+                </p>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <span class="chip-badge">Matter 1.4</span>
+                    <span class="chip-badge">BLE 5.4</span>
+                    <span class="chip-badge">Zigbee 3.0</span>
+                    <span class="chip-badge">Thread 1.2</span>
+                    <span class="chip-badge">AI NPU 0.1 TOPS</span>
+                </div>
+            </div>
 
             <div class="spec-grid">
                 <div class="spec-card">
                     <div class="spec-icon">💻</div>
-                    <h3>Processor Core</h3>
+                    <h3>MCU Processor</h3>
                     <ul>
-                        <li>RISC-V RV64IMAFDC</li>
-                        <li>Up to 320MHz Clock</li>
-                        <li>32KB I-Cache</li>
-                        <li>32KB D-Cache</li>
-                        <li>FPU Floating Point Unit</li>
+                        <li>RISC-V RV32IMAFC @192MHz</li>
+                        <li>L1 I/D Cache 16KB/16KB</li>
+                        <li>RAM 300KB</li>
+                        <li>ROM 128KB</li>
+                        <li>eFuse 2Kb</li>
+                        <li>RTC, Timer x2, WDT</li>
+                        <li>DMA 8 Channels</li>
                     </ul>
                 </div>
 
@@ -59,10 +80,10 @@ lang: en
                     <div class="spec-icon">💾</div>
                     <h3>Memory Configuration</h3>
                     <ul>
-                        <li>4MB On-chip Flash</li>
-                        <li>16MB PSRAM</li>
-                        <li>256KB OCRAM</li>
-                        <li>4KB HBNRAM (Hibernate Retention)</li>
+                        <li>Built-in 8Mb (1MB) Flash</li>
+                        <li>Built-in 64Mb (8MB) pSRAM</li>
+                        <li>XIP QSPI Support</li>
+                        <li>On-The-Fly AES Decryption (OTFAD)</li>
                         <li>External QSPI Flash Support</li>
                     </ul>
                 </div>
@@ -71,23 +92,49 @@ lang: en
                     <div class="spec-icon">📶</div>
                     <h3>Wireless Features</h3>
                     <ul>
-                        <li>Full BLE 5.4 Support</li>
-                        <li>LE Audio / LC3 Codec</li>
-                        <li>TX Power: -20 ~ +10 dBm</li>
-                        <li>RX Sensitivity: -97 dBm</li>
-                        <li>IEEE 802.15.4 (Optional)</li>
+                        <li>Matter 1.4 Full Support</li>
+                        <li>Bluetooth 5.4 / BLE</li>
+                        <li>Zigbee 3.0 / Thread 1.2</li>
+                        <li>IEEE 802.15.4</li>
+                        <li>Up to 16 BLE Connections</li>
+                        <li>BLE/Zigbee/Thread Coexistence</li>
                     </ul>
                 </div>
 
                 <div class="spec-card">
-                    <div class="spec-icon">⚡</div>
-                    <h3>Power Characteristics</h3>
+                    <div class="spec-icon">🔒</div>
+                    <h3>Security Features</h3>
                     <ul>
-                        <li>Operating Voltage: 1.8V ~ 3.6V</li>
-                        <li>Active: ~5mA @ 3.3V</li>
-                        <li>Deep Sleep: < 5μA</li>
-                        <li>Hibernate: < 1μA</li>
-                        <li>Built-in DC-DC Converter</li>
+                        <li>Secure Boot</li>
+                        <li>Secure Debug</li>
+                        <li>TrustZone Isolation</li>
+                        <li>AES-CBC/CCM/GCM/XTS</li>
+                        <li>MD5, SHA-1/224/256/384/512</li>
+                        <li>TRNG (True Random Number Generator)</li>
+                        <li>PKA (RSA/ECC Accelerator)</li>
+                    </ul>
+                </div>
+
+                <div class="spec-card">
+                    <div class="spec-icon">🧠</div>
+                    <h3>AI / NPU</h3>
+                    <ul>
+                        <li>NPU Performance: 0.1 TOPS</li>
+                        <li>AI Detection Applications</li>
+                        <li>Edge Computing Acceleration</li>
+                        <li>Image/Voice AI Processing</li>
+                    </ul>
+                </div>
+
+                <div class="spec-card">
+                    <div class="spec-icon">🎬</div>
+                    <h3>Multimedia</h3>
+                    <ul>
+                        <li>Audio ADC 24-bit</li>
+                        <li>Video MJPEG Codec</li>
+                        <li>Camera DVP/SPI Interface</li>
+                        <li>Display DBI/SPI Interface</li>
+                        <li>USB 2.0</li>
                     </ul>
                 </div>
             </div>
@@ -96,31 +143,156 @@ lang: en
                 <h3>System Architecture Diagram</h3>
                 <div class="diagram-container">
                     <pre class="ascii-diagram">
-┌─────────────────────────────────────────────────────────────────┐
-│                         IPRO7 SoC                               │
-├─────────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
-│  │   RISC-V    │  │    BLE      │  │      RF Transceiver     │  │
-│  │   RV64IMC   │  │  Controller │  │   2.4GHz / BLE 5.4      │  │
-│  │   320MHz    │  │  BLE 5.4    │  │   TX: +10dBm max        │  │
-│  └──────┬──────┘  └──────┬──────┘  └───────────┬─────────────┘  │
-│         │                │                      │                │
-│  ┌──────┴────────────────┴──────────────────────┴──────────┐    │
-│  │                      AHB/APB Bus                        │    │
-│  └──────┬────────────────┬──────────────────────┬──────────┘    │
-│         │                │                      │                │
-│  ┌──────┴──────┐  ┌──────┴──────┐  ┌───────────┴───────────┐    │
-│  │   Memory    │  │ Peripherals │  │     Security          │    │
-│  │  4MB Flash  │  │  UART x3    │  │  AES-128/256          │    │
-│  │ 16MB PSRAM  │  │  SPI x2     │  │  SHA-256              │    │
-│  │ 256KB SRAM  │  │  I2C x2     │  │  TRNG                 │    │
-│  │  4KB HBNRAM │  │  PWM x8     │  │  Secure Boot          │    │
-│  └─────────────┘  │  ADC/DAC    │  └───────────────────────┘    │
-│                   │  GPIO x32   │                                │
-│                   └─────────────┘                                │
-└─────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                              IPRO7AI SoC                                     │
+├──────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐  │
+│  │   RISC-V     │  │   AI/NPU     │  │  Wireless    │  │  RF Transceiver  │  │
+│  │  RV32IMAFC   │  │  0.1 TOPS    │  │  Controller  │  │    2.4GHz        │  │
+│  │   192MHz     │  │              │  │              │  │                  │  │
+│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └────────┬─────────┘  │
+│         │                 │                 │                   │            │
+│         │    ┌────────────┴─────────────────┴───────────────────┘            │
+│         │    │                                                               │
+│  ┌──────┴────┴───────────────────────────────────────────────────────────┐   │
+│  │                           AHB/APB Bus                                 │   │
+│  └───┬──────────┬──────────┬──────────┬──────────┬──────────┬────────────┘   │
+│      │          │          │          │          │          │                │
+│  ┌───┴───┐  ┌───┴───┐  ┌───┴───┐  ┌───┴───┐  ┌───┴───┐  ┌───┴─────────┐     │
+│  │Memory │  │ Crypto│  │ Multi │  │ Inter │  │  PMU  │  │   GPIO      │     │
+│  │       │  │       │  │ Media │  │ face  │  │       │  │   x42       │     │
+│  │ 8Mb   │  │ AES   │  │       │  │       │  │ Buck  │  │             │     │
+│  │ Flash │  │ SHA   │  │ MJPEG │  │UART x2│  │ LDO   │  │ QDEC IRR    │     │
+│  │ 64Mb  │  │ PKA   │  │ ADC   │  │SPI x2 │  │       │  │ KYS  RMII   │     │
+│  │ pSRAM │  │ TRNG  │  │ DAC   │  │I2C x2 │  │ Power │  │             │     │
+│  │ 300KB │  │       │  │ Camera│  │I2S    │  │ Modes │  │             │     │
+│  │ RAM   │  │       │  │ LCD   │  │USB2.0 │  │       │  │             │     │
+│  └───────┘  └───────┘  └───────┘  └───────┘  └───────┘  └─────────────┘     │
+│                                                                              │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  Wireless: BLE 5.4 │ Zigbee 3.0 │ Thread 1.2 │ Matter 1.4 │ 802.15.4        │
+└──────────────────────────────────────────────────────────────────────────────┘
                     </pre>
                 </div>
+            </div>
+        </div>
+
+        <!-- Wireless Specifications -->
+        <div id="wireless" class="hw-section">
+            <h2><i class="fas fa-wifi"></i> Wireless Specifications</h2>
+
+            <div class="spec-grid">
+                <div class="spec-card">
+                    <div class="spec-icon">📡</div>
+                    <h3>Bluetooth (Matter Support)</h3>
+                    <ul>
+                        <li>2.4 GHz RF Transceiver</li>
+                        <li>Bluetooth v5.4 Specification</li>
+                        <li>BLE 1Mbps and 2Mbps</li>
+                        <li>Long Range 500/125Kbps</li>
+                        <li>Up to 16 BLE Connections</li>
+                        <li>Integrated RF balun, PA/LNA</li>
+                        <li>External PA/LNA Support</li>
+                    </ul>
+                </div>
+
+                <div class="spec-card">
+                    <div class="spec-icon">🔗</div>
+                    <h3>IEEE 802.15.4 (Matter Support)</h3>
+                    <ul>
+                        <li>Zigbee 3.0 Full Support</li>
+                        <li>Thread 1.2 Full Support</li>
+                        <li>BLE/Zigbee/Thread Coexistence</li>
+                        <li>Matter 1.4 Protocol Support</li>
+                        <li>Low-power Mesh Networking</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI and Multimedia -->
+        <div id="ai-multimedia" class="hw-section">
+            <h2><i class="fas fa-brain"></i> AI & Multimedia</h2>
+
+            <div class="spec-grid">
+                <div class="spec-card">
+                    <div class="spec-icon">🧠</div>
+                    <h3>AI / NPU Accelerator</h3>
+                    <ul>
+                        <li>NPU Performance: 0.1 TOPS</li>
+                        <li>AI Detection Applications</li>
+                        <li>AI Recognition Applications</li>
+                        <li>Edge Computing Optimization</li>
+                        <li>Low-power AI Inference</li>
+                    </ul>
+                </div>
+
+                <div class="spec-card">
+                    <div class="spec-icon">🎵</div>
+                    <h3>Audio Features</h3>
+                    <ul>
+                        <li>Audio ADC 24-bit</li>
+                        <li>GPADC 12-bit</li>
+                        <li>GPDAC 12-bit</li>
+                        <li>I2S Audio Interface</li>
+                        <li>Microphone/Speaker Support</li>
+                    </ul>
+                </div>
+
+                <div class="spec-card">
+                    <div class="spec-icon">📹</div>
+                    <h3>Video Features</h3>
+                    <ul>
+                        <li>Video MJPEG Codec</li>
+                        <li>Camera DVP Interface</li>
+                        <li>Camera SPI Interface</li>
+                        <li>Image Processing Support</li>
+                    </ul>
+                </div>
+
+                <div class="spec-card">
+                    <div class="spec-icon">🖥️</div>
+                    <h3>Display Features</h3>
+                    <ul>
+                        <li>Display DBI Interface</li>
+                        <li>Display SPI Interface</li>
+                        <li>LCD Controller</li>
+                        <li>SD Card Support (SDIO)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interface Section -->
+        <div id="interfaces" class="hw-section">
+            <h2><i class="fas fa-plug"></i> Interface Specifications</h2>
+
+            <div class="table-wrapper">
+                <table class="spec-table">
+                    <thead>
+                        <tr>
+                            <th>Interface</th>
+                            <th>Count/Spec</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>USB</td><td>USB 2.0</td><td>Full-speed USB Device/Host</td></tr>
+                        <tr><td>UART</td><td>x2</td><td>Serial Communication Interface</td></tr>
+                        <tr><td>I2C</td><td>x2</td><td>I2C Master/Slave</td></tr>
+                        <tr><td>SPI</td><td>x2</td><td>SPI Master/Slave</td></tr>
+                        <tr><td>I2S</td><td>x1</td><td>Digital Audio Interface</td></tr>
+                        <tr><td>PWM</td><td>x8</td><td>Pulse Width Modulation Output</td></tr>
+                        <tr><td>GPADC</td><td>12-bit</td><td>General Purpose ADC</td></tr>
+                        <tr><td>GPDAC</td><td>12-bit</td><td>General Purpose DAC</td></tr>
+                        <tr><td>QDEC</td><td>x1</td><td>Quadrature Decoder (Mouse/Knob)</td></tr>
+                        <tr><td>KYS</td><td>x1</td><td>Key Scan (Remote Control)</td></tr>
+                        <tr><td>IRR</td><td>x1</td><td>IR Remote Receiver</td></tr>
+                        <tr><td>RMII</td><td>x1</td><td>Ethernet Interface</td></tr>
+                        <tr><td>GPIO</td><td>x42</td><td>General Purpose I/O</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 

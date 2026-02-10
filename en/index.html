@@ -39,14 +39,14 @@ lang: en
                     <span class="code-title">terminal</span>
                 </div>
                 <pre><code class="language-bash"><span style="color: #64748b;"># Build BLE application</span>
-./build_freertos.sh ipro_ble_demo
+make -C apps/bluetooth/ipro_ble_remote
 
 <span style="color: #64748b;"># Or use Zephyr RTOS</span>
 ./tools/zephyr/bootstrap.sh
-./tools/zephyr/build.sh -a ipro_zephyr_demo
+./tools/zephyr/build.sh -a ipro_zephyr_demo -b ipro7_fpga -c
 
 <span style="color: #10b981;">✓ Build successful!</span>
-<span style="color: #94a3b8;">Output: apps/ipro_ble_demo/build/build_out/</span></code></pre>
+<span style="color: #94a3b8;">Output: apps/bluetooth/ipro_ble_remote/build/build_out/</span></code></pre>
             </div>
         </div>
     </div>
@@ -67,8 +67,8 @@ lang: en
             <div class="stat-value">0.1 TOPS</div>
             <div class="stat-label">AI NPU Power</div>
         </div>
-        <div class="stat-item" data-tooltip="BLE 5.4 + Zigbee 3.0 + Thread 1.2">
-            <div class="stat-value">4 Protocols</div>
+        <div class="stat-item" data-tooltip="BLE 5.4 + WiFi 6 + Zigbee 3.0 + Thread 1.2">
+            <div class="stat-value">5 Protocols</div>
             <div class="stat-label">Multi-mode Wireless</div>
         </div>
     </div>
@@ -88,7 +88,7 @@ lang: en
                 <div class="feature-icon">🌐</div>
                 <h3 class="feature-title">Matter Multi-Protocol</h3>
                 <p class="feature-description">
-                    Full Matter 1.4 smart home protocol support with BLE 5.4 (up to 16 connections), Zigbee 3.0, Thread 1.2, and BT/Zigbee/Thread coexistence.
+                    Full Matter 1.4 smart home protocol support with BLE 5.4 (up to 999 Kbps throughput), WiFi 6, Zigbee 3.0, Thread 1.2, and multi-protocol coexistence.
                 </p>
             </div>
             <div class="feature-card">
@@ -113,10 +113,10 @@ lang: en
                 </p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">🔌</div>
-                <h3 class="feature-title">VS Code Extension</h3>
+                <div class="feature-icon">🛠️</div>
+                <h3 class="feature-title">Development Toolchain</h3>
                 <p class="feature-description">
-                    Dedicated VS Code Extension supporting Remote SSH development, one-click build, auto toolchain detection, remote compile local flash.
+                    <code>make -C apps/&lt;project&gt;</code> quick build, Zephyr scripts, board_test.sh automated testing, serial_monitor.py serial monitoring for daily development.
                 </p>
             </div>
             <div class="feature-card">
@@ -156,47 +156,62 @@ lang: en
         <div class="app-grid">
             <div class="app-card">
                 <div class="app-header">
-                    <span class="app-icon">📱</span>
-                    <span class="app-name">ipro_ble_demo</span>
+                    <span class="app-icon">🎮</span>
+                    <span class="app-name">ipro_ble_remote</span>
                     <span class="app-badge">Recommended</span>
                 </div>
                 <p class="app-description">
-                    Modern BLE demo application with Core/Profile separation architecture. Supports Heart Rate, Battery, UART, Device Info services, complete CLI system, and OTA firmware updates.
+                    Mobile interactive remote control with 6 GATT services (LED/Button/Env/UART/PIR/OTA), image transfer 101 KB/s, OTA update 12.3 KB/s.
                 </p>
                 <div class="app-features">
-                    <span class="app-feature-tag">BLE 5.4</span>
+                    <span class="app-feature-tag">MTU 517</span>
+                    <span class="app-feature-tag">101 KB/s</span>
+                    <span class="app-feature-tag">OTA 12KB/s</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">📊</span>
+                    <span class="app-name">ipro_throughput_test</span>
+                    <span class="app-badge">High Performance</span>
+                </div>
+                <p class="app-description">
+                    BLE performance test tool using native Zephyr bt_* APIs. Supports Master/Slave modes, PHY selection, connection parameter tuning, up to 999 Kbps.
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">999 Kbps</span>
+                    <span class="app-feature-tag">2M PHY</span>
+                    <span class="app-feature-tag">Performance</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">🎧</span>
+                    <span class="app-name">ipro_le_audio_headset</span>
+                    <span class="app-badge">LE Audio</span>
+                </div>
+                <p class="app-description">
+                    LE Audio headset reference app based on GAF/BAP framework. Supports Unicast/Broadcast audio, VCP volume control, MCP media control.
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">GAF/BAP</span>
+                    <span class="app-feature-tag">LC3 Codec</span>
+                    <span class="app-feature-tag">Unicast</span>
+                    <span class="app-feature-tag">Broadcast</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">📻</span>
+                    <span class="app-name">ipro_walkie_talkie</span>
+                </div>
+                <p class="app-description">
+                    BIS LE Audio walkie-talkie app demonstrating Broadcast Isochronous Stream audio, ideal for group communication scenarios.
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">BIS</span>
                     <span class="app-feature-tag">LE Audio</span>
-                    <span class="app-feature-tag">40+ CLI Commands</span>
-                    <span class="app-feature-tag">OTA Updates</span>
-                </div>
-            </div>
-            <div class="app-card">
-                <div class="app-header">
-                    <span class="app-icon">🌊</span>
-                    <span class="app-name">ipro_zephyr_demo</span>
-                    <span class="app-badge">New</span>
-                </div>
-                <p class="app-description">
-                    Zephyr RTOS integration demo with modern build system. Memory optimized (33KB ROM, 27KB RAM), build time ~30 seconds.
-                </p>
-                <div class="app-features">
-                    <span class="app-feature-tag">Zephyr v3.4.0</span>
-                    <span class="app-feature-tag">Device Tree</span>
-                    <span class="app-feature-tag">West Build</span>
-                </div>
-            </div>
-            <div class="app-card">
-                <div class="app-header">
-                    <span class="app-icon">🔌</span>
-                    <span class="app-name">ipro7_fpga_ble_5p4</span>
-                </div>
-                <p class="app-description">
-                    FPGA-optimized BLE 5.4 implementation with hardware-accelerated BLE processing, periodic advertising, and isochronous streaming support.
-                </p>
-                <div class="app-features">
-                    <span class="app-feature-tag">FPGA Accelerated</span>
-                    <span class="app-feature-tag">Periodic Advertising</span>
-                    <span class="app-feature-tag">ISO Streaming</span>
+                    <span class="app-feature-tag">Broadcast</span>
                 </div>
             </div>
             <div class="app-card">
@@ -265,8 +280,11 @@ west build -b ipro7_fpga ../apps/ipro_zephyr_demo</code></pre>
                     <span class="code-block-title">FreeRTOS Build Commands</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># Use simplified build script
-./build_freertos.sh ipro_ble_demo
+                <pre><code class="language-bash"># Use Make build (recommended)
+make -C apps/bluetooth/ipro_ble_remote
+
+# Or use build script
+./build_freertos.sh ipro_ble_remote build
 
 # Or manual CMake build
 cmake -S . -B build \

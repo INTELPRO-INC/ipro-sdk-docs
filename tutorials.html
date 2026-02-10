@@ -6,340 +6,359 @@ lang: zh-TW
 
 <section class="page-header-section">
     <div class="container">
-        <h1 class="page-title">📖 教學系列 Tutorials</h1>
+        <h1 class="page-title">教學系列 Tutorials</h1>
         <p class="page-subtitle">從零開始，循序漸進學習 IPRO SDK 開發</p>
     </div>
 </section>
 
 <section class="tutorials-section">
     <div class="container">
-        
-        <!-- Tutorial Cards Grid -->
-        <div class="tutorials-grid">
-            
-            <!-- BLE Tutorial -->
-            <div class="tutorial-card">
-                <div class="tutorial-header ble">
-                    <div class="tutorial-icon">📱</div>
-                    <span class="tutorial-level beginner">初學者</span>
-                </div>
-                <div class="tutorial-content">
-                    <h2>從零開始建立 BLE 應用</h2>
-                    <p>學習如何使用 IPRO SDK 建立你的第一個 BLE 應用程式，包含 Advertising、連線管理與 GATT 服務。</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 約 45 分鐘</span>
-                        <span><i class="fas fa-list-ol"></i> 6 個步驟</span>
-                    </div>
-                </div>
-                <div class="tutorial-steps">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h4>環境準備</h4>
-                            <p>安裝工具鏈、設定開發環境</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h4>建立專案結構</h4>
-                            <p>建立 CMakeLists.txt、proj.conf 與主程式</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h4>初始化 BLE Stack</h4>
-                            <p>設定 BLE Controller 與 Host</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <div class="step-content">
-                            <h4>實作 Advertising</h4>
-                            <p>設定 Advertising Data 並啟動廣播</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">5</div>
-                        <div class="step-content">
-                            <h4>處理連線事件</h4>
-                            <p>實作連線與斷線回呼函數</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">6</div>
-                        <div class="step-content">
-                            <h4>建立 GATT 服務</h4>
-                            <p>新增自訂 Characteristic 並處理讀寫</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="tutorial-code-preview">
-                    <h4><i class="fas fa-code"></i> 程式碼預覽</h4>
-                    <pre><code class="language-c">// main.c - BLE 應用程式進入點
-#include "ble_lib_api.h"
-#include "FreeRTOS.h"
-#include "task.h"
 
-int main(void) {
+        <!-- Tutorial 1: First BLE Application -->
+        <div class="tutorial-card">
+            <div class="tutorial-header ble" onclick="toggleTutorial('tut1')">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <span class="tutorial-level beginner">初學者</span>
+                    <h2 style="margin:0;">教學 1：第一個 BLE 應用程式</h2>
+                </div>
+                <i class="fas fa-chevron-down tutorial-toggle" id="tut1-icon"></i>
+            </div>
+            <div class="tutorial-body" id="tut1" style="display:none;">
+                <p>學習如何使用 IPRO SDK 建立第一個 BLE 應用程式。本教學涵蓋 <code>bt_enable()</code> 初始化、廣播設定與連線回呼。</p>
+
+                <h3>步驟 1：專案結構</h3>
+                <p>每個 IPRO SDK 應用程式都是 <code>apps/</code> 下的一個獨立目錄，包含 <code>.config</code>、<code>CMakeLists.txt</code> 和主程式碼。可以複製 <code>apps/bluetooth/ipro_ble_remote/</code> 作為範本。</p>
+                <pre><code class="language-bash">apps/my_ble_app/
+  .config            # Kconfig 設定（CONFIG_BLUETOOTH_LE_ENABLE=y 等）
+  CMakeLists.txt     # 建構設定
+  main.c             # 應用程式進入點</code></pre>
+
+                <h3>步驟 2：.config 設定</h3>
+                <p>在 <code>.config</code> 中啟用 BLE 功能：</p>
+                <pre><code class="language-bash">CONFIG_IPRO7=y
+CONFIG_CPU_ID="intelpro_ipro7"
+CONFIG_FREERTOS_SUPPORT=y
+CONFIG_BLUETOOTH_LE_ENABLE=y
+CONFIG_SHELL=y</code></pre>
+
+                <h3>步驟 3：初始化 BLE Stack</h3>
+                <p>在 <code>main()</code> 中初始化平台和 BLE Controller，然後啟動 FreeRTOS 排程器：</p>
+                <pre><code class="language-c">#include &lt;FreeRTOS.h&gt;
+#include &lt;task.h&gt;
+#include "ble_lib_api.h"
+#include "platform_common.h"
+
+// BLE stack 初始化完成時會呼叫此函數
+void app_init(void)
+{
+    printf("BLE 5.4 stack initialized\r\n");
+}
+
+int main(void)
+{
     // 1. 平台初始化
     platform_init(0);
     setup_heap();
-    
+
     // 2. 初始化 BLE Controller
-    ble_controller_init(configMAX_PRIORITIES - 3, 1);
-    
-    // 3. 啟動 FreeRTOS
+    ble_controller_init(configMAX_PRIORITIES - 3);
+
+    // 3. 建立應用 Task
+    xTaskCreateStatic(app_task, "app", 2048, NULL, 3,
+                      app_stack, &app_tcb);
+
+    // 4. 啟動 FreeRTOS
     vTaskStartScheduler();
-    
     return 0;
 }</code></pre>
-                </div>
-                <a href="tutorials/ble-getting-started.html" class="tutorial-btn">
-                    <i class="fas fa-play-circle"></i> 開始學習
-                </a>
-            </div>
 
-            <!-- LE Audio Tutorial -->
-            <div class="tutorial-card">
-                <div class="tutorial-header audio">
-                    <div class="tutorial-icon">🎵</div>
-                    <span class="tutorial-level intermediate">中級</span>
-                </div>
-                <div class="tutorial-content">
-                    <h2>LE Audio 音訊串流實作</h2>
-                    <p>深入了解 BLE 5.4 LE Audio 功能，實作 LC3 編解碼、Isochronous Channels 與音訊同步。</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 約 90 分鐘</span>
-                        <span><i class="fas fa-list-ol"></i> 8 個步驟</span>
-                    </div>
-                </div>
-                <div class="tutorial-steps">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h4>LE Audio 架構介紹</h4>
-                            <p>了解 BAP、PACS、ASCS 等服務</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h4>設定 GAF 配置</h4>
-                            <p>初始化 Generic Audio Framework</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h4>建立 CIS 連線</h4>
-                            <p>設定 Connected Isochronous Stream</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <div class="step-content">
-                            <h4>LC3 編碼器設定</h4>
-                            <p>配置取樣率、位元率與 Frame Duration</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">5</div>
-                        <div class="step-content">
-                            <h4>音訊資料傳輸</h4>
-                            <p>透過 ISO Data Path 傳送音訊</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">6</div>
-                        <div class="step-content">
-                            <h4>同步與延遲優化</h4>
-                            <p>調整 Presentation Delay</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">7</div>
-                        <div class="step-content">
-                            <h4>多裝置廣播 (Auracast)</h4>
-                            <p>實作 Broadcast Audio</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">8</div>
-                        <div class="step-content">
-                            <h4>品質監控與除錯</h4>
-                            <p>分析音訊品質指標</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="tutorial-code-preview">
-                    <h4><i class="fas fa-code"></i> 程式碼預覽</h4>
-                    <pre><code class="language-c">// LE Audio 配置範例
-struct bap_unicast_config audio_cfg = {
-    .sampling_freq = 48000,      // 48kHz
-    .frame_duration = 10000,     // 10ms
-    .octets_per_frame = 120,     // 96kbps
-    .codec_id = LC3_CODEC_ID,
+                <h3>步驟 4：設定 Advertising</h3>
+                <p>使用 Zephyr-style BLE API 設定廣播資料並啟動廣播：</p>
+                <pre><code class="language-c">#include &lt;bluetooth/bluetooth.h&gt;
+#include &lt;bluetooth/conn.h&gt;
+
+static const struct bt_data ad[] = {
+    BT_DATA_BYTES(BT_DATA_FLAGS,
+                  BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR),
+    BT_DATA_BYTES(BT_DATA_NAME_COMPLETE, 'I','P','R','O'),
 };
 
-// 建立 CIS
-bap_uc_cli_create_cis(conhdl, &audio_cfg);</code></pre>
-                </div>
-                <a href="tutorials/le-audio-streaming.html" class="tutorial-btn">
-                    <i class="fas fa-play-circle"></i> 開始學習
-                </a>
-            </div>
-
-            <!-- RF Tutorial -->
-            <div class="tutorial-card">
-                <div class="tutorial-header rf">
-                    <div class="tutorial-icon">📡</div>
-                    <span class="tutorial-level intermediate">中級</span>
-                </div>
-                <div class="tutorial-content">
-                    <h2>RF 測試與校準指南</h2>
-                    <p>學習 RF 參數調校、使用 CMW500 進行測試、解決 CFO 與功率問題。</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 約 60 分鐘</span>
-                        <span><i class="fas fa-list-ol"></i> 5 個步驟</span>
-                    </div>
-                </div>
-                <div class="tutorial-steps">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h4>RF 校準流程</h4>
-                            <p>rf_acal、rf_kcal、rf_roscal、rf_rccal</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h4>使用 DTM 測試模式</h4>
-                            <p>Direct Test Mode 操作指南</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h4>CFO 調整</h4>
-                            <p>XTAL capcode 與頻率偏移校正</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <div class="step-content">
-                            <h4>TX Power 校準</h4>
-                            <p>功率等級設定與量測</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">5</div>
-                        <div class="step-content">
-                            <h4>CMW500 整合測試</h4>
-                            <p>自動化 RF 認證測試</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="tutorial-code-preview">
-                    <h4><i class="fas fa-code"></i> CLI 指令</h4>
-                    <pre><code class="language-bash"># RF 測試 CLI 指令
-le_tx 0 37 0      # TX test: ch=0, len=37, type=PRBS9
-le_rx 0 0         # RX test: ch=0, phy=1M
-le_test_stop      # 停止測試並顯示封包數
-
-# 設定 TX Power
-rf_set_pwr 12     # 設定為 +5dBm
-
-# 查看校準結果
-rf_show_cal       # 顯示校準數值</code></pre>
-                </div>
-                <a href="tutorials/rf-testing-calibration.html" class="tutorial-btn">
-                    <i class="fas fa-play-circle"></i> 開始學習
-                </a>
-            </div>
-
-            <!-- Low Power Tutorial -->
-            <div class="tutorial-card">
-                <div class="tutorial-header power">
-                    <div class="tutorial-icon">🔋</div>
-                    <span class="tutorial-level advanced">進階</span>
-                </div>
-                <div class="tutorial-content">
-                    <h2>低功耗優化技巧</h2>
-                    <p>掌握 IPRO7 的各種省電模式，優化電池壽命，實現 μA 級待機電流。</p>
-                    <div class="tutorial-meta">
-                        <span><i class="fas fa-clock"></i> 約 75 分鐘</span>
-                        <span><i class="fas fa-list-ol"></i> 6 個步驟</span>
-                    </div>
-                </div>
-                <div class="tutorial-steps">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <div class="step-content">
-                            <h4>電源架構概覽</h4>
-                            <p>了解 IPRO7 電源域與時鐘樹</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <div class="step-content">
-                            <h4>Sleep Mode 配置</h4>
-                            <p>Light Sleep、Deep Sleep、Hibernate</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <div class="step-content">
-                            <h4>BLE 連線間隔優化</h4>
-                            <p>調整 Connection Interval 與 Latency</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <div class="step-content">
-                            <h4>周邊關閉策略</h4>
-                            <p>動態管理 GPIO、ADC、Timer</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">5</div>
-                        <div class="step-content">
-                            <h4>Wake-up 機制</h4>
-                            <p>RTC、GPIO、BLE Event 喚醒</p>
-                        </div>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">6</div>
-                        <div class="step-content">
-                            <h4>電流量測與分析</h4>
-                            <p>使用 Power Profiler 分析功耗</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="tutorial-code-preview">
-                    <h4><i class="fas fa-code"></i> 程式碼預覽</h4>
-                    <pre><code class="language-c">// 進入 Deep Sleep
-void enter_deep_sleep(void) {
-    // 設定喚醒源
-    hal_pmu_set_wakeup_source(PMU_WAKEUP_RTC);
-    hal_rtc_set_alarm(60);  // 60 秒後喚醒
-    
-    // 關閉不需要的周邊
-    hal_gpio_set_all_analog();
-    
-    // 進入 Deep Sleep
-    hal_pmu_enter_deep_sleep();
+static void bt_ready(int err)
+{
+    if (err) {
+        printf("BLE init failed (err %d)\n", err);
+        return;
+    }
+    // 啟動廣播
+    err = bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad),
+                          NULL, 0);
+    if (err) {
+        printf("Advertising failed (err %d)\n", err);
+    }
 }
 
-// 預期待機電流: < 5μA</code></pre>
-                </div>
-                <a href="tutorials/low-power-optimization.html" class="tutorial-btn">
-                    <i class="fas fa-play-circle"></i> 開始學習
-                </a>
-            </div>
+// 在應用 Task 中呼叫
+bt_enable(bt_ready);</code></pre>
 
+                <h3>步驟 5：連線回呼</h3>
+                <p>註冊連線與斷線的回呼函數來處理連線事件：</p>
+                <pre><code class="language-c">static void connected(struct bt_conn *conn, uint8_t err)
+{
+    if (err) {
+        printf("Connection failed (err 0x%02x)\n", err);
+        return;
+    }
+    printf("Connected\n");
+}
+
+static void disconnected(struct bt_conn *conn, uint8_t reason)
+{
+    printf("Disconnected (reason 0x%02x)\n", reason);
+    // 重新啟動廣播
+    bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad),
+                    NULL, 0);
+}
+
+BT_CONN_CB_DEFINE(conn_callbacks) = {
+    .connected = connected,
+    .disconnected = disconnected,
+};</code></pre>
+
+                <h3>步驟 6：建構與燒錄</h3>
+                <pre><code class="language-bash"># 建構
+make -C apps/my_ble_app
+
+# 燒錄
+tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+    --chipname ipro7 \
+    --port /dev/cu.usbserial-2120 \
+    --firmware apps/my_ble_app/build/build_out/my_ble_app_IPRO7.bin \
+    --baudrate 921600 --flash-pin 0x02</code></pre>
+
+                <div class="info-box">
+                    <h4>參考範例</h4>
+                    <p>完整的 BLE 應用範例請參考 <code>apps/bluetooth/ipro_ble_remote/</code>，包含 LED 控制、按鈕偵測、環境感測、UART 橋接、OTA 升級等功能。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tutorial 2: Build & Flash Workflow -->
+        <div class="tutorial-card">
+            <div class="tutorial-header build" onclick="toggleTutorial('tut2')">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <span class="tutorial-level beginner">初學者</span>
+                    <h2 style="margin:0;">教學 2：建構與燒錄流程</h2>
+                </div>
+                <i class="fas fa-chevron-down tutorial-toggle" id="tut2-icon"></i>
+            </div>
+            <div class="tutorial-body" id="tut2" style="display:none;">
+                <p>掌握 IPRO SDK 的建構系統和韌體燒錄流程。</p>
+
+                <h3>建構方式</h3>
+                <p>IPRO SDK 提供兩種建構方式：</p>
+                <pre><code class="language-bash"># 方式 1：使用 Make（推薦）
+make -C apps/ipro_ble_remote
+
+# 方式 2：使用 build_freertos.sh
+./build_freertos.sh ipro_ble_remote build
+
+# 清除編譯
+make -C apps/ipro_ble_remote clean</code></pre>
+                <p>建構產出位於 <code>apps/&lt;project&gt;/build/build_out/</code>，二進位檔名包含晶片後綴，例如 <code>ipro_ble_remote_IPRO7.bin</code>。</p>
+
+                <h3>.config 設定說明</h3>
+                <p>每個應用程式都有自己的 <code>.config</code> 檔案，使用 Linux Kernel Kconfig 格式：</p>
+                <pre><code class="language-bash"># SoC 選擇
+CONFIG_IPRO7=y
+CONFIG_CPU_ID="intelpro_ipro7"
+
+# RTOS 選擇
+CONFIG_FREERTOS_SUPPORT=y
+
+# 功能啟用
+CONFIG_BLUETOOTH_LE_ENABLE=y
+CONFIG_SHELL=y
+CONFIG_LWIP=y
+CONFIG_MBEDTLS=y</code></pre>
+
+                <h3>燒錄韌體</h3>
+                <p>使用 SDK 內建的燒錄工具 <code>ipro_iot_tool_lite</code>：</p>
+                <pre><code class="language-bash"># 基本燒錄指令
+tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+    --chipname ipro7 \
+    --port /dev/cu.usbserial-2120 \
+    --firmware apps/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
+    --baudrate 921600 \
+    --flash-pin 0x02</code></pre>
+
+                <div class="warning-box">
+                    <h4>macOS 序列埠注意事項</h4>
+                    <p>在 macOS 上必須使用 <code>/dev/cu.*</code> 而非 <code>/dev/tty.*</code>。<code>tty.*</code> 裝置會等待 DCD 信號而無法正常使用。</p>
+                </div>
+
+                <h3>序列埠監控</h3>
+                <p>使用 <code>serial_monitor.py</code> 監控序列埠輸出：</p>
+                <pre><code class="language-bash"># 監控序列埠
+python3 tools/serial_monitor.py /dev/cu.usbserial-2120
+
+# 發送重啟指令並等待輸出
+python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
+    --send reboot --timeout 30 \
+    --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
+
+                <h3>自動化測試</h3>
+                <p>使用 <code>board_test.sh</code> 進行完整的建構+燒錄+測試流程：</p>
+                <pre><code class="language-bash"># 完整的建構、燒錄、測試流程
+tools/board_test.sh --project apps/ipro_unit_test
+
+# 結束代碼：0=通過, 1=失敗, 2=超時</code></pre>
+            </div>
+        </div>
+
+        <!-- Tutorial 3: BLE Throughput Testing -->
+        <div class="tutorial-card">
+            <div class="tutorial-header ble" onclick="toggleTutorial('tut3')">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <span class="tutorial-level intermediate">中級</span>
+                    <h2 style="margin:0;">教學 3：BLE 吞吐量測試</h2>
+                </div>
+                <i class="fas fa-chevron-down tutorial-toggle" id="tut3-icon"></i>
+            </div>
+            <div class="tutorial-body" id="tut3" style="display:none;">
+                <p>使用 <code>ipro_throughput_test</code> 應用程式測試 BLE 資料傳輸吞吐量，實測可達 999 Kbps。</p>
+
+                <h3>概述</h3>
+                <p>吞吐量測試在兩塊 IPRO7 開發板之間進行，一塊作為 Slave（Peripheral），另一塊作為 Master（Central）。應用程式使用原生 Zephyr <code>bt_*</code> API 實作。</p>
+
+                <h3>步驟 1：建構與燒錄</h3>
+                <p>將相同的韌體燒錄到兩塊開發板：</p>
+                <pre><code class="language-bash"># 建構吞吐量測試應用
+make -C apps/bluetooth/ipro_throughput_test
+
+# 燒錄到兩塊板子
+tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+    --chipname ipro7 --port /dev/cu.usbserial-2120 \
+    --firmware apps/bluetooth/ipro_throughput_test/build/build_out/ipro_throughput_test_IPRO7.bin \
+    --baudrate 921600 --flash-pin 0x02</code></pre>
+
+                <h3>步驟 2：啟動測試</h3>
+                <pre><code class="language-bash"># 在 Slave 板上執行：
+tp slave
+
+# 在 Master 板上執行（自動掃描連線）：
+tp master
+
+# 或指定 MAC 位址連線：
+tp master XX:XX:XX:XX:XX:XX</code></pre>
+
+                <h3>步驟 3：執行吞吐量測試</h3>
+                <pre><code class="language-bash"># 連線成功後，開始測試（預設 244 bytes/packet, 10 秒）
+tp start
+
+# 自訂封包大小和持續時間
+tp start 244 30    # 244 bytes, 30 秒
+
+# 查看即時統計
+tp stats
+
+# 停止測試
+tp stop</code></pre>
+
+                <h3>效能優化要點</h3>
+                <p>IPRO SDK 通過以下優化達到 999 Kbps 吞吐量：</p>
+                <ul>
+                    <li><strong>連線參數調整</strong>：最小連線間隔、零 Slave Latency</li>
+                    <li><strong>MTU 協商</strong>：最大 MTU 以減少封包開銷</li>
+                    <li><strong>TX Descriptor 優化</strong>：<code>BLE_NB_TX_DESC_PER_CON</code> 參數調整</li>
+                    <li><strong>DLE（Data Length Extension）</strong>：啟用最大傳輸長度</li>
+                    <li><strong>2M PHY</strong>：使用 BLE 2M PHY 提升傳輸速率</li>
+                </ul>
+
+                <h3>預期結果</h3>
+                <pre><code>========== Throughput Result ==========
+Direction:  Master -> Slave (Write Without Response)
+Duration:   10.00 seconds
+Data Sent:  1,223,968 bytes
+Throughput: 999.15 Kbps
+Packets:    5,016
+Avg Size:   244 bytes/packet
+=======================================</code></pre>
+
+                <div class="info-box">
+                    <h4>參考</h4>
+                    <p>完整操作手冊請參考 <code>apps/bluetooth/ipro_throughput_test/README.md</code>。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tutorial 4: LE Audio Getting Started -->
+        <div class="tutorial-card">
+            <div class="tutorial-header audio" onclick="toggleTutorial('tut4')">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <span class="tutorial-level intermediate">中級</span>
+                    <h2 style="margin:0;">教學 4：LE Audio 入門</h2>
+                </div>
+                <i class="fas fa-chevron-down tutorial-toggle" id="tut4-icon"></i>
+            </div>
+            <div class="tutorial-body" id="tut4" style="display:none;">
+                <p>了解 BLE 5.4 LE Audio 的核心概念，包括 BAP/BIS 架構，以及如何使用 IPRO SDK 的 LE Audio 範例應用程式。</p>
+
+                <h3>LE Audio 核心概念</h3>
+                <ul>
+                    <li><strong>BAP (Basic Audio Profile)</strong>：定義音訊串流的建立與管理</li>
+                    <li><strong>CIS (Connected Isochronous Stream)</strong>：點對點音訊傳輸，用於耳機等裝置</li>
+                    <li><strong>BIS (Broadcast Isochronous Stream)</strong>：一對多廣播音訊，用於 Auracast 場景</li>
+                    <li><strong>LC3 Codec</strong>：LE Audio 標準編解碼器，低延遲高品質</li>
+                    <li><strong>GAF (Generic Audio Framework)</strong>：統一的音訊框架，整合 BAP、VCP、MCP、CAP 等 Profile</li>
+                </ul>
+
+                <h3>Controller 變體選擇</h3>
+                <p>LE Audio 需要使用帶 <code>_leaudio</code> 後綴的 Controller 變體：</p>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr><th>變體</th><th>說明</th><th>適用場景</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>link1_leaudio</code></td><td>BLE 5.2 + LE Audio, 1 連線</td><td>簡單耳機</td></tr>
+                            <tr><td><code>link2_leaudio</code></td><td>BLE 5.2 + LE Audio, 2 連線</td><td>TWS 耳機</td></tr>
+                            <tr><td><code>link1_leaudio_53_54</code></td><td>BLE 5.4 + LE Audio, 1 連線</td><td>最新功能</td></tr>
+                            <tr><td><code>link2_leaudio_53_54</code></td><td>BLE 5.4 + LE Audio, 2 連線</td><td>最新 TWS</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>BIS 廣播範例 (Source)</h3>
+                <p>使用 <code>ipro_walkie_talkie</code> 或 <code>ipro_le_audio_bis_source</code> 作為廣播源：</p>
+                <pre><code class="language-bash"># 建構 BIS Source 範例
+make -C apps/bluetooth/ipro_le_audio_bis_source
+
+# 建構 BIS Sink 範例
+make -C apps/bluetooth/ipro_le_audio_bis_sink</code></pre>
+
+                <h3>CIS Unicast 範例 (Headset)</h3>
+                <p>使用 <code>ipro_le_audio_headset</code> 作為 LE Audio 耳機：</p>
+                <pre><code class="language-bash"># 建構 LE Audio Headset 範例
+make -C apps/bluetooth/ipro_le_audio_headset</code></pre>
+
+                <h3>.config 設定重點</h3>
+                <pre><code class="language-bash"># LE Audio 必要設定
+CONFIG_BLUETOOTH_LE_ENABLE=y
+CONFIG_BLE_LE_AUDIO_ENABLE=y
+
+# Controller 變體（選擇 leaudio 版本）
+CONFIG_BLE_CONTROLLER_VARIANT="link2_leaudio_53_54"</code></pre>
+
+                <div class="info-box">
+                    <h4>參考應用</h4>
+                    <ul>
+                        <li><code>apps/bluetooth/ipro_le_audio_headset/</code> - GAF/BAP Unicast 耳機</li>
+                        <li><code>apps/bluetooth/ipro_walkie_talkie/</code> - BIS 廣播對講機</li>
+                        <li><code>apps/bluetooth/ipro_le_audio_bis_source/</code> - BIS 音訊源</li>
+                        <li><code>apps/bluetooth/ipro_le_audio_bis_sink/</code> - BIS 音訊接收器</li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <!-- Learning Path -->
@@ -347,34 +366,30 @@ void enter_deep_sleep(void) {
             <h2><i class="fas fa-route"></i> 建議學習路徑</h2>
             <div class="path-container">
                 <div class="path-item">
-                    <div class="path-icon">🚀</div>
                     <div class="path-content">
                         <h4>第一週</h4>
-                        <p>環境設定 + BLE 基礎</p>
+                        <p>教學 2：建構與燒錄流程</p>
                     </div>
                 </div>
                 <div class="path-arrow"><i class="fas fa-arrow-right"></i></div>
                 <div class="path-item">
-                    <div class="path-icon">📱</div>
                     <div class="path-content">
                         <h4>第二週</h4>
-                        <p>GATT 服務 + 手機連接</p>
+                        <p>教學 1：第一個 BLE 應用</p>
                     </div>
                 </div>
                 <div class="path-arrow"><i class="fas fa-arrow-right"></i></div>
                 <div class="path-item">
-                    <div class="path-icon">🎵</div>
                     <div class="path-content">
                         <h4>第三週</h4>
-                        <p>LE Audio 音訊功能</p>
+                        <p>教學 3：BLE 吞吐量測試</p>
                     </div>
                 </div>
                 <div class="path-arrow"><i class="fas fa-arrow-right"></i></div>
                 <div class="path-item">
-                    <div class="path-icon">🔋</div>
                     <div class="path-content">
                         <h4>第四週</h4>
-                        <p>低功耗優化 + 產品化</p>
+                        <p>教學 4：LE Audio 入門</p>
                     </div>
                 </div>
             </div>
@@ -384,18 +399,17 @@ void enter_deep_sleep(void) {
 </section>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Tutorial cards hover effect for steps
-    const tutorialCards = document.querySelectorAll('.tutorial-card');
-    tutorialCards.forEach(card => {
-        card.addEventListener('mouseenter', () => {
-            const steps = card.querySelector('.tutorial-steps');
-            if (steps) steps.style.maxHeight = '500px';
-        });
-        card.addEventListener('mouseleave', () => {
-            const steps = card.querySelector('.tutorial-steps');
-            if (steps) steps.style.maxHeight = '0';
-        });
-    });
-});
+function toggleTutorial(id) {
+    var body = document.getElementById(id);
+    var icon = document.getElementById(id + '-icon');
+    if (body.style.display === 'none') {
+        body.style.display = 'block';
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-up');
+    } else {
+        body.style.display = 'none';
+        icon.classList.remove('fa-chevron-up');
+        icon.classList.add('fa-chevron-down');
+    }
+}
 </script>

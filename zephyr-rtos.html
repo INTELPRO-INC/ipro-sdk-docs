@@ -9,6 +9,7 @@ title: Zephyr RTOS
             <h4 class="sidebar-title">本頁目錄</h4>
             <ul class="sidebar-links">
                 <li><a href="#overview" class="sidebar-link">概覽</a></li>
+                <li><a href="#dual-rtos" class="sidebar-link">雙 RTOS 架構</a></li>
                 <li><a href="#architecture" class="sidebar-link">整合架構</a></li>
                 <li><a href="#setup" class="sidebar-link">環境設置</a></li>
                 <li><a href="#building" class="sidebar-link">建構應用</a></li>
@@ -22,16 +23,16 @@ title: Zephyr RTOS
 
     <article class="doc-content">
         <h1>Zephyr RTOS 整合指南</h1>
-        <p>Zephyr 是一個可擴展的開源即時作業系統，專為資源受限的裝置設計。IPRO SDK 提供完整的 Zephyr 支援，作為 FreeRTOS 的現代化替代方案。</p>
+        <p>IPRO SDK 中 Zephyr 扮演兩個角色：BLE Host Stack 的基礎（已用於生產環境），以及實驗性的完整 RTOS 替代方案。</p>
 
         <section id="overview">
-            <h2>為什麼選擇 Zephyr？</h2>
+            <h2>Zephyr 在 IPRO SDK 中的角色</h2>
 
             <div class="features-grid" style="margin: 2rem 0;">
                 <div class="feature-card">
                     <div class="feature-icon">⚡</div>
-                    <h3 class="feature-title">快速建構</h3>
-                    <p class="feature-description">優化後的模組下載僅需約 125MB，建構時間約 30 秒。</p>
+                    <h3 class="feature-title">BLE Host Stack</h3>
+                    <p class="feature-description">Zephyr BLE Host 已用於生產環境，運行在 FreeRTOS 之上，提供標準 bt_* API。</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">🎯</div>
@@ -55,13 +56,72 @@ title: Zephyr RTOS
             </ul>
         </section>
 
+        <section id="dual-rtos">
+            <h2>雙 RTOS 架構</h2>
+            <p>IPRO SDK 支援雙 RTOS 模式：FreeRTOS 作為生產 RTOS，Zephyr BLE Host 運行在其上。</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">RTOS 架構概覽</span>
+                </div>
+                <pre><code>+------------------------------------------------------+
+|              Application (bt_* API)                  |
++------------------------------------------------------+
+|         Zephyr BLE Host Stack [生產就緒]              |
+|   (GAP, GATT, L2CAP, SMP, ISO, LE Audio)            |
++------------------------------------------------------+
+|         FreeRTOS [生產 RTOS]                          |
+|   (任務排程, 記憶體管理, 同步原語)                     |
++------------------------------------------------------+
+|    RivieraWaves BLE Controller (預建構 linkN 庫)      |
++------------------------------------------------------+
+|         IPRO Hardware (IPRO7 / IPRO6)                |
++------------------------------------------------------+</code></pre>
+            </div>
+
+            <h3>建構模式</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>模式</th>
+                            <th>RTOS</th>
+                            <th>BLE Host</th>
+                            <th>狀態</th>
+                            <th>建構指令</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>FreeRTOS + Zephyr BLE</strong></td>
+                            <td>FreeRTOS</td>
+                            <td>Zephyr bt_* API</td>
+                            <td>生產就緒</td>
+                            <td><code>make -C apps/&lt;project&gt;</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Full Zephyr</strong></td>
+                            <td>Zephyr RTOS</td>
+                            <td>Zephyr bt_* API</td>
+                            <td>實驗性</td>
+                            <td><code>./tools/zephyr/build.sh -a &lt;app&gt; -b ipro7_fpga -c</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>💡 提示：</strong>大多數應用應使用 FreeRTOS 模式（<code>make -C apps/&lt;project&gt;</code>）。Zephyr BLE Host Stack 已完全整合在此模式中，無需額外設置。
+            </div>
+        </section>
+
         <section id="architecture">
             <h2>整合架構</h2>
             <p>IPRO SDK 提供專用的 HAL 層，讓 Zephyr 能夠在 IPRO 硬體上高效運行。</p>
 
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">Zephyr 整合架構</span>
+                    <span class="code-block-title">Full Zephyr 整合架構（實驗性）</span>
                 </div>
                 <pre><code>+------------------------------------------------------+
 |              Application Layer                       |
@@ -332,12 +392,12 @@ LOG_MODULE_REGISTER(my_app, LOG_LEVEL_INF);
 int main(void)
 {
     LOG_INF("My Zephyr App Started!");
-    
+
     while (1) {
         LOG_INF("Hello from Zephyr!");
         k_sleep(K_SECONDS(1));
     }
-    
+
     return 0;
 }</code></pre>
             </div>

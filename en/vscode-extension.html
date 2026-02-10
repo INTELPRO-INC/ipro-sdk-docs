@@ -16,6 +16,7 @@ title: VS Code Extension - IPRO SDK
                 <li><a href="#workflow" class="sidebar-link">Development Workflow</a></li>
                 <li><a href="#flash" class="sidebar-link">Remote Flashing</a></li>
                 <li><a href="#faq" class="sidebar-link">FAQ</a></li>
+                <li><a href="#cli-tools" class="sidebar-link">CLI Tools</a></li>
             </ul>
         </nav>
     </aside>
@@ -421,6 +422,56 @@ C:\Program Files\IPRO\tools\download\ipro_iot_tool.exe</code></pre>
                     <li>Check <code>apps/&lt;project&gt;/build/build_out/</code> directory</li>
                     <li>If no files exist, re-run Build</li>
                 </ol>
+            </div>
+        </section>
+
+        <section id="cli-tools">
+            <h2>CLI Tools Integration</h2>
+            <p>In addition to the VS Code Extension GUI, you can also use command-line tools directly for development.</p>
+
+            <h3>Build</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Command-line Build</span>
+                </div>
+                <pre><code class="language-bash"># Recommended build method
+make -C apps/ipro_ble_remote
+
+# Or using build_freertos.sh
+./build_freertos.sh ipro_ble_remote build
+
+# Clean build
+make -C apps/ipro_ble_remote clean</code></pre>
+            </div>
+
+            <h3>Flash Tool</h3>
+            <p>The SDK's built-in flash tool is at <code>tools/ipro_iot_tool_lite/ipro_iot_tool_lite</code> (not OpenOCD):</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Command-line Flash (macOS/Linux)</span>
+                </div>
+                <pre><code class="language-bash">tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+    --chipname ipro7 \
+    --port /dev/cu.usbserial-2120 \
+    --firmware apps/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
+    --baudrate 921600 --flash-pin 0x02</code></pre>
+            </div>
+
+            <div class="warning-box">
+                <h4>macOS Serial Port</h4>
+                <p>On macOS, you must use <code>/dev/cu.usbserial-2120</code> (<code>cu.*</code>), not <code>/dev/tty.*</code>. The <code>tty.*</code> devices block waiting for the DCD signal.</p>
+            </div>
+
+            <h3>Automated Testing</h3>
+            <p>Use <code>board_test.sh</code> for a complete build, flash, serial monitoring, and test result parsing workflow:</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Automated Board Testing</span>
+                </div>
+                <pre><code class="language-bash"># Full test cycle (build + flash + monitor + parse results)
+tools/board_test.sh --project apps/ipro_unit_test
+
+# Exit codes: 0=pass, 1=fail, 2=timeout</code></pre>
             </div>
         </section>
 

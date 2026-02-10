@@ -15,6 +15,7 @@ title: VS Code Extension - IPRO SDK
                 <li><a href="#workflow" class="sidebar-link">開發流程</a></li>
                 <li><a href="#flash" class="sidebar-link">遠端燒錄</a></li>
                 <li><a href="#faq" class="sidebar-link">常見問題</a></li>
+                <li><a href="#cli-tools" class="sidebar-link">命令列工具</a></li>
             </ul>
         </nav>
     </aside>
@@ -420,6 +421,56 @@ C:\Program Files\IPRO\tools\download\ipro_iot_tool.exe</code></pre>
                     <li>檢查 <code>apps/&lt;project&gt;/build/build_out/</code> 目錄</li>
                     <li>如果沒有檔案，重新執行 Build</li>
                 </ol>
+            </div>
+        </section>
+
+        <section id="cli-tools">
+            <h2>命令列工具整合</h2>
+            <p>除了 VS Code Extension 的圖形介面外，也可以直接使用命令列工具進行開發。</p>
+
+            <h3>建構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">命令列建構</span>
+                </div>
+                <pre><code class="language-bash"># 推薦的建構方式
+make -C apps/ipro_ble_remote
+
+# 或使用 build_freertos.sh
+./build_freertos.sh ipro_ble_remote build
+
+# 清除編譯
+make -C apps/ipro_ble_remote clean</code></pre>
+            </div>
+
+            <h3>燒錄工具</h3>
+            <p>SDK 內建燒錄工具位於 <code>tools/ipro_iot_tool_lite/ipro_iot_tool_lite</code>（非 OpenOCD）：</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">命令列燒錄（macOS/Linux）</span>
+                </div>
+                <pre><code class="language-bash">tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+    --chipname ipro7 \
+    --port /dev/cu.usbserial-2120 \
+    --firmware apps/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
+    --baudrate 921600 --flash-pin 0x02</code></pre>
+            </div>
+
+            <div class="warning-box">
+                <h4>macOS 序列埠</h4>
+                <p>在 macOS 上必須使用 <code>/dev/cu.usbserial-2120</code>（<code>cu.*</code>），而非 <code>/dev/tty.*</code>。<code>tty.*</code> 裝置會等待 DCD 信號導致掛住。</p>
+            </div>
+
+            <h3>自動化測試</h3>
+            <p>使用 <code>board_test.sh</code> 進行完整的建構、燒錄、序列埠監控和測試結果解析：</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">自動化板級測試</span>
+                </div>
+                <pre><code class="language-bash"># 完整測試流程（建構 + 燒錄 + 監控 + 解析結果）
+tools/board_test.sh --project apps/ipro_unit_test
+
+# 結束代碼：0=通過, 1=失敗, 2=超時</code></pre>
             </div>
         </section>
 

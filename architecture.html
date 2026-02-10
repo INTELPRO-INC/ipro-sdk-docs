@@ -10,9 +10,11 @@ title: 架構概覽
             <ul class="sidebar-links">
                 <li><a href="#overview" class="sidebar-link">架構概覽</a></li>
                 <li><a href="#layers" class="sidebar-link">分層設計</a></li>
+                <li><a href="#memory-layout" class="sidebar-link">記憶體佈局</a></li>
                 <li><a href="#directory" class="sidebar-link">目錄結構</a></li>
                 <li><a href="#build-system" class="sidebar-link">建構系統</a></li>
                 <li><a href="#configuration" class="sidebar-link">配置系統</a></li>
+                <li><a href="#ble-controller" class="sidebar-link">BLE 控制器</a></li>
                 <li><a href="#components" class="sidebar-link">元件概覽</a></li>
             </ul>
         </nav>
@@ -165,6 +167,50 @@ title: 架構概覽
             </div>
         </section>
 
+        <section id="memory-layout">
+            <h2>記憶體佈局（IPRO7）</h2>
+            <p>IPRO7 採用 RISC-V <code>rv32imafc</code> / <code>ilp32f</code> 架構，處理器運行頻率 192MHz。記憶體佈局如下：</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>區域</th>
+                            <th>大小</th>
+                            <th>起始位址</th>
+                            <th>用途</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Flash</td>
+                            <td>4 MB</td>
+                            <td><code>0x00000000</code></td>
+                            <td>程式碼與唯讀資料儲存</td>
+                        </tr>
+                        <tr>
+                            <td>PSRAM</td>
+                            <td>16 MB</td>
+                            <td><code>0x20000000</code></td>
+                            <td>主要 RAM（堆積、資料段）</td>
+                        </tr>
+                        <tr>
+                            <td>OCRAM</td>
+                            <td>256 KB</td>
+                            <td><code>0x60000000</code></td>
+                            <td>高速 SRAM（堆疊、關鍵程式碼）</td>
+                        </tr>
+                        <tr>
+                            <td>HBNRAM</td>
+                            <td>4 KB</td>
+                            <td><code>0x50000000</code></td>
+                            <td>休眠保持 RAM</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
         <section id="directory">
             <h2>目錄結構</h2>
 
@@ -174,10 +220,13 @@ title: 架構概覽
                 </div>
                 <pre><code>ipro_sdk/
 ├── apps/                         # 應用程式專案
-│   ├── ipro7_demo/               # 基礎平台展示
-│   ├── ipro_ble_demo/            # BLE 展示應用
-│   ├── ipro7_fpga_ble_5p4/       # FPGA BLE 5.4
-│   ├── ipro7_phyrf_test/         # RF 測試
+│   ├── bluetooth/                # BLE 應用
+│   │   ├── ipro_ble_remote/      # BLE 遙控器（GATT + OTA）
+│   │   ├── ipro_throughput_test/ # BLE 效能測試（999 Kbps）
+│   │   ├── ipro_walkie_talkie/   # BIS LE Audio 對講機
+│   │   └── ipro_le_audio_headset/# GAF/BAP LE Audio 耳機
+│   ├── ipro7_demo/               # 綜合平台展示
+│   ├── ipro_unit_test/           # 單元測試
 │   └── ipro_zephyr_demo/         # Zephyr 展示
 │
 ├── bsp/                          # Board Support Package
@@ -186,28 +235,29 @@ title: 架構概覽
 │   ├── hal/                      # 硬體抽象層
 │   └── common/                   # 共用程式碼
 │
-├── components/                   # 可重用元件
+├── components/                   # 可重用元件（23 個分類）
 │   ├── wireless/                 # 無線協定棧
-│   │   └── ipro_ble_lib/         # BLE 程式庫
-│   ├── os/                       # RTOS 元件
-│   ├── network/                  # 網路協定棧
-│   ├── crypto/                   # 加密元件
-│   ├── fs/                       # 檔案系統
+│   │   └── bluetooth/            # BLE 5.4 棧
+│   │       ├── blestack/         # Zephyr BLE Host（GAP/GATT/L2CAP/SMP）
+│   │       ├── btblecontroller/  # 預建控制器函式庫（linkN 變體）
+│   │       └── btprofile/        # 70+ BLE Profiles
+│   ├── os/                       # RTOS 元件（FreeRTOS）
+│   ├── network/                  # 網路協定棧（lwIP）
+│   ├── crypto/                   # 加密元件（Mbed TLS）
+│   ├── fs/                       # 檔案系統（LittleFS, FatFS）
+│   ├── cherryusb/                # USB 裝置/主機協定棧
 │   └── ...
 │
 ├── tools/                        # 開發工具
+│   ├── ipro_iot_tool_lite/       # 燒錄工具
+│   ├── serial_monitor.py         # 串口監控（Python3）
+│   ├── board_test.sh             # 自動化板級測試
 │   ├── zephyr/                   # Zephyr 工具腳本
-│   │   ├── bootstrap.sh          # 環境設置
-│   │   ├── build.sh              # 建構腳本
-│   │   ├── menu.sh               # 互動選單
-│   │   └── apps.sh               # 應用管理
-│   ├── mcp_server/               # MCP 伺服器
 │   ├── vscode_extension/         # VS Code 擴充
-│   └── openocd/                  # 除錯工具配置
+│   └── cmake/                    # CI 用 CMake
 │
-├── cmake/                        # CMake 配置
+├── cmake/                        # CMake 配置（toolchain.cmake 自動偵測）
 ├── kconfigs/                     # Kconfig 配置檔
-├── docs/                         # 文件
 │
 ├── build_freertos.sh             # FreeRTOS 建構腳本
 ├── CMakeLists.txt                # 根 CMake 配置
@@ -268,47 +318,115 @@ west flash</code></pre>
             <p>SDK 使用 Kconfig 系統管理專案配置，提供圖形化與文字介面配置選項。</p>
 
             <h3>配置層次</h3>
+            <p>SDK 使用 Linux kernel 風格的 Kconfig 系統。每個應用擁有自己的 <code>.config</code> 檔案，包含 <code>CONFIG_*</code> 變數。建構時自動生成 <code>generated/autoconf.h</code>。</p>
             <ol>
                 <li><strong>根配置</strong>：<code>Kconfig</code> - 定義所有可用選項</li>
                 <li><strong>預設配置</strong>：<code>kconfigs/*.config</code> - 各功能模組的預設值</li>
-                <li><strong>應用配置</strong>：<code>apps/*/proj.conf</code> - 應用專屬配置覆蓋</li>
+                <li><strong>應用配置</strong>：<code>apps/*/.config</code> - 應用專屬配置</li>
             </ol>
 
-            <h3>常用配置選項</h3>
+            <h3>關鍵配置選項</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">proj.conf 範例</span>
+                    <span class="code-block-title">.config 範例</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 啟用 BLE 功能
-CONFIG_IPRO_BLE_LIB_ENABLE=y
-CONFIG_IPRO_BLE_LIB_DEBUG_ENABLE=y
+                <pre><code class="language-bash"># SoC 選擇
+CONFIG_IPRO7=y
+CONFIG_CPU_ID="intelpro_ipro7"
 
-# 記憶體配置
-CONFIG_HEAP_SIZE=32768
+# RTOS 選擇
+CONFIG_FREERTOS_SUPPORT=y
 
-# 日誌等級
-CONFIG_LOG_DEFAULT_LEVEL=3
+# 無線功能
+CONFIG_BLUETOOTH_LE_ENABLE=y
 
-# 元件選擇
-CONFIG_LWIP_ENABLE=n
-CONFIG_MBEDTLS_ENABLE=y</code></pre>
+# 元件啟用
+CONFIG_LWIP=y
+CONFIG_MBEDTLS=y
+
+# 測試自動執行
+CONFIG_TEST_AUTO_RUN=y</code></pre>
             </div>
 
             <div class="alert alert-info">
-                <strong>💡 提示：</strong>使用 <code>make menuconfig</code> 或修改 <code>proj.conf</code> 來調整配置。
+                <strong>💡 提示：</strong><code>CONFIG_CPU_ID</code> 必須在 <code>.config</code> 中設定，工具鏈才能正確偵測架構旗標。<code>cmake/toolchain.cmake</code> 會自動偵測 vendor GCC（含 <code>_xxldsp</code> 擴充）與標準 GCC 並調整編譯旗標。
+            </div>
+        </section>
+
+        <section id="ble-controller">
+            <h2>BLE 控制器與預建函式庫</h2>
+
+            <h3>BLE 棧架構</h3>
+            <p>BLE 5.4 棧位於 <code>components/wireless/bluetooth/</code>，採用 Zephyr 風格回調式 GAP/GATT API：</p>
+            <ul>
+                <li><code>blestack/</code> - Zephyr BLE Host（GAP, GATT, L2CAP, SMP, ISO, LE Audio）- 可建構原始碼</li>
+                <li><code>btblecontroller/</code> - RivieraWaves 控制器（預建 linkN 變體函式庫）</li>
+                <li><code>btprofile/</code> - 70+ BLE Profiles</li>
+                <li><code>blemesh/</code> - Bluetooth Mesh 支援（選用）</li>
+            </ul>
+
+            <h3>控制器變體（linkN 命名）</h3>
+            <p>控制器使用統一連線池設計，以 <code>linkN</code> 命名（取代舊的 <code>mXsY</code> 命名）：</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>變體</th>
+                            <th>BLE 版本</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>link1_periph</code>, <code>link1</code>, <code>link2</code>, <code>link4</code>, <code>link8</code></td>
+                            <td>BLE 5.0+</td>
+                            <td>基礎 BLE，不同連線數</td>
+                        </tr>
+                        <tr>
+                            <td><code>link1_leaudio</code>, <code>link2_leaudio</code></td>
+                            <td>BLE 5.2</td>
+                            <td>含 LE Audio 支援</td>
+                        </tr>
+                        <tr>
+                            <td><code>link1_leaudio_53_54</code>, <code>link2_leaudio_53_54</code></td>
+                            <td>BLE 5.4</td>
+                            <td>含 LE Audio + BLE 5.3/5.4 功能</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>預建函式庫系統</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構預建控制器函式庫</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 建構指定變體
+components/wireless/bluetooth/build_all_prebuilts.sh link2
+
+# 建構所有變體
+components/wireless/bluetooth/build_all_prebuilts.sh all
+
+# 輸出位置：btblecontroller_ipro7_&lt;variant&gt;/libbtblecontroller_ipro7_&lt;variant&gt;.a</code></pre>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>⚠️ 注意：</strong><code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> 不可用於正式發布版本。正式版必須使用預建函式庫。
             </div>
         </section>
 
         <section id="components">
             <h2>主要元件概覽</h2>
 
-            <h3>BLE 程式庫 (<code>ipro_ble_lib</code>)</h3>
-            <p>完整的 BLE 5.4 實作，採用 Core/Profile 分離架構：</p>
+            <h3>BLE 棧（Zephyr-based, BLE 5.4）</h3>
+            <p>完整的 BLE 5.4 實作，應用使用 Zephyr 風格回調式 GAP/GATT API：</p>
             <ul>
-                <li><strong>Core 層</strong>：GAP/GATT 管理、連線控制、安全管理</li>
-                <li><strong>Profile 層</strong>：標準服務（HRS, BAS, DIS）、自訂服務</li>
-                <li><strong>Audio 層</strong>：LE Audio、LC3 編解碼、GAF 框架</li>
+                <li><strong>Host 層</strong>：GAP/GATT 管理、連線控制、安全管理（SMP）、L2CAP</li>
+                <li><strong>Profile 層</strong>：70+ 標準 BLE Profiles</li>
+                <li><strong>Audio 層</strong>：LE Audio（GAF, BAP, VCP, MCP, CAP）、LC3 編解碼</li>
+                <li><strong>App Framework</strong>：Mediator（協調器）- Applets（可重用元件）- Intermediaries（協定橋接）</li>
             </ul>
 
             <h3>RTOS 元件</h3>
