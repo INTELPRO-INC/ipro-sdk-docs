@@ -386,7 +386,7 @@ function initSearchModal() {
         { title: 'BLE 初始化', url: '/ble-development#getting-started', category: 'BLE' },
         { title: 'GAP 操作', url: '/ble-development#gap-operations', category: 'BLE' },
         { title: 'GATT 服務', url: '/ble-development#gatt-services', category: 'BLE' },
-        { title: 'ipro_ble_demo', url: '/applications#ipro-ble-demo', category: '範例' },
+        { title: 'ipro_ble_remote', url: '/applications#ipro-ble-demo', category: '範例' },
         { title: 'ipro_zephyr_demo', url: '/applications#ipro-zephyr-demo', category: '範例' },
         { title: 'ipro7_demo', url: '/applications#ipro7-demo', category: '範例' },
     ];

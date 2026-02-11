@@ -209,9 +209,9 @@ make -C apps/bluetooth/ipro_ble_remote clean</code></pre>
 cmake -S . -B build \
     -G "Ninja" \
     -DIPRO_SDK_BASE=$(pwd) \
-    -DCONFIG_BUILD_PORJECT=ipro_ble_demo \
+    -DCONFIG_BUILD_PORJECT=ipro_ble_remote \
     -DCMAKE_PREFIX_PATH=$(pwd)/cmake \
-    -DCUSTOM_CONFIG_DIR=$(pwd)/apps/ipro_ble_demo \
+    -DCUSTOM_CONFIG_DIR=$(pwd)/apps/ipro_ble_remote \
     -DCONFIG_APPS=1 \
     -DCROSS_COMPILE=/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-
 
