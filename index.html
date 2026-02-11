@@ -7,17 +7,10 @@ title: 首頁
 <section class="hero">
     <div class="hero-container">
         <div class="hero-content">
-            <div class="hero-logo-wrapper">
-                <img src="{{ '/media_ipro_logo.svg' | relative_url }}" alt="IPRO Logo" class="hero-logo">
-            </div>
-            <span class="hero-badge">
-                <i class="fas fa-bolt"></i>
-                Matter 1.4 + AI NPU + BLE 5.4
-            </span>
             <h1 class="hero-title">IPRO SDK</h1>
+            <p class="hero-protocols">Matter 1.4 · BLE 5.4 · WiFi 6 · Zigbee 3.0 · Thread 1.2</p>
             <p class="hero-subtitle">
-                專為 IPRO7AI AIOT Matter 晶片打造的全方位軟體開發套件。支援 Matter 1.4、BLE 5.4、Zigbee 3.0、Thread 1.2，內建 AI NPU
-                加速器，助您快速建構智慧物聯網應用。
+                專為 IPRO7AI AIOT Matter 晶片打造的全方位軟體開發套件，內建 AI NPU 加速器，助您快速建構智慧物聯網應用。
             </p>
             <div class="hero-buttons">
                 <a href="{{ '/getting-started' | relative_url }}" class="btn btn-primary">
@@ -39,14 +32,14 @@ title: 首頁
                     <span class="code-title">terminal</span>
                 </div>
                 <pre><code class="language-bash"><span style="color: #64748b;"># 快速建構 BLE 應用</span>
-                make -C apps/bluetooth/ipro_ble_remote
+make -C apps/bluetooth/ipro_ble_remote
 
-                <span style="color: #64748b;"># 或使用 Zephyr RTOS</span>
-                ./tools/zephyr/bootstrap.sh
-                ./tools/zephyr/build.sh -a ipro_zephyr_demo -b ipro7_fpga -c
+<span style="color: #64748b;"># 或使用 Zephyr RTOS</span>
+./tools/zephyr/bootstrap.sh
+./tools/zephyr/build.sh -a ipro_zephyr_demo -b ipro7_fpga -c
 
-                <span style="color: #10b981;">✓ Build successful!</span>
-                <span style="color: #94a3b8;">Output: apps/bluetooth/ipro_ble_remote/build/build_out/</span></code></pre>
+<span style="color: #10b981;">✓ Build successful!</span>
+<span style="color: #94a3b8;">Output: apps/bluetooth/ipro_ble_remote/build/build_out/</span></code></pre>
             </div>
         </div>
     </div>
@@ -55,21 +48,20 @@ title: 首頁
 <!-- Stats Section -->
 <section class="stats">
     <div class="stats-grid">
-        <div class="stat-item" data-tooltip="支援 Matter 1.4 智慧家庭協定">
-            <div class="stat-value">Matter 1.4</div>
-            <div class="stat-label">智慧家庭協定</div>
+        <div class="stat-item">
+            <span class="stat-value">Matter 1.4</span>
+            <span class="stat-label">智慧家庭</span>
         </div>
-        <div class="stat-item" data-tooltip="RISC-V RV32IMAFC 處理器 @192MHz">
-            <div class="stat-value">RISC-V</div>
-            <div class="stat-label">192MHz 處理器</div>
+        <div class="stat-item">
+            <span class="stat-value">RISC-V 192MHz</span>
         </div>
-        <div class="stat-item" data-tooltip="內建 AI NPU 加速器">
-            <div class="stat-value">0.1 TOPS</div>
-            <div class="stat-label">AI NPU 算力</div>
+        <div class="stat-item">
+            <span class="stat-value">0.1 TOPS</span>
+            <span class="stat-label">AI NPU</span>
         </div>
-        <div class="stat-item" data-tooltip="BLE 5.4 + WiFi 6 + Zigbee 3.0 + Thread 1.2">
-            <div class="stat-value">5 協定</div>
-            <div class="stat-label">多模無線</div>
+        <div class="stat-item">
+            <span class="stat-value">5 協定</span>
+            <span class="stat-label">多模無線</span>
         </div>
     </div>
 </section>
@@ -336,63 +328,39 @@ cmake --build build</code></pre>
 </section>
 
 <!-- Documentation CTA -->
-<section class="features" style="padding: 4rem 2rem;">
+<section class="doc-links">
     <div class="section-container">
         <div class="section-header">
             <h2 class="section-title">深入了解</h2>
-            <p class="section-subtitle">
-                完整的技術文件助您掌握 IPRO SDK 的所有功能
-            </p>
         </div>
-        <div class="features-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
-            <a href="{{ '/architecture' | relative_url }}" class="feature-card" style="text-decoration: none;">
-                <div class="feature-icon"><i class="fas fa-layer-group"></i></div>
-                <h3 class="feature-title">系統架構</h3>
-                <p class="feature-description">
-                    深入了解 SDK 的分層架構設計、元件組織與建構系統。
-                </p>
+        <div class="doc-links-grid">
+            <a href="{{ '/architecture' | relative_url }}" class="doc-link-item">
+                <i class="fas fa-layer-group"></i>
+                <span>系統架構</span>
             </a>
-            <a href="{{ '/ble-development' | relative_url }}" class="feature-card" style="text-decoration: none;">
-                <div class="feature-icon"><i class="fas fa-satellite-dish"></i></div>
-                <h3 class="feature-title">BLE 開發</h3>
-                <p class="feature-description">
-                    BLE 5.4 協定棧、控制器變體、LE Audio 與應用框架。
-                </p>
+            <a href="{{ '/ble-development' | relative_url }}" class="doc-link-item">
+                <i class="fas fa-satellite-dish"></i>
+                <span>BLE 開發</span>
             </a>
-            <a href="{{ '/matter-thread' | relative_url }}" class="feature-card" style="text-decoration: none;">
-                <div class="feature-icon"><i class="fas fa-house"></i></div>
-                <h3 class="feature-title">Matter & Thread</h3>
-                <p class="feature-description">
-                    Matter 1.4 智慧家庭協定與 Thread 1.2 網狀網路整合。
-                </p>
+            <a href="{{ '/matter-thread' | relative_url }}" class="doc-link-item">
+                <i class="fas fa-house"></i>
+                <span>Matter & Thread</span>
             </a>
-            <a href="{{ '/wifi-networking' | relative_url }}" class="feature-card" style="text-decoration: none;">
-                <div class="feature-icon"><i class="fas fa-wifi"></i></div>
-                <h3 class="feature-title">WiFi 與網路</h3>
-                <p class="feature-description">
-                    WiFi 6 連線、lwIP 協定棧、mbedTLS 安全加密。
-                </p>
+            <a href="{{ '/wifi-networking' | relative_url }}" class="doc-link-item">
+                <i class="fas fa-wifi"></i>
+                <span>WiFi 與網路</span>
             </a>
-            <a href="{{ '/ai-npu' | relative_url }}" class="feature-card" style="text-decoration: none;">
-                <div class="feature-icon"><i class="fas fa-microchip"></i></div>
-                <h3 class="feature-title">AI & NPU</h3>
-                <p class="feature-description">
-                    0.1 TOPS NPU 加速器、模型部署與邊緣 AI 應用。
-                </p>
+            <a href="{{ '/ai-npu' | relative_url }}" class="doc-link-item">
+                <i class="fas fa-microchip"></i>
+                <span>AI & NPU</span>
             </a>
-            <a href="{{ '/audio-multimedia' | relative_url }}" class="feature-card" style="text-decoration: none;">
-                <div class="feature-icon"><i class="fas fa-music"></i></div>
-                <h3 class="feature-title">音訊與多媒體</h3>
-                <p class="feature-description">
-                    LE Audio、USB 音訊、ISP 攝影機與視訊處理。
-                </p>
+            <a href="{{ '/audio-multimedia' | relative_url }}" class="doc-link-item">
+                <i class="fas fa-music"></i>
+                <span>音訊與多媒體</span>
             </a>
-            <a href="{{ '/tools-debugging' | relative_url }}" class="feature-card" style="text-decoration: none;">
-                <div class="feature-icon"><i class="fas fa-screwdriver-wrench"></i></div>
-                <h3 class="feature-title">工具與除錯</h3>
-                <p class="feature-description">
-                    燒錄工具、串口監控、GDB 除錯與 CI/CD 流程。
-                </p>
+            <a href="{{ '/tools-debugging' | relative_url }}" class="doc-link-item">
+                <i class="fas fa-screwdriver-wrench"></i>
+                <span>工具與除錯</span>
             </a>
         </div>
     </div>

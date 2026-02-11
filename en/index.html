@@ -8,16 +8,10 @@ lang: en
 <section class="hero">
     <div class="hero-container">
         <div class="hero-content">
-            <div class="hero-logo-wrapper">
-                <img src="{{ '/media_ipro_logo.svg' | relative_url }}" alt="IPRO Logo" class="hero-logo">
-            </div>
-            <span class="hero-badge">
-                <i class="fas fa-bolt"></i>
-                Matter 1.4 + AI NPU + BLE 5.4
-            </span>
             <h1 class="hero-title">IPRO SDK</h1>
+            <p class="hero-protocols">Matter 1.4 · BLE 5.4 · WiFi 6 · Zigbee 3.0 · Thread 1.2</p>
             <p class="hero-subtitle">
-                A comprehensive SDK for IPRO7AI AIOT Matter chipset. Supporting Matter 1.4, BLE 5.4, Zigbee 3.0, Thread 1.2 with built-in AI NPU accelerator for smart IoT applications.
+                A comprehensive SDK for the IPRO7AI AIOT Matter chipset with built-in AI NPU accelerator for smart IoT applications.
             </p>
             <div class="hero-buttons">
                 <a href="{{ '/en/getting-started' | relative_url }}" class="btn btn-primary">
@@ -55,21 +49,20 @@ make -C apps/bluetooth/ipro_ble_remote
 <!-- Stats Section -->
 <section class="stats">
     <div class="stats-grid">
-        <div class="stat-item" data-tooltip="Support Matter 1.4 smart home protocol">
-            <div class="stat-value">Matter 1.4</div>
-            <div class="stat-label">Smart Home Protocol</div>
+        <div class="stat-item">
+            <span class="stat-value">Matter 1.4</span>
+            <span class="stat-label">Smart Home</span>
         </div>
-        <div class="stat-item" data-tooltip="RISC-V RV32IMAFC processor @192MHz">
-            <div class="stat-value">RISC-V</div>
-            <div class="stat-label">192MHz Processor</div>
+        <div class="stat-item">
+            <span class="stat-value">RISC-V 192MHz</span>
         </div>
-        <div class="stat-item" data-tooltip="Built-in AI NPU accelerator">
-            <div class="stat-value">0.1 TOPS</div>
-            <div class="stat-label">AI NPU Power</div>
+        <div class="stat-item">
+            <span class="stat-value">0.1 TOPS</span>
+            <span class="stat-label">AI NPU</span>
         </div>
-        <div class="stat-item" data-tooltip="BLE 5.4 + WiFi 6 + Zigbee 3.0 + Thread 1.2">
-            <div class="stat-value">5 Protocols</div>
-            <div class="stat-label">Multi-mode Wireless</div>
+        <div class="stat-item">
+            <span class="stat-value">5 Protocols</span>
+            <span class="stat-label">Multi-mode Wireless</span>
         </div>
     </div>
 </section>
@@ -306,63 +299,39 @@ cmake --build build</code></pre>
 </section>
 
 <!-- Documentation CTA -->
-<section class="features" style="padding: 4rem 2rem;">
+<section class="doc-links">
     <div class="section-container">
         <div class="section-header">
             <h2 class="section-title">Learn More</h2>
-            <p class="section-subtitle">
-                Comprehensive documentation to help you master all IPRO SDK features
-            </p>
         </div>
-        <div class="features-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
-            <a href="{{ '/en/architecture' | relative_url }}" class="feature-card" style="text-decoration: none;">
-                <div class="feature-icon"><i class="fas fa-layer-group"></i></div>
-                <h3 class="feature-title">Architecture</h3>
-                <p class="feature-description">
-                    SDK layered architecture, component organization, and build system.
-                </p>
+        <div class="doc-links-grid">
+            <a href="{{ '/en/architecture' | relative_url }}" class="doc-link-item">
+                <i class="fas fa-layer-group"></i>
+                <span>Architecture</span>
             </a>
-            <a href="{{ '/en/ble-development' | relative_url }}" class="feature-card" style="text-decoration: none;">
-                <div class="feature-icon"><i class="fas fa-satellite-dish"></i></div>
-                <h3 class="feature-title">BLE Development</h3>
-                <p class="feature-description">
-                    BLE 5.4 stack, controller variants, LE Audio, and app framework.
-                </p>
+            <a href="{{ '/en/ble-development' | relative_url }}" class="doc-link-item">
+                <i class="fas fa-satellite-dish"></i>
+                <span>BLE Development</span>
             </a>
-            <a href="{{ '/en/matter-thread' | relative_url }}" class="feature-card" style="text-decoration: none;">
-                <div class="feature-icon"><i class="fas fa-house"></i></div>
-                <h3 class="feature-title">Matter & Thread</h3>
-                <p class="feature-description">
-                    Matter 1.4 smart home protocol and Thread 1.2 mesh networking.
-                </p>
+            <a href="{{ '/en/matter-thread' | relative_url }}" class="doc-link-item">
+                <i class="fas fa-house"></i>
+                <span>Matter & Thread</span>
             </a>
-            <a href="{{ '/en/wifi-networking' | relative_url }}" class="feature-card" style="text-decoration: none;">
-                <div class="feature-icon"><i class="fas fa-wifi"></i></div>
-                <h3 class="feature-title">WiFi & Networking</h3>
-                <p class="feature-description">
-                    WiFi 6 connectivity, lwIP stack, and mbedTLS security.
-                </p>
+            <a href="{{ '/en/wifi-networking' | relative_url }}" class="doc-link-item">
+                <i class="fas fa-wifi"></i>
+                <span>WiFi & Networking</span>
             </a>
-            <a href="{{ '/en/ai-npu' | relative_url }}" class="feature-card" style="text-decoration: none;">
-                <div class="feature-icon"><i class="fas fa-microchip"></i></div>
-                <h3 class="feature-title">AI & NPU</h3>
-                <p class="feature-description">
-                    0.1 TOPS NPU accelerator, model deployment, and edge AI applications.
-                </p>
+            <a href="{{ '/en/ai-npu' | relative_url }}" class="doc-link-item">
+                <i class="fas fa-microchip"></i>
+                <span>AI & NPU</span>
             </a>
-            <a href="{{ '/en/audio-multimedia' | relative_url }}" class="feature-card" style="text-decoration: none;">
-                <div class="feature-icon"><i class="fas fa-music"></i></div>
-                <h3 class="feature-title">Audio & Multimedia</h3>
-                <p class="feature-description">
-                    LE Audio, USB audio, ISP camera, and video processing.
-                </p>
+            <a href="{{ '/en/audio-multimedia' | relative_url }}" class="doc-link-item">
+                <i class="fas fa-music"></i>
+                <span>Audio & Multimedia</span>
             </a>
-            <a href="{{ '/en/tools-debugging' | relative_url }}" class="feature-card" style="text-decoration: none;">
-                <div class="feature-icon"><i class="fas fa-screwdriver-wrench"></i></div>
-                <h3 class="feature-title">Tools & Debugging</h3>
-                <p class="feature-description">
-                    Flash tools, serial monitor, GDB debugging, and CI/CD pipeline.
-                </p>
+            <a href="{{ '/en/tools-debugging' | relative_url }}" class="doc-link-item">
+                <i class="fas fa-screwdriver-wrench"></i>
+                <span>Tools & Debugging</span>
             </a>
         </div>
     </div>

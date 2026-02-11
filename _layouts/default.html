@@ -254,70 +254,50 @@
                         <span class="footer-logo-text">IPRO SDK</span>
                     </div>
                     {% if page.lang == 'en' %}
-                    <p>High-performance embedded SDK supporting Matter 1.4, BLE 5.4, WiFi 6, Thread, and AI NPU acceleration.</p>
+                    <p>High-performance embedded SDK for IPRO7AI AIOT Matter chipset.</p>
                     {% else %}
-                    <p>高效能嵌入式系統開發套件，支援 Matter 1.4、BLE 5.4、WiFi 6、Thread 與 AI NPU 加速。專為下一代智慧裝置設計。</p>
+                    <p>高效能嵌入式系統開發套件，專為下一代智慧裝置設計。</p>
                     {% endif %}
-                    <div class="footer-badges">
-                        <span class="footer-badge">Matter 1.4</span>
-                        <span class="footer-badge">BLE 5.4</span>
-                        <span class="footer-badge">RISC-V</span>
-                        <span class="footer-badge">AI NPU</span>
+                </div>
+                <div class="footer-section footer-links-wrap">
+                    {% if page.lang == 'en' %}
+                    <div class="footer-link-col">
+                        <h4>Documentation</h4>
+                        <ul>
+                            <li><a href="{{ '/en/getting-started' | relative_url }}">Getting Started</a></li>
+                            <li><a href="{{ '/en/architecture' | relative_url }}">Architecture</a></li>
+                            <li><a href="{{ '/en/ble-development' | relative_url }}">BLE Development</a></li>
+                            <li><a href="{{ '/en/tools-debugging' | relative_url }}">Tools & Debugging</a></li>
+                        </ul>
                     </div>
-                </div>
-                <div class="footer-section">
-                    {% if page.lang == 'en' %}
-                    <h4>Documentation</h4>
-                    <ul>
-                        <li><a href="{{ '/en/getting-started' | relative_url }}">Getting Started</a></li>
-                        <li><a href="{{ '/en/architecture' | relative_url }}">Architecture</a></li>
-                        <li><a href="{{ '/en/ble-development' | relative_url }}">BLE Development</a></li>
-                        <li><a href="{{ '/en/tools-debugging' | relative_url }}">Tools & Debugging</a></li>
-                    </ul>
+                    <div class="footer-link-col">
+                        <h4>Topics</h4>
+                        <ul>
+                            <li><a href="{{ '/en/matter-thread' | relative_url }}">Matter & Thread</a></li>
+                            <li><a href="{{ '/en/wifi-networking' | relative_url }}">WiFi & Networking</a></li>
+                            <li><a href="{{ '/en/ai-npu' | relative_url }}">AI & NPU</a></li>
+                            <li><a href="{{ '/en/audio-multimedia' | relative_url }}">Audio & Multimedia</a></li>
+                        </ul>
+                    </div>
                     {% else %}
-                    <h4>文件</h4>
-                    <ul>
-                        <li><a href="{{ '/getting-started' | relative_url }}">快速開始</a></li>
-                        <li><a href="{{ '/architecture' | relative_url }}">系統架構</a></li>
-                        <li><a href="{{ '/ble-development' | relative_url }}">BLE 開發</a></li>
-                        <li><a href="{{ '/tools-debugging' | relative_url }}">工具與除錯</a></li>
-                    </ul>
-                    {% endif %}
-                </div>
-                <div class="footer-section">
-                    {% if page.lang == 'en' %}
-                    <h4>Topics</h4>
-                    <ul>
-                        <li><a href="{{ '/en/matter-thread' | relative_url }}">Matter & Thread</a></li>
-                        <li><a href="{{ '/en/wifi-networking' | relative_url }}">WiFi & Networking</a></li>
-                        <li><a href="{{ '/en/ai-npu' | relative_url }}">AI & NPU</a></li>
-                        <li><a href="{{ '/en/audio-multimedia' | relative_url }}">Audio & Multimedia</a></li>
-                    </ul>
-                    {% else %}
-                    <h4>主題</h4>
-                    <ul>
-                        <li><a href="{{ '/matter-thread' | relative_url }}">Matter & Thread</a></li>
-                        <li><a href="{{ '/wifi-networking' | relative_url }}">WiFi 與網路</a></li>
-                        <li><a href="{{ '/ai-npu' | relative_url }}">AI & NPU</a></li>
-                        <li><a href="{{ '/audio-multimedia' | relative_url }}">音訊與多媒體</a></li>
-                    </ul>
-                    {% endif %}
-                </div>
-                <div class="footer-section">
-                    {% if page.lang == 'en' %}
-                    <h4>About</h4>
-                    <ul>
-                        <li><a href="{{ '/en/faq' | relative_url }}">FAQ</a></li>
-                        <li><a href="{{ '/en/changelog' | relative_url }}">Changelog</a></li>
-                    </ul>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">SDK source hosted on internal GitLab.</p>
-                    {% else %}
-                    <h4>關於</h4>
-                    <ul>
-                        <li><a href="{{ '/faq' | relative_url }}">常見問題</a></li>
-                        <li><a href="{{ '/changelog' | relative_url }}">更新日誌</a></li>
-                    </ul>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">SDK 原始碼託管於內部 GitLab。</p>
+                    <div class="footer-link-col">
+                        <h4>文件</h4>
+                        <ul>
+                            <li><a href="{{ '/getting-started' | relative_url }}">快速開始</a></li>
+                            <li><a href="{{ '/architecture' | relative_url }}">系統架構</a></li>
+                            <li><a href="{{ '/ble-development' | relative_url }}">BLE 開發</a></li>
+                            <li><a href="{{ '/tools-debugging' | relative_url }}">工具與除錯</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-link-col">
+                        <h4>主題</h4>
+                        <ul>
+                            <li><a href="{{ '/matter-thread' | relative_url }}">Matter & Thread</a></li>
+                            <li><a href="{{ '/wifi-networking' | relative_url }}">WiFi 與網路</a></li>
+                            <li><a href="{{ '/ai-npu' | relative_url }}">AI & NPU</a></li>
+                            <li><a href="{{ '/audio-multimedia' | relative_url }}">音訊與多媒體</a></li>
+                        </ul>
+                    </div>
                     {% endif %}
                 </div>
             </div>
