@@ -9,9 +9,9 @@ lang: en
     <div class="hero-container">
         <div class="hero-content">
             <h1 class="hero-title">IPRO SDK</h1>
-            <p class="hero-protocols">Matter 1.4 · BLE 5.4 · WiFi 6 · Zigbee 3.0 · Thread 1.2</p>
+            <p class="hero-protocols">AI · Matter · BT/BLE · WiFi 6 · Thread</p>
             <p class="hero-subtitle">
-                A comprehensive SDK for the IPRO7AI AIOT Matter chipset with built-in AI NPU accelerator for smart IoT applications.
+                A comprehensive SDK for the IPRO7AI AIOT chipset with built-in AI NPU accelerator for image recognition, voice processing, and multi-protocol wireless connectivity.
             </p>
             <div class="hero-buttons">
                 <a href="{{ '/en/getting-started' | relative_url }}" class="btn btn-primary">
@@ -35,9 +35,8 @@ lang: en
                 <pre><code class="language-bash"><span style="color: #64748b;"># Build BLE application</span>
 make -C apps/bluetooth/ipro_ble_remote
 
-<span style="color: #64748b;"># Or use Zephyr RTOS</span>
-./tools/zephyr/bootstrap.sh
-./tools/zephyr/build.sh -a ipro_zephyr_demo -b ipro7_fpga -c
+<span style="color: #64748b;"># Or use build script</span>
+./build_freertos.sh ipro_ble_remote build
 
 <span style="color: #10b981;">✓ Build successful!</span>
 <span style="color: #94a3b8;">Output: apps/bluetooth/ipro_ble_remote/build/build_out/</span></code></pre>
@@ -50,18 +49,18 @@ make -C apps/bluetooth/ipro_ble_remote
 <section class="stats">
     <div class="stats-grid">
         <div class="stat-item">
-            <span class="stat-value">Matter 1.4</span>
-            <span class="stat-label">Smart Home</span>
+            <span class="stat-value">0.1 TOPS</span>
+            <span class="stat-label">AI NPU</span>
         </div>
         <div class="stat-item">
             <span class="stat-value">RISC-V 192MHz</span>
         </div>
         <div class="stat-item">
-            <span class="stat-value">0.1 TOPS</span>
-            <span class="stat-label">AI NPU</span>
+            <span class="stat-value">Matter</span>
+            <span class="stat-label">Smart Home</span>
         </div>
         <div class="stat-item">
-            <span class="stat-value">5 Protocols</span>
+            <span class="stat-value">BT/BLE · WiFi 6 · Thread</span>
             <span class="stat-label">Multi-mode Wireless</span>
         </div>
     </div>
@@ -78,59 +77,59 @@ make -C apps/bluetooth/ipro_ble_remote
         </div>
         <div class="features-grid">
             <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-globe"></i></div>
-                <h3 class="feature-title">Matter Multi-Protocol</h3>
+                <div class="feature-icon"><i class="fas fa-microchip"></i></div>
+                <h3 class="feature-title">AI NPU Acceleration</h3>
                 <p class="feature-description">
-                    Full Matter 1.4 smart home protocol support with BLE 5.4 (up to 999 Kbps throughput), WiFi 6, Zigbee 3.0, Thread 1.2, and multi-protocol coexistence.
+                    Built-in 0.1 TOPS NPU neural network accelerator for edge computing, image recognition, and voice processing.
                 </p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-bolt"></i></div>
-                <h3 class="feature-title">Dual RTOS Options</h3>
+                <div class="feature-icon"><i class="fas fa-camera"></i></div>
+                <h3 class="feature-title">Image Processing</h3>
                 <p class="feature-description">
-                    Support for both FreeRTOS and Zephyr RTOS. Zephyr offers modern development experience, Device Tree configuration, and fast build times (~30 seconds).
+                    Integrated ISP image pipeline, MJPEG encoding, LCD display driver for camera streaming and image recognition applications.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-microphone"></i></div>
+                <h3 class="feature-title">Voice Processing</h3>
+                <p class="feature-description">
+                    Built-in AUADC/DAC audio subsystem with LC3 codec support, LE Audio streaming for voice recognition and audio devices.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-globe"></i></div>
+                <h3 class="feature-title">Matter Smart Home</h3>
+                <p class="feature-description">
+                    Full Matter smart home protocol support with BT/BLE, WiFi 6, and Thread multi-protocol coexistence for cross-platform interoperability.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-bluetooth-b"></i></div>
+                <h3 class="feature-title">BT/BLE Wireless</h3>
+                <p class="feature-description">
+                    High-performance BLE communication (up to 999 Kbps), LE Audio support, multi-link management, and OTA firmware updates.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-wifi"></i></div>
+                <h3 class="feature-title">WiFi 6 & Thread</h3>
+                <p class="feature-description">
+                    WiFi 6 high-speed connectivity with Thread mesh networking, built-in lwIP stack and Mbed TLS security.
                 </p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-wrench"></i></div>
                 <h3 class="feature-title">Modular Architecture</h3>
                 <p class="feature-description">
-                    Clean layered architecture: Application, Middleware, RTOS, BSP. Components can be configured independently via Kconfig system.
-                </p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-bullseye"></i></div>
-                <h3 class="feature-title">Rich Component Library</h3>
-                <p class="feature-description">
-                    Built-in lwIP network stack, Mbed TLS security, CherryUSB, multiple filesystem support for various application scenarios.
+                    Clean layered architecture: Application, Middleware, RTOS, BSP. Components configured independently via Kconfig system.
                 </p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-screwdriver-wrench"></i></div>
                 <h3 class="feature-title">Development Toolchain</h3>
                 <p class="feature-description">
-                    <code>make -C apps/&lt;project&gt;</code> quick build, Zephyr scripts, board_test.sh automated testing, serial_monitor.py serial monitoring for daily development.
-                </p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-microchip"></i></div>
-                <h3 class="feature-title">AI NPU Acceleration</h3>
-                <p class="feature-description">
-                    Built-in 0.1 TOPS NPU neural network accelerator for AI detection/recognition applications, edge computing, image recognition, and voice processing.
-                </p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
-                <h3 class="feature-title">Complete CI/CD</h3>
-                <p class="feature-description">
-                    Built-in GitLab CI/CD pipeline with automated build testing, memory analysis, security scanning for code quality assurance.
-                </p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-music"></i></div>
-                <h3 class="feature-title">LE Audio Ready</h3>
-                <p class="feature-description">
-                    Complete LC3 encoder/decoder support with Unicast and Broadcast Audio capabilities. Perfect for next-generation audio devices.
+                    <code>make -C apps/&lt;project&gt;</code> quick build, board_test.sh automated testing, serial_monitor.py serial monitoring.
                 </p>
             </div>
         </div>
@@ -169,7 +168,7 @@ make -C apps/bluetooth/ipro_ble_remote
                     <span class="app-badge">High Performance</span>
                 </div>
                 <p class="app-description">
-                    BLE performance test tool using native Zephyr bt_* APIs. Supports Master/Slave modes, PHY selection, connection parameter tuning, up to 999 Kbps.
+                    BLE performance test tool supporting Master/Slave modes, PHY selection, connection parameter tuning, up to 999 Kbps.
                 </p>
                 <div class="app-features">
                     <span class="app-feature-tag">999 Kbps</span>
@@ -237,43 +236,12 @@ make -C apps/bluetooth/ipro_ble_remote
             </p>
         </div>
 
-        <div class="quickstart-tabs">
-            <button class="tab-btn active" data-tab="tab-zephyr">Zephyr RTOS</button>
-            <button class="tab-btn" data-tab="tab-freertos">FreeRTOS</button>
-        </div>
-
-        <div id="tab-zephyr" class="tab-content active">
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Zephyr Environment Setup & Build</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># 1. One-click Zephyr environment setup (first time)
-./tools/zephyr/bootstrap.sh
-
-# 2. Use interactive menu (recommended)
-./tools/zephyr/menu.sh
-
-# 3. Or build directly
-./tools/zephyr/build.sh -a ipro_zephyr_demo -b ipro7_fpga -c
-
-# 4. Manual west build
-cd zephyr-workspace
-source setup_env.sh
-west build -b ipro7_fpga ../apps/ipro_zephyr_demo</code></pre>
+        <div class="code-block">
+            <div class="code-block-header">
+                <span class="code-block-title">Build Commands</span>
+                <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
             </div>
-            <div class="alert alert-info">
-                <strong>Tip:</strong> Optimized Zephyr environment downloads only 6 essential modules (~125MB), build time ~30 seconds.
-            </div>
-        </div>
-
-        <div id="tab-freertos" class="tab-content">
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">FreeRTOS Build Commands</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Use Make build (recommended)
+            <pre><code class="language-bash"># Use Make build (recommended)
 make -C apps/bluetooth/ipro_ble_remote
 
 # Or use build script
@@ -290,10 +258,9 @@ cmake -S . -B build \
     -DCROSS_COMPILE=/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-
 
 cmake --build build</code></pre>
-            </div>
-            <div class="alert alert-info">
-                <strong>Tip:</strong> Build output is located in <code>apps/&lt;PROJECT_NAME&gt;/build/build_out/</code> directory.
-            </div>
+        </div>
+        <div class="alert alert-info">
+            <strong>Tip:</strong> Build output is located in <code>apps/&lt;PROJECT_NAME&gt;/build/build_out/</code> directory.
         </div>
     </div>
 </section>

@@ -11,8 +11,7 @@ title: 快速開始
                 <li><a href="#prerequisites" class="sidebar-link">系統需求</a></li>
                 <li><a href="#installation" class="sidebar-link">安裝設置</a></li>
                 <li><a href="#directory-structure" class="sidebar-link">SDK 目錄結構</a></li>
-                <li><a href="#zephyr-quickstart" class="sidebar-link">Zephyr 快速開始</a></li>
-                <li><a href="#freertos-quickstart" class="sidebar-link">FreeRTOS 快速開始</a></li>
+                <li><a href="#freertos-quickstart" class="sidebar-link">快速開始建構</a></li>
                 <li><a href="#first-build" class="sidebar-link">第一次建構</a></li>
                 <li><a href="#kconfig" class="sidebar-link">配置系統</a></li>
                 <li><a href="#flashing" class="sidebar-link">燒錄韌體</a></li>
@@ -142,7 +141,6 @@ ls /opt/toolchain/riscv_ipro7/bin/
 │   │   └── ipro_matter_switch/   # Matter 開關
 │   ├── ipro7_demo/               # 綜合平台展示
 │   ├── ipro_unit_test/           # 單元測試
-│   └── ipro_zephyr_demo/         # Zephyr 展示
 │
 ├── bsp/                          # Board Support Package（HAL、驅動、連結腳本）
 │   ├── board/                    # 板級配置
@@ -150,7 +148,7 @@ ls /opt/toolchain/riscv_ipro7/bin/
 │   └── hal/                      # 硬體抽象層
 │
 ├── components/                   # 共享中間件
-│   ├── wireless/bluetooth/       # BLE 5.4 棧（Host + Controller + Profiles）
+│   ├── wireless/bluetooth/       # BLE 棧（Host + Controller + Profiles）
 │   ├── os/freertos/              # FreeRTOS RTOS
 │   ├── network/                  # 網路棧（lwIP）
 │   ├── crypto/                   # 加密元件（mbedTLS）
@@ -162,61 +160,14 @@ ls /opt/toolchain/riscv_ipro7/bin/
 │   ├── ipro_iot_tool_lite/       # 韌體燒錄工具
 │   ├── serial_monitor.py         # 串口監控（Python3）
 │   ├── board_test.sh             # 自動化板級測試
-│   └── zephyr/                   # Zephyr 建構工具
 │
 ├── build_freertos.sh             # FreeRTOS 建構腳本
 └── Kconfig                       # 根 Kconfig 配置</code></pre>
             </div>
         </section>
 
-        <section id="zephyr-quickstart">
-            <h2>Zephyr RTOS 快速開始</h2>
-            <p>Zephyr 是推薦的開發方式，提供現代化的建構系統和豐富的功能。</p>
-
-            <h3>一鍵設置環境</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Bootstrap Zephyr</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># 執行 bootstrap 腳本
-./tools/zephyr/bootstrap.sh
-
-# 腳本會自動：
-# - 下載並安裝 Zephyr SDK
-# - 安裝 west 建構工具
-# - 設置環境變數
-# - 下載必要的 Zephyr 模組</code></pre>
-            </div>
-
-            <h3>使用互動式選單</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">互動式開發</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># 啟動互動式選單（支援中英雙語）
-./tools/zephyr/menu.sh</code></pre>
-            </div>
-
-            <h3>直接建構應用</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">建構 Zephyr 應用</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># 使用增強建構腳本
-./tools/zephyr/build.sh -a ipro_zephyr_demo -b ipro7_fpga -c
-
-# 或使用 west 命令
-cd zephyr-workspace
-source setup_env.sh
-west build -b ipro7_fpga ../apps/ipro_zephyr_demo</code></pre>
-            </div>
-        </section>
-
         <section id="freertos-quickstart">
-            <h2>FreeRTOS 快速開始</h2>
+            <h2>快速開始建構</h2>
             <p>傳統的 FreeRTOS 開發方式，適合熟悉 FreeRTOS 的開發者。</p>
 
             <h3>使用 Make 建構（推薦）</h3>
