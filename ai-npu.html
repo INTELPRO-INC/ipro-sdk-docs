@@ -87,7 +87,7 @@ title: AI 與 NPU
 │   └─────────────────┘  └──────────────────────┘  │
 ├──────────────────────────────────────────────────┤
 │         Memory / DMA Interface                    │
-│   PSRAM (16 MB)  │  OCRAM (256 KB)  │  Flash     │
+│   PSRAM (8 MB)   │  OCRAM (256 KB)  │  Flash     │
 └──────────────────────────────────────────────────┘</code></pre>
             </div>
 
@@ -467,7 +467,7 @@ void isp_frame_callback(uint32_t buffer_addr)
 
             <h3>記憶體考量</h3>
             <ul>
-                <li><strong>PSRAM 為必要</strong>：<code>CONFIG_AI_SUPPORT</code> 會自動啟用 <code>CONFIG_USE_PSRAM</code>，模型權重與中間結果存放於 16 MB PSRAM</li>
+                <li><strong>PSRAM 為必要</strong>：<code>CONFIG_AI_SUPPORT</code> 會自動啟用 <code>CONFIG_USE_PSRAM</code>，模型權重與中間結果存放於 8 MB PSRAM</li>
                 <li><strong>模型大小</strong>：典型 YOLOv8 模型約 200 KB - 2 MB（.blai 格式）</li>
                 <li><strong>推理暫存</strong>：推理過程中需要額外的中間 buffer（自動管理），建議確保有足夠的 heap 空間</li>
                 <li><strong>睡眠保留</strong>：PSRAM 在低功耗睡眠期間保留內容，模型無需重新載入</li>

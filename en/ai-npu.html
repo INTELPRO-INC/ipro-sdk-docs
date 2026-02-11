@@ -88,7 +88,7 @@ lang: en
 │   └─────────────────┘  └──────────────────────┘  │
 ├──────────────────────────────────────────────────┤
 │         Memory / DMA Interface                    │
-│   PSRAM (16 MB)  │  OCRAM (256 KB)  │  Flash     │
+│   PSRAM (8 MB)   │  OCRAM (256 KB)  │  Flash     │
 └──────────────────────────────────────────────────┘</code></pre>
             </div>
 
@@ -468,7 +468,7 @@ void isp_frame_callback(uint32_t buffer_addr)
 
             <h3>Memory Considerations</h3>
             <ul>
-                <li><strong>PSRAM is required</strong>: <code>CONFIG_AI_SUPPORT</code> automatically enables <code>CONFIG_USE_PSRAM</code>. Model weights and intermediate results are stored in the 16 MB PSRAM.</li>
+                <li><strong>PSRAM is required</strong>: <code>CONFIG_AI_SUPPORT</code> automatically enables <code>CONFIG_USE_PSRAM</code>. Model weights and intermediate results are stored in the 8 MB PSRAM.</li>
                 <li><strong>Model size</strong>: Typical YOLOv8 models are 200 KB - 2 MB in .blai format</li>
                 <li><strong>Inference buffers</strong>: Inference requires additional intermediate buffers (automatically managed). Ensure sufficient heap space is available.</li>
                 <li><strong>Sleep retention</strong>: PSRAM retains its contents during low-power sleep, so the model does not need to be reloaded after wakeup.</li>

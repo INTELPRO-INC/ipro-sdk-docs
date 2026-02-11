@@ -174,29 +174,29 @@ lang: en
                     <tbody>
                         <tr>
                             <td><strong>Flash</strong></td>
-                            <td>4 MB</td>
-                            <td><code>0x00000000</code></td>
+                            <td>1 MB</td>
+                            <td><code>0x13000000</code></td>
                             <td>XIP Executable</td>
                             <td>Code and read-only data storage</td>
                         </tr>
                         <tr>
                             <td><strong>PSRAM</strong></td>
-                            <td>16 MB</td>
-                            <td><code>0x20000000</code></td>
+                            <td>8 MB</td>
+                            <td><code>0x1e000000</code></td>
                             <td>Random Access</td>
                             <td>Main RAM (heap, data segments, large buffers)</td>
                         </tr>
                         <tr>
                             <td><strong>OCRAM</strong></td>
                             <td>256 KB</td>
-                            <td><code>0x60000000</code></td>
+                            <td><code>0x11010000</code></td>
                             <td>High-speed SRAM</td>
                             <td>Stack, interrupt handlers, performance-critical code</td>
                         </tr>
                         <tr>
                             <td><strong>HBNRAM</strong></td>
                             <td>4 KB</td>
-                            <td><code>0x50000000</code></td>
+                            <td><code>0x20090000</code></td>
                             <td>Hibernate Retention</td>
                             <td>Critical data preserved during deep sleep</td>
                         </tr>
@@ -206,19 +206,19 @@ lang: en
 
             <div class="architecture-layers">
                 <div class="layer layer-blue">
-                    <div class="layer-label">Flash (4 MB) — 0x00000000 ~ 0x003FFFFF</div>
+                    <div class="layer-label">Flash (1 MB) — 0x13000000 ~ 0x130FFFFF</div>
                     <div class="layer-desc">Code + read-only data (XIP execution)</div>
                 </div>
                 <div class="layer layer-cyan">
-                    <div class="layer-label">PSRAM (16 MB) — 0x20000000 ~ 0x20FFFFFF</div>
+                    <div class="layer-label">PSRAM (8 MB) — 0x1e000000 ~ 0x1e7FFFFF</div>
                     <div class="layer-desc">Main RAM (heap, .data, .bss)</div>
                 </div>
                 <div class="layer layer-amber">
-                    <div class="layer-label">HBNRAM (4 KB) — 0x50000000 ~ 0x50000FFF</div>
+                    <div class="layer-label">HBNRAM (4 KB) — 0x20090000 ~ 0x20090FFF</div>
                     <div class="layer-desc">Hibernate retention RAM</div>
                 </div>
                 <div class="layer layer-green">
-                    <div class="layer-label">OCRAM (256 KB) — 0x60000000 ~ 0x6003FFFF</div>
+                    <div class="layer-label">OCRAM (256 KB) — 0x11010000 ~ 0x1104FFFF</div>
                     <div class="layer-desc">High-speed SRAM (stack, critical paths)</div>
                 </div>
             </div>
