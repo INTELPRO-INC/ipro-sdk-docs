@@ -153,27 +153,12 @@ make -C apps/bluetooth/ipro_ble_remote
                     <span class="app-badge">Recommended</span>
                 </div>
                 <p class="app-description">
-                    Mobile interactive remote control with 6 GATT services (LED/Button/Env/UART/PIR/OTA), image transfer 101 KB/s, OTA update 12.3 KB/s.
+                    BLE interactive remote with 6 GATT services (LED/Button/Env/UART/PIR/OTA), image transfer 101 KB/s, OTA update 12.3 KB/s.
                 </p>
                 <div class="app-features">
-                    <span class="app-feature-tag">MTU 517</span>
-                    <span class="app-feature-tag">101 KB/s</span>
-                    <span class="app-feature-tag">OTA 12KB/s</span>
-                </div>
-            </div>
-            <div class="app-card">
-                <div class="app-header">
-                    <span class="app-icon"><i class="fas fa-chart-bar"></i></span>
-                    <span class="app-name">ipro_throughput_test</span>
-                    <span class="app-badge">High Performance</span>
-                </div>
-                <p class="app-description">
-                    BLE performance test tool supporting Master/Slave modes, PHY selection, connection parameter tuning, up to 999 Kbps.
-                </p>
-                <div class="app-features">
-                    <span class="app-feature-tag">999 Kbps</span>
-                    <span class="app-feature-tag">2M PHY</span>
-                    <span class="app-feature-tag">Performance</span>
+                    <span class="app-feature-tag">GATT Services</span>
+                    <span class="app-feature-tag">OTA</span>
+                    <span class="app-feature-tag">Image Transfer</span>
                 </div>
             </div>
             <div class="app-card">
@@ -183,27 +168,144 @@ make -C apps/bluetooth/ipro_ble_remote
                     <span class="app-badge">LE Audio</span>
                 </div>
                 <p class="app-description">
-                    LE Audio headset reference app based on GAF/BAP framework. Supports Unicast/Broadcast audio, VCP volume control, MCP media control.
+                    LE Audio headset based on GAF/BAP framework with bidirectional Unicast streaming, VCP volume control, MCP media control, USB audio interface.
                 </p>
                 <div class="app-features">
                     <span class="app-feature-tag">GAF/BAP</span>
                     <span class="app-feature-tag">LC3 Codec</span>
                     <span class="app-feature-tag">Unicast</span>
-                    <span class="app-feature-tag">Broadcast</span>
+                    <span class="app-feature-tag">USB Audio</span>
                 </div>
             </div>
             <div class="app-card">
                 <div class="app-header">
                     <span class="app-icon"><i class="fas fa-tower-broadcast"></i></span>
                     <span class="app-name">ipro_walkie_talkie</span>
+                    <span class="app-badge">Voice</span>
                 </div>
                 <p class="app-description">
-                    BIS LE Audio walkie-talkie app demonstrating Broadcast Isochronous Stream audio, ideal for group communication scenarios.
+                    LE Audio walkie-talkie with PTT (Push-To-Talk), BIS broadcast audio dual role (Source/Sink) for group communication.
                 </p>
                 <div class="app-features">
+                    <span class="app-feature-tag">PTT</span>
                     <span class="app-feature-tag">BIS</span>
-                    <span class="app-feature-tag">LE Audio</span>
-                    <span class="app-feature-tag">Broadcast</span>
+                    <span class="app-feature-tag">Broadcast Audio</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-volume-high"></i></span>
+                    <span class="app-name">ipro_le_audio_bis_source</span>
+                </div>
+                <p class="app-description">
+                    LE Audio broadcast transmitter (Auracast TX) for one-to-many audio distribution with PBP protocol and USB audio input.
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">Auracast TX</span>
+                    <span class="app-feature-tag">PBP</span>
+                    <span class="app-feature-tag">USB Audio</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-radio"></i></span>
+                    <span class="app-name">ipro_le_audio_bis_sink</span>
+                </div>
+                <p class="app-description">
+                    LE Audio broadcast receiver (Auracast RX) with auto-sync to broadcast sources and USB audio output.
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">Auracast RX</span>
+                    <span class="app-feature-tag">Auto-Sync</span>
+                    <span class="app-feature-tag">USB Audio</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-camera"></i></span>
+                    <span class="app-name">ipro7_pircam</span>
+                    <span class="app-badge">AI Image</span>
+                </div>
+                <p class="app-description">
+                    PIR motion detection camera combining infrared sensing with image capture, BLE remote image transfer.
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">PIR Sensor</span>
+                    <span class="app-feature-tag">Camera</span>
+                    <span class="app-feature-tag">BLE Transfer</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-lightbulb"></i></span>
+                    <span class="app-name">matter/lighting-app</span>
+                    <span class="app-badge">Matter</span>
+                </div>
+                <p class="app-description">
+                    Matter lighting device with on/off and brightness control, interoperable with Apple Home, Google Home, and Alexa.
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">Matter</span>
+                    <span class="app-feature-tag">Lighting</span>
+                    <span class="app-feature-tag">Cross-Platform</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-exchange-alt"></i></span>
+                    <span class="app-name">ipro_ble_transparent</span>
+                </div>
+                <p class="app-description">
+                    UART-to-BLE bridge module with AT command support for external MCU integration via transparent data mode.
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">UART Bridge</span>
+                    <span class="app-feature-tag">AT Commands</span>
+                    <span class="app-feature-tag">Transparent</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-tags"></i></span>
+                    <span class="app-name">ipro_esl_tag</span>
+                </div>
+                <p class="app-description">
+                    Electronic Shelf Label (ESL) tag with E-ink display, PAWR low-power communication, and battery monitoring for retail.
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">ESL</span>
+                    <span class="app-feature-tag">E-ink</span>
+                    <span class="app-feature-tag">PAWR</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-diagram-project"></i></span>
+                    <span class="app-name">ipro_thread_ftd_cli</span>
+                    <span class="app-badge">Thread</span>
+                </div>
+                <p class="app-description">
+                    OpenThread Full Thread Device with CLI for creating and managing Thread IPv6 mesh networks.
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">Thread</span>
+                    <span class="app-feature-tag">Mesh</span>
+                    <span class="app-feature-tag">IPv6</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-microphone"></i></span>
+                    <span class="app-name">ipro_agora_audio</span>
+                    <span class="app-badge">Voice</span>
+                </div>
+                <p class="app-description">
+                    Agora real-time voice communication with 16kHz mono audio streaming and multi-device support.
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">Agora</span>
+                    <span class="app-feature-tag">Real-Time</span>
+                    <span class="app-feature-tag">Multi-Device</span>
                 </div>
             </div>
             <div class="app-card">
@@ -213,13 +315,12 @@ make -C apps/bluetooth/ipro_ble_remote
                     <span class="app-badge">Multimedia</span>
                 </div>
                 <p class="app-description">
-                    Comprehensive platform demo with multimedia (ISP, MJPEG, LCD), USB (CDC, MSC, UAC, UVC), network (EMAC), and audio (AUADC, DAC) capabilities.
+                    Comprehensive platform demo with BLE, peripherals (PWM/SPI/I2C), audio (AUADC/DAC), file system, and USB.
                 </p>
                 <div class="app-features">
-                    <span class="app-feature-tag">USB Audio/Video</span>
-                    <span class="app-feature-tag">ISP Camera</span>
-                    <span class="app-feature-tag">Ethernet</span>
-                    <span class="app-feature-tag">SD Card</span>
+                    <span class="app-feature-tag">USB</span>
+                    <span class="app-feature-tag">Audio I/O</span>
+                    <span class="app-feature-tag">Peripherals</span>
                 </div>
             </div>
         </div>

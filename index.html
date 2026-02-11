@@ -147,62 +147,17 @@ make -C apps/bluetooth/ipro_ble_remote
         <div class="app-grid">
             <div class="app-card">
                 <div class="app-header">
-                    <span class="app-icon"><i class="fas fa-mobile-screen"></i></span>
-                    <span class="app-name">ipro_ble_demo</span>
+                    <span class="app-icon"><i class="fas fa-gamepad"></i></span>
+                    <span class="app-name">ipro_ble_remote</span>
                     <span class="app-badge">推薦</span>
                 </div>
                 <p class="app-description">
-                    BLE 多服務展示，支援 HRS、BAS、UART、DIS 服務，完整的 CLI 系統（40+ 指令），OTA 韌體更新，LE Audio 支援。
+                    BLE 互動遙控器，6 個 GATT 服務（LED/Button/Env/UART/PIR/OTA），圖片傳輸 101 KB/s，OTA 更新 12.3 KB/s。
                 </p>
                 <div class="app-features">
-                    <span class="app-feature-tag">BLE</span>
-                    <span class="app-feature-tag">LE Audio</span>
-                    <span class="app-feature-tag">40+ CLI</span>
+                    <span class="app-feature-tag">GATT 服務</span>
                     <span class="app-feature-tag">OTA</span>
-                </div>
-            </div>
-            <div class="app-card">
-                <div class="app-header">
-                    <span class="app-icon"><i class="fas fa-gamepad"></i></span>
-                    <span class="app-name">ipro_ble_remote</span>
-                    <span class="app-badge">新功能</span>
-                </div>
-                <p class="app-description">
-                    手機互動遙控器，6 個 GATT 服務（LED/Button/Env/UART/PIR/OTA），圖片傳輸 101 KB/s⚡，OTA 更新 12.3 KB/s。
-                </p>
-                <div class="app-features">
-                    <span class="app-feature-tag">MTU 517</span>
-                    <span class="app-feature-tag">101 KB/s⚡</span>
-                    <span class="app-feature-tag">OTA 12KB/s</span>
-                </div>
-            </div>
-            <div class="app-card">
-                <div class="app-header">
-                    <span class="app-icon"><i class="fas fa-chart-bar"></i></span>
-                    <span class="app-name">ipro_throughput_test</span>
-                    <span class="app-badge">高效能</span>
-                </div>
-                <p class="app-description">
-                    BLE 效能測試工具，支援 Master/Slave 模式、PHY 選擇、連線參數調整，最高可達 999 Kbps。
-                </p>
-                <div class="app-features">
-                    <span class="app-feature-tag">999 Kbps</span>
-                    <span class="app-feature-tag">2M PHY</span>
-                    <span class="app-feature-tag">效能測試</span>
-                </div>
-            </div>
-            <div class="app-card">
-                <div class="app-header">
-                    <span class="app-icon">⌨️</span>
-                    <span class="app-name">ipro_ble_hid_keyboard</span>
-                </div>
-                <p class="app-description">
-                    標準 HOGP 藍牙鍵盤，支援所有字母數字鍵、修飾鍵、字串輸入功能，自動重連。
-                </p>
-                <div class="app-features">
-                    <span class="app-feature-tag">HOGP</span>
-                    <span class="app-feature-tag">完整鍵盤</span>
-                    <span class="app-feature-tag">字串輸入</span>
+                    <span class="app-feature-tag">圖片傳輸</span>
                 </div>
             </div>
             <div class="app-card">
@@ -212,27 +167,144 @@ make -C apps/bluetooth/ipro_ble_remote
                     <span class="app-badge">LE Audio</span>
                 </div>
                 <p class="app-description">
-                    LE Audio 耳機參考應用，基於 GAF/BAP 框架，支援 Unicast/Broadcast 音訊、VCP 音量控制、MCP 媒體控制。
+                    LE Audio 耳機參考應用，基於 GAF/BAP 框架，支援 Unicast 雙向音訊串流、VCP 音量控制、MCP 媒體控制、USB 音訊介面。
                 </p>
                 <div class="app-features">
                     <span class="app-feature-tag">GAF/BAP</span>
                     <span class="app-feature-tag">LC3 編解碼</span>
                     <span class="app-feature-tag">Unicast</span>
-                    <span class="app-feature-tag">Broadcast</span>
+                    <span class="app-feature-tag">USB 音訊</span>
                 </div>
             </div>
             <div class="app-card">
                 <div class="app-header">
                     <span class="app-icon"><i class="fas fa-tower-broadcast"></i></span>
                     <span class="app-name">ipro_walkie_talkie</span>
+                    <span class="app-badge">語音</span>
                 </div>
                 <p class="app-description">
-                    BIS LE Audio 對講機應用，展示 Broadcast Isochronous Stream 廣播音訊功能，適用於群組通訊場景。
+                    LE Audio 對講機，支援 PTT 按鍵通話，BIS 廣播音訊雙向角色（Source/Sink），適用於群組通訊。
                 </p>
                 <div class="app-features">
+                    <span class="app-feature-tag">PTT</span>
                     <span class="app-feature-tag">BIS</span>
-                    <span class="app-feature-tag">LE Audio</span>
                     <span class="app-feature-tag">廣播音訊</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-volume-high"></i></span>
+                    <span class="app-name">ipro_le_audio_bis_source</span>
+                </div>
+                <p class="app-description">
+                    LE Audio 廣播發射端（Auracast TX），支援一對多音訊分發，PBP 廣播協定，USB 音訊輸入。
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">Auracast TX</span>
+                    <span class="app-feature-tag">PBP</span>
+                    <span class="app-feature-tag">USB 音訊</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-radio"></i></span>
+                    <span class="app-name">ipro_le_audio_bis_sink</span>
+                </div>
+                <p class="app-description">
+                    LE Audio 廣播接收端（Auracast RX），自動同步廣播源，USB 音訊輸出。
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">Auracast RX</span>
+                    <span class="app-feature-tag">自動同步</span>
+                    <span class="app-feature-tag">USB 音訊</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-camera"></i></span>
+                    <span class="app-name">ipro7_pircam</span>
+                    <span class="app-badge">AI 影像</span>
+                </div>
+                <p class="app-description">
+                    PIR 人體感測攝影機，結合紅外線偵測與影像擷取，透過 BLE 遠端傳輸影像。
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">PIR 感測</span>
+                    <span class="app-feature-tag">影像擷取</span>
+                    <span class="app-feature-tag">BLE 傳輸</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-lightbulb"></i></span>
+                    <span class="app-name">matter/lighting-app</span>
+                    <span class="app-badge">Matter</span>
+                </div>
+                <p class="app-description">
+                    Matter 燈光控制裝置，支援開關與亮度調節，可與 Apple Home、Google Home、Alexa 互通。
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">Matter</span>
+                    <span class="app-feature-tag">燈光控制</span>
+                    <span class="app-feature-tag">跨平台</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-exchange-alt"></i></span>
+                    <span class="app-name">ipro_ble_transparent</span>
+                </div>
+                <p class="app-description">
+                    UART 轉 BLE 透傳模組，支援 AT 指令控制，可與外部 MCU 整合實現無線通訊。
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">UART 橋接</span>
+                    <span class="app-feature-tag">AT 指令</span>
+                    <span class="app-feature-tag">透傳模式</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-tags"></i></span>
+                    <span class="app-name">ipro_esl_tag</span>
+                </div>
+                <p class="app-description">
+                    電子貨架標籤（ESL），支援 E-ink 電子紙顯示、PAWR 省電通訊、電池電量監控，適用於零售場景。
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">ESL</span>
+                    <span class="app-feature-tag">E-ink</span>
+                    <span class="app-feature-tag">PAWR</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-diagram-project"></i></span>
+                    <span class="app-name">ipro_thread_ftd_cli</span>
+                    <span class="app-badge">Thread</span>
+                </div>
+                <p class="app-description">
+                    OpenThread Full Thread Device，CLI 命令列介面，可建立與管理 Thread IPv6 Mesh 網路。
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">Thread</span>
+                    <span class="app-feature-tag">Mesh</span>
+                    <span class="app-feature-tag">IPv6</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-microphone"></i></span>
+                    <span class="app-name">ipro_agora_audio</span>
+                    <span class="app-badge">語音</span>
+                </div>
+                <p class="app-description">
+                    Agora 即時語音通訊整合，16kHz 單聲道音訊串流，支援多裝置語音通話。
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">Agora</span>
+                    <span class="app-feature-tag">即時語音</span>
+                    <span class="app-feature-tag">多裝置</span>
                 </div>
             </div>
             <div class="app-card">
@@ -242,13 +314,12 @@ make -C apps/bluetooth/ipro_ble_remote
                     <span class="app-badge">多媒體</span>
                 </div>
                 <p class="app-description">
-                    綜合平台展示，包含 USB、ISP 攝影機、LCD、音訊、乙太網路、SD 卡等完整功能。
+                    綜合平台展示，整合 BLE、週邊（PWM/SPI/I2C）、音訊（AUADC/DAC）、檔案系統、USB 功能。
                 </p>
                 <div class="app-features">
                     <span class="app-feature-tag">USB</span>
-                    <span class="app-feature-tag">ISP</span>
-                    <span class="app-feature-tag">網路</span>
-                    <span class="app-feature-tag">SD</span>
+                    <span class="app-feature-tag">音訊 I/O</span>
+                    <span class="app-feature-tag">週邊驅動</span>
                 </div>
             </div>
         </div>
