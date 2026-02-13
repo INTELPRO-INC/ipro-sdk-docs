@@ -734,7 +734,6 @@ cleanup:
                 </thead>
                 <tbody>
                     <tr><td>IPRO6 Demo</td><td><code>apps/ipro6_demo/</code></td><td>WiFi STA connection with event handling</td></tr>
-                    <tr><td>IPRO6LE Demo</td><td><code>apps/ipro6le_demo/</code></td><td>WiFi + iperf throughput testing</td></tr>
                     <tr><td>IPRO7 Demo</td><td><code>apps/ipro7_demo/</code></td><td>EMAC Ethernet + lwIP example</td></tr>
                 </tbody>
             </table>
@@ -746,13 +745,13 @@ cleanup:
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
 <pre><code class="language-bash"># Build WiFi demo (ensure CONFIG_WIFI6=y in .config)
-make -C apps/ipro6le_demo
+make -C apps/ipro6_demo
 
 # Clean build
-make -C apps/ipro6le_demo clean
+make -C apps/ipro6_demo clean
 
 # Output firmware path
-# apps/ipro6le_demo/build/build_out/ipro6le_demo_IPRO6LE.bin</code></pre>
+# apps/ipro6_demo/build/build_out/ipro6_demo_IPRO6.bin</code></pre>
             </div>
 
             <h3>Shell Commands</h3>

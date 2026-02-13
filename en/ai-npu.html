@@ -73,7 +73,7 @@ lang: en
                 </div>
                 <pre><code>┌──────────────────────────────────────────────────┐
 │              Application Layer                    │
-│   ipro7_pircam  │  ipro7_demo  │  Custom App     │
+│      ipro7_demo  │  Custom App                    │
 ├──────────────────────────────────────────────────┤
 │          IPROAI Framework (components/ai/)        │
 │   iproai_core  │  iproai_inst  │  postprocess    │
@@ -340,31 +340,6 @@ CONFIG_AI_PREBUILT_PATH="components/ai/prebuilt/libai.a"</code></pre>
         <section id="reference-apps">
             <h2>Reference Applications</h2>
 
-            <h3>ipro7_pircam - PIR + AI Smart Camera</h3>
-            <p>Located at <code>apps/ipro7_pircam/</code>, this application demonstrates a complete low-power workflow combining PIR sensor triggering with AI inference:</p>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">PIRCam Workflow</span>
-                </div>
-                <pre><code>  ┌─────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐     ┌───────────┐
-  │  Sleep   │────&gt;│ PIR      │────&gt;│ ISP      │────&gt;│ NPU      │────&gt;│ BLE       │
-  │  (LP)    │     │ Wakeup   │     │ Capture  │     │ Inference│     │ Report    │
-  └─────────┘     └──────────┘     └──────────┘     └──────────┘     └───────────┘
-       ^                                                                    │
-       └────────────────────────────────────────────────────────────────────┘
-                                 Return to low-power sleep</code></pre>
-            </div>
-
-            <p>Key features:</p>
-            <ul>
-                <li>Model loaded once to PSRAM and retained during sleep (<code>pircam_ai_init()</code> called only once at startup)</li>
-                <li>ISP Channel 1 callback pushes frames to inference queue via <code>pircam_ai_push_buffer()</code> (ISR-safe)</li>
-                <li>After wakeup, <code>pircam_ai_resume()</code> restores NPU clock and registers</li>
-                <li>Uses YOLOv8 Person+Pet model with 640x360 ARGB input</li>
-                <li>Supports SD card loading (<code>CONFIG_PIRCAM_AI_MODEL_FROM_SD</code>) or Flash partition loading</li>
-            </ul>
-
             <h3>ipro7_demo - Interactive AI Demo</h3>
             <p>Located at <code>apps/ipro7_demo/demo/ai/</code>, this provides shell command-based interactive AI inference:</p>
 
@@ -451,20 +426,6 @@ int my_ai_inference(uint32_t image_addr)
 
             <h3>External Buffer Continuous Inference</h3>
             <p>For scenarios where ISP continuously outputs frames. Uses a FreeRTOS Queue to push image addresses to the inference task:</p>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">ISP + AI Continuous Inference</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">/* Push frame from ISP callback (ISR-safe) */
-void isp_frame_callback(uint32_t buffer_addr)
-{
-    pircam_ai_push_buffer(buffer_addr);  /* Uses xQueueSendFromISR */
-}
-
-/* Inference task automatically picks up frames from the queue */</code></pre>
-            </div>
 
             <h3>Memory Considerations</h3>
             <ul>

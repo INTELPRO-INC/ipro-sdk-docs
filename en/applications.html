@@ -12,13 +12,11 @@ title: Applications - IPRO SDK
                 <li><a href="#overview" class="sidebar-link">Applications Overview</a></li>
                 <li class="sidebar-section-title">General Apps</li>
                 <li><a href="#ipro7-demo" class="sidebar-link">ipro7_demo</a></li>
-                <li><a href="#ipro7-pircam" class="sidebar-link">ipro7_pircam</a></li>
                 <li><a href="#ipro-unit-test" class="sidebar-link">ipro_unit_test</a></li>
                 <li><a href="#ipro-agora-audio" class="sidebar-link">ipro_agora_audio</a></li>
                 <li><a href="#ipro-aosl-test" class="sidebar-link">ipro_aosl_test</a></li>
                 <li><a href="#ipro-thread-ftd-cli" class="sidebar-link">ipro_thread_ftd_cli</a></li>
                 <li><a href="#ipro6-demo" class="sidebar-link">ipro6_demo</a></li>
-                <li><a href="#ipro6le-demo" class="sidebar-link">ipro6le_demo</a></li>
                 <li><a href="#ipro7-bootrom" class="sidebar-link">ipro7_bootrom</a></li>
                 <li><a href="#ipro7-fpga-ble" class="sidebar-link">ipro7_fpga_ble_5p4</a></li>
                 <li class="sidebar-section-title">Bluetooth Apps</li>
@@ -44,7 +42,7 @@ title: Applications - IPRO SDK
 
         <section id="overview">
             <h2>Applications Overview</h2>
-            <p>The SDK includes <strong>20 reference applications</strong>, divided into General Apps (10) and Bluetooth Apps (10):</p>
+            <p>The SDK includes <strong>18 reference applications</strong>, divided into General Apps (8) and Bluetooth Apps (10):</p>
 
             <h3>General Applications</h3>
             <div class="table-wrapper">
@@ -63,12 +61,6 @@ title: Applications - IPRO SDK
                             <td>FreeRTOS</td>
                             <td>USB/LCD/Camera/Audio/Ethernet/SD</td>
                             <td>SDK Introduction & Hardware Testing</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro7_pircam</code></td>
-                            <td>FreeRTOS</td>
-                            <td>PIR-triggered Camera + JPEG Pipeline</td>
-                            <td>Security/Image Trigger Applications</td>
                         </tr>
                         <tr>
                             <td><code>ipro_unit_test</code></td>
@@ -99,12 +91,6 @@ title: Applications - IPRO SDK
                             <td>FreeRTOS</td>
                             <td>GPIO/UART/SPI/I2C + lwIP</td>
                             <td>IPRO6 Platform Development</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro6le_demo</code></td>
-                            <td>FreeRTOS</td>
-                            <td>WiFi + lwIP + USB</td>
-                            <td>IPRO6LE Wireless Development</td>
                         </tr>
                         <tr>
                             <td><code>ipro7_bootrom</code></td>
@@ -251,29 +237,7 @@ void gpio_example(void)
             </div>
         </section>
 
-        <section id="ipro7-pircam">
-            <h2>ipro7_pircam</h2>
-            <p>PIR-triggered camera example demonstrating image capture, JPEG pipeline, and display/storage.</p>
-
-            <h3>Features</h3>
-            <ul>
-                <li><strong>PIR Trigger</strong>: Motion detection initiates capture</li>
-                <li><strong>Image Pipeline</strong>: Camera input -> JPEG processing -> LCD preview or storage</li>
-                <li><strong>Storage Output</strong>: SD/PSRAM buffer support</li>
-                <li><strong>Event Hooks</strong>: Chain alerts or wireless upload workflows</li>
-            </ul>
-
-            <h3>Build</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build PIR Camera</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash">make -C apps/ipro7_pircam</code></pre>
-            </div>
-        </section>
-
-        <section id="ipro-unit-test">
+<section id="ipro-unit-test">
             <h2>ipro_unit_test</h2>
             <p>SDK unit test framework with automated build, flash, and test result parsing support.</p>
 
@@ -364,27 +328,6 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-2120 --send reboot --timeout 3
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash">make -C apps/ipro6_demo</code></pre>
-            </div>
-        </section>
-
-        <section id="ipro6le-demo">
-            <h2>ipro6le_demo</h2>
-            <p>IPRO6LE platform WiFi/lwIP and USB example.</p>
-
-            <h3>Features</h3>
-            <ul>
-                <li><strong>WiFi Management</strong>: Connect, scan, and status management</li>
-                <li><strong>lwIP</strong>: TCP/IP connection and iPerf testing</li>
-                <li><strong>USB</strong>: Common device class examples</li>
-            </ul>
-
-            <h3>Build</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build ipro6le_demo</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash">make -C apps/ipro6le_demo</code></pre>
             </div>
         </section>
 

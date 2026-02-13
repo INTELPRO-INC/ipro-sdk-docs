@@ -733,7 +733,6 @@ cleanup:
                 </thead>
                 <tbody>
                     <tr><td>IPRO6 Demo</td><td><code>apps/ipro6_demo/</code></td><td>WiFi STA 連線範例，含事件處理</td></tr>
-                    <tr><td>IPRO6LE Demo</td><td><code>apps/ipro6le_demo/</code></td><td>WiFi + iperf 吞吐量測試</td></tr>
                     <tr><td>IPRO7 Demo</td><td><code>apps/ipro7_demo/</code></td><td>EMAC 乙太網路 + lwIP 範例</td></tr>
                 </tbody>
             </table>
@@ -745,13 +744,13 @@ cleanup:
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
 <pre><code class="language-bash"># 建置 WiFi Demo (確保 .config 中 CONFIG_WIFI6=y)
-make -C apps/ipro6le_demo
+make -C apps/ipro6_demo
 
 # 清除建置
-make -C apps/ipro6le_demo clean
+make -C apps/ipro6_demo clean
 
 # 輸出韌體路徑
-# apps/ipro6le_demo/build/build_out/ipro6le_demo_IPRO6LE.bin</code></pre>
+# apps/ipro6_demo/build/build_out/ipro6_demo_IPRO6.bin</code></pre>
             </div>
 
             <h3>Shell 指令</h3>

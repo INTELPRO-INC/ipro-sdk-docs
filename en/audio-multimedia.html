@@ -540,23 +540,6 @@ bsp/hal/inc/
 ├── mm_demo.c               # Multimedia combined example
 └── stream_control.c        # Stream control</code></pre>
             </div>
-
-            <h3>PIR Camera Application</h3>
-            <p><code>ipro7_pircam</code> is a complete PIR (Passive Infrared) triggered camera reference application, integrating low-power wake-up, ISP image capture, and AI object detection:</p>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">PIR Camera Architecture (apps/ipro7_pircam/)</span>
-                </div>
-                <pre><code>PIR Sensor Trigger → Low-Power Wake → ISP Image Capture → AI Detection → MJPEG Compression
-
-Key files:
-├── main.c              # Application entry point
-├── pircam_isp.c        # ISP camera control
-├── pircam_ai.c         # AI inference integration
-├── pircam_process.c    # Image processing pipeline
-├── pircam_lpfw.c       # Low-power framework
-└── pircam_demo.c       # Demo mode</code></pre>
-            </div>
         </section>
 
         <section id="audio-hardware">
@@ -691,20 +674,6 @@ make -C apps/ipro7_demo
 
 # Output binary
 # apps/ipro7_demo/build/build_out/ipro7_demo_IPRO7.bin</code></pre>
-            </div>
-
-            <h3>ipro7_pircam</h3>
-            <p>PIR-triggered camera integrating low-power wake-up, ISP image capture, and AI object detection:</p>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build PIR Camera</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Build
-make -C apps/ipro7_pircam
-
-# Output binary
-# apps/ipro7_pircam/build/build_out/ipro7_pircam_IPRO7.bin</code></pre>
             </div>
 
             <h3>Controller Variant Selection</h3>

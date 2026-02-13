@@ -539,23 +539,6 @@ bsp/hal/inc/
 ├── mm_demo.c               # 多媒體綜合範例
 └── stream_control.c        # 串流控制</code></pre>
             </div>
-
-            <h3>PIR 攝影機應用</h3>
-            <p><code>ipro7_pircam</code> 是一個完整的 PIR（被動紅外線）觸發攝影機參考應用，整合低功耗喚醒、ISP 影像擷取與 AI 物件偵測：</p>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">PIR 攝影機架構 (apps/ipro7_pircam/)</span>
-                </div>
-                <pre><code>PIR 感測器觸發 → 低功耗喚醒 → ISP 影像擷取 → AI 物件偵測 → MJPEG 壓縮
-
-主要檔案：
-├── main.c              # 應用進入點
-├── pircam_isp.c        # ISP 攝影機控制
-├── pircam_ai.c         # AI 推論整合
-├── pircam_process.c    # 影像處理流程
-├── pircam_lpfw.c       # 低功耗框架
-└── pircam_demo.c       # 展示模式</code></pre>
-            </div>
         </section>
 
         <section id="audio-hardware">
@@ -690,20 +673,6 @@ make -C apps/ipro7_demo
 
 # 輸出二進位檔
 # apps/ipro7_demo/build/build_out/ipro7_demo_IPRO7.bin</code></pre>
-            </div>
-
-            <h3>ipro7_pircam</h3>
-            <p>PIR 觸發攝影機，整合低功耗喚醒、ISP 影像擷取與 AI 物件偵測：</p>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">建構 PIR 攝影機</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># 建構
-make -C apps/ipro7_pircam
-
-# 輸出二進位檔
-# apps/ipro7_pircam/build/build_out/ipro7_pircam_IPRO7.bin</code></pre>
             </div>
 
             <h3>控制器變體選擇</h3>
