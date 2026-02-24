@@ -52,16 +52,14 @@ nav:
     url: /architecture
   - title: BLE 開發
     url: /ble-development
-  - title: Matter & Thread
-    url: /matter-thread
-  - title: WiFi 與網路
-    url: /wifi-networking
-  - title: AI & NPU
-    url: /ai-npu
   - title: 音訊與多媒體
     url: /audio-multimedia
   - title: 工具與除錯
     url: /tools-debugging
+  - title: 應用範例
+    url: /applications
+  - title: API 參考
+    url: /api-reference
   - title: FAQ
     url: /faq
   - title: 更新日誌
@@ -77,16 +75,14 @@ nav_en:
     url: /en/architecture
   - title: BLE Development
     url: /en/ble-development
-  - title: Matter & Thread
-    url: /en/matter-thread
-  - title: WiFi & Networking
-    url: /en/wifi-networking
-  - title: AI & NPU
-    url: /en/ai-npu
   - title: Audio & Multimedia
     url: /en/audio-multimedia
   - title: Tools & Debugging
     url: /en/tools-debugging
+  - title: Applications
+    url: /en/applications
+  - title: API Reference
+    url: /en/api-reference
   - title: FAQ
     url: /en/faq
   - title: Changelog
@@ -108,6 +104,8 @@ languages:
 # google_analytics: UA-XXXXXXXX-X
 
 # Exclude from processing
+release_notice: "此為 Release SDK 發行版本 (v1.0.1)。IPRO7 不支援 WiFi。部分進階功能（Matter、Thread、AI/NPU）及開發工具未包含在此版本中。"
+
 exclude:
   - Gemfile
   - Gemfile.lock

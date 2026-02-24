@@ -295,7 +295,7 @@ int bap_server_init(void)
             <h3>廣播端範例</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">BIS 廣播端 (apps/bluetooth/ipro_walkie_talkie/src/wt_broadcast_source.c)</span>
+                    <span class="code-block-title">BIS 廣播端 (apps/bluetooth/le_audio/ipro_le_audio_bis_source/src/main.c)</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">/* 建立 Broadcast Source */
@@ -324,7 +324,7 @@ static int create_broadcast_source(void)
             <h3>接收端範例</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">BIS 接收端 (apps/bluetooth/ipro_walkie_talkie/src/wt_broadcast_sink.c)</span>
+                    <span class="code-block-title">BIS 接收端 (apps/bluetooth/le_audio/ipro_le_audio_bis_sink/src/main.c)</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">/* Broadcast Sink 回呼 */
@@ -636,29 +636,27 @@ make -C apps/bluetooth/ipro_le_audio_headset
 # apps/bluetooth/ipro_le_audio_headset/build/build_out/ipro_le_audio_headset_IPRO7.bin</code></pre>
             </div>
 
-            <h3>ipro_walkie_talkie</h3>
-            <p>BIS 廣播對講機應用，展示一對多無連線音訊傳輸：</p>
+            <h3>ipro_le_audio_bis_source / ipro_le_audio_bis_sink</h3>
+            <p>BIS 廣播音訊應用，展示一對多無連線音訊傳輸：</p>
             <table>
                 <thead>
-                    <tr><th>功能</th><th>說明</th></tr>
+                    <tr><th>應用</th><th>說明</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td>Broadcast Source</td><td>廣播端，編碼並傳送音訊</td></tr>
-                    <tr><td>Broadcast Sink</td><td>接收端，解碼並播放音訊</td></tr>
-                    <tr><td>雙向切換</td><td>按鍵切換發話/收聽模式</td></tr>
-                    <tr><td>Shell 控制</td><td>串列埠 Shell 命令控制</td></tr>
+                    <tr><td>ipro_le_audio_bis_source</td><td>廣播端，編碼並傳送 BIS 音訊串流</td></tr>
+                    <tr><td>ipro_le_audio_bis_sink</td><td>接收端，同步並解碼 BIS 音訊串流</td></tr>
                 </tbody>
             </table>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">建構對講機</span>
+                    <span class="code-block-title">建構 BIS 廣播應用</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 建構
-make -C apps/bluetooth/ipro_walkie_talkie
+                <pre><code class="language-bash"># 建構 BIS Source
+make -C apps/bluetooth/le_audio/ipro_le_audio_bis_source
 
-# 輸出二進位檔
-# apps/bluetooth/ipro_walkie_talkie/build/build_out/ipro_walkie_talkie_IPRO7.bin</code></pre>
+# 建構 BIS Sink
+make -C apps/bluetooth/le_audio/ipro_le_audio_bis_sink</code></pre>
             </div>
 
             <h3>ipro7_demo</h3>

@@ -45,7 +45,7 @@ lang: en
                 <li><strong>Toolchain:</strong> RISC-V GCC Cross Compiler (<code>/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-*</code>)</li>
                 <li><strong>Build Tools:</strong> CMake 3.20+, Ninja, Make</li>
                 <li><strong>Python:</strong> Python 3.8+ (for development tools and scripts)</li>
-                <li><strong>Git:</strong> Version control</li>
+                <li><strong>tar:</strong> For extracting the SDK release package</li>
             </ul>
 
             <div class="code-block">
@@ -81,18 +81,17 @@ python3 --version</code></pre>
         <section id="installation">
             <h2>Installation</h2>
 
-            <h3>1. Get SDK Source Code</h3>
+            <h3>1. Get SDK Release Package</h3>
             <div class="alert alert-info">
-                <strong><i class="fas fa-clipboard-list"></i> Note:</strong> IPRO SDK source code is hosted on internal GitLab. Please contact your administrator for access.
+                <strong><i class="fas fa-clipboard-list"></i> Note:</strong> IPRO SDK Release is distributed as a compressed archive. Please contact your vendor or administrator for the release package.
             </div>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">Clone SDK (Internal GitLab)</span>
+                    <span class="code-block-title">Extract Release SDK</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># Clone IPRO SDK from internal GitLab
-# Replace with your GitLab server address
-git clone https://your-gitlab-server/ipro/ipro_sdk.git
+                <pre><code class="language-bash"># Extract the SDK release package
+tar -xzf ipro_sdk_release_v1.0.1.tar.gz
 cd ipro_sdk</code></pre>
             </div>
 
@@ -132,16 +131,17 @@ ls /opt/toolchain/riscv_ipro7/bin/
                 </div>
                 <pre><code>ipro_sdk/
 ├── apps/                         # Applications (each with .config + CMakeLists.txt)
-│   ├── bluetooth/                # BLE applications
-│   │   ├── ipro_ble_remote/      # BLE Remote (GATT + OTA)
-│   │   ├── ipro_throughput_test/ # BLE throughput test
-│   │   ├── ipro_walkie_talkie/   # BIS LE Audio walkie-talkie
-│   │   └── ipro_le_audio_headset/# GAF/BAP LE Audio headset
-│   ├── matter/                   # Matter applications
-│   │   ├── ipro_matter_light/    # Matter light control
-│   │   └── ipro_matter_switch/   # Matter switch
-│   ├── ipro7_demo/               # Comprehensive platform demo
-│   ├── ipro_unit_test/           # Unit tests
+│   ├── bluetooth/                # Bluetooth applications
+│   │   ├── ble/                  # BLE applications
+│   │   │   ├── ipro_ble_remote/      # BLE Remote (GATT + OTA)
+│   │   │   ├── ipro_ble_transparent/ # BLE transparent data bridge
+│   │   │   └── ipro_throughput_test/ # BLE throughput test
+│   │   └── le_audio/             # LE Audio applications
+│   │       ├── ipro_le_audio_headset/    # GAF/BAP LE Audio headset
+│   │       ├── ipro_le_audio_bis_source/ # BIS broadcast source
+│   │       └── ipro_le_audio_bis_sink/   # BIS broadcast receiver
+│   └── platform/                 # Platform applications
+│       └── ipro7_demo/           # Comprehensive platform demo
 │
 ├── bsp/                          # Board Support Package (HAL, drivers, linker scripts)
 │   ├── board/                    # Board configurations
@@ -149,18 +149,17 @@ ls /opt/toolchain/riscv_ipro7/bin/
 │   └── hal/                      # Hardware Abstraction Layer
 │
 ├── components/                   # Shared middleware
-│   ├── wireless/bluetooth/       # BLE stack (Host + Controller + Profiles)
+│   ├── wireless/bluetooth/       # BLE stack (Host + Controller prebuilt libs)
+│   ├── wireless/rf/              # RF driver (prebuilt library)
 │   ├── os/freertos/              # FreeRTOS RTOS
 │   ├── network/                  # Network stack (lwIP)
 │   ├── crypto/                   # Crypto components (mbedTLS)
 │   ├── fs/                       # File systems (LittleFS, FatFS)
-│   └── cherryusb/                # USB device/host stack
+│   ├── cherryusb/                # USB device/host stack
+│   └── 3rdparty/liblc3/          # LC3 codec (prebuilt library)
 │
 ├── cmake/                        # Build system (toolchain.cmake auto-detects GCC)
-├── tools/                        # Development tools
-│   ├── ipro_iot_tool_lite/       # Firmware flash tool
-│   ├── serial_monitor.py         # Serial monitor (Python3)
-│   ├── board_test.sh             # Automated board testing
+├── tools/                        # Development tools (limited in release)
 │
 ├── build_freertos.sh             # FreeRTOS build script
 └── Kconfig                       # Root Kconfig configuration</code></pre>
@@ -178,13 +177,13 @@ ls /opt/toolchain/riscv_ipro7/bin/
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># Build BLE Remote application
-make -C apps/bluetooth/ipro_ble_remote
+make -C apps/bluetooth/ble/ipro_ble_remote
 
-# Build unit tests
-make -C apps/ipro_unit_test
+# Build platform demo
+make -C apps/platform/ipro7_demo
 
 # Clean build
-make -C apps/bluetooth/ipro_ble_remote clean</code></pre>
+make -C apps/bluetooth/ble/ipro_ble_remote clean</code></pre>
             </div>
 
             <h3>Use Build Script</h3>
@@ -196,7 +195,7 @@ make -C apps/bluetooth/ipro_ble_remote clean</code></pre>
                 <pre><code class="language-bash"># Build BLE Remote application
 ./build_freertos.sh ipro_ble_remote build
 
-# Build IPRO7 Demo application
+# Build platform demo application
 ./build_freertos.sh ipro7_demo build</code></pre>
             </div>
 
@@ -212,7 +211,7 @@ cmake -S . -B build \
     -DIPRO_SDK_BASE=$(pwd) \
     -DCONFIG_BUILD_PORJECT=ipro_ble_remote \
     -DCMAKE_PREFIX_PATH=$(pwd)/cmake \
-    -DCUSTOM_CONFIG_DIR=$(pwd)/apps/ipro_ble_remote \
+    -DCUSTOM_CONFIG_DIR=$(pwd)/apps/bluetooth/ble/ipro_ble_remote \
     -DCONFIG_APPS=1 \
     -DCROSS_COMPILE=/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-
 
@@ -231,7 +230,7 @@ cmake --build build</code></pre>
                     <span class="code-block-title">Build BLE Remote</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">make -C apps/bluetooth/ipro_ble_remote</code></pre>
+                <pre><code class="language-bash">make -C apps/bluetooth/ble/ipro_ble_remote</code></pre>
             </div>
 
             <h3>Step 2: Check Build Output</h3>
@@ -241,7 +240,7 @@ cmake --build build</code></pre>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># List build artifacts
-ls -la apps/bluetooth/ipro_ble_remote/build/build_out/
+ls -la apps/bluetooth/ble/ipro_ble_remote/build/build_out/
 
 # You should see:
 # ipro_ble_remote_IPRO7.bin  - Binary flash file (name includes chip suffix)
@@ -296,89 +295,22 @@ CONFIG_TEST_AUTO_RUN=y</code></pre>
 
         <section id="flashing">
             <h2>Flashing Firmware</h2>
-            <p>Use the SDK's built-in <code>ipro_iot_tool_lite</code> tool to flash firmware to the development board.</p>
-
-            <h3>Using the Flash Tool</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Flash Firmware to Board</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Flash BLE Remote application
-tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
-    --chipname ipro7 \
-    --port /dev/cu.usbserial-2120 \
-    --firmware apps/bluetooth/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
-    --baudrate 921600 \
-    --flash-pin 0x02</code></pre>
-            </div>
-
             <div class="alert alert-warning">
-                <strong>macOS Note:</strong> Serial ports must use <code>/dev/cu.*</code> devices, not <code>/dev/tty.*</code>. The <code>tty.*</code> devices block waiting for the DCD signal. Linux users should use <code>/dev/ttyUSB0</code> or similar.
-            </div>
-
-            <h3>Using Automated Test Script</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">One-Click Build + Flash + Test</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Full cycle: build + flash + capture serial test results
-tools/board_test.sh --project apps/ipro_unit_test</code></pre>
+                <strong>Release SDK Notice:</strong> The flash tool (<code>ipro_iot_tool_lite</code>) is not included in Release SDK v1.0.1. Please contact your vendor to obtain the flash tool separately.
             </div>
         </section>
 
         <section id="serial-monitor">
             <h2>Serial Monitor</h2>
-            <p>Use the SDK's built-in <code>serial_monitor.py</code> to monitor board serial output. This tool uses Python3 termios and does not require pyserial.</p>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Serial Monitor</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Basic serial monitor (115200 baud)
-python3 tools/serial_monitor.py /dev/cu.usbserial-2120
-
-# Send reboot command and wait for test results
-python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
-    --send reboot --timeout 30 \
-    --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
-            </div>
-
-            <div class="alert alert-info">
-                <strong>Tip:</strong> On macOS, <code>cat</code> has buffering issues with serial ports. Use <code>serial_monitor.py</code> instead.
+            <div class="alert alert-warning">
+                <strong>Release SDK Notice:</strong> The serial monitor tool (<code>serial_monitor.py</code>) is not included in Release SDK v1.0.1. You can use any standard serial terminal tool (e.g., minicom, screen, PuTTY) with 115200 baud rate to monitor board output.
             </div>
         </section>
 
         <section id="board-testing">
             <h2>Board Testing</h2>
-            <p>The SDK provides a complete automated board testing workflow through <code>board_test.sh</code> that handles build, flash, serial capture, and result analysis in one step.</p>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Automated Test Workflow</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Full test workflow (build + flash + monitor + parse results)
-tools/board_test.sh --project apps/ipro_unit_test
-
-# Exit codes: 0 = pass, 1 = fail, 2 = timeout</code></pre>
-            </div>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Quick Retest (reboot only, no rebuild/reflash)</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Reboot board and wait for test results
-python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
-    --send reboot --timeout 30 \
-    --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
-            </div>
-
-            <div class="alert alert-info">
-                <strong>Tip:</strong> Test applications need <code>CONFIG_TEST_AUTO_RUN=y</code> enabled. Tests run automatically on boot. Result markers are <code>ALL TESTS PASSED</code> or <code>SOME TESTS FAILED</code>.
+            <div class="alert alert-warning">
+                <strong>Release SDK Notice:</strong> The automated board test script (<code>board_test.sh</code>) is not included in Release SDK v1.0.1. Please contact your vendor to obtain testing tools separately.
             </div>
         </section>
 
@@ -393,7 +325,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
                 </div>
                 <pre><code class="language-bash"># Use RISC-V GDB for debugging
 /opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-gdb \
-    apps/bluetooth/ipro_ble_remote/build/build_out/ipro_ble_remote.elf</code></pre>
+    apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote.elf</code></pre>
             </div>
 
             <h3>Serial Debugging</h3>
@@ -403,8 +335,9 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
                 <li><code>reboot_dl</code> - Enter download mode (for reflashing)</li>
             </ul>
 
-            <h3>VS Code Debug Configuration</h3>
-            <p>The SDK provides a VS Code extension for graphical debugging. See the <a href="{{ '/en/vscode-extension' | relative_url }}">VS Code Extension</a> page for detailed setup.</p>
+            <div class="alert alert-info">
+                <strong>Note:</strong> The VS Code extension is not included in Release SDK v1.0.1. Use command-line GDB for debugging.
+            </div>
         </section>
 
         <section id="troubleshooting">
@@ -505,10 +438,10 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
                     <h3 class="feature-title">Explore Examples</h3>
                     <p class="feature-description">Study implementation details of various reference applications.</p>
                 </a>
-                <a href="{{ '/en/vscode-extension' | relative_url }}" class="feature-card" style="text-decoration: none;">
+                <a href="{{ '/en/tools-debugging' | relative_url }}" class="feature-card" style="text-decoration: none;">
                     <div class="feature-icon"><i class="fas fa-screwdriver-wrench"></i></div>
                     <h3 class="feature-title">Tools & Debugging</h3>
-                    <p class="feature-description">Boost productivity with VS Code extension and development tools.</p>
+                    <p class="feature-description">Learn about debugging tools and development workflows.</p>
                 </a>
             </div>
         </section>

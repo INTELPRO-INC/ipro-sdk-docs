@@ -8,9 +8,9 @@ title: 首頁
     <div class="hero-container">
         <div class="hero-content">
             <h1 class="hero-title">IPRO SDK</h1>
-            <p class="hero-protocols">AI · Matter · BT/BLE · WiFi 6 · Thread</p>
+            <p class="hero-protocols">BT/BLE 5.4 · LE Audio</p>
             <p class="hero-subtitle">
-                專為 IPRO7AI AIOT 晶片打造的全方位軟體開發套件，內建 AI NPU 加速器，支援影像辨識、語音處理及多協定無線通訊。
+                專為 IPRO7 晶片打造的 Release SDK 開發套件，支援 BLE 5.4 無線通訊與 LE Audio 音訊串流應用。
             </p>
             <div class="hero-buttons">
                 <a href="{{ '/getting-started' | relative_url }}" class="btn btn-primary">
@@ -32,13 +32,13 @@ title: 首頁
                     <span class="code-title">terminal</span>
                 </div>
                 <pre><code class="language-bash"><span style="color: #64748b;"># 建構 BLE 應用</span>
-make -C apps/bluetooth/ipro_ble_remote
+make -C apps/bluetooth/ble/ipro_ble_remote
 
 <span style="color: #64748b;"># 或使用建構腳本</span>
 ./build_freertos.sh ipro_ble_remote build
 
 <span style="color: #10b981;">✓ Build successful!</span>
-<span style="color: #94a3b8;">Output: apps/bluetooth/ipro_ble_remote/build/build_out/</span></code></pre>
+<span style="color: #94a3b8;">Output: apps/bluetooth/ble/ipro_ble_remote/build/build_out/</span></code></pre>
             </div>
         </div>
     </div>
@@ -48,19 +48,11 @@ make -C apps/bluetooth/ipro_ble_remote
 <section class="stats">
     <div class="stats-grid">
         <div class="stat-item">
-            <span class="stat-value">0.1 TOPS</span>
-            <span class="stat-label">AI NPU</span>
-        </div>
-        <div class="stat-item">
             <span class="stat-value">RISC-V 192MHz</span>
         </div>
         <div class="stat-item">
-            <span class="stat-value">Matter</span>
-            <span class="stat-label">智慧家庭</span>
-        </div>
-        <div class="stat-item">
-            <span class="stat-value">BT/BLE · WiFi 6 · Thread</span>
-            <span class="stat-label">多模無線</span>
+            <span class="stat-value">BLE 5.4 · LE Audio</span>
+            <span class="stat-label">無線通訊</span>
         </div>
     </div>
 </section>
@@ -76,13 +68,6 @@ make -C apps/bluetooth/ipro_ble_remote
         </div>
         <div class="features-grid">
             <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-microchip"></i></div>
-                <h3 class="feature-title">AI NPU 加速</h3>
-                <p class="feature-description">
-                    內建 0.1 TOPS NPU 神經網路加速器，支援邊緣運算、影像辨識、語音處理等 AI 應用場景。
-                </p>
-            </div>
-            <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-camera"></i></div>
                 <h3 class="feature-title">影像處理</h3>
                 <p class="feature-description">
@@ -97,24 +82,10 @@ make -C apps/bluetooth/ipro_ble_remote
                 </p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-globe"></i></div>
-                <h3 class="feature-title">Matter 智慧家庭</h3>
-                <p class="feature-description">
-                    完整支援 Matter 智慧家庭協定，整合 BT/BLE、WiFi 6、Thread 多協定共存，實現跨平台互通。
-                </p>
-            </div>
-            <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-bluetooth-b"></i></div>
                 <h3 class="feature-title">BT/BLE 無線通訊</h3>
                 <p class="feature-description">
                     高效能 BLE 通訊（最高 999 Kbps），支援 LE Audio、多連線管理、OTA 韌體更新。
-                </p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-wifi"></i></div>
-                <h3 class="feature-title">WiFi 6 與 Thread</h3>
-                <p class="feature-description">
-                    WiFi 6 高速網路連線搭配 Thread Mesh 網路，內建 lwIP 協定棧與 Mbed TLS 安全加密。
                 </p>
             </div>
             <div class="feature-card">
@@ -128,7 +99,7 @@ make -C apps/bluetooth/ipro_ble_remote
                 <div class="feature-icon"><i class="fas fa-screwdriver-wrench"></i></div>
                 <h3 class="feature-title">開發工具鏈</h3>
                 <p class="feature-description">
-                    提供 <code>make -C apps/&lt;project&gt;</code> 快速建構、board_test.sh 自動化測試、serial_monitor.py 串口監控。
+                    提供 <code>make -C apps/&lt;project&gt;</code> 快速建構、build_freertos.sh 建構腳本、CMake 工具鏈整合。
                 </p>
             </div>
         </div>
@@ -178,21 +149,6 @@ make -C apps/bluetooth/ipro_ble_remote
             </div>
             <div class="app-card">
                 <div class="app-header">
-                    <span class="app-icon"><i class="fas fa-tower-broadcast"></i></span>
-                    <span class="app-name">ipro_walkie_talkie</span>
-                    <span class="app-badge">語音</span>
-                </div>
-                <p class="app-description">
-                    LE Audio 對講機，支援 PTT 按鍵通話，BIS 廣播音訊雙向角色（Source/Sink），適用於群組通訊。
-                </p>
-                <div class="app-features">
-                    <span class="app-feature-tag">PTT</span>
-                    <span class="app-feature-tag">BIS</span>
-                    <span class="app-feature-tag">廣播音訊</span>
-                </div>
-            </div>
-            <div class="app-card">
-                <div class="app-header">
                     <span class="app-icon"><i class="fas fa-volume-high"></i></span>
                     <span class="app-name">ipro_le_audio_bis_source</span>
                 </div>
@@ -221,21 +177,6 @@ make -C apps/bluetooth/ipro_ble_remote
             </div>
             <div class="app-card">
                 <div class="app-header">
-                    <span class="app-icon"><i class="fas fa-lightbulb"></i></span>
-                    <span class="app-name">matter/lighting-app</span>
-                    <span class="app-badge">Matter</span>
-                </div>
-                <p class="app-description">
-                    Matter 燈光控制裝置，支援開關與亮度調節，可與 Apple Home、Google Home、Alexa 互通。
-                </p>
-                <div class="app-features">
-                    <span class="app-feature-tag">Matter</span>
-                    <span class="app-feature-tag">燈光控制</span>
-                    <span class="app-feature-tag">跨平台</span>
-                </div>
-            </div>
-            <div class="app-card">
-                <div class="app-header">
                     <span class="app-icon"><i class="fas fa-exchange-alt"></i></span>
                     <span class="app-name">ipro_ble_transparent</span>
                 </div>
@@ -250,46 +191,17 @@ make -C apps/bluetooth/ipro_ble_remote
             </div>
             <div class="app-card">
                 <div class="app-header">
-                    <span class="app-icon"><i class="fas fa-tags"></i></span>
-                    <span class="app-name">ipro_esl_tag</span>
+                    <span class="app-icon"><i class="fas fa-tachometer-alt"></i></span>
+                    <span class="app-name">ipro_throughput_test</span>
+                    <span class="app-badge">測試</span>
                 </div>
                 <p class="app-description">
-                    電子貨架標籤（ESL），支援 E-ink 電子紙顯示、PAWR 省電通訊、電池電量監控，適用於零售場景。
+                    BLE 吞吐量測試工具，量測 BLE 資料傳輸速率，支援不同連線參數與 PHY 模式下的效能基準測試。
                 </p>
                 <div class="app-features">
-                    <span class="app-feature-tag">ESL</span>
-                    <span class="app-feature-tag">E-ink</span>
-                    <span class="app-feature-tag">PAWR</span>
-                </div>
-            </div>
-            <div class="app-card">
-                <div class="app-header">
-                    <span class="app-icon"><i class="fas fa-diagram-project"></i></span>
-                    <span class="app-name">ipro_thread_ftd_cli</span>
-                    <span class="app-badge">Thread</span>
-                </div>
-                <p class="app-description">
-                    OpenThread Full Thread Device，CLI 命令列介面，可建立與管理 Thread IPv6 Mesh 網路。
-                </p>
-                <div class="app-features">
-                    <span class="app-feature-tag">Thread</span>
-                    <span class="app-feature-tag">Mesh</span>
-                    <span class="app-feature-tag">IPv6</span>
-                </div>
-            </div>
-            <div class="app-card">
-                <div class="app-header">
-                    <span class="app-icon"><i class="fas fa-microphone"></i></span>
-                    <span class="app-name">ipro_agora_audio</span>
-                    <span class="app-badge">語音</span>
-                </div>
-                <p class="app-description">
-                    Agora 即時語音通訊整合，16kHz 單聲道音訊串流，支援多裝置語音通話。
-                </p>
-                <div class="app-features">
-                    <span class="app-feature-tag">Agora</span>
-                    <span class="app-feature-tag">即時語音</span>
-                    <span class="app-feature-tag">多裝置</span>
+                    <span class="app-feature-tag">吞吐量</span>
+                    <span class="app-feature-tag">BLE 測試</span>
+                    <span class="app-feature-tag">效能基準</span>
                 </div>
             </div>
             <div class="app-card">
@@ -327,22 +239,10 @@ make -C apps/bluetooth/ipro_ble_remote
                 <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
             </div>
             <pre><code class="language-bash"># 使用 Make 建構（推薦）
-make -C apps/bluetooth/ipro_ble_remote
+make -C apps/bluetooth/ble/ipro_ble_remote
 
 # 或使用建構腳本
-./build_freertos.sh ipro_ble_remote build
-
-# 或手動使用 CMake
-cmake -S . -B build \
-    -G "Ninja" \
-    -DIPRO_SDK_BASE=$(pwd) \
-    -DCONFIG_BUILD_PORJECT=ipro_ble_remote \
-    -DCMAKE_PREFIX_PATH=$(pwd)/cmake \
-    -DCUSTOM_CONFIG_DIR=$(pwd)/apps/ipro_ble_remote \
-    -DCONFIG_APPS=1 \
-    -DCROSS_COMPILE=/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-
-
-cmake --build build</code></pre>
+./build_freertos.sh ipro_ble_remote build</code></pre>
         </div>
         <div class="alert alert-info">
             <strong>提示：</strong>建構產出位於 <code>apps/&lt;PROJECT_NAME&gt;/build/build_out/</code> 目錄。
@@ -365,18 +265,6 @@ cmake --build build</code></pre>
                 <i class="fas fa-satellite-dish"></i>
                 <span>BLE 開發</span>
             </a>
-            <a href="{{ '/matter-thread' | relative_url }}" class="doc-link-item">
-                <i class="fas fa-house"></i>
-                <span>Matter & Thread</span>
-            </a>
-            <a href="{{ '/wifi-networking' | relative_url }}" class="doc-link-item">
-                <i class="fas fa-wifi"></i>
-                <span>WiFi 與網路</span>
-            </a>
-            <a href="{{ '/ai-npu' | relative_url }}" class="doc-link-item">
-                <i class="fas fa-microchip"></i>
-                <span>AI & NPU</span>
-            </a>
             <a href="{{ '/audio-multimedia' | relative_url }}" class="doc-link-item">
                 <i class="fas fa-music"></i>
                 <span>音訊與多媒體</span>
@@ -384,6 +272,10 @@ cmake --build build</code></pre>
             <a href="{{ '/tools-debugging' | relative_url }}" class="doc-link-item">
                 <i class="fas fa-screwdriver-wrench"></i>
                 <span>工具與除錯</span>
+            </a>
+            <a href="{{ '/applications' | relative_url }}" class="doc-link-item">
+                <i class="fas fa-th-large"></i>
+                <span>應用範例</span>
             </a>
         </div>
     </div>

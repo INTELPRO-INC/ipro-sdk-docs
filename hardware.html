@@ -7,7 +7,7 @@ lang: zh-TW
 <section class="page-header-section">
     <div class="container">
         <h1 class="page-title"><i class="fas fa-wrench"></i> 硬體參考 Hardware Reference</h1>
-        <p class="page-subtitle">IPRO7AI AIOT Matter 晶片規格、腳位定義與評估板資訊</p>
+        <p class="page-subtitle">IPRO7 晶片規格、腳位定義與評估板資訊</p>
     </div>
 </section>
 
@@ -44,20 +44,23 @@ lang: zh-TW
 
         <!-- Chip Overview -->
         <div id="chip-overview" class="hw-section">
-            <h2><i class="fas fa-microchip"></i> IPRO7AI 晶片概覽</h2>
-            
+            <h2><i class="fas fa-microchip"></i> IPRO7 晶片概覽</h2>
+
+            <div class="alert-warning" style="background: rgba(245, 158, 11, 0.1); border-left: 4px solid #f59e0b; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+                <strong>⚠ Release SDK 注意事項：</strong>此為 Release SDK v1.0.1。IPRO7 不支援 WiFi。部分進階功能（Matter、Thread、Zigbee、AI/NPU）未包含在此版本中。
+            </div>
+
             <div class="chip-intro" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1)); border-radius: 16px; padding: 2rem; margin-bottom: 2rem;">
-                <h3 style="margin-top: 0; color: var(--primary);">AIOT 2.4G 多模無線晶片</h3>
+                <h3 style="margin-top: 0; color: var(--primary);">2.4G 低功耗無線晶片</h3>
                 <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 1rem;">
-                    IPRO7AI 是專為低功耗 AIOT 應用設計的多模無線晶片，整合 Matter 1.4、BLE 5.4、Zigbee 3.0 與 Thread 1.2，
-                    並內建 AI NPU 加速器，適用於智慧家庭、影像辨識與物聯網邊緣運算裝置。
+                    IPRO7 是專為低功耗 IoT 應用設計的無線晶片，支援 BLE 5.4 與 LE Audio，
+                    並內建 ISP 影像處理器與 0.1 TOPS NPU 加速器，適用於穿戴裝置、音訊產品與物聯網裝置。
                 </p>
                 <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                    <span class="chip-badge">Matter 1.4</span>
                     <span class="chip-badge">BLE 5.4</span>
-                    <span class="chip-badge">Zigbee 3.0</span>
-                    <span class="chip-badge">Thread 1.2</span>
-                    <span class="chip-badge">AI NPU 0.1 TOPS</span>
+                    <span class="chip-badge">LE Audio</span>
+                    <span class="chip-badge">ISP</span>
+                    <span class="chip-badge">NPU 0.1 TOPS</span>
                 </div>
             </div>
 
@@ -92,12 +95,10 @@ lang: zh-TW
                     <div class="spec-icon"><i class="fas fa-wifi"></i></div>
                     <h3>無線功能</h3>
                     <ul>
-                        <li>Matter 1.4 完整支援</li>
                         <li>Bluetooth 5.4 / BLE</li>
-                        <li>Zigbee 3.0 / Thread 1.2</li>
-                        <li>IEEE 802.15.4</li>
+                        <li>LE Audio (LC3 Codec)</li>
                         <li>最多 16 個 BLE 連線</li>
-                        <li>藍牙/Zigbee/Thread 共存</li>
+                        <li>2.4 GHz RF</li>
                     </ul>
                 </div>
 
@@ -144,7 +145,7 @@ lang: zh-TW
                 <div class="diagram-container">
                     <pre class="ascii-diagram">
 ┌──────────────────────────────────────────────────────────────────────────────┐
-│                              IPRO7AI SoC                                     │
+│                              IPRO7 SoC                                     │
 ├──────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐  │
@@ -171,7 +172,7 @@ lang: zh-TW
 │  └───────┘  └───────┘  └───────┘  └───────┘  └───────┘  └─────────────┘     │
 │                                                                              │
 ├──────────────────────────────────────────────────────────────────────────────┤
-│  Wireless: BLE 5.4 │ Zigbee 3.0 │ Thread 1.2 │ Matter 1.4 │ 802.15.4        │
+│  Wireless: BLE 5.4 │ LE Audio │ 2.4 GHz RF                                   │
 └──────────────────────────────────────────────────────────────────────────────┘
                     </pre>
                 </div>
@@ -224,13 +225,13 @@ lang: zh-TW
 
                 <div class="spec-card">
                     <div class="spec-icon"><i class="fas fa-link"></i></div>
-                    <h3>IEEE 802.15.4 (Matter 支援)</h3>
+                    <h3>BLE 進階功能</h3>
                     <ul>
-                        <li>Zigbee 3.0 完整支援</li>
-                        <li>Thread 1.2 完整支援</li>
-                        <li>藍牙/Zigbee/Thread 共存</li>
-                        <li>Matter 1.4 協定支援</li>
-                        <li>低功耗網狀網路</li>
+                        <li>LE Audio CIS/BIS 串流</li>
+                        <li>GAF/BAP/VCP/CAP 協定</li>
+                        <li>LC3 硬體加速編解碼</li>
+                        <li>Auracast 廣播音訊</li>
+                        <li>OTA 韌體更新</li>
                     </ul>
                 </div>
             </div>

@@ -10,26 +10,16 @@ title: Applications - IPRO SDK
             <h4 class="sidebar-title">Table of Contents</h4>
             <ul class="sidebar-links">
                 <li><a href="#overview" class="sidebar-link">Applications Overview</a></li>
-                <li class="sidebar-section-title">General Apps</li>
-                <li><a href="#ipro7-demo" class="sidebar-link">ipro7_demo</a></li>
-                <li><a href="#ipro-unit-test" class="sidebar-link">ipro_unit_test</a></li>
-                <li><a href="#ipro-agora-audio" class="sidebar-link">ipro_agora_audio</a></li>
-                <li><a href="#ipro-aosl-test" class="sidebar-link">ipro_aosl_test</a></li>
-                <li><a href="#ipro-thread-ftd-cli" class="sidebar-link">ipro_thread_ftd_cli</a></li>
-                <li><a href="#ipro6-demo" class="sidebar-link">ipro6_demo</a></li>
-                <li><a href="#ipro7-bootrom" class="sidebar-link">ipro7_bootrom</a></li>
-                <li><a href="#ipro7-fpga-ble" class="sidebar-link">ipro7_fpga_ble_5p4</a></li>
-                <li class="sidebar-section-title">Bluetooth Apps</li>
-                <li><a href="#ipro-throughput-test" class="sidebar-link">ipro_throughput_test</a></li>
+                <li class="sidebar-section-title">BLE Apps</li>
                 <li><a href="#ipro-ble-remote" class="sidebar-link">ipro_ble_remote</a></li>
+                <li><a href="#ipro-ble-transparent" class="sidebar-link">ipro_ble_transparent</a></li>
+                <li><a href="#ipro-throughput-test" class="sidebar-link">ipro_throughput_test</a></li>
+                <li class="sidebar-section-title">LE Audio Apps</li>
                 <li><a href="#ipro-le-audio-headset" class="sidebar-link">ipro_le_audio_headset</a></li>
-                <li><a href="#ipro-walkie-talkie" class="sidebar-link">ipro_walkie_talkie</a></li>
                 <li><a href="#ipro-le-audio-bis-source" class="sidebar-link">ipro_le_audio_bis_source</a></li>
                 <li><a href="#ipro-le-audio-bis-sink" class="sidebar-link">ipro_le_audio_bis_sink</a></li>
-                <li><a href="#ipro-esl-tag" class="sidebar-link">ipro_esl_tag</a></li>
-                <li><a href="#ipro-ble-hid-keyboard" class="sidebar-link">ipro_ble_hid_keyboard</a></li>
-                <li><a href="#ipro-ble-transparent" class="sidebar-link">ipro_ble_transparent</a></li>
-                <li><a href="#ipro-blecontroller-test" class="sidebar-link">ipro_blecontroller_test</a></li>
+                <li class="sidebar-section-title">Platform Apps</li>
+                <li><a href="#ipro7-demo" class="sidebar-link">ipro7_demo</a></li>
                 <li class="sidebar-section-title">Other</li>
                 <li><a href="#creating-apps" class="sidebar-link">Creating New Apps</a></li>
             </ul>
@@ -42,15 +32,83 @@ title: Applications - IPRO SDK
 
         <section id="overview">
             <h2>Applications Overview</h2>
-            <p>The SDK includes <strong>18 reference applications</strong>, divided into General Apps (8) and Bluetooth Apps (10):</p>
+            <p>Release SDK v1.0.1 includes <strong>7 reference applications</strong>, organized into BLE Apps (3), LE Audio Apps (3), and Platform Apps (1):</p>
 
-            <h3>General Applications</h3>
+            <h3>BLE Applications</h3>
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
                             <th>Application</th>
-                            <th>RTOS</th>
+                            <th>Path</th>
+                            <th>Main Features</th>
+                            <th>Use Cases</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>ipro_ble_remote</code></td>
+                            <td><code>apps/bluetooth/ble/</code></td>
+                            <td>LED/Button/Env/UART/PIR/OTA (6 GATT Services)</td>
+                            <td>Mobile App Interaction</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_ble_transparent</code></td>
+                            <td><code>apps/bluetooth/ble/</code></td>
+                            <td>BLE Transparent Communication</td>
+                            <td>Serial Pass-through / Data Bridge</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_throughput_test</code></td>
+                            <td><code>apps/bluetooth/ble/</code></td>
+                            <td>Native Zephyr bt_* APIs, 999 Kbps</td>
+                            <td>BLE Performance Testing & Benchmark</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>LE Audio Applications</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Application</th>
+                            <th>Path</th>
+                            <th>Main Features</th>
+                            <th>Use Cases</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>ipro_le_audio_headset</code></td>
+                            <td><code>apps/bluetooth/le_audio/</code></td>
+                            <td>GAF/BAP LE Audio Headset</td>
+                            <td>LE Audio Headset/Audio Device</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_le_audio_bis_source</code></td>
+                            <td><code>apps/bluetooth/le_audio/</code></td>
+                            <td>BIS Broadcast Audio Source</td>
+                            <td>LE Audio Broadcast Transmitter</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_le_audio_bis_sink</code></td>
+                            <td><code>apps/bluetooth/le_audio/</code></td>
+                            <td>BIS Broadcast Audio Sink</td>
+                            <td>LE Audio Broadcast Receiver</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Platform Applications</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Application</th>
+                            <th>Path</th>
                             <th>Main Features</th>
                             <th>Use Cases</th>
                         </tr>
@@ -58,127 +116,9 @@ title: Applications - IPRO SDK
                     <tbody>
                         <tr>
                             <td><code>ipro7_demo</code></td>
-                            <td>FreeRTOS</td>
+                            <td><code>apps/platform/</code></td>
                             <td>USB/LCD/Camera/Audio/Ethernet/SD</td>
                             <td>SDK Introduction & Hardware Testing</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_unit_test</code></td>
-                            <td>FreeRTOS</td>
-                            <td>Unit Test Framework</td>
-                            <td>SDK Validation & Regression Testing</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_agora_audio</code></td>
-                            <td>FreeRTOS</td>
-                            <td>Agora Audio SDK Integration</td>
-                            <td>Cloud Real-time Voice Communication</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_aosl_test</code></td>
-                            <td>FreeRTOS</td>
-                            <td>AOSL Platform Abstraction Test</td>
-                            <td>Platform Adaptation Verification</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_thread_ftd_cli</code></td>
-                            <td>Zephyr</td>
-                            <td>Thread FTD CLI Example</td>
-                            <td>Thread Network Setup</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro6_demo</code></td>
-                            <td>FreeRTOS</td>
-                            <td>GPIO/UART/SPI/I2C + lwIP</td>
-                            <td>IPRO6 Platform Development</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro7_bootrom</code></td>
-                            <td>N/A</td>
-                            <td>Boot Loader</td>
-                            <td>Boot & Partition Management</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro7_fpga_ble_5p4</code></td>
-                            <td>FreeRTOS</td>
-                            <td>FPGA BLE 5.4 Validation</td>
-                            <td>FPGA Environment BLE Testing</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <h3>Bluetooth Applications</h3>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Application</th>
-                            <th>RTOS</th>
-                            <th>Main Features</th>
-                            <th>Use Cases</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>ipro_throughput_test</code></td>
-                            <td>FreeRTOS</td>
-                            <td>Native Zephyr bt_* APIs, 999 Kbps</td>
-                            <td>BLE Performance Testing & Benchmark</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_ble_remote</code></td>
-                            <td>FreeRTOS</td>
-                            <td>LED/Button/Env/UART/PIR/OTA (6 GATT Services)</td>
-                            <td>Mobile App Interaction</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_le_audio_headset</code></td>
-                            <td>FreeRTOS</td>
-                            <td>GAF/BAP LE Audio Headset</td>
-                            <td>LE Audio Headset/Audio Device</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_walkie_talkie</code></td>
-                            <td>FreeRTOS</td>
-                            <td>BIS LE Audio Walkie-Talkie</td>
-                            <td>Broadcast Audio Communication</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_le_audio_bis_source</code></td>
-                            <td>FreeRTOS</td>
-                            <td>BIS Broadcast Audio Source</td>
-                            <td>LE Audio Broadcast Transmitter</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_le_audio_bis_sink</code></td>
-                            <td>FreeRTOS</td>
-                            <td>BIS Broadcast Audio Sink</td>
-                            <td>LE Audio Broadcast Receiver</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_esl_tag</code></td>
-                            <td>FreeRTOS</td>
-                            <td>BLE 5.4 PAwR Electronic Shelf Label</td>
-                            <td>ESL Electronic Price Tag</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_ble_hid_keyboard</code></td>
-                            <td>FreeRTOS</td>
-                            <td>HOGP Standard HID Keyboard</td>
-                            <td>HID Device Development</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_ble_transparent</code></td>
-                            <td>FreeRTOS</td>
-                            <td>BLE Transparent Communication</td>
-                            <td>Serial Pass-through / Data Bridge</td>
-                        </tr>
-                        <tr>
-                            <td><code>ipro_blecontroller_test</code></td>
-                            <td>FreeRTOS</td>
-                            <td>BLE Controller Low-level Test</td>
-                            <td>BLE Protocol Stack Verification</td>
                         </tr>
                     </tbody>
                 </table>
@@ -187,170 +127,7 @@ title: Applications - IPRO SDK
 
         <!-- ==================== General Apps ==================== -->
 
-        <section id="ipro7-demo">
-            <h2>ipro7_demo</h2>
-            <p>Comprehensive platform demonstration application showcasing complete SDK functionality including multimedia, USB, and peripheral drivers.</p>
-
-            <h3>Features</h3>
-            <ul>
-                <li><strong>Peripheral Drivers</strong>: GPIO, UART, SPI (Master/Slave), I2C, PWM, ADC, DAC</li>
-                <li><strong>USB Device</strong>: CDC, MSC, HID, UAC (Audio), UVC (Video) via CherryUSB</li>
-                <li><strong>Multimedia</strong>: ISP Camera, MJPEG Codec, LCD Display (ILI9488)</li>
-                <li><strong>Audio</strong>: AUADC Audio Input, DAC Speaker Output</li>
-                <li><strong>Network</strong>: EMAC Ethernet, lwIP Protocol Stack, iPerf Testing</li>
-                <li><strong>Storage</strong>: SD Card (SDH), FatFS File System</li>
-                <li><strong>FreeRTOS</strong>: Multi-task Management & Runtime Statistics</li>
-            </ul>
-
-            <h3>Build</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build Platform Demo</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash">make -C apps/ipro7_demo</code></pre>
-            </div>
-
-            <h3>Code Example</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">GPIO Usage Example</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">#include "hal_gpio.h"
-
-void gpio_example(void)
-{
-    // Configure GPIO as output
-    gpio_set_mode(GPIO_PIN_0, GPIO_OUTPUT_MODE);
-
-    // Set output high
-    gpio_write(GPIO_PIN_0, 1);
-
-    // Read input
-    gpio_set_mode(GPIO_PIN_1, GPIO_INPUT_PP_MODE);
-    int value = gpio_read(GPIO_PIN_1);
-
-    // Toggle output
-    gpio_toggle(GPIO_PIN_0);
-}</code></pre>
-            </div>
-        </section>
-
-<section id="ipro-unit-test">
-            <h2>ipro_unit_test</h2>
-            <p>SDK unit test framework with automated build, flash, and test result parsing support.</p>
-
-            <h3>Features</h3>
-            <ul>
-                <li><strong>Auto-run</strong>: <code>CONFIG_TEST_AUTO_RUN=y</code> runs tests on boot</li>
-                <li><strong>Automation Script</strong>: <code>tools/board_test.sh</code> supports full build+flash+monitor+parse workflow</li>
-                <li><strong>Result Detection</strong>: Outputs <code>ALL TESTS PASSED</code> or <code>SOME TESTS FAILED</code></li>
-            </ul>
-
-            <h3>Build and Test</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Full Test Workflow</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Full cycle: build + flash + capture serial test results
-tools/board_test.sh --project apps/ipro_unit_test
-
-# Quick retest (reboot board, no rebuild/reflash)
-python3 tools/serial_monitor.py /dev/cu.usbserial-2120 --send reboot --timeout 30 \
-    --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
-            </div>
-        </section>
-
-        <section id="ipro-agora-audio">
-            <h2>ipro_agora_audio</h2>
-            <p>Real-time audio communication application integrating the Agora SDK.</p>
-            <h3>Build</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build Agora Audio</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash">make -C apps/ipro_agora_audio</code></pre>
-            </div>
-        </section>
-
-        <section id="ipro-aosl-test">
-            <h2>ipro_aosl_test</h2>
-            <p>AOSL (Agora OS Layer) platform abstraction layer test application.</p>
-            <h3>Build</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build AOSL Test</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash">make -C apps/ipro_aosl_test</code></pre>
-            </div>
-        </section>
-
-        <section id="ipro-thread-ftd-cli">
-            <h2>ipro_thread_ftd_cli</h2>
-            <p>Zephyr-based Thread Full Thread Device CLI example for Thread network commissioning and debugging.</p>
-
-            <h3>Features</h3>
-            <ul>
-                <li><strong>FTD CLI</strong>: Commissioning, joining, network diagnostics</li>
-                <li><strong>Zephyr Device Tree</strong>: Declarative hardware configuration</li>
-                <li><strong>UART Console</strong>: Command response and log output</li>
-            </ul>
-
-            <h3>Build</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build Thread FTD CLI</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash">./tools/zephyr/build.sh -a ipro_thread_ftd_cli -b ipro7_fpga -c</code></pre>
-            </div>
-        </section>
-
-        <section id="ipro6-demo">
-            <h2>ipro6_demo</h2>
-            <p>IPRO6 platform peripheral and networking demo including basic I/O and lwIP.</p>
-
-            <h3>Features</h3>
-            <ul>
-                <li><strong>Peripherals</strong>: GPIO, UART, SPI, I2C, PWM</li>
-                <li><strong>Network</strong>: lwIP + iPerf testing</li>
-                <li><strong>USB</strong>: CherryUSB device class examples</li>
-            </ul>
-
-            <h3>Build</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build ipro6_demo</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash">make -C apps/ipro6_demo</code></pre>
-            </div>
-        </section>
-
-        <section id="ipro7-bootrom">
-            <h2>ipro7_bootrom</h2>
-            <p>IPRO7 platform Boot ROM/Boot Loader configuration for boot and partition management.</p>
-        </section>
-
-        <section id="ipro7-fpga-ble">
-            <h2>ipro7_fpga_ble_5p4</h2>
-            <p>FPGA environment BLE 5.4 validation application for early hardware development BLE testing.</p>
-
-            <h3>Build</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build FPGA BLE</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash">make -C apps/ipro7_fpga_ble_5p4</code></pre>
-            </div>
-        </section>
-
-        <!-- ==================== Bluetooth Apps ==================== -->
+        <!-- ==================== BLE Apps ==================== -->
 
         <section id="ipro-throughput-test">
             <h2>ipro_throughput_test</h2>
@@ -418,7 +195,7 @@ tp conn 6 6      # Minimum connection interval</code></pre>
                     <span class="code-block-title">Build Throughput Test</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">make -C apps/bluetooth/ipro_throughput_test</code></pre>
+                <pre><code class="language-bash">make -C apps/bluetooth/ble/ipro_throughput_test</code></pre>
             </div>
         </section>
 
@@ -485,7 +262,7 @@ tp conn 6 6      # Minimum connection interval</code></pre>
                     <span class="code-block-title">Build BLE Remote</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">make -C apps/bluetooth/ipro_ble_remote</code></pre>
+                <pre><code class="language-bash">make -C apps/bluetooth/ble/ipro_ble_remote</code></pre>
             </div>
         </section>
 
@@ -508,28 +285,7 @@ tp conn 6 6      # Minimum connection interval</code></pre>
                     <span class="code-block-title">Build LE Audio Headset</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">make -C apps/bluetooth/ipro_le_audio_headset</code></pre>
-            </div>
-        </section>
-
-        <section id="ipro-walkie-talkie">
-            <h2>ipro_walkie_talkie</h2>
-            <p>BIS (Broadcast Isochronous Stream) LE Audio walkie-talkie application supporting one-to-many broadcast audio.</p>
-
-            <h3>Features</h3>
-            <ul>
-                <li><strong>BIS Broadcast</strong>: One-to-many audio broadcast</li>
-                <li><strong>LC3 Encoding</strong>: Low latency audio streaming</li>
-                <li><strong>Bidirectional</strong>: Switch between talk/listen modes</li>
-            </ul>
-
-            <h3>Build</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build Walkie Talkie</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash">make -C apps/bluetooth/ipro_walkie_talkie</code></pre>
+                <pre><code class="language-bash">make -C apps/bluetooth/le_audio/ipro_le_audio_headset</code></pre>
             </div>
         </section>
 
@@ -543,7 +299,7 @@ tp conn 6 6      # Minimum connection interval</code></pre>
                     <span class="code-block-title">Build BIS Source</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">make -C apps/bluetooth/ipro_le_audio_bis_source</code></pre>
+                <pre><code class="language-bash">make -C apps/bluetooth/le_audio/ipro_le_audio_bis_source</code></pre>
             </div>
         </section>
 
@@ -557,68 +313,7 @@ tp conn 6 6      # Minimum connection interval</code></pre>
                     <span class="code-block-title">Build BIS Sink</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">make -C apps/bluetooth/ipro_le_audio_bis_sink</code></pre>
-            </div>
-        </section>
-
-        <section id="ipro-esl-tag">
-            <h2>ipro_esl_tag</h2>
-            <p>BLE 5.4 PAwR (Periodic Advertising with Responses) Electronic Shelf Label application showcasing the latest BLE 5.4 features.</p>
-
-            <h3>Features</h3>
-            <ul>
-                <li><strong>PAwR</strong>: BLE 5.4 Periodic Advertising with Responses</li>
-                <li><strong>Low-power Sync</strong>: Electronic price tag synchronized updates</li>
-                <li><strong>ESL Profile</strong>: Electronic Shelf Label standard profile</li>
-            </ul>
-
-            <h3>Build</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build ESL Tag</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash">make -C apps/bluetooth/ipro_esl_tag</code></pre>
-            </div>
-        </section>
-
-        <section id="ipro-ble-hid-keyboard">
-            <h2>ipro_ble_hid_keyboard</h2>
-            <p>HOGP (HID over GATT Profile) standard BLE keyboard implementation.</p>
-
-            <h3>Features</h3>
-            <ul>
-                <li><strong>Standard HID Keyboard</strong>: Complete HOGP protocol implementation</li>
-                <li><strong>Full Key Support</strong>: A-Z, 0-9, symbol keys</li>
-                <li><strong>Modifier Keys</strong>: Shift, Ctrl, Alt, GUI</li>
-                <li><strong>String Input</strong>: Type complete strings directly</li>
-                <li><strong>Auto Reconnection</strong>: Automatic reconnection after disconnect</li>
-            </ul>
-
-            <h3>CLI Commands</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Common Commands</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Send single key
-hid_key a              # Send 'a'
-hid_key A              # Send 'A' (with shift)
-
-# Type string
-hid_type "Hello World!"
-
-# Check status
-hid_status</code></pre>
-            </div>
-
-            <h3>Build</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build HID Keyboard</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash">make -C apps/bluetooth/ipro_ble_hid_keyboard</code></pre>
+                <pre><code class="language-bash">make -C apps/bluetooth/le_audio/ipro_le_audio_bis_sink</code></pre>
             </div>
         </section>
 
@@ -632,28 +327,59 @@ hid_status</code></pre>
                     <span class="code-block-title">Build BLE Transparent</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">make -C apps/bluetooth/ipro_ble_transparent</code></pre>
+                <pre><code class="language-bash">make -C apps/bluetooth/ble/ipro_ble_transparent</code></pre>
             </div>
         </section>
 
-        <section id="ipro-blecontroller-test">
-            <h2>ipro_blecontroller_test</h2>
-            <p>Low-level BLE Controller verification example for protocol stack and RF testing.</p>
+        <!-- ==================== Platform Apps ==================== -->
+
+        <section id="ipro7-demo">
+            <h2>ipro7_demo</h2>
+            <p>Comprehensive platform demonstration application showcasing complete SDK functionality including multimedia, USB, and peripheral drivers.</p>
 
             <h3>Features</h3>
             <ul>
-                <li><strong>Controller API Testing</strong>: Scan, advertise, connect, PHY/MTU adjustment</li>
-                <li><strong>Debug Signals</strong>: Output key test signals for instrument measurement</li>
-                <li><strong>WDT Integration</strong>: Watchdog for long-duration stability verification</li>
+                <li><strong>Peripheral Drivers</strong>: GPIO, UART, SPI (Master/Slave), I2C, PWM, ADC, DAC</li>
+                <li><strong>USB Device</strong>: CDC, MSC, HID, UAC (Audio), UVC (Video) via CherryUSB</li>
+                <li><strong>Multimedia</strong>: ISP Camera, MJPEG Codec, LCD Display (ILI9488)</li>
+                <li><strong>Audio</strong>: AUADC Audio Input, DAC Speaker Output</li>
+                <li><strong>Network</strong>: EMAC Ethernet, lwIP Protocol Stack, iPerf Testing</li>
+                <li><strong>Storage</strong>: SD Card (SDH), FatFS File System</li>
+                <li><strong>FreeRTOS</strong>: Multi-task Management & Runtime Statistics</li>
             </ul>
 
             <h3>Build</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">Build Controller Test</span>
+                    <span class="code-block-title">Build Platform Demo</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">make -C apps/bluetooth/ipro_blecontroller_test</code></pre>
+                <pre><code class="language-bash">make -C apps/platform/ipro7_demo</code></pre>
+            </div>
+
+            <h3>Code Example</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">GPIO Usage Example</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">#include "hal_gpio.h"
+
+void gpio_example(void)
+{
+    // Configure GPIO as output
+    gpio_set_mode(GPIO_PIN_0, GPIO_OUTPUT_MODE);
+
+    // Set output high
+    gpio_write(GPIO_PIN_0, 1);
+
+    // Read input
+    gpio_set_mode(GPIO_PIN_1, GPIO_INPUT_PP_MODE);
+    int value = gpio_read(GPIO_PIN_1);
+
+    // Toggle output
+    gpio_toggle(GPIO_PIN_0);
+}</code></pre>
             </div>
         </section>
 

@@ -241,12 +241,38 @@ function initSmoothScroll() {
     });
 }
 
-// Make scroll-fade-in elements visible immediately (no animation)
+// Scroll-triggered reveal animations
 function initScrollAnimations() {
+    // Legacy: make old scroll-fade-in elements visible
     document.querySelectorAll('.scroll-fade-in').forEach(el => {
         el.style.opacity = '1';
         el.style.transform = 'none';
     });
+
+    // New: IntersectionObserver-based reveal for cards and sections
+    const revealTargets = document.querySelectorAll(
+        '.feature-card, .app-card, .stat-item, .section-header, ' +
+        '.architecture-layers .layer, .protocol-stack .stack-layer, ' +
+        '.comparison-card, .spec-card, .tutorial-card'
+    );
+
+    if (!revealTargets.length) return;
+
+    revealTargets.forEach(el => el.classList.add('reveal-on-scroll'));
+
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+                revealObserver.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -40px 0px'
+    });
+
+    revealTargets.forEach(el => revealObserver.observe(el));
 }
 
 // Active nav link based on scroll position

@@ -14,9 +14,9 @@ title: 快速開始
                 <li><a href="#freertos-quickstart" class="sidebar-link">快速開始建構</a></li>
                 <li><a href="#first-build" class="sidebar-link">第一次建構</a></li>
                 <li><a href="#kconfig" class="sidebar-link">配置系統</a></li>
-                <li><a href="#flashing" class="sidebar-link">燒錄韌體</a></li>
-                <li><a href="#serial-monitor" class="sidebar-link">串口監控</a></li>
-                <li><a href="#board-testing" class="sidebar-link">板級測試</a></li>
+                <li><a href="#flashing" class="sidebar-link">燒錄韌體（Release 說明）</a></li>
+                <li><a href="#serial-monitor" class="sidebar-link">串口監控（Release 說明）</a></li>
+                <li><a href="#board-testing" class="sidebar-link">板級測試（Release 說明）</a></li>
                 <li><a href="#debugging" class="sidebar-link">除錯設置</a></li>
                 <li><a href="#troubleshooting" class="sidebar-link">疑難排解</a></li>
                 <li><a href="#next-steps" class="sidebar-link">下一步</a></li>
@@ -26,7 +26,11 @@ title: 快速開始
 
     <article class="doc-content">
         <h1>快速開始</h1>
-        <p>本指南將帶您完成 IPRO SDK 的安裝設置，並建構您的第一個應用程式。</p>
+        <p>本指南將帶您完成 IPRO SDK Release 套件的安裝設置，並建構您的第一個應用程式。</p>
+
+        <div class="alert alert-info">
+            <strong><i class="fas fa-info-circle"></i> Release SDK 說明：</strong>此為 Release 版本的 SDK 套件，部分開發工具（燒錄工具、串口監控、板級測試腳本、VS Code 擴充套件）未包含在內。如需完整開發工具，請聯繫 IntelPro 取得。
+        </div>
 
         <section id="prerequisites">
             <h2>系統需求</h2>
@@ -80,18 +84,17 @@ python3 --version</code></pre>
         <section id="installation">
             <h2>安裝設置</h2>
 
-            <h3>1. 取得 SDK 原始碼</h3>
+            <h3>1. 解壓縮 Release SDK 套件</h3>
             <div class="alert alert-info">
-                <strong><i class="fas fa-clipboard-list"></i> 注意：</strong>IPRO SDK 原始碼託管於內部 GitLab，請聯繫管理員取得存取權限。
+                <strong><i class="fas fa-clipboard-list"></i> 注意：</strong>此為 Release 版本的 SDK 套件，無需透過 Git 取得原始碼。請直接解壓縮收到的 Release 套件即可。
             </div>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">Clone SDK（內部 GitLab）</span>
+                    <span class="code-block-title">解壓縮 Release SDK</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 從內部 GitLab Clone IPRO SDK
-# 請替換為您的 GitLab 伺服器位址
-git clone https://your-gitlab-server/ipro/ipro_sdk.git
+                <pre><code class="language-bash"># 解壓縮 Release SDK 套件
+tar xzf ipro_sdk_release_*.tar.gz
 cd ipro_sdk</code></pre>
             </div>
 
@@ -131,16 +134,17 @@ ls /opt/toolchain/riscv_ipro7/bin/
                 </div>
                 <pre><code>ipro_sdk/
 ├── apps/                         # 應用程式專案（每個應用含 .config + CMakeLists.txt）
-│   ├── bluetooth/                # BLE 應用
-│   │   ├── ipro_ble_remote/      # BLE 遙控器（GATT + OTA）
-│   │   ├── ipro_throughput_test/ # BLE 效能測試
-│   │   ├── ipro_walkie_talkie/   # BIS LE Audio 對講機
-│   │   └── ipro_le_audio_headset/# GAF/BAP LE Audio 耳機
-│   ├── matter/                   # Matter 應用
-│   │   ├── ipro_matter_light/    # Matter 燈光控制
-│   │   └── ipro_matter_switch/   # Matter 開關
-│   ├── ipro7_demo/               # 綜合平台展示
-│   ├── ipro_unit_test/           # 單元測試
+│   ├── bluetooth/                # Bluetooth 應用
+│   │   ├── ble/                  # BLE 應用
+│   │   │   ├── ipro_ble_remote/          # BLE 遙控器（GATT + OTA）
+│   │   │   ├── ipro_ble_transparent/     # BLE 透傳
+│   │   │   └── ipro_throughput_test/     # BLE 效能測試
+│   │   └── le_audio/             # LE Audio 應用
+│   │       ├── ipro_le_audio_headset/    # GAF/BAP LE Audio 耳機
+│   │       ├── ipro_le_audio_bis_source/ # BIS LE Audio 來源
+│   │       └── ipro_le_audio_bis_sink/   # BIS LE Audio 接收
+│   └── platform/
+│       └── ipro7_demo/           # 綜合平台展示
 │
 ├── bsp/                          # Board Support Package（HAL、驅動、連結腳本）
 │   ├── board/                    # 板級配置
@@ -157,11 +161,11 @@ ls /opt/toolchain/riscv_ipro7/bin/
 │
 ├── cmake/                        # 建構系統（toolchain.cmake 自動偵測 GCC）
 ├── tools/                        # 開發工具
-│   ├── ipro_iot_tool_lite/       # 韌體燒錄工具
-│   ├── serial_monitor.py         # 串口監控（Python3）
-│   ├── board_test.sh             # 自動化板級測試
+│   ├── cmake/                    # 內建 CMake（Linux x86-64）
+│   └── script/                   # 輔助腳本
 │
 ├── build_freertos.sh             # FreeRTOS 建構腳本
+├── project.build                 # 專案建構配置
 └── Kconfig                       # 根 Kconfig 配置</code></pre>
             </div>
         </section>
@@ -177,13 +181,16 @@ ls /opt/toolchain/riscv_ipro7/bin/
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 建構 BLE Remote 應用
-make -C apps/bluetooth/ipro_ble_remote
+make -C apps/bluetooth/ble/ipro_ble_remote
 
-# 建構單元測試
-make -C apps/ipro_unit_test
+# 建構 LE Audio Headset 應用
+make -C apps/bluetooth/le_audio/ipro_le_audio_headset
+
+# 建構 IPRO7 Demo 應用
+make -C apps/platform/ipro7_demo
 
 # 清除建構
-make -C apps/bluetooth/ipro_ble_remote clean</code></pre>
+make -C apps/bluetooth/ble/ipro_ble_remote clean</code></pre>
             </div>
 
             <h3>使用建構腳本</h3>
@@ -211,7 +218,7 @@ cmake -S . -B build \
     -DIPRO_SDK_BASE=$(pwd) \
     -DCONFIG_BUILD_PORJECT=ipro_ble_remote \
     -DCMAKE_PREFIX_PATH=$(pwd)/cmake \
-    -DCUSTOM_CONFIG_DIR=$(pwd)/apps/ipro_ble_remote \
+    -DCUSTOM_CONFIG_DIR=$(pwd)/apps/bluetooth/ble/ipro_ble_remote \
     -DCONFIG_APPS=1 \
     -DCROSS_COMPILE=/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-
 
@@ -230,7 +237,7 @@ cmake --build build</code></pre>
                     <span class="code-block-title">建構 BLE Remote</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">make -C apps/bluetooth/ipro_ble_remote</code></pre>
+                <pre><code class="language-bash">make -C apps/bluetooth/ble/ipro_ble_remote</code></pre>
             </div>
 
             <h3>步驟 2：檢查建構輸出</h3>
@@ -240,7 +247,7 @@ cmake --build build</code></pre>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 列出建構產出
-ls -la apps/bluetooth/ipro_ble_remote/build/build_out/
+ls -la apps/bluetooth/ble/ipro_ble_remote/build/build_out/
 
 # 應該看到：
 # ipro_ble_remote_IPRO7.bin  - 二進位燒錄檔（檔名包含晶片後綴）
@@ -295,89 +302,30 @@ CONFIG_TEST_AUTO_RUN=y</code></pre>
 
         <section id="flashing">
             <h2>燒錄韌體</h2>
-            <p>使用 SDK 內建的 <code>ipro_iot_tool_lite</code> 工具燒錄韌體到開發板。</p>
-
-            <h3>使用燒錄工具</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">燒錄韌體到開發板</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># 燒錄 BLE Remote 應用
-tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
-    --chipname ipro7 \
-    --port /dev/cu.usbserial-2120 \
-    --firmware apps/bluetooth/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
-    --baudrate 921600 \
-    --flash-pin 0x02</code></pre>
-            </div>
 
             <div class="alert alert-warning">
-                <strong>macOS 注意：</strong>串口必須使用 <code>/dev/cu.*</code> 裝置，而不是 <code>/dev/tty.*</code>。<code>tty.*</code> 裝置會等待 DCD 信號而造成阻塞。Linux 使用者請使用 <code>/dev/ttyUSB0</code> 或類似裝置。
+                <strong><i class="fas fa-exclamation-triangle"></i> Release SDK 說明：</strong>燒錄工具 <code>ipro_iot_tool_lite</code> 及自動化測試腳本 <code>board_test.sh</code> 未包含在此 Release SDK 套件中。如需燒錄工具，請聯繫 IntelPro 取得完整開發工具套件。
             </div>
 
-            <h3>使用自動化測試腳本</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">一鍵建構+燒錄+測試</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># 完整流程：建構 + 燒錄 + 擷取串口測試結果
-tools/board_test.sh --project apps/ipro_unit_test</code></pre>
+            <h3>串口提示（一般知識）</h3>
+            <div class="alert alert-info">
+                <strong>macOS 注意：</strong>串口必須使用 <code>/dev/cu.*</code> 裝置，而不是 <code>/dev/tty.*</code>。<code>tty.*</code> 裝置會等待 DCD 信號而造成阻塞。Linux 使用者請使用 <code>/dev/ttyUSB0</code> 或類似裝置。
             </div>
         </section>
 
         <section id="serial-monitor">
             <h2>串口監控</h2>
-            <p>使用 SDK 內建的 <code>serial_monitor.py</code> 監控開發板串口輸出。此工具使用 Python3 termios，無需安裝 pyserial。</p>
 
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">串口監控</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># 基本串口監控（115200 baud）
-python3 tools/serial_monitor.py /dev/cu.usbserial-2120
-
-# 發送重啟命令並等待測試結果
-python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
-    --send reboot --timeout 30 \
-    --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
-            </div>
-
-            <div class="alert alert-info">
-                <strong>提示：</strong>在 macOS 上，<code>cat</code> 對串口有緩衝問題，建議使用 <code>serial_monitor.py</code> 替代。
+            <div class="alert alert-warning">
+                <strong><i class="fas fa-exclamation-triangle"></i> Release SDK 說明：</strong>串口監控工具 <code>serial_monitor.py</code> 未包含在此 Release SDK 套件中。如需串口監控工具，請聯繫 IntelPro 取得完整開發工具套件。您也可以使用第三方串口工具（如 <code>minicom</code>、<code>screen</code> 或 <code>picocom</code>）進行串口監控。
             </div>
         </section>
 
         <section id="board-testing">
             <h2>板級測試</h2>
-            <p>SDK 提供完整的板級自動化測試流程，透過 <code>board_test.sh</code> 一鍵完成建構、燒錄、串口擷取與結果分析。</p>
 
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">自動化測試流程</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># 完整測試流程（建構 + 燒錄 + 監控 + 結果解析）
-tools/board_test.sh --project apps/ipro_unit_test
-
-# 退出碼：0 = 通過, 1 = 失敗, 2 = 逾時</code></pre>
-            </div>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">快速重測（僅重啟板子，不重建不燒錄）</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># 重啟板子並等待測試結果
-python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
-    --send reboot --timeout 30 \
-    --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
-            </div>
-
-            <div class="alert alert-info">
-                <strong>提示：</strong>測試應用需啟用 <code>CONFIG_TEST_AUTO_RUN=y</code>，測試會在開機後自動執行。測試結果標記為 <code>ALL TESTS PASSED</code> 或 <code>SOME TESTS FAILED</code>。
+            <div class="alert alert-warning">
+                <strong><i class="fas fa-exclamation-triangle"></i> Release SDK 說明：</strong>自動化板級測試腳本 <code>board_test.sh</code> 未包含在此 Release SDK 套件中。如需板級測試工具，請聯繫 IntelPro 取得完整開發工具套件。
             </div>
         </section>
 
@@ -392,7 +340,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
                 </div>
                 <pre><code class="language-bash"># 使用 RISC-V GDB 除錯
 /opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-gdb \
-    apps/bluetooth/ipro_ble_remote/build/build_out/ipro_ble_remote.elf</code></pre>
+    apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote.elf</code></pre>
             </div>
 
             <h3>串口除錯</h3>
@@ -402,14 +350,18 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
                 <li><code>reboot_dl</code> - 進入下載模式（用於重新燒錄）</li>
             </ul>
 
-            <h3>VS Code 除錯配置</h3>
-            <p>SDK 提供 VS Code 擴充套件，支援圖形化除錯。詳細設定請參考 <a href="{{ '/vscode-extension' | relative_url }}">VS Code 擴充套件</a> 頁面。</p>
+            <div class="alert alert-info">
+                <strong>提示：</strong>VS Code 擴充套件未包含在此 Release SDK 套件中。如需圖形化除錯支援，請聯繫 IntelPro 取得 VS Code 擴充套件。
+            </div>
         </section>
 
         <section id="troubleshooting">
             <h2>疑難排解</h2>
 
-            <h3>macOS 串口問題</h3>
+            <h3>macOS 串口問題（一般知識）</h3>
+            <div class="alert alert-info">
+                <strong>注意：</strong>此 Release SDK 未包含 <code>serial_monitor.py</code>，以下為使用外部串口工具時的一般性提示。
+            </div>
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -425,7 +377,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
                         </tr>
                         <tr>
                             <td><code>cat</code> 指令無輸出</td>
-                            <td><code>cat</code> 在 macOS 上對串口有緩衝問題，請使用 <code>python3 tools/serial_monitor.py</code>。</td>
+                            <td><code>cat</code> 在 macOS 上對串口有緩衝問題，請使用專門的串口工具（如 <code>minicom</code>、<code>screen</code> 或 <code>picocom</code>）。</td>
                         </tr>
                         <tr>
                             <td>串口顯示 "Resource busy"</td>
@@ -503,11 +455,6 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
                     <div class="feature-icon"><i class="fas fa-box"></i></div>
                     <h3 class="feature-title">研究範例</h3>
                     <p class="feature-description">探索各種參考應用的實作細節。</p>
-                </a>
-                <a href="{{ '/vscode-extension' | relative_url }}" class="feature-card" style="text-decoration: none;">
-                    <div class="feature-icon"><i class="fas fa-screwdriver-wrench"></i></div>
-                    <h3 class="feature-title">工具與除錯</h3>
-                    <p class="feature-description">使用 VS Code 擴充套件與開發工具提升效率。</p>
                 </a>
             </div>
         </section>

@@ -36,41 +36,31 @@ lang: en
                 <div class="layer layer-green">
                     <div class="layer-label">Applications (apps/)</div>
                     <div class="layer-items">
-                        <span class="pill">bluetooth/</span>
-                        <span class="pill">matter/</span>
-                        <span class="pill">ipro7_demo</span>
-                        <span class="pill">ipro_unit_test</span>
+                        <span class="pill">bluetooth/ble/</span>
+                        <span class="pill">bluetooth/le_audio/</span>
+                        <span class="pill">platform/ipro7_demo</span>
                     </div>
                 </div>
                 <div class="layer layer-cyan">
                     <div class="layer-label">Components (components/)</div>
                     <div class="layer-items">
                         <span class="pill">BLE 5.4</span>
-                        <span class="pill">Matter</span>
-                        <span class="pill">WiFi 6</span>
-                        <span class="pill">Thread</span>
-                        <span class="pill">Zigbee</span>
-                        <span class="pill">802.15.4</span>
+                        <span class="pill">LE Audio</span>
                         <span class="pill">lwIP</span>
                         <span class="pill">mbedTLS</span>
                         <span class="pill">CherryUSB</span>
                         <span class="pill">Audio</span>
-                        <span class="pill">AI/NPU</span>
-                        <span class="pill">Codec</span>
                         <span class="pill">LittleFS</span>
                         <span class="pill">FatFS</span>
                         <span class="pill">Shell</span>
-                        <span class="pill">Agora</span>
-                        <span class="pill">Opus</span>
-                        <span class="pill">LC3</span>
+                        <span class="pill">LC3 (prebuilt)</span>
                     </div>
                 </div>
                 <div class="layer layer-purple">
-                    <div class="layer-label">RTOS (FreeRTOS / Zephyr)</div>
+                    <div class="layer-label">RTOS (FreeRTOS)</div>
                     <div class="layer-items">
                         <span class="pill">FreeRTOS POSIX</span>
                         <span class="pill">OSAL</span>
-                        <span class="pill">Zephyr Kernel</span>
                     </div>
                 </div>
                 <div class="layer layer-amber">
@@ -128,7 +118,7 @@ lang: en
                             <td>192 MHz</td>
                             <td>4 MB</td>
                             <td>16 MB PSRAM + 256 KB OCRAM</td>
-                            <td>BLE 5.4, WiFi 6, 0.1 TOPS NPU, ISP</td>
+                            <td>BLE 5.4, LE Audio, ISP, 0.1 TOPS NPU</td>
                         </tr>
                         <tr>
                             <td><strong>IPRO6</strong></td>
@@ -136,7 +126,7 @@ lang: en
                             <td>-</td>
                             <td>-</td>
                             <td>-</td>
-                            <td>Previous generation SoC, BLE + WiFi</td>
+                            <td>Previous generation SoC, BLE (BSP references only, no IPRO6 apps in this release)</td>
                         </tr>
                     </tbody>
                 </table>
@@ -260,13 +250,13 @@ lang: en
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># Method 1: Using Make wrapper (recommended)
-make -C apps/ipro7_demo
+make -C apps/platform/ipro7_demo
 
 # Method 2: Using build script
 ./build_freertos.sh ipro7_demo build
 
 # Clean build
-make -C apps/ipro7_demo clean</code></pre>
+make -C apps/platform/ipro7_demo clean</code></pre>
             </div>
 
             <h3>Toolchain</h3>
@@ -300,18 +290,8 @@ make -C apps/ipro7_demo clean</code></pre>
                 </table>
             </div>
 
-            <h3>Zephyr Build (Experimental)</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Zephyr Build Commands</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Using the SDK-provided build script
-./tools/zephyr/build.sh -a &lt;app&gt; -b ipro7_fpga -c</code></pre>
-            </div>
-
-            <div class="alert alert-warning">
-                <strong>Note:</strong> Zephyr build is currently experimental. Use the FreeRTOS build for production environments.
+            <div class="alert alert-info">
+                <strong>Note:</strong> Release SDK v1.0.1 uses FreeRTOS build only. Zephyr RTOS build tools are not included in this release.
             </div>
         </section>
 
@@ -334,32 +314,12 @@ make -C apps/ipro7_demo clean</code></pre>
                         <tr>
                             <td><strong>Bluetooth LE 5.4</strong></td>
                             <td><code>wireless/bluetooth/</code></td>
-                            <td>Zephyr BLE Host + RivieraWaves Controller, 70+ Profiles, LE Audio</td>
-                        </tr>
-                        <tr>
-                            <td><strong>WiFi 6</strong></td>
-                            <td><code>wireless/wifi6/</code></td>
-                            <td>WiFi 6 (802.11ax) stack</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Thread</strong></td>
-                            <td><code>wireless/thread/</code></td>
-                            <td>Thread mesh networking protocol</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Zigbee</strong></td>
-                            <td><code>wireless/zigbee/</code></td>
-                            <td>Zigbee protocol stack</td>
-                        </tr>
-                        <tr>
-                            <td><strong>IEEE 802.15.4</strong></td>
-                            <td><code>wireless/ieee802154/</code></td>
-                            <td>802.15.4 MAC layer</td>
+                            <td>Zephyr BLE Host + RivieraWaves Controller (prebuilt), 70+ Profiles, LE Audio</td>
                         </tr>
                         <tr>
                             <td><strong>RF</strong></td>
                             <td><code>wireless/rf/</code></td>
-                            <td>Radio frequency low-level driver</td>
+                            <td>Radio frequency low-level driver (prebuilt library)</td>
                         </tr>
                     </tbody>
                 </table>
@@ -421,11 +381,6 @@ make -C apps/ipro7_demo clean</code></pre>
                             <td><code>os/ipro_osal/</code></td>
                             <td>OS Abstraction Layer, unified API interface</td>
                         </tr>
-                        <tr>
-                            <td><strong>Zephyr</strong></td>
-                            <td><code>os/zephyr/</code></td>
-                            <td>Zephyr RTOS kernel (experimental)</td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -454,7 +409,7 @@ make -C apps/ipro7_demo clean</code></pre>
                         <tr>
                             <td><strong>ISP</strong></td>
                             <td><code>isp_algorithm/</code>, <code>isp_firmware/</code>, <code>isp_iq_param/</code></td>
-                            <td>Image Signal Processor (algorithms, firmware, IQ parameters)</td>
+                            <td>Image Signal Processor (ISP algorithm is prebuilt library)</td>
                         </tr>
                         <tr>
                             <td><strong>Sensor</strong></td>
@@ -522,19 +477,9 @@ make -C apps/ipro7_demo clean</code></pre>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>Agora</strong></td>
-                            <td><code>3rdparty/agora/</code></td>
-                            <td>Agora real-time communication SDK</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Opus</strong></td>
-                            <td><code>3rdparty/opus/</code></td>
-                            <td>Opus audio codec</td>
-                        </tr>
-                        <tr>
                             <td><strong>LC3</strong></td>
                             <td><code>3rdparty/liblc3/</code></td>
-                            <td>LC3 audio codec (LE Audio)</td>
+                            <td>LC3 audio codec (LE Audio) - prebuilt library</td>
                         </tr>
                         <tr>
                             <td><strong>XZ</strong></td>
@@ -570,11 +515,6 @@ make -C apps/ipro7_demo clean</code></pre>
                             <td><strong>libc</strong></td>
                             <td><code>libc/</code></td>
                             <td>C standard library supplement</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Matter</strong></td>
-                            <td><code>matter/</code></td>
-                            <td>Matter (CHIP) smart home protocol</td>
                         </tr>
                     </tbody>
                 </table>
@@ -670,24 +610,19 @@ CONFIG_TEST_AUTO_RUN=y</code></pre>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>Bluetooth</strong></td>
-                            <td><code>apps/bluetooth/</code></td>
-                            <td>ipro_ble_remote (GATT + OTA), ipro_le_audio_headset (GAF/BAP), ipro_walkie_talkie (BIS LE Audio)</td>
+                            <td><strong>BLE</strong></td>
+                            <td><code>apps/bluetooth/ble/</code></td>
+                            <td>ipro_ble_remote, ipro_ble_transparent, ipro_throughput_test</td>
                         </tr>
                         <tr>
-                            <td><strong>Matter</strong></td>
-                            <td><code>apps/matter/</code></td>
-                            <td>Matter smart home devices</td>
+                            <td><strong>LE Audio</strong></td>
+                            <td><code>apps/bluetooth/le_audio/</code></td>
+                            <td>ipro_le_audio_headset, ipro_le_audio_bis_source, ipro_le_audio_bis_sink</td>
                         </tr>
                         <tr>
-                            <td><strong>Platform Demos</strong></td>
-                            <td><code>apps/</code></td>
-                            <td>ipro7_demo, ipro6_demo</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Testing</strong></td>
-                            <td><code>apps/</code></td>
-                            <td>ipro_unit_test</td>
+                            <td><strong>Platform</strong></td>
+                            <td><code>apps/platform/</code></td>
+                            <td>ipro7_demo</td>
                         </tr>
                     </tbody>
                 </table>
@@ -708,11 +643,11 @@ CONFIG_TEST_AUTO_RUN=y</code></pre>
                 </div>
                 <pre><code>ipro_sdk/
 ├── apps/                         # Application projects
-│   ├── bluetooth/                # BLE applications (10+ examples)
-│   ├── matter/                   # Matter smart home applications
-│   ├── ipro7_demo/               # IPRO7 comprehensive platform demo
-│   ├── ipro_unit_test/           # Unit test framework
-│   └── ...
+│   ├── bluetooth/                # Bluetooth applications
+│   │   ├── ble/                  # BLE apps (3 apps)
+│   │   └── le_audio/             # LE Audio apps (3 apps)
+│   └── platform/                 # Platform apps
+│       └── ipro7_demo/           # Comprehensive platform demo
 │
 ├── bsp/                          # Board Support Package
 │   ├── board/                    # Board configuration (pin definitions, clock)
@@ -721,31 +656,26 @@ CONFIG_TEST_AUTO_RUN=y</code></pre>
 │   └── common/                   # Shared startup code and linker scripts
 │
 ├── components/                   # Reusable components
-│   ├── wireless/                 # Wireless: BLE, WiFi 6, Thread, Zigbee
+│   ├── wireless/bluetooth/       # BLE stack (Controller prebuilt)
+│   ├── wireless/rf/              # RF driver (prebuilt)
 │   ├── network/                  # Network: lwIP
 │   ├── crypto/                   # Security: Mbed TLS, cipher suite
-│   ├── os/                       # RTOS: FreeRTOS, Zephyr, OSAL
+│   ├── os/                       # RTOS: FreeRTOS, OSAL
 │   ├── fs/                       # File systems: LittleFS, FatFS, ROMFS
 │   ├── cherryusb/                # USB stack
 │   ├── audio/                    # Audio framework
-│   ├── ai/                       # AI/NPU inference
+│   ├── ai/                       # AI source code (ISP algorithm prebuilt)
 │   ├── sensor/                   # Camera sensor drivers
 │   ├── sys/                      # System services (Shell, events)
-│   ├── 3rdparty/                 # Third-party: Agora, Opus, LC3, XZ
-│   ├── matter/                   # Matter protocol
+│   ├── 3rdparty/liblc3/          # LC3 codec (prebuilt)
 │   └── ...                       # libc, softcrc, utils, ISP, etc.
 │
-├── tools/                        # Development tools
-│   ├── ipro_iot_tool_lite/       # Flash tool
-│   ├── serial_monitor.py         # Serial monitor
-│   ├── board_test.sh             # Automated board testing
-│   └── vscode_extension/         # VS Code extension
+├── tools/                        # Development tools (limited in release)
 │
 ├── cmake/                        # CMake config (toolchain.cmake)
 ├── kconfigs/                     # Kconfig default configs
 ├── build_freertos.sh             # FreeRTOS build script
-├── Kconfig                       # Root Kconfig
-└── west.yml                      # Zephyr west config</code></pre>
+└── Kconfig                       # Root Kconfig</code></pre>
             </div>
         </section>
 

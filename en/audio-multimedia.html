@@ -296,7 +296,7 @@ int bap_server_init(void)
             <h3>Broadcast Source Example</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">BIS Source (apps/bluetooth/ipro_walkie_talkie/src/wt_broadcast_source.c)</span>
+                    <span class="code-block-title">BIS Source (apps/bluetooth/le_audio/ipro_le_audio_bis_source/src/main.c)</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">/* Create Broadcast Source */
@@ -325,7 +325,7 @@ static int create_broadcast_source(void)
             <h3>Broadcast Sink Example</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">BIS Sink (apps/bluetooth/ipro_walkie_talkie/src/wt_broadcast_sink.c)</span>
+                    <span class="code-block-title">BIS Sink (apps/bluetooth/le_audio/ipro_le_audio_bis_sink/src/main.c)</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">/* Broadcast Sink callbacks */
@@ -637,29 +637,27 @@ make -C apps/bluetooth/ipro_le_audio_headset
 # apps/bluetooth/ipro_le_audio_headset/build/build_out/ipro_le_audio_headset_IPRO7.bin</code></pre>
             </div>
 
-            <h3>ipro_walkie_talkie</h3>
-            <p>BIS broadcast walkie-talkie application demonstrating one-to-many connectionless audio:</p>
+            <h3>ipro_le_audio_bis_source / ipro_le_audio_bis_sink</h3>
+            <p>BIS broadcast audio applications demonstrating one-to-many connectionless audio:</p>
             <table>
                 <thead>
-                    <tr><th>Feature</th><th>Description</th></tr>
+                    <tr><th>Application</th><th>Description</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td>Broadcast Source</td><td>Transmitter side, encodes and sends audio</td></tr>
-                    <tr><td>Broadcast Sink</td><td>Receiver side, decodes and plays audio</td></tr>
-                    <tr><td>Bidirectional Switch</td><td>Button to toggle transmit/receive mode</td></tr>
-                    <tr><td>Shell Control</td><td>Serial shell command interface</td></tr>
+                    <tr><td>ipro_le_audio_bis_source</td><td>Broadcast side, encodes and transmits BIS audio streams</td></tr>
+                    <tr><td>ipro_le_audio_bis_sink</td><td>Receiver side, syncs and decodes BIS audio streams</td></tr>
                 </tbody>
             </table>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">Build Walkie-Talkie</span>
+                    <span class="code-block-title">Build BIS Broadcast Apps</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># Build
-make -C apps/bluetooth/ipro_walkie_talkie
+                <pre><code class="language-bash"># Build BIS Source
+make -C apps/bluetooth/le_audio/ipro_le_audio_bis_source
 
-# Output binary
-# apps/bluetooth/ipro_walkie_talkie/build/build_out/ipro_walkie_talkie_IPRO7.bin</code></pre>
+# Build BIS Sink
+make -C apps/bluetooth/le_audio/ipro_le_audio_bis_sink</code></pre>
             </div>
 
             <h3>ipro7_demo</h3>

@@ -35,41 +35,31 @@ title: 架構概覽
                 <div class="layer layer-green">
                     <div class="layer-label">Applications (apps/)</div>
                     <div class="layer-items">
-                        <span class="pill">bluetooth/</span>
-                        <span class="pill">matter/</span>
-                        <span class="pill">ipro7_demo</span>
-                        <span class="pill">ipro_unit_test</span>
+                        <span class="pill">bluetooth/ble/</span>
+                        <span class="pill">bluetooth/le_audio/</span>
+                        <span class="pill">platform/ipro7_demo</span>
                     </div>
                 </div>
                 <div class="layer layer-cyan">
                     <div class="layer-label">Components (components/)</div>
                     <div class="layer-items">
                         <span class="pill">BLE 5.4</span>
-                        <span class="pill">Matter</span>
-                        <span class="pill">WiFi 6</span>
-                        <span class="pill">Thread</span>
-                        <span class="pill">Zigbee</span>
-                        <span class="pill">802.15.4</span>
                         <span class="pill">lwIP</span>
                         <span class="pill">mbedTLS</span>
                         <span class="pill">CherryUSB</span>
                         <span class="pill">Audio</span>
-                        <span class="pill">AI/NPU</span>
+                        <span class="pill">AI</span>
                         <span class="pill">Codec</span>
-                        <span class="pill">LittleFS</span>
+                        <span class="pill">EVFS/SPIFFS</span>
                         <span class="pill">FatFS</span>
                         <span class="pill">Shell</span>
-                        <span class="pill">Agora</span>
-                        <span class="pill">Opus</span>
                         <span class="pill">LC3</span>
                     </div>
                 </div>
                 <div class="layer layer-purple">
-                    <div class="layer-label">RTOS (FreeRTOS / Zephyr)</div>
+                    <div class="layer-label">RTOS (FreeRTOS)</div>
                     <div class="layer-items">
-                        <span class="pill">FreeRTOS POSIX</span>
-                        <span class="pill">OSAL</span>
-                        <span class="pill">Zephyr Kernel</span>
+                        <span class="pill">FreeRTOS</span>
                     </div>
                 </div>
                 <div class="layer layer-amber">
@@ -83,10 +73,9 @@ title: 架構概覽
                     </div>
                 </div>
                 <div class="layer layer-red">
-                    <div class="layer-label">Hardware (IPRO7 / IPRO6)</div>
+                    <div class="layer-label">Hardware (IPRO7)</div>
                     <div class="layer-items">
                         <span class="pill">RISC-V RV32IMAFC</span>
-                        <span class="pill">Cortex-M0+</span>
                         <span class="pill">BLE Radio</span>
                         <span class="pill">NPU</span>
                     </div>
@@ -127,15 +116,15 @@ title: 架構概覽
                             <td>192 MHz</td>
                             <td>4 MB</td>
                             <td>16 MB PSRAM + 256 KB OCRAM</td>
-                            <td>BLE 5.4, WiFi 6, 0.1 TOPS NPU, ISP</td>
+                            <td>BLE 5.4, LE Audio, ISP, 0.1 TOPS NPU</td>
                         </tr>
                         <tr>
-                            <td><strong>IPRO6</strong></td>
+                            <td><strong>IPRO6</strong> <em>(legacy)</em></td>
                             <td>RISC-V</td>
                             <td>-</td>
                             <td>-</td>
                             <td>-</td>
-                            <td>前代 SoC，BLE + WiFi</td>
+                            <td>前代 SoC，BLE（BSP 中保留部分參考，本版不含 IPRO6 應用）</td>
                         </tr>
                     </tbody>
                 </table>
@@ -259,13 +248,13 @@ title: 架構概覽
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 方式一：使用 Make 包裝（推薦）
-make -C apps/ipro7_demo
+make -C apps/platform/ipro7_demo
 
 # 方式二：使用建構腳本
 ./build_freertos.sh ipro7_demo build
 
 # 清除建構
-make -C apps/ipro7_demo clean</code></pre>
+make -C apps/platform/ipro7_demo clean</code></pre>
             </div>
 
             <h3>工具鏈</h3>
@@ -299,19 +288,6 @@ make -C apps/ipro7_demo clean</code></pre>
                 </table>
             </div>
 
-            <h3>Zephyr 建構（實驗性）</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Zephyr 建構命令</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># 使用 SDK 提供的建構腳本
-./tools/zephyr/build.sh -a &lt;app&gt; -b ipro7_fpga -c</code></pre>
-            </div>
-
-            <div class="alert alert-warning">
-                <strong>注意：</strong>Zephyr 建構目前為實驗性質，生產環境請使用 FreeRTOS 建構。
-            </div>
         </section>
 
         <!-- Section 5: Component Architecture -->
@@ -333,32 +309,12 @@ make -C apps/ipro7_demo clean</code></pre>
                         <tr>
                             <td><strong>Bluetooth LE 5.4</strong></td>
                             <td><code>wireless/bluetooth/</code></td>
-                            <td>Zephyr BLE Host + RivieraWaves 控制器，含 70+ Profiles、LE Audio</td>
-                        </tr>
-                        <tr>
-                            <td><strong>WiFi 6</strong></td>
-                            <td><code>wireless/wifi6/</code></td>
-                            <td>WiFi 6 (802.11ax) 協定棧</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Thread</strong></td>
-                            <td><code>wireless/thread/</code></td>
-                            <td>Thread 網狀網路協定</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Zigbee</strong></td>
-                            <td><code>wireless/zigbee/</code></td>
-                            <td>Zigbee 協定棧</td>
-                        </tr>
-                        <tr>
-                            <td><strong>IEEE 802.15.4</strong></td>
-                            <td><code>wireless/ieee802154/</code></td>
-                            <td>802.15.4 MAC 層</td>
+                            <td>Zephyr BLE Host + RivieraWaves 控制器，含 70+ Profiles、LE Audio（Host 為原始碼，Controller 為預建函式庫）</td>
                         </tr>
                         <tr>
                             <td><strong>RF</strong></td>
                             <td><code>wireless/rf/</code></td>
-                            <td>射頻底層驅動</td>
+                            <td>射頻底層驅動（預建函式庫）</td>
                         </tr>
                     </tbody>
                 </table>
@@ -385,11 +341,6 @@ make -C apps/ipro7_demo clean</code></pre>
                             <td><code>crypto/mbedtls/</code></td>
                             <td>TLS/SSL 加密通訊</td>
                         </tr>
-                        <tr>
-                            <td><strong>Cipher Suite</strong></td>
-                            <td><code>crypto/cipher_suite/</code></td>
-                            <td>密碼學工具套件</td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -409,21 +360,6 @@ make -C apps/ipro7_demo clean</code></pre>
                             <td><strong>FreeRTOS</strong></td>
                             <td><code>os/freertos/</code></td>
                             <td>即時作業系統（任務、佇列、信號量、定時器）</td>
-                        </tr>
-                        <tr>
-                            <td><strong>FreeRTOS POSIX</strong></td>
-                            <td><code>os/freertos_posix/</code></td>
-                            <td>POSIX 相容層</td>
-                        </tr>
-                        <tr>
-                            <td><strong>OSAL</strong></td>
-                            <td><code>os/ipro_osal/</code></td>
-                            <td>作業系統抽象層，統一 API 介面</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Zephyr</strong></td>
-                            <td><code>os/zephyr/</code></td>
-                            <td>Zephyr RTOS 核心（實驗性）</td>
                         </tr>
                     </tbody>
                 </table>
@@ -453,7 +389,7 @@ make -C apps/ipro7_demo clean</code></pre>
                         <tr>
                             <td><strong>ISP</strong></td>
                             <td><code>isp_algorithm/</code>, <code>isp_firmware/</code>, <code>isp_iq_param/</code></td>
-                            <td>影像訊號處理器（演算法、韌體、IQ 參數）</td>
+                            <td>影像訊號處理器（演算法為預建函式庫，韌體為原始碼，IQ 參數）</td>
                         </tr>
                         <tr>
                             <td><strong>Sensor</strong></td>
@@ -481,11 +417,6 @@ make -C apps/ipro7_demo clean</code></pre>
                             <td>USB Device/Host 協定棧（CDC, MSC, HID, UAC, UVC）</td>
                         </tr>
                         <tr>
-                            <td><strong>LittleFS</strong></td>
-                            <td><code>fs/littlefs/</code></td>
-                            <td>針對 Flash 優化的檔案系統</td>
-                        </tr>
-                        <tr>
                             <td><strong>FatFS</strong></td>
                             <td><code>fs/fatfs/</code></td>
                             <td>FAT 檔案系統（SD 卡）</td>
@@ -496,14 +427,9 @@ make -C apps/ipro7_demo clean</code></pre>
                             <td>輕量級 KV 儲存</td>
                         </tr>
                         <tr>
-                            <td><strong>ROMFS</strong></td>
-                            <td><code>fs/romfs/</code></td>
-                            <td>唯讀檔案系統</td>
-                        </tr>
-                        <tr>
-                            <td><strong>EVFS</strong></td>
+                            <td><strong>EVFS/SPIFFS</strong></td>
                             <td><code>fs/evfs/</code></td>
-                            <td>虛擬檔案系統抽象層</td>
+                            <td>虛擬檔案系統抽象層（含 SPIFFS 支援）</td>
                         </tr>
                     </tbody>
                 </table>
@@ -521,29 +447,9 @@ make -C apps/ipro7_demo clean</code></pre>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>Agora</strong></td>
-                            <td><code>3rdparty/agora/</code></td>
-                            <td>Agora 即時通訊 SDK</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Opus</strong></td>
-                            <td><code>3rdparty/opus/</code></td>
-                            <td>Opus 音訊編解碼器</td>
-                        </tr>
-                        <tr>
                             <td><strong>LC3</strong></td>
                             <td><code>3rdparty/liblc3/</code></td>
-                            <td>LC3 音訊編解碼器（LE Audio）</td>
-                        </tr>
-                        <tr>
-                            <td><strong>XZ</strong></td>
-                            <td><code>3rdparty/xz/</code></td>
-                            <td>XZ/LZMA 壓縮解壓</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Zmodem</strong></td>
-                            <td><code>3rdparty/zmodem/</code></td>
-                            <td>Zmodem 檔案傳輸協定</td>
+                            <td>LC3 音訊編解碼器（LE Audio，預建函式庫）</td>
                         </tr>
                         <tr>
                             <td><strong>Shell</strong></td>
@@ -569,11 +475,6 @@ make -C apps/ipro7_demo clean</code></pre>
                             <td><strong>libc</strong></td>
                             <td><code>libc/</code></td>
                             <td>C 標準函式庫補充</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Matter</strong></td>
-                            <td><code>matter/</code></td>
-                            <td>Matter (CHIP) 智慧家庭協定</td>
                         </tr>
                     </tbody>
                 </table>
@@ -669,24 +570,19 @@ CONFIG_TEST_AUTO_RUN=y</code></pre>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>Bluetooth</strong></td>
-                            <td><code>apps/bluetooth/</code></td>
-                            <td>ipro_ble_remote（GATT + OTA）、ipro_le_audio_headset（GAF/BAP）、ipro_walkie_talkie（BIS LE Audio）</td>
+                            <td><strong>BLE</strong></td>
+                            <td><code>apps/bluetooth/ble/</code></td>
+                            <td>BLE 應用範例（GATT、OTA、Profiles 等）</td>
                         </tr>
                         <tr>
-                            <td><strong>Matter</strong></td>
-                            <td><code>apps/matter/</code></td>
-                            <td>Matter 智慧家庭裝置</td>
+                            <td><strong>LE Audio</strong></td>
+                            <td><code>apps/bluetooth/le_audio/</code></td>
+                            <td>LE Audio 應用（GAF/BAP headset、walkie-talkie 等）</td>
                         </tr>
                         <tr>
                             <td><strong>平台展示</strong></td>
-                            <td><code>apps/</code></td>
-                            <td>ipro7_demo、ipro6_demo</td>
-                        </tr>
-                        <tr>
-                            <td><strong>測試</strong></td>
-                            <td><code>apps/</code></td>
-                            <td>ipro_unit_test</td>
+                            <td><code>apps/platform/</code></td>
+                            <td>ipro7_demo</td>
                         </tr>
                     </tbody>
                 </table>
@@ -707,11 +603,11 @@ CONFIG_TEST_AUTO_RUN=y</code></pre>
                 </div>
                 <pre><code>ipro_sdk/
 ├── apps/                         # 應用程式專案
-│   ├── bluetooth/                # BLE 應用（10+ 範例）
-│   ├── matter/                   # Matter 智慧家庭應用
-│   ├── ipro7_demo/               # IPRO7 綜合平台展示
-│   ├── ipro_unit_test/           # 單元測試框架
-│   └── ...
+│   ├── bluetooth/
+│   │   ├── ble/                  # BLE 應用範例
+│   │   └── le_audio/             # LE Audio 應用範例
+│   └── platform/
+│       └── ipro7_demo/           # IPRO7 綜合平台展示
 │
 ├── bsp/                          # Board Support Package
 │   ├── board/                    # 板級配置（腳位定義、時脈）
@@ -720,31 +616,27 @@ CONFIG_TEST_AUTO_RUN=y</code></pre>
 │   └── common/                   # 共用啟動程式碼與連結腳本
 │
 ├── components/                   # 可重用元件
-│   ├── wireless/                 # 無線：BLE、WiFi 6、Thread、Zigbee
+│   ├── wireless/                 # 無線：BLE（bluetooth/）、RF（rf/）
 │   ├── network/                  # 網路：lwIP
-│   ├── crypto/                   # 安全：Mbed TLS、密碼套件
-│   ├── os/                       # RTOS：FreeRTOS、Zephyr、OSAL
-│   ├── fs/                       # 檔案系統：LittleFS、FatFS、ROMFS
+│   ├── crypto/                   # 安全：Mbed TLS
+│   ├── os/                       # RTOS：FreeRTOS
+│   ├── fs/                       # 檔案系統：FatFS、EasyFlash、EVFS/SPIFFS
 │   ├── cherryusb/                # USB 協定棧
 │   ├── audio/                    # 音訊框架
-│   ├── ai/                       # AI/NPU 推論
+│   ├── ai/                       # AI/NPU 推論（原始碼）
 │   ├── sensor/                   # 攝影機感測器驅動
 │   ├── sys/                      # 系統服務（Shell、事件）
-│   ├── 3rdparty/                 # 第三方：Agora、Opus、LC3、XZ
-│   ├── matter/                   # Matter 協定
+│   ├── 3rdparty/                 # 第三方：LC3（預建）
 │   └── ...                       # libc、softcrc、utils、ISP 等
 │
 ├── tools/                        # 開發工具
-│   ├── ipro_iot_tool_lite/       # 燒錄工具
-│   ├── serial_monitor.py         # 串口監控
-│   ├── board_test.sh             # 自動化板級測試
-│   └── vscode_extension/         # VS Code 擴充
+│   ├── cmake/                    # CMake 設定
+│   └── script/                   # 建構輔助腳本
 │
+├── ipro-sdk-docs/                # SDK 文件
 ├── cmake/                        # CMake 設定（toolchain.cmake）
-├── kconfigs/                     # Kconfig 預設配置檔
 ├── build_freertos.sh             # FreeRTOS 建構腳本
-├── Kconfig                       # 根 Kconfig
-└── west.yml                      # Zephyr west 配置</code></pre>
+└── Kconfig                       # 根 Kconfig</code></pre>
             </div>
         </section>
 
@@ -812,22 +704,10 @@ CONFIG_TEST_AUTO_RUN=y</code></pre>
             </div>
 
             <h3>預建函式庫</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">建構預建控制器函式庫</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># 建構指定變體
-components/wireless/bluetooth/build_all_prebuilts.sh link2
+            <p>BLE 控制器以預建 <code>.a</code> 靜態函式庫形式提供，共包含 14 種變體，位於各自的 <code>btblecontroller_ipro7_&lt;variant&gt;/</code> 目錄中。本發行版不包含控制器原始碼建構腳本，應用程式透過 Kconfig 選擇所需的控制器變體即可。</p>
 
-# 建構所有變體
-components/wireless/bluetooth/build_all_prebuilts.sh all
-
-# 輸出：btblecontroller_ipro7_&lt;variant&gt;/libbtblecontroller_ipro7_&lt;variant&gt;.a</code></pre>
-            </div>
-
-            <div class="alert alert-warning">
-                <strong>注意：</strong><code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> 不可用於正式發布版本。正式版必須使用預建函式庫。
+            <div class="alert alert-info">
+                <strong>提示：</strong>預建函式庫檔案命名為 <code>libbtblecontroller_ipro7_&lt;variant&gt;.a</code>，建構系統會根據 <code>.config</code> 中的設定自動連結對應的變體。
             </div>
 
             <h3>LE Audio 應用框架</h3>

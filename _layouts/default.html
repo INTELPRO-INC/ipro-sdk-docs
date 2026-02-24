@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700&display=swap"
         rel="stylesheet">
 
     <!-- Font Awesome -->
@@ -76,6 +76,20 @@
                                 <span class="nav-dropdown-desc">BLE & LE Audio</span>
                             </div>
                         </a>
+                        <a href="{{ '/en/applications' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-box"></i>
+                            <div>
+                                <span class="nav-dropdown-title">Applications</span>
+                                <span class="nav-dropdown-desc">Reference examples</span>
+                            </div>
+                        </a>
+                        <a href="{{ '/en/api-reference' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-code"></i>
+                            <div>
+                                <span class="nav-dropdown-title">API Reference</span>
+                                <span class="nav-dropdown-desc">BLE, HAL, RTOS APIs</span>
+                            </div>
+                        </a>
                     </div>
                 </li>
 
@@ -85,27 +99,6 @@
                         Topics <i class="fas fa-chevron-down"></i>
                     </button>
                     <div class="nav-dropdown-menu">
-                        <a href="{{ '/en/matter-thread' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-house-signal"></i>
-                            <div>
-                                <span class="nav-dropdown-title">Matter & Thread</span>
-                                <span class="nav-dropdown-desc">Smart home protocols</span>
-                            </div>
-                        </a>
-                        <a href="{{ '/en/wifi-networking' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-wifi"></i>
-                            <div>
-                                <span class="nav-dropdown-title">WiFi & Networking</span>
-                                <span class="nav-dropdown-desc">WiFi, lwIP, TLS</span>
-                            </div>
-                        </a>
-                        <a href="{{ '/en/ai-npu' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-brain"></i>
-                            <div>
-                                <span class="nav-dropdown-title">AI & NPU</span>
-                                <span class="nav-dropdown-desc">Neural network accelerator</span>
-                            </div>
-                        </a>
                         <a href="{{ '/en/audio-multimedia' | relative_url }}" class="nav-dropdown-item">
                             <i class="fas fa-headphones"></i>
                             <div>
@@ -117,7 +110,14 @@
                             <i class="fas fa-wrench"></i>
                             <div>
                                 <span class="nav-dropdown-title">Tools & Debugging</span>
-                                <span class="nav-dropdown-desc">Flash, debug, CI/CD</span>
+                                <span class="nav-dropdown-desc">Build, debug, GDB</span>
+                            </div>
+                        </a>
+                        <a href="{{ '/en/hardware' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-microchip"></i>
+                            <div>
+                                <span class="nav-dropdown-title">Hardware</span>
+                                <span class="nav-dropdown-desc">IPRO7 specs & peripherals</span>
                             </div>
                         </a>
                     </div>
@@ -164,6 +164,20 @@
                                 <span class="nav-dropdown-desc">BLE 與 LE Audio</span>
                             </div>
                         </a>
+                        <a href="{{ '/applications' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-box"></i>
+                            <div>
+                                <span class="nav-dropdown-title">應用範例</span>
+                                <span class="nav-dropdown-desc">參考應用程式</span>
+                            </div>
+                        </a>
+                        <a href="{{ '/api-reference' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-code"></i>
+                            <div>
+                                <span class="nav-dropdown-title">API 參考</span>
+                                <span class="nav-dropdown-desc">BLE、HAL、RTOS API</span>
+                            </div>
+                        </a>
                     </div>
                 </li>
 
@@ -173,27 +187,6 @@
                         主題 <i class="fas fa-chevron-down"></i>
                     </button>
                     <div class="nav-dropdown-menu">
-                        <a href="{{ '/matter-thread' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-house-signal"></i>
-                            <div>
-                                <span class="nav-dropdown-title">Matter & Thread</span>
-                                <span class="nav-dropdown-desc">智慧家庭協定</span>
-                            </div>
-                        </a>
-                        <a href="{{ '/wifi-networking' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-wifi"></i>
-                            <div>
-                                <span class="nav-dropdown-title">WiFi 與網路</span>
-                                <span class="nav-dropdown-desc">WiFi、lwIP、TLS</span>
-                            </div>
-                        </a>
-                        <a href="{{ '/ai-npu' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-brain"></i>
-                            <div>
-                                <span class="nav-dropdown-title">AI & NPU</span>
-                                <span class="nav-dropdown-desc">神經網路加速器</span>
-                            </div>
-                        </a>
                         <a href="{{ '/audio-multimedia' | relative_url }}" class="nav-dropdown-item">
                             <i class="fas fa-headphones"></i>
                             <div>
@@ -205,7 +198,14 @@
                             <i class="fas fa-wrench"></i>
                             <div>
                                 <span class="nav-dropdown-title">工具與除錯</span>
-                                <span class="nav-dropdown-desc">燒錄、除錯、CI/CD</span>
+                                <span class="nav-dropdown-desc">建構、除錯、GDB</span>
+                            </div>
+                        </a>
+                        <a href="{{ '/hardware' | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas fa-microchip"></i>
+                            <div>
+                                <span class="nav-dropdown-title">硬體規格</span>
+                                <span class="nav-dropdown-desc">IPRO7 規格與週邊</span>
                             </div>
                         </a>
                     </div>
@@ -254,9 +254,9 @@
                         <span class="footer-logo-text">IPRO SDK</span>
                     </div>
                     {% if page.lang == 'en' %}
-                    <p>High-performance embedded SDK for IPRO7AI AIOT chipset with AI, image, voice, and multi-protocol wireless.</p>
+                    <p>Embedded SDK for IPRO7 RISC-V SoC with BLE 5.4 and LE Audio support.</p>
                     {% else %}
-                    <p>高效能嵌入式系統開發套件，支援 AI、影像、語音及多協定無線通訊。</p>
+                    <p>IPRO7 RISC-V SoC 嵌入式開發套件，支援 BLE 5.4 與 LE Audio。</p>
                     {% endif %}
                 </div>
                 <div class="footer-section footer-links-wrap">
@@ -273,10 +273,10 @@
                     <div class="footer-link-col">
                         <h4>Topics</h4>
                         <ul>
-                            <li><a href="{{ '/en/matter-thread' | relative_url }}">Matter & Thread</a></li>
-                            <li><a href="{{ '/en/wifi-networking' | relative_url }}">WiFi & Networking</a></li>
-                            <li><a href="{{ '/en/ai-npu' | relative_url }}">AI & NPU</a></li>
+                            <li><a href="{{ '/en/applications' | relative_url }}">Applications</a></li>
+                            <li><a href="{{ '/en/api-reference' | relative_url }}">API Reference</a></li>
                             <li><a href="{{ '/en/audio-multimedia' | relative_url }}">Audio & Multimedia</a></li>
+                            <li><a href="{{ '/en/hardware' | relative_url }}">Hardware</a></li>
                         </ul>
                     </div>
                     {% else %}
@@ -292,10 +292,10 @@
                     <div class="footer-link-col">
                         <h4>主題</h4>
                         <ul>
-                            <li><a href="{{ '/matter-thread' | relative_url }}">Matter & Thread</a></li>
-                            <li><a href="{{ '/wifi-networking' | relative_url }}">WiFi 與網路</a></li>
-                            <li><a href="{{ '/ai-npu' | relative_url }}">AI & NPU</a></li>
+                            <li><a href="{{ '/applications' | relative_url }}">應用範例</a></li>
+                            <li><a href="{{ '/api-reference' | relative_url }}">API 參考</a></li>
                             <li><a href="{{ '/audio-multimedia' | relative_url }}">音訊與多媒體</a></li>
+                            <li><a href="{{ '/hardware' | relative_url }}">硬體規格</a></li>
                         </ul>
                     </div>
                     {% endif %}
