@@ -17,6 +17,7 @@ lang: en
                 <li><a href="#reference-apps" class="sidebar-link">Reference Applications</a></li>
                 <li><a href="#dev-guide" class="sidebar-link">Development Guide</a></li>
                 <li><a href="#performance" class="sidebar-link">Performance & Optimization</a></li>
+                <li><a href="#cloud-llm" class="sidebar-link">Cloud LLM Agent</a></li>
             </ul>
         </nav>
     </aside>
@@ -343,29 +344,27 @@ CONFIG_AI_PREBUILT_PATH="components/ai/prebuilt/libai.a"</code></pre>
         <section id="reference-apps">
             <h2>Reference Applications</h2>
 
-            <h3>ipro7_demo - Interactive AI Demo</h3>
-            <p>Located at <code>apps/ipro7_demo/demo/ai/</code>, this provides shell command-based interactive AI inference:</p>
+            <h3>ipro7_pircam — PIR-Triggered AI Camera</h3>
+            <p>Located at <code>apps/turnkey/ipro7_pircam/</code>. The most complete on-device AI reference design in the SDK, integrating PIR sensor wakeup, ISP capture, NPU inference, and USB UVC output:</p>
+            <ul>
+                <li>PIR triggers wakeup → ISP captures 640×360 ARGB frame → NPU inference → results pushed over SPI/USB</li>
+                <li>YOLOv8 Person+Pet model lives on SD card at <code>/sdcard/ai_model/person_pet_detect.blai</code> and is loaded once at boot</li>
+                <li>Model stays in PSRAM across low-power sleep cycles — no reload on wakeup</li>
+                <li>Key files: <code>pircam_ai.c</code> (inference task), <code>pircam_isp.c</code> (frame source), <code>pircam_lpfw.c</code> (low-power firmware)</li>
+            </ul>
 
+            <h3>ipro7_cmd_pircam — Command-Mode Variant</h3>
+            <p>Located at <code>apps/turnkey/ipro7_cmd_pircam/</code>. Same AI pipeline, but driven over an SPI master/slave protocol (<code>pircam_spi_proto.c</code>) — an external host MCU initiates capture and inference requests. Useful when IPRO7AI is embedded as a co-processor in a larger system.</p>
+
+            <h3>Key API</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">Shell Commands</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                    <span class="code-block-title">pircam_ai.h</span>
+                    <button type="button" class="code-copy-btn" aria-label="Copy code"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># Load model and run single inference (reads model + test image from SD card)
-ai_sd_run
-
-# Run inference demo with a specific model
-ai_run_demo 0    # Person Detection
-ai_run_demo 1    # Person + Pet Detection
-ai_run_demo 2    # Pet Detection
-ai_run_demo 3    # Face Detection
-
-# Start External Buffer continuous inference mode
-ai_run_ext 1              # Start Person+Pet continuous inference
-ai_run_ext stop           # Stop inference
-
-# View AI status
-ai_status</code></pre>
+                <pre><code class="language-c">int  pircam_ai_init(void);                  /* Mount SD, load model, spawn inference task */
+int  pircam_ai_push_buffer(uint32_t addr);  /* ISP ISR enqueues frame address (ISR-safe) */
+void pircam_ai_wait_done(void);             /* Block until current inference completes */</code></pre>
             </div>
         </section>
 
@@ -499,6 +498,96 @@ CONFIG_AI_DEBUG=y
 # - IPROAI_SHOW_INST: Display per-layer instructions
 # - IPROAI_PROFILING_EACH_LAYER: Per-layer execution time</code></pre>
             </div>
+        </section>
+
+        <section id="cloud-llm">
+            <h2>Cloud LLM Agent</h2>
+            <p>In addition to on-device NPU inference, IPRO SDK ships a full cloud LLM agent framework in <code>components/ai_client/</code>. It wraps multiple providers behind a unified interface, includes a built-in ReAct tool-calling loop, and runs directly on IPRO7AI — letting you combine BLE / Wi-Fi / sensor data with conversational LLM agents in IoT products.</p>
+
+            <h3>Supported Providers</h3>
+            <p>Each provider is implemented as an <code>ai_provider_t</code> handling request building, HTTP transport, and streaming response parsing. Application code only picks a provider and supplies an API key.</p>
+            <ul>
+                <li><strong>Anthropic Claude</strong> — <code>ai_provider_claude</code> (<code>ai_claude.h</code>)</li>
+                <li><strong>OpenAI</strong> — <code>ai_provider_openai</code> (<code>ai_openai.h</code>)</li>
+                <li><strong>Google Gemini</strong> — <code>ai_provider_gemini</code> (<code>ai_gemini.h</code>)</li>
+                <li><strong>MiniMax</strong> — <code>ai_provider_minimax</code> (<code>ai_minimax.h</code>)</li>
+            </ul>
+
+            <h3>ReAct Loop &amp; Tool Calls</h3>
+            <p><code>ai_agent_process()</code> drives the full reason-act-observe loop: model returns a tool_call → SDK invokes <code>ai_tool_dispatch_fn</code> → result is appended to history → model is re-invoked, until <code>AI_CLIENT_MAX_TOOL_DEPTH</code> (default 5) is reached or a final text reply is produced. Tool schemas are supplied separately for each provider format (Anthropic / OpenAI / Gemini).</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Minimal integration</span>
+                    <button type="button" class="code-copy-btn" aria-label="Copy code"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">#include "ai_agent.h"
+#include "ai_claude.h"
+
+static int my_tool_dispatch(const char *name, const char *input,
+                            char *output, uint32_t size)
+{
+    if (strcmp(name, "read_temperature") == 0) {
+        snprintf(output, size, "{\"temp_c\":%.1f}", sensor_read_temp());
+        return 0;
+    }
+    return -1;
+}
+
+void ask_ai(const char *user_text)
+{
+    ai_agent_ctx_t ctx = {
+        .provider      = &amp;ai_provider_claude,
+        .api_key       = CONFIG_CLAUDE_API_KEY,
+        .model         = "claude-sonnet-4-5",
+        .system_prompt = "You are an embedded assistant.",
+        .user_text     = user_text,
+        .tools_json    = TOOLS_SCHEMA_ANTHROPIC,
+        .tools_count   = 1,
+        .tool_dispatch = my_tool_dispatch,
+    };
+
+    char reply[1024];
+    if (ai_agent_process(&amp;ctx, reply, sizeof(reply)) == 0) {
+        printf("AI: %s\n", reply);
+    }
+}</code></pre>
+            </div>
+
+            <h3>Enabling the Component</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">.config</span>
+                    <button type="button" class="code-copy-btn" aria-label="Copy code"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">CONFIG_AI_CLIENT_ENABLE=y
+CONFIG_AI_CLIENT_MAX_TOOL_DEPTH=5
+CONFIG_AI_CLIENT_REQ_BUF_SIZE=16384
+CONFIG_AI_CLIENT_RESPONSE_MAX=32768
+# Dependencies: Wi-Fi/network, json_utils, net_utils, mbedTLS (HTTPS)</code></pre>
+            </div>
+            <p>Call <code>ai_agent_init()</code> once to create the serialization mutex; <code>ai_agent_process()</code> can then be called safely from multiple tasks.</p>
+
+            <h3>Reference Applications</h3>
+            <ul>
+                <li><strong><code>apps/ai/ipro_llm_pawr_gateway/</code></strong> — LLM × BLE PAwR gateway. Feeds PAwR sensor data into an LLM and lets tool callbacks trigger control actions, demonstrating BLE controller + lwIP + LLM agent + sensor fusion in one pipeline.</li>
+                <li><strong><code>apps/ai/ipro_lobster_pool/</code></strong> — A state-machine-driven Discord bot example: <code>INIT → NETWORK → NTP → APP_INIT → DISCORD_CONNECT → SIM_START → BRIDGE_START → RUNNING</code>. Shows how to embed an LLM agent in a long-running IoT service while avoiding TLS contention between tasks.</li>
+            </ul>
+
+            <h3>NPU vs. Cloud AI Trade-offs</h3>
+            <table class="api-table">
+                <thead>
+                    <tr><th>Aspect</th><th>On-device NPU (IPROAI)</th><th>Cloud LLM (ai_client)</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Typical task</td><td>Image/audio classification, object detection</td><td>Conversation, reasoning, tool orchestration</td></tr>
+                    <tr><td>Network</td><td>None</td><td>Requires Wi-Fi/Ethernet + HTTPS</td></tr>
+                    <tr><td>Latency</td><td>Tens of ms</td><td>Hundreds of ms to seconds</td></tr>
+                    <tr><td>Memory</td><td>PSRAM (model + intermediates)</td><td>~50 KB request/response buffers</td></tr>
+                    <tr><td>Low power</td><td>PSRAM-retained sleep supported</td><td>Must keep network link alive</td></tr>
+                    <tr><td>Privacy</td><td>Data stays on device</td><td>Sent to third-party provider</td></tr>
+                </tbody>
+            </table>
         </section>
     </article>
 </div>

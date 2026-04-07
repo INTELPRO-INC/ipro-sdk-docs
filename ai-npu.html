@@ -16,6 +16,7 @@ title: AI 與 NPU
                 <li><a href="#reference-apps" class="sidebar-link">參考應用</a></li>
                 <li><a href="#dev-guide" class="sidebar-link">開發指南</a></li>
                 <li><a href="#performance" class="sidebar-link">效能與優化</a></li>
+                <li><a href="#cloud-llm" class="sidebar-link">雲端 LLM Agent</a></li>
             </ul>
         </nav>
     </aside>
@@ -342,29 +343,27 @@ CONFIG_AI_PREBUILT_PATH="components/ai/prebuilt/libai.a"</code></pre>
         <section id="reference-apps">
             <h2>參考應用</h2>
 
-            <h3>ipro7_demo - AI 互動展示</h3>
-            <p>位於 <code>apps/ipro7_demo/demo/ai/</code>，提供 Shell 命令列互動式 AI 推理：</p>
+            <h3>ipro7_pircam — PIR 觸發 AI 攝影機</h3>
+            <p>位於 <code>apps/turnkey/ipro7_pircam/</code>。整合 PIR 感測器、ISP、NPU 推理與 USB UVC 輸出，是 SDK 中最完整的端側 AI 參考設計：</p>
+            <ul>
+                <li>PIR 觸發喚醒 → ISP 抓取 640×360 ARGB 影像 → NPU 推理 → 結果經 SPI/USB 上報</li>
+                <li>YOLOv8 Person+Pet 模型存於 SD 卡 <code>/sdcard/ai_model/person_pet_detect.blai</code>，僅啟動時載入一次</li>
+                <li>模型常駐 PSRAM，低功耗睡眠期間保留，喚醒後免重新載入</li>
+                <li>核心檔案：<code>pircam_ai.c</code>（推理任務）、<code>pircam_isp.c</code>（影像來源）、<code>pircam_lpfw.c</code>（低功耗韌體）</li>
+            </ul>
 
+            <h3>ipro7_cmd_pircam — 命令模式變體</h3>
+            <p>位於 <code>apps/turnkey/ipro7_cmd_pircam/</code>。同樣的 AI pipeline，改用 SPI 主從協議（<code>pircam_spi_proto.c</code>）由外部 MCU 主動發起拍攝與推理請求，適合搭配主控板的 system-in-package 應用。</p>
+
+            <h3>關鍵 API 對應</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">Shell 命令</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                    <span class="code-block-title">pircam_ai.h</span>
+                    <button type="button" class="code-copy-btn" aria-label="複製程式碼"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 載入模型並執行單次推理（從 SD 卡讀取模型 + 測試影像）
-ai_sd_run
-
-# 執行特定模型的推理展示
-ai_run_demo 0    # Person Detection
-ai_run_demo 1    # Person + Pet Detection
-ai_run_demo 2    # Pet Detection
-ai_run_demo 3    # Face Detection
-
-# 啟動 External Buffer 連續推理模式
-ai_run_ext 1              # 啟動 Person+Pet 連續推理
-ai_run_ext stop           # 停止推理
-
-# 查看 AI 狀態
-ai_status</code></pre>
+                <pre><code class="language-c">int  pircam_ai_init(void);                  /* 掛載 SD、載入模型、建立推理 task */
+int  pircam_ai_push_buffer(uint32_t addr);  /* ISP 中斷把 frame 位址塞進 queue（ISR-safe） */
+void pircam_ai_wait_done(void);             /* 等待當前推理結束（ISP deinit 前呼叫） */</code></pre>
             </div>
         </section>
 
@@ -498,6 +497,96 @@ CONFIG_AI_DEBUG=y
 # - IPROAI_SHOW_INST: 顯示每層指令
 # - IPROAI_PROFILING_EACH_LAYER: 每層執行時間</code></pre>
             </div>
+        </section>
+
+        <section id="cloud-llm">
+            <h2>雲端 LLM Agent</h2>
+            <p>除了端側 NPU 推理之外，IPRO SDK 透過 <code>components/ai_client/</code> 提供完整的雲端 LLM agent 框架。它把多家供應商封裝成統一介面，內建 ReAct 工具呼叫迴圈，可在 IPRO7AI 直接執行對話式 agent，搭配 BLE / Wi-Fi / 感測器建立 IoT × LLM 應用。</p>
+
+            <h3>支援的供應商</h3>
+            <p>每家供應商都實作為一個 <code>ai_provider_t</code>，負責 request 組裝、HTTP 呼叫與 streaming 解析。應用層只需要選擇 provider 並提供 API key。</p>
+            <ul>
+                <li><strong>Anthropic Claude</strong> — <code>ai_provider_claude</code>（<code>ai_claude.h</code>）</li>
+                <li><strong>OpenAI</strong> — <code>ai_provider_openai</code>（<code>ai_openai.h</code>）</li>
+                <li><strong>Google Gemini</strong> — <code>ai_provider_gemini</code>（<code>ai_gemini.h</code>）</li>
+                <li><strong>MiniMax</strong> — <code>ai_provider_minimax</code>（<code>ai_minimax.h</code>）</li>
+            </ul>
+
+            <h3>ReAct 迴圈與工具呼叫</h3>
+            <p><code>ai_agent_process()</code> 會處理完整的 reason-act-observe 迴圈：模型回傳 tool_call → SDK 透過 <code>ai_tool_dispatch_fn</code> 執行 → 結果寫回 history → 再次呼叫模型，直到 <code>AI_CLIENT_MAX_TOOL_DEPTH</code>（預設 5）或得到最終文字。三家供應商的 tool schema 各自獨立提供：</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">最小整合範例</span>
+                    <button type="button" class="code-copy-btn" aria-label="複製程式碼"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">#include "ai_agent.h"
+#include "ai_claude.h"
+
+static int my_tool_dispatch(const char *name, const char *input,
+                            char *output, uint32_t size)
+{
+    if (strcmp(name, "read_temperature") == 0) {
+        snprintf(output, size, "{\"temp_c\":%.1f}", sensor_read_temp());
+        return 0;
+    }
+    return -1;
+}
+
+void ask_ai(const char *user_text)
+{
+    ai_agent_ctx_t ctx = {
+        .provider      = &amp;ai_provider_claude,
+        .api_key       = CONFIG_CLAUDE_API_KEY,
+        .model         = "claude-sonnet-4-5",
+        .system_prompt = "You are an embedded assistant.",
+        .user_text     = user_text,
+        .tools_json    = TOOLS_SCHEMA_ANTHROPIC,
+        .tools_count   = 1,
+        .tool_dispatch = my_tool_dispatch,
+    };
+
+    char reply[1024];
+    if (ai_agent_process(&amp;ctx, reply, sizeof(reply)) == 0) {
+        printf("AI: %s\n", reply);
+    }
+}</code></pre>
+            </div>
+
+            <h3>啟用方式</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">.config</span>
+                    <button type="button" class="code-copy-btn" aria-label="複製程式碼"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">CONFIG_AI_CLIENT_ENABLE=y
+CONFIG_AI_CLIENT_MAX_TOOL_DEPTH=5
+CONFIG_AI_CLIENT_REQ_BUF_SIZE=16384
+CONFIG_AI_CLIENT_RESPONSE_MAX=32768
+# 依賴：需要 Wi-Fi/網路、json_utils、net_utils、mbedTLS（HTTPS）</code></pre>
+            </div>
+            <p>呼叫 <code>ai_agent_init()</code> 一次以建立序列化 mutex；之後可從多個 task 安全呼叫 <code>ai_agent_process()</code>。</p>
+
+            <h3>參考應用</h3>
+            <ul>
+                <li><strong><code>apps/ai/ipro_llm_pawr_gateway/</code></strong> — LLM × BLE PAwR gateway。把 PAwR 感測器資料丟給 LLM 推理，再透過工具回呼觸發控制動作。展示 BLE controller + lwIP + LLM agent + 感測器資料融合的完整 pipeline。</li>
+                <li><strong><code>apps/ai/ipro_lobster_pool/</code></strong> — 狀態機驅動的 Discord 機器人示範：<code>INIT → NETWORK → NTP → APP_INIT → DISCORD_CONNECT → SIM_START → BRIDGE_START → RUNNING</code>，展示如何把 LLM agent 嵌進長時運行的 IoT 服務並避免多 task 競爭 TLS。</li>
+            </ul>
+
+            <h3>NPU 與雲端 AI 的取捨</h3>
+            <table class="api-table">
+                <thead>
+                    <tr><th>面向</th><th>本地 NPU（IPROAI）</th><th>雲端 LLM（ai_client）</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>典型任務</td><td>影像/聲音分類、物件偵測</td><td>對話、推理、工具編排</td></tr>
+                    <tr><td>網路依賴</td><td>無</td><td>必需 Wi-Fi/Ethernet + HTTPS</td></tr>
+                    <tr><td>延遲</td><td>數十 ms</td><td>數百 ms ~ 數秒</td></tr>
+                    <tr><td>記憶體</td><td>PSRAM（模型 + 中間結果）</td><td>~50 KB request/response buffer</td></tr>
+                    <tr><td>低功耗</td><td>支援 PSRAM 保留睡眠</td><td>需保持網路連線</td></tr>
+                    <tr><td>隱私</td><td>資料不離開裝置</td><td>送至第三方供應商</td></tr>
+                </tbody>
+            </table>
         </section>
     </article>
 </div>
