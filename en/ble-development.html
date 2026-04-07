@@ -150,7 +150,7 @@ lang: en
                             <td>2</td>
                             <td>5.4</td>
                             <td>No</td>
-                            <td>Dual connection + PAwR (used by PHM Gateway)</td>
+                            <td>Dual connection + PAwR (gateway use cases)</td>
                         </tr>
                         <tr>
                             <td><code>link4</code></td>
@@ -460,7 +460,7 @@ bt_le_per_adv_set_response_data(sync, &amp;response_params, &amp;response_buf);<
             </div>
 
             <div class="alert alert-warning">
-                <strong>Known issue:</strong> <code>bt_le_per_adv_set_response_data()</code> currently returns -5 (EIO) on subevents 1+ — see the PHM Gateway session notes. The provisioning channel (subevent 0) is verified working.
+                <strong>Known issue:</strong> <code>bt_le_per_adv_set_response_data()</code> currently returns -5 (EIO) on subevents 1+. The provisioning channel (subevent 0) is verified working.
             </div>
 
             <h3>PAwR Applications in the SDK</h3>
@@ -483,16 +483,6 @@ bt_le_per_adv_set_response_data(sync, &amp;response_params, &amp;response_buf);<
                             <td><code>apps/bluetooth/esl/ipro_esl_sensor/</code></td>
                             <td>Observer</td>
                             <td>ESL sensor tag, PAwR + PDS31 deep sleep</td>
-                        </tr>
-                        <tr>
-                            <td><code>apps/turnkey/robust/ipro_robust_phm_gateway/</code></td>
-                            <td>Broadcaster</td>
-                            <td>PHM Gateway, 32 subevents, 1s interval, V2 PA report (0x25)</td>
-                        </tr>
-                        <tr>
-                            <td><code>apps/turnkey/robust/ipro_robust_phm_sensor/</code></td>
-                            <td>Observer</td>
-                            <td>MPU6500 vibration sensor with PAwR auto-pairing</td>
                         </tr>
                         <tr>
                             <td><code>apps/ai/ipro_llm_pawr_gateway/</code></td>
@@ -677,12 +667,6 @@ bt_le_per_adv_set_response_data(sync, &amp;response_params, &amp;response_buf);<
                             <td>PAwR ESL sensor variant (large connectionless network)</td>
                             <td>link1_periph / link2_54</td>
                             <td><code>apps/bluetooth/esl/</code></td>
-                        </tr>
-                        <tr>
-                            <td><strong>ipro_robust_phm_sensor / _gateway</strong></td>
-                            <td>PHM vibration monitoring (PAwR + IMU), reference V2 PA report (0x25)</td>
-                            <td>link1_periph / link2_54</td>
-                            <td><code>apps/turnkey/robust/</code></td>
                         </tr>
                     </tbody>
                 </table>

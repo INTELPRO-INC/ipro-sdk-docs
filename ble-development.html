@@ -149,7 +149,7 @@ title: BLE 開發指南
                             <td>2</td>
                             <td>5.4</td>
                             <td>否</td>
-                            <td>雙連線 + PAwR（PHM Gateway 使用）</td>
+                            <td>雙連線 + PAwR（gateway 應用）</td>
                         </tr>
                         <tr>
                             <td><code>link4</code></td>
@@ -459,7 +459,7 @@ bt_le_per_adv_set_response_data(sync, &amp;response_params, &amp;response_buf);<
             </div>
 
             <div class="alert alert-warning">
-                <strong>已知問題：</strong><code>bt_le_per_adv_set_response_data()</code> 在 subevent 1+ 上目前回傳 -5（EIO）— 詳見 PHM Gateway session 紀錄。Provisioning channel（subevent 0）已驗證可正常運作。
+                <strong>已知問題：</strong><code>bt_le_per_adv_set_response_data()</code> 在 subevent 1+ 上目前回傳 -5（EIO）。Provisioning channel（subevent 0）已驗證可正常運作。
             </div>
 
             <h3>SDK 內 PAwR 應用</h3>
@@ -482,16 +482,6 @@ bt_le_per_adv_set_response_data(sync, &amp;response_params, &amp;response_buf);<
                             <td><code>apps/bluetooth/esl/ipro_esl_sensor/</code></td>
                             <td>Observer</td>
                             <td>ESL sensor tag，PAwR + PDS31 深度睡眠</td>
-                        </tr>
-                        <tr>
-                            <td><code>apps/turnkey/robust/ipro_robust_phm_gateway/</code></td>
-                            <td>Broadcaster</td>
-                            <td>PHM Gateway，32 subevents、1s interval、V2 PA report (0x25)</td>
-                        </tr>
-                        <tr>
-                            <td><code>apps/turnkey/robust/ipro_robust_phm_sensor/</code></td>
-                            <td>Observer</td>
-                            <td>MPU6500 振動 sensor，PAwR 自動配對</td>
                         </tr>
                         <tr>
                             <td><code>apps/ai/ipro_llm_pawr_gateway/</code></td>
@@ -676,12 +666,6 @@ bt_le_per_adv_set_response_data(sync, &amp;response_params, &amp;response_buf);<
                             <td>PAwR 模式 ESL 感測器（大規模無連線網路）</td>
                             <td>link1_periph / link2_54</td>
                             <td><code>apps/bluetooth/esl/</code></td>
-                        </tr>
-                        <tr>
-                            <td><strong>ipro_robust_phm_sensor / _gateway</strong></td>
-                            <td>PHM 振動監控（PAwR + IMU），參考 V2 PA report (0x25)</td>
-                            <td>link1_periph / link2_54</td>
-                            <td><code>apps/turnkey/robust/</code></td>
                         </tr>
                     </tbody>
                 </table>
