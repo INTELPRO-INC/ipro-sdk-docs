@@ -13,6 +13,8 @@ lang: en
                 <li><a href="#controller-variants" class="sidebar-link">Controller Variants</a></li>
                 <li><a href="#api-patterns" class="sidebar-link">API Patterns</a></li>
                 <li><a href="#le-audio" class="sidebar-link">LE Audio</a></li>
+                <li><a href="#pawr-esl" class="sidebar-link">PAwR &amp; ESL</a></li>
+                <li><a href="#low-power" class="sidebar-link">Low Power BLE</a></li>
                 <li><a href="#app-framework" class="sidebar-link">App Framework</a></li>
                 <li><a href="#reference-apps" class="sidebar-link">Reference Applications</a></li>
                 <li><a href="#prebuilt-libs" class="sidebar-link">Prebuilt Libraries</a></li>
@@ -65,20 +67,25 @@ lang: en
                 </div>
                 <pre><code>components/wireless/bluetooth/
 ├── blestack/                        # Zephyr BLE Host Stack (buildable source)
-│   └── src/include/bluetooth/       # Public headers
-│       ├── bluetooth.h              # bt_enable(), bt_le_adv_start()
-│       ├── conn.h                   # bt_conn_create_le(), bt_conn_cb_register()
-│       ├── gatt.h                   # bt_gatt_service_register(), bt_gatt_notify()
-│       ├── uuid.h                   # BT_UUID_DECLARE_16() etc.
-│       └── audio/                   # LE Audio APIs (BAP, CAP, VCP...)
+│   └── src/
+│       ├── include/bluetooth/       # Public headers
+│       │   ├── bluetooth.h          # bt_enable(), bt_le_adv_start()
+│       │   ├── conn.h               # bt_conn_create_le(), bt_conn_cb_register()
+│       │   ├── gatt.h               # bt_gatt_service_register(), bt_gatt_notify()
+│       │   ├── uuid.h               # BT_UUID_DECLARE_16() etc.
+│       │   ├── hci_host.h           # HCI commands/events (incl. PAwR V2 0x25)
+│       │   └── audio/               # LE Audio APIs (BAP, CAP, VCP, MCP...)
+│       ├── host/                    # GAP / GATT / L2CAP / SMP / ATT / hci_core
+│       ├── audio/                   # LE Audio profile implementations
+│       ├── services/                # Built-in GATT services (bas, dis, hog, ias, scps, spp, atvv, oad)
+│       ├── ipro_hci_wrapper/        # On-chip HCI bridge (Host ↔ Controller)
+│       └── port/                    # FreeRTOS port layer
 ├── btblecontroller/                 # RivieraWaves Controller source (requires license)
 ├── btblecontroller_ipro7_&lt;variant&gt;/ # Prebuilt controller static libraries
-├── btprofile/                       # 20+ GATT Profile implementations
-│   ├── bas/   dis/   hogp/          # Battery, Device Info, HID
-│   ├── csip/  otp/   find/          # CSIP, OTP, Find Me
-│   └── ...
+├── btprofile/                       # Bluetooth Classic profiles (A2DP / AVRCP / HFP / SPP / SDP)
 ├── blemesh/                         # Bluetooth Mesh support
-├── ble_common.cmake                 # Controller variant configuration
+├── blemesh_model/                   # Mesh model implementations
+├── ble_common.cmake                 # Controller variant configuration (PRIV_CONFIG_GEN_BLE)
 └── build_all_prebuilts.sh           # Prebuilt library build script</code></pre>
             </div>
         </section>
@@ -108,21 +115,42 @@ lang: en
                             <td>1</td>
                             <td>5.0+</td>
                             <td>No</td>
-                            <td>Simple peripheral (minimal footprint)</td>
+                            <td>Peripheral-only role, minimal footprint (HID, sensor tags)</td>
                         </tr>
                         <tr>
                             <td><code>link1</code></td>
                             <td>1</td>
                             <td>5.0+</td>
                             <td>No</td>
-                            <td>Single connection, all roles</td>
+                            <td>Single connection, all roles (default)</td>
+                        </tr>
+                        <tr>
+                            <td><code>link1_53</code></td>
+                            <td>1</td>
+                            <td>5.3</td>
+                            <td>No</td>
+                            <td>Single connection + BLE 5.3 features</td>
+                        </tr>
+                        <tr>
+                            <td><code>link1_54</code></td>
+                            <td>1</td>
+                            <td>5.4</td>
+                            <td>No</td>
+                            <td>Single connection + BLE 5.4 (incl. PAwR)</td>
                         </tr>
                         <tr>
                             <td><code>link2</code></td>
                             <td>2</td>
                             <td>5.0+</td>
                             <td>No</td>
-                            <td>Dual connection (2C+0P, 1C+1P, 0C+2P)</td>
+                            <td>Dual connection (any 2C+0P / 1C+1P / 0C+2P combo)</td>
+                        </tr>
+                        <tr>
+                            <td><code>link2_54</code></td>
+                            <td>2</td>
+                            <td>5.4</td>
+                            <td>No</td>
+                            <td>Dual connection + PAwR (used by PHM Gateway)</td>
                         </tr>
                         <tr>
                             <td><code>link4</code></td>
@@ -157,14 +185,21 @@ lang: en
                             <td>1</td>
                             <td>5.4</td>
                             <td>Yes</td>
-                            <td>Latest BLE + LE Audio</td>
+                            <td>Latest BLE + LE Audio (single link)</td>
                         </tr>
                         <tr>
                             <td><code>link2_leaudio_53_54</code></td>
                             <td>2</td>
                             <td>5.4</td>
                             <td>Yes</td>
-                            <td>Latest BLE + LE Audio</td>
+                            <td>Latest BLE + LE Audio (typical headset)</td>
+                        </tr>
+                        <tr>
+                            <td><code>link4_leaudio_53_54</code></td>
+                            <td>4</td>
+                            <td>5.4</td>
+                            <td>Yes</td>
+                            <td>Quad-link LE Audio (multi-device sync)</td>
                         </tr>
                     </tbody>
                 </table>
@@ -175,7 +210,7 @@ lang: en
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">.config Variant Selection</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                    <button type="button" class="code-copy-btn" aria-label="Copy code"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># Specify variant name directly
 CONFIG_BTBLECONTROLLER_LIB="link2"
@@ -201,7 +236,7 @@ CONFIG_BTBLECONTROLLER_BT_54=y        # Appends _53_54 (5.4 implies 5.3)
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">GAP Advertising Operations</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                    <button type="button" class="code-copy-btn" aria-label="Copy code"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">#include &lt;bluetooth/bluetooth.h&gt;
 #include &lt;bluetooth/conn.h&gt;
@@ -233,7 +268,7 @@ bt_le_scan_start(BT_LE_SCAN_ACTIVE, scan_cb);</code></pre>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">Connection Management</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                    <button type="button" class="code-copy-btn" aria-label="Copy code"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">static void connected(struct bt_conn *conn, u8_t err)
 {
@@ -265,7 +300,7 @@ void app_init(void)
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">Static GATT Service Definition</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                    <button type="button" class="code-copy-btn" aria-label="Copy code"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">#include &lt;bluetooth/gatt.h&gt;
 #include &lt;bluetooth/uuid.h&gt;
@@ -363,7 +398,7 @@ bt_gatt_notify(conn, &amp;my_svc.attrs[1], my_value, sizeof(my_value));</code></
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">.config LE Audio Configuration</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                    <button type="button" class="code-copy-btn" aria-label="Copy code"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># Enable LE Audio controller
 CONFIG_BTBLECONTROLLER_LIB="link2"
@@ -382,6 +417,129 @@ CONFIG_BT_CSIP_SET_MEMBER=y</code></pre>
 
             <div class="alert alert-info">
                 <strong>Cross-reference:</strong> See the Audio &amp; Multimedia page for detailed audio pipeline documentation.
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PAwR & ESL -->
+        <!-- ============================================================ -->
+        <section id="pawr-esl">
+            <h2>PAwR &amp; ESL</h2>
+            <p>BLE 5.4 introduces <strong>PAwR (Periodic Advertising with Responses)</strong>, letting a broadcaster collect responses from observers in fixed subevent slots without establishing one-to-one connections. The SDK supports PAwR in both host and controller layers — it is the foundation of IPRO's large-scale sensor and ESL applications.</p>
+
+            <h3>Typical Architecture</h3>
+            <ul>
+                <li><strong>Gateway / Broadcaster</strong>: broadcasts a PAwR train every PA interval, containing multiple subevents. Subevent 0 is typically the provisioning channel; subevents 1+ are assigned to paired sensors.</li>
+                <li><strong>Sensor / Observer</strong>: wakes up only in its assigned subevent slot, parses the broadcaster command, returns sensor data, and goes back to deep sleep.</li>
+                <li><strong>Connectionless</strong>: the sensor count can far exceed controller link limits (typical 32 sensors per interval).</li>
+            </ul>
+
+            <h3>Key API</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">PAwR Host API</span>
+                    <button type="button" class="code-copy-btn" aria-label="Copy code"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/* Broadcaster: build a PAwR train */
+struct bt_le_per_adv_param param = {
+    .interval_min   = BT_GAP_PER_ADV_SLOW_INT_MIN,  /* 1s */
+    .interval_max   = BT_GAP_PER_ADV_SLOW_INT_MAX,
+    .num_subevents  = 32,
+    .subevent_interval = 0x10,        /* 20 ms */
+    .response_slot_delay  = 0x05,
+    .response_slot_spacing = 0x05,
+    .num_response_slots  = 1,
+};
+bt_le_per_adv_set_param(adv, &amp;param);
+bt_le_per_adv_set_subevent_data(adv, num_subevents, subevent_data);
+bt_le_per_adv_start(adv);
+
+/* Observer: sync to the PA train, return a response */
+bt_le_per_adv_sync_create(...);
+bt_le_per_adv_set_response_data(sync, &amp;response_params, &amp;response_buf);</code></pre>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>Known issue:</strong> <code>bt_le_per_adv_set_response_data()</code> currently returns -5 (EIO) on subevents 1+ — see the PHM Gateway session notes. The provisioning channel (subevent 0) is verified working.
+            </div>
+
+            <h3>PAwR Applications in the SDK</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Application</th>
+                            <th>Role</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>apps/bluetooth/esl/ipro_esl_sensor_gateway/</code></td>
+                            <td>Broadcaster</td>
+                            <td>ESL sensor gateway, polls a large connectionless sensor fleet</td>
+                        </tr>
+                        <tr>
+                            <td><code>apps/bluetooth/esl/ipro_esl_sensor/</code></td>
+                            <td>Observer</td>
+                            <td>ESL sensor tag, PAwR + PDS31 deep sleep</td>
+                        </tr>
+                        <tr>
+                            <td><code>apps/turnkey/robust/ipro_robust_phm_gateway/</code></td>
+                            <td>Broadcaster</td>
+                            <td>PHM Gateway, 32 subevents, 1s interval, V2 PA report (0x25)</td>
+                        </tr>
+                        <tr>
+                            <td><code>apps/turnkey/robust/ipro_robust_phm_sensor/</code></td>
+                            <td>Observer</td>
+                            <td>MPU6500 vibration sensor with PAwR auto-pairing</td>
+                        </tr>
+                        <tr>
+                            <td><code>apps/ai/ipro_llm_pawr_gateway/</code></td>
+                            <td>Broadcaster</td>
+                            <td>LLM × PAwR sensor gateway, feeds sensor data into a cloud LLM</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>ESL (Electronic Shelf Label)</h3>
+            <p>The SDK ships both a traditional connection-based ESL and a PAwR variant:</p>
+            <ul>
+                <li><code>apps/bluetooth/esl/ipro_esl_tag/</code> + <code>ipro_esl_gateway/</code> — standard ESL profile, connection-oriented</li>
+                <li><code>apps/bluetooth/esl/ipro_esl_sensor/</code> + <code>ipro_esl_sensor_gateway/</code> — PAwR variant, scales to larger sensor networks</li>
+                <li>Shared header: <code>components/wireless/bluetooth/include/esl_defs.h</code> — ESL opcodes (incl. <code>READ_SENSOR 0x10</code>) and packet structures</li>
+            </ul>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- Low Power BLE -->
+        <!-- ============================================================ -->
+        <section id="low-power">
+            <h2>Low Power BLE</h2>
+            <p>IPRO7 supports multiple low-power tiers; BLE applications can enter PDS (Power Down Sleep) between advertising / connection events to reach µA-level average current.</p>
+
+            <h3>PDS Level 31 — Deep Sleep</h3>
+            <ul>
+                <li><strong>Full OCRAM retention</strong>: all 256 KB of OCRAM banks are retained by default — no <code>PDS_RAM_Config()</code> call required.</li>
+                <li><strong>BLE Exchange Memory</strong>: lives at the top of OCRAM (0x1104_0000~), outside the retention partition.</li>
+                <li><strong>BZ Controller</strong>: with <code>pdsCtl4.BzRst=1, BzGateClk=1</code> the PDS resets and gates the BLE controller clock during sleep; the controller is re-initialized on wakeup.</li>
+                <li><strong>Automatic RF shutdown</strong>: <code>pdsCtlRfSel=1</code> in <code>hal_pm.c</code> lets the PDS hardware shut down RF analog blocks during sleep, dropping current from 80 µA to ~10 µA.</li>
+                <li><strong>turnoffDLL=0</strong>: under cpuRst=1 the post-WFI path skips the DLL re-initialization sequence.</li>
+            </ul>
+
+            <h3>Cold Boot with Detection</h3>
+            <p>Hardware testing has shown that <code>cpuRst=0</code> (pure WFI resume) is not viable in BLE controller mode. The verified approach is cpuRst=1 + RSV0=0 + RSV2=flag, detecting the wakeup cause during cold boot and jumping back to BLE state after bootrom. Wakeup latency is roughly 100 ms — suitable for sparse wakeup cycles; maintaining live BLE connections still requires sleep clock calibration.</p>
+
+            <h3>Low-Power BLE Applications</h3>
+            <ul>
+                <li><strong><code>apps/bluetooth/ble/ipro_ble_lowpower_test/</code></strong> — full PDS31 verification app, including RF reinit, register save/restore, and margin measurement. Phases 0–4 implemented and PDS31 hardware-verified.</li>
+                <li><strong><code>apps/bluetooth/esl/ipro_esl_sensor/</code></strong> — sensor under PAwR mode, wakes up only for its subevent and immediately returns to deep sleep.</li>
+                <li><strong><code>apps/turnkey/ipro7_pircam/</code></strong> — PIR-triggered wakeup with the AI model retained in PSRAM across sleep cycles.</li>
+            </ul>
+
+            <div class="alert alert-info">
+                <strong>Tip:</strong> Before tweaking LP/PDS configuration, rule out application-level bugs first. Most "current went up" reports are tasks failing to enter idle or timers not being released, not the LP settings themselves.
             </div>
         </section>
 
@@ -444,39 +602,87 @@ CONFIG_BT_CSIP_SET_MEMBER=y</code></pre>
                     <tbody>
                         <tr>
                             <td><strong>ipro_ble_remote</strong></td>
-                            <td>GATT services + OTA update, 6 services, image transfer at 101 KB/s</td>
+                            <td>GATT services + OTA update, multi-service, image transfer at 101 KB/s</td>
                             <td>link2</td>
-                            <td><code>apps/bluetooth/ipro_ble_remote/</code></td>
+                            <td><code>apps/bluetooth/ble/ipro_ble_remote/</code></td>
                         </tr>
                         <tr>
                             <td><strong>ipro_throughput_test</strong></td>
-                            <td>Throughput benchmark, up to 999 Kbps, native Zephyr bt_* API, Master/Slave roles</td>
+                            <td>Throughput benchmark (up to 999 Kbps), native Zephyr bt_* API, Master/Slave roles</td>
                             <td>link2</td>
-                            <td><code>apps/bluetooth/ipro_throughput_test/</code></td>
+                            <td><code>apps/bluetooth/ble/ipro_throughput_test/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_throughput_demo</strong></td>
+                            <td>Demo variant paired with the Android <code>tools/android/IproThroughputDemo</code> client</td>
+                            <td>link2</td>
+                            <td><code>apps/bluetooth/ble/ipro_throughput_demo/</code></td>
                         </tr>
                         <tr>
                             <td><strong>ipro_ble_transparent</strong></td>
-                            <td>UART transparent bridge, bidirectional BLE-to-serial passthrough</td>
+                            <td>UART ↔ BLE transparent bridge</td>
                             <td>link1</td>
-                            <td><code>apps/bluetooth/ipro_ble_transparent/</code></td>
+                            <td><code>apps/bluetooth/ble/ipro_ble_transparent/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_ble_lowpower_test</strong></td>
+                            <td>PDS31 low-power BLE verification (RF reinit, register save/restore)</td>
+                            <td>link1_periph</td>
+                            <td><code>apps/bluetooth/ble/ipro_ble_lowpower_test/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_blecontroller_test</strong></td>
+                            <td>Controller-only test, bypasses host stack for low-level validation</td>
+                            <td>link2</td>
+                            <td><code>apps/bluetooth/ble/ipro_blecontroller_test/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_ble_stress_test</strong></td>
+                            <td>Long-running stress test (connect/disconnect/reconnect loops)</td>
+                            <td>link2</td>
+                            <td><code>apps/bluetooth/ble/ipro_ble_stress_test/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_ble_img_capture</strong></td>
+                            <td>BLE image capture demo (paired with ISP)</td>
+                            <td>link2</td>
+                            <td><code>apps/bluetooth/ble/ipro_ble_img_capture/</code></td>
                         </tr>
                         <tr>
                             <td><strong>ipro_le_audio_headset</strong></td>
-                            <td>GAF/BAP unicast audio headset with VCP and CSIP support</td>
+                            <td>GAF/BAP unicast audio headset with VCP and CSIP</td>
                             <td>link2_leaudio_53_54</td>
-                            <td><code>apps/bluetooth/ipro_le_audio_headset/</code></td>
+                            <td><code>apps/bluetooth/le_audio/ipro_le_audio_headset/</code></td>
                         </tr>
                         <tr>
                             <td><strong>ipro_le_audio_bis_source</strong></td>
-                            <td>BIS LE Audio broadcast audio source</td>
-                            <td>link2_leaudio</td>
+                            <td>BIS broadcaster (audio broadcast source)</td>
+                            <td>link1_leaudio_53_54</td>
                             <td><code>apps/bluetooth/le_audio/ipro_le_audio_bis_source/</code></td>
                         </tr>
                         <tr>
                             <td><strong>ipro_le_audio_bis_sink</strong></td>
-                            <td>BIS LE Audio broadcast audio sink</td>
-                            <td>link2_leaudio</td>
+                            <td>BIS receiver (audio broadcast sink)</td>
+                            <td>link1_leaudio_53_54</td>
                             <td><code>apps/bluetooth/le_audio/ipro_le_audio_bis_sink/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_esl_tag / ipro_esl_gateway</strong></td>
+                            <td>Standard ESL profile (connection-based)</td>
+                            <td>link1_periph / link2</td>
+                            <td><code>apps/bluetooth/esl/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_esl_sensor / ipro_esl_sensor_gateway</strong></td>
+                            <td>PAwR ESL sensor variant (large connectionless network)</td>
+                            <td>link1_periph / link2_54</td>
+                            <td><code>apps/bluetooth/esl/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_robust_phm_sensor / _gateway</strong></td>
+                            <td>PHM vibration monitoring (PAwR + IMU), reference V2 PA report (0x25)</td>
+                            <td>link1_periph / link2_54</td>
+                            <td><code>apps/turnkey/robust/</code></td>
                         </tr>
                     </tbody>
                 </table>
@@ -494,7 +700,7 @@ CONFIG_BT_CSIP_SET_MEMBER=y</code></pre>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">Building Prebuilt Libraries</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                    <button type="button" class="code-copy-btn" aria-label="Copy code"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># Build a specific variant
 components/wireless/bluetooth/build_all_prebuilts.sh link2
@@ -510,7 +716,7 @@ components/wireless/bluetooth/build_all_prebuilts.sh all
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">.config Enable Source Build (Development Only)</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                    <button type="button" class="code-copy-btn" aria-label="Copy code"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># Development and debugging only, not for release
 CONFIG_BLE_FORCE_SOURCE_BUILD=y</code></pre>

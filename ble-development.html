@@ -12,6 +12,8 @@ title: BLE 開發指南
                 <li><a href="#controller-variants" class="sidebar-link">控制器變體</a></li>
                 <li><a href="#api-patterns" class="sidebar-link">API 模式</a></li>
                 <li><a href="#le-audio" class="sidebar-link">LE Audio</a></li>
+                <li><a href="#pawr-esl" class="sidebar-link">PAwR 與 ESL</a></li>
+                <li><a href="#low-power" class="sidebar-link">低功耗 BLE</a></li>
                 <li><a href="#app-framework" class="sidebar-link">應用框架</a></li>
                 <li><a href="#reference-apps" class="sidebar-link">參考應用</a></li>
                 <li><a href="#prebuilt-libs" class="sidebar-link">預建構函式庫</a></li>
@@ -64,20 +66,25 @@ title: BLE 開發指南
                 </div>
                 <pre><code>components/wireless/bluetooth/
 ├── blestack/                        # Zephyr BLE Host Stack（可建構原始碼）
-│   └── src/include/bluetooth/       # 公開標頭檔
-│       ├── bluetooth.h              # bt_enable(), bt_le_adv_start()
-│       ├── conn.h                   # bt_conn_create_le(), bt_conn_cb_register()
-│       ├── gatt.h                   # bt_gatt_service_register(), bt_gatt_notify()
-│       ├── uuid.h                   # BT_UUID_DECLARE_16() 等
-│       └── audio/                   # LE Audio API（BAP, CAP, VCP...）
+│   └── src/
+│       ├── include/bluetooth/       # 公開標頭檔
+│       │   ├── bluetooth.h          # bt_enable(), bt_le_adv_start()
+│       │   ├── conn.h               # bt_conn_create_le(), bt_conn_cb_register()
+│       │   ├── gatt.h               # bt_gatt_service_register(), bt_gatt_notify()
+│       │   ├── uuid.h               # BT_UUID_DECLARE_16() 等
+│       │   ├── hci_host.h           # HCI 命令/事件（含 PAwR V2 0x25）
+│       │   └── audio/               # LE Audio API（BAP, CAP, VCP, MCP...）
+│       ├── host/                    # GAP / GATT / L2CAP / SMP / ATT / hci_core
+│       ├── audio/                   # LE Audio Profile 實作
+│       ├── services/                # 內建 GATT 服務（bas, dis, hog, ias, scps, spp, atvv, oad）
+│       ├── ipro_hci_wrapper/        # 片上 HCI bridge（Host ↔ Controller）
+│       └── port/                    # FreeRTOS 移植層
 ├── btblecontroller/                 # RivieraWaves 控制器原始碼（需授權）
 ├── btblecontroller_ipro7_&lt;variant&gt;/ # 預建構控制器靜態庫
-├── btprofile/                       # 20+ GATT Profiles 實作
-│   ├── bas/   dis/   hogp/          # 電池、裝置資訊、HID
-│   ├── csip/  otp/   find/          # CSIP、OTP、Find Me
-│   └── ...
+├── btprofile/                       # Bluetooth Classic profiles（A2DP / AVRCP / HFP / SPP / SDP）
 ├── blemesh/                         # Bluetooth Mesh 支援
-├── ble_common.cmake                 # 控制器變體配置
+├── blemesh_model/                   # Mesh 模型實作
+├── ble_common.cmake                 # 控制器變體配置（PRIV_CONFIG_GEN_BLE）
 └── build_all_prebuilts.sh           # 預建構庫建置腳本</code></pre>
             </div>
         </section>
@@ -107,21 +114,42 @@ title: BLE 開發指南
                             <td>1</td>
                             <td>5.0+</td>
                             <td>否</td>
-                            <td>簡易周邊設備（最小 footprint）</td>
+                            <td>純周邊角色，最小 footprint（HID、感測標籤）</td>
                         </tr>
                         <tr>
                             <td><code>link1</code></td>
                             <td>1</td>
                             <td>5.0+</td>
                             <td>否</td>
-                            <td>單連線，支援所有角色</td>
+                            <td>單連線，支援所有角色（預設）</td>
+                        </tr>
+                        <tr>
+                            <td><code>link1_53</code></td>
+                            <td>1</td>
+                            <td>5.3</td>
+                            <td>否</td>
+                            <td>單連線 + BLE 5.3 功能</td>
+                        </tr>
+                        <tr>
+                            <td><code>link1_54</code></td>
+                            <td>1</td>
+                            <td>5.4</td>
+                            <td>否</td>
+                            <td>單連線 + BLE 5.4（含 PAwR）</td>
                         </tr>
                         <tr>
                             <td><code>link2</code></td>
                             <td>2</td>
                             <td>5.0+</td>
                             <td>否</td>
-                            <td>雙連線（2C+0P, 1C+1P, 0C+2P）</td>
+                            <td>雙連線（2C+0P, 1C+1P, 0C+2P 任意組合）</td>
+                        </tr>
+                        <tr>
+                            <td><code>link2_54</code></td>
+                            <td>2</td>
+                            <td>5.4</td>
+                            <td>否</td>
+                            <td>雙連線 + PAwR（PHM Gateway 使用）</td>
                         </tr>
                         <tr>
                             <td><code>link4</code></td>
@@ -156,14 +184,21 @@ title: BLE 開發指南
                             <td>1</td>
                             <td>5.4</td>
                             <td>是</td>
-                            <td>最新 BLE + LE Audio</td>
+                            <td>最新 BLE + LE Audio（單連線）</td>
                         </tr>
                         <tr>
                             <td><code>link2_leaudio_53_54</code></td>
                             <td>2</td>
                             <td>5.4</td>
                             <td>是</td>
-                            <td>最新 BLE + LE Audio</td>
+                            <td>最新 BLE + LE Audio（雙連線，耳機典型）</td>
+                        </tr>
+                        <tr>
+                            <td><code>link4_leaudio_53_54</code></td>
+                            <td>4</td>
+                            <td>5.4</td>
+                            <td>是</td>
+                            <td>四連線 LE Audio（多裝置同步）</td>
                         </tr>
                     </tbody>
                 </table>
@@ -174,7 +209,7 @@ title: BLE 開發指南
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">.config 變體選擇</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                    <button type="button" class="code-copy-btn" aria-label="複製程式碼"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 直接指定變體名稱
 CONFIG_BTBLECONTROLLER_LIB="link2"
@@ -200,7 +235,7 @@ CONFIG_BTBLECONTROLLER_BT_54=y        # 加上 _53_54（5.4 隱含 5.3）
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">GAP 廣播操作</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                    <button type="button" class="code-copy-btn" aria-label="複製程式碼"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">#include &lt;bluetooth/bluetooth.h&gt;
 #include &lt;bluetooth/conn.h&gt;
@@ -232,7 +267,7 @@ bt_le_scan_start(BT_LE_SCAN_ACTIVE, scan_cb);</code></pre>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">連線管理</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                    <button type="button" class="code-copy-btn" aria-label="複製程式碼"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">static void connected(struct bt_conn *conn, u8_t err)
 {
@@ -264,7 +299,7 @@ void app_init(void)
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">靜態 GATT 服務定義</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                    <button type="button" class="code-copy-btn" aria-label="複製程式碼"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">#include &lt;bluetooth/gatt.h&gt;
 #include &lt;bluetooth/uuid.h&gt;
@@ -362,7 +397,7 @@ bt_gatt_notify(conn, &amp;my_svc.attrs[1], my_value, sizeof(my_value));</code></
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">.config LE Audio 配置</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                    <button type="button" class="code-copy-btn" aria-label="複製程式碼"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 啟用 LE Audio 控制器
 CONFIG_BTBLECONTROLLER_LIB="link2"
@@ -381,6 +416,129 @@ CONFIG_BT_CSIP_SET_MEMBER=y</code></pre>
 
             <div class="alert alert-info">
                 <strong>交叉參考：</strong>詳細的音訊管線說明請參閱「音訊與多媒體」頁面。
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- PAwR & ESL -->
+        <!-- ============================================================ -->
+        <section id="pawr-esl">
+            <h2>PAwR 與 ESL</h2>
+            <p>BLE 5.4 引入 <strong>PAwR（Periodic Advertising with Responses）</strong>，讓 broadcaster 能在固定 subevent 時槽中收集 observer 的回應，無需建立一對一連線。SDK 在 host 與 controller 兩端皆已支援 PAwR，是 IPRO 大規模感測器與 ESL 應用的核心技術。</p>
+
+            <h3>典型架構</h3>
+            <ul>
+                <li><strong>Gateway / Broadcaster</strong>：每個 PA interval 廣播一次 PAwR train，內含多個 subevent；subevent 0 通常作為 provisioning channel，subevent 1+ 分配給已配對的 sensor</li>
+                <li><strong>Sensor / Observer</strong>：依分配到的 subevent 在精確時槽喚醒、解析 broadcaster 命令、回傳感測資料，其餘時間深度睡眠</li>
+                <li><strong>無連線</strong>：sensor 數量可遠超過控制器連線上限（典型 32 sensors / interval）</li>
+            </ul>
+
+            <h3>關鍵 API</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">PAwR Host API</span>
+                    <button type="button" class="code-copy-btn" aria-label="複製程式碼"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/* Broadcaster：建立 PAwR train */
+struct bt_le_per_adv_param param = {
+    .interval_min   = BT_GAP_PER_ADV_SLOW_INT_MIN,  /* 1s */
+    .interval_max   = BT_GAP_PER_ADV_SLOW_INT_MAX,
+    .num_subevents  = 32,
+    .subevent_interval = 0x10,        /* 20 ms */
+    .response_slot_delay  = 0x05,
+    .response_slot_spacing = 0x05,
+    .num_response_slots  = 1,
+};
+bt_le_per_adv_set_param(adv, &amp;param);
+bt_le_per_adv_set_subevent_data(adv, num_subevents, subevent_data);
+bt_le_per_adv_start(adv);
+
+/* Observer：同步 PA train，回傳 response */
+bt_le_per_adv_sync_create(...);
+bt_le_per_adv_set_response_data(sync, &amp;response_params, &amp;response_buf);</code></pre>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>已知問題：</strong><code>bt_le_per_adv_set_response_data()</code> 在 subevent 1+ 上目前回傳 -5（EIO）— 詳見 PHM Gateway session 紀錄。Provisioning channel（subevent 0）已驗證可正常運作。
+            </div>
+
+            <h3>SDK 內 PAwR 應用</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>應用</th>
+                            <th>角色</th>
+                            <th>用途</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>apps/bluetooth/esl/ipro_esl_sensor_gateway/</code></td>
+                            <td>Broadcaster</td>
+                            <td>ESL 感測器 gateway，支援大量無連線 sensor 輪詢</td>
+                        </tr>
+                        <tr>
+                            <td><code>apps/bluetooth/esl/ipro_esl_sensor/</code></td>
+                            <td>Observer</td>
+                            <td>ESL sensor tag，PAwR + PDS31 深度睡眠</td>
+                        </tr>
+                        <tr>
+                            <td><code>apps/turnkey/robust/ipro_robust_phm_gateway/</code></td>
+                            <td>Broadcaster</td>
+                            <td>PHM Gateway，32 subevents、1s interval、V2 PA report (0x25)</td>
+                        </tr>
+                        <tr>
+                            <td><code>apps/turnkey/robust/ipro_robust_phm_sensor/</code></td>
+                            <td>Observer</td>
+                            <td>MPU6500 振動 sensor，PAwR 自動配對</td>
+                        </tr>
+                        <tr>
+                            <td><code>apps/ai/ipro_llm_pawr_gateway/</code></td>
+                            <td>Broadcaster</td>
+                            <td>LLM × PAwR sensor gateway，將感測資料丟給雲端 AI 推理</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>ESL（Electronic Shelf Label）</h3>
+            <p>SDK 同時提供傳統 ESL（基於連線）與 PAwR 版本：</p>
+            <ul>
+                <li><code>apps/bluetooth/esl/ipro_esl_tag/</code> + <code>ipro_esl_gateway/</code> — 標準 ESL profile，主要走連線通道</li>
+                <li><code>apps/bluetooth/esl/ipro_esl_sensor/</code> + <code>ipro_esl_sensor_gateway/</code> — PAwR 版本，可擴充至更大規模感測網路</li>
+                <li>共用標頭：<code>components/wireless/bluetooth/include/esl_defs.h</code>，含 ESL opcode（含 <code>READ_SENSOR 0x10</code>）與封包結構體</li>
+            </ul>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- Low Power BLE -->
+        <!-- ============================================================ -->
+        <section id="low-power">
+            <h2>低功耗 BLE</h2>
+            <p>IPRO7 支援多級低功耗模式，BLE 應用可在 advertising / connection 間隙進入 PDS（Power Down Sleep）以達成 µA 等級的平均電流。</p>
+
+            <h3>PDS Level 31 — 深度睡眠</h3>
+            <ul>
+                <li><strong>OCRAM 全保留</strong>：IPRO7 OCRAM 256 KB 全部 bank 預設保留，無需 <code>PDS_RAM_Config()</code></li>
+                <li><strong>BLE Exchange Memory</strong>：位於 OCRAM 頂端（0x1104_0000~），不佔用 retention 區</li>
+                <li><strong>BZ Controller</strong>：<code>pdsCtl4.BzRst=1, BzGateClk=1</code> 讓 PDS 在睡眠時 reset + gate BLE controller 時脈，喚醒後重新初始化</li>
+                <li><strong>RF 自動關斷</strong>：<code>pdsCtlRfSel=1</code>（在 <code>hal_pm.c</code>）讓 PDS 硬體在睡眠時關閉 RF analog blocks，從 80 µA 降至 ~10 µA</li>
+                <li><strong>turnoffDLL=0</strong>：cpuRst=1 模式下 post-WFI 不執行 DLL 重啟流程</li>
+            </ul>
+
+            <h3>Cold Boot with Detection</h3>
+            <p>實測 <code>cpuRst=0</code>（純 WFI 恢復）在 BLE controller 模式下不可用；正確方案是 cpuRst=1 + RSV0=0 + RSV2=flag 在 cold boot 中偵測喚醒原因，於 bootrom 之後跳回 BLE state。延遲約 100 ms — 適合稀疏喚醒週期，BLE 連線維持仍需配合 sleep clock 校正。</p>
+
+            <h3>低功耗 BLE 應用</h3>
+            <ul>
+                <li><strong><code>apps/bluetooth/ble/ipro_ble_lowpower_test/</code></strong> — PDS31 全套驗證 app，包含 RF reinit、register save/restore、margin 量測。Phase 0–4 已實作，PDS31 已硬體驗證</li>
+                <li><strong><code>apps/bluetooth/esl/ipro_esl_sensor/</code></strong> — PAwR 模式下的 sensor，每個 subevent 喚醒、回應後立刻深睡</li>
+                <li><strong><code>apps/turnkey/ipro7_pircam/</code></strong> — PIR 觸發喚醒，AI 模型常駐 PSRAM 跨睡眠週期</li>
+            </ul>
+
+            <div class="alert alert-info">
+                <strong>提示：</strong>修改 LP/PDS 配置前先排除應用層程式錯誤；多數情況下「電流變高」是 task 沒進 idle 或 timer 沒釋放，而非 LP 設定本身。
             </div>
         </section>
 
@@ -443,39 +601,87 @@ CONFIG_BT_CSIP_SET_MEMBER=y</code></pre>
                     <tbody>
                         <tr>
                             <td><strong>ipro_ble_remote</strong></td>
-                            <td>GATT 服務 + OTA 更新，6 個服務，圖片傳輸達 101 KB/s</td>
+                            <td>GATT 服務 + OTA 更新，多 service，圖片傳輸達 101 KB/s</td>
                             <td>link2</td>
-                            <td><code>apps/bluetooth/ipro_ble_remote/</code></td>
+                            <td><code>apps/bluetooth/ble/ipro_ble_remote/</code></td>
                         </tr>
                         <tr>
                             <td><strong>ipro_throughput_test</strong></td>
-                            <td>吞吐量基準測試，最高 999 Kbps，原生 Zephyr bt_* API，支援 Master/Slave 角色</td>
+                            <td>吞吐量基準（最高 999 Kbps），原生 Zephyr bt_* API，Master/Slave 雙角色</td>
                             <td>link2</td>
-                            <td><code>apps/bluetooth/ipro_throughput_test/</code></td>
+                            <td><code>apps/bluetooth/ble/ipro_throughput_test/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_throughput_demo</strong></td>
+                            <td>搭配 Android <code>tools/android/IproThroughputDemo</code> 的展示版本</td>
+                            <td>link2</td>
+                            <td><code>apps/bluetooth/ble/ipro_throughput_demo/</code></td>
                         </tr>
                         <tr>
                             <td><strong>ipro_ble_transparent</strong></td>
-                            <td>UART 透傳橋接，BLE 與序列埠雙向透傳</td>
+                            <td>UART ↔ BLE 雙向透傳</td>
                             <td>link1</td>
-                            <td><code>apps/bluetooth/ipro_ble_transparent/</code></td>
+                            <td><code>apps/bluetooth/ble/ipro_ble_transparent/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_ble_lowpower_test</strong></td>
+                            <td>PDS31 低功耗 BLE 驗證 app（含 RF reinit、register save/restore）</td>
+                            <td>link1_periph</td>
+                            <td><code>apps/bluetooth/ble/ipro_ble_lowpower_test/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_blecontroller_test</strong></td>
+                            <td>純 controller 驗證，bypass host stack 進行底層測試</td>
+                            <td>link2</td>
+                            <td><code>apps/bluetooth/ble/ipro_blecontroller_test/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_ble_stress_test</strong></td>
+                            <td>長時間壓力測試（連線/斷線/重連迴圈）</td>
+                            <td>link2</td>
+                            <td><code>apps/bluetooth/ble/ipro_ble_stress_test/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_ble_img_capture</strong></td>
+                            <td>BLE 影像擷取展示（搭配 ISP）</td>
+                            <td>link2</td>
+                            <td><code>apps/bluetooth/ble/ipro_ble_img_capture/</code></td>
                         </tr>
                         <tr>
                             <td><strong>ipro_le_audio_headset</strong></td>
-                            <td>GAF/BAP 單播音訊耳機，支援 VCP、CSIP</td>
+                            <td>GAF/BAP 單播音訊耳機，含 VCP、CSIP</td>
                             <td>link2_leaudio_53_54</td>
-                            <td><code>apps/bluetooth/ipro_le_audio_headset/</code></td>
+                            <td><code>apps/bluetooth/le_audio/ipro_le_audio_headset/</code></td>
                         </tr>
                         <tr>
                             <td><strong>ipro_le_audio_bis_source</strong></td>
-                            <td>BIS LE Audio 廣播音訊源</td>
-                            <td>link2_leaudio</td>
+                            <td>BIS broadcaster（音訊廣播源）</td>
+                            <td>link1_leaudio_53_54</td>
                             <td><code>apps/bluetooth/le_audio/ipro_le_audio_bis_source/</code></td>
                         </tr>
                         <tr>
                             <td><strong>ipro_le_audio_bis_sink</strong></td>
-                            <td>BIS LE Audio 廣播音訊接收器</td>
-                            <td>link2_leaudio</td>
+                            <td>BIS receiver（音訊廣播接收）</td>
+                            <td>link1_leaudio_53_54</td>
                             <td><code>apps/bluetooth/le_audio/ipro_le_audio_bis_sink/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_esl_tag / ipro_esl_gateway</strong></td>
+                            <td>標準 ESL profile（連線模式）</td>
+                            <td>link1_periph / link2</td>
+                            <td><code>apps/bluetooth/esl/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_esl_sensor / ipro_esl_sensor_gateway</strong></td>
+                            <td>PAwR 模式 ESL 感測器（大規模無連線網路）</td>
+                            <td>link1_periph / link2_54</td>
+                            <td><code>apps/bluetooth/esl/</code></td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_robust_phm_sensor / _gateway</strong></td>
+                            <td>PHM 振動監控（PAwR + IMU），參考 V2 PA report (0x25)</td>
+                            <td>link1_periph / link2_54</td>
+                            <td><code>apps/turnkey/robust/</code></td>
                         </tr>
                     </tbody>
                 </table>
@@ -493,7 +699,7 @@ CONFIG_BT_CSIP_SET_MEMBER=y</code></pre>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">建構預建構庫</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                    <button type="button" class="code-copy-btn" aria-label="複製程式碼"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 建構特定變體
 components/wireless/bluetooth/build_all_prebuilts.sh link2
@@ -509,7 +715,7 @@ components/wireless/bluetooth/build_all_prebuilts.sh all
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">.config 啟用原始碼建構（僅開發用）</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                    <button type="button" class="code-copy-btn" aria-label="複製程式碼"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 僅限開發除錯，不可用於正式發行
 CONFIG_BLE_FORCE_SOURCE_BUILD=y</code></pre>
