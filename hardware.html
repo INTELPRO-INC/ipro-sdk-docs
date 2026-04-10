@@ -32,6 +32,22 @@ lang: zh-TW
                 <i class="fas fa-th"></i>
                 <span>腳位定義</span>
             </a>
+            <a href="#uart-pins" class="hw-nav-item">
+                <i class="fas fa-exchange-alt"></i>
+                <span>UART</span>
+            </a>
+            <a href="#spi-pins" class="hw-nav-item">
+                <i class="fas fa-microchip"></i>
+                <span>SPI</span>
+            </a>
+            <a href="#sdio-pins" class="hw-nav-item">
+                <i class="fas fa-sd-card"></i>
+                <span>SDIO</span>
+            </a>
+            <a href="#i2s-pins" class="hw-nav-item">
+                <i class="fas fa-volume-up"></i>
+                <span>I2S</span>
+            </a>
             <a href="#evb" class="hw-nav-item">
                 <i class="fas fa-tachograph-digital"></i>
                 <span>評估板</span>
@@ -380,243 +396,727 @@ lang: zh-TW
 
             <div class="package-info" style="display: flex; gap: 1rem; margin-bottom: 2rem;">
                 <div class="spec-card" style="flex: 1;">
-                    <h4>QFN56 (7×7mm)</h4>
+                    <h4>QFN56 (7x7mm)</h4>
                     <p>標準封裝，提供 42 個 GPIO (GPIO0-GPIO41)，適合大多數應用</p>
                 </div>
                 <div class="spec-card" style="flex: 1;">
-                    <h4>QFN48 (6×6mm)</h4>
+                    <h4>QFN48 (6x6mm)</h4>
                     <p>精簡封裝，適合空間受限設計</p>
                 </div>
             </div>
 
-            <div class="pinout-table-container">
-                <h3>GPIO 功能對照表 (IPRO7-SEVB)</h3>
+            <!-- GPIO Function Select Reference -->
+            <div class="pinout-table-container" style="margin-bottom: 2rem;">
+                <h3>GPIO Function Select 對照表</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">每個 GPIO 透過 GLB pin mux 選擇功能，寫入對應的 function value (0~27) 即可切換。</p>
                 <table class="pinout-table">
                     <thead>
                         <tr>
-                            <th>GPIO</th>
-                            <th>預設功能</th>
-                            <th>ALT1</th>
-                            <th>ALT2</th>
-                            <th>ALT3</th>
-                            <th>SEVB 連接</th>
+                            <th>Value</th>
+                            <th>Function</th>
+                            <th>Description</th>
+                            <th>Value</th>
+                            <th>Function</th>
+                            <th>Description</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><span class="pin-num">GPIO0</span></td>
-                            <td>GPIO</td>
-                            <td>UART_TX</td>
-                            <td>SPI_MOSI</td>
-                            <td>PWM0</td>
-                            <td>J19 (UART Console)</td>
+                            <td>0</td><td><code>CLK_OUT</code></td><td>Clock Output</td>
+                            <td>14</td><td><code>MCU_JTAG</code></td><td>JTAG Debug</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">GPIO1</span></td>
-                            <td>GPIO</td>
-                            <td>UART_RX</td>
-                            <td>SPI_MISO</td>
-                            <td>PWM1</td>
-                            <td>J19 (UART Console)</td>
+                            <td>1</td><td><code>BT_COEXIST</code></td><td>BT Coexistence</td>
+                            <td>15</td><td><code>DEBUG</code></td><td>Debug</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">GPIO2</span></td>
-                            <td>GPIO</td>
-                            <td>UART_CTS</td>
-                            <td>SPI_CLK</td>
-                            <td>PWM2</td>
-                            <td>GPIO 擴展</td>
+                            <td>2</td><td><code>FLASH_PSRAM</code></td><td>Flash / PSRAM / QSPI</td>
+                            <td>16</td><td><code>EXTERNAL_PA</code></td><td>External PA Control</td>
+                        </tr>
+                        <tr style="background: rgba(99, 102, 241, 0.08);">
+                            <td><strong>3</strong></td><td><strong><code>I2S</code></strong></td><td><strong>I2S Audio</strong></td>
+                            <td>17</td><td><code>USB_TRANCEIVER</code></td><td>USB PHY</td>
+                        </tr>
+                        <tr style="background: rgba(99, 102, 241, 0.08);">
+                            <td><strong>4</strong></td><td><strong><code>SPI</code></strong></td><td><strong>SPI0</strong></td>
+                            <td>18</td><td><code>USB_CONTROLLER</code></td><td>USB Controller</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">GPIO3</span></td>
-                            <td>GPIO</td>
-                            <td>UART_RTS</td>
-                            <td>SPI_CS</td>
-                            <td>PWM3</td>
-                            <td>GPIO 擴展</td>
+                            <td>5</td><td><code>PDM</code></td><td>PDM Microphone</td>
+                            <td>19</td><td><code>ETHER_MAC</code></td><td>Ethernet RMII</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">GPIO4</span></td>
-                            <td>GPIO</td>
-                            <td>I2C_SCL</td>
-                            <td>UART1_TX</td>
-                            <td>PWM4</td>
-                            <td>I2C 介面</td>
+                            <td>6</td><td><code>I2C</code></td><td>I2C0</td>
+                            <td>20</td><td><code>QDEC</code></td><td>Quadrature Decoder</td>
+                        </tr>
+                        <tr style="background: rgba(99, 102, 241, 0.08);">
+                            <td><strong>7</strong></td><td><strong><code>UART</code></strong></td><td><strong>UART</strong></td>
+                            <td>21</td><td><code>KEY_SCAN_IN</code></td><td>Key Scan Row</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">GPIO5</span></td>
-                            <td>GPIO</td>
-                            <td>I2C_SDA</td>
-                            <td>UART1_RX</td>
-                            <td>PWM5</td>
-                            <td>I2C 介面</td>
+                            <td>8</td><td><code>PWM</code></td><td>PWM</td>
+                            <td>22</td><td><code>KEY_SCAN_DRIVE</code></td><td>Key Scan Column</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">GPIO6</span></td>
-                            <td>GPIO</td>
-                            <td>SPI_MOSI</td>
-                            <td>I2S_DO</td>
-                            <td>-</td>
-                            <td>音訊/SPI</td>
+                            <td>9</td><td><code>CAM</code></td><td>Camera DVP</td>
+                            <td>25</td><td><code>I2C1</code></td><td>I2C1</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">GPIO7</span></td>
-                            <td>GPIO</td>
-                            <td>SPI_MISO</td>
-                            <td>I2S_DI</td>
-                            <td>-</td>
-                            <td>音訊/SPI</td>
-                        </tr>
-                        <tr class="special-pin">
-                            <td><span class="pin-num">GPIO8</span></td>
-                            <td>USB_DP</td>
-                            <td>GPIO</td>
-                            <td>SPI_CLK</td>
-                            <td>-</td>
-                            <td>⚠️ J40 USB 2.0 D+</td>
-                        </tr>
-                        <tr class="special-pin">
-                            <td><span class="pin-num">GPIO9</span></td>
-                            <td>USB_DN</td>
-                            <td>GPIO</td>
-                            <td>SPI_CS</td>
-                            <td>-</td>
-                            <td>⚠️ J40 USB 2.0 D-</td>
+                            <td>10</td><td><code>ANALOG</code></td><td>ADC / DAC</td>
+                            <td style="background: rgba(99, 102, 241, 0.08);"><strong>26</strong></td>
+                            <td style="background: rgba(99, 102, 241, 0.08);"><strong><code>SPI1</code></strong></td>
+                            <td style="background: rgba(99, 102, 241, 0.08);"><strong>SPI1</strong></td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">GPIO10</span></td>
-                            <td>GPIO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>GPIO 擴展</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pin-num">GPIO11</span></td>
-                            <td>GPIO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>GPIO 擴展</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pin-num">GPIO12</span></td>
-                            <td>GPIO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>GPIO 擴展</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pin-num">GPIO13</span></td>
-                            <td>GPIO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>GPIO 擴展</td>
-                        </tr>
-                        <tr class="special-pin">
-                            <td><span class="pin-num">GPIO14</span></td>
-                            <td>JTAG_TMS</td>
-                            <td>GPIO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>⚠️ J23 JTAG TMS</td>
-                        </tr>
-                        <tr class="special-pin">
-                            <td><span class="pin-num">GPIO15</span></td>
-                            <td>JTAG_TCK</td>
-                            <td>GPIO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>⚠️ J23 JTAG TCK</td>
-                        </tr>
-                        <tr class="special-pin">
-                            <td><span class="pin-num">GPIO16</span></td>
-                            <td>BOOT/ANT</td>
-                            <td>GPIO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>⚠️ Boot/天線選擇</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pin-num">GPIO17</span></td>
-                            <td>GPIO</td>
-                            <td>JTAG_TDI</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>J23 JTAG TDI</td>
-                        </tr>
-                        <tr class="special-pin">
-                            <td><span class="pin-num">GPIO18</span></td>
-                            <td>X32K_IN</td>
-                            <td>GPIO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>⚠️ 32.768kHz 晶振輸入</td>
-                        </tr>
-                        <tr class="special-pin">
-                            <td><span class="pin-num">GPIO19</span></td>
-                            <td>X32K_OUT</td>
-                            <td>GPIO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>⚠️ 32.768kHz 晶振輸出</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pin-num">GPIO20</span></td>
-                            <td>GPIO</td>
-                            <td>JTAG_TDO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>J23 JTAG TDO</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pin-num">GPIO21</span></td>
-                            <td>GPIO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>GPIO 擴展</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pin-num">GPIO22-27</span></td>
-                            <td>GPIO</td>
-                            <td>DVP_D0-D5</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>J27 DVP Camera</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pin-num">GPIO28-33</span></td>
-                            <td>GPIO</td>
-                            <td>DVP_D6-D7</td>
-                            <td>PCLK/SYNC</td>
-                            <td>-</td>
-                            <td>J27 DVP Camera</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pin-num">GPIO34-41</span></td>
-                            <td>GPIO</td>
-                            <td>Ethernet</td>
-                            <td>Motor</td>
-                            <td>PWM</td>
-                            <td>J56-J63 擴展</td>
+                            <td>11</td><td><code>GPIO</code></td><td>General Purpose IO</td>
+                            <td style="background: rgba(99, 102, 241, 0.08);"><strong>27</strong></td>
+                            <td style="background: rgba(99, 102, 241, 0.08);"><strong><code>SDC</code></strong></td>
+                            <td style="background: rgba(99, 102, 241, 0.08);"><strong>SD Card (SDIO)</strong></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
+            <!-- UART Pin Assignment -->
+            <div id="uart-pins" class="pinout-table-container" style="margin-bottom: 2rem;">
+                <h3><i class="fas fa-exchange-alt"></i> UART Pin Assignment (Function = 7)</h3>
+
+                <div class="alert-warning" style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
+                    <strong>UART0 GPIO20/GPIO21 不可更改</strong> — Boot ROM 使用此 UART 進行 firmware download (DL mode)，更改將導致無法透過 UART 燒錄韌體。
+                </div>
+
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    UART 使用 <strong>兩段式 mux</strong>：(1) GPIO 設為 function 7 產生 UART_SIG_N，(2) 透過 <code>GLB_UART_Fun_Sel()</code> 將 signal 映射到 UART0/UART1 的 TX/RX/CTS/RTS。<strong>任意 GPIO 皆可作為 UART</strong>。
+                </p>
+
+                <h4>EVB 預設 UART 配置</h4>
+                <table class="pinout-table">
+                    <thead>
+                        <tr>
+                            <th>介面</th>
+                            <th>信號</th>
+                            <th>GPIO</th>
+                            <th>UART Signal</th>
+                            <th>Baudrate</th>
+                            <th>備註</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="special-pin">
+                            <td>UART0</td>
+                            <td>TXD</td>
+                            <td><span class="pin-num">GPIO20</span></td>
+                            <td><code>GLB_UART_SIG_8</code></td>
+                            <td>2,000,000</td>
+                            <td>Console TX (Boot ROM 固定)</td>
+                        </tr>
+                        <tr class="special-pin">
+                            <td>UART0</td>
+                            <td>RXD</td>
+                            <td><span class="pin-num">GPIO21</span></td>
+                            <td><code>GLB_UART_SIG_9</code></td>
+                            <td>2,000,000</td>
+                            <td>Console RX (Boot ROM 固定)</td>
+                        </tr>
+                        <tr>
+                            <td>UART1</td>
+                            <td>TXD/RXD</td>
+                            <td>任意 GPIO</td>
+                            <td>由 signal routing 決定</td>
+                            <td>115,200</td>
+                            <td>可自由分配</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="margin-top: 1.5rem;">UART Signal Routing — GPIO 對應表</h4>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">GPIO 設為 function 7 後，依 pin number 產生對應的 UART_SIG，再透過 <code>GLB_UART_Fun_Sel()</code> 映射到 UART0/1 的 TXD/RXD/CTS/RTS。</p>
+                <table class="pinout-table">
+                    <thead>
+                        <tr>
+                            <th>GPIO</th><th>Primary SIG</th><th>Swap SIG</th>
+                            <th>GPIO</th><th>Primary SIG</th><th>Swap SIG</th>
+                            <th>GPIO</th><th>Primary SIG</th><th>Swap SIG</th>
+                            <th>GPIO</th><th>Primary SIG</th><th>Swap SIG</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="pin-num">0</span></td><td>SIG_0</td><td>SIG_4</td>
+                            <td><span class="pin-num">8</span></td><td>SIG_0</td><td>SIG_4</td>
+                            <td><span class="pin-num">16</span></td><td>SIG_0</td><td>SIG_4</td>
+                            <td><span class="pin-num">24</span></td><td>SIG_0</td><td>SIG_4</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">1</span></td><td>SIG_1</td><td>SIG_5</td>
+                            <td><span class="pin-num">9</span></td><td>SIG_1</td><td>SIG_5</td>
+                            <td><span class="pin-num">17</span></td><td>SIG_1</td><td>SIG_5</td>
+                            <td><span class="pin-num">25</span></td><td>SIG_1</td><td>SIG_5</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">2</span></td><td>SIG_2</td><td>SIG_6</td>
+                            <td><span class="pin-num">10</span></td><td>SIG_2</td><td>SIG_6</td>
+                            <td><span class="pin-num">18</span></td><td>SIG_2</td><td>SIG_6</td>
+                            <td><span class="pin-num">26</span></td><td>SIG_2</td><td>SIG_6</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">3</span></td><td>SIG_3</td><td>SIG_7</td>
+                            <td><span class="pin-num">11</span></td><td>SIG_3</td><td>SIG_7</td>
+                            <td><span class="pin-num">19</span></td><td>SIG_3</td><td>SIG_7</td>
+                            <td><span class="pin-num">27</span></td><td>SIG_3</td><td>SIG_7</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">4</span></td><td>SIG_4</td><td>SIG_0</td>
+                            <td><span class="pin-num">12</span></td><td>SIG_4</td><td>SIG_0</td>
+                            <td><span class="pin-num">20</span></td><td>SIG_4</td><td>SIG_0</td>
+                            <td><span class="pin-num">28</span></td><td>SIG_4</td><td>SIG_0</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">5</span></td><td>SIG_5</td><td>SIG_1</td>
+                            <td><span class="pin-num">13</span></td><td>SIG_5</td><td>SIG_1</td>
+                            <td><span class="pin-num">21</span></td><td>SIG_5</td><td>SIG_1</td>
+                            <td><span class="pin-num">29</span></td><td>SIG_5</td><td>SIG_1</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">6</span></td><td>SIG_6</td><td>SIG_2</td>
+                            <td><span class="pin-num">14</span></td><td>SIG_6</td><td>SIG_2</td>
+                            <td><span class="pin-num">22</span></td><td>SIG_6</td><td>SIG_2</td>
+                            <td><span class="pin-num">30</span></td><td>SIG_6</td><td>SIG_2</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">7</span></td><td>SIG_7</td><td>SIG_3</td>
+                            <td><span class="pin-num">15</span></td><td>SIG_7</td><td>SIG_3</td>
+                            <td><span class="pin-num">23</span></td><td>SIG_7</td><td>SIG_3</td>
+                            <td><span class="pin-num">31</span></td><td>SIG_7</td><td>SIG_3</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="margin-top: 1.5rem;">UART Signal Function 映射</h4>
+                <table class="pinout-table">
+                    <thead>
+                        <tr>
+                            <th>Signal Function</th><th>Description</th>
+                            <th>Signal Function</th><th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>GLB_UART_SIG_FUN_UART0_RTS</code></td><td>UART0 Request To Send</td>
+                            <td><code>GLB_UART_SIG_FUN_UART1_RTS</code></td><td>UART1 Request To Send</td>
+                        </tr>
+                        <tr>
+                            <td><code>GLB_UART_SIG_FUN_UART0_CTS</code></td><td>UART0 Clear To Send</td>
+                            <td><code>GLB_UART_SIG_FUN_UART1_CTS</code></td><td>UART1 Clear To Send</td>
+                        </tr>
+                        <tr>
+                            <td><code>GLB_UART_SIG_FUN_UART0_TXD</code></td><td>UART0 Transmit Data</td>
+                            <td><code>GLB_UART_SIG_FUN_UART1_TXD</code></td><td>UART1 Transmit Data</td>
+                        </tr>
+                        <tr>
+                            <td><code>GLB_UART_SIG_FUN_UART0_RXD</code></td><td>UART0 Receive Data</td>
+                            <td><code>GLB_UART_SIG_FUN_UART1_RXD</code></td><td>UART1 Receive Data</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="margin-top: 1.5rem;">UART 配置範例</h4>
+                <pre style="background: var(--code-bg, #1e293b); color: var(--code-text, #e2e8f0); padding: 1rem; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;"><code>/* 使用 GPIO14 作為 UART1_TXD, GPIO15 作為 UART1_RXD */
+GLB_GPIO_Cfg_Type uart_pins[] = {
+    { GLB_GPIO_PIN_14, GPIO_FUN_UART, GPIO_MODE_AF, GPIO_PULL_UP, 0, 1 },
+    { GLB_GPIO_PIN_15, GPIO_FUN_UART, GPIO_MODE_AF, GPIO_PULL_UP, 0, 1 },
+};
+GLB_GPIO_Init(&uart_pins[0]);
+GLB_GPIO_Init(&uart_pins[1]);
+
+/* GPIO14 -> UART_SIG_6, GPIO15 -> UART_SIG_7 */
+GLB_UART_Fun_Sel(GLB_UART_SIG_6, GLB_UART_SIG_FUN_UART1_TXD);
+GLB_UART_Fun_Sel(GLB_UART_SIG_7, GLB_UART_SIG_FUN_UART1_RXD);</code></pre>
+            </div>
+
+            <!-- SPI Pin Assignment -->
+            <div id="spi-pins" class="pinout-table-container" style="margin-bottom: 2rem;">
+                <h3><i class="fas fa-microchip"></i> SPI Pin Assignment</h3>
+
+                <h4>SPI0 (Function = 4) — Pin Group 對照表</h4>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">
+                    SPI0 以 <strong>4 個 GPIO 為一組</strong>，信號固定依位置分配。<code>pin_swap_enable</code> 可交換 MOSI/MISO。EVB 預設 <code>pin_swap_enable = 1</code>。
+                </p>
+                <table class="pinout-table">
+                    <thead>
+                        <tr>
+                            <th>Group</th>
+                            <th>MOSI (swap=0) / MISO (swap=1)</th>
+                            <th>MISO (swap=0) / MOSI (swap=1)</th>
+                            <th>SS (Chip Select)</th>
+                            <th>SCLK</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0</td>
+                            <td><span class="pin-num">GPIO0</span></td>
+                            <td><span class="pin-num">GPIO1</span></td>
+                            <td><span class="pin-num">GPIO2</span></td>
+                            <td><span class="pin-num">GPIO3</span></td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td><span class="pin-num">GPIO4</span></td>
+                            <td><span class="pin-num">GPIO5</span></td>
+                            <td><span class="pin-num">GPIO6</span></td>
+                            <td><span class="pin-num">GPIO7</span></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><span class="pin-num">GPIO8</span></td>
+                            <td><span class="pin-num">GPIO9</span></td>
+                            <td><span class="pin-num">GPIO10</span></td>
+                            <td><span class="pin-num">GPIO11</span></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td><span class="pin-num">GPIO12</span></td>
+                            <td><span class="pin-num">GPIO13</span></td>
+                            <td><span class="pin-num">GPIO14</span></td>
+                            <td><span class="pin-num">GPIO15</span></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td><span class="pin-num">GPIO16</span></td>
+                            <td><span class="pin-num">GPIO17</span></td>
+                            <td><span class="pin-num">GPIO18</span></td>
+                            <td><span class="pin-num">GPIO19</span></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td><span class="pin-num">GPIO20</span></td>
+                            <td><span class="pin-num">GPIO21</span></td>
+                            <td><span class="pin-num">GPIO22</span></td>
+                            <td><span class="pin-num">GPIO23</span></td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td><span class="pin-num">GPIO24</span></td>
+                            <td><span class="pin-num">GPIO25</span></td>
+                            <td><span class="pin-num">GPIO26</span></td>
+                            <td><span class="pin-num">GPIO27</span></td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td><span class="pin-num">GPIO28</span></td>
+                            <td><span class="pin-num">GPIO29</span></td>
+                            <td><span class="pin-num">GPIO30</span></td>
+                            <td><span class="pin-num">GPIO31</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="margin-top: 1rem;">SPI1 (Function = 26)</h4>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">獨立的第二組 SPI 外設，pin group 分配規則同 SPI0，使用 function value 26。</p>
+
+                <h4 style="margin-top: 1rem;">SPI 規格</h4>
+                <table class="pinout-table">
+                    <thead>
+                        <tr><th>Feature</th><th>SPI0</th><th>SPI1</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Max Clock</td><td>18 MHz (EVB default)</td><td>18 MHz (EVB default)</td></tr>
+                        <tr><td>Data Width</td><td>8 / 16 / 24 / 32 bit</td><td>8 / 16 / 24 / 32 bit</td></tr>
+                        <tr><td>Mode</td><td>Master / Slave</td><td>Master / Slave</td></tr>
+                        <tr><td>CPOL/CPHA</td><td>Configurable</td><td>Configurable</td></tr>
+                        <tr><td>DMA</td><td>TX: DMA_CH3, RX: DMA_CH4</td><td>Yes</td></tr>
+                        <tr><td>Pin Swap</td><td>MOSI/MISO swappable</td><td>MOSI/MISO swappable</td></tr>
+                    </tbody>
+                </table>
+
+                <h4 style="margin-top: 1.5rem;">SPI 配置範例</h4>
+                <pre style="background: var(--code-bg, #1e293b); color: var(--code-text, #e2e8f0); padding: 1rem; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;"><code>/* SPI0 on GPIO12~15 group */
+GLB_GPIO_Cfg_Type spi_pins[] = {
+    { GLB_GPIO_PIN_12, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_NONE, 1, 1 }, /* MOSI */
+    { GLB_GPIO_PIN_13, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_NONE, 1, 1 }, /* MISO */
+    { GLB_GPIO_PIN_14, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_UP,   1, 1 }, /* SS   */
+    { GLB_GPIO_PIN_15, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_NONE, 1, 1 }, /* SCLK */
+};
+for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
+            </div>
+
+            <!-- SDIO Pin Assignment -->
+            <div id="sdio-pins" class="pinout-table-container" style="margin-bottom: 2rem;">
+                <h3><i class="fas fa-sd-card"></i> SDIO / SD Card Pin Assignment (Function = 27)</h3>
+
+                <div class="alert-warning" style="background: rgba(245, 158, 11, 0.1); border-left: 4px solid #f59e0b; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
+                    <strong>GPIO28~33 為 SDC 與 SF2/SF3 共用</strong> — 定義 <code>CONFIG_DISABLE_SDC_PINMUX</code> 時，這些 pin 改為 external flash 用途，不可同時使用 SD card。
+                </div>
+
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">SD card host controller 使用<strong>固定 pin group</strong>：GPIO28 ~ GPIO33。</p>
+
+                <table class="pinout-table">
+                    <thead>
+                        <tr>
+                            <th>GPIO</th>
+                            <th>SDC Signal</th>
+                            <th>Pull</th>
+                            <th>Drive</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="pin-num">GPIO28</span></td>
+                            <td>SDC_CLK</td>
+                            <td>Pull-Up</td>
+                            <td>2 (8 mA)</td>
+                            <td>SD Clock</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO29</span></td>
+                            <td>SDC_CMD</td>
+                            <td>Pull-Up</td>
+                            <td>2 (8 mA)</td>
+                            <td>SD Command Line</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO30</span></td>
+                            <td>SDC_DAT0</td>
+                            <td>None</td>
+                            <td>2 (8 mA)</td>
+                            <td>SD Data Bit 0</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO31</span></td>
+                            <td>SDC_DAT1</td>
+                            <td>Pull-Up</td>
+                            <td>2 (8 mA)</td>
+                            <td>SD Data Bit 1</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO32</span></td>
+                            <td>SDC_DAT2</td>
+                            <td>Pull-Up</td>
+                            <td>2 (8 mA)</td>
+                            <td>SD Data Bit 2</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO33</span></td>
+                            <td>SDC_DAT3</td>
+                            <td>Pull-Up</td>
+                            <td>2 (8 mA)</td>
+                            <td>SD Data Bit 3</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="margin-top: 1rem;">SDC 規格</h4>
+                <table class="pinout-table">
+                    <thead><tr><th>Feature</th><th>Value</th></tr></thead>
+                    <tbody>
+                        <tr><td>Bus Width</td><td>1-bit / 4-bit</td></tr>
+                        <tr><td>Clock Source</td><td>DLL_64M / PLL_96M</td></tr>
+                        <tr><td>EVB Default</td><td>PLL_96M, div=1 (48 MHz)</td></tr>
+                        <tr><td>Protocol</td><td>SD 3.0 / SDIO</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- I2S Pin Assignment -->
+            <div id="i2s-pins" class="pinout-table-container" style="margin-bottom: 2rem;">
+                <h3><i class="fas fa-volume-up"></i> I2S Pin Assignment (Function = 3)</h3>
+
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    I2S0 以 <strong>4 個 GPIO 為一組</strong>，信號依位置固定分配。Pin N+2 為雙功能 DIO/DO，Pin N+3 為雙功能 RCLK_O/DI。全雙工時 DO=output、DI=input；半雙工時 DIO 雙向傳輸。
+                </p>
+
+                <table class="pinout-table">
+                    <thead>
+                        <tr>
+                            <th>Group</th>
+                            <th>BCLK (Bit Clock)</th>
+                            <th>FS (Frame Sync / LRCLK)</th>
+                            <th>DIO / DO (Data Out)</th>
+                            <th>RCLK_O / DI (Data In)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0</td>
+                            <td><span class="pin-num">GPIO0</span></td>
+                            <td><span class="pin-num">GPIO1</span></td>
+                            <td><span class="pin-num">GPIO2</span></td>
+                            <td><span class="pin-num">GPIO3</span></td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td><span class="pin-num">GPIO4</span></td>
+                            <td><span class="pin-num">GPIO5</span></td>
+                            <td><span class="pin-num">GPIO6</span></td>
+                            <td><span class="pin-num">GPIO7</span></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><span class="pin-num">GPIO8</span></td>
+                            <td><span class="pin-num">GPIO9</span></td>
+                            <td><span class="pin-num">GPIO10</span></td>
+                            <td><span class="pin-num">GPIO11</span></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td><span class="pin-num">GPIO12</span></td>
+                            <td><span class="pin-num">GPIO13</span></td>
+                            <td><span class="pin-num">GPIO14</span></td>
+                            <td><span class="pin-num">GPIO15</span></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td><span class="pin-num">GPIO16</span></td>
+                            <td><span class="pin-num">GPIO17</span></td>
+                            <td><span class="pin-num">GPIO18</span></td>
+                            <td><span class="pin-num">GPIO19</span></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td><span class="pin-num">GPIO20</span></td>
+                            <td><span class="pin-num">GPIO21</span></td>
+                            <td><span class="pin-num">GPIO22</span></td>
+                            <td><span class="pin-num">GPIO23</span></td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td><span class="pin-num">GPIO24</span></td>
+                            <td><span class="pin-num">GPIO25</span></td>
+                            <td><span class="pin-num">GPIO26</span></td>
+                            <td><span class="pin-num">GPIO27</span></td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td><span class="pin-num">GPIO28</span></td>
+                            <td><span class="pin-num">GPIO29</span></td>
+                            <td><span class="pin-num">GPIO30</span></td>
+                            <td><span class="pin-num">GPIO31</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="margin-top: 1rem;">I2S 規格</h4>
+                <table class="pinout-table">
+                    <thead><tr><th>Feature</th><th>I2S0</th></tr></thead>
+                    <tbody>
+                        <tr><td>Mode</td><td>Master / Slave</td></tr>
+                        <tr><td>Interface</td><td>I2S Left / Right / DSP</td></tr>
+                        <tr><td>Sample Rate</td><td>8 kHz ~ 96 kHz</td></tr>
+                        <tr><td>Frame / Data Size</td><td>8 / 16 / 24 / 32 bit</td></tr>
+                        <tr><td>Channels</td><td>Mono / Stereo</td></tr>
+                        <tr><td>FIFO Depth</td><td>8 entries</td></tr>
+                        <tr><td>DMA</td><td>TX: DMA_CH5/CH6</td></tr>
+                        <tr><td>MCLK Output</td><td>Via RCLK_O pin</td></tr>
+                        <tr><td>EVB Default</td><td>Master, Left-justified, 16 kHz, Mono, 16-bit</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Complete GPIO Alternate Function Table -->
+            <div class="pinout-table-container" style="margin-bottom: 2rem;">
+                <h3>GPIO0 ~ GPIO31 完整 Alternate Function 對照表</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">僅列出周邊電路設計相關的功能。每個 GPIO 皆支援 GPIO (11)、JTAG (14)、Debug (15) 等通用功能，此處省略。</p>
+
+                <h4>GPIO0 ~ GPIO15</h4>
+                <div style="overflow-x: auto;">
+                <table class="pinout-table" style="font-size: 0.8rem;">
+                    <thead>
+                        <tr>
+                            <th>Func</th>
+                            <th>GPIO0</th><th>GPIO1</th><th>GPIO2</th><th>GPIO3</th>
+                            <th>GPIO4</th><th>GPIO5</th><th>GPIO6</th><th>GPIO7</th>
+                            <th>GPIO8</th><th>GPIO9</th><th>GPIO10</th><th>GPIO11</th>
+                            <th>GPIO12</th><th>GPIO13</th><th>GPIO14</th><th>GPIO15</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>3 I2S</strong></td>
+                            <td>BCLK</td><td>FS</td><td>DIO/DO</td><td>RCLK/DI</td>
+                            <td>BCLK</td><td>FS</td><td>DIO/DO</td><td>RCLK/DI</td>
+                            <td>BCLK</td><td>FS</td><td>DIO/DO</td><td>RCLK/DI</td>
+                            <td>BCLK</td><td>FS</td><td>DIO/DO</td><td>RCLK/DI</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4 SPI0</strong></td>
+                            <td>MOSI*</td><td>MISO*</td><td>SS</td><td>SCLK</td>
+                            <td>MOSI*</td><td>MISO*</td><td>SS</td><td>SCLK</td>
+                            <td>MOSI*</td><td>MISO*</td><td>SS</td><td>SCLK</td>
+                            <td>MOSI*</td><td>MISO*</td><td>SS</td><td>SCLK</td>
+                        </tr>
+                        <tr>
+                            <td><strong>6 I2C0</strong></td>
+                            <td>SCL</td><td>SDA</td><td>SCL</td><td>SDA</td>
+                            <td>SCL</td><td>SDA</td><td>SCL</td><td>SDA</td>
+                            <td>SCL</td><td>SDA</td><td>SCL</td><td>SDA</td>
+                            <td>SCL</td><td>SDA</td><td>SCL</td><td>SDA</td>
+                        </tr>
+                        <tr>
+                            <td><strong>7 UART</strong></td>
+                            <td>S0/4</td><td>S1/5</td><td>S2/6</td><td>S3/7</td>
+                            <td>S4/0</td><td>S5/1</td><td>S6/2</td><td>S7/3</td>
+                            <td>S0/4</td><td>S1/5</td><td>S2/6</td><td>S3/7</td>
+                            <td>S4/0</td><td>S5/1</td><td>S6/2</td><td>S7/3</td>
+                        </tr>
+                        <tr>
+                            <td><strong>8 PWM</strong></td>
+                            <td>CH0</td><td>CH1</td><td>CH2</td><td>CH3</td>
+                            <td>CH4</td><td>CH0</td><td>CH1</td><td>CH2</td>
+                            <td>CH3</td><td>CH4</td><td>CH0</td><td>CH1</td>
+                            <td>CH2</td><td>CH3</td><td>CH4</td><td>CH0</td>
+                        </tr>
+                        <tr>
+                            <td><strong>10 ADC</strong></td>
+                            <td>-</td><td>-</td><td>-</td><td>-</td>
+                            <td>-</td><td>-</td><td>-</td><td>CH6</td>
+                            <td>CH0</td><td>-</td><td>MICBIAS</td><td>CH3</td>
+                            <td>CH4</td><td>-</td><td>CH5</td><td>CH1</td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary);">* MOSI/MISO 依 <code>pin_swap_enable</code> 設定交換</p>
+
+                <h4 style="margin-top: 1.5rem;">GPIO16 ~ GPIO31</h4>
+                <div style="overflow-x: auto;">
+                <table class="pinout-table" style="font-size: 0.8rem;">
+                    <thead>
+                        <tr>
+                            <th>Func</th>
+                            <th>GPIO16</th><th>GPIO17</th><th>GPIO18</th><th>GPIO19</th>
+                            <th>GPIO20</th><th>GPIO21</th><th>GPIO22</th><th>GPIO23</th>
+                            <th>GPIO24</th><th>GPIO25</th><th>GPIO26</th><th>GPIO27</th>
+                            <th>GPIO28</th><th>GPIO29</th><th>GPIO30</th><th>GPIO31</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>2 Flash</strong></td>
+                            <td>-</td><td>SF_IO0</td><td>SF_IO1</td><td>SF_CS</td>
+                            <td>SF_IO3</td><td>SF_CLK</td><td>SF_IO2</td><td>SF2_IO2</td>
+                            <td>SF2_IO1</td><td>SF2_CS</td><td>SF2_IO3</td><td>SF2_CLK</td>
+                            <td>SF2_IO0</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3 I2S</strong></td>
+                            <td>BCLK</td><td>FS</td><td>DIO/DO</td><td>RCLK/DI</td>
+                            <td>BCLK</td><td>FS</td><td>DIO/DO</td><td>RCLK/DI</td>
+                            <td>BCLK</td><td>FS</td><td>DIO/DO</td><td>RCLK/DI</td>
+                            <td>BCLK</td><td>FS</td><td>DIO/DO</td><td>RCLK/DI</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4 SPI0</strong></td>
+                            <td>MOSI*</td><td>MISO*</td><td>SS</td><td>SCLK</td>
+                            <td>MOSI*</td><td>MISO*</td><td>SS</td><td>SCLK</td>
+                            <td>MOSI*</td><td>MISO*</td><td>SS</td><td>SCLK</td>
+                            <td>MOSI*</td><td>MISO*</td><td>SS</td><td>SCLK</td>
+                        </tr>
+                        <tr>
+                            <td><strong>6 I2C0</strong></td>
+                            <td>SCL</td><td>SDA</td><td>SCL</td><td>SDA</td>
+                            <td>SCL</td><td>SDA</td><td>SCL</td><td>SDA</td>
+                            <td>SCL</td><td>SDA</td><td>SCL</td><td>SDA</td>
+                            <td>SCL</td><td>SDA</td><td>SCL</td><td>SDA</td>
+                        </tr>
+                        <tr>
+                            <td><strong>7 UART</strong></td>
+                            <td>S0/4</td><td>S1/5</td><td>S2/6</td><td>S3/7</td>
+                            <td>S4/0</td><td>S5/1</td><td>S6/2</td><td>S7/3</td>
+                            <td>S0/4</td><td>S1/5</td><td>S2/6</td><td>S3/7</td>
+                            <td>S4/0</td><td>S5/1</td><td>S6/2</td><td>S7/3</td>
+                        </tr>
+                        <tr>
+                            <td><strong>8 PWM</strong></td>
+                            <td>CH1</td><td>CH2</td><td>CH3</td><td>CH4</td>
+                            <td>CH0</td><td>CH1</td><td>CH2</td><td>CH3</td>
+                            <td>CH4</td><td>CH0</td><td>CH1</td><td>CH2</td>
+                            <td>CH3</td><td>CH4</td><td>CH0</td><td>CH1</td>
+                        </tr>
+                        <tr>
+                            <td><strong>10 ADC</strong></td>
+                            <td>-</td><td>CH2</td><td>CH8</td><td>CH9</td>
+                            <td>CH10</td><td>CH11</td><td>LED0</td><td>LED1</td>
+                            <td>-</td><td>-</td><td>-</td><td>-</td>
+                            <td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>19 RMII</strong></td>
+                            <td>-</td><td>-</td><td>MDC</td><td>MDIO</td>
+                            <td>RXERR</td><td>TX_EN</td><td>RX_DV</td><td>-</td>
+                            <td>MDC</td><td>MDIO</td><td>RXERR</td><td>TX_EN</td>
+                            <td>RX_DV</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>27 SDC</strong></td>
+                            <td>-</td><td>-</td><td>-</td><td>-</td>
+                            <td>-</td><td>-</td><td>-</td><td>-</td>
+                            <td>-</td><td>-</td><td>-</td><td>-</td>
+                            <td>CLK</td><td>CMD</td><td>DAT0</td><td>DAT1</td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+
+            <!-- EVB Default Pin Summary -->
+            <div class="pinout-table-container" style="margin-bottom: 2rem;">
+                <h3>EVB 預設 Pin 配置總覽</h3>
+                <table class="pinout-table">
+                    <thead>
+                        <tr>
+                            <th>GPIO</th>
+                            <th>Function</th>
+                            <th>Signal</th>
+                            <th>Pull</th>
+                            <th>Drive</th>
+                            <th>備註</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="special-pin"><td><span class="pin-num">GPIO0</span></td><td>JTAG (14)</td><td>E21_TMS/TCK</td><td>Pull-Up</td><td>0</td><td>Debug</td></tr>
+                        <tr class="special-pin"><td><span class="pin-num">GPIO1</span></td><td>JTAG (14)</td><td>E21_TDI/TDO</td><td>Pull-Up</td><td>0</td><td>Debug</td></tr>
+                        <tr class="special-pin"><td><span class="pin-num">GPIO2</span></td><td>JTAG (14)</td><td>E21_TCK/TMS</td><td>Pull-Up</td><td>0</td><td>Debug</td></tr>
+                        <tr class="special-pin"><td><span class="pin-num">GPIO11</span></td><td>JTAG (14)</td><td>E21_TDO/TDI</td><td>Pull-Up</td><td>0</td><td>Debug</td></tr>
+                        <tr><td><span class="pin-num">GPIO15</span></td><td>GPIO (11)</td><td>Output</td><td>Pull-Down</td><td>2</td><td>SW Control</td></tr>
+                        <tr class="special-pin"><td><span class="pin-num">GPIO20</span></td><td>UART (7)</td><td>UART0_TXD</td><td>Pull-Up</td><td>0</td><td>Console TX (Boot ROM 固定)</td></tr>
+                        <tr class="special-pin"><td><span class="pin-num">GPIO21</span></td><td>UART (7)</td><td>UART0_RXD</td><td>Pull-Up</td><td>0</td><td>Console RX (Boot ROM 固定)</td></tr>
+                        <tr><td><span class="pin-num">GPIO28</span></td><td>SDC (27)</td><td>SDC_CLK</td><td>Pull-Up</td><td>2</td><td>SD Card</td></tr>
+                        <tr><td><span class="pin-num">GPIO29</span></td><td>SDC (27)</td><td>SDC_CMD</td><td>Pull-Up</td><td>2</td><td>SD Card</td></tr>
+                        <tr><td><span class="pin-num">GPIO30</span></td><td>SDC (27)</td><td>SDC_DAT0</td><td>None</td><td>2</td><td>SD Card</td></tr>
+                        <tr><td><span class="pin-num">GPIO31</span></td><td>SDC (27)</td><td>SDC_DAT1</td><td>Pull-Up</td><td>2</td><td>SD Card</td></tr>
+                        <tr><td><span class="pin-num">GPIO32</span></td><td>SDC (27)</td><td>SDC_DAT2</td><td>Pull-Up</td><td>2</td><td>SD Card</td></tr>
+                        <tr><td><span class="pin-num">GPIO33</span></td><td>SDC (27)</td><td>SDC_DAT3</td><td>Pull-Up</td><td>2</td><td>SD Card</td></tr>
+                    </tbody>
+                </table>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;"><strong>可用 GPIO</strong>：GPIO3~10, GPIO12~19, GPIO22~27, GPIO34~41 (未被 EVB 預設佔用)</p>
+            </div>
+
+            <!-- Design Recommendations -->
             <div class="pin-notes">
-                <h4>⚠️ 注意事項</h4>
+                <h4>Pin 衝突與設計注意事項</h4>
                 <ul>
-                    <li><strong>GPIO8/9:</strong> 預設為 USB 2.0 介面 (D+/D-)，連接 J40</li>
-                    <li><strong>GPIO14/15/17/20:</strong> JTAG Debug 介面，連接 J23</li>
-                    <li><strong>GPIO16:</strong> 開機時讀取此腳位，也用於天線切換控制</li>
-                    <li><strong>GPIO18/19:</strong> 32.768kHz 外部晶振連接，RTC 使用</li>
-                    <li><strong>DVP (GPIO22-33):</strong> 8-bit 並行相機介面，連接 J27</li>
-                    <li><strong>RF:</strong> 天線匹配電路請參考 SEVB Reference Design</li>
+                    <li><strong>GPIO20/21：</strong>Boot ROM UART download 固定使用，<strong>不可重新分配</strong></li>
+                    <li><strong>GPIO0~2, GPIO11：</strong>預設 JTAG Debug，正式產品可釋放使用</li>
+                    <li><strong>GPIO17~22：</strong>與內部 Flash (SF) 共用，若內部 Flash 啟用則不可使用</li>
+                    <li><strong>GPIO23~28：</strong>與外部 Flash (SF2) 共用，需注意衝突</li>
+                    <li><strong>GPIO28~33：</strong>SDC 與 SF2/SF3 互斥，由 <code>CONFIG_DISABLE_SDC_PINMUX</code> 選擇</li>
                 </ul>
+
+                <h4 style="margin-top: 1rem;">電氣特性</h4>
+                <table class="pinout-table">
+                    <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+                    <tbody>
+                        <tr><td>I/O Voltage</td><td>3.3V (VDDIO)</td></tr>
+                        <tr><td>Drive Strength 0</td><td>~2 mA</td></tr>
+                        <tr><td>Drive Strength 1</td><td>~4 mA</td></tr>
+                        <tr><td>Drive Strength 2</td><td>~8 mA</td></tr>
+                        <tr><td>Drive Strength 3</td><td>~12 mA</td></tr>
+                        <tr><td>Internal Pull-Up/Down</td><td>~50 kOhm</td></tr>
+                        <tr><td>Schmitt Trigger</td><td>Available (per-pin configurable)</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -855,106 +1355,185 @@ lang: zh-TW
             <div class="peripheral-grid">
                 <div class="peripheral-card">
                     <h3><i class="fas fa-volume-up"></i> I2S 音訊 Codec</h3>
-                    <p>連接外部音訊編解碼器 (如 ES8388、WM8978)</p>
+                    <p>連接外部音訊編解碼器 (如 ES8388、WM8978)。使用 I2S Group 1 (GPIO4~7) + I2C0 控制。</p>
                     <table class="connection-table">
                         <tr>
                             <th>IPRO7</th>
+                            <th>Function</th>
                             <th>Codec</th>
                         </tr>
                         <tr>
-                            <td>GPIO8 (I2S_BCLK)</td>
+                            <td>GPIO4 (Fun=3, I2S0_BCLK)</td>
+                            <td>I2S Bit Clock</td>
                             <td>BCLK</td>
                         </tr>
                         <tr>
-                            <td>GPIO9 (I2S_LRCLK)</td>
-                            <td>LRCLK/WS</td>
+                            <td>GPIO5 (Fun=3, I2S0_FS)</td>
+                            <td>I2S Frame Sync</td>
+                            <td>LRCLK / WS</td>
                         </tr>
                         <tr>
-                            <td>GPIO6 (I2S_DO)</td>
-                            <td>DIN</td>
+                            <td>GPIO6 (Fun=3, I2S0_DO)</td>
+                            <td>I2S Data Out</td>
+                            <td>DIN (to codec)</td>
                         </tr>
                         <tr>
-                            <td>GPIO7 (I2S_DI)</td>
-                            <td>DOUT</td>
+                            <td>GPIO7 (Fun=3, I2S0_DI)</td>
+                            <td>I2S Data In</td>
+                            <td>DOUT (from codec)</td>
                         </tr>
                         <tr>
-                            <td>GPIO4 (I2C_SCL)</td>
+                            <td>GPIO12 (Fun=6, I2C0_SCL)</td>
+                            <td>I2C Clock</td>
                             <td>SCL</td>
                         </tr>
                         <tr>
-                            <td>GPIO5 (I2C_SDA)</td>
+                            <td>GPIO13 (Fun=6, I2C0_SDA)</td>
+                            <td>I2C Data</td>
                             <td>SDA</td>
                         </tr>
                     </table>
+                    <p style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(99, 102, 241, 0.1); border-radius: 4px; font-size: 0.8rem;">
+                        I2S 也可使用其他 Group (0~7)，每組 4 pin 依序為 BCLK/FS/DO/DI，詳見 <a href="#i2s-pins">I2S Pin Assignment</a>。
+                    </p>
                 </div>
 
                 <div class="peripheral-card">
-                    <h3><i class="fas fa-sd-card"></i> SPI Flash</h3>
-                    <p>擴展外部 QSPI Flash 儲存空間</p>
+                    <h3><i class="fas fa-microchip"></i> SPI 外設 (LCD / Sensor)</h3>
+                    <p>SPI0 接 LCD 或感測器。使用 Group 3 (GPIO12~15)。</p>
                     <table class="connection-table">
                         <tr>
                             <th>IPRO7</th>
-                            <th>Flash</th>
+                            <th>Function</th>
+                            <th>外設</th>
                         </tr>
                         <tr>
-                            <td>QSPI_CLK</td>
+                            <td>GPIO15 (Fun=4, SPI0_SCLK)</td>
+                            <td>SPI Clock</td>
+                            <td>SCK</td>
+                        </tr>
+                        <tr>
+                            <td>GPIO12 (Fun=4, SPI0_MOSI)</td>
+                            <td>SPI Master Out</td>
+                            <td>SDI / MOSI</td>
+                        </tr>
+                        <tr>
+                            <td>GPIO13 (Fun=4, SPI0_MISO)</td>
+                            <td>SPI Master In</td>
+                            <td>SDO / MISO</td>
+                        </tr>
+                        <tr>
+                            <td>GPIO14 (Fun=4, SPI0_SS)</td>
+                            <td>Chip Select</td>
+                            <td>CS#</td>
+                        </tr>
+                    </table>
+                    <p style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(245, 158, 11, 0.15); border-radius: 4px; font-size: 0.8rem; color: #f59e0b;">
+                        MOSI/MISO 可透過 <code>pin_swap_enable</code> 交換。SPI0 支援 8 組 pin group，詳見 <a href="#spi-pins">SPI Pin Assignment</a>。
+                    </p>
+                </div>
+
+                <div class="peripheral-card">
+                    <h3><i class="fas fa-sd-card"></i> SD Card (SDIO)</h3>
+                    <p>SD 卡使用固定 GPIO28~33，不可更改。</p>
+                    <table class="connection-table">
+                        <tr>
+                            <th>IPRO7</th>
+                            <th>SD Card</th>
+                        </tr>
+                        <tr>
+                            <td>GPIO28 (Fun=27, SDC_CLK)</td>
                             <td>CLK</td>
                         </tr>
                         <tr>
-                            <td>QSPI_CS</td>
-                            <td>CS#</td>
+                            <td>GPIO29 (Fun=27, SDC_CMD)</td>
+                            <td>CMD</td>
                         </tr>
                         <tr>
-                            <td>QSPI_D0</td>
-                            <td>DI/IO0</td>
+                            <td>GPIO30 (Fun=27, SDC_DAT0)</td>
+                            <td>DAT0</td>
                         </tr>
                         <tr>
-                            <td>QSPI_D1</td>
-                            <td>DO/IO1</td>
+                            <td>GPIO31 (Fun=27, SDC_DAT1)</td>
+                            <td>DAT1</td>
                         </tr>
                         <tr>
-                            <td>QSPI_D2</td>
-                            <td>WP#/IO2</td>
+                            <td>GPIO32 (Fun=27, SDC_DAT2)</td>
+                            <td>DAT2</td>
                         </tr>
                         <tr>
-                            <td>QSPI_D3</td>
-                            <td>HOLD#/IO3</td>
+                            <td>GPIO33 (Fun=27, SDC_DAT3)</td>
+                            <td>DAT3</td>
                         </tr>
                     </table>
+                    <p style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(245, 158, 11, 0.15); border-radius: 4px; font-size: 0.8rem; color: #f59e0b;">
+                        GPIO28~33 與外部 Flash (SF2/SF3) 共用。定義 <code>CONFIG_DISABLE_SDC_PINMUX</code> 切換為 Flash 模式。詳見 <a href="#sdio-pins">SDIO Pin Assignment</a>。
+                    </p>
                 </div>
 
                 <div class="peripheral-card">
-                    <h3><i class="fas fa-thermometer-half"></i> 感測器</h3>
-                    <p>I2C 介面感測器連接範例</p>
+                    <h3><i class="fas fa-thermometer-half"></i> I2C 感測器</h3>
+                    <p>I2C0 介面感測器連接範例。I2C0 可用任意偶數/奇數 GPIO 配對 (SCL=偶數位, SDA=奇數位)。</p>
                     <table class="connection-table">
                         <tr>
                             <th>IPRO7</th>
+                            <th>Function</th>
                             <th>Sensor</th>
                         </tr>
                         <tr>
-                            <td>GPIO4 (I2C_SCL)</td>
+                            <td>GPIO4 (Fun=6, I2C0_SCL)</td>
+                            <td>I2C Clock</td>
                             <td>SCL</td>
                         </tr>
                         <tr>
-                            <td>GPIO5 (I2C_SDA)</td>
+                            <td>GPIO5 (Fun=6, I2C0_SDA)</td>
+                            <td>I2C Data</td>
                             <td>SDA</td>
                         </tr>
                         <tr>
-                            <td>GPIO10</td>
-                            <td>INT (可選)</td>
+                            <td>GPIO10 (Fun=11, GPIO)</td>
+                            <td>Interrupt</td>
+                            <td>INT (optional)</td>
                         </tr>
                         <tr>
                             <td>3V3</td>
+                            <td>Power</td>
                             <td>VDD</td>
                         </tr>
                         <tr>
                             <td>GND</td>
+                            <td>Ground</td>
                             <td>GND</td>
                         </tr>
                     </table>
-                    <p
-                        style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(245, 158, 11, 0.15); border-radius: 4px; font-size: 0.8rem; color: #f59e0b;">
-                        ⚠️ I2C 需要 4.7kΩ 上拉電阻</p>
+                    <p style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(245, 158, 11, 0.15); border-radius: 4px; font-size: 0.8rem; color: #f59e0b;">
+                        I2C 需要外部 4.7 kOhm 上拉電阻（內部 pull-up ~50 kOhm 不足以驅動標準 I2C bus）。I2C1 (Fun=25) 為獨立的第二組 I2C。
+                    </p>
+                </div>
+
+                <div class="peripheral-card">
+                    <h3><i class="fas fa-exchange-alt"></i> UART 擴展</h3>
+                    <p>UART1 可分配到任意 GPIO。範例使用 GPIO14/15。</p>
+                    <table class="connection-table">
+                        <tr>
+                            <th>IPRO7</th>
+                            <th>Function</th>
+                            <th>外設</th>
+                        </tr>
+                        <tr>
+                            <td>GPIO14 (Fun=7, UART_SIG6)</td>
+                            <td>UART1_TXD</td>
+                            <td>RXD</td>
+                        </tr>
+                        <tr>
+                            <td>GPIO15 (Fun=7, UART_SIG7)</td>
+                            <td>UART1_RXD</td>
+                            <td>TXD</td>
+                        </tr>
+                    </table>
+                    <p style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(239, 68, 68, 0.1); border-radius: 4px; font-size: 0.8rem; color: #ef4444;">
+                        UART0 (GPIO20 TXD, GPIO21 RXD) 為 Boot ROM 固定使用，不可更改。詳見 <a href="#uart-pins">UART Pin Assignment</a>。
+                    </p>
                 </div>
 
                 <div class="peripheral-card">
@@ -966,13 +1545,13 @@ lang: zh-TW
                         <li><strong>外接天線:</strong> 效能最佳，需 U.FL 連接器</li>
                     </ul>
                     <div class="rf-matching">
-                        <p><strong>π 型匹配電路:</strong></p>
+                        <p><strong>pi 型匹配電路:</strong></p>
                         <pre>
-RF_OUT ─┬─[L1]─┬─ ANT
-        │      │
-       [C1]   [C2]
-        │      │
-       GND    GND
+RF_OUT --+--[L1]--+-- ANT
+         |        |
+        [C1]     [C2]
+         |        |
+        GND      GND
                         </pre>
                     </div>
                 </div>
