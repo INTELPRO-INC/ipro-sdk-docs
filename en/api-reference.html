@@ -12,6 +12,7 @@ title: API Reference - IPRO SDK
                 <li class="sidebar-section-title">BLE API</li>
                 <li><a href="#ble-core" class="sidebar-link">Core Initialization</a></li>
                 <li><a href="#ble-adv" class="sidebar-link">Advertising</a></li>
+                <li><a href="#ble-scan" class="sidebar-link">Scanning</a></li>
                 <li><a href="#ble-conn" class="sidebar-link">Connection Management</a></li>
                 <li><a href="#ble-gatt-server" class="sidebar-link">GATT Server</a></li>
                 <li><a href="#ble-gatt-client" class="sidebar-link">GATT Client</a></li>
@@ -23,8 +24,8 @@ title: API Reference - IPRO SDK
                 <li><a href="#hal-pwm" class="sidebar-link">PWM</a></li>
                 <li><a href="#hal-adc" class="sidebar-link">ADC</a></li>
                 <li class="sidebar-section-title">RTOS API</li>
+                <li><a href="#rtos-platform" class="sidebar-link">Platform Init</a></li>
                 <li><a href="#rtos-freertos" class="sidebar-link">FreeRTOS</a></li>
-                <li><a href="#rtos-zephyr" class="sidebar-link">Zephyr</a></li>
                 <li class="sidebar-section-title">Other</li>
                 <li><a href="#log-api" class="sidebar-link">Log API</a></li>
             </ul>
@@ -39,7 +40,24 @@ title: API Reference - IPRO SDK
 
         <section id="ble-core">
             <h2>BLE Core Initialization</h2>
-            <p>The BLE subsystem uses Zephyr-style <code>bt_*</code> APIs. <code>bt_enable()</code> must be called before any BLE operations.</p>
+            <p>The BLE subsystem uses Zephyr-style <code>bt_*</code> APIs. Before calling <code>bt_enable()</code>, you must first call <code>ble_controller_init()</code> and then <code>hci_driver_init()</code> in that order — otherwise <code>bt_enable()</code> will fail.</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">ble_lib_api.h / hci_driver.h</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/** Initialize the BLE controller (creates the controller task, must be called first)
+ *  @param task_priority  FreeRTOS priority of the controller task
+ *                        (the reference application uses configMAX_PRIORITIES - 1)
+ */
+void ble_controller_init(uint8_t task_priority);
+
+/** Initialize the HCI driver (must be called before bt_enable())
+ *  @return 0 on success, negative error code on failure
+ */
+int hci_driver_init(void);</code></pre>
+            </div>
 
             <div class="code-block">
                 <div class="code-block-header">
@@ -70,25 +88,56 @@ const char *bt_get_name(void);</code></pre>
                     <span class="code-block-title">BLE Initialization Example</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">#include &lt;bluetooth/bluetooth.h&gt;
+                <pre><code class="language-c">#include "freertos_app_hooks.h"
+#include "ipro_log.h"
+#include &lt;FreeRTOS.h&gt;
+#include &lt;task.h&gt;
+
+#include &lt;bluetooth/bluetooth.h&gt;
+#include &lt;hci_driver.h&gt;
+#include &lt;ble_lib_api.h&gt;
+
+#define TAG "APP"
 
 static void bt_ready(int err)
 {
     if (err) {
-        printk("BLE init failed (err %d)\n", err);
+        IPRO_LOGE(TAG, "BLE init failed (err %d)", err);
         return;
     }
-    printk("BLE initialized\n");
-    // Can start advertising or scanning
+    IPRO_LOGI(TAG, "BLE initialized");
+    /* Can start advertising or scanning */
 }
 
-void main(void)
+static void app_task(void *arg)
 {
-    int err = bt_enable(bt_ready);
-    if (err) {
-        printk("bt_enable failed (err %d)\n", err);
+    /* 1. Initialize the BLE controller (must run first) */
+    ble_controller_init(configMAX_PRIORITIES - 1);
+    vTaskDelay(pdMS_TO_TICKS(50));  /* Give the controller task time to start */
+
+    /* 2. Initialize the HCI driver */
+    int err = hci_driver_init();
+    if (err == 0) {
+        vTaskDelay(pdMS_TO_TICKS(50));
+        /* 3. Enable the BLE Host */
+        err = bt_enable(bt_ready);
     }
+    if (err) {
+        IPRO_LOGE(TAG, "BLE startup failed (err %d)", err);
+    }
+    vTaskDelete(NULL);
+}
+
+int main(void)
+{
+    ipro_platform_init();   /* heap + boot2 + log + shell */
+    xTaskCreate(app_task, "app", 2048, NULL, 5, NULL);
+    vTaskStartScheduler();
+    while (1) {}
 }</code></pre>
+            </div>
+            <div class="alert alert-info">
+                <p>For the complete flow, see <code>apps/bluetooth/ble/ipro_ble_remote</code> (GATT + OTA reference application).</p>
             </div>
         </section>
 
@@ -129,8 +178,8 @@ int bt_le_adv_stop(void);</code></pre>
                 <pre><code class="language-c">// Connectable advertising (default interval)
 BT_LE_ADV_CONN
 
-// Custom advertising parameters
-BT_LE_ADV_PARAM(options, int_min, int_max, peer)
+// Custom advertising parameters (options, min/max advertising interval in 0.625 ms units)
+BT_LE_ADV_PARAM(options, int_min, int_max)
 
 // Advertising data construction
 BT_DATA_BYTES(type, ...)        // Byte data
@@ -154,6 +203,76 @@ static const struct bt_data sd[] = {
 
 // Start connectable advertising
 int err = bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd));</code></pre>
+            </div>
+        </section>
+
+        <!-- ==================== BLE Scanning ==================== -->
+
+        <section id="ble-scan">
+            <h2>BLE Scanning</h2>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">bluetooth/bluetooth.h</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/** Scan result callback
+ *  @param addr     Advertiser LE address and type
+ *  @param rssi     Signal strength (dBm)
+ *  @param adv_type Advertising type
+ *  @param buf      Advertising data buffer
+ */
+typedef void bt_le_scan_cb_t(const bt_addr_le_t *addr, s8_t rssi,
+                             u8_t adv_type, struct net_buf_simple *buf);
+
+/** Start LE scanning
+ *  @param param  Scan parameters (type, duplicate filter, interval, window)
+ *  @param cb     Scan result callback, called once per discovered device
+ *  @return 0 on success, negative error code on failure
+ */
+int bt_le_scan_start(const struct bt_le_scan_param *param, bt_le_scan_cb_t cb);
+
+/** Stop LE scanning
+ *  @return 0 on success, negative error code on failure
+ */
+int bt_le_scan_stop(void);</code></pre>
+            </div>
+
+            <h3>Common Scan Macros</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Common Scan Configuration</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">// Active scanning (sends Scan Requests, default interval)
+BT_LE_SCAN_ACTIVE
+
+// Passive scanning (receive advertising packets only, default interval)
+BT_LE_SCAN_PASSIVE
+
+// Custom scan parameters (interval/window in 0.625 ms units)
+BT_LE_SCAN_PARAM(type, filter, interval, window)</code></pre>
+            </div>
+
+            <h3>Usage Example</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Scanning Example</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">static void scan_cb(const bt_addr_le_t *addr, s8_t rssi,
+                    u8_t adv_type, struct net_buf_simple *buf)
+{
+    char addr_str[BT_ADDR_LE_STR_LEN];
+    bt_addr_le_to_str(addr, addr_str, sizeof(addr_str));
+    IPRO_LOGI(TAG, "Device found: %s (RSSI %d)", addr_str, rssi);
+}
+
+// Start passive scanning
+int err = bt_le_scan_start(BT_LE_SCAN_PASSIVE, scan_cb);
+
+// Stop scanning
+bt_le_scan_stop();</code></pre>
             </div>
         </section>
 
@@ -344,8 +463,20 @@ int bt_gatt_write(struct bt_conn *conn,
  *  @param sign   Whether to sign
  *  @return 0 on success, negative error code on failure
  */
+int bt_gatt_write_without_response(struct bt_conn *conn,
+    u16_t handle, const void *data, u16_t length, bool sign);
+
+/** Write to a remote attribute (without response, with completion callback)
+ *  Same as bt_gatt_write_without_response(), but the func callback
+ *  is called after the write is sent, and internal flow control is
+ *  disabled — do not submit more data until the callback fires.
+ *  @param func       Transmission complete callback
+ *  @param user_data  User data passed back to the callback
+ *  @return 0 on success, negative error code on failure
+ */
 int bt_gatt_write_without_response_cb(struct bt_conn *conn,
-    u16_t handle, const void *data, u16_t length, bool sign);</code></pre>
+    u16_t handle, const void *data, u16_t length, bool sign,
+    bt_gatt_complete_func_t func, void *user_data);</code></pre>
             </div>
         </section>
 
@@ -361,7 +492,9 @@ int bt_gatt_write_without_response_cb(struct bt_conn *conn,
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">/** Set GPIO mode
- *  @param pin   Pin number (GPIO_PIN_0 ~ GPIO_PIN_31)
+ *  @param pin   Pin number (IPRO7 supports GPIO 0 ~ 41;
+ *               the GPIO_PIN_x enums are convenience constants only,
+ *               numeric values can be passed directly)
  *  @param mode  Mode (GPIO_OUTPUT_MODE, GPIO_INPUT_PP_MODE, ...)
  */
 void gpio_set_mode(uint32_t pin, uint32_t mode);
@@ -412,6 +545,13 @@ void gpio_irq_enable(uint32_t pin, uint8_t enabled);</code></pre>
                         <tr><td><code>GPIO_INPUT_PD_MODE</code></td><td>5</td><td>Pull-down input</td></tr>
                         <tr><td><code>GPIO_ASYNC_RISING_TRIGER_INT_MODE</code></td><td>6</td><td>Async rising edge interrupt</td></tr>
                         <tr><td><code>GPIO_ASYNC_FALLING_TRIGER_INT_MODE</code></td><td>7</td><td>Async falling edge interrupt</td></tr>
+                        <tr><td><code>GPIO_ASYNC_HIGH_LEVEL_INT_MODE</code></td><td>8</td><td>Async high level interrupt</td></tr>
+                        <tr><td><code>GPIO_ASYNC_LOW_LEVEL_INT_MODE</code></td><td>9</td><td>Async low level interrupt</td></tr>
+                        <tr><td><code>GPIO_SYNC_RISING_TRIGER_INT_MODE</code></td><td>10</td><td>Sync rising edge interrupt</td></tr>
+                        <tr><td><code>GPIO_SYNC_FALLING_TRIGER_INT_MODE</code></td><td>11</td><td>Sync falling edge interrupt</td></tr>
+                        <tr><td><code>GPIO_SYNC_HIGH_LEVEL_INT_MODE</code></td><td>12</td><td>Sync high level interrupt</td></tr>
+                        <tr><td><code>GPIO_SYNC_LOW_LEVEL_INT_MODE</code></td><td>13</td><td>Sync low level interrupt</td></tr>
+                        <tr><td><code>GPIO_HZ_MODE</code></td><td>14</td><td>High impedance (Hi-Z)</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -601,9 +741,66 @@ adc_channel_config(index, list)   // Configure ADC channel</code></pre>
 
         <!-- ==================== RTOS ==================== -->
 
+        <section id="rtos-platform">
+            <h2>Platform Initialization (freertos_app_hooks)</h2>
+            <p>Header: <code>components/os/freertos/freertos_app_hooks.h</code></p>
+            <p>All FreeRTOS applications share this component as the standard entry point. It also provides weak defaults for the FreeRTOS hooks (idle / tick / stack overflow / malloc failed), heap, and assert — an application can override any of them by defining a non-weak version in its own sources, without modifying the component.</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">freertos_app_hooks.h</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">/** Standard platform init (call at the start of main())
+ *  Runs in order: platform_init() → ipro_setup_heap() → hal_boot2_init()
+ *                 → PSRAM check → ipro_log_init() → shell init (CONFIG_SHELL)
+ *  After this returns, the app should create its tasks and call
+ *  vTaskStartScheduler()
+ */
+void ipro_platform_init(void);
+
+/** Set up FreeRTOS heap regions only
+ *  Collects heap regions from linker symbols (OCRAM + optional PSRAM),
+ *  sorts them by address, and calls vPortDefineHeapRegions().
+ *  Safe to call once from main().
+ */
+void ipro_setup_heap(void);</code></pre>
+            </div>
+
+            <h3>Minimal Application Skeleton</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">main.c</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">#include "freertos_app_hooks.h"
+#include &lt;FreeRTOS.h&gt;
+#include &lt;task.h&gt;
+
+static void app_task(void *arg)
+{
+    for (;;) {
+        /* Application logic */
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
+
+int main(void)
+{
+    ipro_platform_init();   /* heap + boot2 + log + shell */
+    xTaskCreate(app_task, "app", 1024, NULL, 5, NULL);
+    vTaskStartScheduler();
+    while (1) {}
+}</code></pre>
+            </div>
+        </section>
+
         <section id="rtos-freertos">
             <h2>FreeRTOS API</h2>
             <p>The SDK primarily uses FreeRTOS as the real-time operating system.</p>
+            <div class="alert alert-info">
+                <p>The BLE Host is Zephyr-based, but it runs on top of an internal FreeRTOS port layer; applications always use the FreeRTOS API — the Zephyr kernel API (<code>k_thread_create</code>, <code>k_sleep</code>, etc.) is neither needed nor available.</p>
+            </div>
 
             <div class="code-block">
                 <div class="code-block-header">
@@ -637,74 +834,33 @@ BaseType_t xQueueReceive(QueueHandle_t queue, void *buffer, TickType_t timeout);
             </div>
         </section>
 
-        <section id="rtos-zephyr">
-            <h2>Zephyr API</h2>
-            <p>Some applications (Thread, Zephyr Demo) use Zephyr RTOS.</p>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Kernel API</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">// Sleep
-void k_sleep(k_timeout_t timeout);
-
-// Create thread
-k_tid_t k_thread_create(struct k_thread *new_thread,
-                        k_thread_stack_t *stack,
-                        size_t stack_size,
-                        k_thread_entry_t entry,
-                        void *p1, void *p2, void *p3,
-                        int prio, uint32_t options,
-                        k_timeout_t delay);
-
-// Time macros
-K_SECONDS(s)
-K_MSEC(ms)
-K_FOREVER</code></pre>
-            </div>
-        </section>
-
         <!-- ==================== Log ==================== -->
 
         <section id="log-api">
             <h2>Log API</h2>
-            <p>Unified logging output interface.</p>
+            <p>Unified logging output interface. Header: <code>components/utils/include/ipro_log.h</code></p>
 
             <h3>IPRO Log API</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">Logging Functions</span>
+                    <span class="code-block-title">ipro_log.h</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">// Logging macros
-IPRO_LOG_ERROR(tag, fmt, ...)   // Error level
-IPRO_LOG_WARN(tag, fmt, ...)    // Warning level
-IPRO_LOG_INFO(tag, fmt, ...)    // Info level
-IPRO_LOG_DEBUG(tag, fmt, ...)   // Debug level
-IPRO_LOG_VERBOSE(tag, fmt, ...) // Verbose level
+                <pre><code class="language-c">#include "ipro_log.h"
+
+// Logging macros
+IPRO_LOGE(tag, format, ...)   // Error level
+IPRO_LOGW(tag, format, ...)   // Warning level
+IPRO_LOGI(tag, format, ...)   // Info level
+IPRO_LOGD(tag, format, ...)   // Debug level
+IPRO_LOGV(tag, format, ...)   // Verbose level
 
 // Usage example
 #define TAG "MY_MODULE"
-IPRO_LOG_INFO(TAG, "System started, version %d.%d", major, minor);</code></pre>
+IPRO_LOGI(TAG, "System started, version %d.%d", major, minor);</code></pre>
             </div>
-
-            <h3>Zephyr Log API</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Zephyr Logging</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">#include &lt;zephyr/logging/log.h&gt;
-
-// Register log module
-LOG_MODULE_REGISTER(my_module, LOG_LEVEL_INF);
-
-// Log output
-LOG_ERR("Error message");
-LOG_WRN("Warning message");
-LOG_INF("Info message");
-LOG_DBG("Debug message");</code></pre>
+            <div class="alert alert-info">
+                <p>The BLE Host (blestack) provides an internal <code>logging/log.h</code> compatibility shim intended only for porting Zephyr code; applications should always use the <code>IPRO_LOGx</code> macros from <code>ipro_log.h</code>.</p>
             </div>
         </section>
     </article>
