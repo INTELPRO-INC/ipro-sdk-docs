@@ -5917,3 +5917,163 @@ pre:not(.code-block pre) .copy-btn.copied {
 [data-theme="light"] .protocol-stack .stack-layer.stack-amber { background: linear-gradient(90deg, rgba(245, 158, 11, 0.1) 0%, #ffffff 40%); }
 [data-theme="light"] .protocol-stack .stack-layer.stack-red { background: linear-gradient(90deg, rgba(239, 68, 68, 0.1) 0%, #ffffff 40%); }
 [data-theme="light"] .protocol-stack .stack-layer.stack-blue { background: linear-gradient(90deg, rgba(59, 130, 246, 0.1) 0%, #ffffff 40%); }
+
+/* ==========================================
+   Diagram Kit — themed replacements for ASCII diagrams
+   ========================================== */
+.dg {
+    margin: 1.5rem 0;
+    font-family: var(--font-sans);
+}
+
+.dg-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    text-transform: none;
+}
+
+.dg-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin: 0.6rem 0;
+}
+
+.dg-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    justify-content: center;
+}
+
+.dg-node {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-top: 3px solid var(--primary);
+    border-radius: 8px;
+    padding: 0.7rem 0.95rem;
+    min-width: 130px;
+    flex: 1 1 0;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.dg-node:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-glow);
+}
+
+.dg-node--accent { border-top-color: var(--secondary); }
+.dg-node--success { border-top-color: #10b981; }
+.dg-node--muted { border-top-color: var(--text-muted); }
+
+.dg-node-title {
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.dg-node-desc {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.55;
+}
+
+.dg-node-desc code {
+    font-size: 0.72rem;
+}
+
+/* Connector arrow: horizontal by default, vertical when rows stack on mobile */
+.dg-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    min-width: 56px;
+    flex: 0 0 auto;
+    color: var(--primary);
+    gap: 0.1rem;
+}
+
+.dg-arrow::after {
+    content: '\2192'; /* → */
+    font-size: 1.4rem;
+    line-height: 1;
+}
+
+.dg-arrow--bi::after { content: '\2194'; } /* ↔ */
+
+.dg-arrow-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+/* Titled group container (e.g. a chip, a sender/receiver side) */
+.dg-group {
+    border: 1px dashed var(--border-color);
+    border-radius: 10px;
+    padding: 0.9rem;
+    background: var(--gradient-surface);
+    flex: 1 1 240px;
+}
+
+.dg-group--solid {
+    border-style: solid;
+    border-color: var(--border-hover);
+}
+
+.dg-group-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+/* Full-width bus / shared backbone bar */
+.dg-bus {
+    width: 100%;
+    text-align: center;
+    padding: 0.45rem 0.8rem;
+    border-radius: 6px;
+    background: var(--primary-glow);
+    border: 1px solid var(--border-hover);
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin: 0.6rem 0;
+}
+
+/* Small footnote under a diagram */
+.dg-note {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.4rem;
+}
+
+@media (max-width: 640px) {
+    .dg-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .dg-arrow {
+        min-width: 0;
+        min-height: 34px;
+    }
+
+    .dg-arrow::after { content: '\2193'; } /* ↓ */
+    .dg-arrow--bi::after { content: '\2195'; } /* ↕ */
+}
