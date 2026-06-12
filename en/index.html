@@ -9,9 +9,9 @@ lang: en
     <div class="hero-container">
         <div class="hero-content">
             <h1 class="hero-title">IPRO SDK</h1>
-            <p class="hero-protocols">BT/BLE 5.4 · LE Audio</p>
+            <p class="hero-protocols">BLE 5.4 · LE Audio</p>
             <p class="hero-subtitle">
-                Release SDK for the IPRO7 chipset with BLE 5.4 wireless connectivity, LE Audio support, and comprehensive peripheral drivers.
+                Release SDK built for the IPRO7 chipset, supporting BLE 5.4 wireless connectivity, LE Audio streaming, and ISP image processing applications, with comprehensive peripheral drivers.
             </p>
             <div class="hero-buttons">
                 <a href="{{ '/en/getting-started' | relative_url }}" class="btn btn-primary">
@@ -50,10 +50,19 @@ make -C apps/bluetooth/ble/ipro_ble_remote
     <div class="stats-grid">
         <div class="stat-item">
             <span class="stat-value">RISC-V 192MHz</span>
+            <span class="stat-label">CPU Clock</span>
         </div>
         <div class="stat-item">
             <span class="stat-value">BLE 5.4 · LE Audio</span>
             <span class="stat-label">Wireless Connectivity</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">8MB PSRAM · 1MB Flash</span>
+            <span class="stat-label">Memory</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">256KB OCRAM</span>
+            <span class="stat-label">On-chip SRAM</span>
         </div>
     </div>
 </section>
@@ -84,7 +93,7 @@ make -C apps/bluetooth/ble/ipro_ble_remote
             </div>
             <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-bluetooth-b"></i></div>
-                <h3 class="feature-title">BT/BLE Wireless</h3>
+                <h3 class="feature-title">BLE Wireless</h3>
                 <p class="feature-description">
                     High-performance BLE communication (up to 999 Kbps), LE Audio support, multi-link management, and OTA firmware updates.
                 </p>
@@ -100,7 +109,7 @@ make -C apps/bluetooth/ble/ipro_ble_remote
                 <div class="feature-icon"><i class="fas fa-screwdriver-wrench"></i></div>
                 <h3 class="feature-title">Development Toolchain</h3>
                 <p class="feature-description">
-                    <code>make -C apps/&lt;project&gt;</code> quick build, board_test.sh automated testing, serial_monitor.py serial monitoring.
+                    <code>make -C apps/&lt;project&gt;</code> quick build, build_freertos.sh build script, and CMake toolchain integration.
                 </p>
             </div>
         </div>
@@ -134,33 +143,32 @@ make -C apps/bluetooth/ble/ipro_ble_remote
             </div>
             <div class="app-card">
                 <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-camera"></i></span>
+                    <span class="app-name">ipro_ble_img_capture</span>
+                    <span class="app-badge">Imaging</span>
+                </div>
+                <p class="app-description">
+                    BLE image capture application integrating the camera ISP pipeline: PIR motion detection triggers capture, images are transferred to the phone over BLE using a chunked protocol, with OTA firmware update support.
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">ISP Imaging</span>
+                    <span class="app-feature-tag">PIR Trigger</span>
+                    <span class="app-feature-tag">Image Transfer</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
                     <span class="app-icon"><i class="fas fa-headphones"></i></span>
                     <span class="app-name">ipro_le_audio_headset</span>
                     <span class="app-badge">LE Audio</span>
                 </div>
                 <p class="app-description">
-                    LE Audio headset based on GAF/BAP framework with bidirectional Unicast streaming, VCP volume control, MCP media control, USB audio interface.
+                    LE Audio headset based on GAF/BAP framework with bidirectional Unicast streaming and VCP volume control; output defaults to the DAC speaker path, with USB audio as an optional build (requires enabling CONFIG_AUDIO_OUTPUT_UAC).
                 </p>
                 <div class="app-features">
                     <span class="app-feature-tag">GAF/BAP</span>
                     <span class="app-feature-tag">LC3 Codec</span>
                     <span class="app-feature-tag">Unicast</span>
-                    <span class="app-feature-tag">USB Audio</span>
-                </div>
-            </div>
-            <div class="app-card">
-                <div class="app-header">
-                    <span class="app-icon"><i class="fas fa-tachometer-alt"></i></span>
-                    <span class="app-name">ipro_throughput_test</span>
-                    <span class="app-badge">Performance</span>
-                </div>
-                <p class="app-description">
-                    BLE throughput test using native Zephyr bt_* APIs, achieving 999 Kbps with 2M PHY + DLE optimization between two boards.
-                </p>
-                <div class="app-features">
-                    <span class="app-feature-tag">999 Kbps</span>
-                    <span class="app-feature-tag">2M PHY</span>
-                    <span class="app-feature-tag">DLE</span>
                 </div>
             </div>
             <div class="app-card">
@@ -207,12 +215,56 @@ make -C apps/bluetooth/ble/ipro_ble_remote
             </div>
             <div class="app-card">
                 <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-tachometer-alt"></i></span>
+                    <span class="app-name">ipro_throughput_test</span>
+                    <span class="app-badge">Testing</span>
+                </div>
+                <p class="app-description">
+                    BLE throughput test tool using native Zephyr bt_* APIs; board-to-board testing with 2M PHY and DLE optimization reaches 999 Kbps, supporting performance benchmarking across connection parameters.
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">999 Kbps</span>
+                    <span class="app-feature-tag">2M PHY</span>
+                    <span class="app-feature-tag">DLE</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-cloud"></i></span>
+                    <span class="app-name">ipro_agora_sentino</span>
+                </div>
+                <p class="app-description">
+                    AI voice conversation gateway: AMIC microphone audio is Opus-encoded and streamed in real time to the Agora RTC cloud for bidirectional voice calls with an AI bot, with LCD status display. Network connectivity is provided via Ethernet (RMII) or USB NCM.
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">Agora RTC</span>
+                    <span class="app-feature-tag">Opus</span>
+                    <span class="app-feature-tag">Bidirectional Voice</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-robot"></i></span>
+                    <span class="app-name">ipro_voice_assistant</span>
+                    <span class="app-badge">AI</span>
+                </div>
+                <p class="app-description">
+                    AI voice assistant integrating microphone capture, VAD voice detection, cloud speech recognition, and TTS speech synthesis, with LCD status animation and file-system persistent memory. Network connectivity is provided via Ethernet (RMII) or a 4G LTE modem (PPPoS).
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">Speech Recognition</span>
+                    <span class="app-feature-tag">TTS</span>
+                    <span class="app-feature-tag">LCD Display</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
                     <span class="app-icon"><i class="fas fa-wrench"></i></span>
                     <span class="app-name">ipro7_demo</span>
                     <span class="app-badge">Multimedia</span>
                 </div>
                 <p class="app-description">
-                    Comprehensive platform demo with BLE, peripherals (PWM/SPI/I2C), audio (AUADC/DAC), file system, and USB.
+                    Comprehensive platform demo with peripherals (PWM/SPI/I2C), audio (AUADC/DAC), file system, and USB.
                 </p>
                 <div class="app-features">
                     <span class="app-feature-tag">USB</span>
@@ -243,22 +295,10 @@ make -C apps/bluetooth/ble/ipro_ble_remote
 make -C apps/bluetooth/ble/ipro_ble_remote
 
 # Or use build script
-./build_freertos.sh ipro_ble_remote build
-
-# Or manual CMake build
-cmake -S . -B build \
-    -G "Ninja" \
-    -DIPRO_SDK_BASE=$(pwd) \
-    -DCONFIG_BUILD_PORJECT=ipro_ble_remote \
-    -DCMAKE_PREFIX_PATH=$(pwd)/cmake \
-    -DCUSTOM_CONFIG_DIR=$(pwd)/apps/bluetooth/ble/ipro_ble_remote \
-    -DCONFIG_APPS=1 \
-    -DCROSS_COMPILE=/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-
-
-cmake --build build</code></pre>
+./build_freertos.sh ipro_ble_remote build</code></pre>
         </div>
         <div class="alert alert-info">
-            <strong>Tip:</strong> Build output is located in <code>apps/&lt;PROJECT_NAME&gt;/build/build_out/</code> directory.
+            <strong>Tip:</strong> Build output is located in <code>apps/&lt;category&gt;/&lt;name&gt;/build/build_out/</code> directory.
         </div>
     </div>
 </section>
@@ -285,6 +325,10 @@ cmake --build build</code></pre>
             <a href="{{ '/en/tools-debugging' | relative_url }}" class="doc-link-item">
                 <i class="fas fa-screwdriver-wrench"></i>
                 <span>Tools & Debugging</span>
+            </a>
+            <a href="{{ '/en/applications' | relative_url }}" class="doc-link-item">
+                <i class="fas fa-th-large"></i>
+                <span>Applications</span>
             </a>
         </div>
     </div>

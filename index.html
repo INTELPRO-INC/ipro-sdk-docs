@@ -8,9 +8,9 @@ title: 首頁
     <div class="hero-container">
         <div class="hero-content">
             <h1 class="hero-title">IPRO SDK</h1>
-            <p class="hero-protocols">BT/BLE 5.4 · LE Audio</p>
+            <p class="hero-protocols">BLE 5.4 · LE Audio</p>
             <p class="hero-subtitle">
-                專為 IPRO7 晶片打造的 Release SDK 開發套件，支援 BLE 5.4 無線通訊與 LE Audio 音訊串流應用。
+                專為 IPRO7 晶片打造的 Release SDK 開發套件，支援 BLE 5.4 無線通訊、LE Audio 音訊串流與 ISP 影像處理應用，並提供完整的週邊驅動。
             </p>
             <div class="hero-buttons">
                 <a href="{{ '/getting-started' | relative_url }}" class="btn btn-primary">
@@ -49,10 +49,19 @@ make -C apps/bluetooth/ble/ipro_ble_remote
     <div class="stats-grid">
         <div class="stat-item">
             <span class="stat-value">RISC-V 192MHz</span>
+            <span class="stat-label">CPU 主頻</span>
         </div>
         <div class="stat-item">
             <span class="stat-value">BLE 5.4 · LE Audio</span>
             <span class="stat-label">無線通訊</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">8MB PSRAM · 1MB Flash</span>
+            <span class="stat-label">記憶體</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">256KB OCRAM</span>
+            <span class="stat-label">片上 SRAM</span>
         </div>
     </div>
 </section>
@@ -83,7 +92,7 @@ make -C apps/bluetooth/ble/ipro_ble_remote
             </div>
             <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-bluetooth-b"></i></div>
-                <h3 class="feature-title">BT/BLE 無線通訊</h3>
+                <h3 class="feature-title">BLE 無線通訊</h3>
                 <p class="feature-description">
                     高效能 BLE 通訊（最高 999 Kbps），支援 LE Audio、多連線管理、OTA 韌體更新。
                 </p>
@@ -133,18 +142,32 @@ make -C apps/bluetooth/ble/ipro_ble_remote
             </div>
             <div class="app-card">
                 <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-camera"></i></span>
+                    <span class="app-name">ipro_ble_img_capture</span>
+                    <span class="app-badge">影像</span>
+                </div>
+                <p class="app-description">
+                    BLE 影像擷取應用，整合攝影機 ISP 影像管線，PIR 移動偵測觸發拍攝，影像以分段協定經 BLE 傳輸至手機，並支援 OTA 韌體更新。
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">ISP 影像</span>
+                    <span class="app-feature-tag">PIR 觸發</span>
+                    <span class="app-feature-tag">影像傳輸</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
                     <span class="app-icon"><i class="fas fa-headphones"></i></span>
                     <span class="app-name">ipro_le_audio_headset</span>
                     <span class="app-badge">LE Audio</span>
                 </div>
                 <p class="app-description">
-                    LE Audio 耳機參考應用，基於 GAF/BAP 框架，支援 Unicast 雙向音訊串流、VCP 音量控制、MCP 媒體控制、USB 音訊介面。
+                    LE Audio 耳機參考應用，基於 GAF/BAP 框架，支援 Unicast 雙向音訊串流、VCP 音量控制，預設經 DAC 喇叭輸出；USB 音訊為選配（需啟用 CONFIG_AUDIO_OUTPUT_UAC）。
                 </p>
                 <div class="app-features">
                     <span class="app-feature-tag">GAF/BAP</span>
                     <span class="app-feature-tag">LC3 編解碼</span>
                     <span class="app-feature-tag">Unicast</span>
-                    <span class="app-feature-tag">USB 音訊</span>
                 </div>
             </div>
             <div class="app-card">
@@ -196,12 +219,41 @@ make -C apps/bluetooth/ble/ipro_ble_remote
                     <span class="app-badge">測試</span>
                 </div>
                 <p class="app-description">
-                    BLE 吞吐量測試工具，量測 BLE 資料傳輸速率，支援不同連線參數與 PHY 模式下的效能基準測試。
+                    BLE 吞吐量測試工具，使用原生 Zephyr bt_* API，雙板對測搭配 2M PHY 與 DLE 最佳化可達 999 Kbps，支援不同連線參數的效能基準測試。
                 </p>
                 <div class="app-features">
-                    <span class="app-feature-tag">吞吐量</span>
-                    <span class="app-feature-tag">BLE 測試</span>
-                    <span class="app-feature-tag">效能基準</span>
+                    <span class="app-feature-tag">999 Kbps</span>
+                    <span class="app-feature-tag">2M PHY</span>
+                    <span class="app-feature-tag">DLE</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-cloud"></i></span>
+                    <span class="app-name">ipro_agora_sentino</span>
+                </div>
+                <p class="app-description">
+                    AI 語音對話閘道，AMIC 麥克風收音經 Opus 編碼即時串流至 Agora RTC 雲端，支援與 AI 機器人雙向語音通話與 LCD 狀態顯示，網路連線透過乙太網路（RMII）或 USB NCM 提供。
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">Agora RTC</span>
+                    <span class="app-feature-tag">Opus</span>
+                    <span class="app-feature-tag">雙向語音</span>
+                </div>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-robot"></i></span>
+                    <span class="app-name">ipro_voice_assistant</span>
+                    <span class="app-badge">AI</span>
+                </div>
+                <p class="app-description">
+                    AI 語音助理，整合麥克風收音、VAD 語音偵測、雲端語音辨識與 TTS 語音合成，搭配 LCD 狀態動畫與檔案系統持久記憶，網路連線透過乙太網路（RMII）或 4G LTE Modem（PPPoS）提供。
+                </p>
+                <div class="app-features">
+                    <span class="app-feature-tag">語音辨識</span>
+                    <span class="app-feature-tag">TTS</span>
+                    <span class="app-feature-tag">LCD 顯示</span>
                 </div>
             </div>
             <div class="app-card">
@@ -211,7 +263,7 @@ make -C apps/bluetooth/ble/ipro_ble_remote
                     <span class="app-badge">多媒體</span>
                 </div>
                 <p class="app-description">
-                    綜合平台展示，整合 BLE、週邊（PWM/SPI/I2C）、音訊（AUADC/DAC）、檔案系統、USB 功能。
+                    綜合平台展示，整合週邊（PWM/SPI/I2C）、音訊（AUADC/DAC）、檔案系統、USB 功能。
                 </p>
                 <div class="app-features">
                     <span class="app-feature-tag">USB</span>
@@ -245,7 +297,7 @@ make -C apps/bluetooth/ble/ipro_ble_remote
 ./build_freertos.sh ipro_ble_remote build</code></pre>
         </div>
         <div class="alert alert-info">
-            <strong>提示：</strong>建構產出位於 <code>apps/&lt;PROJECT_NAME&gt;/build/build_out/</code> 目錄。
+            <strong>提示：</strong>建構產出位於 <code>apps/&lt;category&gt;/&lt;name&gt;/build/build_out/</code> 目錄。
         </div>
     </div>
 </section>
