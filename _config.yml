@@ -2,12 +2,13 @@
 # GitHub Pages Configuration
 
 title: IPRO SDK
+sdk_version: "v1.0.1"
 description: A Comprehensive Software Development Kit for IPRO Hardware Platforms
 baseurl: "/ipro-sdk-docs" # Your GitHub Pages repository name
 url: "https://intelpro-inc.github.io" # Your GitHub Pages URL
 
-# Theme settings
-remote_theme: pages-themes/cayman@v0.2.0
+# No theme: the site ships its own layout (_layouts/default.html) and CSS.
+# A remote_theme would race our assets/css/style.css on incremental rebuilds.
 
 # Build settings
 markdown: kramdown
@@ -62,9 +63,9 @@ nav:
       - { title: 更新日誌, desc: 版本發行紀錄, icon: fa-clock-rotate-left, url: /changelog }
   - title: 進階功能
     dropdown:
-      - { title: AI 與 NPU, desc: Roadmap — on-device AI, icon: fa-brain, url: /ai-npu }
-      - { title: Matter & Thread, desc: Roadmap — 智慧家庭, icon: fa-house-signal, url: /matter-thread }
-      - { title: VS Code 擴充, desc: Roadmap — IDE 整合, icon: fa-plug, url: /vscode-extension }
+      - { title: AI 與 NPU, badge: Roadmap, desc: 端側 AI 推理, icon: fa-brain, url: /ai-npu }
+      - { title: Matter & Thread, badge: Roadmap, desc: 智慧家庭協定, icon: fa-house-signal, url: /matter-thread }
+      - { title: VS Code 擴充, badge: Roadmap, desc: IDE 開發整合, icon: fa-plug, url: /vscode-extension }
   - title: FAQ
     url: /faq
 
@@ -87,9 +88,9 @@ nav_en:
       - { title: Changelog, desc: Release history, icon: fa-clock-rotate-left, url: /en/changelog }
   - title: Advanced
     dropdown:
-      - { title: AI & NPU, desc: Roadmap — on-device AI, icon: fa-brain, url: /en/ai-npu }
-      - { title: Matter & Thread, desc: Roadmap — smart home, icon: fa-house-signal, url: /en/matter-thread }
-      - { title: VS Code Extension, desc: Roadmap — IDE integration, icon: fa-plug, url: /en/vscode-extension }
+      - { title: AI & NPU, badge: Roadmap, desc: On-device AI inference, icon: fa-brain, url: /en/ai-npu }
+      - { title: Matter & Thread, badge: Roadmap, desc: Smart home protocols, icon: fa-house-signal, url: /en/matter-thread }
+      - { title: VS Code Extension, badge: Roadmap, desc: IDE integration, icon: fa-plug, url: /en/vscode-extension }
   - title: FAQ
     url: /en/faq
 
