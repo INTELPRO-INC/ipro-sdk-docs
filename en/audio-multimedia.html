@@ -35,7 +35,7 @@ lang: en
                     <div class="feature-icon">LE Audio</div>
                     <h3 class="feature-title">LE Audio (BLE 5.2+)</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
-                        <li>LC3 / Opus codecs</li>
+                        <li>LC3 codec (liblc3)</li>
                         <li>Unicast (CIS) & Broadcast (BIS)</li>
                         <li>BAP / CAP / VCP / MCP profiles</li>
                         <li>Auracast broadcast audio</li>
@@ -68,9 +68,12 @@ lang: en
                     <span class="code-block-title">Audio & Multimedia Component Directory Structure</span>
                 </div>
                 <pre><code>components/
-├── audio/                          # Audio processing (resampler, etc.)
-│   ├── include/audio_resampler.h
-│   └── src/audio_resampler.c
+├── audio/                          # Audio pipeline components
+│   ├── include/audio_capture.h     # Audio capture (AUADC + DMA)
+│   ├── include/audio_output.h      # Audio output abstraction (DAC / I2S / UAC backends)
+│   ├── include/audio_resampler.h   # Sample rate conversion
+│   └── include/mp3_decoder.h       # MP3 decoder
+├── 3rdparty/liblc3/                # LC3 codec library (prebuilt)
 ├── wireless/bluetooth/
 │   └── blestack/src/audio/         # LE Audio protocol stack
 │       ├── bap_*.c                 # Basic Audio Profile
@@ -79,7 +82,7 @@ lang: en
 │       ├── mcc.c / mcs.c          # Media Control
 │       ├── csip_*.c               # Coordinated Set Identification
 │       ├── pacs.c / ascs.c        # Published/Available Audio Capabilities
-│       └── codec.c                # LC3 codec integration
+│       └── codec.c                # LE Audio codec capability/config parsing
 ├── cherryusb/class/
 │   ├── audio/                      # USB Audio Class (UAC)
 │   └── video/                      # USB Video Class (UVC)
@@ -111,8 +114,8 @@ bsp/hal/inc/
                 <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
                 <div class="flow-step">
                     <div class="flow-number">2</div>
-                    <div class="flow-title">LC3/Opus</div>
-                    <div class="flow-desc">Audio encode 32-320 kbps</div>
+                    <div class="flow-title">LC3 Encode</div>
+                    <div class="flow-desc">Audio encode 16-320 kbps</div>
                 </div>
                 <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
                 <div class="flow-step">
@@ -144,7 +147,7 @@ bsp/hal/inc/
                 <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
                 <div class="flow-step">
                     <div class="flow-number">3</div>
-                    <div class="flow-title">LC3/Opus</div>
+                    <div class="flow-title">LC3 Decode</div>
                     <div class="flow-desc">Audio decode PCM recovery</div>
                 </div>
                 <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
@@ -161,8 +164,8 @@ bsp/hal/inc/
                     <tr><th>Feature</th><th>Description</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td>Codec</td><td>LC3 (mandatory), Opus (optional)</td></tr>
-                    <tr><td>Bitrate</td><td>32 - 320 kbps</td></tr>
+                    <tr><td>Codec</td><td>LC3 (provided by the prebuilt liblc3 library)</td></tr>
+                    <tr><td>Bitrate</td><td>16 - 320 kbps (LE Audio commonly 16-124 kbps per channel)</td></tr>
                     <tr><td>Sample Rate</td><td>8 / 16 / 24 / 32 / 48 kHz</td></tr>
                     <tr><td>Channels</td><td>Mono, Stereo</td></tr>
                     <tr><td>Latency</td><td>&lt; 20ms end-to-end</td></tr>
@@ -182,7 +185,7 @@ bsp/hal/inc/
                     <div class="comparison-items">
                         <span class="pill">BAP Acceptor</span>
                         <span class="pill">VCP Renderer</span>
-                        <span class="pill">MCS Server</span>
+                        <span class="pill">MCC Client</span>
                         <span class="pill">CAP Acceptor</span>
                     </div>
                 </div>
@@ -195,7 +198,7 @@ bsp/hal/inc/
                     <div class="comparison-items">
                         <span class="pill">BAP Initiator</span>
                         <span class="pill">VCP Controller</span>
-                        <span class="pill">MCC Client</span>
+                        <span class="pill">MCS Server</span>
                         <span class="pill">CAP Initiator</span>
                     </div>
                 </div>
@@ -238,27 +241,38 @@ bsp/hal/inc/
             <h3>Headset-Side Example Code</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">BAP Server Init (apps/bluetooth/ipro_le_audio_headset/src/bap_server.c)</span>
+                    <span class="code-block-title">BAP Server Init (apps/bluetooth/le_audio/ipro_le_audio_headset/src/bap_server.c)</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">/* Register BAP Unicast Server callbacks */
-static struct bt_bap_unicast_server_cb unicast_server_cb = {
-    .config = bap_config_cb,
-    .reconfig = bap_reconfig_cb,
-    .qos = bap_qos_cb,
-    .enable = bap_enable_cb,
-    .start = bap_start_cb,
-    .disable = bap_disable_cb,
-    .release = bap_release_cb,
+static const struct bt_bap_unicast_server_cb unicast_server_cb = {
+    .config = bap_server_config,
+    .reconfig = bap_server_reconfig,
+    .qos = bap_server_qos,
+    .enable = bap_server_enable,
+    .start = bap_server_start,
+    .metadata = bap_server_metadata,
+    .disable = bap_server_disable,
+    .stop = bap_server_stop,
+    .release = bap_server_release,
 };
 
 int bap_server_init(void)
 {
-    /* Register Published Audio Capabilities */
-    bt_pacs_cap_register(BT_AUDIO_DIR_SINK, &amp;cap_sink);
-    bt_pacs_cap_register(BT_AUDIO_DIR_SOURCE, &amp;cap_source);
+    /* Initialize PACS service (must precede ASCS) */
+    bt_pacs_init();
 
-    /* Register Unicast Server */
+    /* Register LC3 sink audio capability */
+    bt_pacs_cap_register(BT_AUDIO_DIR_SINK, &amp;lc3_sink_cap);
+
+    /* Set audio location and audio contexts */
+    bt_pacs_set_location(BT_AUDIO_DIR_SINK, BT_AUDIO_LOCATION_FRONT_LEFT);
+    bt_pacs_set_supported_contexts(BT_AUDIO_DIR_SINK,
+                                   BT_AUDIO_CONTEXT_TYPE_MEDIA |
+                                   BT_AUDIO_CONTEXT_TYPE_CONVERSATIONAL |
+                                   BT_AUDIO_CONTEXT_TYPE_UNSPECIFIED);
+
+    /* Register Unicast Server callbacks with ASCS */
     bt_bap_unicast_server_register_cb(&amp;unicast_server_cb);
 
     return 0;
@@ -296,28 +310,30 @@ int bap_server_init(void)
             <h3>Broadcast Source Example</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">BIS Source (apps/bluetooth/le_audio/ipro_le_audio_bis_source/src/main.c)</span>
+                    <span class="code-block-title">BIS Source (apps/bluetooth/le_audio/ipro_le_audio_bis_source/src/app_broadcast_source.c)</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">/* Create Broadcast Source */
+                <pre><code class="language-c">/* Create Broadcast Source (BAP layer)
+ * Full flow: bt_le_ext_adv_create → bt_le_per_adv_set_param
+ *           → bt_bap_broadcast_source_create → bt_bap_broadcast_source_start */
 static int create_broadcast_source(void)
 {
-    struct bt_bap_broadcast_source_param param = {
+    struct bt_bap_broadcast_source_create_param create_param = {
         .params_count = 1,
         .params = &amp;subgroup_param,
-        .qos = &amp;preset_qos,
+        .qos = &amp;qos,
         .packing = BT_ISO_PACKING_SEQUENTIAL,
         .encryption = false,
     };
 
-    int err = bt_bap_broadcast_source_create(&amp;param, &amp;broadcast_source);
+    int err = bt_bap_broadcast_source_create(&amp;create_param, &amp;source);
     if (err) {
-        printk("Failed to create broadcast source: %d\n", err);
+        IPRO_LOGE(LOG_TAG, "Broadcast source create failed: %d", err);
         return err;
     }
 
-    /* Start broadcasting */
-    err = bt_bap_broadcast_source_start(broadcast_source, adv);
+    /* Start broadcasting (bound to the extended advertising set) */
+    err = bt_bap_broadcast_source_start(source, adv);
     return err;
 }</code></pre>
             </div>
@@ -325,22 +341,39 @@ static int create_broadcast_source(void)
             <h3>Broadcast Sink Example</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">BIS Sink (apps/bluetooth/le_audio/ipro_le_audio_bis_sink/src/main.c)</span>
+                    <span class="code-block-title">BIS Sink (apps/bluetooth/le_audio/ipro_le_audio_bis_sink/src/app_broadcast.c)</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">/* Broadcast Sink callbacks */
-static struct bt_bap_broadcast_sink_cb broadcast_sink_cb = {
-    .base_recv = base_recv_cb,        /* BASE information received */
-    .syncable = syncable_cb,          /* Syncable notification */
-    .pa_synced = pa_synced_cb,        /* PA sync established */
+                <pre><code class="language-c">/* The Broadcast Sink on the IPRO blestack does not use the
+ * bt_bap_broadcast_sink_* APIs. The receive flow is:
+ * Scan → PA sync (raw HCI) → BIG sync → ISO receive
+ *
+ *   1. bt_le_scan_start() scans for the Broadcast Audio
+ *      Announcement (UUID 0x1852)
+ *   2. PA sync via the HCI LE_Periodic_Advertising_Create_Sync command
+ *      (bt_hci_cmd_create / bt_hci_cmd_send_sync,
+ *       opcode BT_HCI_OP_LE_PER_ADV_CREATE_SYNC)
+ *   3. After the BIGInfo report arrives, call bt_iso_big_sync()
+ *      to sync to the BIG
+ *   4. Receive ISO audio data through bt_iso_chan_ops and decode
+ */
+
+/* ISO channel callbacks: receive BIS audio data */
+static struct bt_iso_chan_ops bis_chan_ops = {
+    .connected    = bis_connected_cb,
+    .disconnected = bis_disconnected_cb,
+    .recv         = bis_recv_cb,      /* LC3 audio in → decode → output */
 };
 
-/* Scan and sync to broadcast source */
+/* Scan for the broadcast source */
 static void scan_for_broadcast(void)
 {
-    bt_bap_broadcast_sink_register_cb(&amp;broadcast_sink_cb);
     bt_le_scan_start(BT_LE_SCAN_PASSIVE, scan_recv_cb);
 }</code></pre>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>Important:</strong> the BIS push-to-talk reference application (<code>ipro_walkie_talkie</code>) is not included in the release package — contact the vendor to obtain it for evaluation.
             </div>
         </section>
 
@@ -411,14 +444,18 @@ static void scan_for_broadcast(void)
             </table>
 
             <h3>LC3 Codec</h3>
-            <p>LC3 (Low Complexity Communication Codec) is the mandatory codec for LE Audio. It delivers better audio quality than SBC at lower bitrates:</p>
+            <p>LC3 (Low Complexity Communication Codec) is the mandatory codec for LE Audio. It delivers better audio quality than SBC at lower bitrates. The SDK ships the LC3 codec as the prebuilt library <code>components/3rdparty/liblc3</code>; <code>blestack/src/audio/codec.c</code> handles LE Audio codec capability and configuration parsing.</p>
             <ul>
                 <li><strong>Sample Rate</strong>: 8 / 16 / 24 / 32 / 48 kHz</li>
-                <li><strong>Bitrate</strong>: 32 - 320 kbps</li>
-                <li><strong>Frame Duration</strong>: 7.5ms or 10ms</li>
+                <li><strong>Bitrate</strong>: 16 - 320 kbps (common LE Audio presets are 16 - 124 kbps per channel)</li>
+                <li><strong>Frame Duration</strong>: 7.5ms or 10ms per the LE Audio standard; the bundled liblc3 additionally supports 2.5ms and 5ms</li>
                 <li><strong>Channels</strong>: Mono, Stereo</li>
                 <li><strong>Advantage</strong>: Matches SBC 328 kbps quality at just 160 kbps</li>
             </ul>
+
+            <div class="alert alert-info">
+                <strong>About Opus:</strong> The SDK also includes the Opus codec (<code>components/3rdparty/opus</code>), used by networked voice-streaming applications (for example, speech synthesis playback in <code>ipro_voice_assistant</code>). It is not used for LE Audio ISO channel audio — LE Audio always uses LC3.
+            </div>
         </section>
 
         <section id="usb-audio">
@@ -459,24 +496,34 @@ USB-to-BLE Bridge Mode:
             <h3>UAC Initialization Example</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">USB Audio Device Init (apps/bluetooth/ipro_le_audio_headset/src/app_uac.c)</span>
+                    <span class="code-block-title">USB Audio Device Init (apps/bluetooth/le_audio/ipro_le_audio_headset/src/app_uac.c)</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">/* USB Audio Class device configuration */
+                <pre><code class="language-c">#include "usbd_core.h"
 #include "usbd_audio.h"
 
-/* Audio stream callback: receive audio data from USB host */
-static void usbd_audio_data_recv_callback(uint8_t *data, uint32_t len)
+/* Called by CherryUSB when the USB host opens the audio stream
+ * (Set Alternate Setting) */
+void usbd_audio_open(uint8_t intf)
 {
-    /* Forward PCM data to DAC or BLE encoder */
-    audio_output_write(data, len);
+    /* Start isochronous DMA; send silence until audio data is available */
+}
+
+void usbd_audio_close(uint8_t intf)
+{
+    /* USB host closed the audio stream */
 }
 
 /* Initialize USB Audio device */
-void app_uac_init(void)
+int app_uac_init(const app_uac_config_t *config)
 {
-    usbd_audio_add_interface(/* ... */);
+    usbd_desc_register(uac_descriptor);
+    usbd_add_interface(usbd_audio_init_intf(&amp;s_intf0, 0x0100, s_entity_table, 1));
+    usbd_add_interface(usbd_audio_init_intf(&amp;s_intf1, 0x0100, s_entity_table, 1));
+    usbd_add_endpoint(&amp;s_audio_in_ep);
+    usbd_event_register_callback(uac_event_handler);
     usbd_initialize();
+    return 0;
 }</code></pre>
             </div>
         </section>
@@ -528,7 +575,7 @@ bsp/hal/inc/
                 <div class="code-block-header">
                     <span class="code-block-title">ipro7_demo Multimedia Examples</span>
                 </div>
-                <pre><code>apps/ipro7_demo/demo/mm/
+                <pre><code>apps/platform/ipro7_demo/demo/mm/
 ├── isp/                    # ISP pipeline example
 ├── mjpeg/                  # MJPEG encoding example
 ├── mjdec/                  # MJPEG decoding example
@@ -537,9 +584,12 @@ bsp/hal/inc/
 ├── mjpeg_test_demo.c       # MJPEG encoding test
 ├── mjdec_test_demo.c       # MJPEG decoding test
 ├── lcd_ai_demo.c           # LCD + AI demonstration
+├── uvc_ai_demo.c           # UVC + AI demonstration
 ├── mm_demo.c               # Multimedia combined example
 └── stream_control.c        # Stream control</code></pre>
             </div>
+
+            <p>To transfer camera images over BLE (for scenarios without a USB connection), see the BLE image capture reference application <code>apps/bluetooth/ble/ipro_ble_img_capture</code>.</p>
         </section>
 
         <section id="audio-hardware">
@@ -593,6 +643,29 @@ External Codec Path:
   External Codec ↔ I2S ↔ DMA ↔ Memory Buffer</code></pre>
             </div>
 
+            <h3>Audio Output Abstraction Layer</h3>
+            <p><code>components/audio</code> provides a unified audio output abstraction layer, <code>audio_output</code>, which drives DAC, I2S, UAC, and PCM dump backends through the same API. It is the output interface used by the LE Audio reference applications. The same component also provides <code>audio_capture</code> (AUADC + DMA audio capture) and <code>mp3_decoder</code> (MP3 decoding):</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Audio Output Abstraction (components/audio/include/audio_output.h)</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">#include "audio_output.h"
+
+audio_output_cfg_t cfg = {
+    .type        = AUDIO_OUTPUT_DAC,            /* DAC / UAC / I2S / DUMP */
+    .mode        = AUDIO_OUTPUT_MODE_STREAMING,
+    .sample_rate = 48000,
+    .channels    = 2,
+};
+
+audio_output_t *out = audio_output_create(&amp;cfg);
+audio_output_start(out);
+audio_output_write(out, pcm, samples);   /* interleaved int16_t PCM */
+audio_output_stop(out);
+audio_output_destroy(out);</code></pre>
+            </div>
+
             <h3>Audio Resampler</h3>
             <p>The SDK provides a software audio resampler for sample rate conversion between different sources:</p>
             <div class="code-block">
@@ -620,7 +693,6 @@ External Codec Path:
                     <tr><td>BAP Unicast Server</td><td>Accept audio streams from phone</td></tr>
                     <tr><td>CAP Acceptor</td><td>Coordinated set audio (L/R ear sync)</td></tr>
                     <tr><td>VCP Volume Renderer</td><td>Remote volume control</td></tr>
-                    <tr><td>MCS Server</td><td>Media playback control</td></tr>
                     <tr><td>USB Audio (UAC)</td><td>USB audio input/output</td></tr>
                     <tr><td>DAC Output</td><td>Built-in DAC speaker driver</td></tr>
                 </tbody>
@@ -631,10 +703,10 @@ External Codec Path:
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># Build
-make -C apps/bluetooth/ipro_le_audio_headset
+make -C apps/bluetooth/le_audio/ipro_le_audio_headset
 
 # Output binary
-# apps/bluetooth/ipro_le_audio_headset/build/build_out/ipro_le_audio_headset_IPRO7.bin</code></pre>
+# apps/bluetooth/le_audio/ipro_le_audio_headset/build/build_out/ipro_le_audio_headset_IPRO7.bin</code></pre>
             </div>
 
             <h3>ipro_le_audio_bis_source / ipro_le_audio_bis_sink</h3>
@@ -645,7 +717,7 @@ make -C apps/bluetooth/ipro_le_audio_headset
                 </thead>
                 <tbody>
                     <tr><td>ipro_le_audio_bis_source</td><td>Broadcast side, encodes and transmits BIS audio streams</td></tr>
-                    <tr><td>ipro_le_audio_bis_sink</td><td>Receiver side, syncs and decodes BIS audio streams</td></tr>
+                    <tr><td>ipro_le_audio_bis_sink</td><td>Receiver side, syncs and decodes BIS audio streams; ships with two configurations — <code>DAC.config</code> (built-in DAC speaker output) and <code>UAC.config</code> (USB Audio output to a PC) — copy one to <code>.config</code> to switch</td></tr>
                 </tbody>
             </table>
             <div class="code-block">
@@ -668,10 +740,30 @@ make -C apps/bluetooth/le_audio/ipro_le_audio_bis_sink</code></pre>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># Build
-make -C apps/ipro7_demo
+make -C apps/platform/ipro7_demo
 
 # Output binary
-# apps/ipro7_demo/build/build_out/ipro7_demo_IPRO7.bin</code></pre>
+# apps/platform/ipro7_demo/build/build_out/ipro7_demo_IPRO7.bin</code></pre>
+            </div>
+
+            <h3>ipro_agora_sentino</h3>
+            <p>Embedded AI voice-conversation gateway reference application (<code>apps/multimedia/ipro_agora_sentino</code>): captures speech through an AMIC microphone, encodes it with Opus, connects over Ethernet (RMII) or USB NCM, and holds two-way voice conversations with a cloud real-time audio streaming (RTC) service. It also supports LCD status display and USB CDC text output. This application integrates a third-party RTC SDK; contact the vendor for integration details.</p>
+
+            <h3>ipro_voice_assistant</h3>
+            <p>AI voice assistant reference application (<code>apps/network/ipro_voice_assistant</code>): captures speech with <code>audio_capture</code> (AMIC microphone) and VAD voice detection, connects over Ethernet (RMII) for cloud speech recognition and AI conversation, then decodes the Opus (Ogg) reply and plays it through the DAC — demonstrating the full "capture → recognize → converse → synthesize and play" audio chain.</p>
+            <div class="alert alert-info">
+                <strong>Network connectivity:</strong> The two applications above connect via Ethernet (RMII) or USB NCM. The IPRO7 itself has no Wi-Fi; for Wi-Fi connectivity, pair it with an IPRO6 companion chip (SDIO interface).
+            </div>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build Networked Audio Applications</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Build the AI voice-conversation gateway
+make -C apps/multimedia/ipro_agora_sentino
+
+# Build the AI voice assistant
+make -C apps/network/ipro_voice_assistant</code></pre>
             </div>
 
             <h3>Controller Variant Selection</h3>
@@ -685,6 +777,7 @@ make -C apps/ipro7_demo
                     <tr><td><code>link2_leaudio</code></td><td>5.2</td><td>Supported</td><td>Dual-connection LE Audio device</td></tr>
                     <tr><td><code>link1_leaudio_53_54</code></td><td>5.4</td><td>Supported</td><td>Single-connection BLE 5.4 + LE Audio</td></tr>
                     <tr><td><code>link2_leaudio_53_54</code></td><td>5.4</td><td>Supported</td><td>Dual-connection BLE 5.4 + LE Audio</td></tr>
+                    <tr><td><code>link4_leaudio_53_54</code></td><td>5.4</td><td>Supported</td><td>Four-connection BLE 5.4 + LE Audio</td></tr>
                 </tbody>
             </table>
         </section>

@@ -34,7 +34,7 @@ title: 音訊與多媒體
                     <div class="feature-icon">LE Audio</div>
                     <h3 class="feature-title">LE Audio (BLE 5.2+)</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
-                        <li>LC3 / Opus 編解碼器</li>
+                        <li>LC3 編解碼器（liblc3）</li>
                         <li>單播 (CIS) 與廣播 (BIS)</li>
                         <li>BAP / CAP / VCP / MCP 協定</li>
                         <li>Auracast 廣播音訊</li>
@@ -67,9 +67,12 @@ title: 音訊與多媒體
                     <span class="code-block-title">音訊與多媒體元件目錄結構</span>
                 </div>
                 <pre><code>components/
-├── audio/                          # 音訊處理（重取樣器等）
-│   ├── include/audio_resampler.h
-│   └── src/audio_resampler.c
+├── audio/                          # 音訊管線元件
+│   ├── include/audio_capture.h     # 音訊擷取（AUADC + DMA）
+│   ├── include/audio_output.h      # 音訊輸出抽象層（DAC / I2S / UAC 後端）
+│   ├── include/audio_resampler.h   # 取樣率轉換
+│   └── include/mp3_decoder.h       # MP3 解碼器
+├── 3rdparty/liblc3/                # LC3 編解碼器函式庫（prebuilt）
 ├── wireless/bluetooth/
 │   └── blestack/src/audio/         # LE Audio 協定棧
 │       ├── bap_*.c                 # Basic Audio Profile
@@ -78,7 +81,7 @@ title: 音訊與多媒體
 │       ├── mcc.c / mcs.c          # Media Control
 │       ├── csip_*.c               # Coordinated Set Identification
 │       ├── pacs.c / ascs.c        # Published/Available Audio Capabilities
-│       └── codec.c                # LC3 編解碼整合
+│       └── codec.c                # LE Audio codec 能力/設定解析
 ├── cherryusb/class/
 │   ├── audio/                      # USB Audio Class (UAC)
 │   └── video/                      # USB Video Class (UVC)
@@ -110,8 +113,8 @@ bsp/hal/inc/
                 <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
                 <div class="flow-step">
                     <div class="flow-number">2</div>
-                    <div class="flow-title">LC3/Opus</div>
-                    <div class="flow-desc">音訊編碼 32-320 kbps</div>
+                    <div class="flow-title">LC3 編碼</div>
+                    <div class="flow-desc">音訊編碼 16-320 kbps</div>
                 </div>
                 <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
                 <div class="flow-step">
@@ -143,7 +146,7 @@ bsp/hal/inc/
                 <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
                 <div class="flow-step">
                     <div class="flow-number">3</div>
-                    <div class="flow-title">LC3/Opus</div>
+                    <div class="flow-title">LC3 解碼</div>
                     <div class="flow-desc">音訊解碼 PCM 還原</div>
                 </div>
                 <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
@@ -160,8 +163,8 @@ bsp/hal/inc/
                     <tr><th>特性</th><th>說明</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td>編碼器</td><td>LC3（必備）、Opus（選配）</td></tr>
-                    <tr><td>位元率</td><td>32 - 320 kbps</td></tr>
+                    <tr><td>編碼器</td><td>LC3（由 prebuilt 函式庫 liblc3 提供）</td></tr>
+                    <tr><td>位元率</td><td>16 - 320 kbps（LE Audio 常用 16-124 kbps/聲道）</td></tr>
                     <tr><td>取樣率</td><td>8 / 16 / 24 / 32 / 48 kHz</td></tr>
                     <tr><td>聲道</td><td>單聲道、立體聲</td></tr>
                     <tr><td>延遲</td><td>&lt; 20ms 端到端</td></tr>
@@ -181,7 +184,7 @@ bsp/hal/inc/
                     <div class="comparison-items">
                         <span class="pill">BAP Acceptor</span>
                         <span class="pill">VCP Renderer</span>
-                        <span class="pill">MCS Server</span>
+                        <span class="pill">MCC Client</span>
                         <span class="pill">CAP Acceptor</span>
                     </div>
                 </div>
@@ -194,7 +197,7 @@ bsp/hal/inc/
                     <div class="comparison-items">
                         <span class="pill">BAP Initiator</span>
                         <span class="pill">VCP Controller</span>
-                        <span class="pill">MCC Client</span>
+                        <span class="pill">MCS Server</span>
                         <span class="pill">CAP Initiator</span>
                     </div>
                 </div>
@@ -237,27 +240,38 @@ bsp/hal/inc/
             <h3>耳機端範例程式碼</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">BAP Server 初始化 (apps/bluetooth/ipro_le_audio_headset/src/bap_server.c)</span>
+                    <span class="code-block-title">BAP Server 初始化 (apps/bluetooth/le_audio/ipro_le_audio_headset/src/bap_server.c)</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">/* 註冊 BAP Unicast Server 回呼 */
-static struct bt_bap_unicast_server_cb unicast_server_cb = {
-    .config = bap_config_cb,
-    .reconfig = bap_reconfig_cb,
-    .qos = bap_qos_cb,
-    .enable = bap_enable_cb,
-    .start = bap_start_cb,
-    .disable = bap_disable_cb,
-    .release = bap_release_cb,
+static const struct bt_bap_unicast_server_cb unicast_server_cb = {
+    .config = bap_server_config,
+    .reconfig = bap_server_reconfig,
+    .qos = bap_server_qos,
+    .enable = bap_server_enable,
+    .start = bap_server_start,
+    .metadata = bap_server_metadata,
+    .disable = bap_server_disable,
+    .stop = bap_server_stop,
+    .release = bap_server_release,
 };
 
 int bap_server_init(void)
 {
-    /* 註冊 Published Audio Capabilities */
-    bt_pacs_cap_register(BT_AUDIO_DIR_SINK, &amp;cap_sink);
-    bt_pacs_cap_register(BT_AUDIO_DIR_SOURCE, &amp;cap_source);
+    /* 初始化 PACS 服務（須先於 ASCS） */
+    bt_pacs_init();
 
-    /* 註冊 Unicast Server */
+    /* 註冊 LC3 sink 音訊能力 */
+    bt_pacs_cap_register(BT_AUDIO_DIR_SINK, &amp;lc3_sink_cap);
+
+    /* 設定音訊位置與 audio context */
+    bt_pacs_set_location(BT_AUDIO_DIR_SINK, BT_AUDIO_LOCATION_FRONT_LEFT);
+    bt_pacs_set_supported_contexts(BT_AUDIO_DIR_SINK,
+                                   BT_AUDIO_CONTEXT_TYPE_MEDIA |
+                                   BT_AUDIO_CONTEXT_TYPE_CONVERSATIONAL |
+                                   BT_AUDIO_CONTEXT_TYPE_UNSPECIFIED);
+
+    /* 向 ASCS 註冊 Unicast Server 回呼 */
     bt_bap_unicast_server_register_cb(&amp;unicast_server_cb);
 
     return 0;
@@ -295,28 +309,30 @@ int bap_server_init(void)
             <h3>廣播端範例</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">BIS 廣播端 (apps/bluetooth/le_audio/ipro_le_audio_bis_source/src/main.c)</span>
+                    <span class="code-block-title">BIS 廣播端 (apps/bluetooth/le_audio/ipro_le_audio_bis_source/src/app_broadcast_source.c)</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">/* 建立 Broadcast Source */
+                <pre><code class="language-c">/* 建立 Broadcast Source（BAP 層）
+ * 完整流程：bt_le_ext_adv_create → bt_le_per_adv_set_param
+ *          → bt_bap_broadcast_source_create → bt_bap_broadcast_source_start */
 static int create_broadcast_source(void)
 {
-    struct bt_bap_broadcast_source_param param = {
+    struct bt_bap_broadcast_source_create_param create_param = {
         .params_count = 1,
         .params = &amp;subgroup_param,
-        .qos = &amp;preset_qos,
+        .qos = &amp;qos,
         .packing = BT_ISO_PACKING_SEQUENTIAL,
         .encryption = false,
     };
 
-    int err = bt_bap_broadcast_source_create(&amp;param, &amp;broadcast_source);
+    int err = bt_bap_broadcast_source_create(&amp;create_param, &amp;source);
     if (err) {
-        printk("Failed to create broadcast source: %d\n", err);
+        IPRO_LOGE(LOG_TAG, "Broadcast source create failed: %d", err);
         return err;
     }
 
-    /* 開始廣播 */
-    err = bt_bap_broadcast_source_start(broadcast_source, adv);
+    /* 開始廣播（綁定 extended advertising set） */
+    err = bt_bap_broadcast_source_start(source, adv);
     return err;
 }</code></pre>
             </div>
@@ -324,22 +340,36 @@ static int create_broadcast_source(void)
             <h3>接收端範例</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">BIS 接收端 (apps/bluetooth/le_audio/ipro_le_audio_bis_sink/src/main.c)</span>
+                    <span class="code-block-title">BIS 接收端 (apps/bluetooth/le_audio/ipro_le_audio_bis_sink/src/app_broadcast.c)</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">/* Broadcast Sink 回呼 */
-static struct bt_bap_broadcast_sink_cb broadcast_sink_cb = {
-    .base_recv = base_recv_cb,        /* 收到 BASE 資訊 */
-    .syncable = syncable_cb,          /* 可同步通知 */
-    .pa_synced = pa_synced_cb,        /* PA 同步完成 */
+                <pre><code class="language-c">/* IPRO blestack 的 Broadcast Sink 不使用 bt_bap_broadcast_sink_* API，
+ * 接收流程為：掃描 → PA 同步（raw HCI）→ BIG 同步 → ISO 接收
+ *
+ *   1. bt_le_scan_start() 掃描 Broadcast Audio Announcement (UUID 0x1852)
+ *   2. 以 HCI LE_Periodic_Advertising_Create_Sync 命令建立 PA 同步
+ *      （bt_hci_cmd_create / bt_hci_cmd_send_sync,
+ *        opcode BT_HCI_OP_LE_PER_ADV_CREATE_SYNC）
+ *   3. 收到 BIGInfo 報告後呼叫 bt_iso_big_sync() 同步 BIG
+ *   4. 透過 bt_iso_chan_ops 接收 ISO 音訊資料並解碼
+ */
+
+/* ISO channel 回呼：接收 BIS 音訊資料 */
+static struct bt_iso_chan_ops bis_chan_ops = {
+    .connected    = bis_connected_cb,
+    .disconnected = bis_disconnected_cb,
+    .recv         = bis_recv_cb,      /* 收到 LC3 音訊 → 解碼 → 輸出 */
 };
 
-/* 掃描並同步至廣播端 */
+/* 掃描並尋找廣播端 */
 static void scan_for_broadcast(void)
 {
-    bt_bap_broadcast_sink_register_cb(&amp;broadcast_sink_cb);
     bt_le_scan_start(BT_LE_SCAN_PASSIVE, scan_recv_cb);
 }</code></pre>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>注意：</strong>BIS push-to-talk 對講參考應用（<code>ipro_walkie_talkie</code>）未隨附於 release 套件，如需評估請聯絡原廠取得。
             </div>
         </section>
 
@@ -410,14 +440,18 @@ static void scan_for_broadcast(void)
             </table>
 
             <h3>LC3 編解碼器</h3>
-            <p>LC3（Low Complexity Communication Codec）是 LE Audio 的必備編解碼器，以較低位元率提供優於 SBC 的音質：</p>
+            <p>LC3（Low Complexity Communication Codec）是 LE Audio 的必備編解碼器，以較低位元率提供優於 SBC 的音質。SDK 以 prebuilt 函式庫 <code>components/3rdparty/liblc3</code> 提供 LC3 編解碼；<code>blestack/src/audio/codec.c</code> 負責 LE Audio codec 能力與設定的解析。</p>
             <ul>
                 <li><strong>取樣率</strong>：8 / 16 / 24 / 32 / 48 kHz</li>
-                <li><strong>位元率</strong>：32 - 320 kbps</li>
-                <li><strong>幀長度</strong>：7.5ms 或 10ms</li>
+                <li><strong>位元率</strong>：16 - 320 kbps（LE Audio 常用 preset 為每聲道 16 - 124 kbps）</li>
+                <li><strong>幀長度</strong>：LE Audio 標準為 7.5ms 或 10ms；隨附的 liblc3 另支援 2.5ms 與 5ms</li>
                 <li><strong>聲道</strong>：單聲道、立體聲</li>
                 <li><strong>優勢</strong>：以 160 kbps 達到 SBC 328 kbps 的音質</li>
             </ul>
+
+            <div class="alert alert-info">
+                <strong>關於 Opus：</strong>SDK 另包含 Opus 編解碼器（<code>components/3rdparty/opus</code>），用於網路語音串流類應用（例如 <code>ipro_voice_assistant</code> 的語音合成播放），不用於 LE Audio ISO 通道音訊——LE Audio 一律使用 LC3。
+            </div>
         </section>
 
         <section id="usb-audio">
@@ -458,24 +492,33 @@ USB 轉 BLE 橋接模式：
             <h3>UAC 初始化範例</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">USB Audio 裝置初始化 (apps/bluetooth/ipro_le_audio_headset/src/app_uac.c)</span>
+                    <span class="code-block-title">USB Audio 裝置初始化 (apps/bluetooth/le_audio/ipro_le_audio_headset/src/app_uac.c)</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">/* USB Audio Class 裝置配置 */
+                <pre><code class="language-c">#include "usbd_core.h"
 #include "usbd_audio.h"
 
-/* 音訊串流回呼：收到 USB 主機送來的音訊資料 */
-static void usbd_audio_data_recv_callback(uint8_t *data, uint32_t len)
+/* USB 主機開啟音訊串流（Set Alternate Setting）時由 CherryUSB 呼叫 */
+void usbd_audio_open(uint8_t intf)
 {
-    /* 將 PCM 資料送至 DAC 或 BLE 編碼器 */
-    audio_output_write(data, len);
+    /* 啟動等時傳輸 DMA；尚無音訊資料時先送出靜音 */
+}
+
+void usbd_audio_close(uint8_t intf)
+{
+    /* USB 主機關閉音訊串流 */
 }
 
 /* 初始化 USB Audio 裝置 */
-void app_uac_init(void)
+int app_uac_init(const app_uac_config_t *config)
 {
-    usbd_audio_add_interface(/* ... */);
+    usbd_desc_register(uac_descriptor);
+    usbd_add_interface(usbd_audio_init_intf(&amp;s_intf0, 0x0100, s_entity_table, 1));
+    usbd_add_interface(usbd_audio_init_intf(&amp;s_intf1, 0x0100, s_entity_table, 1));
+    usbd_add_endpoint(&amp;s_audio_in_ep);
+    usbd_event_register_callback(uac_event_handler);
     usbd_initialize();
+    return 0;
 }</code></pre>
             </div>
         </section>
@@ -527,7 +570,7 @@ bsp/hal/inc/
                 <div class="code-block-header">
                     <span class="code-block-title">ipro7_demo 多媒體範例</span>
                 </div>
-                <pre><code>apps/ipro7_demo/demo/mm/
+                <pre><code>apps/platform/ipro7_demo/demo/mm/
 ├── isp/                    # ISP 管線範例
 ├── mjpeg/                  # MJPEG 編碼範例
 ├── mjdec/                  # MJPEG 解碼範例
@@ -536,9 +579,12 @@ bsp/hal/inc/
 ├── mjpeg_test_demo.c       # MJPEG 編碼測試
 ├── mjdec_test_demo.c       # MJPEG 解碼測試
 ├── lcd_ai_demo.c           # LCD + AI 展示
+├── uvc_ai_demo.c           # UVC + AI 展示
 ├── mm_demo.c               # 多媒體綜合範例
 └── stream_control.c        # 串流控制</code></pre>
             </div>
+
+            <p>若需透過 BLE 傳輸攝影機影像（無 USB 連線的場景），可參考 BLE 影像擷取參考應用 <code>apps/bluetooth/ble/ipro_ble_img_capture</code>。</p>
         </section>
 
         <section id="audio-hardware">
@@ -592,6 +638,29 @@ bsp/hal/inc/
   外部 Codec ↔ I2S ↔ DMA ↔ 記憶體緩衝區</code></pre>
             </div>
 
+            <h3>Audio Output 抽象層</h3>
+            <p><code>components/audio</code> 提供統一的音訊輸出抽象層 <code>audio_output</code>，以同一組 API 操作 DAC、I2S、UAC 與 PCM dump 等多種後端，是 LE Audio 參考應用實際使用的輸出介面。同元件另提供 <code>audio_capture</code>（AUADC + DMA 音訊擷取）與 <code>mp3_decoder</code>（MP3 解碼）：</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">音訊輸出抽象層 (components/audio/include/audio_output.h)</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-c">#include "audio_output.h"
+
+audio_output_cfg_t cfg = {
+    .type        = AUDIO_OUTPUT_DAC,            /* DAC / UAC / I2S / DUMP */
+    .mode        = AUDIO_OUTPUT_MODE_STREAMING,
+    .sample_rate = 48000,
+    .channels    = 2,
+};
+
+audio_output_t *out = audio_output_create(&amp;cfg);
+audio_output_start(out);
+audio_output_write(out, pcm, samples);   /* interleaved int16_t PCM */
+audio_output_stop(out);
+audio_output_destroy(out);</code></pre>
+            </div>
+
             <h3>Audio Resampler</h3>
             <p>SDK 提供軟體音訊重取樣器，用於不同取樣率間的轉換：</p>
             <div class="code-block">
@@ -619,7 +688,6 @@ bsp/hal/inc/
                     <tr><td>BAP Unicast Server</td><td>接受來自手機的音訊串流</td></tr>
                     <tr><td>CAP Acceptor</td><td>協調集合音訊（左右耳同步）</td></tr>
                     <tr><td>VCP Volume Renderer</td><td>遠端音量控制</td></tr>
-                    <tr><td>MCS Server</td><td>媒體播放控制</td></tr>
                     <tr><td>USB Audio (UAC)</td><td>USB 音訊輸入/輸出</td></tr>
                     <tr><td>DAC 輸出</td><td>內建 DAC 喇叭驅動</td></tr>
                 </tbody>
@@ -630,10 +698,10 @@ bsp/hal/inc/
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 建構
-make -C apps/bluetooth/ipro_le_audio_headset
+make -C apps/bluetooth/le_audio/ipro_le_audio_headset
 
 # 輸出二進位檔
-# apps/bluetooth/ipro_le_audio_headset/build/build_out/ipro_le_audio_headset_IPRO7.bin</code></pre>
+# apps/bluetooth/le_audio/ipro_le_audio_headset/build/build_out/ipro_le_audio_headset_IPRO7.bin</code></pre>
             </div>
 
             <h3>ipro_le_audio_bis_source / ipro_le_audio_bis_sink</h3>
@@ -644,7 +712,7 @@ make -C apps/bluetooth/ipro_le_audio_headset
                 </thead>
                 <tbody>
                     <tr><td>ipro_le_audio_bis_source</td><td>廣播端，編碼並傳送 BIS 音訊串流</td></tr>
-                    <tr><td>ipro_le_audio_bis_sink</td><td>接收端，同步並解碼 BIS 音訊串流</td></tr>
+                    <tr><td>ipro_le_audio_bis_sink</td><td>接收端，同步並解碼 BIS 音訊串流；提供 <code>DAC.config</code>（內建 DAC 喇叭輸出）與 <code>UAC.config</code>（USB Audio 輸出至 PC）兩種組態，複製為 <code>.config</code> 即可切換</td></tr>
                 </tbody>
             </table>
             <div class="code-block">
@@ -667,10 +735,30 @@ make -C apps/bluetooth/le_audio/ipro_le_audio_bis_sink</code></pre>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 建構
-make -C apps/ipro7_demo
+make -C apps/platform/ipro7_demo
 
 # 輸出二進位檔
-# apps/ipro7_demo/build/build_out/ipro7_demo_IPRO7.bin</code></pre>
+# apps/platform/ipro7_demo/build/build_out/ipro7_demo_IPRO7.bin</code></pre>
+            </div>
+
+            <h3>ipro_agora_sentino</h3>
+            <p>嵌入式 AI 語音對話閘道器參考應用（<code>apps/multimedia/ipro_agora_sentino</code>）：透過 AMIC 麥克風擷取語音，以 Opus 編碼經由 Ethernet（RMII）或 USB NCM 連網，與雲端即時音訊串流（RTC）服務進行雙向語音對話，並支援 LCD 狀態顯示與 USB CDC 文字輸出。本應用整合第三方 RTC SDK，整合細節請聯絡原廠取得。</p>
+
+            <h3>ipro_voice_assistant</h3>
+            <p>AI 語音助理參考應用（<code>apps/network/ipro_voice_assistant</code>）：以 <code>audio_capture</code>（AMIC 麥克風）收音並進行 VAD 語音偵測，經由 Ethernet（RMII）連網完成雲端語音辨識與 AI 對話，回覆以 Opus（Ogg）解碼後透過 DAC 播放，展示完整的「收音 → 辨識 → 對話 → 合成播放」音訊鏈。</p>
+            <div class="alert alert-info">
+                <strong>連網方式：</strong>上述兩個應用透過 Ethernet（RMII）或 USB NCM 連網。IPRO7 本身不具備 Wi-Fi，若需 Wi-Fi 連網請搭配 IPRO6 companion 晶片（SDIO 介面）。
+            </div>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構網路音訊應用</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 建構 AI 語音對話閘道器
+make -C apps/multimedia/ipro_agora_sentino
+
+# 建構 AI 語音助理
+make -C apps/network/ipro_voice_assistant</code></pre>
             </div>
 
             <h3>控制器變體選擇</h3>
@@ -684,6 +772,7 @@ make -C apps/ipro7_demo
                     <tr><td><code>link2_leaudio</code></td><td>5.2</td><td>支援</td><td>雙連線 LE Audio 裝置</td></tr>
                     <tr><td><code>link1_leaudio_53_54</code></td><td>5.4</td><td>支援</td><td>單連線 BLE 5.4 + LE Audio</td></tr>
                     <tr><td><code>link2_leaudio_53_54</code></td><td>5.4</td><td>支援</td><td>雙連線 BLE 5.4 + LE Audio</td></tr>
+                    <tr><td><code>link4_leaudio_53_54</code></td><td>5.4</td><td>支援</td><td>四連線 BLE 5.4 + LE Audio</td></tr>
                 </tbody>
             </table>
         </section>
