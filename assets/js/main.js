@@ -339,7 +339,7 @@ function initThemeToggle() {
     }
     
     // Check saved preference
-    const savedTheme = localStorage.getItem('theme') || 'dark';
+    const savedTheme = localStorage.getItem('theme') || document.documentElement.getAttribute('data-theme') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
     updateThemeIcon(themeToggle, savedTheme);
     
@@ -361,151 +361,18 @@ function updateThemeIcon(button, theme) {
 
 // Search Modal
 function initSearchModal() {
-    // Create search trigger
-    const searchTrigger = document.createElement('button');
-    searchTrigger.className = 'search-trigger';
-    searchTrigger.innerHTML = '<i class="fas fa-search"></i><span class="search-shortcut">⌘K</span>';
-    
-    const navbar = document.querySelector('.nav-container');
-    if (navbar) {
-        const themeToggle = navbar.querySelector('.theme-toggle');
-        if (themeToggle) {
-            navbar.insertBefore(searchTrigger, themeToggle);
-        } else {
-            navbar.appendChild(searchTrigger);
-        }
-    }
-    
-    // Create modal
-    const modal = document.createElement('div');
-    modal.className = 'search-modal';
-    modal.innerHTML = `
-        <div class="search-modal-content">
-            <div class="search-header">
-                <i class="fas fa-search"></i>
-                <input type="text" class="search-input" placeholder="搜尋文件...">
-                <kbd>ESC</kbd>
-            </div>
-            <div class="search-results"></div>
-            <div class="search-footer">
-                <span><kbd>↑</kbd><kbd>↓</kbd> 導航</span>
-                <span><kbd>↵</kbd> 開啟</span>
-                <span><kbd>ESC</kbd> 關閉</span>
-            </div>
-        </div>
-    `;
-    document.body.appendChild(modal);
-    
-    const searchInput = modal.querySelector('.search-input');
-    const searchResults = modal.querySelector('.search-results');
-    
-    // Search data
-    const searchData = [
-        { title: '快速開始', url: '/getting-started', category: '入門' },
-        { title: '架構概覽', url: '/architecture', category: '架構' },
-        { title: 'BLE 開發指南', url: '/ble-development', category: 'BLE' },
-        { title: 'Zephyr RTOS', url: '/zephyr-rtos', category: 'RTOS' },
-        { title: '應用範例', url: '/applications', category: '範例' },
-        { title: 'VS Code Extension', url: '/vscode-extension', category: '工具' },
-        { title: 'API 參考', url: '/api-reference', category: 'API' },
-        { title: '更新日誌', url: '/changelog', category: '更新' },
-        { title: 'BLE 初始化', url: '/ble-development#getting-started', category: 'BLE' },
-        { title: 'GAP 操作', url: '/ble-development#gap-operations', category: 'BLE' },
-        { title: 'GATT 服務', url: '/ble-development#gatt-services', category: 'BLE' },
-        { title: 'ipro_ble_remote', url: '/applications#ipro-ble-demo', category: '範例' },
-        { title: 'ipro_zephyr_demo', url: '/applications#ipro-zephyr-demo', category: '範例' },
-        { title: 'ipro7_demo', url: '/applications#ipro7-demo', category: '範例' },
-    ];
-    
-    function showModal() {
-        modal.classList.add('active');
-        searchInput.focus();
-        document.body.style.overflow = 'hidden';
-    }
-    
-    function hideModal() {
-        modal.classList.remove('active');
-        searchInput.value = '';
-        searchResults.innerHTML = '';
-        document.body.style.overflow = '';
-    }
-    
-    function search(query) {
-        if (!query) {
-            searchResults.innerHTML = '<div class="search-hint">輸入關鍵字搜尋文件...</div>';
-            return;
-        }
-        
-        const results = searchData.filter(item => 
-            item.title.toLowerCase().includes(query.toLowerCase()) ||
-            item.category.toLowerCase().includes(query.toLowerCase())
-        );
-        
-        if (results.length === 0) {
-            searchResults.innerHTML = '<div class="search-no-results">找不到相關結果</div>';
-            return;
-        }
-        
-        searchResults.innerHTML = results.map((item, index) => `
-            <a href="${item.url}" class="search-result-item ${index === 0 ? 'selected' : ''}">
-                <span class="search-result-category">${item.category}</span>
-                <span class="search-result-title">${item.title}</span>
-                <i class="fas fa-arrow-right"></i>
-            </a>
-        `).join('');
-    }
-    
-    // Event listeners
-    searchTrigger.addEventListener('click', showModal);
-    
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) hideModal();
-    });
-    
-    searchInput.addEventListener('input', (e) => {
-        search(e.target.value);
-    });
-    
-    // Keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
-        // Cmd/Ctrl + K to open
+    // Superseded by the inline navbar search (#nav-search-input).
+    // Keep the Cmd/Ctrl+K shortcut as a focus accelerator.
+    const input = document.getElementById('nav-search-input');
+    if (!input) return;
+    document.addEventListener('keydown', function (e) {
         if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
             e.preventDefault();
-            showModal();
-        }
-        
-        // ESC to close
-        if (e.key === 'Escape' && modal.classList.contains('active')) {
-            hideModal();
-        }
-        
-        // Navigate results
-        if (modal.classList.contains('active')) {
-            const items = searchResults.querySelectorAll('.search-result-item');
-            const selected = searchResults.querySelector('.search-result-item.selected');
-            
-            if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                const next = selected?.nextElementSibling || items[0];
-                items.forEach(i => i.classList.remove('selected'));
-                next?.classList.add('selected');
-            }
-            
-            if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                const prev = selected?.previousElementSibling || items[items.length - 1];
-                items.forEach(i => i.classList.remove('selected'));
-                prev?.classList.add('selected');
-            }
-            
-            if (e.key === 'Enter' && selected) {
-                window.location.href = selected.href;
-            }
+            input.focus();
         }
     });
 }
 
-// Tooltips
 function initTooltips() {
     document.querySelectorAll('[data-tooltip]').forEach(el => {
         const tooltip = document.createElement('div');
@@ -554,8 +421,8 @@ function initBackToTop() {
 // Table of Contents (TOC)
 // ==========================================
 function initTableOfContents() {
-    // Skip TOC if page already has a sidebar (doc-sidebar)
-    if (document.querySelector('.doc-sidebar')) {
+    // Skip TOC if page already has a sidebar (doc-sidebar) or is a landing page (hero)
+    if (document.querySelector('.doc-sidebar') || document.querySelector('.hero')) {
         return;
     }
     
@@ -990,3 +857,99 @@ function initImageLazyLoad() {
     
     images.forEach(img => imageObserver.observe(img));
 }
+// ==========================================
+// Site search (client-side, CJK-safe substring match)
+// ==========================================
+document.addEventListener('DOMContentLoaded', function () {
+    const input = document.getElementById('nav-search-input');
+    const results = document.getElementById('nav-search-results');
+    if (!input || !results) return;
+
+    const lang = results.dataset.lang || 'zh-TW';
+    const indexUrl = results.dataset.index;
+    const emptyText = lang === 'en' ? 'No results' : '沒有符合的結果';
+    let index = null;
+    let loading = false;
+    let selected = -1;
+
+    function loadIndex() {
+        if (index || loading) return;
+        loading = true;
+        fetch(indexUrl)
+            .then(r => r.json())
+            .then(data => { index = data.filter(p => p.lang === lang && p.title); })
+            .catch(() => { loading = false; });
+    }
+
+    function escapeHtml(s) {
+        return s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    }
+
+    function snippet(text, q) {
+        const i = text.toLowerCase().indexOf(q);
+        if (i < 0) return '';
+        const start = Math.max(0, i - 30);
+        const end = Math.min(text.length, i + q.length + 50);
+        let s = (start > 0 ? '…' : '') + text.slice(start, end) + (end < text.length ? '…' : '');
+        const safe = escapeHtml(s);
+        const qi = safe.toLowerCase().indexOf(escapeHtml(q).toLowerCase());
+        if (qi < 0) return safe;
+        return safe.slice(0, qi) + '<mark>' + safe.slice(qi, qi + q.length) + '</mark>' + safe.slice(qi + q.length);
+    }
+
+    function render(q) {
+        if (!index || !q) { results.classList.remove('open'); results.innerHTML = ''; selected = -1; return; }
+        const ql = q.toLowerCase();
+        const hits = [];
+        for (const p of index) {
+            const inTitle = p.title.toLowerCase().includes(ql);
+            const occurrences = p.text.toLowerCase().split(ql).length - 1;
+            if (inTitle || occurrences > 0) {
+                hits.push({ p, score: (inTitle ? 100 : 0) + Math.min(occurrences, 30) });
+            }
+        }
+        hits.sort((a, b) => b.score - a.score);
+        const top = hits.slice(0, 8);
+        if (!top.length) {
+            results.innerHTML = '<div class="search-empty">' + emptyText + '</div>';
+        } else {
+            results.innerHTML = top.map(h =>
+                '<a class="search-result-item" href="' + h.p.url + '">' +
+                '<span class="search-result-title">' + escapeHtml(h.p.title) + '</span>' +
+                '<span class="search-result-snippet">' + snippet(h.p.text, q) + '</span>' +
+                '</a>'
+            ).join('');
+        }
+        selected = -1;
+        results.classList.add('open');
+    }
+
+    input.addEventListener('focus', loadIndex);
+    let debounce = null;
+    input.addEventListener('input', function () {
+        clearTimeout(debounce);
+        const q = input.value.trim();
+        debounce = setTimeout(() => render(q), 120);
+    });
+
+    input.addEventListener('keydown', function (e) {
+        const items = results.querySelectorAll('.search-result-item');
+        if (e.key === 'Escape') { results.classList.remove('open'); input.blur(); return; }
+        if (!items.length) return;
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+            e.preventDefault();
+            selected = e.key === 'ArrowDown'
+                ? Math.min(selected + 1, items.length - 1)
+                : Math.max(selected - 1, 0);
+            items.forEach((el, i) => el.classList.toggle('selected', i === selected));
+            items[selected].scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            (items[selected >= 0 ? selected : 0]).click();
+        }
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.nav-search')) results.classList.remove('open');
+    });
+});

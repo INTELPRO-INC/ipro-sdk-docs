@@ -23,8 +23,17 @@
     <!-- Highlight.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
 
+    <!-- Theme bootstrap (before CSS paint to avoid flash) -->
+    <script>
+        (function () {
+            var t = localStorage.getItem('theme');
+            if (!t) { t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'; }
+            document.documentElement.setAttribute('data-theme', t);
+        })();
+    </script>
+
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/site.css' | relative_url }}">
 </head>
 
 <body>
@@ -43,6 +52,11 @@
                 <img src="{{ '/media_ipro_logo.svg' | relative_url }}" alt="IPRO Logo" class="logo-image">
                 <span class="logo-text">IPRO SDK</span>
             </a>
+            {% if page.lang == 'en' %}
+            <a href="{{ '/en/changelog' | relative_url }}" class="nav-version" title="Release notes">{{ site.sdk_version }}</a>
+            {% else %}
+            <a href="{{ '/changelog' | relative_url }}" class="nav-version" title="版本紀錄">{{ site.sdk_version }}</a>
+            {% endif %}
 
             <button class="nav-toggle" aria-label="Toggle navigation">
                 <i class="fas fa-bars"></i>
@@ -66,7 +80,7 @@
                         <a href="{{ sub.url | relative_url }}" class="nav-dropdown-item">
                             <i class="fas {{ sub.icon | default: 'fa-file-lines' }}"></i>
                             <div>
-                                <span class="nav-dropdown-title">{{ sub.title }}</span>
+                                <span class="nav-dropdown-title">{{ sub.title }}{% if sub.badge %}<span class="nav-item-badge">{{ sub.badge }}</span>{% endif %}</span>
                                 <span class="nav-dropdown-desc">{{ sub.desc }}</span>
                             </div>
                         </a>
@@ -77,6 +91,28 @@
                 <li><a href="{{ item.url | relative_url }}" class="nav-link">{{ item.title }}</a></li>
                 {% endif %}
                 {% endfor %}
+
+                <!-- Search -->
+                <li class="nav-search">
+                    <i class="fas fa-magnifying-glass search-icon"></i>
+                    {% if page.lang == 'en' %}
+                    <input type="search" id="nav-search-input" placeholder="Search docs…" autocomplete="off" aria-label="Search documentation">
+                    {% else %}
+                    <input type="search" id="nav-search-input" placeholder="搜尋文件…" autocomplete="off" aria-label="搜尋文件">
+                    {% endif %}
+                    <div class="search-results" id="nav-search-results" data-lang="{{ page.lang | default: 'zh-TW' }}" data-index="{{ '/search.json' | relative_url }}"></div>
+                </li>
+
+                <!-- Theme toggle -->
+                <li class="nav-lang">
+                    {% if page.lang == 'en' %}
+                    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle light/dark theme" title="Toggle theme">
+                    {% else %}
+                    <button class="theme-toggle" id="theme-toggle" aria-label="切換亮暗主題" title="切換主題">
+                    {% endif %}
+                        <i class="fas fa-sun"></i><i class="fas fa-moon"></i>
+                    </button>
+                </li>
 
                 <!-- Language Switch: jump to the same page in the other language -->
                 {% if page.lang == 'en' %}
@@ -136,6 +172,40 @@
         </nav>
         {% endunless %}
         {{ content }}
+
+        {% unless page.url == '/' or page.url == '/en/' or page.url == '/index.html' or page.url == '/en/index.html' %}
+        {% assign flat_nav = "" | split: "" %}
+        {% for item in nav_items %}
+        {% if item.dropdown %}
+        {% for sub in item.dropdown %}{% assign flat_nav = flat_nav | push: sub %}{% endfor %}
+        {% elsif item.url %}
+        {% assign flat_nav = flat_nav | push: item %}
+        {% endif %}
+        {% endfor %}
+        {% assign cur_url = page.url | replace: '.html', '' %}
+        {% assign cur_idx = -1 %}
+        {% for it in flat_nav %}{% if it.url == cur_url %}{% assign cur_idx = forloop.index0 %}{% endif %}{% endfor %}
+        {% if cur_idx >= 0 %}
+        {% assign prev_idx = cur_idx | minus: 1 %}
+        {% assign next_idx = cur_idx | plus: 1 %}
+        <nav class="page-nav" aria-label="Page navigation">
+            {% if prev_idx >= 0 %}
+            {% assign prev_page = flat_nav[prev_idx] %}
+            <a href="{{ prev_page.url | relative_url }}" class="page-nav-link prev">
+                <span class="page-nav-label">{% if page.lang == 'en' %}&larr; Previous{% else %}&larr; 上一頁{% endif %}</span>
+                <span class="page-nav-title">{{ prev_page.title }}</span>
+            </a>
+            {% endif %}
+            {% if next_idx < flat_nav.size %}
+            {% assign next_page = flat_nav[next_idx] %}
+            <a href="{{ next_page.url | relative_url }}" class="page-nav-link next">
+                <span class="page-nav-label">{% if page.lang == 'en' %}Next &rarr;{% else %}下一頁 &rarr;{% endif %}</span>
+                <span class="page-nav-title">{{ next_page.title }}</span>
+            </a>
+            {% endif %}
+        </nav>
+        {% endif %}
+        {% endunless %}
     </main>
 
     <!-- Footer -->
