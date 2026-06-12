@@ -79,28 +79,41 @@ title: 網路開發
             <h2>網路架構</h2>
             <p>IPRO SDK 的網路子系統採用分層架構。EMAC 與 SDIO Wi-Fi 橋接共用同一個 lwIP 堆疊，應用層程式碼不需因實體介面不同而改寫：</p>
 
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">網路協定堆疊架構</span>
+            <div class="dg" role="img" aria-label="網路協定堆疊架構圖">
+                <div class="dg-title">網路協定堆疊架構</div>
+                <div class="architecture-layers">
+                    <div class="layer layer-green">
+                        <div class="layer-label">應用層 (HTTP Client, MQTT, CoAP, ...)</div>
+                    </div>
+                    <div class="layer layer-cyan">
+                        <div class="layer-label">TLS / DTLS (mbedTLS 2.28 LTS)</div>
+                        <div class="layer-desc">components/crypto/mbedtls/</div>
+                    </div>
+                    <div class="layer layer-purple">
+                        <div class="layer-label">TCP / UDP (lwIP Socket API)</div>
+                        <div class="layer-items">
+                            <span class="pill">DHCP</span>
+                            <span class="pill">DNS</span>
+                            <span class="pill">SNTP</span>
+                            <span class="pill">Ping</span>
+                        </div>
+                        <div class="layer-desc">components/network/lwip/</div>
+                    </div>
+                    <div class="layer layer-amber">
+                        <div class="layer-label">驅動層</div>
+                        <div class="layer-items">
+                            <span class="pill">EMAC 驅動（乙太網路）— bsp/.../drv_emac.c</span>
+                            <span class="pill">SDIO 網路橋接 — IPRO7 SDH ↔ IPRO6（需聯絡原廠取得）</span>
+                        </div>
+                    </div>
+                    <div class="layer layer-red">
+                        <div class="layer-label">實體層</div>
+                        <div class="layer-items">
+                            <span class="pill">Ethernet PHY</span>
+                            <span class="pill">IPRO6 Wi-Fi 6 Companion</span>
+                        </div>
+                    </div>
                 </div>
-<pre><code>┌─────────────────────────────────────────────────┐
-│      應用層 (HTTP Client, MQTT, CoAP, ...)       │
-├─────────────────────────────────────────────────┤
-│      TLS / DTLS (mbedTLS 2.28 LTS)               │
-│      components/crypto/mbedtls/                  │
-├─────────────────────────────────────────────────┤
-│      TCP / UDP (lwIP Socket API)                 │
-│    ┌─────┬──────┬───────┬────────┐              │
-│    │DHCP │ DNS  │ SNTP  │  Ping  │              │
-│    └─────┴──────┴───────┴────────┘              │
-│      components/network/lwip/                    │
-├──────────────────────┬──────────────────────────┤
-│  EMAC 驅動           │  SDIO 網路橋接            │
-│  (乙太網路)          │  IPRO7 SDH ↔ IPRO6        │
-│  bsp/.../drv_emac.c  │  (需聯絡原廠取得)         │
-├──────────────────────┴──────────────────────────┤
-│  Ethernet PHY        │  IPRO6 Wi-Fi 6 Companion  │
-└─────────────────────────────────────────────────┘</code></pre>
             </div>
 
             <h3>核心元件路徑</h3>
@@ -429,17 +442,25 @@ cleanup:
 
             <p>IPRO7 本身不具備 Wi-Fi 射頻。需要 Wi-Fi 連線的產品採用雙晶片架構：IPRO7 作為主控 SoC，搭配 IPRO6 系列 connectivity companion 晶片提供 Wi-Fi 6 (802.11ax) 連線能力。</p>
 
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">雙晶片 Wi-Fi 架構</span>
+            <div class="dg" role="img" aria-label="雙晶片 Wi-Fi 架構圖">
+                <div class="dg-title">雙晶片 Wi-Fi 架構</div>
+                <div class="dg-row">
+                    <div class="dg-group dg-group--solid">
+                        <div class="dg-group-title"><i class="fas fa-microchip"></i> IPRO7（主控）</div>
+                        <div class="dg-node">
+                            <div class="dg-node-title">應用 / NPU / BLE</div>
+                            <div class="dg-node-desc">lwIP netif ↔ SDH<br>（數據面進入 lwIP 堆疊）</div>
+                        </div>
+                    </div>
+                    <div class="dg-arrow dg-arrow--bi"><span class="dg-arrow-label">SDIO 4-bit</span></div>
+                    <div class="dg-group">
+                        <div class="dg-group-title"><i class="fas fa-wifi"></i> IPRO6（Wi-Fi Companion）</div>
+                        <div class="dg-node dg-node--accent">
+                            <div class="dg-node-title">Wi-Fi 6 (802.11ax)</div>
+                            <div class="dg-node-desc">SDIO 網路橋接韌體<br>（STA 連線 / 認證）</div>
+                        </div>
+                    </div>
                 </div>
-<pre><code>┌───────────────────────────┐        ┌───────────────────────────┐
-│        IPRO7 (主控)        │        │   IPRO6 (Wi-Fi Companion) │
-│                           │        │                           │
-│  應用 / NPU / BLE          │  SDIO  │  Wi-Fi 6 (802.11ax)       │
-│  lwIP netif ──── SDH ─────┼────────┼── SDIO 網路橋接韌體        │
-│  (數據面進入 lwIP 堆疊)    │ 4-bit  │  (STA 連線 / 認證)         │
-└───────────────────────────┘        └───────────────────────────┘</code></pre>
             </div>
 
             <ul>

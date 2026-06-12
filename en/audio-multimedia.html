@@ -463,21 +463,45 @@ static void scan_for_broadcast(void)
             <p>IPRO SDK integrates USB Audio Class (UAC) functionality through CherryUSB, enabling the IPRO7 to function as a USB audio device or as a USB-to-BLE audio bridge.</p>
 
             <h3>USB Audio Architecture</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">USB Audio Data Flow</span>
+            <div class="dg" role="img" aria-label="USB Audio data flow diagram">
+                <div class="dg-title">USB Audio Data Flow</div>
+                <div class="dg-group">
+                    <div class="dg-group-title">USB Audio Device Mode</div>
+                    <div class="dg-row">
+                        <div class="dg-node">
+                            <div class="dg-node-title">Host</div>
+                            <div class="dg-node-desc">PC / Phone</div>
+                        </div>
+                        <div class="dg-arrow dg-arrow--bi"><span class="dg-arrow-label">USB / UAC</span></div>
+                        <div class="dg-node dg-node--accent">
+                            <div class="dg-node-title">CherryUSB</div>
+                            <div class="dg-node-desc"><code>usbd_audio</code></div>
+                        </div>
+                        <div class="dg-arrow"></div>
+                        <div class="dg-node dg-node--success">
+                            <div class="dg-node-title">Audio DAC / I2S Out</div>
+                        </div>
+                    </div>
                 </div>
-                <pre><code>USB Audio Device Mode:
-┌──────────┐    USB     ┌──────────────┐    ┌──────────────┐
-│   Host    │◄═════════►│  CherryUSB   │───►│  Audio DAC   │
-│ (PC/Phone)│   UAC     │  (usbd_audio)│    │  / I2S Out   │
-└──────────┘           └──────────────┘    └──────────────┘
-
-USB-to-BLE Bridge Mode:
-┌──────────┐    USB     ┌──────────────┐    BLE    ┌────────────┐
-│   Host    │◄═════════►│   IPRO7      │◄════════►│ BLE Headset│
-│ (PC/Phone)│   UAC     │  USB ↔ BLE   │   CIS    │ (LE Audio) │
-└──────────┘           └──────────────┘          └────────────┘</code></pre>
+                <div class="dg-group">
+                    <div class="dg-group-title">USB-to-BLE Bridge Mode</div>
+                    <div class="dg-row">
+                        <div class="dg-node">
+                            <div class="dg-node-title">Host</div>
+                            <div class="dg-node-desc">PC / Phone</div>
+                        </div>
+                        <div class="dg-arrow dg-arrow--bi"><span class="dg-arrow-label">USB / UAC</span></div>
+                        <div class="dg-node dg-node--accent">
+                            <div class="dg-node-title">IPRO7</div>
+                            <div class="dg-node-desc">USB ↔ BLE</div>
+                        </div>
+                        <div class="dg-arrow dg-arrow--bi"><span class="dg-arrow-label">BLE / CIS</span></div>
+                        <div class="dg-node dg-node--success">
+                            <div class="dg-node-title">BLE Headset</div>
+                            <div class="dg-node-desc">LE Audio</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <h3>CherryUSB Audio Components</h3>
@@ -533,20 +557,39 @@ int app_uac_init(const app_uac_config_t *config)
             <p>The IPRO7 SoC includes a built-in ISP (Image Signal Processor) and MJPEG hardware encoder. It can drive camera sensors for image capture, processing, and compression, with output via USB UVC or LCD display.</p>
 
             <h3>Video Processing Pipeline</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Camera Image Processing Pipeline</span>
+            <div class="dg" role="img" aria-label="Camera image processing pipeline diagram">
+                <div class="dg-title">Camera Image Processing Pipeline</div>
+                <div class="dg-row">
+                    <div class="dg-node">
+                        <div class="dg-node-title">Camera Sensor</div>
+                        <div class="dg-node-desc">SPI / DVP</div>
+                    </div>
+                    <div class="dg-arrow"></div>
+                    <div class="dg-node dg-node--accent">
+                        <div class="dg-node-title">ISP Pipeline</div>
+                    </div>
+                    <div class="dg-arrow"></div>
+                    <div class="dg-col">
+                        <div class="dg-row">
+                            <div class="dg-node">
+                                <div class="dg-node-title">MJPEG Encoder</div>
+                                <div class="dg-node-desc">HW Accel</div>
+                            </div>
+                            <div class="dg-arrow"></div>
+                            <div class="dg-node dg-node--success">
+                                <div class="dg-node-title">USB UVC</div>
+                                <div class="dg-node-desc">Camera Device</div>
+                            </div>
+                        </div>
+                        <div class="dg-row">
+                            <div class="dg-node dg-node--success">
+                                <div class="dg-node-title">LCD Display</div>
+                                <div class="dg-node-desc">Live Preview</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <pre><code>┌────────────┐    ┌─────────┐    ┌──────────────┐    ┌───────────────┐
-│ Camera     │───►│  ISP    │───►│ MJPEG Encoder│───►│ USB UVC       │
-│ Sensor     │    │ Pipeline│    │ (HW Accel)   │    │ (Camera Dev)  │
-│ (SPI/DVP)  │    │         │    └──────────────┘    └───────────────┘
-└────────────┘    │         │    ┌──────────────┐
-                  │         │───►│ LCD Display  │
-                  │         │    │ (Live Preview)│
-                  └─────────┘    └──────────────┘
-
-ISP Features: Auto Exposure (AE), Auto White Balance (AWB), Noise Reduction (NR), Sharpening</code></pre>
+                <div class="dg-note">ISP Features: Auto Exposure (AE), Auto White Balance (AWB), Noise Reduction (NR), Sharpening</div>
             </div>
 
             <h3>ISP Component Structure</h3>

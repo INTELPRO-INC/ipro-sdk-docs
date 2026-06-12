@@ -147,15 +147,23 @@ lang: en
             <h2>Dual-Chip Architecture</h2>
             <p>IPRO7 has no built-in Wi-Fi. Products requiring Wi-Fi connectivity use a dual-chip architecture: IPRO7 serves as the main SoC, handling application logic, AI/NPU inference, BLE, audio, and peripheral control, while Wi-Fi connectivity is provided by the IPRO6 companion chip over the SDIO interface.</p>
 
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Dual-Chip Connectivity Architecture</span>
+            <div class="dg" role="img" aria-label="Dual-chip connectivity architecture diagram">
+                <div class="dg-title">Dual-Chip Connectivity Architecture</div>
+                <div class="dg-row">
+                    <div class="dg-group dg-group--solid">
+                        <div class="dg-group-title"><i class="fas fa-microchip"></i> IPRO7 (main SoC)</div>
+                        <div class="dg-node">
+                            <div class="dg-node-desc">Application logic / AI &amp; NPU / BLE<br>Audio / ISP / peripheral control</div>
+                        </div>
+                    </div>
+                    <div class="dg-arrow dg-arrow--bi"><span class="dg-arrow-label">SDIO</span></div>
+                    <div class="dg-group">
+                        <div class="dg-group-title"><i class="fas fa-wifi"></i> IPRO6 (connectivity companion)</div>
+                        <div class="dg-node dg-node--accent">
+                            <div class="dg-node-desc">Wi-Fi</div>
+                        </div>
+                    </div>
                 </div>
-                <pre><code>┌──────────────────────────────┐          ┌──────────────────────────┐
-│      IPRO7 (Main SoC)        │          │ IPRO6 (Connectivity      │
-│  App logic / AI・NPU / BLE   │   SDIO   │        companion)        │
-│  Audio / ISP / Peripherals   │◄────────►│          Wi-Fi           │
-└──────────────────────────────┘          └──────────────────────────┘</code></pre>
             </div>
 
             <div class="alert alert-info">

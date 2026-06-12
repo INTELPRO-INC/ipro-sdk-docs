@@ -146,15 +146,23 @@ title: 架構概覽
             <h2>雙晶片架構</h2>
             <p>IPRO7 不內建 Wi-Fi。需要 Wi-Fi 連網的產品採用雙晶片架構：IPRO7 作為主控 SoC，負責應用邏輯、AI/NPU 推論、BLE、音訊與周邊控制；Wi-Fi 連網由 IPRO6 companion 晶片透過 SDIO 介面提供。</p>
 
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">雙晶片連網架構</span>
+            <div class="dg" role="img" aria-label="雙晶片連網架構圖">
+                <div class="dg-title">雙晶片連網架構</div>
+                <div class="dg-row">
+                    <div class="dg-group dg-group--solid">
+                        <div class="dg-group-title"><i class="fas fa-microchip"></i> IPRO7（主控 SoC）</div>
+                        <div class="dg-node">
+                            <div class="dg-node-desc">應用邏輯 / AI・NPU / BLE<br>音訊 / ISP / 周邊控制</div>
+                        </div>
+                    </div>
+                    <div class="dg-arrow dg-arrow--bi"><span class="dg-arrow-label">SDIO</span></div>
+                    <div class="dg-group">
+                        <div class="dg-group-title"><i class="fas fa-wifi"></i> IPRO6（連網 companion）</div>
+                        <div class="dg-node dg-node--accent">
+                            <div class="dg-node-desc">Wi-Fi</div>
+                        </div>
+                    </div>
                 </div>
-                <pre><code>┌──────────────────────────────┐          ┌──────────────────────────┐
-│        IPRO7（主控 SoC）      │          │  IPRO6（連網 companion）  │
-│  應用邏輯 / AI・NPU / BLE     │   SDIO   │                          │
-│  音訊 / ISP / 周邊控制        │◄────────►│         Wi-Fi            │
-└──────────────────────────────┘          └──────────────────────────┘</code></pre>
             </div>
 
             <div class="alert alert-info">

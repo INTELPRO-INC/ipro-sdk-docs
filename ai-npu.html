@@ -70,29 +70,40 @@ title: AI 與 NPU
             <h2>NPU 架構</h2>
             <p>IPRO7 的 NPU 與 RISC-V CPU 協同工作，支援 CPU 與 NPU 混合執行模式。每一層 (layer) 可依據其算子類型自動分配至最佳執行裝置：</p>
 
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">AI 系統架構</span>
+            <div class="dg" role="img" aria-label="AI 系統架構分層圖">
+                <div class="dg-title">AI 系統架構</div>
+                <div class="architecture-layers">
+                    <div class="layer layer-green">
+                        <div class="layer-label">Application Layer</div>
+                        <div class="layer-items">
+                            <span class="pill">ipro7_demo</span>
+                            <span class="pill">Custom App</span>
+                        </div>
+                    </div>
+                    <div class="layer layer-cyan">
+                        <div class="layer-label">IPROAI Framework (components/ai/)</div>
+                        <div class="layer-items">
+                            <span class="pill">iproai_core — Model Load</span>
+                            <span class="pill">iproai_inst — Layer Sched</span>
+                            <span class="pill">postprocess — YOLOv8 / NMS</span>
+                        </div>
+                    </div>
+                    <div class="layer layer-purple">
+                        <div class="layer-label">Execution Backend</div>
+                        <div class="layer-items">
+                            <span class="pill">CPU Backend：Softmax, YOLO, Route, Reshape, NMSIS DSP Ops</span>
+                            <span class="pill">NPU Backend：Conv, Pool, FC, DW-Conv, MatMul, Activation (HW)</span>
+                        </div>
+                    </div>
+                    <div class="layer layer-amber">
+                        <div class="layer-label">Memory / DMA Interface</div>
+                        <div class="layer-items">
+                            <span class="pill">PSRAM (8 MB)</span>
+                            <span class="pill">OCRAM (256 KB)</span>
+                            <span class="pill">Flash</span>
+                        </div>
+                    </div>
                 </div>
-                <pre><code>┌──────────────────────────────────────────────────┐
-│              Application Layer                    │
-│      ipro7_demo  │  Custom App                    │
-├──────────────────────────────────────────────────┤
-│          IPROAI Framework (components/ai/)        │
-│   iproai_core  │  iproai_inst  │  postprocess    │
-│   Model Load   │  Layer Sched  │  YOLOv8 / NMS   │
-├──────────────────────────────────────────────────┤
-│         Execution Backend                         │
-│   ┌─────────────────┐  ┌──────────────────────┐  │
-│   │   CPU Backend    │  │    NPU Backend       │  │
-│   │   Softmax, YOLO  │  │    Conv, Pool, FC    │  │
-│   │   Route, Reshape │  │    DW-Conv, MatMul   │  │
-│   │   NMSIS DSP Ops  │  │    Activation (HW)   │  │
-│   └─────────────────┘  └──────────────────────┘  │
-├──────────────────────────────────────────────────┤
-│         Memory / DMA Interface                    │
-│   PSRAM (8 MB)   │  OCRAM (256 KB)  │  Flash     │
-└──────────────────────────────────────────────────┘</code></pre>
             </div>
 
             <h3>支援的算子</h3>
@@ -129,18 +140,29 @@ title: AI 與 NPU
             <h2>模型部署流程</h2>
             <p>從訓練到裝置端部署的完整工作流程：</p>
 
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">模型部署流程</span>
+            <div class="dg" role="img" aria-label="模型部署流程圖">
+                <div class="dg-title">模型部署流程</div>
+                <div class="dg-row">
+                    <div class="dg-node">
+                        <div class="dg-node-title">Training</div>
+                        <div class="dg-node-desc">(PyTorch / TensorFlow)<br>Float32 模型<br>(YOLO, MobileNet)</div>
+                    </div>
+                    <div class="dg-arrow"></div>
+                    <div class="dg-node">
+                        <div class="dg-node-title">Quantization</div>
+                        <div class="dg-node-desc">(INT8)<br>TFLite INT8 模型<br>(per-channel quant)</div>
+                    </div>
+                    <div class="dg-arrow"></div>
+                    <div class="dg-node">
+                        <div class="dg-node-title">Conversion</div>
+                        <div class="dg-node-desc">(<code>.blai</code>)<br>.blai 二進位檔<br>(NPU 指令+權重)</div>
+                    </div>
+                    <div class="dg-arrow"></div>
+                    <div class="dg-node dg-node--success">
+                        <div class="dg-node-title">Deployment</div>
+                        <div class="dg-node-desc">(SD / Flash)<br>載入至 PSRAM<br>NPU 推理執行</div>
+                    </div>
                 </div>
-                <pre><code>  ┌─────────────┐     ┌──────────────┐     ┌─────────────┐     ┌───────────────┐
-  │  Training    │────&gt;│ Quantization │────&gt;│  Conversion │────&gt;│  Deployment   │
-  │  (PyTorch /  │     │  (INT8)      │     │  (.blai)    │     │  (SD / Flash) │
-  │  TensorFlow) │     │              │     │             │     │               │
-  └─────────────┘     └──────────────┘     └─────────────┘     └───────────────┘
-        │                    │                    │                     │
-   Float32 模型        TFLite INT8 模型      .blai 二進位檔        載入至 PSRAM
-   (YOLO, MobileNet)  (per-channel quant)   (NPU 指令+權重)     NPU 推理執行</code></pre>
             </div>
 
             <h3>.blai 模型格式</h3>

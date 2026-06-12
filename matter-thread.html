@@ -496,16 +496,41 @@ apps/networking/thread/ipro_thread_ftd_cli/build/build_out/ipro_thread_ftd_cli_I
 
             <p>IEEE 802.15.4 的實體層速率僅 250 kbps，傳統視訊編碼（MJPEG、H.264）即使在最低位元率下也無法於 Thread 網路串流。IPRO7-AI 改以 NPU 執行 autoencoder 神經網路，將整張 640×320 RGB 影格直接壓縮成 <strong>400 bytes</strong> 的 embedding（壓縮比超過 1500:1），接收端再以 NPU 解碼還原影像——讓視訊串流在標準 Thread mesh 上成為可能。</p>
 
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">端到端管線</span>
+            <div class="dg" role="img" aria-label="NPU 嵌入式視訊串流端到端管線圖">
+                <div class="dg-title">端到端管線</div>
+                <div class="dg-row">
+                    <div class="dg-group">
+                        <div class="dg-group-title"><i class="fas fa-video"></i> 傳送端（IPRO7-AI）</div>
+                        <div class="dg-col">
+                            <div class="dg-node">
+                                <div class="dg-node-title">Camera</div>
+                                <div class="dg-node-desc">DVP, 640×320 RGB</div>
+                            </div>
+                            <div class="dg-node dg-node--accent">
+                                <div class="dg-node-title">NPU Encoder</div>
+                                <div class="dg-node-desc">encoder <code>.blai</code> → 400 B embedding / frame</div>
+                            </div>
+                            <div class="dg-node">
+                                <div class="dg-node-title">UDP unicast</div>
+                                <div class="dg-node-desc">over Thread</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dg-arrow"><span class="dg-arrow-label">Thread UDP</span></div>
+                    <div class="dg-group">
+                        <div class="dg-group-title"><i class="fas fa-desktop"></i> 接收端（IPRO7-AI）</div>
+                        <div class="dg-col">
+                            <div class="dg-node dg-node--accent">
+                                <div class="dg-node-title">NPU Decoder</div>
+                                <div class="dg-node-desc">decoder <code>.blai</code> → 還原 640×320 RGB 影格</div>
+                            </div>
+                            <div class="dg-node">
+                                <div class="dg-node-title">USB UVC webcam</div>
+                                <div class="dg-node-desc">輸出至 PC</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <pre><code>┌─ 傳送端（IPRO7-AI）─────────────────┐        ┌─ 接收端（IPRO7-AI）─────────────────┐
-│ Camera（DVP, 640×320 RGB）          │        │ NPU Decoder（decoder .blai）        │
-│   → NPU Encoder（encoder .blai）    │ ─────► │   → 還原 640×320 RGB 影格           │
-│   → 400 B embedding / frame         │ Thread │   → USB UVC webcam 輸出至 PC        │
-│   → UDP unicast over Thread         │  UDP   │                                     │
-└─────────────────────────────────────┘        └─────────────────────────────────────┘</code></pre>
             </div>
 
             <p>主要設計：</p>

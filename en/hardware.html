@@ -154,39 +154,56 @@ lang: en
 
             <div class="block-diagram">
                 <h3>System Architecture Diagram</h3>
-                <div class="diagram-container">
-                    <pre class="ascii-diagram">
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                              IPRO7 SoC                                     │
-├──────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐  │
-│  │   RISC-V     │  │   AI/NPU     │  │  Wireless    │  │  RF Transceiver  │  │
-│  │  RV32IMAFC   │  │  0.1 TOPS    │  │  Controller  │  │    2.4GHz        │  │
-│  │   192MHz     │  │              │  │              │  │                  │  │
-│  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘  └────────┬─────────┘  │
-│         │                 │                 │                   │            │
-│         │    ┌────────────┴─────────────────┴───────────────────┘            │
-│         │    │                                                               │
-│  ┌──────┴────┴───────────────────────────────────────────────────────────┐   │
-│  │                           AHB/APB Bus                                 │   │
-│  └───┬──────────┬──────────┬──────────┬──────────┬──────────┬────────────┘   │
-│      │          │          │          │          │          │                │
-│  ┌───┴───┐  ┌───┴───┐  ┌───┴───┐  ┌───┴───┐  ┌───┴───┐  ┌───┴─────────┐     │
-│  │Memory │  │ Crypto│  │ Multi │  │ Inter │  │  PMU  │  │   GPIO      │     │
-│  │       │  │       │  │ Media │  │ face  │  │       │  │   x42       │     │
-│  │ 8Mb   │  │ AES   │  │       │  │       │  │ Buck  │  │             │     │
-│  │ Flash │  │ SHA   │  │ MJPEG │  │UART x2│  │ LDO   │  │ QDEC IRR    │     │
-│  │ 64Mb  │  │ PKA   │  │ ADC   │  │SPI x2 │  │       │  │ KYS  RMII   │     │
-│  │ pSRAM │  │ TRNG  │  │ DAC   │  │I2C x2 │  │ Power │  │             │     │
-│  │ 256KB │  │       │  │ Camera│  │I2S    │  │ Modes │  │             │     │
-│  │ OCRAM │  │       │  │ LCD   │  │USB2.0 │  │       │  │             │     │
-│  └───────┘  └───────┘  └───────┘  └───────┘  └───────┘  └─────────────┘     │
-│                                                                              │
-├──────────────────────────────────────────────────────────────────────────────┤
-│  Wireless: BLE 5.4 │ LE Audio │ 2.4 GHz RF                                   │
-└──────────────────────────────────────────────────────────────────────────────┘
-                    </pre>
+                <div class="dg" role="img" aria-label="IPRO7 SoC system architecture diagram">
+                    <div class="dg-group dg-group--solid">
+                        <div class="dg-group-title"><i class="fas fa-microchip"></i> IPRO7 SoC</div>
+                        <div class="dg-row">
+                            <div class="dg-node">
+                                <div class="dg-node-title">RISC-V</div>
+                                <div class="dg-node-desc">RV32IMAFC<br>192MHz</div>
+                            </div>
+                            <div class="dg-node">
+                                <div class="dg-node-title">AI/NPU</div>
+                                <div class="dg-node-desc">0.1 TOPS</div>
+                            </div>
+                            <div class="dg-node">
+                                <div class="dg-node-title">Wireless Controller</div>
+                                <div class="dg-node-desc">BLE 5.4 / LE Audio</div>
+                            </div>
+                            <div class="dg-node">
+                                <div class="dg-node-title">RF Transceiver</div>
+                                <div class="dg-node-desc">2.4GHz</div>
+                            </div>
+                        </div>
+                        <div class="dg-bus">AHB/APB Bus</div>
+                        <div class="dg-row">
+                            <div class="dg-node dg-node--accent">
+                                <div class="dg-node-title">Memory</div>
+                                <div class="dg-node-desc">8Mb Flash<br>64Mb pSRAM<br>256KB OCRAM</div>
+                            </div>
+                            <div class="dg-node dg-node--accent">
+                                <div class="dg-node-title">Crypto</div>
+                                <div class="dg-node-desc">AES · SHA<br>PKA · TRNG</div>
+                            </div>
+                            <div class="dg-node dg-node--accent">
+                                <div class="dg-node-title">MultiMedia</div>
+                                <div class="dg-node-desc">MJPEG · ADC · DAC<br>Camera · LCD</div>
+                            </div>
+                            <div class="dg-node dg-node--accent">
+                                <div class="dg-node-title">Interface</div>
+                                <div class="dg-node-desc">UART x2 · SPI x2 · I2C x2<br>I2S · USB2.0</div>
+                            </div>
+                            <div class="dg-node dg-node--accent">
+                                <div class="dg-node-title">PMU</div>
+                                <div class="dg-node-desc">Buck · LDO<br>Power Modes</div>
+                            </div>
+                            <div class="dg-node dg-node--accent">
+                                <div class="dg-node-title">GPIO x42</div>
+                                <div class="dg-node-desc">QDEC · IRR<br>KYS · RMII</div>
+                            </div>
+                        </div>
+                        <div class="dg-note">Wireless: BLE 5.4 · LE Audio · 2.4 GHz RF</div>
+                    </div>
                 </div>
             </div>
 
@@ -1225,43 +1242,81 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
 
                     <div class="evb-pinout">
                         <h4><i class="fas fa-clipboard-list"></i> System Architecture</h4>
-                        <pre class="evb-diagram">
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                        IPRO7-SEVB V1 System Architecture                    │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│   ┌─────────┐     ┌──────────────────────────────────────────────────┐     │
-│   │ 12V DC  │────►│              Power Management                    │     │
-│   │  (J1)   │     │  12V ──► 5V ──► 3.3V ──► 1.8V ──► 0.9V          │     │
-│   └─────────┘     └──────────────────────────────────────────────────┘     │
-│                                       │                                     │
-│   ┌───────────────────────────────────┼───────────────────────────────┐    │
-│   │                           IPRO7 SoC (QFN56)                       │    │
-│   │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐               │    │
-│   │  │  RISC-V     │  │    BLE      │  │     RF      │◄─► Antenna    │    │
-│   │  │  RV32IMAFC  │  │  5.4 Core   │  │ Transceiver │    (J118-122) │    │
-│   │  └─────────────┘  └─────────────┘  └─────────────┘               │    │
-│   │         │                                                        │    │
-│   │  ┌──────┴───────────────────────────────────────────────────┐   │    │
-│   │  │                  Peripherals                              │   │    │
-│   │  │  GPIO[0:41] │ UART │ SPI │ I2C │ I2S │ PWM │ USB │ DVP   │   │    │
-│   │  └─────────────────────────────────────────────────────────┘   │    │
-│   └────────────────────────────────────────────────────────────────┘    │
-│              │          │        │        │         │       │            │
-│         ┌────┘     ┌────┘   ┌────┘   ┌────┘    ┌────┘  ┌────┘           │
-│         ▼          ▼        ▼        ▼         ▼       ▼                │
-│    ┌─────────┐ ┌───────┐ ┌──────┐ ┌──────┐ ┌───────┐ ┌──────┐          │
-│    │  JTAG   │ │ UART  │ │ NOR/ │ │Audio │ │  USB  │ │ DVP  │          │
-│    │ (J23)   │ │ (J19) │ │ NAND │ │Codec │ │ (J40) │ │(J27) │          │
-│    └─────────┘ └───────┘ └──────┘ └──────┘ └───────┘ └──────┘          │
-│                                                                         │
-│    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐            │
-│    │   Ethernet   │    │    Motor     │    │     GPIO     │            │
-│    │    (RJ45)    │    │   Control    │    │  Extension   │            │
-│    │              │    │              │    │  (J56-J63)   │            │
-│    └──────────────┘    └──────────────┘    └──────────────┘            │
-└─────────────────────────────────────────────────────────────────────────┘
-                        </pre>
+                        <div class="dg" role="img" aria-label="IPRO7-SEVB V1 system architecture diagram">
+                            <div class="dg-title">IPRO7-SEVB V1 System Architecture</div>
+                            <div class="dg-row">
+                                <div class="dg-node dg-node--muted">
+                                    <div class="dg-node-title">12V DC</div>
+                                    <div class="dg-node-desc">(J1)</div>
+                                </div>
+                                <div class="dg-arrow"></div>
+                                <div class="dg-node dg-node--accent">
+                                    <div class="dg-node-title">Power Management</div>
+                                    <div class="dg-node-desc">12V → 5V → 3.3V → 1.8V → 0.9V</div>
+                                </div>
+                            </div>
+                            <div class="dg-group dg-group--solid">
+                                <div class="dg-group-title"><i class="fas fa-microchip"></i> IPRO7 SoC (QFN56)</div>
+                                <div class="dg-row">
+                                    <div class="dg-node">
+                                        <div class="dg-node-title">RISC-V</div>
+                                        <div class="dg-node-desc">RV32IMAFC</div>
+                                    </div>
+                                    <div class="dg-node">
+                                        <div class="dg-node-title">BLE 5.4 Core</div>
+                                    </div>
+                                    <div class="dg-node">
+                                        <div class="dg-node-title">RF Transceiver</div>
+                                    </div>
+                                    <div class="dg-arrow dg-arrow--bi"></div>
+                                    <div class="dg-node dg-node--muted">
+                                        <div class="dg-node-title">Antenna</div>
+                                        <div class="dg-node-desc">(J118-122)</div>
+                                    </div>
+                                </div>
+                                <div class="dg-bus">Peripherals — GPIO[0:41] · UART · SPI · I2C · I2S · PWM · USB · DVP</div>
+                            </div>
+                            <div class="dg-group">
+                                <div class="dg-group-title"><i class="fas fa-plug"></i> On-board Peripherals &amp; Interfaces</div>
+                                <div class="dg-row">
+                                    <div class="dg-node">
+                                        <div class="dg-node-title">JTAG</div>
+                                        <div class="dg-node-desc">(J23)</div>
+                                    </div>
+                                    <div class="dg-node">
+                                        <div class="dg-node-title">UART</div>
+                                        <div class="dg-node-desc">(J19)</div>
+                                    </div>
+                                    <div class="dg-node">
+                                        <div class="dg-node-title">NOR/NAND</div>
+                                    </div>
+                                    <div class="dg-node">
+                                        <div class="dg-node-title">Audio Codec</div>
+                                    </div>
+                                    <div class="dg-node">
+                                        <div class="dg-node-title">USB</div>
+                                        <div class="dg-node-desc">(J40)</div>
+                                    </div>
+                                    <div class="dg-node">
+                                        <div class="dg-node-title">DVP</div>
+                                        <div class="dg-node-desc">(J27)</div>
+                                    </div>
+                                </div>
+                                <div class="dg-row">
+                                    <div class="dg-node">
+                                        <div class="dg-node-title">Ethernet</div>
+                                        <div class="dg-node-desc">(RJ45)</div>
+                                    </div>
+                                    <div class="dg-node">
+                                        <div class="dg-node-title">Motor Control</div>
+                                    </div>
+                                    <div class="dg-node">
+                                        <div class="dg-node-title">GPIO Extension</div>
+                                        <div class="dg-node-desc">(J56-J63)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1530,56 +1585,83 @@ RF_OUT --+--[L1]--+-- ANT
 
             <div class="power-diagram">
                 <h3>IPRO7-SEVB Power Architecture</h3>
-                <pre class="ascii-diagram">
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                     IPRO7-SEVB Power Management System                      │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  ┌──────────────┐                                                          │
-│  │ 12V DC Input │    TVS Protection (SMAJ15CA)                             │
-│  │   (J1)       │─────────────┬─────────────────────────────────────┐      │
-│  │ DC-062A-4A   │             │                                     │      │
-│  └──────────────┘             ▼                                     │      │
-│                        ┌──────────────┐                             │      │
-│                        │  DC-DC 12V   │                             │      │
-│                        │   → +5V      │────────────────┐            │      │
-│                        │ (+5V_ADAPTER)│                │            │      │
-│                        └──────────────┘                │            │      │
-│                               │                        │            │      │
-│              ┌────────────────┼────────────────┐       │            │      │
-│              ▼                ▼                ▼       ▼            │      │
-│       ┌──────────┐    ┌──────────┐    ┌──────────┐ ┌──────────┐    │      │
-│       │ LDO 5V   │    │ LDO 5V   │    │ LDO 5V   │ │  +5V_SOC │    │      │
-│       │ → 3.3V   │    │ → 3.3V   │    │ → 1.5V   │ │          │    │      │
-│       │(3V3_SOC) │    │(DVDD33)  │    │ → 1.8V   │ └──────────┘    │      │
-│       └────┬─────┘    └────┬─────┘    │(1V8_SOC) │                  │      │
-│            │               │          └────┬─────┘                  │      │
-│            ▼               ▼               │                        │      │
-│       ┌──────────┐    ┌──────────┐         │    ┌──────────────┐   │      │
-│       │ AVDD33   │    │DVDD33_SOC│         │    │   LDO 1.8V   │   │      │
-│       │ AVDD33_  │    │          │         │    │    → 0.9V    │   │      │
-│       │   AON    │    │          │         │    │   (0V9/DVDD) │   │      │
-│       └──────────┘    └──────────┘         │    └──────────────┘   │      │
-│                                            │           │           │      │
-│       ┌──────────┐    ┌──────────┐         │           │           │      │
-│       │  AVDD18  │◄───┤  1.8V    │◄────────┘           │           │      │
-│       │  AVDD15  │    │  Power   │                     │           │      │
-│       └──────────┘    │  Rail    │         ┌───────────┘           │      │
-│                       └──────────┘         ▼                       │      │
-│                                       ┌──────────┐                 │      │
-│                                       │DVDD_CORE │                 │      │
-│                                       │  (0.9V)  │                 │      │
-│                                       └──────────┘                 │      │
-│                                                                    │      │
-│  Power Rail Overview:                                              │      │
-│  ┌────────────────────────────────────────────────────────────┐   │      │
-│  │ +12V → +5V → +3.3V (3V3_SOC, AVDD33, DVDD33_SOC)          │   │      │
-│  │            → +1.8V (1V8_SOC, AVDD18)                       │   │      │
-│  │            → +1.5V (AVDD15)                                │   │      │
-│  │            → +0.9V (DVDD_CORE, 0V9)                        │   │      │
-│  └────────────────────────────────────────────────────────────┘   │      │
-└─────────────────────────────────────────────────────────────────────────────┘
-                </pre>
+                <div class="dg" role="img" aria-label="IPRO7-SEVB power management system diagram">
+                    <div class="dg-title">IPRO7-SEVB Power Management System</div>
+                    <div class="dg-row">
+                        <div class="dg-node dg-node--muted">
+                            <div class="dg-node-title">12V DC Input</div>
+                            <div class="dg-node-desc">(J1)<br>DC-062A-4A</div>
+                        </div>
+                        <div class="dg-arrow"><span class="dg-arrow-label">12V</span></div>
+                        <div class="dg-node">
+                            <div class="dg-node-title">DC-DC 12V → +5V</div>
+                            <div class="dg-node-desc">(+5V_ADAPTER)</div>
+                        </div>
+                        <div class="dg-arrow"><span class="dg-arrow-label">+5V</span></div>
+                        <div class="dg-col">
+                            <div class="dg-row">
+                                <div class="dg-node">
+                                    <div class="dg-node-title">LDO 5V → 3.3V</div>
+                                    <div class="dg-node-desc">(3V3_SOC)</div>
+                                </div>
+                                <div class="dg-arrow"></div>
+                                <div class="dg-node dg-node--success">
+                                    <div class="dg-node-title">AVDD33</div>
+                                    <div class="dg-node-desc">AVDD33_AON</div>
+                                </div>
+                            </div>
+                            <div class="dg-row">
+                                <div class="dg-node">
+                                    <div class="dg-node-title">LDO 5V → 3.3V</div>
+                                    <div class="dg-node-desc">(DVDD33)</div>
+                                </div>
+                                <div class="dg-arrow"></div>
+                                <div class="dg-node dg-node--success">
+                                    <div class="dg-node-title">DVDD33_SOC</div>
+                                </div>
+                            </div>
+                            <div class="dg-row">
+                                <div class="dg-node">
+                                    <div class="dg-node-title">LDO 5V → 1.5V / 1.8V</div>
+                                    <div class="dg-node-desc">(1V8_SOC)</div>
+                                </div>
+                                <div class="dg-arrow"></div>
+                                <div class="dg-node">
+                                    <div class="dg-node-title">1.8V Power Rail</div>
+                                </div>
+                                <div class="dg-arrow"></div>
+                                <div class="dg-col">
+                                    <div class="dg-node dg-node--success">
+                                        <div class="dg-node-title">AVDD18 · AVDD15</div>
+                                    </div>
+                                    <div class="dg-row">
+                                        <div class="dg-node">
+                                            <div class="dg-node-title">LDO 1.8V → 0.9V</div>
+                                            <div class="dg-node-desc">(0V9/DVDD)</div>
+                                        </div>
+                                        <div class="dg-arrow"></div>
+                                        <div class="dg-node dg-node--success">
+                                            <div class="dg-node-title">DVDD_CORE</div>
+                                            <div class="dg-node-desc">(0.9V)</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dg-row">
+                                <div class="dg-node dg-node--success">
+                                    <div class="dg-node-title">+5V_SOC</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dg-group">
+                        <div class="dg-group-title"><i class="fas fa-bolt"></i> Power Rail Overview</div>
+                        <div class="dg-node dg-node--muted">
+                            <div class="dg-node-desc">+12V → +5V → +3.3V (3V3_SOC, AVDD33, DVDD33_SOC)<br>+5V → +1.8V (1V8_SOC, AVDD18)<br>+5V → +1.5V (AVDD15)<br>+5V → +0.9V (DVDD_CORE, 0V9)</div>
+                        </div>
+                    </div>
+                    <div class="dg-note">TVS protection (SMAJ15CA) on the 12V DC input.</div>
+                </div>
             </div>
 
             <div class="power-rails">

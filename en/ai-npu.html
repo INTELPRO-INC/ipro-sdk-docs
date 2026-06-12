@@ -71,29 +71,40 @@ lang: en
             <h2>NPU Architecture</h2>
             <p>The IPRO7 NPU works in tandem with the RISC-V CPU, supporting a hybrid execution mode. Each layer is automatically dispatched to the optimal execution device based on its operator type:</p>
 
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">AI System Architecture</span>
+            <div class="dg" role="img" aria-label="AI system architecture layer diagram">
+                <div class="dg-title">AI System Architecture</div>
+                <div class="architecture-layers">
+                    <div class="layer layer-green">
+                        <div class="layer-label">Application Layer</div>
+                        <div class="layer-items">
+                            <span class="pill">ipro7_demo</span>
+                            <span class="pill">Custom App</span>
+                        </div>
+                    </div>
+                    <div class="layer layer-cyan">
+                        <div class="layer-label">IPROAI Framework (components/ai/)</div>
+                        <div class="layer-items">
+                            <span class="pill">iproai_core — Model Load</span>
+                            <span class="pill">iproai_inst — Layer Sched</span>
+                            <span class="pill">postprocess — YOLOv8 / NMS</span>
+                        </div>
+                    </div>
+                    <div class="layer layer-purple">
+                        <div class="layer-label">Execution Backend</div>
+                        <div class="layer-items">
+                            <span class="pill">CPU Backend: Softmax, YOLO, Route, Reshape, NMSIS DSP Ops</span>
+                            <span class="pill">NPU Backend: Conv, Pool, FC, DW-Conv, MatMul, Activation (HW)</span>
+                        </div>
+                    </div>
+                    <div class="layer layer-amber">
+                        <div class="layer-label">Memory / DMA Interface</div>
+                        <div class="layer-items">
+                            <span class="pill">PSRAM (8 MB)</span>
+                            <span class="pill">OCRAM (256 KB)</span>
+                            <span class="pill">Flash</span>
+                        </div>
+                    </div>
                 </div>
-                <pre><code>┌──────────────────────────────────────────────────┐
-│              Application Layer                    │
-│      ipro7_demo  │  Custom App                    │
-├──────────────────────────────────────────────────┤
-│          IPROAI Framework (components/ai/)        │
-│   iproai_core  │  iproai_inst  │  postprocess    │
-│   Model Load   │  Layer Sched  │  YOLOv8 / NMS   │
-├──────────────────────────────────────────────────┤
-│         Execution Backend                         │
-│   ┌─────────────────┐  ┌──────────────────────┐  │
-│   │   CPU Backend    │  │    NPU Backend       │  │
-│   │   Softmax, YOLO  │  │    Conv, Pool, FC    │  │
-│   │   Route, Reshape │  │    DW-Conv, MatMul   │  │
-│   │   NMSIS DSP Ops  │  │    Activation (HW)   │  │
-│   └─────────────────┘  └──────────────────────┘  │
-├──────────────────────────────────────────────────┤
-│         Memory / DMA Interface                    │
-│   PSRAM (8 MB)   │  OCRAM (256 KB)  │  Flash     │
-└──────────────────────────────────────────────────┘</code></pre>
             </div>
 
             <h3>Supported Operators</h3>
@@ -130,18 +141,29 @@ lang: en
             <h2>Model Deployment Pipeline</h2>
             <p>The complete workflow from training to on-device deployment:</p>
 
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Model Pipeline</span>
+            <div class="dg" role="img" aria-label="Model deployment pipeline diagram">
+                <div class="dg-title">Model Pipeline</div>
+                <div class="dg-row">
+                    <div class="dg-node">
+                        <div class="dg-node-title">Training</div>
+                        <div class="dg-node-desc">(PyTorch / TensorFlow)<br>Float32 model<br>(YOLO, MobileNet)</div>
+                    </div>
+                    <div class="dg-arrow"></div>
+                    <div class="dg-node">
+                        <div class="dg-node-title">Quantization</div>
+                        <div class="dg-node-desc">(INT8)<br>TFLite INT8 model<br>(per-channel quant)</div>
+                    </div>
+                    <div class="dg-arrow"></div>
+                    <div class="dg-node">
+                        <div class="dg-node-title">Conversion</div>
+                        <div class="dg-node-desc">(<code>.blai</code>)<br>.blai binary<br>(NPU inst+weights)</div>
+                    </div>
+                    <div class="dg-arrow"></div>
+                    <div class="dg-node dg-node--success">
+                        <div class="dg-node-title">Deployment</div>
+                        <div class="dg-node-desc">(SD / Flash)<br>Load to PSRAM<br>NPU inference</div>
+                    </div>
                 </div>
-                <pre><code>  ┌─────────────┐     ┌──────────────┐     ┌─────────────┐     ┌───────────────┐
-  │  Training    │────&gt;│ Quantization │────&gt;│  Conversion │────&gt;│  Deployment   │
-  │  (PyTorch /  │     │  (INT8)      │     │  (.blai)    │     │  (SD / Flash) │
-  │  TensorFlow) │     │              │     │             │     │               │
-  └─────────────┘     └──────────────┘     └─────────────┘     └───────────────┘
-        │                    │                    │                     │
-   Float32 model       TFLite INT8 model     .blai binary        Load to PSRAM
-   (YOLO, MobileNet)  (per-channel quant)   (NPU inst+weights)  NPU inference</code></pre>
             </div>
 
             <h3>.blai Model Format</h3>

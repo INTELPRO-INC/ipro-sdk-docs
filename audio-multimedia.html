@@ -459,21 +459,45 @@ static void scan_for_broadcast(void)
             <p>IPRO SDK 透過 CherryUSB 整合 USB Audio Class（UAC）功能，可將 IPRO7 作為 USB 音訊裝置或建立 USB 轉 BLE 的音訊橋接器。</p>
 
             <h3>USB Audio 架構</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">USB Audio 資料流</span>
+            <div class="dg" role="img" aria-label="USB Audio 資料流圖">
+                <div class="dg-title">USB Audio 資料流</div>
+                <div class="dg-group">
+                    <div class="dg-group-title">USB 音訊裝置模式</div>
+                    <div class="dg-row">
+                        <div class="dg-node">
+                            <div class="dg-node-title">主機</div>
+                            <div class="dg-node-desc">PC / 手機</div>
+                        </div>
+                        <div class="dg-arrow dg-arrow--bi"><span class="dg-arrow-label">USB / UAC</span></div>
+                        <div class="dg-node dg-node--accent">
+                            <div class="dg-node-title">CherryUSB</div>
+                            <div class="dg-node-desc"><code>usbd_audio</code></div>
+                        </div>
+                        <div class="dg-arrow"></div>
+                        <div class="dg-node dg-node--success">
+                            <div class="dg-node-title">Audio DAC / I2S 輸出</div>
+                        </div>
+                    </div>
                 </div>
-                <pre><code>USB 音訊裝置模式：
-┌──────────┐    USB     ┌──────────────┐    ┌──────────────┐
-│   主機    │◄═════════►│  CherryUSB   │───►│  Audio DAC   │
-│ (PC/手機) │   UAC     │  (usbd_audio)│    │  / I2S 輸出  │
-└──────────┘           └──────────────┘    └──────────────┘
-
-USB 轉 BLE 橋接模式：
-┌──────────┐    USB     ┌──────────────┐    BLE    ┌────────────┐
-│   主機    │◄═════════►│   IPRO7      │◄════════►│  BLE 耳機  │
-│ (PC/手機) │   UAC     │  USB ↔ BLE   │   CIS    │  (LE Audio) │
-└──────────┘           └──────────────┘          └────────────┘</code></pre>
+                <div class="dg-group">
+                    <div class="dg-group-title">USB 轉 BLE 橋接模式</div>
+                    <div class="dg-row">
+                        <div class="dg-node">
+                            <div class="dg-node-title">主機</div>
+                            <div class="dg-node-desc">PC / 手機</div>
+                        </div>
+                        <div class="dg-arrow dg-arrow--bi"><span class="dg-arrow-label">USB / UAC</span></div>
+                        <div class="dg-node dg-node--accent">
+                            <div class="dg-node-title">IPRO7</div>
+                            <div class="dg-node-desc">USB ↔ BLE</div>
+                        </div>
+                        <div class="dg-arrow dg-arrow--bi"><span class="dg-arrow-label">BLE / CIS</span></div>
+                        <div class="dg-node dg-node--success">
+                            <div class="dg-node-title">BLE 耳機</div>
+                            <div class="dg-node-desc">LE Audio</div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <h3>CherryUSB 音訊元件</h3>
@@ -528,20 +552,39 @@ int app_uac_init(const app_uac_config_t *config)
             <p>IPRO7 SoC 內建 ISP（Image Signal Processor）與 MJPEG 硬體編碼器，可驅動攝影機感測器進行影像擷取、處理與壓縮，並透過 USB UVC 或 LCD 輸出。</p>
 
             <h3>視訊處理管線</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">攝影機影像處理管線</span>
+            <div class="dg" role="img" aria-label="攝影機影像處理管線圖">
+                <div class="dg-title">攝影機影像處理管線</div>
+                <div class="dg-row">
+                    <div class="dg-node">
+                        <div class="dg-node-title">Camera Sensor</div>
+                        <div class="dg-node-desc">SPI / DVP</div>
+                    </div>
+                    <div class="dg-arrow"></div>
+                    <div class="dg-node dg-node--accent">
+                        <div class="dg-node-title">ISP Pipeline</div>
+                    </div>
+                    <div class="dg-arrow"></div>
+                    <div class="dg-col">
+                        <div class="dg-row">
+                            <div class="dg-node">
+                                <div class="dg-node-title">MJPEG Encoder</div>
+                                <div class="dg-node-desc">硬體加速</div>
+                            </div>
+                            <div class="dg-arrow"></div>
+                            <div class="dg-node dg-node--success">
+                                <div class="dg-node-title">USB UVC</div>
+                                <div class="dg-node-desc">攝影機裝置</div>
+                            </div>
+                        </div>
+                        <div class="dg-row">
+                            <div class="dg-node dg-node--success">
+                                <div class="dg-node-title">LCD Display</div>
+                                <div class="dg-node-desc">即時預覽</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <pre><code>┌────────────┐    ┌─────────┐    ┌──────────────┐    ┌───────────────┐
-│ Camera     │───►│  ISP    │───►│ MJPEG Encoder│───►│ USB UVC       │
-│ Sensor     │    │ Pipeline│    │ (硬體加速)    │    │ (攝影機裝置)  │
-│ (SPI/DVP)  │    │         │    └──────────────┘    └───────────────┘
-└────────────┘    │         │    ┌──────────────┐
-                  │         │───►│ LCD Display  │
-                  │         │    │ (即時預覽)    │
-                  └─────────┘    └──────────────┘
-
-ISP 功能：自動曝光 (AE)、自動白平衡 (AWB)、降噪 (NR)、銳化</code></pre>
+                <div class="dg-note">ISP 功能：自動曝光 (AE)、自動白平衡 (AWB)、降噪 (NR)、銳化</div>
             </div>
 
             <h3>ISP 元件結構</h3>
