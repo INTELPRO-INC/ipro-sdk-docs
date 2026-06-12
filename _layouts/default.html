@@ -28,14 +28,18 @@
 </head>
 
 <body>
+    {% if page.lang == 'en' %}
+    {% assign nav_items = site.nav_en %}
+    {% assign home_url = '/en/' %}
+    {% else %}
+    {% assign nav_items = site.nav %}
+    {% assign home_url = '/' %}
+    {% endif %}
+
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            {% if page.lang == 'en' %}
-            <a href="{{ '/en/' | relative_url }}" class="nav-logo">
-            {% else %}
-            <a href="{{ '/' | relative_url }}" class="nav-logo">
-            {% endif %}
+            <a href="{{ home_url | relative_url }}" class="nav-logo">
                 <img src="{{ '/media_ipro_logo.svg' | relative_url }}" alt="IPRO Logo" class="logo-image">
                 <span class="logo-text">IPRO SDK</span>
             </a>
@@ -44,185 +48,77 @@
                 <i class="fas fa-bars"></i>
             </button>
 
-            {% if page.lang == 'en' %}
-            <!-- English Navigation -->
             <ul class="nav-menu">
-                <li><a href="{{ '/en/' | relative_url }}" class="nav-link">Home</a></li>
+                {% if page.lang == 'en' %}
+                <li><a href="{{ home_url | relative_url }}" class="nav-link">Home</a></li>
+                {% else %}
+                <li><a href="{{ home_url | relative_url }}" class="nav-link">首頁</a></li>
+                {% endif %}
 
-                <!-- Docs Dropdown -->
+                {% for item in nav_items %}
+                {% if item.dropdown %}
                 <li class="nav-dropdown">
                     <button class="nav-link nav-dropdown-btn">
-                        Docs <i class="fas fa-chevron-down"></i>
+                        {{ item.title }} <i class="fas fa-chevron-down"></i>
                     </button>
                     <div class="nav-dropdown-menu">
-                        <a href="{{ '/en/getting-started' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-rocket"></i>
+                        {% for sub in item.dropdown %}
+                        <a href="{{ sub.url | relative_url }}" class="nav-dropdown-item">
+                            <i class="fas {{ sub.icon | default: 'fa-file-lines' }}"></i>
                             <div>
-                                <span class="nav-dropdown-title">Getting Started</span>
-                                <span class="nav-dropdown-desc">Setup & first project</span>
+                                <span class="nav-dropdown-title">{{ sub.title }}</span>
+                                <span class="nav-dropdown-desc">{{ sub.desc }}</span>
                             </div>
                         </a>
-                        <a href="{{ '/en/architecture' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-sitemap"></i>
-                            <div>
-                                <span class="nav-dropdown-title">Architecture</span>
-                                <span class="nav-dropdown-desc">System overview</span>
-                            </div>
-                        </a>
-                        <a href="{{ '/en/ble-development' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-bluetooth-b"></i>
-                            <div>
-                                <span class="nav-dropdown-title">BLE Development</span>
-                                <span class="nav-dropdown-desc">BLE & LE Audio</span>
-                            </div>
-                        </a>
-                        <a href="{{ '/en/applications' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-box"></i>
-                            <div>
-                                <span class="nav-dropdown-title">Applications</span>
-                                <span class="nav-dropdown-desc">Reference examples</span>
-                            </div>
-                        </a>
-                        <a href="{{ '/en/api-reference' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-code"></i>
-                            <div>
-                                <span class="nav-dropdown-title">API Reference</span>
-                                <span class="nav-dropdown-desc">BLE, HAL, RTOS APIs</span>
-                            </div>
-                        </a>
+                        {% endfor %}
                     </div>
                 </li>
+                {% else %}
+                <li><a href="{{ item.url | relative_url }}" class="nav-link">{{ item.title }}</a></li>
+                {% endif %}
+                {% endfor %}
 
-                <!-- Topics Dropdown -->
-                <li class="nav-dropdown">
-                    <button class="nav-link nav-dropdown-btn">
-                        Topics <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="nav-dropdown-menu">
-                        <a href="{{ '/en/audio-multimedia' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-headphones"></i>
-                            <div>
-                                <span class="nav-dropdown-title">Audio & Multimedia</span>
-                                <span class="nav-dropdown-desc">LE Audio, camera, USB</span>
-                            </div>
-                        </a>
-                        <a href="{{ '/en/tools-debugging' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-wrench"></i>
-                            <div>
-                                <span class="nav-dropdown-title">Tools & Debugging</span>
-                                <span class="nav-dropdown-desc">Build, debug, GDB</span>
-                            </div>
-                        </a>
-                        <a href="{{ '/en/hardware' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-microchip"></i>
-                            <div>
-                                <span class="nav-dropdown-title">Hardware</span>
-                                <span class="nav-dropdown-desc">IPRO7 specs & peripherals</span>
-                            </div>
-                        </a>
-                    </div>
-                </li>
-
-                <li><a href="{{ '/en/faq' | relative_url }}" class="nav-link">FAQ</a></li>
-
-                <!-- Language Switch -->
+                <!-- Language Switch: jump to the same page in the other language -->
+                {% if page.lang == 'en' %}
+                {% assign counterpart = page.url | remove_first: '/en' %}
+                {% if counterpart == '' or counterpart == '/' or counterpart == '/index.html' %}
+                {% assign counterpart = '/' %}
+                {% endif %}
                 <li class="nav-lang">
-                    <a href="{{ '/' | relative_url }}" class="nav-link lang-switch" title="切換為中文">
+                    <a href="{{ counterpart | relative_url }}" class="nav-link lang-switch" title="切換為中文">
                         🇹🇼
                     </a>
                 </li>
-            </ul>
-            {% else %}
-            <!-- Chinese Navigation -->
-            <ul class="nav-menu">
-                <li><a href="{{ '/' | relative_url }}" class="nav-link">首頁</a></li>
-
-                <!-- Docs Dropdown -->
-                <li class="nav-dropdown">
-                    <button class="nav-link nav-dropdown-btn">
-                        文件 <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="nav-dropdown-menu">
-                        <a href="{{ '/getting-started' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-rocket"></i>
-                            <div>
-                                <span class="nav-dropdown-title">快速開始</span>
-                                <span class="nav-dropdown-desc">環境設定與第一個專案</span>
-                            </div>
-                        </a>
-                        <a href="{{ '/architecture' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-sitemap"></i>
-                            <div>
-                                <span class="nav-dropdown-title">系統架構</span>
-                                <span class="nav-dropdown-desc">SDK 整體架構概覽</span>
-                            </div>
-                        </a>
-                        <a href="{{ '/ble-development' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-bluetooth-b"></i>
-                            <div>
-                                <span class="nav-dropdown-title">BLE 開發</span>
-                                <span class="nav-dropdown-desc">BLE 與 LE Audio</span>
-                            </div>
-                        </a>
-                        <a href="{{ '/applications' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-box"></i>
-                            <div>
-                                <span class="nav-dropdown-title">應用範例</span>
-                                <span class="nav-dropdown-desc">參考應用程式</span>
-                            </div>
-                        </a>
-                        <a href="{{ '/api-reference' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-code"></i>
-                            <div>
-                                <span class="nav-dropdown-title">API 參考</span>
-                                <span class="nav-dropdown-desc">BLE、HAL、RTOS API</span>
-                            </div>
-                        </a>
-                    </div>
-                </li>
-
-                <!-- Topics Dropdown -->
-                <li class="nav-dropdown">
-                    <button class="nav-link nav-dropdown-btn">
-                        主題 <i class="fas fa-chevron-down"></i>
-                    </button>
-                    <div class="nav-dropdown-menu">
-                        <a href="{{ '/audio-multimedia' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-headphones"></i>
-                            <div>
-                                <span class="nav-dropdown-title">音訊與多媒體</span>
-                                <span class="nav-dropdown-desc">LE Audio、攝影機、USB</span>
-                            </div>
-                        </a>
-                        <a href="{{ '/tools-debugging' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-wrench"></i>
-                            <div>
-                                <span class="nav-dropdown-title">工具與除錯</span>
-                                <span class="nav-dropdown-desc">建構、除錯、GDB</span>
-                            </div>
-                        </a>
-                        <a href="{{ '/hardware' | relative_url }}" class="nav-dropdown-item">
-                            <i class="fas fa-microchip"></i>
-                            <div>
-                                <span class="nav-dropdown-title">硬體規格</span>
-                                <span class="nav-dropdown-desc">IPRO7 規格與週邊</span>
-                            </div>
-                        </a>
-                    </div>
-                </li>
-
-                <li><a href="{{ '/faq' | relative_url }}" class="nav-link">FAQ</a></li>
-
-                <!-- Language Switch -->
+                {% else %}
+                {% if page.url == '/' or page.url == '/index.html' %}
+                {% assign counterpart = '/en/' %}
+                {% else %}
+                {% assign counterpart = page.url | prepend: '/en' %}
+                {% endif %}
                 <li class="nav-lang">
-                    <a href="{{ '/en/' | relative_url }}" class="nav-link lang-switch" title="Switch to English">
+                    <a href="{{ counterpart | relative_url }}" class="nav-link lang-switch" title="Switch to English">
                         🇺🇸
                     </a>
                 </li>
+                {% endif %}
             </ul>
-            {% endif %}
         </div>
     </nav>
+
+    <!-- Release Scope Notice -->
+    {% if page.lang == 'en' %}
+    {% assign notice = site.release_notice_en %}
+    {% else %}
+    {% assign notice = site.release_notice %}
+    {% endif %}
+    {% if notice %}
+    <div class="release-notice">
+        <div class="release-notice-container">
+            <i class="fas fa-circle-info"></i>
+            <span>{{ notice }}</span>
+        </div>
+    </div>
+    {% endif %}
 
     <!-- Main Content -->
     <main class="main-content">
@@ -231,13 +127,11 @@
             <div class="breadcrumb-container">
                 {% if page.lang == 'en' %}
                 <a href="{{ '/en/' | relative_url }}" class="breadcrumb-link">Home</a>
-                <i class="fas fa-chevron-right breadcrumb-sep"></i>
-                <span class="breadcrumb-current">{{ page.title }}</span>
                 {% else %}
                 <a href="{{ '/' | relative_url }}" class="breadcrumb-link">首頁</a>
+                {% endif %}
                 <i class="fas fa-chevron-right breadcrumb-sep"></i>
                 <span class="breadcrumb-current">{{ page.title }}</span>
-                {% endif %}
             </div>
         </nav>
         {% endunless %}
@@ -265,18 +159,18 @@
                         <h4>Documentation</h4>
                         <ul>
                             <li><a href="{{ '/en/getting-started' | relative_url }}">Getting Started</a></li>
+                            <li><a href="{{ '/en/tutorials' | relative_url }}">Tutorials</a></li>
                             <li><a href="{{ '/en/architecture' | relative_url }}">Architecture</a></li>
                             <li><a href="{{ '/en/ble-development' | relative_url }}">BLE Development</a></li>
-                            <li><a href="{{ '/en/tools-debugging' | relative_url }}">Tools & Debugging</a></li>
                         </ul>
                     </div>
                     <div class="footer-link-col">
-                        <h4>Topics</h4>
+                        <h4>Reference</h4>
                         <ul>
                             <li><a href="{{ '/en/applications' | relative_url }}">Applications</a></li>
                             <li><a href="{{ '/en/api-reference' | relative_url }}">API Reference</a></li>
-                            <li><a href="{{ '/en/audio-multimedia' | relative_url }}">Audio & Multimedia</a></li>
                             <li><a href="{{ '/en/hardware' | relative_url }}">Hardware</a></li>
+                            <li><a href="{{ '/en/changelog' | relative_url }}">Changelog</a></li>
                         </ul>
                     </div>
                     {% else %}
@@ -284,18 +178,18 @@
                         <h4>文件</h4>
                         <ul>
                             <li><a href="{{ '/getting-started' | relative_url }}">快速開始</a></li>
+                            <li><a href="{{ '/tutorials' | relative_url }}">教學</a></li>
                             <li><a href="{{ '/architecture' | relative_url }}">系統架構</a></li>
                             <li><a href="{{ '/ble-development' | relative_url }}">BLE 開發</a></li>
-                            <li><a href="{{ '/tools-debugging' | relative_url }}">工具與除錯</a></li>
                         </ul>
                     </div>
                     <div class="footer-link-col">
-                        <h4>主題</h4>
+                        <h4>參考</h4>
                         <ul>
                             <li><a href="{{ '/applications' | relative_url }}">應用範例</a></li>
                             <li><a href="{{ '/api-reference' | relative_url }}">API 參考</a></li>
-                            <li><a href="{{ '/audio-multimedia' | relative_url }}">音訊與多媒體</a></li>
                             <li><a href="{{ '/hardware' | relative_url }}">硬體規格</a></li>
+                            <li><a href="{{ '/changelog' | relative_url }}">更新日誌</a></li>
                         </ul>
                     </div>
                     {% endif %}
@@ -305,9 +199,9 @@
                 <div class="footer-bottom-content">
                     <p>&copy; 2026 INTELPRO INC. All rights reserved.</p>
                     {% if page.lang == 'en' %}
-                    <p class="footer-update">Last updated: February 2026</p>
+                    <p class="footer-update">Last updated: {{ site.time | date: "%B %Y" }}</p>
                     {% else %}
-                    <p class="footer-update">最後更新：2026 年 2 月</p>
+                    <p class="footer-update">最後更新：{{ site.time | date: "%Y 年 %m 月" }}</p>
                     {% endif %}
                 </div>
             </div>

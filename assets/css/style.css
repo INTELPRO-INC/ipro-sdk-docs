@@ -5584,3 +5584,32 @@ pre:not(.code-block pre) .copy-btn.copied {
         display: none;
     }
 }
+/* ===== Release Scope Notice (site-wide banner under navbar) ===== */
+.release-notice {
+    background: linear-gradient(90deg, rgba(16, 185, 129, 0.10), rgba(139, 92, 246, 0.08));
+    border-bottom: 1px solid var(--border-color);
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+.release-notice-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.5rem 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.release-notice-container i {
+    color: var(--primary);
+    margin-top: 0.2rem;
+    flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+    .release-notice {
+        font-size: 0.75rem;
+    }
+}
