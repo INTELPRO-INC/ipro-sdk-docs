@@ -8,256 +8,241 @@ title: 更新日誌
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">版本</h4>
             <ul class="sidebar-links">
-                <li><a href="#feb-2026" class="sidebar-link">2026 年 2 月</a></li>
-                <li><a href="#dec-2025" class="sidebar-link">2025 年 12 月</a></li>
-                <li><a href="#sep-dec-2025" class="sidebar-link">2025 年 9-12 月</a></li>
-                <li><a href="#aug-2025" class="sidebar-link">2025 年 8 月</a></li>
-                <li><a href="#earlier" class="sidebar-link">更早版本</a></li>
+                <li><a href="#v1-0-1" class="sidebar-link">IPROREL-IPRO7-V1.0.1</a></li>
+                <li><a href="#v0-0-1" class="sidebar-link">IPRO-BLE-SDK-V0.0.1</a></li>
+                <li><a href="#doc-history" class="sidebar-link">文件更新紀錄</a></li>
             </ul>
         </nav>
     </aside>
 
     <article class="doc-content">
         <h1>更新日誌</h1>
-        <p>IPRO SDK 的版本更新記錄。</p>
+        <p>IPRO SDK 的正式釋出版本紀錄。SDK 交付包的整體說明請參考包內的 <code>README.md</code> 檔案。</p>
 
-        <section id="feb-2026">
-            <h2>2026 年 2 月</h2>
+        <section id="v1-0-1">
+            <h2>IPROREL-IPRO7-V1.0.1</h2>
+            <p><strong>釋出日期：</strong>2026 年 3 月 13 日<br>
+               <strong>平台：</strong>IPRO7（RISC-V RV32IMAFC）</p>
+            <p>IPRO7 完整 SDK 交付包，整合 platform、BLE、ISP 與 LE Audio，包含 10 個可直接編譯的參考應用、Zephyr-based BLE Host、prebuilt linkN controller 函式庫變體與統一建置系統。</p>
 
-            <h3>BLE 吞吐量優化</h3>
+            <h3>參考應用（10 個）</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>分類</th>
+                            <th>應用</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>bluetooth/ble</td>
+                            <td><code>ipro_ble_remote</code></td>
+                            <td>GATT 服務示範（LED、Button、UART、OTA、影像傳輸）</td>
+                        </tr>
+                        <tr>
+                            <td>bluetooth/ble</td>
+                            <td><code>ipro_ble_transparent</code></td>
+                            <td>BLE 透明資料傳輸，含 AT 指令介面</td>
+                        </tr>
+                        <tr>
+                            <td>bluetooth/ble</td>
+                            <td><code>ipro_ble_img_capture</code></td>
+                            <td>影像擷取與 BLE 影像上傳服務（含 OTA）</td>
+                        </tr>
+                        <tr>
+                            <td>bluetooth/ble</td>
+                            <td><code>ipro_throughput_test</code></td>
+                            <td>雙向 BLE 吞吐量測試（2M PHY + DLE，最高 999 Kbps）</td>
+                        </tr>
+                        <tr>
+                            <td>bluetooth/le_audio</td>
+                            <td><code>ipro_le_audio_headset</code></td>
+                            <td>GAF/BAP 單播與廣播耳機（LC3 編解碼）</td>
+                        </tr>
+                        <tr>
+                            <td>bluetooth/le_audio</td>
+                            <td><code>ipro_le_audio_bis_source</code></td>
+                            <td>Auracast 相容 BIS 廣播音源</td>
+                        </tr>
+                        <tr>
+                            <td>bluetooth/le_audio</td>
+                            <td><code>ipro_le_audio_bis_sink</code></td>
+                            <td>BIS 廣播接收端（BASE 解析與音訊重取樣）</td>
+                        </tr>
+                        <tr>
+                            <td>multimedia</td>
+                            <td><code>ipro_agora_sentino</code></td>
+                            <td>Agora RTC 雲端音訊串流閘道（經 Ethernet / USB NCM 連網）</td>
+                        </tr>
+                        <tr>
+                            <td>network</td>
+                            <td><code>ipro_voice_assistant</code></td>
+                            <td>AI 語音助理（語音辨識、AI 對話、語音合成、LCD 狀態顯示，經 Ethernet（RMII）或 4G LTE modem（PPPoS）連網）</td>
+                        </tr>
+                        <tr>
+                            <td>platform</td>
+                            <td><code>ipro7_demo</code></td>
+                            <td>IPRO7 平台周邊功能示範</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>BLE 協定棧</h3>
             <ul>
-                <li><strong>feat:</strong> BLE 吞吐量優化至 999 Kbps
+                <li>Zephyr-based BLE Host：GAP、GATT、L2CAP、SMP、ISO、LE Audio</li>
+                <li>預編譯 RivieraWaves Controller 函式庫（linkN 變體）：
                     <ul>
-                        <li>從約 600 Kbps 提升至 999 Kbps</li>
-                        <li>連線參數調整與 TX Descriptor 優化</li>
-                        <li><code>BLE_NB_TX_DESC_PER_CON</code> 參數最佳化</li>
+                        <li>標準 BLE：<code>link1_periph</code>、<code>link1</code>–<code>link8</code></li>
+                        <li>LE Audio：<code>link1_leaudio</code>、<code>link2_leaudio</code></li>
+                        <li>BLE 5.4 + LE Audio：<code>link1_leaudio_53_54</code>、<code>link2_leaudio_53_54</code>、<code>link4_leaudio_53_54</code></li>
+                        <li>BLE 5.3/5.4：<code>link1_53</code>、<code>link1_54</code>、<code>link2_54</code></li>
                     </ul>
                 </li>
-                <li><strong>fix:</strong> 重建 link2 預編譯 BLE Controller 函式庫
+                <li>預編譯 RF 驅動函式庫（<code>ipro7_rf</code>）</li>
+                <li>預編譯 LC3 音訊編解碼函式庫（<code>liblc3</code>）</li>
+            </ul>
+
+            <h3>函式庫元件</h3>
+            <ul>
+                <li><code>isp_algorithm</code> — ISP 影像處理演算法函式庫</li>
+                <li><code>ipro7_rf</code> — BLE Controller 使用的 RF 驅動</li>
+                <li><code>liblc3</code> — LE Audio 使用的 LC3 音訊編解碼</li>
+                <li><code>lp_framework</code> — 低功耗框架（HAL 子函式庫）</li>
+            </ul>
+
+            <h3>建置系統</h3>
+            <pre><code class="language-bash"># 列出所有可建置的專案
+./build_freertos.sh -l
+
+# 建置 BLE 應用
+./build_freertos.sh ipro_ble_remote build
+
+# 建置、燒錄並監看
+./build_freertos.sh ipro_ble_remote build flash monitor</code></pre>
+
+            <div class="alert alert-warning">
+                <strong>已知限制：</strong>BLE Controller 原始碼不隨包提供，僅提供 prebuilt linkN 函式庫變體；<code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> 在本版本不支援。如需進階功能，請聯絡原廠取得。
+            </div>
+        </section>
+
+        <section id="v0-0-1">
+            <h2>IPRO-BLE-SDK-V0.0.1</h2>
+            <p><strong>釋出日期：</strong>2026 年 2 月 12 日<br>
+               <strong>平台：</strong>IPRO7（RISC-V RV32IMAFC）</p>
+            <p>IPRO BLE SDK 首次正式釋出，提供完整的 BLE 5.4 開發環境與 LE Audio 支援，包含 10 個可直接編譯的應用、Zephyr-based BLE Host、prebuilt controller 函式庫與統一建置系統。</p>
+
+            <h3>內含應用</h3>
+            <ul>
+                <li><strong>BLE 應用</strong>
                     <ul>
-                        <li>包含 TX Descriptor 優化</li>
-                        <li>使用 <code>build_all_prebuilts.sh</code> 自動化重建</li>
+                        <li>BLE Remote — GATT 服務示範（LED、Button、UART、OTA、影像傳輸）</li>
+                        <li>Throughput Test — 雙向 BLE 吞吐量測試（2M PHY + DLE，最高 999 Kbps）</li>
+                        <li>HID Keyboard — HID over GATT（HOGP）鍵盤，支援修飾鍵</li>
+                        <li>Transparent Data — BLE 透明資料傳輸，含 AT 指令介面</li>
+                    </ul>
+                </li>
+                <li><strong>LE Audio 應用</strong>
+                    <ul>
+                        <li>LE Audio Headset — GAF/BAP 單播與廣播耳機（LC3 編解碼）</li>
+                        <li>BIS Broadcast Source — Auracast 相容廣播音源</li>
+                        <li>BIS Broadcast Sink — 廣播接收端（BASE 解析與音訊重取樣）</li>
+                        <li>Walkie-Talkie — 基於 BIS 的 LE Audio 按鍵通話</li>
+                    </ul>
+                </li>
+                <li><strong>ESL 應用</strong>
+                    <ul>
+                        <li>ESL Tag — 符合 Bluetooth ESL Profile 的電子標籤（含顯示管理）</li>
+                        <li>ESL Gateway — 管理 ESL 標籤的存取點（AP）</li>
                     </ul>
                 </li>
             </ul>
 
-            <h3>ipro_throughput_test 應用程式</h3>
+            <h3>BLE 協定棧</h3>
             <ul>
-                <li><strong>refactor:</strong> 從 ipro_ble_lib 遷移至原生 Zephyr bt_* API
-                    <ul>
-                        <li>使用標準 Zephyr BLE API 取代自訂封裝</li>
-                        <li>更好的可維護性和程式碼可讀性</li>
-                    </ul>
-                </li>
-                <li><strong>docs:</strong> 新增完整的 README 和操作手冊
-                    <ul>
-                        <li>詳細的使用說明和 CLI 指令參考</li>
-                        <li>效能調校指南</li>
-                    </ul>
-                </li>
+                <li>Zephyr-based BLE Host：GAP、GATT、L2CAP、SMP、ISO、LE Audio</li>
+                <li>預編譯 RivieraWaves Controller 函式庫（linkN 變體，本版新增 <code>link2_54</code>）</li>
+                <li>預編譯 RF 驅動函式庫（<code>ipro7_rf</code>）與 LC3 編解碼函式庫（<code>liblc3</code>）</li>
+                <li>移除 legacy btprofile 元件，應用層統一使用 Zephyr <code>bt_*</code> API</li>
             </ul>
 
-            <h3>工具與基礎設施</h3>
+            <h3>建置系統</h3>
             <ul>
-                <li><strong>feat:</strong> 新增 <code>build_all_prebuilts.sh</code> 自動化預編譯函式庫生成腳本
-                    <ul>
-                        <li>支援單一變體或全部變體重建</li>
-                        <li>自動剝離除錯資訊、寫入版本中繼資料</li>
-                    </ul>
-                </li>
+                <li>統一建置 CLI：<code>./build_freertos.sh &lt;app&gt; build flash monitor</code></li>
+                <li>自動偵測 vendor 與標準 GCC 工具鏈</li>
+                <li>Kconfig 配置系統</li>
+            </ul>
+
+            <h3>系統需求</h3>
+            <ul>
+                <li>RISC-V 工具鏈：<code>/opt/toolchain/riscv_ipro7/</code></li>
+                <li>CMake &gt;= 3.19</li>
+                <li>Ninja 建置系統</li>
+                <li>Python 3.8+</li>
+            </ul>
+
+            <h3>已知限制</h3>
+            <ul>
+                <li>Controller 原始碼不隨包提供，僅提供 prebuilt 函式庫變體</li>
+                <li><code>ipro_blecontroller_test</code>（UART HCI 模式）不包含在內，因其需要 controller 原始碼</li>
+                <li><code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> 在本版本不支援</li>
             </ul>
         </section>
 
-        <section id="dec-2025">
-            <h2>2025 年 12 月</h2>
+        <section id="doc-history">
+            <h2>文件更新紀錄</h2>
+            <p>以下為正式版本釋出前的開發與文件更新摘要。</p>
 
-            <h3>December 24, 2025 - BLE MTU 優化與效能提升</h3>
+            <h3>2026 年 2 月</h3>
+            <ul>
+                <li><strong>feat:</strong> BLE 吞吐量優化至 999 Kbps（從約 600 Kbps 提升；連線參數調整與 TX descriptor 優化）</li>
+                <li><strong>fix:</strong> 全部 prebuilt BLE Controller 函式庫已更新（含 TX descriptor 優化）</li>
+                <li><strong>refactor:</strong> <code>ipro_throughput_test</code> 從自訂封裝遷移至原生 Zephyr <code>bt_*</code> API</li>
+                <li><strong>feat:</strong> BIS sink 新增 BASE 解析、共用 FIR resampler 音訊元件、修復 UAC DMA stall</li>
+                <li><strong>test:</strong> 單元測試套件自 11 套擴充至 28 套（147 項測試），新增板測自動化工具</li>
+                <li><strong>build:</strong> 工具鏈自動偵測 vendor 與標準 GCC（<code>cmake/toolchain.cmake</code>）</li>
+                <li><strong>docs:</strong> <code>ipro_throughput_test</code> 新增完整 README 與操作手冊</li>
+            </ul>
+
+            <h3>2025 年 12 月</h3>
             <ul>
                 <li><strong>feat:</strong> Image Service MTU 優化與傳輸速度統計
                     <ul>
                         <li>MTU 計算優化：從 MTU-8 調整為 MTU-11（增加 4-byte 安全邊界）</li>
                         <li>支援動態 chunk size（236-506 bytes，基於 MTU 517）</li>
-                        <li>新增傳輸速度統計：顯示 KB/s 和 Kbps</li>
-                        <li>效能提升：56KB 圖片傳輸達 ~40 KB/s (320 Kbps)</li>
+                        <li>效能提升：56KB 影像傳輸達 ~40 KB/s（320 Kbps）</li>
                     </ul>
                 </li>
-                <li><strong>feat:</strong> BLE MTU Changed 事件通知系統
-                    <ul>
-                        <li>新增 IPRO_BLE_EVENT_MTU_CHANGED 事件類型</li>
-                        <li>實作 GAPC_LE_ATT_LEGACY_BEARER_MTU_CHANGED_IND 訊息處理</li>
-                        <li>自動將 MTU 變更從 BLE 協定棧傳播到應用層</li>
-                        <li>支援 OTA 和 Image Service 的動態 MTU 適配</li>
-                    </ul>
-                </li>
-                <li><strong>fix:</strong> 移除重複的 image_start_transfer() 呼叫
-                    <ul>
-                        <li>修復導致 "Not ready" 警告的問題</li>
-                        <li>改善應用程式事件處理流程</li>
-                    </ul>
-                </li>
+                <li><strong>feat:</strong> MTU 變更透過 Zephyr <code>bt_gatt_cb</code> 的 <code>att_mtu_updated</code> callback 自動傳遞至應用層，OTA 與 Image Service 動態適配 MTU（最大 517）</li>
+                <li><strong>fix:</strong> 移除重複的 <code>image_start_transfer()</code> 呼叫，修復 "Not ready" 警告</li>
+                <li><strong>feat:</strong> 新增 <code>ipro_ble_hid_keyboard</code>（HOGP）與 <code>ipro_walkie_talkie</code>（BIS LE Audio）應用</li>
+                <li><strong>docs:</strong> SDK 文件全面更新；文件網站正式上線 GitHub Pages</li>
             </ul>
 
-            <h3>December 7, 2025 - SDK 文件全面更新</h3>
+            <h3>2025 年 9-12 月</h3>
             <ul>
-                <li><strong>docs:</strong> SDK 文件全面更新與優化
-                    <ul>
-                        <li>README.md 更新至最新功能與結構</li>
-                        <li>BLE 開發指南增強</li>
-                        <li>快速入門指南改進</li>
-                        <li>AI Assistant Reference 更新</li>
-                    </ul>
-                </li>
+                <li><strong>BLE：</strong>timing 優化、PA sync 修復、EM 初始化整併至 board 層、靜態 CLI 指令註冊修復</li>
+                <li><strong>USB 與音訊：</strong>UAC demo 整合 AUADC、CDC 記憶體傳輸指令、AUADC demo、DAC 喇叭支援</li>
+                <li><strong>多媒體：</strong>ISP sw pingpong 控制、DVP sensor + MJPEG demo、UVC 與 LCD 串流控制、ILI9488 SPI LCD demo</li>
+                <li><strong>網路與周邊：</strong>EMAC 乙太網支援、SD 卡（SDH）、SPI slave demo 與 SPI1 支援</li>
+                <li><strong>系統：</strong>FreeRTOS runtime statistics、frame pointer 與 backtrace chain、dynamic OCRAM sizing</li>
             </ul>
 
-            <h3>December 2025 - 文件網站上線</h3>
+            <h3>2025 年 8 月</h3>
             <ul>
-                <li><strong>docs:</strong> IPRO SDK 文件網站正式上線 GitHub Pages
-                    <ul>
-                        <li>完整的快速開始指南</li>
-                        <li>架構概覽與元件說明</li>
-                        <li>BLE 5.4 開發指南</li>
-                        <li>Zephyr RTOS 整合教學</li>
-                        <li>應用範例詳細說明</li>
-                        <li>API 參考文件</li>
-                    </ul>
-                </li>
+                <li><strong>feat:</strong> BLE 5.4 支援與新配置選項</li>
+                <li><strong>refactor:</strong> Controller 函式庫變體自 mXsY 重新命名為 linkN</li>
+                <li><strong>feat:</strong> BLE 廣播工作流程實作、40+ 互動 CLI 指令、IPRO 日誌系統、OTA 韌體更新整合</li>
+                <li><strong>refactor:</strong> 移除過時的 RivieraWaves host 協定棧與舊版 BLE 封裝層</li>
             </ul>
-        </section>
-
-        <section id="sep-dec-2025">
-            <h2>2025 年 9-12 月 - 多媒體與週邊功能強化</h2>
-
-            <h3>BLE 增強</h3>
-            <ul>
-                <li><strong>fix:</strong> BLE timing optimizations and debug enhancements</li>
-                <li><strong>feat:</strong> Comprehensive BLE development improvements and PA sync fix</li>
-                <li><strong>fix:</strong> BLE audio context type swap</li>
-                <li><strong>refactor:</strong> Consolidate EM initialization to board level</li>
-                <li><strong>fix:</strong> Resolve static CLI commands registration issue</li>
-                <li><strong>refactor:</strong> Remove verbose messages for default EM configuration</li>
-                <li><strong>fix:</strong> Correct default EM_SIZE to 0KB for non-BLE projects</li>
-            </ul>
-
-            <h3>USB 與音訊</h3>
-            <ul>
-                <li><strong>feat:</strong> [USBD][UAC] 新增 UAC demo 整合 AUADC</li>
-                <li><strong>feat:</strong> [USBD][CDC] 新增 DUT send memory to PC 指令</li>
-                <li><strong>feat:</strong> [USBD] 預設編譯所有 USB 範例</li>
-                <li><strong>feat:</strong> [AUADC] 新增 AUADC demo</li>
-                <li><strong>feat:</strong> [BSP] DAC 喇叭支援與 FreeRTOS debug info 更新</li>
-            </ul>
-
-            <h3>多媒體（ISP, MJPEG, LCD）</h3>
-            <ul>
-                <li><strong>feat:</strong> [ISP] Add sw pingpong control for ISP</li>
-                <li><strong>feat:</strong> [ISP] SPI sensor demo 和 DVP sensor 更新</li>
-                <li><strong>feat:</strong> [MM] DVP sensor + MJPG demo</li>
-                <li><strong>feat:</strong> [MM] Stream control add UVC and show LCD flow</li>
-                <li><strong>fix:</strong> [jpeg_combo] MJPEG HW stuck at 255 frame bug workaround</li>
-                <li><strong>feat:</strong> [lcd_demo] 新增 LCD demo 支援 ILI9488 SPI LCD</li>
-                <li><strong>feat:</strong> [lcd_demo] 新增 LCD inversion 指令</li>
-            </ul>
-
-            <h3>網路與週邊</h3>
-            <ul>
-                <li><strong>feat:</strong> [BSP] 新增 EMAC 乙太網支援</li>
-                <li><strong>feat:</strong> [LWIP] 重新命名 lwIP 選項並設定 IPERF 依賴</li>
-                <li><strong>feat:</strong> [SDH] 新增 SD 卡支援</li>
-                <li><strong>feat:</strong> [SPI] SPI slave demo 與 SPI1 支援</li>
-            </ul>
-
-            <h3>BSP 與系統</h3>
-            <ul>
-                <li><strong>feat:</strong> [BSP] 將 TCM 移至 non-cachable region</li>
-                <li><strong>feat:</strong> 新增 FreeRTOS runtime statistics 支援</li>
-                <li><strong>feat:</strong> [DBG] 新增 frame pointer 和 backtrace chain 支援</li>
-                <li><strong>fix:</strong> 實作 dynamic OCRAM sizing</li>
-            </ul>
-
-            <h3>CI/CD</h3>
-            <ul>
-                <li><strong>feat:</strong> 啟用 Teams notifications for all pipeline triggers</li>
-            </ul>
-        </section>
-
-        <section id="aug-2025">
-            <h2>2025 年 8 月</h2>
-
-            <h3>August 23, 2025 - 重大文件與系統清理</h3>
-            <ul>
-                <li><strong>docs:</strong> 重新組織並清理 README.md 結構
-                    <ul>
-                        <li>簡化內容組織，建立清晰的章節</li>
-                        <li>移除重複和冗餘資訊</li>
-                        <li>增強快速入門章節，同時支援 Zephyr 和 SDK 選項</li>
-                        <li>改善技術規格說明</li>
-                    </ul>
-                </li>
-                <li><strong>refactor:</strong> 移除過時的 west 配置系統
-                    <ul>
-                        <li>移除 config/west_configs/ 目錄</li>
-                        <li>簡化 menu.sh，移除 west 配置管理</li>
-                        <li>簡化為使用單一 west.yml 配置</li>
-                    </ul>
-                </li>
-            </ul>
-
-            <h3>August 22, 2025 - 主要功能增強</h3>
-            <ul>
-                <li><strong>feat:</strong> 新增多語言互動式選單 (menu.sh)
-                    <ul>
-                        <li>完整中英雙語支援</li>
-                        <li>互動式開發環境介面</li>
-                        <li>選單驅動存取所有開發工具</li>
-                    </ul>
-                </li>
-                <li><strong>feat:</strong> 增強 apps.sh，新增分類和搜尋功能
-                    <ul>
-                        <li>新增 list_categories() 函式瀏覽 Zephyr 範例類別</li>
-                        <li>增強搜尋功能，跨所有應用程式和範例</li>
-                        <li>支援 21 個 Zephyr 範例類別</li>
-                    </ul>
-                </li>
-                <li><strong>feat:</strong> 新增完整的 Zephyr 週邊驅動框架
-                    <ul>
-                        <li>完整的 GPIO、SPI、PWM 驅動整合</li>
-                        <li>增強 Kconfig 配置系統</li>
-                        <li>IPRO7 硬體支援優化</li>
-                    </ul>
-                </li>
-            </ul>
-
-            <h3>August 19-21, 2025 - BLE 系統改進</h3>
-            <ul>
-                <li><strong>feat:</strong> 完成 BLE 廣播工作流程實作和狀態管理修復</li>
-                <li><strong>feat:</strong> 新增全面的 CLI 命令系統，包含 40+ 互動指令</li>
-                <li><strong>feat:</strong> 增強 BLE demo 和自訂 profile 實作</li>
-                <li><strong>feat:</strong> 新增完整的 IPRO 日誌系統，整合 BLE 程式庫</li>
-                <li><strong>fix:</strong> BLE Channel Map Indication 除錯和 CSA #2 驗證</li>
-                <li><strong>feat:</strong> OTA 韌體更新功能整合</li>
-            </ul>
-
-            <h3>August 12-18, 2025 - 基礎設施和 CI/CD</h3>
-            <ul>
-                <li><strong>feat:</strong> MCP 伺服器訊息優化和註解翻譯</li>
-                <li><strong>feat:</strong> 增強 README 徽章，美化樣式</li>
-                <li><strong>feat:</strong> 新增 GitLab Merge Request 建立工具</li>
-                <li><strong>feat:</strong> JIRA 整合增強</li>
-                <li><strong>feat:</strong> VS Code 擴展功能更新 (v0.0.7)</li>
-            </ul>
-        </section>
-
-        <section id="earlier">
-            <h2>更早版本</h2>
-            <p>完整的更新日誌請參考 SDK 原始碼中的 <code>changelog.md</code> 檔案。</p>
 
             <h3>主要里程碑</h3>
             <ul>
-                <li><strong>Zephyr RTOS 整合</strong> - 完整的 Zephyr v3.4.0 支援</li>
-                <li><strong>BLE 5.4 支援</strong> - RivieraWaves BLE 5.4 協定棧整合</li>
+                <li><strong>FreeRTOS 平台</strong> - 基於 FreeRTOS 的應用框架與統一建置系統</li>
+                <li><strong>BLE 5.4 支援</strong> - Zephyr-based BLE Host（GAP、GATT、L2CAP、SMP、ISO）+ RivieraWaves prebuilt controller（linkN 變體）</li>
                 <li><strong>LE Audio</strong> - GAF 框架和 LC3 編解碼支援</li>
-                <li><strong>MCP Server</strong> - AI 輔助開發工具</li>
-                <li><strong>VS Code Extension</strong> - 專用開發擴充套件</li>
             </ul>
         </section>
     </article>

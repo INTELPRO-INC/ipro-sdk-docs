@@ -7,232 +7,243 @@ title: Changelog - IPRO SDK
 <div class="doc-layout">
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
-            <h4 class="sidebar-title">Table of Contents</h4>
+            <h4 class="sidebar-title">Releases</h4>
             <ul class="sidebar-links">
-                <li><a href="#feb-2026" class="sidebar-link">February 2026</a></li>
-                <li><a href="#dec-2025" class="sidebar-link">December 2025</a></li>
-                <li><a href="#sep-dec-2025" class="sidebar-link">Sep-Dec 2025</a></li>
-                <li><a href="#aug-2025" class="sidebar-link">August 2025</a></li>
-                <li><a href="#earlier" class="sidebar-link">Earlier Versions</a></li>
+                <li><a href="#v1-0-1" class="sidebar-link">IPROREL-IPRO7-V1.0.1</a></li>
+                <li><a href="#v0-0-1" class="sidebar-link">IPRO-BLE-SDK-V0.0.1</a></li>
+                <li><a href="#doc-history" class="sidebar-link">Documentation History</a></li>
             </ul>
         </nav>
     </aside>
 
     <article class="doc-content">
         <h1>Changelog</h1>
-        <p>Version update history for IPRO SDK.</p>
+        <p>Official release history for the IPRO SDK. For an overview of the SDK delivery package, refer to the <code>README.md</code> file included in the package.</p>
 
-        <section id="feb-2026">
-            <h2>February 2026</h2>
+        <section id="v1-0-1">
+            <h2>IPROREL-IPRO7-V1.0.1</h2>
+            <p><strong>Release Date:</strong> March 13, 2026<br>
+               <strong>Platform:</strong> IPRO7 (RISC-V RV32IMAFC)</p>
+            <p>Full IPRO7 SDK delivery package combining platform, BLE, ISP, and LE Audio, with 10 ready-to-build reference applications, a Zephyr-based BLE Host, prebuilt linkN controller library variants, and a unified build system.</p>
 
-            <h3>BLE Throughput Optimization</h3>
+            <h3>Reference Applications (10)</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Application</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>bluetooth/ble</td>
+                            <td><code>ipro_ble_remote</code></td>
+                            <td>GATT services demo (LED, Button, UART, OTA, image transfer)</td>
+                        </tr>
+                        <tr>
+                            <td>bluetooth/ble</td>
+                            <td><code>ipro_ble_transparent</code></td>
+                            <td>BLE transparent data transfer with AT command interface</td>
+                        </tr>
+                        <tr>
+                            <td>bluetooth/ble</td>
+                            <td><code>ipro_ble_img_capture</code></td>
+                            <td>Image capture with BLE image upload service (includes OTA)</td>
+                        </tr>
+                        <tr>
+                            <td>bluetooth/ble</td>
+                            <td><code>ipro_throughput_test</code></td>
+                            <td>Bidirectional BLE throughput testing (2M PHY + DLE, up to 999 Kbps)</td>
+                        </tr>
+                        <tr>
+                            <td>bluetooth/le_audio</td>
+                            <td><code>ipro_le_audio_headset</code></td>
+                            <td>GAF/BAP unicast and broadcast headset (LC3 codec)</td>
+                        </tr>
+                        <tr>
+                            <td>bluetooth/le_audio</td>
+                            <td><code>ipro_le_audio_bis_source</code></td>
+                            <td>Auracast-compatible BIS broadcast source</td>
+                        </tr>
+                        <tr>
+                            <td>bluetooth/le_audio</td>
+                            <td><code>ipro_le_audio_bis_sink</code></td>
+                            <td>BIS broadcast sink (BASE parsing and audio resampling)</td>
+                        </tr>
+                        <tr>
+                            <td>multimedia</td>
+                            <td><code>ipro_agora_sentino</code></td>
+                            <td>Agora RTC cloud audio streaming gateway (network via Ethernet / USB NCM)</td>
+                        </tr>
+                        <tr>
+                            <td>network</td>
+                            <td><code>ipro_voice_assistant</code></td>
+                            <td>AI voice assistant (speech recognition, AI conversation, speech synthesis, LCD status display, network via Ethernet (RMII) or 4G LTE modem (PPPoS))</td>
+                        </tr>
+                        <tr>
+                            <td>platform</td>
+                            <td><code>ipro7_demo</code></td>
+                            <td>IPRO7 platform peripheral feature demo</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>BLE Stack</h3>
             <ul>
-                <li><strong>feat:</strong> BLE throughput optimized to 999 Kbps
+                <li>Zephyr-based BLE Host: GAP, GATT, L2CAP, SMP, ISO, LE Audio</li>
+                <li>Prebuilt RivieraWaves controller libraries (linkN variants):
                     <ul>
-                        <li>Improved from ~600 Kbps to 999 Kbps</li>
-                        <li>Connection parameter tuning and TX descriptor optimization</li>
-                        <li><code>BLE_NB_TX_DESC_PER_CON</code> parameter optimization</li>
+                        <li>Standard BLE: <code>link1_periph</code>, <code>link1</code>&ndash;<code>link8</code></li>
+                        <li>LE Audio: <code>link1_leaudio</code>, <code>link2_leaudio</code></li>
+                        <li>BLE 5.4 + LE Audio: <code>link1_leaudio_53_54</code>, <code>link2_leaudio_53_54</code>, <code>link4_leaudio_53_54</code></li>
+                        <li>BLE 5.3/5.4: <code>link1_53</code>, <code>link1_54</code>, <code>link2_54</code></li>
                     </ul>
                 </li>
-                <li><strong>fix:</strong> Rebuilt link2 prebuilt BLE Controller library
+                <li>Pre-compiled RF driver library (<code>ipro7_rf</code>)</li>
+                <li>Pre-compiled LC3 audio codec library (<code>liblc3</code>)</li>
+            </ul>
+
+            <h3>Library Components</h3>
+            <ul>
+                <li><code>isp_algorithm</code> — ISP image processing algorithm library</li>
+                <li><code>ipro7_rf</code> — RF drivers used by the BLE controller</li>
+                <li><code>liblc3</code> — LC3 audio codec for LE Audio</li>
+                <li><code>lp_framework</code> — Low power framework (HAL sub-library)</li>
+            </ul>
+
+            <h3>Build System</h3>
+            <pre><code class="language-bash"># List all available projects
+./build_freertos.sh -l
+
+# Build a BLE application
+./build_freertos.sh ipro_ble_remote build
+
+# Build, flash, and monitor
+./build_freertos.sh ipro_ble_remote build flash monitor</code></pre>
+
+            <div class="alert alert-warning">
+                <strong>Known Limitations:</strong> BLE controller source code is not included; only prebuilt linkN library variants are provided. <code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> is not supported in this release. For advanced features, please contact the vendor.
+            </div>
+        </section>
+
+        <section id="v0-0-1">
+            <h2>IPRO-BLE-SDK-V0.0.1</h2>
+            <p><strong>Release Date:</strong> February 12, 2026<br>
+               <strong>Platform:</strong> IPRO7 (RISC-V RV32IMAFC)</p>
+            <p>First official release of the IPRO BLE SDK, providing a complete BLE 5.4 development environment with LE Audio support. It includes 10 ready-to-build applications, a Zephyr-based BLE Host, prebuilt controller libraries, and a unified build system.</p>
+
+            <h3>What's Included</h3>
+            <ul>
+                <li><strong>BLE Applications</strong>
                     <ul>
-                        <li>Includes TX descriptor optimization</li>
-                        <li>Automated rebuild via <code>build_all_prebuilts.sh</code></li>
+                        <li>BLE Remote — GATT services demo (LED, Button, UART, OTA, image transfer)</li>
+                        <li>Throughput Test — Bidirectional BLE throughput testing (2M PHY + DLE, up to 999 Kbps)</li>
+                        <li>HID Keyboard — HID over GATT (HOGP) keyboard with modifier key support</li>
+                        <li>Transparent Data — BLE transparent data transfer with AT command interface</li>
+                    </ul>
+                </li>
+                <li><strong>LE Audio Applications</strong>
+                    <ul>
+                        <li>LE Audio Headset — GAF/BAP unicast and broadcast headset (LC3 codec)</li>
+                        <li>BIS Broadcast Source — Auracast-compatible broadcast source</li>
+                        <li>BIS Broadcast Sink — Broadcast sink (BASE parsing and audio resampling)</li>
+                        <li>Walkie-Talkie — BIS-based LE Audio push-to-talk</li>
+                    </ul>
+                </li>
+                <li><strong>ESL Applications</strong>
+                    <ul>
+                        <li>ESL Tag — Bluetooth ESL Profile compliant tag with display management</li>
+                        <li>ESL Gateway — Access point for managing ESL tags</li>
                     </ul>
                 </li>
             </ul>
 
-            <h3>ipro_throughput_test Application</h3>
+            <h3>BLE Stack</h3>
             <ul>
-                <li><strong>refactor:</strong> Migrated from ipro_ble_lib to native Zephyr bt_* APIs
-                    <ul>
-                        <li>Uses standard Zephyr BLE APIs instead of custom wrappers</li>
-                        <li>Better maintainability and code readability</li>
-                    </ul>
-                </li>
-                <li><strong>docs:</strong> Added comprehensive README and operation manual
-                    <ul>
-                        <li>Detailed usage instructions and CLI command reference</li>
-                        <li>Performance tuning guide</li>
-                    </ul>
-                </li>
+                <li>Zephyr-based BLE Host: GAP, GATT, L2CAP, SMP, ISO, LE Audio</li>
+                <li>Prebuilt RivieraWaves controller libraries (linkN variants, <code>link2_54</code> added in this release)</li>
+                <li>Pre-compiled RF driver library (<code>ipro7_rf</code>) and LC3 codec library (<code>liblc3</code>)</li>
+                <li>Removed the legacy btprofile component; applications uniformly use the Zephyr <code>bt_*</code> APIs</li>
             </ul>
 
-            <h3>Tools & Infrastructure</h3>
+            <h3>Build System</h3>
             <ul>
-                <li><strong>feat:</strong> Added <code>build_all_prebuilts.sh</code> automated prebuilt library generation script
-                    <ul>
-                        <li>Supports single variant or all variants rebuild</li>
-                        <li>Auto-strips debug sections, writes version metadata</li>
-                    </ul>
-                </li>
+                <li>Unified build CLI: <code>./build_freertos.sh &lt;app&gt; build flash monitor</code></li>
+                <li>Automatic toolchain detection (vendor and standard GCC)</li>
+                <li>Kconfig-based configuration system</li>
+            </ul>
+
+            <h3>Requirements</h3>
+            <ul>
+                <li>RISC-V toolchain: <code>/opt/toolchain/riscv_ipro7/</code></li>
+                <li>CMake &gt;= 3.19</li>
+                <li>Ninja build system</li>
+                <li>Python 3.8+</li>
+            </ul>
+
+            <h3>Known Limitations</h3>
+            <ul>
+                <li>Controller source code is not included; only prebuilt library variants are provided</li>
+                <li><code>ipro_blecontroller_test</code> (UART HCI mode) is not included as it requires controller source</li>
+                <li><code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> is not supported in this release</li>
             </ul>
         </section>
 
-        <section id="dec-2025">
-            <h2>December 2025</h2>
+        <section id="doc-history">
+            <h2>Documentation History</h2>
+            <p>The following is a summary of development and documentation updates prior to the official releases.</p>
 
-            <h3>December 7, 2025 - Comprehensive SDK Documentation Update</h3>
+            <h3>February 2026</h3>
             <ul>
-                <li><strong>docs:</strong> Comprehensive SDK documentation update and optimization
+                <li><strong>feat:</strong> BLE throughput optimized to 999 Kbps (improved from ~600 Kbps; connection parameter tuning and TX descriptor optimization)</li>
+                <li><strong>fix:</strong> All prebuilt BLE Controller libraries updated (including TX descriptor optimization)</li>
+                <li><strong>refactor:</strong> <code>ipro_throughput_test</code> migrated from custom wrappers to native Zephyr <code>bt_*</code> APIs</li>
+                <li><strong>feat:</strong> BIS sink gained BASE parsing, a shared FIR resampler audio component, and a UAC DMA stall fix</li>
+                <li><strong>test:</strong> Unit test suite expanded from 11 to 28 suites (147 tests), board test automation tools added</li>
+                <li><strong>build:</strong> Automatic toolchain detection for vendor and standard GCC (<code>cmake/toolchain.cmake</code>)</li>
+                <li><strong>docs:</strong> Added comprehensive README and operation manual for <code>ipro_throughput_test</code></li>
+            </ul>
+
+            <h3>December 2025</h3>
+            <ul>
+                <li><strong>feat:</strong> Image Service MTU optimization and transfer speed statistics
                     <ul>
-                        <li>README.md updated to latest features and structure</li>
-                        <li>BLE development guide enhanced</li>
-                        <li>Quick start guide improved</li>
-                        <li>AI Assistant Reference updated</li>
+                        <li>MTU calculation refined from MTU-8 to MTU-11 (4-byte safety margin added)</li>
+                        <li>Dynamic chunk size support (236-506 bytes, based on MTU 517)</li>
+                        <li>Performance: 56KB image transfer reaches ~40 KB/s (320 Kbps)</li>
                     </ul>
                 </li>
+                <li><strong>feat:</strong> MTU changes are propagated to the application automatically via the Zephyr <code>bt_gatt_cb</code> <code>att_mtu_updated</code> callback; OTA and Image Service adapt to the negotiated MTU dynamically (up to 517)</li>
+                <li><strong>fix:</strong> Removed duplicate <code>image_start_transfer()</code> call, fixing the "Not ready" warning</li>
+                <li><strong>feat:</strong> Added <code>ipro_ble_hid_keyboard</code> (HOGP) and <code>ipro_walkie_talkie</code> (BIS LE Audio) applications</li>
+                <li><strong>docs:</strong> Comprehensive SDK documentation update; documentation website officially launched on GitHub Pages</li>
             </ul>
 
-            <h3>December 2025 - Documentation Website Launch</h3>
+            <h3>September-December 2025</h3>
             <ul>
-                <li><strong>docs:</strong> IPRO SDK documentation website officially launched on GitHub Pages
-                    <ul>
-                        <li>Complete getting started guide</li>
-                        <li>Architecture overview and component descriptions</li>
-                        <li>BLE 5.4 development guide</li>
-                        <li>Zephyr RTOS integration tutorial</li>
-                        <li>Detailed application examples</li>
-                        <li>API reference documentation</li>
-                    </ul>
-                </li>
+                <li><strong>BLE:</strong> timing optimizations, PA sync fix, EM initialization consolidated to board level, static CLI command registration fix</li>
+                <li><strong>USB &amp; Audio:</strong> UAC demo with AUADC integration, CDC memory transfer command, AUADC demo, DAC speaker support</li>
+                <li><strong>Multimedia:</strong> ISP sw pingpong control, DVP sensor + MJPEG demo, UVC and LCD stream control, ILI9488 SPI LCD demo</li>
+                <li><strong>Network &amp; Peripherals:</strong> EMAC Ethernet support, SD card (SDH), SPI slave demo and SPI1 support</li>
+                <li><strong>System:</strong> FreeRTOS runtime statistics, frame pointer and backtrace chain, dynamic OCRAM sizing</li>
             </ul>
-        </section>
 
-        <section id="sep-dec-2025">
-            <h2>September-December 2025 - Multimedia & Peripheral Enhancements</h2>
-
-            <h3>BLE Enhancements</h3>
+            <h3>August 2025</h3>
             <ul>
-                <li><strong>fix:</strong> BLE timing optimizations and debug enhancements</li>
-                <li><strong>feat:</strong> Comprehensive BLE development improvements and PA sync fix</li>
-                <li><strong>fix:</strong> BLE audio context type swap</li>
-                <li><strong>refactor:</strong> Consolidate EM initialization to board level</li>
-                <li><strong>fix:</strong> Resolve static CLI commands registration issue</li>
-                <li><strong>refactor:</strong> Remove verbose messages for default EM configuration</li>
-                <li><strong>fix:</strong> Correct default EM_SIZE to 0KB for non-BLE projects</li>
+                <li><strong>feat:</strong> BLE 5.4 support with new configuration options</li>
+                <li><strong>refactor:</strong> Controller library variants renamed from mXsY to linkN</li>
+                <li><strong>feat:</strong> BLE advertising workflow implementation, 40+ interactive CLI commands, IPRO logging system, OTA firmware update integration</li>
+                <li><strong>refactor:</strong> Removed the obsolete RivieraWaves host stack and the legacy BLE wrapper layer</li>
             </ul>
-
-            <h3>USB & Audio</h3>
-            <ul>
-                <li><strong>feat:</strong> [USBD][UAC] Add UAC demo with AUADC integration</li>
-                <li><strong>feat:</strong> [USBD][CDC] Add DUT send memory to PC command</li>
-                <li><strong>feat:</strong> [USBD] Enable all USB examples by default</li>
-                <li><strong>feat:</strong> [AUADC] Add AUADC demo</li>
-                <li><strong>feat:</strong> [BSP] DAC speaker support and FreeRTOS debug info update</li>
-            </ul>
-
-            <h3>Multimedia (ISP, MJPEG, LCD)</h3>
-            <ul>
-                <li><strong>feat:</strong> [ISP] Add sw pingpong control for ISP</li>
-                <li><strong>feat:</strong> [ISP] SPI sensor demo and DVP sensor updates</li>
-                <li><strong>feat:</strong> [MM] DVP sensor + MJPG demo</li>
-                <li><strong>feat:</strong> [MM] Stream control add UVC and show LCD flow</li>
-                <li><strong>fix:</strong> [jpeg_combo] MJPEG HW stuck at 255 frame bug workaround</li>
-                <li><strong>feat:</strong> [lcd_demo] Add LCD demo with ILI9488 SPI LCD support</li>
-                <li><strong>feat:</strong> [lcd_demo] Add LCD inversion command</li>
-            </ul>
-
-            <h3>Network & Peripherals</h3>
-            <ul>
-                <li><strong>feat:</strong> [BSP] Add EMAC Ethernet support</li>
-                <li><strong>feat:</strong> [LWIP] Rename lwIP options and set IPERF dependency</li>
-                <li><strong>feat:</strong> [SDH] Add SD card support</li>
-                <li><strong>feat:</strong> [SPI] SPI slave demo and SPI1 support</li>
-            </ul>
-
-            <h3>BSP & System</h3>
-            <ul>
-                <li><strong>feat:</strong> [BSP] Move TCM to non-cachable region</li>
-                <li><strong>feat:</strong> Add FreeRTOS runtime statistics support</li>
-                <li><strong>feat:</strong> [DBG] Add frame pointer and backtrace chain support</li>
-                <li><strong>fix:</strong> Implement dynamic OCRAM sizing</li>
-            </ul>
-
-            <h3>CI/CD</h3>
-            <ul>
-                <li><strong>feat:</strong> Enable Teams notifications for all pipeline triggers</li>
-            </ul>
-        </section>
-
-        <section id="aug-2025">
-            <h2>August 2025</h2>
-
-            <h3>August 23, 2025 - Major Documentation and System Cleanup</h3>
-            <ul>
-                <li><strong>docs:</strong> Reorganized and cleaned up README.md structure
-                    <ul>
-                        <li>Simplified content organization with clear sections</li>
-                        <li>Removed duplicate and redundant information</li>
-                        <li>Enhanced quick start section with both Zephyr and SDK options</li>
-                        <li>Improved technical specifications</li>
-                    </ul>
-                </li>
-                <li><strong>refactor:</strong> Removed outdated west configuration system
-                    <ul>
-                        <li>Removed config/west_configs/ directory</li>
-                        <li>Simplified menu.sh by removing west configuration management</li>
-                        <li>Streamlined to use single west.yml configuration</li>
-                    </ul>
-                </li>
-            </ul>
-
-            <h3>August 22, 2025 - Major Feature Enhancements</h3>
-            <ul>
-                <li><strong>feat:</strong> Added multilingual interactive menu (menu.sh)
-                    <ul>
-                        <li>Full bilingual support (Chinese/English)</li>
-                        <li>Interactive development environment interface</li>
-                        <li>Menu-driven access to all development tools</li>
-                    </ul>
-                </li>
-                <li><strong>feat:</strong> Enhanced apps.sh with categories and search functionality
-                    <ul>
-                        <li>Added list_categories() function to browse Zephyr sample categories</li>
-                        <li>Enhanced search functionality across all apps and samples</li>
-                        <li>Support for 21 Zephyr sample categories</li>
-                    </ul>
-                </li>
-                <li><strong>feat:</strong> Added complete Zephyr peripheral driver framework
-                    <ul>
-                        <li>Complete GPIO, SPI, PWM driver integration</li>
-                        <li>Enhanced Kconfig configuration system</li>
-                        <li>IPRO7 hardware support optimization</li>
-                    </ul>
-                </li>
-            </ul>
-
-            <h3>August 19-21, 2025 - BLE System Improvements</h3>
-            <ul>
-                <li><strong>feat:</strong> Completed BLE advertising workflow implementation and state management fixes</li>
-                <li><strong>feat:</strong> Added comprehensive CLI command system with 40+ interactive commands</li>
-                <li><strong>feat:</strong> Enhanced BLE demo and custom profile implementation</li>
-                <li><strong>feat:</strong> Added complete IPRO logging system integrated with BLE library</li>
-                <li><strong>fix:</strong> BLE Channel Map Indication debugging and CSA #2 validation</li>
-                <li><strong>feat:</strong> OTA firmware update feature integration</li>
-            </ul>
-
-            <h3>August 12-18, 2025 - Infrastructure and CI/CD</h3>
-            <ul>
-                <li><strong>feat:</strong> MCP server message optimization and comment translation</li>
-                <li><strong>feat:</strong> Enhanced README badges with improved styling</li>
-                <li><strong>feat:</strong> Added GitLab Merge Request creation tool</li>
-                <li><strong>feat:</strong> JIRA integration enhancements</li>
-                <li><strong>feat:</strong> VS Code extension updates (v0.0.7)</li>
-            </ul>
-        </section>
-
-        <section id="earlier">
-            <h2>Earlier Versions</h2>
-            <p>For the complete changelog, please refer to the <code>changelog.md</code> file in the SDK source code.</p>
 
             <h3>Major Milestones</h3>
             <ul>
-                <li><strong>Zephyr RTOS Integration</strong> - Full Zephyr v3.4.0 support</li>
-                <li><strong>BLE 5.4 Support</strong> - RivieraWaves BLE 5.4 protocol stack integration</li>
+                <li><strong>FreeRTOS Platform</strong> - FreeRTOS-based application framework with a unified build system</li>
+                <li><strong>BLE 5.4 Support</strong> - Zephyr-based BLE Host (GAP, GATT, L2CAP, SMP, ISO) + RivieraWaves prebuilt controller (linkN variants)</li>
                 <li><strong>LE Audio</strong> - GAF framework and LC3 codec support</li>
-                <li><strong>MCP Server</strong> - AI-assisted development tools</li>
-                <li><strong>VS Code Extension</strong> - Dedicated development extension</li>
             </ul>
         </section>
     </article>
