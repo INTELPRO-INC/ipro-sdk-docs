@@ -9,13 +9,13 @@ title: 工具與除錯
             <h4 class="sidebar-title">本頁目錄</h4>
             <ul class="sidebar-links">
                 <li><a href="#overview" class="sidebar-link">概述</a></li>
+                <li><a href="#build-cli" class="sidebar-link">統一建構 CLI</a></li>
                 <li><a href="#flash-tool" class="sidebar-link">燒錄工具</a></li>
                 <li><a href="#serial-monitor" class="sidebar-link">串口監控</a></li>
                 <li><a href="#automated-testing" class="sidebar-link">自動化測試</a></li>
                 <li><a href="#gdb-debugging" class="sidebar-link">GDB 除錯</a></li>
                 <li><a href="#crash-analysis" class="sidebar-link">當機分析</a></li>
                 <li><a href="#size-analysis" class="sidebar-link">建構分析</a></li>
-                <li><a href="#ci-cd" class="sidebar-link">CI/CD 流程</a></li>
                 <li><a href="#macos-notes" class="sidebar-link">macOS 注意事項</a></li>
                 <li><a href="#dev-workflow" class="sidebar-link">開發者工作流程</a></li>
             </ul>
@@ -23,10 +23,10 @@ title: 工具與除錯
     </aside>
 
     <article class="doc-content">
-        <div class="alert alert-warning" style="margin-bottom: 2rem;">
-            <strong>⚠ Release SDK 注意事項：</strong>部分開發工具（燒錄工具、串口監控、板級測試腳本、VS Code 擴充套件）未包含在 Release SDK v1.0.1 中。以下內容部分僅供參考。
-        </div>
         <h1>工具與除錯</h1>
+        <div class="alert alert-warning">
+            <strong>&#9888; Release SDK 注意事項：</strong>以下工具<strong>未包含</strong>在 Release SDK v1.0.1 中：燒錄工具（<code>tools/ipro_iot_tool_lite/</code>）、串口監控（<code>tools/serial_monitor.py</code>）、板級測試腳本（<code>tools/board_test.sh</code>）、當機解析工具（<code>tools/parse_backtrace.py</code>）與 OpenOCD 配置檔（<code>tools/openocd/</code>）。如有需要請聯絡原廠取得。Release SDK 內建的統一開發入口為 SDK 根目錄的 <code>./build_freertos.sh</code>。
+        </div>
         <p>IPRO SDK 提供了完整的開發工具鏈，涵蓋從建構、燒錄、監控到除錯的完整開發週期。</p>
 
         <!-- ============================================================ -->
@@ -43,7 +43,7 @@ title: 工具與除錯
   Edit    → Build → Flash → Monitor → Debug → Repeat</code></pre>
             </div>
 
-            <p>SDK 在 <code>tools/</code> 目錄下提供了以下工具：</p>
+            <p>SDK 提供的開發工具如下：</p>
 
             <table>
                 <thead>
@@ -51,46 +51,197 @@ title: 工具與除錯
                         <th>工具</th>
                         <th>路徑</th>
                         <th>用途</th>
+                        <th>Release SDK v1.0.1</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
+                        <td>統一建構 CLI</td>
+                        <td><code>./build_freertos.sh</code></td>
+                        <td>建構、清除、燒錄、監控、大小分析與測試的統一入口</td>
+                        <td>內含</td>
+                    </tr>
+                    <tr>
+                        <td>綁定 CMake</td>
+                        <td><code>tools/cmake/</code></td>
+                        <td>建構系統使用的 CMake（Linux x86-64）</td>
+                        <td>內含</td>
+                    </tr>
+                    <tr>
+                        <td>Kconfig 解析腳本</td>
+                        <td><code>tools/script/parse_kconfig_dynamic.py</code></td>
+                        <td>建構系統解析 <code>.config</code> / Kconfig 設定</td>
+                        <td>內含</td>
+                    </tr>
+                    <tr>
                         <td>燒錄工具</td>
                         <td><code>tools/ipro_iot_tool_lite/</code></td>
                         <td>將韌體燒錄到開發板 Flash</td>
+                        <td>未內含（請聯絡原廠）</td>
                     </tr>
                     <tr>
                         <td>串口監控</td>
                         <td><code>tools/serial_monitor.py</code></td>
                         <td>串口通訊與日誌擷取</td>
+                        <td>未內含（請聯絡原廠）</td>
                     </tr>
                     <tr>
                         <td>板級測試</td>
                         <td><code>tools/board_test.sh</code></td>
                         <td>自動化建構、燒錄與測試</td>
+                        <td>未內含（請聯絡原廠）</td>
                     </tr>
                     <tr>
                         <td>當機分析</td>
                         <td><code>tools/parse_backtrace.py</code></td>
                         <td>將當機位址轉為原始碼位置</td>
-                    </tr>
-                    <tr>
-                        <td>記憶體分析</td>
-                        <td><code>tools/size_analysis.sh</code></td>
-                        <td>分析韌體記憶體使用情況</td>
+                        <td>未內含（請聯絡原廠）</td>
                     </tr>
                     <tr>
                         <td>OpenOCD 配置</td>
                         <td><code>tools/openocd/</code></td>
                         <td>JTAG 除錯介面配置</td>
+                        <td>未內含（請聯絡原廠）</td>
                     </tr>
                 </tbody>
             </table>
         </section>
 
         <!-- ============================================================ -->
+        <section id="build-cli">
+            <h2>統一建構 CLI（build_freertos.sh）</h2>
+            <p><code>./build_freertos.sh</code> 位於 SDK 根目錄，是 Release SDK 內建的統一開發入口。它可以將多個 action 串接成一條指令，依序執行。</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">指令格式</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">./build_freertos.sh [actions...] [options] &lt;project&gt;</code></pre>
+            </div>
+
+            <h3>Actions</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Action</th>
+                        <th>說明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>build</code></td>
+                        <td>建構專案（未指定 action 時的預設值）</td>
+                    </tr>
+                    <tr>
+                        <td><code>clean</code></td>
+                        <td>清除建構目錄</td>
+                    </tr>
+                    <tr>
+                        <td><code>flash</code></td>
+                        <td>燒錄韌體到開發板</td>
+                    </tr>
+                    <tr>
+                        <td><code>monitor</code></td>
+                        <td>開啟串口監控</td>
+                    </tr>
+                    <tr>
+                        <td><code>size</code></td>
+                        <td>顯示 ELF 大小與各記憶體區域用量</td>
+                    </tr>
+                    <tr>
+                        <td><code>test</code></td>
+                        <td>建構 + 燒錄 + 監控，並等待自動測試結果 pattern</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>選項</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>選項</th>
+                        <th>說明</th>
+                        <th>預設值</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>-p, --port PORT</code></td>
+                        <td>串口裝置路徑（flash / monitor / test 使用）</td>
+                        <td>請依實際裝置指定（如 <code>/dev/cu.usbserial-XXXX</code>）</td>
+                    </tr>
+                    <tr>
+                        <td><code>-t, --timeout SEC</code></td>
+                        <td>monitor / test 的逾時秒數</td>
+                        <td><code>30</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>-w, --wait-for PAT</code></td>
+                        <td>monitor 等待的正規表達式 pattern</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><code>-d, --defconfig FILE</code></td>
+                        <td>使用替代 defconfig（建構輸出於 <code>build_&lt;name&gt;/</code>）</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><code>-j, --jobs N</code></td>
+                        <td>平行建構任務數</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><code>-v, --verbose</code></td>
+                        <td>顯示完整建構輸出</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><code>-l, --list</code></td>
+                        <td>列出所有可用專案</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td><code>-h, --help</code></td>
+                        <td>顯示說明</td>
+                        <td>-</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>常用範例</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">統一 CLI 範例</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 列出所有可用專案
+./build_freertos.sh -l
+
+# 建構（預設 action）
+./build_freertos.sh platform/ipro7_demo
+
+# 清除後重新建構
+./build_freertos.sh clean build platform/ipro7_demo
+
+# 建構 → 燒錄 → 監控（完整開發循環）
+./build_freertos.sh build flash monitor bluetooth/ble/ipro_ble_remote
+
+# 顯示 ELF 大小與各記憶體區域用量
+./build_freertos.sh size platform/ipro7_demo</code></pre>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>&#9888;&#65039;</strong> <code>flash</code>、<code>monitor</code> 與 <code>test</code> action 會呼叫 <code>tools/ipro_iot_tool_lite/</code> 與 <code>tools/serial_monitor.py</code>。這兩個工具未包含於 Release SDK v1.0.1，請聯絡原廠取得，放置於上述路徑後即可直接使用。
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
         <section id="flash-tool">
             <h2>燒錄工具</h2>
+            <div class="alert alert-warning">
+                <strong>&#9888;&#65039;</strong> <code>ipro_iot_tool_lite</code> 未包含於 Release SDK v1.0.1，請聯絡原廠取得。取得後放置於 <code>tools/ipro_iot_tool_lite/</code>，<code>./build_freertos.sh flash &lt;project&gt;</code> 即會自動呼叫。
+            </div>
             <p>IPRO SDK 使用 <code>ipro_iot_tool_lite</code> 將編譯好的韌體燒錄到開發板的 Flash 記憶體中。</p>
 
             <h3>基本用法</h3>
@@ -99,10 +250,11 @@ title: 工具與除錯
                     <span class="code-block-title">燒錄韌體</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+                <pre><code class="language-bash"># 串口路徑請依實際接上的裝置調整
+tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
     --chipname ipro7 \
-    --port /dev/cu.usbserial-2120 \
-    --firmware apps/bluetooth/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
+    --port /dev/cu.usbserial-XXXX \
+    --firmware apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
     --baudrate 921600 \
     --flash-pin 0x02</code></pre>
             </div>
@@ -125,7 +277,7 @@ title: 工具與除錯
                     <tr>
                         <td><code>--port</code></td>
                         <td>串口裝置路徑</td>
-                        <td><code>/dev/cu.usbserial-2120</code> (macOS)<br><code>/dev/ttyUSB0</code> (Linux)</td>
+                        <td><code>/dev/cu.usbserial-XXXX</code>（macOS，依實際裝置而定）<br><code>/dev/ttyUSB0</code>（Linux）</td>
                     </tr>
                     <tr>
                         <td><code>--firmware</code></td>
@@ -153,7 +305,7 @@ title: 工具與除錯
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 透過串口監控工具發送指令
-python3 tools/serial_monitor.py /dev/cu.usbserial-2120 --send reboot_dl --timeout 1</code></pre>
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --send reboot_dl --timeout 1</code></pre>
             </div>
 
             <div class="alert alert-warning">
@@ -164,6 +316,9 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-2120 --send reboot_dl --timeou
         <!-- ============================================================ -->
         <section id="serial-monitor">
             <h2>串口監控</h2>
+            <div class="alert alert-warning">
+                <strong>&#9888;&#65039;</strong> <code>serial_monitor.py</code> 未包含於 Release SDK v1.0.1，請聯絡原廠取得。取得後放置於 <code>tools/serial_monitor.py</code>，<code>./build_freertos.sh monitor &lt;project&gt;</code> 即會自動呼叫。
+            </div>
             <p><code>serial_monitor.py</code> 是一個基於 Python3 termios 的串口監控工具，不需要安裝 pyserial 等額外依賴。</p>
 
             <h3>基本監控</h3>
@@ -172,8 +327,8 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-2120 --send reboot_dl --timeou
                     <span class="code-block-title">基本串口監控</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 預設 115200 baud
-python3 tools/serial_monitor.py /dev/cu.usbserial-2120</code></pre>
+                <pre><code class="language-bash"># 預設 115200 baud；串口路徑依實際裝置而定
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX</code></pre>
             </div>
 
             <h3>發送指令並等待回應</h3>
@@ -183,7 +338,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-2120</code></pre>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 發送 reboot 並等待測試結果
-python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX \
     --send reboot \
     --timeout 30 \
     --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
@@ -203,12 +358,16 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
                         <td>串口裝置路徑（位置參數）</td>
                     </tr>
                     <tr>
+                        <td><code>--baud RATE</code></td>
+                        <td>鮑率（預設 <code>115200</code>，macOS 上支援至 <code>921600</code>）</td>
+                    </tr>
+                    <tr>
                         <td><code>--send CMD</code></td>
                         <td>連線後發送的指令</td>
                     </tr>
                     <tr>
                         <td><code>--timeout SEC</code></td>
-                        <td>逾時秒數</td>
+                        <td>逾時秒數（預設 <code>30</code>）</td>
                     </tr>
                     <tr>
                         <td><code>--wait-for PATTERN</code></td>
@@ -245,7 +404,10 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
         <!-- ============================================================ -->
         <section id="automated-testing">
             <h2>自動化測試</h2>
-            <p><code>board_test.sh</code> 整合了建構、燒錄與測試的完整流程，適用於 CI/CD 與本地開發。</p>
+            <div class="alert alert-warning">
+                <strong>&#9888;&#65039;</strong> <code>board_test.sh</code> 與 <code>ipro_unit_test</code> 測試專案皆未包含於 Release SDK v1.0.1，如需完整板級測試環境請聯絡原廠取得。Release SDK 內建的等效指令為 <code>./build_freertos.sh test &lt;project&gt;</code>。
+            </div>
+            <p><code>board_test.sh</code> 整合了建構、燒錄與測試的完整流程，適用於自動化驗證與本地開發。</p>
 
             <h3>完整測試流程</h3>
             <div class="code-block">
@@ -254,7 +416,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 完整流程：建構 → 燒錄 → 串口擷取 → 結果解析
-tools/board_test.sh --project apps/ipro_unit_test</code></pre>
+tools/board_test.sh --project apps/test/ipro_unit_test</code></pre>
             </div>
 
             <h3>選項說明</h3>
@@ -270,12 +432,12 @@ tools/board_test.sh --project apps/ipro_unit_test</code></pre>
                     <tr>
                         <td><code>--project PATH</code></td>
                         <td>專案目錄路徑</td>
-                        <td><code>apps/ipro_unit_test</code></td>
+                        <td><code>apps/test/ipro_unit_test</code></td>
                     </tr>
                     <tr>
                         <td><code>--port PORT</code></td>
                         <td>串口裝置路徑</td>
-                        <td><code>/dev/cu.usbserial-2120</code></td>
+                        <td>請依實際裝置指定（如 <code>/dev/cu.usbserial-XXXX</code>）</td>
                     </tr>
                     <tr>
                         <td><code>--skip-build</code></td>
@@ -324,6 +486,16 @@ tools/board_test.sh --project apps/ipro_unit_test</code></pre>
                 </tbody>
             </table>
 
+            <h3>Release SDK 內建等效指令</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">build_freertos.sh test</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 建構 + 燒錄 + 監控，並等待「ALL TESTS PASSED|SOME TESTS FAILED」輸出
+./build_freertos.sh test &lt;project&gt;</code></pre>
+            </div>
+
             <h3>快速重測（不重新建構與燒錄）</h3>
             <div class="code-block">
                 <div class="code-block-header">
@@ -331,7 +503,7 @@ tools/board_test.sh --project apps/ipro_unit_test</code></pre>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 僅重啟開發板並擷取測試結果
-python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX \
     --send reboot \
     --timeout 30 \
     --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
@@ -345,7 +517,10 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
         <!-- ============================================================ -->
         <section id="gdb-debugging">
             <h2>GDB 除錯</h2>
-            <p>IPRO SDK 支援透過 OpenOCD + GDB 進行 JTAG 除錯。</p>
+            <div class="alert alert-warning">
+                <strong>&#9888;&#65039;</strong> OpenOCD 配置檔（<code>tools/openocd/</code>）未包含於 Release SDK v1.0.1，請聯絡原廠取得。
+            </div>
+            <p>IPRO SDK 支援透過 OpenOCD + GDB 進行 JTAG 除錯。IPRO7 的 JTAG 腳位為 GPIO0（TMS）、GPIO1（TDI）、GPIO2（TCK）、GPIO9（TDO）。</p>
 
             <h3>啟動 OpenOCD</h3>
             <div class="code-block">
@@ -354,7 +529,11 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 使用 SDK 提供的 OpenOCD 配置檔
-openocd -f tools/openocd/openocd_ipro6.cfg</code></pre>
+# （通用 RISC-V JTAG 設定，IPRO6 / IPRO7 皆適用）
+openocd -f tools/openocd/openocd_ipro6.cfg
+
+# 啟動成功後會顯示：
+# >>> Ready for GDB on port 12021</code></pre>
             </div>
 
             <h3>連接 GDB</h3>
@@ -365,12 +544,15 @@ openocd -f tools/openocd/openocd_ipro6.cfg</code></pre>
                 </div>
                 <pre><code class="language-bash"># 使用 SDK 工具鏈中的 GDB
 /opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-gdb \
-    apps/ipro7_demo/build/build_out/ipro7_demo_IPRO7.elf
+    apps/platform/ipro7_demo/build/build_out/ipro7_demo_IPRO7.elf
 
-# 在 GDB 中連接 OpenOCD
-(gdb) target remote :3333
-(gdb) monitor reset halt
-(gdb) load</code></pre>
+# 在 GDB 中連接 OpenOCD（連接埠由配置檔中的 gdb_port 指定，預設 12021）
+(gdb) target remote :12021
+(gdb) monitor reset halt</code></pre>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>&#9888;&#65039;</strong> 配置檔未定義 flash bank，無法在 GDB 中以 <code>load</code> 燒寫 XIP Flash（<code>0x13000000</code>）。韌體燒錄請使用燒錄工具；GDB 用於中斷點、單步執行與記憶體檢視。
             </div>
 
             <h3>常用 GDB 指令</h3>
@@ -421,7 +603,10 @@ openocd -f tools/openocd/openocd_ipro6.cfg</code></pre>
         <!-- ============================================================ -->
         <section id="crash-analysis">
             <h2>當機分析</h2>
-            <p>當韌體發生異常（exception）時，異常處理程式會輸出暫存器狀態與堆疊回溯資訊。<code>parse_backtrace.py</code> 可以將這些位址轉換為對應的原始碼檔案與行號。</p>
+            <div class="alert alert-warning">
+                <strong>&#9888;&#65039;</strong> <code>parse_backtrace.py</code> 未包含於 Release SDK v1.0.1，請聯絡原廠取得。即使沒有此工具，也可以使用工具鏈內建的 <code>addr2line</code> 手動解析（見下方）。
+            </div>
+            <p>當韌體發生異常（exception）時，異常處理程式會輸出異常 PC、SP（含所屬堆疊範圍）、saved s0(fp) / ra 與堆疊內容傾印。<code>parse_backtrace.py</code> 可以將這些位址轉換為對應的原始碼檔案與行號。</p>
 
             <h3>使用方式</h3>
             <div class="code-block">
@@ -432,7 +617,7 @@ openocd -f tools/openocd/openocd_ipro6.cfg</code></pre>
                 <pre><code class="language-bash"># 從檔案讀取當機日誌
 python3 tools/parse_backtrace.py \
     /opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf- \
-    apps/ipro7_demo/build/build_out/ipro7_demo_IPRO7.elf \
+    apps/platform/ipro7_demo/build/build_out/ipro7_demo_IPRO7.elf \
     backtrace.txt</code></pre>
             </div>
 
@@ -444,7 +629,7 @@ python3 tools/parse_backtrace.py \
                 <pre><code class="language-bash"># 從剪貼簿或管線輸入
 cat backtrace.txt | python3 tools/parse_backtrace.py \
     /opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf- \
-    apps/ipro7_demo/build/build_out/ipro7_demo_IPRO7.elf</code></pre>
+    apps/platform/ipro7_demo/build/build_out/ipro7_demo_IPRO7.elf</code></pre>
             </div>
 
             <h3>參數說明</h3>
@@ -471,6 +656,19 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
                 </tbody>
             </table>
 
+            <h3>手動解析（addr2line）</h3>
+            <p>異常輸出中落在程式碼區段（例如 Flash <code>0x13000000</code> 起）的位址，可以直接用工具鏈內建的 <code>addr2line</code> 轉為函式名稱與原始碼位置：</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">addr2line 手動解析</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 將單一位址轉為函式名稱與原始碼位置
+/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-addr2line \
+    -e apps/platform/ipro7_demo/build/build_out/ipro7_demo_IPRO7.elf \
+    -f -C 0x1301c148</code></pre>
+            </div>
+
             <div class="alert alert-info">
                 <strong>&#128161;</strong> 解析需要帶有除錯符號的 ELF 檔案（<code>.elf</code>），不是燒錄用的 <code>.bin</code> 檔。ELF 檔案位於 <code>build/build_out/</code> 目錄。
             </div>
@@ -479,7 +677,7 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
         <!-- ============================================================ -->
         <section id="size-analysis">
             <h2>建構分析</h2>
-            <p><code>size_analysis.sh</code> 可以分析韌體的記憶體使用情況，幫助您了解各模組佔用了多少 Flash 與 RAM。</p>
+            <p>使用 <code>./build_freertos.sh size &lt;project&gt;</code>（Release SDK v1.0.1 內建）可以檢視韌體的記憶體使用情況，幫助您了解韌體佔用了多少 Flash 與 RAM。</p>
 
             <h3>使用方式</h3>
             <div class="code-block">
@@ -487,19 +685,17 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
                     <span class="code-block-title">記憶體分析</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 分析指定專案的記憶體使用
-./tools/size_analysis.sh ipro7_demo</code></pre>
+                <pre><code class="language-bash"># 顯示 ELF 大小與各 section 用量（需先完成 build）
+./build_freertos.sh size platform/ipro7_demo</code></pre>
             </div>
 
-            <p>分析報告包含以下資訊：</p>
+            <p>輸出包含整體大小摘要與各 section 的細項分佈：</p>
             <ul>
                 <li><strong>text</strong> - 程式碼區段（存放於 Flash）</li>
                 <li><strong>data</strong> - 已初始化資料（佔用 Flash + RAM）</li>
                 <li><strong>bss</strong> - 未初始化資料（僅佔用 RAM）</li>
-                <li>各元件（component）與函式庫的記憶體佔用分佈</li>
+                <li>各 section（如 <code>.text</code>、<code>.data</code>、<code>.bss</code> 等）的大小與位址</li>
             </ul>
-
-            <p>分析結果會輸出至專案目錄下的 <code>SIZE_ANALYSIS.md</code>。</p>
 
             <h3>IPRO7 記憶體配置</h3>
             <table>
@@ -536,68 +732,6 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
         </section>
 
         <!-- ============================================================ -->
-        <section id="ci-cd">
-            <h2>CI/CD 流程</h2>
-            <p>IPRO SDK 使用 GitLab CI 進行持續整合與持續部署，配置檔位於 <code>.gitlab-ci.yml</code>。</p>
-
-            <h3>Pipeline 階段</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">CI/CD 階段</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-text">prepare → build → test → security → notify → merge</code></pre>
-            </div>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>階段</th>
-                        <th>說明</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>prepare</strong></td>
-                        <td>檢查建構環境（CMake、Ninja、Python3、Git）</td>
-                    </tr>
-                    <tr>
-                        <td><strong>build</strong></td>
-                        <td>編譯所有目標應用程式（BLE、通用等）</td>
-                    </tr>
-                    <tr>
-                        <td><strong>test</strong></td>
-                        <td>執行自動化測試</td>
-                    </tr>
-                    <tr>
-                        <td><strong>security</strong></td>
-                        <td>安全掃描</td>
-                    </tr>
-                    <tr>
-                        <td><strong>notify</strong></td>
-                        <td>發送建構結果通知（Teams webhook）</td>
-                    </tr>
-                    <tr>
-                        <td><strong>merge</strong></td>
-                        <td>自動合併處理</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>CI 環境設定</h3>
-            <ul>
-                <li><strong>工具鏈路徑：</strong><code>/opt/toolchain/riscv_ipro7/</code></li>
-                <li><strong>CMake：</strong>使用 <code>tools/cmake/</code> 中綁定的 Linux x86-64 版本</li>
-                <li><strong>平行建構：</strong>預設 4 個並行任務（<code>CMAKE_BUILD_PARALLEL_LEVEL=4</code>）</li>
-                <li><strong>快取策略：</strong>依分支與工作名稱建立快取</li>
-            </ul>
-
-            <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> CI 綁定的 CMake（<code>tools/cmake/</code>）為 Linux x86-64 ELF 二進位檔，無法在 macOS 上使用。macOS 開發請安裝系統 CMake。
-            </div>
-        </section>
-
-        <!-- ============================================================ -->
         <section id="macos-notes">
             <h2>macOS 開發注意事項</h2>
             <p>在 macOS 上進行開發時，有一些平台特定的注意事項需要留意。</p>
@@ -617,7 +751,7 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
                 <tbody>
                     <tr>
                         <td>macOS</td>
-                        <td><code>/dev/cu.usbserial-2120</code></td>
+                        <td><code>/dev/cu.usbserial-XXXX</code>（依實際裝置而定）</td>
                     </tr>
                     <tr>
                         <td>Linux</td>
@@ -625,6 +759,9 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
                     </tr>
                 </tbody>
             </table>
+
+            <h3>綁定 CMake</h3>
+            <p><code>tools/cmake/</code> 內綁定的 CMake 為 Linux x86-64 ELF 二進位檔，無法在 macOS 上執行。macOS 開發請改用 <code>brew install cmake</code> 安裝系統 CMake。</p>
 
             <h3>常見問題與解決方案</h3>
             <table>
@@ -652,8 +789,8 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
                         <td>關閉佔用程序，使用 Python 方案</td>
                     </tr>
                     <tr>
-                        <td>CI CMake 無法執行</td>
-                        <td>綁定版本為 Linux ELF</td>
+                        <td>綁定 CMake 無法執行</td>
+                        <td><code>tools/cmake/</code> 為 Linux x86-64 ELF</td>
                         <td>使用 <code>brew install cmake</code></td>
                     </tr>
                 </tbody>
@@ -667,8 +804,8 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
                 </div>
                 <pre><code class="language-python">import os
 
-# 正確的串口開啟方式（macOS）
-fd = os.open("/dev/cu.usbserial-2120", os.O_RDWR | os.O_NOCTTY | os.O_NONBLOCK)</code></pre>
+# 正確的串口開啟方式（macOS，路徑依實際裝置而定）
+fd = os.open("/dev/cu.usbserial-XXXX", os.O_RDWR | os.O_NOCTTY | os.O_NONBLOCK)</code></pre>
             </div>
         </section>
 
@@ -677,26 +814,39 @@ fd = os.open("/dev/cu.usbserial-2120", os.O_RDWR | os.O_NOCTTY | os.O_NONBLOCK)<
             <h2>開發者工作流程</h2>
             <p>以下是日常開發中常用的指令與流程。</p>
 
-            <h3>完整建構與燒錄</h3>
+            <h3>完整建構與燒錄（統一 CLI）</h3>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">標準開發流程</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 1. 建構專案
-make -C apps/ipro7_demo
+                <pre><code class="language-bash"># 建構（預設 action）
+./build_freertos.sh platform/ipro7_demo
 
-# 2. 燒錄到開發板
-python3 tools/serial_monitor.py /dev/cu.usbserial-2120 --send reboot_dl --timeout 1
+# 建構 → 燒錄 → 監控 一條指令完成
+./build_freertos.sh build flash monitor platform/ipro7_demo</code></pre>
+            </div>
+
+            <h3>手動逐步操作</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">逐步建構、燒錄與監控</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 1. 建構專案
+make -C apps/platform/ipro7_demo
+
+# 2. 燒錄到開發板（燒錄與監控工具需向原廠取得）
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --send reboot_dl --timeout 1
 tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
     --chipname ipro7 \
-    --port /dev/cu.usbserial-2120 \
-    --firmware apps/ipro7_demo/build/build_out/ipro7_demo_IPRO7.bin \
+    --port /dev/cu.usbserial-XXXX \
+    --firmware apps/platform/ipro7_demo/build/build_out/ipro7_demo_IPRO7.bin \
     --baudrate 921600 \
     --flash-pin 0x02
 
 # 3. 監控輸出
-python3 tools/serial_monitor.py /dev/cu.usbserial-2120</code></pre>
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX</code></pre>
             </div>
 
             <h3>快速重測（不重新建構）</h3>
@@ -706,7 +856,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-2120</code></pre>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 重啟並等待結果
-python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX \
     --send reboot \
     --timeout 30 \
     --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
@@ -718,9 +868,12 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
                     <span class="code-block-title">清除後重新建構</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 清除建構產物後重新建構
-make -C apps/ipro7_demo clean
-make -C apps/ipro7_demo</code></pre>
+                <pre><code class="language-bash"># 使用統一 CLI
+./build_freertos.sh clean build platform/ipro7_demo
+
+# 或使用 make
+make -C apps/platform/ipro7_demo clean
+make -C apps/platform/ipro7_demo</code></pre>
             </div>
 
             <h3>自動化測試流程</h3>
@@ -729,14 +882,17 @@ make -C apps/ipro7_demo</code></pre>
                     <span class="code-block-title">一鍵測試（建構 + 燒錄 + 驗證）</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 完整測試流程（含報告產生）
-tools/board_test.sh --project apps/ipro_unit_test --report test_results/
+                <pre><code class="language-bash"># Release SDK 內建：建構 + 燒錄 + 監控並等待測試結果
+./build_freertos.sh test &lt;project&gt;
+
+# board_test.sh（未包含於 Release SDK v1.0.1）
+tools/board_test.sh --project apps/test/ipro_unit_test --report test_results/
 
 # 跳過建構，僅燒錄與測試
-tools/board_test.sh --project apps/ipro_unit_test --skip-build
+tools/board_test.sh --project apps/test/ipro_unit_test --skip-build
 
 # 跳過建構與燒錄，僅測試
-tools/board_test.sh --project apps/ipro_unit_test --skip-build --skip-flash</code></pre>
+tools/board_test.sh --project apps/test/ipro_unit_test --skip-build --skip-flash</code></pre>
             </div>
         </section>
 
