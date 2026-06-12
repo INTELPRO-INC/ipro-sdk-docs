@@ -52,16 +52,22 @@ lang: en
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>Both are functionally equivalent. <code>make -C apps/&lt;project&gt;</code> is the recommended method -- it internally delegates to the <code>project.build</code> script. <code>build_freertos.sh</code> is the legacy build entry point.</p>
-                    <pre><code class="language-bash"># Recommended
-make -C apps/ipro_ble_remote
-
-# Legacy (still works)
+                    <p><code>build_freertos.sh</code> is the recommended unified build entry point: it supports chaining actions such as <code>build</code>, <code>flash</code>, and <code>monitor</code>, lists all projects with <code>-l</code>, and resolves short project names automatically. <code>make -C apps/&lt;category&gt;/&lt;project&gt;</code> is the equivalent single-build method, which requires the full nested path.</p>
+                    <pre><code class="language-bash"># Recommended: unified CLI
 ./build_freertos.sh ipro_ble_remote build
 
+# Chain build + flash + monitor
+./build_freertos.sh ipro_ble_remote build flash monitor
+
+# List all buildable projects
+./build_freertos.sh -l
+
+# Equivalent single-build method (full nested path required)
+make -C apps/bluetooth/ble/ipro_ble_remote
+
 # Clean build
-make -C apps/ipro_ble_remote clean</code></pre>
-                    <p>Build output is at <code>apps/&lt;project&gt;/build/build_out/</code>. Binary names include a chip suffix (e.g., <code>ipro_ble_remote_IPRO7.bin</code>).</p>
+make -C apps/bluetooth/ble/ipro_ble_remote clean</code></pre>
+                    <p>Build output is at <code>apps/&lt;category&gt;/&lt;project&gt;/build/build_out/</code>. Binary names include a chip suffix (e.g., <code>ipro_ble_remote_IPRO7.bin</code>).</p>
                 </div>
             </div>
 
@@ -110,17 +116,55 @@ cmake -DCROSS_COMPILE=/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf- ...</c
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
+                    <p>First check the IPRO7 memory layout baseline to identify which region is overflowing:</p>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr><th>Region</th><th>Size</th><th>Address</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Flash</td><td>1 MB</td><td><code>0x13000000</code></td></tr>
+                                <tr><td>PSRAM</td><td>8 MB</td><td><code>0x1e000000</code></td></tr>
+                                <tr><td>OCRAM</td><td>256 KB</td><td><code>0x11010000</code></td></tr>
+                                <tr><td>HBNRAM</td><td>4 KB</td><td><code>0x20090000</code></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <p>Optimize through the following methods:</p>
                     <ol>
                         <li>Disable unnecessary features in <code>.config</code></li>
                         <li>Use <code>-Os</code> optimization level</li>
                         <li>Check if unused components are being compiled</li>
                     </ol>
-                    <pre><code class="language-bash"># Check module sizes
-riscv64-unknown-elf-size build/build_out/*.elf
+                    <pre><code class="language-bash"># Show ELF size + memory region usage
+./build_freertos.sh ipro_ble_remote size
+
+# Check module sizes
+riscv64-unknown-elf-size apps/bluetooth/ble/ipro_ble_remote/build/build_out/*.elf
 
 # Detailed analysis
-riscv64-unknown-elf-nm --size-sort build/build_out/*.elf | tail -50</code></pre>
+riscv64-unknown-elf-nm --size-sort apps/bluetooth/ble/ipro_ble_remote/build/build_out/*.elf | tail -50</code></pre>
+                    <p>Also check the per-region usage in the linker output, and inspect the <code>.map</code> file under <code>build/build_out/</code> to find the largest consumers.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="build">
+                <div class="faq-question">
+                    <span class="faq-badge build">Build</span>
+                    <h3>How to flash firmware to the board? What if flashing fails?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Use the <code>flash</code> action of <code>build_freertos.sh</code> to build and flash in one step (the serial port name depends on your device):</p>
+                    <pre><code class="language-bash"># Build + flash + monitor serial output
+./build_freertos.sh ipro_ble_remote build flash monitor -p /dev/cu.usbserial-XXXX</code></pre>
+                    <p>If flashing fails, check the following in order:</p>
+                    <ol>
+                        <li>On macOS, you must use the <code>/dev/cu.*</code> device node, and the serial port name must be correct</li>
+                        <li>Make sure no other program is holding the serial port (check with <code>lsof</code>)</li>
+                        <li>If the board does not enter download mode automatically, type <code>reboot_dl</code> in the board shell to reboot into download mode and retry</li>
+                        <li>Check the USB cable and power supply stability</li>
+                    </ol>
                 </div>
             </div>
 
@@ -141,38 +185,39 @@ riscv64-unknown-elf-nm --size-sort build/build_out/*.elf | tail -50</code></pre>
                             <tbody>
                                 <tr><td><code>link1_periph</code></td><td>1</td><td>Peripheral only</td><td>Smallest footprint simple peripheral</td></tr>
                                 <tr><td><code>link1</code></td><td>1</td><td>Central + Peripheral</td><td>Single connection apps</td></tr>
-                                <tr><td><code>link2</code></td><td>2</td><td>Central + Peripheral</td><td>Common apps (recommended default)</td></tr>
+                                <tr><td><code>link2</code></td><td>2</td><td>Central + Peripheral</td><td>Dual connection apps</td></tr>
                                 <tr><td><code>link4</code></td><td>4</td><td>Multi-connection</td><td>Gateways, multi-device management</td></tr>
                                 <tr><td><code>link8</code></td><td>8</td><td>Multi-connection</td><td>Large multi-connection scenarios</td></tr>
+                                <tr><td><code>link2_54</code></td><td>2</td><td>BLE 5.4</td><td>Dual connection apps needing BLE 5.4 features</td></tr>
                                 <tr><td><code>link1_leaudio</code></td><td>1</td><td>BLE 5.2 + LE Audio</td><td>Simple LE Audio headset</td></tr>
                                 <tr><td><code>link2_leaudio</code></td><td>2</td><td>BLE 5.2 + LE Audio</td><td>TWS earbuds</td></tr>
                                 <tr><td><code>link1_leaudio_53_54</code></td><td>1</td><td>BLE 5.4 + LE Audio</td><td>Latest LE Audio features</td></tr>
                                 <tr><td><code>link2_leaudio_53_54</code></td><td>2</td><td>BLE 5.4 + LE Audio</td><td>Latest TWS features</td></tr>
+                                <tr><td><code>link4_leaudio_53_54</code></td><td>4</td><td>BLE 5.4 + LE Audio</td><td>Multi-connection LE Audio apps</td></tr>
                             </tbody>
                         </table>
                     </div>
-                    <p>The connection model uses a unified pool -- any connection can be either Central or Peripheral role, freely combined.</p>
+                    <p>Select the variant via <code>CONFIG_BTBLECONTROLLER_LIB</code> in your application's <code>.config</code>:</p>
+                    <pre><code class="language-bash"># Select Controller variant
+CONFIG_BTBLECONTROLLER_LIB="link1"</code></pre>
+                    <p>SDK example defaults: the BLE examples (<code>ipro_ble_remote</code>, <code>ipro_ble_transparent</code>) default to <code>link1</code>, and the LE Audio headset example defaults to <code>link1_leaudio_53_54</code>. The connection model uses a unified pool -- any connection can be either Central or Peripheral role, freely combined.</p>
                 </div>
             </div>
 
             <div class="faq-item" data-category="ble">
                 <div class="faq-question">
                     <span class="faq-badge ble">BLE</span>
-                    <h3>How to use prebuilt Controller libraries? What is build_all_prebuilts.sh?</h3>
+                    <h3>Is the BLE Controller provided as source code or prebuilt libraries?</h3>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>The BLE Controller is provided as prebuilt static libraries (<code>.a</code>) in <code>components/wireless/bluetooth/btblecontroller/</code>.</p>
-                    <p>To rebuild prebuilt libraries (e.g., after updating Controller settings), use <code>build_all_prebuilts.sh</code>:</p>
-                    <pre><code class="language-bash"># Rebuild specific variant
-components/wireless/bluetooth/build_all_prebuilts.sh link2
-
-# Rebuild all variants
-components/wireless/bluetooth/build_all_prebuilts.sh all</code></pre>
-                    <p>The script automatically uses template apps (<code>ipro_ble_remote</code> for base, <code>ipro_le_audio_headset</code> for LE Audio), strips debug sections after build, and writes version metadata.</p>
+                    <p>The BLE Controller is provided only as prebuilt static libraries (<code>.a</code>), one per linkN variant, under <code>components/wireless/bluetooth/btblecontroller_ipro7_link*/</code>. Controller source code is not included in the SDK.</p>
+                    <p>Simply select the variant to link in your application's <code>.config</code>:</p>
+                    <pre><code class="language-bash"># Select Controller variant
+CONFIG_BTBLECONTROLLER_LIB="link1"</code></pre>
                     <div class="warning-box">
                         <h4>Important</h4>
-                        <p><code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> cannot be used in release builds. Release builds must use prebuilt libraries.</p>
+                        <p>The prebuilt libraries must not be modified. If you need a customized Controller variant (e.g., a different link count or feature combination), please contact the vendor for support.</p>
                     </div>
                 </div>
             </div>
@@ -235,14 +280,55 @@ bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad),
                         <li>Buffer underrun/overrun</li>
                         <li>RF interference or weak signal</li>
                     </ul>
-                    <pre><code class="language-c">// Recommended LE Audio parameters
-// 48kHz, 10ms frame duration
-// SDU size: 120 bytes (48_4 config)
-struct bap_unicast_config {
-    .sampling_freq = 48000,
-    .frame_duration = 10000,  // 10ms in us
-    .octets_per_frame = 120,
-};</code></pre>
+                    <pre><code class="language-c">// Recommended LE Audio parameters (48_4 configuration set):
+// 48kHz sampling rate, 10ms frame duration, 120 octets per frame
+// blestack provides the matching macro (include/bluetooth/audio/lc3.h):
+BT_CODEC_LC3_CONFIG_48_4(loc, stream_context)</code></pre>
+                    <p>For the complete codec configuration flow, refer to the LE Audio headset example: <code>apps/bluetooth/le_audio/ipro_le_audio_headset</code>.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="ble">
+                <div class="faq-question">
+                    <span class="faq-badge ble">BLE</span>
+                    <h3>BLE pairing (bonding) information is not persisted, or the Controller fails to link?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>BLE applications need NVDS (Non-Volatile Data Storage) enabled to persist pairing keys and other data to flash. Configure in <code>.config</code>:</p>
+                    <pre><code class="language-bash"># Enable NVDS storage
+CONFIG_ENABLE_NVDS=y
+CONFIG_CFG_NVDS=y</code></pre>
+                    <p>Note: if NVDS is not enabled in a BLE application, the link stage fails due to missing NVDS-related symbols. The shipped BLE examples (e.g., <code>ipro_ble_remote</code>) already enable it by default.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="ble">
+                <div class="faq-question">
+                    <span class="faq-badge ble">BLE</span>
+                    <h3>How to optimize BLE throughput?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Key settings for higher BLE data throughput:</p>
+                    <ol>
+                        <li>Switch to 2M PHY</li>
+                        <li>Enable DLE (Data Length Extension)</li>
+                        <li>Negotiate a larger ATT MTU</li>
+                        <li>Use a shorter connection interval</li>
+                    </ol>
+                    <p>The SDK throughput test example (<code>apps/bluetooth/ble/ipro_throughput_test</code>) achieves up to 999 Kbps measured with 2M PHY + DLE, and serves as a reference implementation for parameter tuning.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="ble">
+                <div class="faq-question">
+                    <span class="faq-badge ble">BLE</span>
+                    <h3>How to perform OTA firmware upgrade?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>The <code>ipro_ble_remote</code> example (<code>apps/bluetooth/ble/ipro_ble_remote</code>) includes a built-in OTA GATT service, providing a complete reference implementation for transferring and updating firmware over BLE that you can adopt in your own application.</p>
                 </div>
             </div>
 
@@ -254,16 +340,16 @@ struct bap_unicast_config {
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>On macOS, each serial device has two device nodes:</p>
+                    <p>On macOS, each serial device has two device nodes (the serial port name below depends on your device):</p>
                     <ul>
                         <li><code>/dev/cu.*</code> (Calling Unit) - <strong>You must use this device</strong>. Does not wait for DCD signal, opens immediately.</li>
                         <li><code>/dev/tty.*</code> (Teletype) - Waits for DCD signal, causing the program to hang.</li>
                     </ul>
                     <pre><code class="language-bash"># Correct
-python3 tools/serial_monitor.py /dev/cu.usbserial-2120
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX
 
 # Wrong (will hang)
-python3 tools/serial_monitor.py /dev/tty.usbserial-2120</code></pre>
+python3 tools/serial_monitor.py /dev/tty.usbserial-XXXX</code></pre>
                 </div>
             </div>
 
@@ -276,7 +362,7 @@ python3 tools/serial_monitor.py /dev/tty.usbserial-2120</code></pre>
                 <div class="faq-answer">
                     <p>This is usually because another program (including <code>stty</code>) is holding the serial port. Solutions:</p>
                     <ol>
-                        <li>Check and close programs using the port: <code>lsof /dev/cu.usbserial-2120</code></li>
+                        <li>Check and close programs using the port: <code>lsof /dev/cu.usbserial-XXXX</code> (the serial port name depends on your device)</li>
                         <li>Avoid using <code>stty -f</code>, which keeps the port busy</li>
                         <li>Use <code>tools/serial_monitor.py</code> instead of <code>cat</code> or <code>screen</code></li>
                     </ol>
@@ -292,14 +378,12 @@ python3 tools/serial_monitor.py /dev/tty.usbserial-2120</code></pre>
                 </div>
                 <div class="faq-answer">
                     <p>Configure in <code>.config</code>:</p>
-                    <pre><code class="language-bash"># Enable Debug mode
-CONFIG_CFG_DBG=y
+                    <pre><code class="language-bash"># Set the default Log Level to DEBUG
+# (choice symbol, maps to CONFIG_LOG_DEFAULT_LEVEL=4)
+CONFIG_LOG_DEFAULT_LEVEL_DEBUG=y
 
-# Enable BLE Library Debug
-CONFIG_IPRO_BLE_LIB_DEBUG_ENABLE=y
-
-# Set Log Level
-CONFIG_LOG_DEFAULT_LEVEL=4  # DEBUG</code></pre>
+# Enable verbose BLE Host logs
+CONFIG_BT_DEBUG_LOG=y</code></pre>
                 </div>
             </div>
 
@@ -318,7 +402,8 @@ CONFIG_LOG_DEFAULT_LEVEL=4  # DEBUG</code></pre>
                         <li>Illegal instruction</li>
                     </ul>
                     <pre><code class="language-bash"># Use addr2line to parse backtrace
-riscv64-unknown-elf-addr2line -e build/build_out/app.elf 0x12345678</code></pre>
+# The ELF name includes a chip suffix (e.g., ipro_ble_remote_IPRO7.elf)
+riscv64-unknown-elf-addr2line -e apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.elf 0x12345678</code></pre>
                 </div>
             </div>
 
@@ -335,13 +420,13 @@ riscv64-unknown-elf-addr2line -e build/build_out/app.elf 0x12345678</code></pre>
                         <li><strong>rf_kcal not executed:</strong> Check RF_CAL_STATE_CTRL register</li>
                         <li><strong>XTAL frequency deviation:</strong> Adjust capcode</li>
                     </ol>
+                    <p>Adjust the XTAL capcode with the AON driver API (<code>bsp/drivers/ipro7_soc/std_drv/inc/drv_aon.h</code>):</p>
                     <pre><code class="language-c">// Adjust XTAL capcode
 // Negative CFO (frequency too low): Decrease capcode
 // Positive CFO (frequency too high): Increase capcode
-tmpVal = BL_RD_REG(AON_BASE, AON_XTAL_CFG2);
-tmpVal = BL_SET_REG_BITS_VAL(tmpVal, AON_XTAL_HF_CAPCODE_IN_AON, 70);
-tmpVal = BL_SET_REG_BITS_VAL(tmpVal, AON_XTAL_HF_CAPCODE_OUT_AON, 70);
-BL_WR_REG(AON_BASE, AON_XTAL_CFG2, tmpVal);</code></pre>
+AON_Set_Xtal_CapCode(70, 70);          // Set capcode (in / out)
+
+uint8_t cap = AON_Get_Xtal_CapCode();  // Read back current capcode</code></pre>
                 </div>
             </div>
 
@@ -352,16 +437,25 @@ BL_WR_REG(AON_BASE, AON_XTAL_CFG2, tmpVal);</code></pre>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>IPRO7 supports TX Power range from -20dBm to +10dBm:</p>
-                    <pre><code class="language-c">// Power Level Reference Table
-// 0: -20dBm    4: -10dBm
-// 8: 0dBm     12: +5dBm    15: +10dBm
+                    <p>IPRO7 supports TX Power from -3dBm to +10dBm (1dB step):</p>
+                    <pre><code class="language-c">// The parameter is the target power (dBm); the function
+// automatically picks the closest power table entry
+rf_set_tx_power(10);   // +10dBm (maximum)
+rf_set_tx_power(0);    // 0dBm
+rf_set_tx_power(-3);   // -3dBm (minimum)</code></pre>
+                    <p>For more advanced RF tuning (e.g., custom power tables), please contact the vendor for support.</p>
+                </div>
+            </div>
 
-// CLI
-// rf_set_pwr &lt;power_level&gt;
-
-// In code
-rf_set_tx_power(power_level);</code></pre>
+            <div class="faq-item" data-category="rf">
+                <div class="faq-question">
+                    <span class="faq-badge rf">RF</span>
+                    <h3>Does IPRO7 support Wi-Fi?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>IPRO7 itself does not include Wi-Fi. For applications that need Wi-Fi connectivity, use the IPRO6 companion chip (via the SDIO interface): IPRO7 serves as the main SoC handling application logic, BLE, and compute, while IPRO6 acts as the Wi-Fi connectivity chip.</p>
+                    <p>For the two-chip reference design and related materials, please contact the vendor.</p>
                 </div>
             </div>
 
@@ -369,32 +463,16 @@ rf_set_tx_power(power_level);</code></pre>
             <div class="faq-item" data-category="rtos">
                 <div class="faq-question">
                     <span class="faq-badge rtos">RTOS</span>
-                    <h3>FreeRTOS vs Zephyr - which to choose?</h3>
+                    <h3>Which RTOS does the SDK use? Is the BLE Host Zephyr?</h3>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <table class="comparison-table">
-                        <thead>
-                            <tr>
-                                <th>Feature</th>
-                                <th>FreeRTOS</th>
-                                <th>Zephyr</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>Learning Curve</td><td>Lower</td><td>Higher</td></tr>
-                            <tr><td>BLE Support</td><td>Complete (production-ready)</td><td>Experimental</td></tr>
-                            <tr><td>Memory Footprint</td><td>Smaller</td><td>Larger</td></tr>
-                            <tr><td>Device Drivers</td><td>Manual Integration</td><td>Device Tree</td></tr>
-                            <tr><td>Build Time</td><td>Longer</td><td>~30 seconds</td></tr>
-                        </tbody>
-                    </table>
-                    <p><strong>Recommendation:</strong> Choose FreeRTOS for BLE applications and production products. Zephyr is currently experimental, suitable for scenarios requiring Device Tree and modern development experience, but not recommended for production.</p>
-                    <pre><code class="language-bash"># FreeRTOS build (recommended)
-make -C apps/ipro_ble_remote
-
-# Zephyr build (experimental)
-./tools/zephyr/build.sh -a &lt;app&gt; -b ipro7_fpga -c</code></pre>
+                    <p>The SDK uses <strong>FreeRTOS</strong> as its operating system; all applications are built with FreeRTOS:</p>
+                    <pre><code class="language-bash"># Every application's .config uses
+CONFIG_FREERTOS_SUPPORT=y</code></pre>
+                    <p>The BLE Host protocol stack (GAP, GATT, L2CAP, SMP, ISO, LE Audio) originates from the Zephyr project, and the application layer uses Zephyr-style <code>bt_*</code> callback APIs -- but it runs on top of FreeRTOS, so <strong>no Zephyr installation or build is required</strong>.</p>
+                    <pre><code class="language-bash"># Build a BLE application (FreeRTOS + Zephyr-based BLE Host)
+./build_freertos.sh ipro_ble_remote build</code></pre>
                 </div>
             </div>
 
