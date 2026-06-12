@@ -8,6 +8,7 @@ title: BLE 開發指南
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">本頁目錄</h4>
             <ul class="sidebar-links">
+                <li><a href="#zephyr-host" class="sidebar-link">Zephyr BLE Host 架構</a></li>
                 <li><a href="#stack-architecture" class="sidebar-link">協定棧架構</a></li>
                 <li><a href="#controller-variants" class="sidebar-link">控制器變體</a></li>
                 <li><a href="#api-patterns" class="sidebar-link">API 模式</a></li>
@@ -24,6 +25,22 @@ title: BLE 開發指南
     <article class="doc-content">
         <h1>BLE 開發指南</h1>
         <p>本指南介紹如何使用 IPRO SDK 的 BLE 協定棧開發藍牙低功耗應用。SDK 採用 Zephyr BLE Host Stack 搭配 RivieraWaves 預建構控制器，提供完整的 BLE 5.4 功能支援。</p>
+
+        <!-- ============================================================ -->
+        <!-- Zephyr BLE Host -->
+        <!-- ============================================================ -->
+        <section id="zephyr-host">
+            <h2>Zephyr BLE Host 架構</h2>
+            <p>IPRO SDK 的作業系統是 <strong>FreeRTOS</strong>——Zephyr 在 SDK 中的角色是 BLE Host 協定堆疊的來源，而非 RTOS kernel。<code>components/wireless/bluetooth/blestack/</code> 移植自 Zephyr BLE Host（GAP、GATT、L2CAP、SMP、ISO、LE Audio），透過 <code>port/</code> 移植層執行於 FreeRTOS 之上，應用程式一律使用 Zephyr 風格的 <code>bt_*</code> API 開發。</p>
+            <ul>
+                <li><strong>Host — 可建構原始碼</strong>：<code>blestack/</code> 自 Zephyr 移植，完整原始碼隨 SDK 提供，可直接閱讀與除錯</li>
+                <li><strong>Controller — 預建構靜態庫</strong>：RivieraWaves 控制器以 <code>linkN</code> 變體預建構庫提供，共 13 個變體：<code>link1_periph</code>、<code>link1</code>、<code>link1_53</code>、<code>link1_54</code>、<code>link2</code>、<code>link2_54</code>、<code>link4</code>、<code>link8</code>、<code>link1_leaudio</code>、<code>link2_leaudio</code>、<code>link1_leaudio_53_54</code>、<code>link2_leaudio_53_54</code>、<code>link4_leaudio_53_54</code></li>
+                <li><strong>RTOS — FreeRTOS</strong>：排程、佇列、計時器皆由 FreeRTOS 提供；Zephyr kernel 不存在於系統中</li>
+            </ul>
+            <div class="alert alert-info">
+                <strong>延伸閱讀：</strong>完整的 Host 架構指南（BLE Host Architecture Guide）未隨附於 release 套件，如需取得請聯絡原廠。
+            </div>
+        </section>
 
         <!-- ============================================================ -->
         <!-- Stack Architecture -->
@@ -79,13 +96,12 @@ title: BLE 開發指南
 │       ├── services/                # 內建 GATT 服務（bas, dis, hog, ias, scps, spp, atvv, oad）
 │       ├── ipro_hci_wrapper/        # 片上 HCI bridge（Host ↔ Controller）
 │       └── port/                    # FreeRTOS 移植層
-├── btblecontroller/                 # RivieraWaves 控制器原始碼（需授權）
+├── btblecontroller/                 # 控制器公開標頭（btble_inc/）與移植層（btblecontroller_port/）
+│                                    #   控制器原始碼不隨附於 release
 ├── btblecontroller_ipro7_&lt;variant&gt;/ # 預建構控制器靜態庫
-├── btprofile/                       # Bluetooth Classic profiles（A2DP / AVRCP / HFP / SPP / SDP）
 ├── blemesh/                         # Bluetooth Mesh 支援
 ├── blemesh_model/                   # Mesh 模型實作
-├── ble_common.cmake                 # 控制器變體配置（PRIV_CONFIG_GEN_BLE）
-└── build_all_prebuilts.sh           # 預建構庫建置腳本</code></pre>
+└── ble_common.cmake                 # 控制器變體配置（PRIV_CONFIG_GEN_BLE）</code></pre>
             </div>
         </section>
 
@@ -200,25 +216,41 @@ title: BLE 開發指南
                             <td>是</td>
                             <td>四連線 LE Audio（多裝置同步）</td>
                         </tr>
+                        <tr>
+                            <td><code>uarthci</code></td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td>否</td>
+                            <td>UART HCI bridge 模式（停用 host stack，由外部主機直接下 HCI 命令）；無預建構庫，需控制器原始碼，release 未隨附，請聯絡原廠</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
 
             <h3>Kconfig 配置</h3>
-            <p>在應用程式的 <code>.config</code> 中透過 <code>CONFIG_BTBLECONTROLLER_LIB</code> 選擇變體：</p>
+            <p>在應用程式的 <code>.config</code> 中透過 <code>CONFIG_BTBLECONTROLLER_LIB</code> 指定完整變體名稱（建議做法，與 SDK 內所有參考應用一致）：</p>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">.config 變體選擇</span>
                     <button type="button" class="code-copy-btn" aria-label="複製程式碼"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 直接指定變體名稱
-CONFIG_BTBLECONTROLLER_LIB="link2"
+                <pre><code class="language-bash"># 直接指定完整變體名稱（建議）
+CONFIG_BTBLECONTROLLER_LIB="link2_leaudio_53_54"
 
 # 或使用布林旗標組合（自動拼接後綴）
 CONFIG_BTBLECONTROLLER_LIB="link2"
 CONFIG_BTBLECONTROLLER_LE_AUDIO=y     # 加上 _leaudio
-CONFIG_BTBLECONTROLLER_BT_54=y        # 加上 _53_54（5.4 隱含 5.3）
+CONFIG_BTBLECONTROLLER_BT_53=y        # 加上 _53
+CONFIG_BTBLECONTROLLER_BT_54=y        # 加上 _54
 # 結果變體：link2_leaudio_53_54</code></pre>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>注意：</strong>旗標組合的結果必須對應實際存在的預建構庫目錄。LE Audio 變體只提供 <code>_leaudio_53_54</code> 函式庫——raw <code>.config</code> 建置不會解析 Kconfig <code>select</code>，必須明確同時設定 <code>CONFIG_BTBLECONTROLLER_BT_53=y</code> 與 <code>CONFIG_BTBLECONTROLLER_BT_54=y</code>。基礎變體（未啟用 LE Audio）則不存在 <code>_53_54</code> 組合（既有函式庫為 <code>link1_53</code>、<code>link1_54</code>、<code>link2_54</code>），只能設定其中一個旗標，兩者同時設定會組出不存在的目錄而導致連結失敗。直接在 <code>CONFIG_BTBLECONTROLLER_LIB</code> 指定完整名稱可避免此問題。
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>NVDS 必須啟用：</strong>flash 版 BLE 應用需在 <code>.config</code> 設定 <code>CONFIG_ENABLE_NVDS=y</code> 與 <code>CONFIG_CFG_NVDS=y</code>，否則控制器連結階段會因 <code>__nvds_start</code> 等符號未定義而失敗。
             </div>
 
             <p>預建構庫位於：<code>components/wireless/bluetooth/btblecontroller_ipro7_&lt;variant&gt;/</code></p>
@@ -339,7 +371,7 @@ bt_gatt_notify(conn, &amp;my_svc.attrs[1], my_value, sizeof(my_value));</code></
             </div>
 
             <div class="alert alert-info">
-                <strong>提示：</strong>舊版 <code>ipro_ble_api.h</code> 與 RivieraWaves <code>ke_msg</code> API 已棄用。所有新應用程式應使用 Zephyr <code>bt_*</code> API。
+                <strong>提示：</strong>舊版 RivieraWaves <code>ke_msg</code> API 已棄用；控制器初始化仍使用 <code>ble_lib_api.h</code> 的 <code>ble_controller_init()</code>（見 API 參考），與 Zephyr <code>bt_*</code> Host API 並用。所有新應用程式的 Host 層功能應使用 Zephyr <code>bt_*</code> API。
             </div>
         </section>
 
@@ -399,11 +431,8 @@ bt_gatt_notify(conn, &amp;my_svc.attrs[1], my_value, sizeof(my_value));</code></
                     <span class="code-block-title">.config LE Audio 配置</span>
                     <button type="button" class="code-copy-btn" aria-label="複製程式碼"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 啟用 LE Audio 控制器
-CONFIG_BTBLECONTROLLER_LIB="link2"
-CONFIG_BTBLECONTROLLER_LE_AUDIO=y
-CONFIG_BTBLECONTROLLER_BT_54=y
-# 結果變體：link2_leaudio_53_54
+                <pre><code class="language-bash"># 啟用 LE Audio 控制器（BLE 5.4 + LE Audio）
+CONFIG_BTBLECONTROLLER_LIB="link2_leaudio_53_54"
 
 # 啟用 LE Audio Host 功能
 CONFIG_BT_AUDIO=y
@@ -439,30 +468,62 @@ CONFIG_BT_CSIP_SET_MEMBER=y</code></pre>
                     <span class="code-block-title">PAwR Host API</span>
                     <button type="button" class="code-copy-btn" aria-label="複製程式碼"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">/* Broadcaster：建立 PAwR train */
-struct bt_le_per_adv_param param = {
-    .interval_min   = BT_GAP_PER_ADV_SLOW_INT_MIN,  /* 1s */
-    .interval_max   = BT_GAP_PER_ADV_SLOW_INT_MAX,
-    .num_subevents  = 32,
-    .subevent_interval = 0x10,        /* 20 ms */
-    .response_slot_delay  = 0x05,
-    .response_slot_spacing = 0x05,
-    .num_response_slots  = 1,
+                <pre><code class="language-c">/* ── Broadcaster（gateway 端）────────────────────────────── */
+/* 1. 建立 ext adv set，掛上 PAwR 回調 */
+static const struct bt_le_ext_adv_cb adv_cb = {
+    .pawr_data_request = pawr_data_request_cb,  /* controller 索取 subevent 資料 */
+    .pawr_response     = pawr_response_cb,      /* 收到 observer 的 response */
 };
-bt_le_per_adv_set_param(adv, &amp;param);
-bt_le_per_adv_set_subevent_data(adv, num_subevents, subevent_data);
+bt_le_ext_adv_create(&amp;adv_param, &amp;adv_cb, &amp;adv);
+
+/* 2. 設定 PAwR train 參數並啟動 */
+struct bt_le_per_adv_param per_param = {
+    .interval_min          = 800,   /* N * 1.25 ms = 1 s */
+    .interval_max          = 800,
+    .num_subevents         = 32,
+    .subevent_interval     = 24,    /* N * 1.25 ms = 30 ms */
+    .response_slot_delay   = 12,    /* N * 1.25 ms = 15 ms */
+    .response_slot_spacing = 8,     /* N * 0.125 ms = 1 ms */
+    .num_response_slots    = 4,
+};
+bt_le_per_adv_set_param(adv, &amp;per_param);
 bt_le_per_adv_start(adv);
 
-/* Observer：同步 PA train，回傳 response */
-bt_le_per_adv_sync_create(...);
-bt_le_per_adv_set_response_data(sync, &amp;response_params, &amp;response_buf);</code></pre>
+/* 3. 在 pawr_data_request 回調中下發各 subevent 的資料 */
+bt_le_per_adv_set_subevent_data(adv, num_subevents, subevent_params);
+
+/* ── Observer（sensor / tag 端）─────────────────────────── */
+/* 1. 註冊 PA sync 與 PAwR data 回調，掃描後建立 PA sync */
+bt_le_pa_sync_cb_register(pa_sync_established);
+bt_le_pa_sync_lost_cb_register(pa_sync_lost);
+bt_le_pa_pawr_data_cb_register(pawr_data_received);
+bt_le_scan_start(&amp;scan_param, scan_cb);
+/* 掃描到 broadcaster 後，以 HCI LE Periodic Advertising
+ * Create Sync 命令建立同步，sync handle 由
+ * pa_sync_established 回調帶回 */
+
+/* 2. sync 建立後：訂閱要監聽的 subevent */
+struct bt_le_per_adv_sync_subevent_params se_params = {
+    .num_subevents = 1,
+    .subevents     = my_subevents,
+};
+bt_le_per_adv_sync_subevent(sync_handle, &amp;se_params);
+
+/* 3. 在 pawr_data_received 回調中於 response slot 回傳資料 */
+struct bt_le_per_adv_response_params rsp_params = {
+    .request_event     = periodic_event_counter,
+    .request_subevent  = subevent,
+    .response_subevent = subevent,
+    .response_slot     = 0,
+};
+bt_le_per_adv_set_response_data(sync_handle, &amp;rsp_params, &amp;rsp_buf);</code></pre>
             </div>
 
             <div class="alert alert-warning">
-                <strong>已知問題：</strong><code>bt_le_per_adv_set_response_data()</code> 在 subevent 1+ 上目前回傳 -5（EIO）。Provisioning channel（subevent 0）已驗證可正常運作。
+                <strong>注意：</strong><code>subevent_interval</code> 需為 host 端預留足夠的資料準備時間——間隔過短時 host 會來不及在下一輪 subevent 前下發資料。若 subevent payload 需要額外處理（如加密），請進一步放寬間隔。
             </div>
 
-            <h3>SDK 內 PAwR 應用</h3>
+            <h3>PAwR 驗證應用</h3>
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -474,31 +535,28 @@ bt_le_per_adv_set_response_data(sync, &amp;response_params, &amp;response_buf);<
                     </thead>
                     <tbody>
                         <tr>
-                            <td><code>apps/bluetooth/esl/ipro_esl_sensor_gateway/</code></td>
+                            <td><code>apps/bluetooth/esl/ipro_pawr_test_ap/</code></td>
                             <td>Broadcaster</td>
-                            <td>ESL 感測器 gateway，支援大量無連線 sensor 輪詢</td>
+                            <td>PAwR 連結特性驗證：subevent 資料下發、response slot 接收統計，PA interval / subevent 數可由 CLI 調整</td>
                         </tr>
                         <tr>
-                            <td><code>apps/bluetooth/esl/ipro_esl_sensor/</code></td>
+                            <td><code>apps/bluetooth/esl/ipro_pawr_test_tag/</code></td>
                             <td>Observer</td>
-                            <td>ESL sensor tag，PAwR + PDS31 深度睡眠</td>
-                        </tr>
-                        <tr>
-                            <td><code>apps/ai/ipro_llm_pawr_gateway/</code></td>
-                            <td>Broadcaster</td>
-                            <td>LLM × PAwR sensor gateway，將感測資料丟給雲端 AI 推理</td>
+                            <td>PA sync 建立、subevent 訂閱、response slot 回傳，含序號/掉包統計</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+            <p>上述驗證應用未隨附於 release 套件，如需評估請聯絡原廠取得。PAwR 大規模感測 gateway（含雲端 AI 推理整合）的 turnkey 參考設計亦請聯絡原廠。</p>
 
             <h3>ESL（Electronic Shelf Label）</h3>
-            <p>SDK 同時提供傳統 ESL（基於連線）與 PAwR 版本：</p>
+            <p>Host 與 controller 已具備 SIG ESL Profile 所需的 BLE 5.4 能力：</p>
             <ul>
-                <li><code>apps/bluetooth/esl/ipro_esl_tag/</code> + <code>ipro_esl_gateway/</code> — 標準 ESL profile，主要走連線通道</li>
-                <li><code>apps/bluetooth/esl/ipro_esl_sensor/</code> + <code>ipro_esl_sensor_gateway/</code> — PAwR 版本，可擴充至更大規模感測網路</li>
-                <li>共用標頭：<code>components/wireless/bluetooth/include/esl_defs.h</code>，含 ESL opcode（含 <code>READ_SENSOR 0x10</code>）與封包結構體</li>
+                <li><strong>PAwR subevent provisioning</strong>：subevent 0 作為 provisioning channel，subevent 1+ 分配給已配對的 tag</li>
+                <li><strong>PAST（Periodic Advertising Sync Transfer）</strong>：<code>bt_le_per_adv_sync_transfer()</code> / <code>bt_le_per_adv_sync_transfer_subscribe()</code> / <code>bt_le_per_adv_sync_transfer_unsubscribe()</code>——AP 可在 GATT 連線期間直接移交 PA sync，tag 免去 provisioning 後的掃描視窗</li>
+                <li><strong>共用協定定義</strong>：<code>components/wireless/bluetooth/include/esl_defs.h</code>——opcode 對齊 SIG ESL Profile v1.0.1（含 <code>READ_SENSOR 0x10</code>）與 PAwR 封包結構體</li>
             </ul>
+            <p>完整的 ESL turnkey 參考設計（tag + gateway）請聯絡原廠取得。</p>
         </section>
 
         <!-- ============================================================ -->
@@ -520,11 +578,11 @@ bt_le_per_adv_set_response_data(sync, &amp;response_params, &amp;response_buf);<
             <h3>Cold Boot with Detection</h3>
             <p>實測 <code>cpuRst=0</code>（純 WFI 恢復）在 BLE controller 模式下不可用；正確方案是 cpuRst=1 + RSV0=0 + RSV2=flag 在 cold boot 中偵測喚醒原因，於 bootrom 之後跳回 BLE state。延遲約 100 ms — 適合稀疏喚醒週期，BLE 連線維持仍需配合 sleep clock 校正。</p>
 
-            <h3>低功耗 BLE 應用</h3>
+            <h3>低功耗 BLE 應用模式</h3>
             <ul>
-                <li><strong><code>apps/bluetooth/ble/ipro_ble_lowpower_test/</code></strong> — PDS31 全套驗證 app，包含 RF reinit、register save/restore、margin 量測。Phase 0–4 已實作，PDS31 已硬體驗證</li>
-                <li><strong><code>apps/bluetooth/esl/ipro_esl_sensor/</code></strong> — PAwR 模式下的 sensor，每個 subevent 喚醒、回應後立刻深睡</li>
-                <li><strong><code>apps/turnkey/ipro7_pircam/</code></strong> — PIR 觸發喚醒，AI 模型常駐 PSRAM 跨睡眠週期</li>
+                <li><strong>PDS31 驗證 app</strong>（<code>ipro_ble_lowpower_test</code>）— 涵蓋 RF reinit、暫存器 save/restore、睡眠 margin 量測，PDS31 進出已硬體驗證；此 app 為能力展示，release 未隨附，請聯絡原廠取得</li>
+                <li><strong>PAwR sensor tag</strong> — observer 只在分配到的 subevent 喚醒、回應後立即回到深度睡眠（參見「PAwR 與 ESL」章節）</li>
+                <li><strong>感測器觸發喚醒</strong> — 以外部感測器中斷喚醒，搭配常駐 PSRAM 的應用資料跨睡眠週期保留，適合事件驅動型產品；turnkey 參考設計請聯絡原廠取得</li>
             </ul>
 
             <div class="alert alert-info">
@@ -576,8 +634,9 @@ bt_le_per_adv_set_response_data(sync, &amp;response_params, &amp;response_buf);<
         <!-- ============================================================ -->
         <section id="reference-apps">
             <h2>參考應用</h2>
-            <p>SDK 提供多個 BLE 參考應用程式，涵蓋常見的藍牙使用場景：</p>
+            <p>SDK 提供多個 BLE 參考應用程式，涵蓋常見的藍牙使用場景。</p>
 
+            <h3>隨附於 Release 的參考應用</h3>
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -592,7 +651,7 @@ bt_le_per_adv_set_response_data(sync, &amp;response_params, &amp;response_buf);<
                         <tr>
                             <td><strong>ipro_ble_remote</strong></td>
                             <td>GATT 服務 + OTA 更新，多 service，圖片傳輸達 101 KB/s</td>
-                            <td>link2</td>
+                            <td>link1</td>
                             <td><code>apps/bluetooth/ble/ipro_ble_remote/</code></td>
                         </tr>
                         <tr>
@@ -602,45 +661,21 @@ bt_le_per_adv_set_response_data(sync, &amp;response_params, &amp;response_buf);<
                             <td><code>apps/bluetooth/ble/ipro_throughput_test/</code></td>
                         </tr>
                         <tr>
-                            <td><strong>ipro_throughput_demo</strong></td>
-                            <td>搭配 Android <code>tools/android/IproThroughputDemo</code> 的展示版本</td>
-                            <td>link2</td>
-                            <td><code>apps/bluetooth/ble/ipro_throughput_demo/</code></td>
-                        </tr>
-                        <tr>
                             <td><strong>ipro_ble_transparent</strong></td>
                             <td>UART ↔ BLE 雙向透傳</td>
                             <td>link1</td>
                             <td><code>apps/bluetooth/ble/ipro_ble_transparent/</code></td>
                         </tr>
                         <tr>
-                            <td><strong>ipro_ble_lowpower_test</strong></td>
-                            <td>PDS31 低功耗 BLE 驗證 app（含 RF reinit、register save/restore）</td>
-                            <td>link1_periph</td>
-                            <td><code>apps/bluetooth/ble/ipro_ble_lowpower_test/</code></td>
-                        </tr>
-                        <tr>
-                            <td><strong>ipro_blecontroller_test</strong></td>
-                            <td>純 controller 驗證，bypass host stack 進行底層測試</td>
-                            <td>link2</td>
-                            <td><code>apps/bluetooth/ble/ipro_blecontroller_test/</code></td>
-                        </tr>
-                        <tr>
-                            <td><strong>ipro_ble_stress_test</strong></td>
-                            <td>長時間壓力測試（連線/斷線/重連迴圈）</td>
-                            <td>link2</td>
-                            <td><code>apps/bluetooth/ble/ipro_ble_stress_test/</code></td>
-                        </tr>
-                        <tr>
                             <td><strong>ipro_ble_img_capture</strong></td>
                             <td>BLE 影像擷取展示（搭配 ISP）</td>
-                            <td>link2</td>
+                            <td>link1</td>
                             <td><code>apps/bluetooth/ble/ipro_ble_img_capture/</code></td>
                         </tr>
                         <tr>
                             <td><strong>ipro_le_audio_headset</strong></td>
                             <td>GAF/BAP 單播音訊耳機，含 VCP、CSIP</td>
-                            <td>link2_leaudio_53_54</td>
+                            <td>link1_leaudio_53_54</td>
                             <td><code>apps/bluetooth/le_audio/ipro_le_audio_headset/</code></td>
                         </tr>
                         <tr>
@@ -655,17 +690,51 @@ bt_le_per_adv_set_response_data(sync, &amp;response_params, &amp;response_buf);<
                             <td>link1_leaudio_53_54</td>
                             <td><code>apps/bluetooth/le_audio/ipro_le_audio_bis_sink/</code></td>
                         </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>其他能力展示應用</h3>
+            <p>以下應用展示 SDK 的進階能力，未隨附於 release 套件，如需評估請聯絡原廠取得：</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
                         <tr>
-                            <td><strong>ipro_esl_tag / ipro_esl_gateway</strong></td>
-                            <td>標準 ESL profile（連線模式）</td>
-                            <td>link1_periph / link2</td>
-                            <td><code>apps/bluetooth/esl/</code></td>
+                            <th>應用</th>
+                            <th>功能說明</th>
+                            <th>控制器變體</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>ipro_ble_hid_keyboard</strong></td>
+                            <td>HID over GATT（HOGP）鍵盤，支援 modifier key</td>
+                            <td>link1</td>
                         </tr>
                         <tr>
-                            <td><strong>ipro_esl_sensor / ipro_esl_sensor_gateway</strong></td>
-                            <td>PAwR 模式 ESL 感測器（大規模無連線網路）</td>
-                            <td>link1_periph / link2_54</td>
-                            <td><code>apps/bluetooth/esl/</code></td>
+                            <td><strong>ipro_walkie_talkie</strong></td>
+                            <td>BIS LE Audio push-to-talk 對講</td>
+                            <td>link1_leaudio_53_54</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_throughput_demo</strong></td>
+                            <td>搭配 Android 展示 App 的吞吐量 demo 版本</td>
+                            <td>link2</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_ble_lowpower_test</strong></td>
+                            <td>PDS31 低功耗 BLE 驗證 app（含 RF reinit、register save/restore）</td>
+                            <td>link1</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_ble_stress_test</strong></td>
+                            <td>長時間壓力測試（連線/斷線/重連迴圈）</td>
+                            <td>link2</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ipro_blecontroller_test</strong></td>
+                            <td>純 controller 驗證（UART HCI 模式），bypass host stack 進行底層測試；依賴控制器原始碼，release 不含</td>
+                            <td>uarthci</td>
                         </tr>
                     </tbody>
                 </table>
@@ -677,54 +746,36 @@ bt_le_per_adv_set_response_data(sync, &amp;response_params, &amp;response_buf);<
         <!-- ============================================================ -->
         <section id="prebuilt-libs">
             <h2>預建構函式庫</h2>
-            <p>BLE 控制器以預建構靜態庫形式提供。正式發行版不可使用 <code>CONFIG_BLE_FORCE_SOURCE_BUILD</code>。</p>
-
-            <h3>建構腳本</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">建構預建構庫</span>
-                    <button type="button" class="code-copy-btn" aria-label="複製程式碼"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># 建構特定變體
-components/wireless/bluetooth/build_all_prebuilts.sh link2
-
-# 建構所有變體
-components/wireless/bluetooth/build_all_prebuilts.sh all
-
-# 輸出位置
-# btblecontroller_ipro7_link2/libbtblecontroller_ipro7_link2.a</code></pre>
-            </div>
-
-            <h3>開發時原始碼建構</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">.config 啟用原始碼建構（僅開發用）</span>
-                    <button type="button" class="code-copy-btn" aria-label="複製程式碼"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># 僅限開發除錯，不可用於正式發行
-CONFIG_BLE_FORCE_SOURCE_BUILD=y</code></pre>
-            </div>
+            <p>BLE 控制器一律以預建構靜態庫（<code>.a</code>）形式提供，每個庫附帶 <code>.a.version</code> 版本中繼資料。應用程式只需在 <code>.config</code> 指定變體名稱（見「控制器變體」），建置系統會自動連結對應的函式庫，無需任何額外建構步驟。</p>
 
             <div class="alert alert-warning">
-                <strong>注意：</strong><code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> 僅供開發除錯使用，不可用於正式發行版本。正式版必須使用預建構靜態庫。
+                <strong>注意：</strong>release 套件不包含控制器原始碼，<code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> 不支援。如需客製控制器變體（連線數、功能組合），請聯絡原廠。
             </div>
 
             <h3>庫檔案位置</h3>
-            <p>預建構庫存放於 <code>components/wireless/bluetooth/</code> 下，命名格式為：</p>
+            <p>預建構庫存放於 <code>components/wireless/bluetooth/</code> 下，每個變體一個目錄：</p>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">預建構庫目錄</span>
+                    <span class="code-block-title">預建構庫目錄（全部 13 個變體）</span>
                 </div>
-                <pre><code>btblecontroller_ipro7_link1/
+                <pre><code>btblecontroller_ipro7_&lt;variant&gt;/
+├── libbtblecontroller_ipro7_&lt;variant&gt;.a          # 預建構靜態庫
+├── libbtblecontroller_ipro7_&lt;variant&gt;.a.version  # 版本中繼資料
+└── CMakeLists.txt
+
+btblecontroller_ipro7_link1/
+btblecontroller_ipro7_link1_53/
+btblecontroller_ipro7_link1_54/
+btblecontroller_ipro7_link1_leaudio/
+btblecontroller_ipro7_link1_leaudio_53_54/
 btblecontroller_ipro7_link1_periph/
 btblecontroller_ipro7_link2/
-btblecontroller_ipro7_link4/
-btblecontroller_ipro7_link8/
-btblecontroller_ipro7_link1_leaudio/
+btblecontroller_ipro7_link2_54/
 btblecontroller_ipro7_link2_leaudio/
-btblecontroller_ipro7_link1_leaudio_53_54/
 btblecontroller_ipro7_link2_leaudio_53_54/
-...</code></pre>
+btblecontroller_ipro7_link4/
+btblecontroller_ipro7_link4_leaudio_53_54/
+btblecontroller_ipro7_link8/</code></pre>
             </div>
         </section>
     </article>
