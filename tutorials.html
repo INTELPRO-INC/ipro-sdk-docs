@@ -27,28 +27,50 @@ lang: zh-TW
                 <p>學習如何使用 IPRO SDK 建立第一個 BLE 應用程式。本教學涵蓋 <code>bt_enable()</code> 初始化、廣播設定與連線回呼。</p>
 
                 <h3>步驟 1：專案結構</h3>
-                <p>每個 IPRO SDK 應用程式都是 <code>apps/</code> 下的一個獨立目錄，包含 <code>.config</code>、<code>CMakeLists.txt</code> 和主程式碼。可以複製 <code>apps/bluetooth/ipro_ble_remote/</code> 作為範本。</p>
-                <pre><code class="language-bash">apps/my_ble_app/
+                <p>每個 IPRO SDK 應用程式都是 <code>apps/&lt;category&gt;/&lt;name&gt;</code> 下的一個獨立目錄。建議複製 <code>apps/bluetooth/ble/ipro_ble_remote/</code> 作為範本，並放在相同層級（例如 <code>apps/bluetooth/ble/my_ble_app/</code>）：</p>
+                <pre><code class="language-bash">apps/bluetooth/ble/my_ble_app/
   .config            # Kconfig 設定（CONFIG_BLUETOOTH_LE_ENABLE=y 等）
+  Makefile           # make 進入點（內含 PROJECT_NAME 與 IPRO_SDK_BASE）
+  Kconfig            # 應用層 Kconfig 選項
   CMakeLists.txt     # 建構設定
   main.c             # 應用程式進入點</code></pre>
+                <div class="alert alert-warning">
+                    <p>複製範本後請修改 <code>Makefile</code> 中的 <code>PROJECT_NAME</code> 為新專案名稱。<code>IPRO_SDK_BASE ?= $(abspath ../../../../)</code> 是相對路徑，若專案放在不同深度的目錄，需同步調整層數。</p>
+                </div>
 
                 <h3>步驟 2：.config 設定</h3>
-                <p>在 <code>.config</code> 中啟用 BLE 功能：</p>
-                <pre><code class="language-bash">CONFIG_IPRO7=y
+                <p>在 <code>.config</code> 中啟用 BLE 功能。以下僅列關鍵設定，實務上請直接以 <code>apps/bluetooth/ble/ipro_ble_remote/</code> 的 <code>.config</code> 為基礎修改：</p>
+                <pre><code class="language-bash"># SoC 與工具鏈
+CONFIG_IPRO7=y
+CONFIG_CHIP="IPRO7"
 CONFIG_CPU_ID="intelpro_ipro7"
+
+# RTOS 選擇
 CONFIG_FREERTOS_SUPPORT=y
+
+# BLE Host + Controller 變體（prebuilt linkN library）
 CONFIG_BLUETOOTH_LE_ENABLE=y
+CONFIG_BTBLECONTROLLER_LIB="link1"
+
+# NVDS — BLE 配對/綁定資料儲存（flash BLE app 必須啟用，
+# 缺少時會在連結階段出現 __nvds_start 未定義錯誤）
+CONFIG_ENABLE_NVDS=y
+CONFIG_CFG_NVDS=y
+
+# Shell CLI（除錯用，可選）
 CONFIG_SHELL=y</code></pre>
 
-                <h3>步驟 3：初始化 BLE Stack</h3>
-                <p>在 <code>main()</code> 中初始化平台和 BLE Controller，然後啟動 FreeRTOS 排程器：</p>
-                <pre><code class="language-c">#include &lt;FreeRTOS.h&gt;
+                <h3>步驟 3：初始化平台與 BLE Controller</h3>
+                <p>所有 FreeRTOS 應用程式共用 <code>components/os/freertos/freertos_app_hooks.{c,h}</code> 元件，它以 weak 函式提供 heap、FreeRTOS hooks 與平台初始化的預設實作。最小 <code>main.c</code> 只需呼叫 <code>ipro_platform_init()</code>，不需要手寫任何 hooks 或 heap 設定：</p>
+                <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;FreeRTOS.h&gt;
 #include &lt;task.h&gt;
-#include "ble_lib_api.h"
-#include "platform_common.h"
+#include "ble_lib_api.h"          // ble_controller_init()
+#include "freertos_app_hooks.h"   // ipro_platform_init()
 
-// BLE stack 初始化完成時會呼叫此函數
+static void app_task(void *arg);  // 應用主迴圈（見步驟 4）
+
+// BLE stack 要求的符號，stack 初始化完成時會被呼叫
 void app_init(void)
 {
     printf("BLE 5.4 stack initialized\r\n");
@@ -56,26 +78,28 @@ void app_init(void)
 
 int main(void)
 {
-    // 1. 平台初始化
-    platform_init(0);
-    setup_heap();
+    // 1. 平台初始化（heap + boot2 + log + shell，由 freertos_app_hooks 提供）
+    ipro_platform_init();
 
     // 2. 初始化 BLE Controller
-    ble_controller_init(configMAX_PRIORITIES - 3);
+    ble_controller_init(configMAX_PRIORITIES - 1);
 
     // 3. 建立應用 Task
-    xTaskCreateStatic(app_task, "app", 2048, NULL, 3,
-                      app_stack, &app_tcb);
+    xTaskCreate(app_task, "app", 2048, NULL, 3, NULL);
 
-    // 4. 啟動 FreeRTOS
+    // 4. 啟動 FreeRTOS 排程器
     vTaskStartScheduler();
     return 0;
 }</code></pre>
+                <div class="alert alert-info">
+                    <p>若需要客製某個 hook（例如 <code>vApplicationIdleHook</code>），在應用程式內定義非 weak 版本即可，連結器會自動採用，不要把 hooks/heap 樣板程式碼複製回 <code>main.c</code>。</p>
+                </div>
 
-                <h3>步驟 4：設定 Advertising</h3>
-                <p>使用 Zephyr-style BLE API 設定廣播資料並啟動廣播：</p>
+                <h3>步驟 4：啟用 BLE Host 與設定 Advertising</h3>
+                <p>在應用 Task 中依序呼叫 <code>hci_driver_init()</code> 與 <code>bt_enable()</code>（順序固定：<code>ble_controller_init</code> → <code>hci_driver_init</code> → <code>bt_enable</code>），並在 ready 回呼中啟動廣播：</p>
                 <pre><code class="language-c">#include &lt;bluetooth/bluetooth.h&gt;
 #include &lt;bluetooth/conn.h&gt;
+#include &lt;hci_driver.h&gt;
 
 static const struct bt_data ad[] = {
     BT_DATA_BYTES(BT_DATA_FLAGS,
@@ -97,11 +121,28 @@ static void bt_ready(int err)
     }
 }
 
-// 在應用 Task 中呼叫
-bt_enable(bt_ready);</code></pre>
+static void app_task(void *arg)
+{
+    // HCI driver 必須在 bt_enable() 之前初始化
+    int err = hci_driver_init();
+    if (err) {
+        printf("HCI driver init failed (err %d)\n", err);
+        vTaskDelete(NULL);
+        return;
+    }
+
+    err = bt_enable(bt_ready);
+    if (err) {
+        printf("bt_enable failed (err %d)\n", err);
+    }
+
+    for (;;) {
+        vTaskDelay(portMAX_DELAY);
+    }
+}</code></pre>
 
                 <h3>步驟 5：連線回呼</h3>
-                <p>註冊連線與斷線的回呼函數來處理連線事件：</p>
+                <p>定義 <code>struct bt_conn_cb</code> 並用 <code>bt_conn_cb_register()</code> 註冊（建議放在 <code>bt_ready()</code> 開頭）：</p>
                 <pre><code class="language-c">static void connected(struct bt_conn *conn, uint8_t err)
 {
     if (err) {
@@ -119,25 +160,32 @@ static void disconnected(struct bt_conn *conn, uint8_t reason)
                     NULL, 0);
 }
 
-BT_CONN_CB_DEFINE(conn_callbacks) = {
+static struct bt_conn_cb conn_callbacks = {
     .connected = connected,
     .disconnected = disconnected,
-};</code></pre>
+};
+
+// 在 bt_ready() 中註冊：
+//     bt_conn_cb_register(&conn_callbacks);</code></pre>
 
                 <h3>步驟 6：建構與燒錄</h3>
-                <pre><code class="language-bash"># 建構
-make -C apps/my_ble_app
+                <pre><code class="language-bash"># 建構（輸出檔名帶 _IPRO7 晶片後綴）
+make -C apps/bluetooth/ble/my_ble_app
+# → apps/bluetooth/ble/my_ble_app/build/build_out/my_ble_app_IPRO7.bin
 
-# 燒錄
+# 燒錄（序列埠名稱依實際裝置而定）
 tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
     --chipname ipro7 \
-    --port /dev/cu.usbserial-2120 \
-    --firmware apps/my_ble_app/build/build_out/my_ble_app_IPRO7.bin \
-    --baudrate 921600 --flash-pin 0x02</code></pre>
+    --port /dev/cu.usbserial-XXXX \
+    --firmware apps/bluetooth/ble/my_ble_app/build/build_out/my_ble_app_IPRO7.bin \
+    --baudrate 921600 --flash-pin 0x02
+
+# 或用 build_freertos.sh 一次完成建構＋燒錄＋監看
+./build_freertos.sh my_ble_app build flash monitor</code></pre>
 
                 <div class="info-box">
                     <h4>參考範例</h4>
-                    <p>完整的 BLE 應用範例請參考 <code>apps/bluetooth/ipro_ble_remote/</code>，包含 LED 控制、按鈕偵測、環境感測、UART 橋接、OTA 升級等功能。</p>
+                    <p>完整的 BLE 應用範例請參考 <code>apps/bluetooth/ble/ipro_ble_remote/</code>，包含 LED 控制、按鈕偵測、環境感測、UART 橋接、OTA 升級等功能。</p>
                 </div>
             </div>
         </div>
@@ -156,38 +204,54 @@ tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
 
                 <h3>建構方式</h3>
                 <p>IPRO SDK 提供兩種建構方式：</p>
-                <pre><code class="language-bash"># 方式 1：使用 Make（推薦）
-make -C apps/ipro_ble_remote
-
-# 方式 2：使用 build_freertos.sh
+                <pre><code class="language-bash"># 方式 1：使用 build_freertos.sh（推薦，可串接多個 action）
 ./build_freertos.sh ipro_ble_remote build
 
+# 串接 actions：建構 + 燒錄 + 開啟序列埠監看
+./build_freertos.sh ipro_ble_remote build flash monitor
+
+# 其他 actions：clean / size（ELF 大小與記憶體區段用量報告）
+./build_freertos.sh clean build bluetooth/ble/ipro_ble_remote
+./build_freertos.sh size bluetooth/ble/ipro_ble_remote
+
+# 列出所有可建構的專案
+./build_freertos.sh -l
+
+# 方式 2：使用 Make（底層方式，需用完整巢狀路徑 apps/&lt;category&gt;/&lt;name&gt;）
+make -C apps/bluetooth/ble/ipro_ble_remote
+
 # 清除編譯
-make -C apps/ipro_ble_remote clean</code></pre>
-                <p>建構產出位於 <code>apps/&lt;project&gt;/build/build_out/</code>，二進位檔名包含晶片後綴，例如 <code>ipro_ble_remote_IPRO7.bin</code>。</p>
+make -C apps/bluetooth/ble/ipro_ble_remote clean</code></pre>
+                <p><code>build_freertos.sh</code> 常用選項：<code>-p</code> 指定序列埠、<code>-t</code> 設定逾時秒數、<code>-w</code> 設定 monitor 等待的輸出樣式（regex）。建構產出位於 <code>apps/&lt;category&gt;/&lt;name&gt;/build/build_out/</code>，二進位檔名包含晶片後綴，例如 <code>ipro_ble_remote_IPRO7.bin</code>。</p>
 
                 <h3>.config 設定說明</h3>
-                <p>每個應用程式都有自己的 <code>.config</code> 檔案，使用 Linux Kernel Kconfig 格式：</p>
+                <p>每個應用程式都有自己的 <code>.config</code> 檔案，使用 Linux Kernel Kconfig 格式。以 BLE 應用為例：</p>
                 <pre><code class="language-bash"># SoC 選擇
 CONFIG_IPRO7=y
+CONFIG_CHIP="IPRO7"
 CONFIG_CPU_ID="intelpro_ipro7"
 
 # RTOS 選擇
 CONFIG_FREERTOS_SUPPORT=y
 
-# 功能啟用
+# BLE 功能與 Controller 變體
 CONFIG_BLUETOOTH_LE_ENABLE=y
-CONFIG_SHELL=y
-CONFIG_LWIP=y
-CONFIG_MBEDTLS=y</code></pre>
+CONFIG_BTBLECONTROLLER_LIB="link1"
+
+# NVDS — BLE 配對/綁定資料儲存（flash BLE app 必須）
+CONFIG_ENABLE_NVDS=y
+CONFIG_CFG_NVDS=y
+
+# Shell CLI
+CONFIG_SHELL=y</code></pre>
 
                 <h3>燒錄韌體</h3>
-                <p>使用 SDK 內建的燒錄工具 <code>ipro_iot_tool_lite</code>：</p>
+                <p>使用 SDK 內建的燒錄工具 <code>ipro_iot_tool_lite</code>（序列埠名稱依實際裝置而定，macOS 可用 <code>ls /dev/cu.usbserial-*</code> 查詢）：</p>
                 <pre><code class="language-bash"># 基本燒錄指令
 tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
     --chipname ipro7 \
-    --port /dev/cu.usbserial-2120 \
-    --firmware apps/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
+    --port /dev/cu.usbserial-XXXX \
+    --firmware apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
     --baudrate 921600 \
     --flash-pin 0x02</code></pre>
 
@@ -198,20 +262,22 @@ tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
 
                 <h3>序列埠監控</h3>
                 <p>使用 <code>serial_monitor.py</code> 監控序列埠輸出：</p>
-                <pre><code class="language-bash"># 監控序列埠
-python3 tools/serial_monitor.py /dev/cu.usbserial-2120
+                <pre><code class="language-bash"># 監控序列埠（序列埠名稱依實際裝置而定）
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX
 
-# 發送重啟指令並等待輸出
-python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
+# 發送重啟指令並等待預期輸出（--wait-for 為 regex）
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX \
     --send reboot --timeout 30 \
-    --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
+    --wait-for "BLE 5.4 stack initialized"</code></pre>
 
-                <h3>自動化測試</h3>
-                <p>使用 <code>board_test.sh</code> 進行完整的建構+燒錄+測試流程：</p>
-                <pre><code class="language-bash"># 完整的建構、燒錄、測試流程
-tools/board_test.sh --project apps/ipro_unit_test
+                <h3>自動化流程</h3>
+                <p><code>build_freertos.sh</code> 可將建構、燒錄、監看串成一條指令，搭配 <code>-w</code>/<code>-t</code> 等待預期輸出，適合整合進自動化指令稿：</p>
+                <pre><code class="language-bash"># 一行完成：建構 + 燒錄 + 監看
+./build_freertos.sh ipro_ble_remote build flash monitor
 
-# 結束代碼：0=通過, 1=失敗, 2=超時</code></pre>
+# 等待應用開機輸出（60 秒逾時）
+./build_freertos.sh -w "BLE 5.4 stack initialized" -t 60 \
+    ipro_ble_remote build flash monitor</code></pre>
             </div>
         </div>
 
@@ -225,20 +291,20 @@ tools/board_test.sh --project apps/ipro_unit_test
                 <i class="fas fa-chevron-down tutorial-toggle" id="tut3-icon"></i>
             </div>
             <div class="tutorial-body" id="tut3" style="display:none;">
-                <p>使用 <code>ipro_throughput_test</code> 應用程式測試 BLE 資料傳輸吞吐量，實測可達 999 Kbps。</p>
+                <p>使用 <code>ipro_throughput_test</code> 應用程式測試 BLE 資料傳輸吞吐量，2M PHY 實測可達 999 Kbps。</p>
 
                 <h3>概述</h3>
                 <p>吞吐量測試在兩塊 IPRO7 開發板之間進行，一塊作為 Slave（Peripheral），另一塊作為 Master（Central）。應用程式使用原生 Zephyr <code>bt_*</code> API 實作。</p>
 
                 <h3>步驟 1：建構與燒錄</h3>
-                <p>將相同的韌體燒錄到兩塊開發板：</p>
+                <p>將相同的韌體燒錄到兩塊開發板（兩塊板子的序列埠名稱不同，請依實際裝置調整）：</p>
                 <pre><code class="language-bash"># 建構吞吐量測試應用
-make -C apps/bluetooth/ipro_throughput_test
+make -C apps/bluetooth/ble/ipro_throughput_test
 
 # 燒錄到兩塊板子
 tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
-    --chipname ipro7 --port /dev/cu.usbserial-2120 \
-    --firmware apps/bluetooth/ipro_throughput_test/build/build_out/ipro_throughput_test_IPRO7.bin \
+    --chipname ipro7 --port /dev/cu.usbserial-XXXX \
+    --firmware apps/bluetooth/ble/ipro_throughput_test/build/build_out/ipro_throughput_test_IPRO7.bin \
     --baudrate 921600 --flash-pin 0x02</code></pre>
 
                 <h3>步驟 2：啟動測試</h3>
@@ -252,17 +318,21 @@ tp master
 tp master XX:XX:XX:XX:XX:XX</code></pre>
 
                 <h3>步驟 3：執行吞吐量測試</h3>
-                <pre><code class="language-bash"># 連線成功後，開始測試（預設 244 bytes/packet, 10 秒）
+                <pre><code class="language-bash"># 連線成功後，先切換到 2M PHY（達到 999 Kbps 的必要條件）
+tp phy 2
+
+# 開始測試（預設 200 bytes/packet, 10 秒）
 tp start
 
-# 自訂封包大小和持續時間
-tp start 244 30    # 244 bytes, 30 秒
+# 自訂封包大小和持續時間（最高吞吐量使用 244 bytes）
+tp start 244 10    # 244 bytes, 10 秒
 
 # 查看即時統計
 tp stats
 
 # 停止測試
 tp stop</code></pre>
+                <p>其他調校指令：<code>tp phy &lt;1|2|3&gt;</code> 切換 PHY（1=1M, 2=2M, 3=Coded）、<code>tp conn &lt;min&gt; &lt;max&gt;</code> 調整連線間隔（單位 1.25ms）、<code>tp interval &lt;ms&gt;</code> 調整 TX 間隔。</p>
 
                 <h3>效能優化要點</h3>
                 <p>IPRO SDK 通過以下優化達到 999 Kbps 吞吐量：</p>
@@ -273,20 +343,30 @@ tp stop</code></pre>
                     <li><strong>DLE（Data Length Extension）</strong>：啟用最大傳輸長度</li>
                     <li><strong>2M PHY</strong>：使用 BLE 2M PHY 提升傳輸速率</li>
                 </ul>
+                <p>實測參考數據（244 bytes/packet）：</p>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr><th>PHY</th><th>連線間隔</th><th>吞吐量</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1M</td><td>7.5 ms</td><td>507 Kbps</td></tr>
+                            <tr><td>2M</td><td>7.5 ms</td><td><strong>999 Kbps</strong></td></tr>
+                            <tr><td>2M</td><td>15 ms</td><td>984 Kbps</td></tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <h3>預期結果</h3>
-                <pre><code>========== Throughput Result ==========
-Direction:  Master -> Slave (Write Without Response)
-Duration:   10.00 seconds
-Data Sent:  1,223,968 bytes
-Throughput: 999.15 Kbps
-Packets:    5,016
-Avg Size:   244 bytes/packet
-=======================================</code></pre>
+                <p>測試期間每秒輸出一行即時統計，<code>tp stats</code> 顯示累計結果（以下數值為示意，實際依 PHY 與連線參數而異）：</p>
+                <pre><code>[TP] TX: 512 pkts, 124928 bytes, 998.4 Kbps | RX: 0 pkts, 0 bytes, 0.0 Kbps | Err: 0
+
+TX: 5016 packets, 1223904 bytes, 999.15 Kbps (124.89 KBps)
+RX: 0 packets, 0 bytes, 0.00 Kbps (0.00 KBps)</code></pre>
 
                 <div class="info-box">
                     <h4>參考</h4>
-                    <p>完整操作手冊請參考 <code>apps/bluetooth/ipro_throughput_test/README.md</code>。</p>
+                    <p>完整操作手冊請參考 <code>apps/bluetooth/ble/ipro_throughput_test/README.md</code>。</p>
                 </div>
             </div>
         </div>
@@ -324,6 +404,7 @@ Avg Size:   244 bytes/packet
                             <tr><td><code>link2_leaudio</code></td><td>BLE 5.2 + LE Audio, 2 連線</td><td>TWS 耳機</td></tr>
                             <tr><td><code>link1_leaudio_53_54</code></td><td>BLE 5.4 + LE Audio, 1 連線</td><td>最新功能</td></tr>
                             <tr><td><code>link2_leaudio_53_54</code></td><td>BLE 5.4 + LE Audio, 2 連線</td><td>最新 TWS</td></tr>
+                            <tr><td><code>link4_leaudio_53_54</code></td><td>BLE 5.4 + LE Audio, 4 連線</td><td>多裝置場景</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -331,31 +412,37 @@ Avg Size:   244 bytes/packet
                 <h3>BIS 廣播範例 (Source)</h3>
                 <p>使用 <code>ipro_le_audio_bis_source</code> 作為廣播源：</p>
                 <pre><code class="language-bash"># 建構 BIS Source 範例
-make -C apps/bluetooth/ipro_le_audio_bis_source
+make -C apps/bluetooth/le_audio/ipro_le_audio_bis_source
 
 # 建構 BIS Sink 範例
-make -C apps/bluetooth/ipro_le_audio_bis_sink</code></pre>
+make -C apps/bluetooth/le_audio/ipro_le_audio_bis_sink</code></pre>
 
                 <h3>CIS Unicast 範例 (Headset)</h3>
                 <p>使用 <code>ipro_le_audio_headset</code> 作為 LE Audio 耳機：</p>
                 <pre><code class="language-bash"># 建構 LE Audio Headset 範例
-make -C apps/bluetooth/ipro_le_audio_headset</code></pre>
+make -C apps/bluetooth/le_audio/ipro_le_audio_headset</code></pre>
 
                 <h3>.config 設定重點</h3>
                 <pre><code class="language-bash"># LE Audio 必要設定
 CONFIG_BLUETOOTH_LE_ENABLE=y
-CONFIG_BLE_LE_AUDIO_ENABLE=y
+CONFIG_BT_AUDIO=y
 
-# Controller 變體（選擇 leaudio 版本）
-CONFIG_BLE_CONTROLLER_VARIANT="link2_leaudio_53_54"</code></pre>
+# 依應用角色選擇 BAP 設定
+CONFIG_BT_BAP_BROADCAST_SOURCE=y    # BIS 廣播源
+# CONFIG_BT_BAP_UNICAST_SERVER=y    # CIS Unicast 耳機
+
+# LC3 編解碼器
+CONFIG_COMPONENTS_LC3_ENABLE=y
+
+# Controller 變體（選擇 leaudio 版本；Release 的 headset 範例預設為 link1_leaudio_53_54）
+CONFIG_BTBLECONTROLLER_LIB="link1_leaudio_53_54"</code></pre>
 
                 <div class="info-box">
                     <h4>參考應用</h4>
                     <ul>
-                        <li><code>apps/bluetooth/ipro_le_audio_headset/</code> - GAF/BAP Unicast 耳機</li>
+                        <li><code>apps/bluetooth/le_audio/ipro_le_audio_headset/</code> - GAF/BAP Unicast 耳機</li>
                         <li><code>apps/bluetooth/le_audio/ipro_le_audio_bis_source/</code> - BIS 廣播音訊源</li>
-                        <li><code>apps/bluetooth/ipro_le_audio_bis_source/</code> - BIS 音訊源</li>
-                        <li><code>apps/bluetooth/ipro_le_audio_bis_sink/</code> - BIS 音訊接收器</li>
+                        <li><code>apps/bluetooth/le_audio/ipro_le_audio_bis_sink/</code> - BIS 音訊接收器</li>
                     </ul>
                 </div>
             </div>
@@ -394,6 +481,24 @@ CONFIG_BLE_CONTROLLER_VARIANT="link2_leaudio_53_54"</code></pre>
                 </div>
             </div>
         </div>
+
+        <!-- Next Steps -->
+        <section id="next-steps" style="margin-top:3rem;">
+            <h2>下一步</h2>
+            <p>完成本系列教學後，建議繼續閱讀：</p>
+            <div class="features-grid" style="margin-top:2rem;">
+                <a href="{{ '/applications' | relative_url }}" class="feature-card" style="text-decoration:none;">
+                    <div class="feature-icon"><i class="fas fa-box"></i></div>
+                    <h3 class="feature-title">範例應用</h3>
+                    <p class="feature-description">瀏覽 SDK 內所有參考應用的功能與建構方式。</p>
+                </a>
+                <a href="{{ '/ble-development' | relative_url }}" class="feature-card" style="text-decoration:none;">
+                    <div class="feature-icon"><i class="fas fa-satellite-dish"></i></div>
+                    <h3 class="feature-title">BLE 開發指南</h3>
+                    <p class="feature-description">深入了解 BLE 5.4 Host/Controller 架構與 API。</p>
+                </a>
+            </div>
+        </section>
 
     </div>
 </section>

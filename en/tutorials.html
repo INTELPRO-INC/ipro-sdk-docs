@@ -27,28 +27,50 @@ lang: en
                 <p>Learn how to create your first BLE application with IPRO SDK. This tutorial covers <code>bt_enable()</code> initialization, advertising setup, and connection callbacks.</p>
 
                 <h3>Step 1: Project Structure</h3>
-                <p>Each IPRO SDK application is a standalone directory under <code>apps/</code>, containing <code>.config</code>, <code>CMakeLists.txt</code>, and source code. You can copy <code>apps/bluetooth/ipro_ble_remote/</code> as a template.</p>
-                <pre><code class="language-bash">apps/my_ble_app/
+                <p>Each IPRO SDK application is a standalone directory under <code>apps/&lt;category&gt;/&lt;name&gt;</code>. We recommend copying <code>apps/bluetooth/ble/ipro_ble_remote/</code> as a template and placing your project at the same level (e.g., <code>apps/bluetooth/ble/my_ble_app/</code>):</p>
+                <pre><code class="language-bash">apps/bluetooth/ble/my_ble_app/
   .config            # Kconfig settings (CONFIG_BLUETOOTH_LE_ENABLE=y etc.)
+  Makefile           # make entry point (contains PROJECT_NAME and IPRO_SDK_BASE)
+  Kconfig            # Application-level Kconfig options
   CMakeLists.txt     # Build configuration
   main.c             # Application entry point</code></pre>
+                <div class="alert alert-warning">
+                    <p>After copying the template, update <code>PROJECT_NAME</code> in the <code>Makefile</code> to your new project name. <code>IPRO_SDK_BASE ?= $(abspath ../../../../)</code> is a relative path -- if your project sits at a different directory depth, adjust the number of levels accordingly.</p>
+                </div>
 
                 <h3>Step 2: .config Settings</h3>
-                <p>Enable BLE features in <code>.config</code>:</p>
-                <pre><code class="language-bash">CONFIG_IPRO7=y
+                <p>Enable BLE features in <code>.config</code>. Only the key settings are listed below; in practice, start from the <code>.config</code> of <code>apps/bluetooth/ble/ipro_ble_remote/</code> and modify it:</p>
+                <pre><code class="language-bash"># SoC and toolchain
+CONFIG_IPRO7=y
+CONFIG_CHIP="IPRO7"
 CONFIG_CPU_ID="intelpro_ipro7"
+
+# RTOS selection
 CONFIG_FREERTOS_SUPPORT=y
+
+# BLE Host + controller variant (prebuilt linkN library)
 CONFIG_BLUETOOTH_LE_ENABLE=y
+CONFIG_BTBLECONTROLLER_LIB="link1"
+
+# NVDS -- BLE pairing/bonding data storage (required for flash BLE apps;
+# without it the link fails with undefined symbol __nvds_start)
+CONFIG_ENABLE_NVDS=y
+CONFIG_CFG_NVDS=y
+
+# Shell CLI (for debugging, optional)
 CONFIG_SHELL=y</code></pre>
 
-                <h3>Step 3: Initialize BLE Stack</h3>
-                <p>In <code>main()</code>, initialize the platform and BLE Controller, then start the FreeRTOS scheduler:</p>
-                <pre><code class="language-c">#include &lt;FreeRTOS.h&gt;
+                <h3>Step 3: Initialize the Platform and BLE Controller</h3>
+                <p>All FreeRTOS applications share the <code>components/os/freertos/freertos_app_hooks.{c,h}</code> component, which provides weak default implementations of the heap, FreeRTOS hooks, and platform initialization. A minimal <code>main.c</code> only needs to call <code>ipro_platform_init()</code> -- there is no need to hand-write any hooks or heap setup:</p>
+                <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;FreeRTOS.h&gt;
 #include &lt;task.h&gt;
-#include "ble_lib_api.h"
-#include "platform_common.h"
+#include "ble_lib_api.h"          // ble_controller_init()
+#include "freertos_app_hooks.h"   // ipro_platform_init()
 
-// Called when BLE stack initialization completes
+static void app_task(void *arg);  // Application main loop (see Step 4)
+
+// Symbol required by the BLE stack, called when stack init completes
 void app_init(void)
 {
     printf("BLE 5.4 stack initialized\r\n");
@@ -56,26 +78,28 @@ void app_init(void)
 
 int main(void)
 {
-    // 1. Platform initialization
-    platform_init(0);
-    setup_heap();
+    // 1. Platform init (heap + boot2 + log + shell, provided by freertos_app_hooks)
+    ipro_platform_init();
 
-    // 2. Initialize BLE Controller
-    ble_controller_init(configMAX_PRIORITIES - 3);
+    // 2. Initialize the BLE Controller
+    ble_controller_init(configMAX_PRIORITIES - 1);
 
-    // 3. Create application task
-    xTaskCreateStatic(app_task, "app", 2048, NULL, 3,
-                      app_stack, &app_tcb);
+    // 3. Create the application task
+    xTaskCreate(app_task, "app", 2048, NULL, 3, NULL);
 
-    // 4. Start FreeRTOS
+    // 4. Start the FreeRTOS scheduler
     vTaskStartScheduler();
     return 0;
 }</code></pre>
+                <div class="alert alert-info">
+                    <p>To customize a hook (e.g., <code>vApplicationIdleHook</code>), simply define a non-weak version inside your application -- the linker picks it up automatically. Do not copy hooks/heap boilerplate back into <code>main.c</code>.</p>
+                </div>
 
-                <h3>Step 4: Set Up Advertising</h3>
-                <p>Use Zephyr-style BLE APIs to configure advertising data and start broadcasting:</p>
+                <h3>Step 4: Enable the BLE Host and Set Up Advertising</h3>
+                <p>In your application task, call <code>hci_driver_init()</code> followed by <code>bt_enable()</code> (the order is fixed: <code>ble_controller_init</code> → <code>hci_driver_init</code> → <code>bt_enable</code>), then start advertising in the ready callback:</p>
                 <pre><code class="language-c">#include &lt;bluetooth/bluetooth.h&gt;
 #include &lt;bluetooth/conn.h&gt;
+#include &lt;hci_driver.h&gt;
 
 static const struct bt_data ad[] = {
     BT_DATA_BYTES(BT_DATA_FLAGS,
@@ -97,11 +121,28 @@ static void bt_ready(int err)
     }
 }
 
-// Call in your application task
-bt_enable(bt_ready);</code></pre>
+static void app_task(void *arg)
+{
+    // The HCI driver must be initialized before bt_enable()
+    int err = hci_driver_init();
+    if (err) {
+        printf("HCI driver init failed (err %d)\n", err);
+        vTaskDelete(NULL);
+        return;
+    }
+
+    err = bt_enable(bt_ready);
+    if (err) {
+        printf("bt_enable failed (err %d)\n", err);
+    }
+
+    for (;;) {
+        vTaskDelay(portMAX_DELAY);
+    }
+}</code></pre>
 
                 <h3>Step 5: Connection Callbacks</h3>
-                <p>Register connection and disconnection callbacks to handle connection events:</p>
+                <p>Define a <code>struct bt_conn_cb</code> and register it with <code>bt_conn_cb_register()</code> (recommended at the beginning of <code>bt_ready()</code>):</p>
                 <pre><code class="language-c">static void connected(struct bt_conn *conn, uint8_t err)
 {
     if (err) {
@@ -119,25 +160,32 @@ static void disconnected(struct bt_conn *conn, uint8_t reason)
                     NULL, 0);
 }
 
-BT_CONN_CB_DEFINE(conn_callbacks) = {
+static struct bt_conn_cb conn_callbacks = {
     .connected = connected,
     .disconnected = disconnected,
-};</code></pre>
+};
+
+// Register inside bt_ready():
+//     bt_conn_cb_register(&conn_callbacks);</code></pre>
 
                 <h3>Step 6: Build and Flash</h3>
-                <pre><code class="language-bash"># Build
-make -C apps/my_ble_app
+                <pre><code class="language-bash"># Build (the output binary carries the _IPRO7 chip suffix)
+make -C apps/bluetooth/ble/my_ble_app
+# → apps/bluetooth/ble/my_ble_app/build/build_out/my_ble_app_IPRO7.bin
 
-# Flash
+# Flash (serial port name depends on your device)
 tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
     --chipname ipro7 \
-    --port /dev/cu.usbserial-2120 \
-    --firmware apps/my_ble_app/build/build_out/my_ble_app_IPRO7.bin \
-    --baudrate 921600 --flash-pin 0x02</code></pre>
+    --port /dev/cu.usbserial-XXXX \
+    --firmware apps/bluetooth/ble/my_ble_app/build/build_out/my_ble_app_IPRO7.bin \
+    --baudrate 921600 --flash-pin 0x02
+
+# Or use build_freertos.sh to build + flash + monitor in one step
+./build_freertos.sh my_ble_app build flash monitor</code></pre>
 
                 <div class="info-box">
                     <h4>Reference Example</h4>
-                    <p>For a complete BLE application example, see <code>apps/bluetooth/ipro_ble_remote/</code>, which includes LED control, button detection, environment sensing, UART bridge, and OTA upgrade features.</p>
+                    <p>For a complete BLE application example, see <code>apps/bluetooth/ble/ipro_ble_remote/</code>, which includes LED control, button detection, environment sensing, UART bridge, and OTA upgrade features.</p>
                 </div>
             </div>
         </div>
@@ -156,38 +204,54 @@ tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
 
                 <h3>Build Methods</h3>
                 <p>IPRO SDK provides two build methods:</p>
-                <pre><code class="language-bash"># Method 1: Using Make (recommended)
-make -C apps/ipro_ble_remote
-
-# Method 2: Using build_freertos.sh
+                <pre><code class="language-bash"># Method 1: Using build_freertos.sh (recommended, supports chained actions)
 ./build_freertos.sh ipro_ble_remote build
 
+# Chain actions: build + flash + open serial monitor
+./build_freertos.sh ipro_ble_remote build flash monitor
+
+# Other actions: clean / size (ELF size + memory region usage report)
+./build_freertos.sh clean build bluetooth/ble/ipro_ble_remote
+./build_freertos.sh size bluetooth/ble/ipro_ble_remote
+
+# List all buildable projects
+./build_freertos.sh -l
+
+# Method 2: Using Make (low-level, requires the full nested path apps/&lt;category&gt;/&lt;name&gt;)
+make -C apps/bluetooth/ble/ipro_ble_remote
+
 # Clean build
-make -C apps/ipro_ble_remote clean</code></pre>
-                <p>Build output is located at <code>apps/&lt;project&gt;/build/build_out/</code>. Binary names include a chip suffix, e.g., <code>ipro_ble_remote_IPRO7.bin</code>.</p>
+make -C apps/bluetooth/ble/ipro_ble_remote clean</code></pre>
+                <p>Common <code>build_freertos.sh</code> options: <code>-p</code> to specify the serial port, <code>-t</code> to set the timeout in seconds, and <code>-w</code> to set the output pattern (regex) the monitor waits for. Build output is located at <code>apps/&lt;category&gt;/&lt;name&gt;/build/build_out/</code>. Binary names include a chip suffix, e.g., <code>ipro_ble_remote_IPRO7.bin</code>.</p>
 
                 <h3>.config Settings</h3>
-                <p>Each application has its own <code>.config</code> file using Linux Kernel Kconfig format:</p>
+                <p>Each application has its own <code>.config</code> file using Linux Kernel Kconfig format. Taking a BLE application as an example:</p>
                 <pre><code class="language-bash"># SoC selection
 CONFIG_IPRO7=y
+CONFIG_CHIP="IPRO7"
 CONFIG_CPU_ID="intelpro_ipro7"
 
 # RTOS selection
 CONFIG_FREERTOS_SUPPORT=y
 
-# Feature enables
+# BLE features and controller variant
 CONFIG_BLUETOOTH_LE_ENABLE=y
-CONFIG_SHELL=y
-CONFIG_LWIP=y
-CONFIG_MBEDTLS=y</code></pre>
+CONFIG_BTBLECONTROLLER_LIB="link1"
+
+# NVDS -- BLE pairing/bonding data storage (required for flash BLE apps)
+CONFIG_ENABLE_NVDS=y
+CONFIG_CFG_NVDS=y
+
+# Shell CLI
+CONFIG_SHELL=y</code></pre>
 
                 <h3>Flash Firmware</h3>
-                <p>Use the SDK's built-in flash tool <code>ipro_iot_tool_lite</code>:</p>
+                <p>Use the SDK's built-in flash tool <code>ipro_iot_tool_lite</code> (the serial port name depends on your device; on macOS, find it with <code>ls /dev/cu.usbserial-*</code>):</p>
                 <pre><code class="language-bash"># Basic flash command
 tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
     --chipname ipro7 \
-    --port /dev/cu.usbserial-2120 \
-    --firmware apps/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
+    --port /dev/cu.usbserial-XXXX \
+    --firmware apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
     --baudrate 921600 \
     --flash-pin 0x02</code></pre>
 
@@ -198,20 +262,22 @@ tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
 
                 <h3>Serial Monitor</h3>
                 <p>Use <code>serial_monitor.py</code> to monitor serial output:</p>
-                <pre><code class="language-bash"># Monitor serial port
-python3 tools/serial_monitor.py /dev/cu.usbserial-2120
+                <pre><code class="language-bash"># Monitor serial port (port name depends on your device)
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX
 
-# Send reboot command and wait for output
-python3 tools/serial_monitor.py /dev/cu.usbserial-2120 \
+# Send reboot command and wait for expected output (--wait-for takes a regex)
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX \
     --send reboot --timeout 30 \
-    --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
+    --wait-for "BLE 5.4 stack initialized"</code></pre>
 
-                <h3>Automated Testing</h3>
-                <p>Use <code>board_test.sh</code> for a complete build+flash+test cycle:</p>
-                <pre><code class="language-bash"># Full build, flash, and test cycle
-tools/board_test.sh --project apps/ipro_unit_test
+                <h3>Automated Workflow</h3>
+                <p><code>build_freertos.sh</code> can chain build, flash, and monitor into a single command. Combine it with <code>-w</code>/<code>-t</code> to wait for expected output, which makes it easy to integrate into automation scripts:</p>
+                <pre><code class="language-bash"># One line: build + flash + monitor
+./build_freertos.sh ipro_ble_remote build flash monitor
 
-# Exit codes: 0=pass, 1=fail, 2=timeout</code></pre>
+# Wait for the application boot output (60-second timeout)
+./build_freertos.sh -w "BLE 5.4 stack initialized" -t 60 \
+    ipro_ble_remote build flash monitor</code></pre>
             </div>
         </div>
 
@@ -225,20 +291,20 @@ tools/board_test.sh --project apps/ipro_unit_test
                 <i class="fas fa-chevron-down tutorial-toggle" id="tut3-icon"></i>
             </div>
             <div class="tutorial-body" id="tut3" style="display:none;">
-                <p>Use the <code>ipro_throughput_test</code> application to measure BLE data throughput, achieving up to 999 Kbps.</p>
+                <p>Use the <code>ipro_throughput_test</code> application to measure BLE data throughput, achieving up to 999 Kbps on 2M PHY.</p>
 
                 <h3>Overview</h3>
                 <p>The throughput test runs between two IPRO7 development boards -- one as Slave (Peripheral) and the other as Master (Central). The application uses native Zephyr <code>bt_*</code> APIs.</p>
 
                 <h3>Step 1: Build and Flash</h3>
-                <p>Flash the same firmware to both development boards:</p>
+                <p>Flash the same firmware to both development boards (the two boards have different serial port names; adjust to your actual devices):</p>
                 <pre><code class="language-bash"># Build throughput test application
-make -C apps/bluetooth/ipro_throughput_test
+make -C apps/bluetooth/ble/ipro_throughput_test
 
 # Flash to both boards
 tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
-    --chipname ipro7 --port /dev/cu.usbserial-2120 \
-    --firmware apps/bluetooth/ipro_throughput_test/build/build_out/ipro_throughput_test_IPRO7.bin \
+    --chipname ipro7 --port /dev/cu.usbserial-XXXX \
+    --firmware apps/bluetooth/ble/ipro_throughput_test/build/build_out/ipro_throughput_test_IPRO7.bin \
     --baudrate 921600 --flash-pin 0x02</code></pre>
 
                 <h3>Step 2: Start Test</h3>
@@ -252,17 +318,21 @@ tp master
 tp master XX:XX:XX:XX:XX:XX</code></pre>
 
                 <h3>Step 3: Run Throughput Test</h3>
-                <pre><code class="language-bash"># After connection, start test (default 244 bytes/packet, 10 seconds)
+                <pre><code class="language-bash"># After connection, switch to 2M PHY first (required to reach 999 Kbps)
+tp phy 2
+
+# Start test (default 200 bytes/packet, 10 seconds)
 tp start
 
-# Custom packet size and duration
-tp start 244 30    # 244 bytes, 30 seconds
+# Custom packet size and duration (use 244 bytes for maximum throughput)
+tp start 244 10    # 244 bytes, 10 seconds
 
 # View real-time statistics
 tp stats
 
 # Stop test
 tp stop</code></pre>
+                <p>Other tuning commands: <code>tp phy &lt;1|2|3&gt;</code> switches PHY (1=1M, 2=2M, 3=Coded), <code>tp conn &lt;min&gt; &lt;max&gt;</code> updates the connection interval (units of 1.25ms), and <code>tp interval &lt;ms&gt;</code> changes the TX interval.</p>
 
                 <h3>Performance Optimization</h3>
                 <p>IPRO SDK achieves 999 Kbps throughput through the following optimizations:</p>
@@ -273,20 +343,30 @@ tp stop</code></pre>
                     <li><strong>DLE (Data Length Extension)</strong>: Enable maximum transmission length</li>
                     <li><strong>2M PHY</strong>: Use BLE 2M PHY for faster data rate</li>
                 </ul>
+                <p>Measured reference numbers (244 bytes/packet):</p>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr><th>PHY</th><th>Connection Interval</th><th>Throughput</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1M</td><td>7.5 ms</td><td>507 Kbps</td></tr>
+                            <tr><td>2M</td><td>7.5 ms</td><td><strong>999 Kbps</strong></td></tr>
+                            <tr><td>2M</td><td>15 ms</td><td>984 Kbps</td></tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <h3>Expected Results</h3>
-                <pre><code>========== Throughput Result ==========
-Direction:  Master -> Slave (Write Without Response)
-Duration:   10.00 seconds
-Data Sent:  1,223,968 bytes
-Throughput: 999.15 Kbps
-Packets:    5,016
-Avg Size:   244 bytes/packet
-=======================================</code></pre>
+                <p>During the test, a real-time statistics line is printed every second, and <code>tp stats</code> shows the cumulative results (the numbers below are illustrative; actual values depend on PHY and connection parameters):</p>
+                <pre><code>[TP] TX: 512 pkts, 124928 bytes, 998.4 Kbps | RX: 0 pkts, 0 bytes, 0.0 Kbps | Err: 0
+
+TX: 5016 packets, 1223904 bytes, 999.15 Kbps (124.89 KBps)
+RX: 0 packets, 0 bytes, 0.00 Kbps (0.00 KBps)</code></pre>
 
                 <div class="info-box">
                     <h4>Reference</h4>
-                    <p>For the complete operation manual, see <code>apps/bluetooth/ipro_throughput_test/README.md</code>.</p>
+                    <p>For the complete operation manual, see <code>apps/bluetooth/ble/ipro_throughput_test/README.md</code>.</p>
                 </div>
             </div>
         </div>
@@ -324,6 +404,7 @@ Avg Size:   244 bytes/packet
                             <tr><td><code>link2_leaudio</code></td><td>BLE 5.2 + LE Audio, 2 connections</td><td>TWS earbuds</td></tr>
                             <tr><td><code>link1_leaudio_53_54</code></td><td>BLE 5.4 + LE Audio, 1 connection</td><td>Latest features</td></tr>
                             <tr><td><code>link2_leaudio_53_54</code></td><td>BLE 5.4 + LE Audio, 2 connections</td><td>Latest TWS</td></tr>
+                            <tr><td><code>link4_leaudio_53_54</code></td><td>BLE 5.4 + LE Audio, 4 connections</td><td>Multi-device scenarios</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -331,31 +412,37 @@ Avg Size:   244 bytes/packet
                 <h3>BIS Broadcast Example (Source)</h3>
                 <p>Use <code>ipro_le_audio_bis_source</code> as broadcast source:</p>
                 <pre><code class="language-bash"># Build BIS Source example
-make -C apps/bluetooth/ipro_le_audio_bis_source
+make -C apps/bluetooth/le_audio/ipro_le_audio_bis_source
 
 # Build BIS Sink example
-make -C apps/bluetooth/ipro_le_audio_bis_sink</code></pre>
+make -C apps/bluetooth/le_audio/ipro_le_audio_bis_sink</code></pre>
 
                 <h3>CIS Unicast Example (Headset)</h3>
                 <p>Use <code>ipro_le_audio_headset</code> as an LE Audio headset:</p>
                 <pre><code class="language-bash"># Build LE Audio Headset example
-make -C apps/bluetooth/ipro_le_audio_headset</code></pre>
+make -C apps/bluetooth/le_audio/ipro_le_audio_headset</code></pre>
 
                 <h3>.config Key Settings</h3>
                 <pre><code class="language-bash"># Required LE Audio settings
 CONFIG_BLUETOOTH_LE_ENABLE=y
-CONFIG_BLE_LE_AUDIO_ENABLE=y
+CONFIG_BT_AUDIO=y
 
-# Controller variant (choose leaudio version)
-CONFIG_BLE_CONTROLLER_VARIANT="link2_leaudio_53_54"</code></pre>
+# Choose BAP settings according to the application role
+CONFIG_BT_BAP_BROADCAST_SOURCE=y    # BIS broadcast source
+# CONFIG_BT_BAP_UNICAST_SERVER=y    # CIS unicast headset
+
+# LC3 codec
+CONFIG_COMPONENTS_LC3_ENABLE=y
+
+# Controller variant (choose a leaudio version; the Release headset example defaults to link1_leaudio_53_54)
+CONFIG_BTBLECONTROLLER_LIB="link1_leaudio_53_54"</code></pre>
 
                 <div class="info-box">
                     <h4>Reference Applications</h4>
                     <ul>
-                        <li><code>apps/bluetooth/ipro_le_audio_headset/</code> - GAF/BAP Unicast headset</li>
+                        <li><code>apps/bluetooth/le_audio/ipro_le_audio_headset/</code> - GAF/BAP Unicast headset</li>
                         <li><code>apps/bluetooth/le_audio/ipro_le_audio_bis_source/</code> - BIS broadcast audio source</li>
-                        <li><code>apps/bluetooth/ipro_le_audio_bis_source/</code> - BIS audio source</li>
-                        <li><code>apps/bluetooth/ipro_le_audio_bis_sink/</code> - BIS audio sink</li>
+                        <li><code>apps/bluetooth/le_audio/ipro_le_audio_bis_sink/</code> - BIS audio sink</li>
                     </ul>
                 </div>
             </div>
@@ -394,6 +481,24 @@ CONFIG_BLE_CONTROLLER_VARIANT="link2_leaudio_53_54"</code></pre>
                 </div>
             </div>
         </div>
+
+        <!-- Next Steps -->
+        <section id="next-steps" style="margin-top:3rem;">
+            <h2>Next Steps</h2>
+            <p>After completing this tutorial series, we recommend continuing with:</p>
+            <div class="features-grid" style="margin-top:2rem;">
+                <a href="{{ '/en/applications' | relative_url }}" class="feature-card" style="text-decoration:none;">
+                    <div class="feature-icon"><i class="fas fa-box"></i></div>
+                    <h3 class="feature-title">Example Applications</h3>
+                    <p class="feature-description">Browse the features and build instructions of all reference applications in the SDK.</p>
+                </a>
+                <a href="{{ '/en/ble-development' | relative_url }}" class="feature-card" style="text-decoration:none;">
+                    <div class="feature-icon"><i class="fas fa-satellite-dish"></i></div>
+                    <h3 class="feature-title">BLE Development Guide</h3>
+                    <p class="feature-description">Dive deeper into the BLE 5.4 Host/Controller architecture and APIs.</p>
+                </a>
+            </div>
+        </section>
 
     </div>
 </section>
