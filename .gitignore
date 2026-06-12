@@ -14,3 +14,12 @@ vendor/
 *.swp
 *.swo
 *~
+
+# Internal notes guard: only README.md may live at the publish root.
+# Internal write-ups belong in the SDK repo (docs/internal-notes/), never here.
+/*.md
+!/README.md
+/en/*.md
+
+# Local review tooling state
+.claude_review_state.json

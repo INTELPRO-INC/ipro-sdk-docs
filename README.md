@@ -1,203 +1,78 @@
 # IPRO SDK Documentation Website
 
-This folder contains the GitHub Pages documentation site for the IPRO SDK.
+Public documentation site for the IPRO SDK, hosted on GitHub Pages:
+<https://intelpro-inc.github.io/ipro-sdk-docs/>
 
-> **📋 Note:** SDK source code is hosted on internal GitLab. This site provides documentation only.
-
-## 🚀 Deployment to GitHub Pages
-
-### Step 1: Create a new GitHub repository for documentation
-
-```bash
-# Create a new repository on GitHub (e.g., ipro-sdk-docs)
-# Then push this folder as the main content
-
-cd gh-pages
-git init
-git add .
-git commit -m "Initial documentation site"
-git branch -M main
-git remote add origin https://github.com/YOUR_USERNAME/ipro-sdk-docs.git
-git push -u origin main
-```
-
-### Step 2: Enable GitHub Pages
-
-1. Go to your GitHub repository Settings → Pages
-2. Source: Select `main` branch, `/ (root)` folder
-3. Save
-
-Your site will be available at: `https://YOUR_USERNAME.github.io/ipro-sdk-docs/`
-
-### Step 3: Update baseurl in _config.yml
-
-```yaml
-baseurl: "/ipro-sdk-docs"  # Change to your repository name
-```
-
-### Alternative: Use GitHub Actions
-
-Create `.github/workflows/pages.yml` in your documentation repository:
-```yaml
-name: Deploy to GitHub Pages
-
-on:
-  push:
-    branches: [main]
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.1'
-          bundler-cache: true
-      
-      - name: Build site
-        run: bundle exec jekyll build
-      
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
-        with:
-          path: ./_site
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v3
-```
-
-## 🔄 Syncing Documentation with Internal GitLab
-
-When SDK documentation is updated on internal GitLab, sync to GitHub:
-
-```bash
-# In your internal GitLab SDK repository
-cd /path/to/ipro_sdk/gh-pages
-
-# Copy to your GitHub docs repository
-cp -r * /path/to/github-docs-repo/
-
-# Commit and push to GitHub
-cd /path/to/github-docs-repo
-git add .
-git commit -m "Sync documentation from internal SDK"
-git push
-```
-
-Or create a CI/CD job in GitLab to auto-sync (if network allows).
+The site is bilingual — Traditional Chinese pages live at the repository root,
+English pages under `en/`. Every `*.html` page at the root has a same-named
+counterpart in `en/`.
 
 ## 📁 Structure
 
 ```
-gh-pages/
-├── _config.yml           # Jekyll configuration
+ipro-sdk-docs/
+├── _config.yml           # Jekyll configuration + navigation (single source of truth)
 ├── _layouts/
-│   └── default.html      # Main layout template
+│   └── default.html      # Main layout (navbar, release notice, footer)
 ├── assets/
-│   ├── css/
-│   │   └── style.css     # Custom styles
-│   ├── js/
-│   │   └── main.js       # JavaScript functionality
-│   └── favicon.svg       # Site favicon
-├── index.html            # Home page
-├── getting-started.html  # Getting started guide
-├── architecture.html     # Architecture overview
-├── ble-development.html  # BLE development guide
-├── zephyr-rtos.html      # Zephyr RTOS guide
-├── applications.html     # Application examples
-├── api-reference.html    # API reference
-├── Gemfile               # Ruby dependencies
-└── README.md             # This file
+│   ├── css/style.css     # Custom styles
+│   ├── js/main.js        # Navigation / UI behavior
+│   └── favicon.svg
+├── index.html            # Home (zh-TW)
+├── *.html                # Documentation pages (zh-TW)
+└── en/*.html             # English counterparts (same filenames)
 ```
 
-## 🛠️ Local Development
+Navigation is defined once in `_config.yml` (`nav` / `nav_en`) and rendered by
+`_layouts/default.html`. To add or remove a page from the menus, edit
+`_config.yml` only.
 
-### Prerequisites
-- Ruby 2.7+ and Bundler
-- Jekyll 4.0+
+## 🛠️ Local Preview
 
-### Setup
 ```bash
-cd gh-pages
 bundle install
-```
-
-### Run locally
-```bash
 bundle exec jekyll serve
+# open http://localhost:4000/ipro-sdk-docs/
 ```
 
-Open http://localhost:4000 in your browser.
+## ✍️ Updating Documentation
 
-### Build
+1. Edit the Chinese page and its English counterpart in the same change.
+2. Keep section anchor `id`s identical between the zh and en versions.
+3. Preview locally, then commit the **specific files you changed** and push:
+
 ```bash
-bundle exec jekyll build
+git add index.html en/index.html
+git commit -m "docs(index): describe the change"
+git push
 ```
 
-The built site will be in `_site/` directory.
+> ⚠️ Never use `git add .` in this repository. Only `README.md` and the site
+> pages belong here — working notes and internal documents must not be
+> committed. Internal write-ups belong in the SDK repository under
+> `docs/internal-notes/`.
 
-## 🎨 Customization
+## ✅ Content Rules (public site)
 
-### Update site info
-Edit `_config.yml`:
-- `title`: Site title
-- `description`: Site description
-- `baseurl`: Repository name (for GitHub Pages)
-- `url`: Your GitHub Pages URL
+- **IPRO7 has no built-in Wi-Fi.** Network connectivity is provided by the
+  IPRO6 companion chip over SDIO. Never describe Wi-Fi as an IPRO7 feature.
+- **No customer or internal project codenames.** Reference designs are
+  described generically ("contact INTELPRO for availability").
+- **Document the Release SDK scope** (see `release_notice` in `_config.yml`),
+  not the internal development tree. Features outside the release are marked
+  as roadmap items.
+- **No internal infrastructure details** (CI pipelines, issue trackers,
+  internal hostnames or ports).
 
-### Modify styles
-Edit `assets/css/style.css` to customize:
-- Colors (CSS variables at the top)
-- Typography
-- Layout
-- Components
+## 🎨 Adding a New Page
 
-### Add new pages
-1. Create a new `.html` file
-2. Add front matter:
+1. Create `your-page.html` at the root (zh-TW) **and** `en/your-page.html`.
+2. Add front matter to both:
    ```yaml
    ---
    layout: default
    title: Page Title
    ---
    ```
-3. Add your content
-
-## 📝 Content Guidelines
-
-- Use semantic HTML with proper heading hierarchy
-- Include code examples with syntax highlighting
-- Add navigation sidebar for long pages
-- Keep mobile responsiveness in mind
-
-## 🔗 Important Links
-
-- [Jekyll Documentation](https://jekyllrb.com/docs/)
-- [GitHub Pages Documentation](https://docs.github.com/en/pages)
-- [Liquid Template Language](https://shopify.github.io/liquid/)
-
-## 📋 Important Notes
-
-- **SDK Source Code**: Hosted on internal GitLab (not publicly accessible)
-- **Documentation Site**: This site, hosted on GitHub Pages (public)
-- **Updates**: Documentation should be synced when SDK updates are released
-
-## 📄 License
-
-This documentation is part of the IPRO SDK and follows the same license terms.
+3. Register the page in `_config.yml` under `nav` and `nav_en`.
+4. Add a sidebar TOC (`doc-sidebar`) for long pages, matching existing pages.
