@@ -21,7 +21,7 @@ lang: en
                 <span>Chip Overview</span>
             </a>
             <a href="#wireless" class="hw-nav-item">
-                <i class="fas fa-wifi"></i>
+                <i class="fas fa-tower-broadcast"></i>
                 <span>Wireless</span>
             </a>
             <a href="#ai-multimedia" class="hw-nav-item">
@@ -31,6 +31,22 @@ lang: en
             <a href="#pinout" class="hw-nav-item">
                 <i class="fas fa-th"></i>
                 <span>Pinout</span>
+            </a>
+            <a href="#uart-pins" class="hw-nav-item">
+                <i class="fas fa-exchange-alt"></i>
+                <span>UART</span>
+            </a>
+            <a href="#spi-pins" class="hw-nav-item">
+                <i class="fas fa-microchip"></i>
+                <span>SPI</span>
+            </a>
+            <a href="#sdio-pins" class="hw-nav-item">
+                <i class="fas fa-sd-card"></i>
+                <span>SDIO</span>
+            </a>
+            <a href="#i2s-pins" class="hw-nav-item">
+                <i class="fas fa-volume-up"></i>
+                <span>I2S</span>
             </a>
             <a href="#evb" class="hw-nav-item">
                 <i class="fas fa-tachograph-digital"></i>
@@ -45,10 +61,6 @@ lang: en
         <!-- Chip Overview -->
         <div id="chip-overview" class="hw-section">
             <h2><i class="fas fa-microchip"></i> IPRO7 Chip Overview</h2>
-
-            <div class="alert-warning" style="background: rgba(245, 158, 11, 0.1); border-left: 4px solid #f59e0b; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
-                <strong>⚠ Release SDK Notice:</strong> This is Release SDK v1.0.1. IPRO7 does not support WiFi. Some advanced features (Matter, Thread, Zigbee, AI/NPU) are not included in this release.
-            </div>
 
             <div class="chip-intro" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1)); border-radius: 16px; padding: 2rem; margin-bottom: 2rem;">
                 <h3 style="margin-top: 0; color: var(--primary);">2.4G Low-Power Wireless Chip</h3>
@@ -71,7 +83,7 @@ lang: en
                     <ul>
                         <li>RISC-V RV32IMAFC @192MHz</li>
                         <li>L1 I/D Cache 16KB/16KB</li>
-                        <li>RAM 300KB</li>
+                        <li>OCRAM 256KB (plus 4KB HBN retention RAM)</li>
                         <li>ROM 128KB</li>
                         <li>eFuse 2Kb</li>
                         <li>RTC, Timer x2, WDT</li>
@@ -92,12 +104,12 @@ lang: en
                 </div>
 
                 <div class="spec-card">
-                    <div class="spec-icon"><i class="fas fa-wifi"></i></div>
+                    <div class="spec-icon"><i class="fas fa-tower-broadcast"></i></div>
                     <h3>Wireless Features</h3>
                     <ul>
                         <li>Bluetooth 5.4 / BLE</li>
                         <li>LE Audio (LC3 Codec)</li>
-                        <li>Up to 16 BLE Connections</li>
+                        <li>Up to 8 simultaneous connections (link8 controller variant; choose link1/link2/link4/link8 as needed)</li>
                         <li>2.4 GHz RF</li>
                     </ul>
                 </div>
@@ -121,7 +133,7 @@ lang: en
                     <h3>AI / NPU</h3>
                     <ul>
                         <li>NPU Performance: 0.1 TOPS</li>
-                        <li>AI Detection Applications</li>
+                        <li>AI Detection/Recognition Applications</li>
                         <li>Edge Computing Acceleration</li>
                         <li>Image/Voice AI Processing</li>
                     </ul>
@@ -167,8 +179,8 @@ lang: en
 │  │ Flash │  │ SHA   │  │ MJPEG │  │UART x2│  │ LDO   │  │ QDEC IRR    │     │
 │  │ 64Mb  │  │ PKA   │  │ ADC   │  │SPI x2 │  │       │  │ KYS  RMII   │     │
 │  │ pSRAM │  │ TRNG  │  │ DAC   │  │I2C x2 │  │ Power │  │             │     │
-│  │ 300KB │  │       │  │ Camera│  │I2S    │  │ Modes │  │             │     │
-│  │ RAM   │  │       │  │ LCD   │  │USB2.0 │  │       │  │             │     │
+│  │ 256KB │  │       │  │ Camera│  │I2S    │  │ Modes │  │             │     │
+│  │ OCRAM │  │       │  │ LCD   │  │USB2.0 │  │       │  │             │     │
 │  └───────┘  └───────┘  └───────┘  └───────┘  └───────┘  └─────────────┘     │
 │                                                                              │
 ├──────────────────────────────────────────────────────────────────────────────┤
@@ -177,22 +189,48 @@ lang: en
                     </pre>
                 </div>
             </div>
+
+            <!-- Applications -->
+            <div class="applications-section" style="margin-top: 2rem;">
+                <h3><i class="fas fa-mobile-screen"></i> Application Scenarios</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+                    <div class="app-card" style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem;">
+                        <h4 style="color: var(--primary); margin-top: 0;"><i class="fas fa-house"></i> Low-Power AIOT Devices</h4>
+                        <ul style="margin-bottom: 0;">
+                            <li>PIR cameras</li>
+                            <li>Smart glasses</li>
+                            <li>Smart doorbells</li>
+                            <li>Voice recorders</li>
+                        </ul>
+                    </div>
+                    <div class="app-card" style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem;">
+                        <h4 style="color: var(--primary); margin-top: 0;"><i class="fas fa-globe"></i> Matter IoT Connectivity</h4>
+                        <ul style="margin-bottom: 0.75rem;">
+                            <li>Border Router</li>
+                            <li>Smart home gateway</li>
+                            <li>Multi-protocol bridge</li>
+                            <li>Thread/Zigbee converter</li>
+                        </ul>
+                        <p style="margin-bottom: 0; font-size: 0.85rem; color: #f59e0b;">⚠ Capability showcase — Matter/Thread/Zigbee are not included in this SDK release; contact INTELPRO for availability.</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Wireless Specifications -->
         <div id="wireless" class="hw-section">
-            <h2><i class="fas fa-wifi"></i> Wireless Specifications</h2>
+            <h2><i class="fas fa-tower-broadcast"></i> Wireless Specifications</h2>
 
             <div class="spec-grid">
                 <div class="spec-card">
                     <div class="spec-icon"><i class="fas fa-satellite-dish"></i></div>
-                    <h3>Bluetooth (Matter Support)</h3>
+                    <h3>Bluetooth</h3>
                     <ul>
                         <li>2.4 GHz RF Transceiver</li>
-                        <li>Bluetooth v5.4 Specification</li>
+                        <li>Bluetooth® v5.4 Specification</li>
                         <li>BLE 1Mbps and 2Mbps</li>
                         <li>Long Range 500/125Kbps</li>
-                        <li>Up to 16 BLE Connections</li>
+                        <li>Up to 8 simultaneous connections (link8 controller variant)</li>
                         <li>Integrated RF balun, PA/LNA</li>
                         <li>External PA/LNA Support</li>
                     </ul>
@@ -204,7 +242,7 @@ lang: en
                     <ul>
                         <li>LE Audio CIS/BIS Streaming</li>
                         <li>GAF/BAP/VCP/CAP Profiles</li>
-                        <li>LC3 Hardware-accelerated Codec</li>
+                        <li>LC3 Codec (software liblc3, optimized with RISC-V DSP instructions)</li>
                         <li>Auracast Broadcast Audio</li>
                         <li>OTA Firmware Update</li>
                     </ul>
@@ -284,7 +322,7 @@ lang: en
                         <tr><td>I2C</td><td>x2</td><td>I2C Master/Slave</td></tr>
                         <tr><td>SPI</td><td>x2</td><td>SPI Master/Slave</td></tr>
                         <tr><td>I2S</td><td>x1</td><td>Digital Audio Interface</td></tr>
-                        <tr><td>PWM</td><td>x8</td><td>Pulse Width Modulation Output</td></tr>
+                        <tr><td>PWM</td><td>x4 channels</td><td>Pulse Width Modulation; complementary H/L outputs per channel (8 outputs total)</td></tr>
                         <tr><td>GPADC</td><td>12-bit</td><td>General Purpose ADC</td></tr>
                         <tr><td>GPDAC</td><td>12-bit</td><td>General Purpose DAC</td></tr>
                         <tr><td>QDEC</td><td>x1</td><td>Quadrature Decoder (Mouse/Knob)</td></tr>
@@ -303,243 +341,749 @@ lang: en
 
             <div class="package-info" style="display: flex; gap: 1rem; margin-bottom: 2rem;">
                 <div class="spec-card" style="flex: 1;">
-                    <h4>QFN56 (7×7mm)</h4>
+                    <h4>QFN56 (7x7mm)</h4>
                     <p>Standard package with 42 GPIOs (GPIO0-GPIO41), suitable for most applications</p>
                 </div>
                 <div class="spec-card" style="flex: 1;">
-                    <h4>QFN48 (6×6mm)</h4>
-                    <p>Compact package for space-constrained designs</p>
+                    <h4>QFN32</h4>
+                    <p>Compact package for space-constrained designs. No in-package PSRAM, no AI/NPU, fewer bonded-out GPIOs (e.g., no GPIO41)</p>
                 </div>
             </div>
 
-            <div class="pinout-table-container">
-                <h3>GPIO Function Reference Table (IPRO7-SEVB)</h3>
+            <!-- GPIO Function Select Reference -->
+            <div class="pinout-table-container" style="margin-bottom: 2rem;">
+                <h3>GPIO Function Select Reference</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Each GPIO selects its function through the GLB pin mux; writing the corresponding function value (0~27) switches the function.</p>
                 <table class="pinout-table">
                     <thead>
                         <tr>
-                            <th>GPIO</th>
-                            <th>Default</th>
-                            <th>ALT1</th>
-                            <th>ALT2</th>
-                            <th>ALT3</th>
-                            <th>SEVB Connection</th>
+                            <th>Value</th>
+                            <th>Function</th>
+                            <th>Description</th>
+                            <th>Value</th>
+                            <th>Function</th>
+                            <th>Description</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><span class="pin-num">GPIO0</span></td>
-                            <td>GPIO</td>
-                            <td>UART_TX</td>
-                            <td>SPI_MOSI</td>
-                            <td>PWM0</td>
-                            <td>J19 (UART Console)</td>
+                            <td>0</td><td><code>CLK_OUT</code></td><td>Clock Output</td>
+                            <td>14</td><td><code>MCU_JTAG</code></td><td>JTAG Debug</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">GPIO1</span></td>
-                            <td>GPIO</td>
-                            <td>UART_RX</td>
-                            <td>SPI_MISO</td>
-                            <td>PWM1</td>
-                            <td>J19 (UART Console)</td>
+                            <td>1</td><td><code>BT_COEXIST</code></td><td>BT Coexistence</td>
+                            <td>15</td><td><code>DEBUG</code></td><td>Debug</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">GPIO2</span></td>
-                            <td>GPIO</td>
-                            <td>UART_CTS</td>
-                            <td>SPI_CLK</td>
-                            <td>PWM2</td>
-                            <td>GPIO Expansion</td>
+                            <td>2</td><td><code>FLASH_PSRAM</code></td><td>Flash / PSRAM / QSPI</td>
+                            <td>16</td><td><code>EXTERNAL_PA</code></td><td>External PA Control</td>
+                        </tr>
+                        <tr style="background: rgba(99, 102, 241, 0.08);">
+                            <td><strong>3</strong></td><td><strong><code>I2S</code></strong></td><td><strong>I2S Audio</strong></td>
+                            <td>17</td><td><code>USB_TRANCEIVER</code></td><td>USB PHY</td>
+                        </tr>
+                        <tr style="background: rgba(99, 102, 241, 0.08);">
+                            <td><strong>4</strong></td><td><strong><code>SPI</code></strong></td><td><strong>SPI0</strong></td>
+                            <td>18</td><td><code>USB_CONTROLLER</code></td><td>USB Controller</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">GPIO3</span></td>
-                            <td>GPIO</td>
-                            <td>UART_RTS</td>
-                            <td>SPI_CS</td>
-                            <td>PWM3</td>
-                            <td>GPIO Expansion</td>
+                            <td>5</td><td><code>PDM</code></td><td>PDM Microphone</td>
+                            <td>19</td><td><code>ETHER_MAC</code></td><td>Ethernet RMII</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">GPIO4</span></td>
-                            <td>GPIO</td>
-                            <td>I2C_SCL</td>
-                            <td>UART1_TX</td>
-                            <td>PWM4</td>
-                            <td>I2C Interface</td>
+                            <td>6</td><td><code>I2C</code></td><td>I2C0</td>
+                            <td>20</td><td><code>QDEC</code></td><td>Quadrature Decoder</td>
+                        </tr>
+                        <tr style="background: rgba(99, 102, 241, 0.08);">
+                            <td><strong>7</strong></td><td><strong><code>UART</code></strong></td><td><strong>UART</strong></td>
+                            <td>21</td><td><code>KEY_SCAN_IN</code></td><td>Key Scan Row</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">GPIO5</span></td>
-                            <td>GPIO</td>
-                            <td>I2C_SDA</td>
-                            <td>UART1_RX</td>
-                            <td>PWM5</td>
-                            <td>I2C Interface</td>
+                            <td>8</td><td><code>PWM</code></td><td>PWM</td>
+                            <td>22</td><td><code>KEY_SCAN_DRIVE</code></td><td>Key Scan Column</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">GPIO6</span></td>
-                            <td>GPIO</td>
-                            <td>SPI_MOSI</td>
-                            <td>I2S_DO</td>
-                            <td>-</td>
-                            <td>Audio/SPI</td>
+                            <td>9</td><td><code>CAM</code></td><td>Camera DVP</td>
+                            <td>23</td><td><code>CAM_MISC</code></td><td>Camera PWRDN / RST / REF_CLK</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">GPIO7</span></td>
-                            <td>GPIO</td>
-                            <td>SPI_MISO</td>
-                            <td>I2S_DI</td>
-                            <td>-</td>
-                            <td>Audio/SPI</td>
-                        </tr>
-                        <tr class="special-pin">
-                            <td><span class="pin-num">GPIO8</span></td>
-                            <td>USB_DP</td>
-                            <td>GPIO</td>
-                            <td>SPI_CLK</td>
-                            <td>-</td>
-                            <td>⚠️ J40 USB 2.0 D+</td>
-                        </tr>
-                        <tr class="special-pin">
-                            <td><span class="pin-num">GPIO9</span></td>
-                            <td>USB_DN</td>
-                            <td>GPIO</td>
-                            <td>SPI_CS</td>
-                            <td>-</td>
-                            <td>⚠️ J40 USB 2.0 D-</td>
+                            <td>10</td><td><code>ANALOG</code></td><td>ADC / DAC</td>
+                            <td>24</td><td><code>PIO</code></td><td>Programmable IO</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">GPIO10</span></td>
-                            <td>GPIO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>GPIO Expansion</td>
+                            <td>11</td><td><code>GPIO</code></td><td>General Purpose IO</td>
+                            <td>25</td><td><code>I2C1</code></td><td>I2C1</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">GPIO11</span></td>
-                            <td>GPIO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>GPIO Expansion</td>
+                            <td>12</td><td><code>RF_TEST</code></td><td>RF Test (internal test use)</td>
+                            <td style="background: rgba(99, 102, 241, 0.08);"><strong>26</strong></td>
+                            <td style="background: rgba(99, 102, 241, 0.08);"><strong><code>SPI1</code></strong></td>
+                            <td style="background: rgba(99, 102, 241, 0.08);"><strong>SPI1</strong></td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">GPIO12</span></td>
-                            <td>GPIO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>GPIO Expansion</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pin-num">GPIO13</span></td>
-                            <td>GPIO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>GPIO Expansion</td>
-                        </tr>
-                        <tr class="special-pin">
-                            <td><span class="pin-num">GPIO14</span></td>
-                            <td>JTAG_TMS</td>
-                            <td>GPIO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>⚠️ J23 JTAG TMS</td>
-                        </tr>
-                        <tr class="special-pin">
-                            <td><span class="pin-num">GPIO15</span></td>
-                            <td>JTAG_TCK</td>
-                            <td>GPIO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>⚠️ J23 JTAG TCK</td>
-                        </tr>
-                        <tr class="special-pin">
-                            <td><span class="pin-num">GPIO16</span></td>
-                            <td>BOOT/ANT</td>
-                            <td>GPIO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>⚠️ Boot/Antenna Select</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pin-num">GPIO17</span></td>
-                            <td>GPIO</td>
-                            <td>JTAG_TDI</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>J23 JTAG TDI</td>
-                        </tr>
-                        <tr class="special-pin">
-                            <td><span class="pin-num">GPIO18</span></td>
-                            <td>X32K_IN</td>
-                            <td>GPIO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>⚠️ 32.768kHz Crystal Input</td>
-                        </tr>
-                        <tr class="special-pin">
-                            <td><span class="pin-num">GPIO19</span></td>
-                            <td>X32K_OUT</td>
-                            <td>GPIO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>⚠️ 32.768kHz Crystal Output</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pin-num">GPIO20</span></td>
-                            <td>GPIO</td>
-                            <td>JTAG_TDO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>J23 JTAG TDO</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pin-num">GPIO21</span></td>
-                            <td>GPIO</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>GPIO Expansion</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pin-num">GPIO22-27</span></td>
-                            <td>GPIO</td>
-                            <td>DVP_D0-D5</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>J27 DVP Camera</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pin-num">GPIO28-33</span></td>
-                            <td>GPIO</td>
-                            <td>DVP_D6-D7</td>
-                            <td>PCLK/SYNC</td>
-                            <td>-</td>
-                            <td>J27 DVP Camera</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pin-num">GPIO34-41</span></td>
-                            <td>GPIO</td>
-                            <td>Ethernet</td>
-                            <td>Motor</td>
-                            <td>PWM</td>
-                            <td>J56-J63 Expansion</td>
+                            <td>13</td><td><code>SCAN</code></td><td>Scan Chain (internal test use)</td>
+                            <td style="background: rgba(99, 102, 241, 0.08);"><strong>27</strong></td>
+                            <td style="background: rgba(99, 102, 241, 0.08);"><strong><code>SDC</code></strong></td>
+                            <td style="background: rgba(99, 102, 241, 0.08);"><strong>SD Card (SDIO)</strong></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
+            <!-- UART Pin Assignment -->
+            <div id="uart-pins" class="pinout-table-container" style="margin-bottom: 2rem;">
+                <h3><i class="fas fa-exchange-alt"></i> UART Pin Assignment (Function = 7)</h3>
+
+                <div class="alert-warning" style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
+                    <strong>UART0 GPIO20/GPIO21 must not be reassigned</strong> — the Boot ROM uses this UART for firmware download (DL mode); changing it makes UART firmware flashing impossible.
+                </div>
+
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    UART uses a <strong>two-stage mux</strong>: (1) set the GPIO to function 7 to generate UART_SIG_N, (2) route the signal to UART0/UART1 TX/RX/CTS/RTS via <code>GLB_UART_Fun_Sel()</code>. <strong>Any GPIO can serve as UART</strong>.
+                </p>
+
+                <h4>EVB Default UART Configuration</h4>
+                <table class="pinout-table">
+                    <thead>
+                        <tr>
+                            <th>Interface</th>
+                            <th>Signal</th>
+                            <th>GPIO</th>
+                            <th>UART Signal</th>
+                            <th>Baudrate</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="special-pin">
+                            <td>UART0</td>
+                            <td>TXD</td>
+                            <td><span class="pin-num">GPIO20</span></td>
+                            <td><code>GLB_UART_SIG_8</code></td>
+                            <td>2,000,000</td>
+                            <td>Console TX (fixed by Boot ROM)</td>
+                        </tr>
+                        <tr class="special-pin">
+                            <td>UART0</td>
+                            <td>RXD</td>
+                            <td><span class="pin-num">GPIO21</span></td>
+                            <td><code>GLB_UART_SIG_9</code></td>
+                            <td>2,000,000</td>
+                            <td>Console RX (fixed by Boot ROM)</td>
+                        </tr>
+                        <tr>
+                            <td>UART1</td>
+                            <td>TXD/RXD</td>
+                            <td>Any GPIO</td>
+                            <td>Determined by signal routing</td>
+                            <td>115,200</td>
+                            <td>Freely assignable</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="margin-top: 1.5rem;">UART Signal Routing — GPIO Mapping</h4>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">When a GPIO is set to function 7, it generates the corresponding UART_SIG (<strong>SIG = GPIO number mod 12</strong>; there are 12 signals, SIG_0~SIG_11). The signal is then routed to UART0/1 TXD/RXD/CTS/RTS via <code>GLB_UART_Fun_Sel()</code>.</p>
+                <table class="pinout-table">
+                    <thead>
+                        <tr>
+                            <th>GPIO</th><th>UART SIG</th>
+                            <th>GPIO</th><th>UART SIG</th>
+                            <th>GPIO</th><th>UART SIG</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="pin-num">0</span></td><td>SIG_0</td>
+                            <td><span class="pin-num">12</span></td><td>SIG_0</td>
+                            <td><span class="pin-num">24</span></td><td>SIG_0</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">1</span></td><td>SIG_1</td>
+                            <td><span class="pin-num">13</span></td><td>SIG_1</td>
+                            <td><span class="pin-num">25</span></td><td>SIG_1</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">2</span></td><td>SIG_2</td>
+                            <td><span class="pin-num">14</span></td><td>SIG_2</td>
+                            <td><span class="pin-num">26</span></td><td>SIG_2</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">3</span></td><td>SIG_3</td>
+                            <td><span class="pin-num">15</span></td><td>SIG_3</td>
+                            <td><span class="pin-num">27</span></td><td>SIG_3</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">4</span></td><td>SIG_4</td>
+                            <td><span class="pin-num">16</span></td><td>SIG_4</td>
+                            <td><span class="pin-num">28</span></td><td>SIG_4</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">5</span></td><td>SIG_5</td>
+                            <td><span class="pin-num">17</span></td><td>SIG_5</td>
+                            <td><span class="pin-num">29</span></td><td>SIG_5</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">6</span></td><td>SIG_6</td>
+                            <td><span class="pin-num">18</span></td><td>SIG_6</td>
+                            <td><span class="pin-num">30</span></td><td>SIG_6</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">7</span></td><td>SIG_7</td>
+                            <td><span class="pin-num">19</span></td><td>SIG_7</td>
+                            <td><span class="pin-num">31</span></td><td>SIG_7</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">8</span></td><td>SIG_8</td>
+                            <td><span class="pin-num">20</span></td><td>SIG_8</td>
+                            <td><span class="pin-num">32</span></td><td>SIG_8</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">9</span></td><td>SIG_9</td>
+                            <td><span class="pin-num">21</span></td><td>SIG_9</td>
+                            <td><span class="pin-num">33</span></td><td>SIG_9</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">10</span></td><td>SIG_10</td>
+                            <td><span class="pin-num">22</span></td><td>SIG_10</td>
+                            <td></td><td></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">11</span></td><td>SIG_11</td>
+                            <td><span class="pin-num">23</span></td><td>SIG_11</td>
+                            <td></td><td></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem;">
+                    <strong>Signal Swap:</strong> <code>GLB_UART_Sig_Swap_Set()</code> can enable a swap for three pin groups (GPIO0~7, GPIO8~15, GPIO16~22), exchanging that group's <code>uart_sig[0:3]</code> with <code>uart_sig[4:7]</code>. The system default is <code>UART_SIG_SWAP_NONE</code> (no swap); the table above shows the default mapping.
+                </p>
+
+                <h4 style="margin-top: 1.5rem;">UART Signal Function Mapping</h4>
+                <table class="pinout-table">
+                    <thead>
+                        <tr>
+                            <th>Signal Function</th><th>Description</th>
+                            <th>Signal Function</th><th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>GLB_UART_SIG_FUN_UART0_RTS</code></td><td>UART0 Request To Send</td>
+                            <td><code>GLB_UART_SIG_FUN_UART1_RTS</code></td><td>UART1 Request To Send</td>
+                        </tr>
+                        <tr>
+                            <td><code>GLB_UART_SIG_FUN_UART0_CTS</code></td><td>UART0 Clear To Send</td>
+                            <td><code>GLB_UART_SIG_FUN_UART1_CTS</code></td><td>UART1 Clear To Send</td>
+                        </tr>
+                        <tr>
+                            <td><code>GLB_UART_SIG_FUN_UART0_TXD</code></td><td>UART0 Transmit Data</td>
+                            <td><code>GLB_UART_SIG_FUN_UART1_TXD</code></td><td>UART1 Transmit Data</td>
+                        </tr>
+                        <tr>
+                            <td><code>GLB_UART_SIG_FUN_UART0_RXD</code></td><td>UART0 Receive Data</td>
+                            <td><code>GLB_UART_SIG_FUN_UART1_RXD</code></td><td>UART1 Receive Data</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="margin-top: 1.5rem;">UART Configuration Example</h4>
+                <pre style="background: var(--code-bg, #1e293b); color: var(--code-text, #e2e8f0); padding: 1rem; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;"><code>/* Use GPIO14 as UART1_TXD, GPIO15 as UART1_RXD */
+GLB_GPIO_Cfg_Type uart_pins[] = {
+    { GLB_GPIO_PIN_14, GPIO_FUN_UART, GPIO_MODE_AF, GPIO_PULL_UP, 0, 1 },
+    { GLB_GPIO_PIN_15, GPIO_FUN_UART, GPIO_MODE_AF, GPIO_PULL_UP, 0, 1 },
+};
+GLB_GPIO_Init(&uart_pins[0]);
+GLB_GPIO_Init(&uart_pins[1]);
+
+/* GPIO14 -> UART_SIG_2, GPIO15 -> UART_SIG_3 (SIG = GPIO number mod 12) */
+GLB_UART_Fun_Sel(GLB_UART_SIG_2, GLB_UART_SIG_FUN_UART1_TXD);
+GLB_UART_Fun_Sel(GLB_UART_SIG_3, GLB_UART_SIG_FUN_UART1_RXD);</code></pre>
+            </div>
+
+            <!-- SPI Pin Assignment -->
+            <div id="spi-pins" class="pinout-table-container" style="margin-bottom: 2rem;">
+                <h3><i class="fas fa-microchip"></i> SPI Pin Assignment</h3>
+
+                <h4>SPI0 (Function = 4) — Pin Group Reference</h4>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">
+                    SPI0 uses <strong>groups of 4 GPIOs</strong>; signals are assigned by fixed position within the group. <code>pin_swap_enable</code> swaps MOSI/MISO. The EVB default is <code>pin_swap_enable = 1</code>.
+                </p>
+                <table class="pinout-table">
+                    <thead>
+                        <tr>
+                            <th>Group</th>
+                            <th>MOSI (swap=0) / MISO (swap=1)</th>
+                            <th>MISO (swap=0) / MOSI (swap=1)</th>
+                            <th>SS (Chip Select)</th>
+                            <th>SCLK</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0</td>
+                            <td><span class="pin-num">GPIO0</span></td>
+                            <td><span class="pin-num">GPIO1</span></td>
+                            <td><span class="pin-num">GPIO2</span></td>
+                            <td><span class="pin-num">GPIO3</span></td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td><span class="pin-num">GPIO4</span></td>
+                            <td><span class="pin-num">GPIO5</span></td>
+                            <td><span class="pin-num">GPIO6</span></td>
+                            <td><span class="pin-num">GPIO7</span></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><span class="pin-num">GPIO8</span></td>
+                            <td><span class="pin-num">GPIO9</span></td>
+                            <td><span class="pin-num">GPIO10</span></td>
+                            <td><span class="pin-num">GPIO11</span></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td><span class="pin-num">GPIO12</span></td>
+                            <td><span class="pin-num">GPIO13</span></td>
+                            <td><span class="pin-num">GPIO14</span></td>
+                            <td><span class="pin-num">GPIO15</span></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td><span class="pin-num">GPIO16</span></td>
+                            <td><span class="pin-num">GPIO17</span></td>
+                            <td><span class="pin-num">GPIO18</span></td>
+                            <td><span class="pin-num">GPIO19</span></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td><span class="pin-num">GPIO20</span></td>
+                            <td><span class="pin-num">GPIO21</span></td>
+                            <td><span class="pin-num">GPIO22</span></td>
+                            <td><span class="pin-num">GPIO23</span></td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td><span class="pin-num">GPIO24</span></td>
+                            <td><span class="pin-num">GPIO25</span></td>
+                            <td><span class="pin-num">GPIO26</span></td>
+                            <td><span class="pin-num">GPIO27</span></td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td><span class="pin-num">GPIO28</span></td>
+                            <td><span class="pin-num">GPIO29</span></td>
+                            <td><span class="pin-num">GPIO30</span></td>
+                            <td><span class="pin-num">GPIO31</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="margin-top: 1rem;">SPI1 (Function = 26)</h4>
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">Independent second SPI peripheral; pin group assignment follows the same rules as SPI0, using function value 26.</p>
+
+                <h4 style="margin-top: 1rem;">SPI Specifications</h4>
+                <table class="pinout-table">
+                    <thead>
+                        <tr><th>Feature</th><th>SPI0</th><th>SPI1</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Max Clock</td><td>18 MHz (EVB default)</td><td>18 MHz (EVB default)</td></tr>
+                        <tr><td>Data Width</td><td>8 / 16 / 24 / 32 bit</td><td>8 / 16 / 24 / 32 bit</td></tr>
+                        <tr><td>Mode</td><td>Master / Slave</td><td>Master / Slave</td></tr>
+                        <tr><td>CPOL/CPHA</td><td>Configurable</td><td>Configurable</td></tr>
+                        <tr><td>DMA</td><td>TX: DMA_CH3, RX: DMA_CH4</td><td>Yes</td></tr>
+                        <tr><td>Pin Swap</td><td>MOSI/MISO swappable</td><td>MOSI/MISO swappable</td></tr>
+                    </tbody>
+                </table>
+
+                <h4 style="margin-top: 1.5rem;">SPI Configuration Example</h4>
+                <pre style="background: var(--code-bg, #1e293b); color: var(--code-text, #e2e8f0); padding: 1rem; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;"><code>/* SPI0 on GPIO12~15 group */
+GLB_GPIO_Cfg_Type spi_pins[] = {
+    { GLB_GPIO_PIN_12, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_NONE, 1, 1 }, /* MOSI */
+    { GLB_GPIO_PIN_13, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_NONE, 1, 1 }, /* MISO */
+    { GLB_GPIO_PIN_14, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_UP,   1, 1 }, /* SS   */
+    { GLB_GPIO_PIN_15, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_NONE, 1, 1 }, /* SCLK */
+};
+for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
+            </div>
+
+            <!-- SDIO Pin Assignment -->
+            <div id="sdio-pins" class="pinout-table-container" style="margin-bottom: 2rem;">
+                <h3><i class="fas fa-sd-card"></i> SDIO / SD Card Pin Assignment (Function = 27)</h3>
+
+                <div class="alert-warning" style="background: rgba(245, 158, 11, 0.1); border-left: 4px solid #f59e0b; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
+                    <strong>GPIO28~33 are shared between SDC and SF2/SF3</strong> — when <code>CONFIG_DISABLE_SDC_PINMUX</code> is defined, these pins are repurposed for external flash and cannot be used for an SD card at the same time.
+                </div>
+
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">The SD card host controller uses a <strong>fixed pin group</strong>: GPIO28 ~ GPIO33.</p>
+
+                <table class="pinout-table">
+                    <thead>
+                        <tr>
+                            <th>GPIO</th>
+                            <th>SDC Signal</th>
+                            <th>Pull</th>
+                            <th>Drive</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="pin-num">GPIO28</span></td>
+                            <td>SDC_CLK</td>
+                            <td>Pull-Up</td>
+                            <td>2 (8 mA)</td>
+                            <td>SD Clock</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO29</span></td>
+                            <td>SDC_CMD</td>
+                            <td>Pull-Up</td>
+                            <td>2 (8 mA)</td>
+                            <td>SD Command Line</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO30</span></td>
+                            <td>SDC_DAT0</td>
+                            <td>None</td>
+                            <td>2 (8 mA)</td>
+                            <td>SD Data Bit 0</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO31</span></td>
+                            <td>SDC_DAT1</td>
+                            <td>Pull-Up</td>
+                            <td>2 (8 mA)</td>
+                            <td>SD Data Bit 1</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO32</span></td>
+                            <td>SDC_DAT2</td>
+                            <td>Pull-Up</td>
+                            <td>2 (8 mA)</td>
+                            <td>SD Data Bit 2</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO33</span></td>
+                            <td>SDC_DAT3</td>
+                            <td>Pull-Up</td>
+                            <td>2 (8 mA)</td>
+                            <td>SD Data Bit 3</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="margin-top: 1rem;">SDC Specifications</h4>
+                <table class="pinout-table">
+                    <thead><tr><th>Feature</th><th>Value</th></tr></thead>
+                    <tbody>
+                        <tr><td>Bus Width</td><td>1-bit / 4-bit</td></tr>
+                        <tr><td>Clock Source</td><td>DLL_64M / PLL_96M</td></tr>
+                        <tr><td>EVB Default</td><td>PLL_96M, div=1 (48 MHz)</td></tr>
+                        <tr><td>Protocol</td><td>SD 3.0 / SDIO</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- I2S Pin Assignment -->
+            <div id="i2s-pins" class="pinout-table-container" style="margin-bottom: 2rem;">
+                <h3><i class="fas fa-volume-up"></i> I2S Pin Assignment (Function = 3)</h3>
+
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                    I2S0 uses <strong>groups of 4 GPIOs</strong>; signals are assigned by fixed position. Pin N+2 is dual-function DIO/DO and pin N+3 is dual-function RCLK_O/DI. In full-duplex mode DO=output and DI=input; in half-duplex mode DIO is bidirectional.
+                </p>
+
+                <table class="pinout-table">
+                    <thead>
+                        <tr>
+                            <th>Group</th>
+                            <th>BCLK (Bit Clock)</th>
+                            <th>FS (Frame Sync / LRCLK)</th>
+                            <th>DIO / DO (Data Out)</th>
+                            <th>RCLK_O / DI (Data In)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0</td>
+                            <td><span class="pin-num">GPIO0</span></td>
+                            <td><span class="pin-num">GPIO1</span></td>
+                            <td><span class="pin-num">GPIO2</span></td>
+                            <td><span class="pin-num">GPIO3</span></td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td><span class="pin-num">GPIO4</span></td>
+                            <td><span class="pin-num">GPIO5</span></td>
+                            <td><span class="pin-num">GPIO6</span></td>
+                            <td><span class="pin-num">GPIO7</span></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><span class="pin-num">GPIO8</span></td>
+                            <td><span class="pin-num">GPIO9</span></td>
+                            <td><span class="pin-num">GPIO10</span></td>
+                            <td><span class="pin-num">GPIO11</span></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td><span class="pin-num">GPIO12</span></td>
+                            <td><span class="pin-num">GPIO13</span></td>
+                            <td><span class="pin-num">GPIO14</span></td>
+                            <td><span class="pin-num">GPIO15</span></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td><span class="pin-num">GPIO16</span></td>
+                            <td><span class="pin-num">GPIO17</span></td>
+                            <td><span class="pin-num">GPIO18</span></td>
+                            <td><span class="pin-num">GPIO19</span></td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td><span class="pin-num">GPIO20</span></td>
+                            <td><span class="pin-num">GPIO21</span></td>
+                            <td><span class="pin-num">GPIO22</span></td>
+                            <td><span class="pin-num">GPIO23</span></td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td><span class="pin-num">GPIO24</span></td>
+                            <td><span class="pin-num">GPIO25</span></td>
+                            <td><span class="pin-num">GPIO26</span></td>
+                            <td><span class="pin-num">GPIO27</span></td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td><span class="pin-num">GPIO28</span></td>
+                            <td><span class="pin-num">GPIO29</span></td>
+                            <td><span class="pin-num">GPIO30</span></td>
+                            <td><span class="pin-num">GPIO31</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="margin-top: 1rem;">I2S Specifications</h4>
+                <table class="pinout-table">
+                    <thead><tr><th>Feature</th><th>I2S0</th></tr></thead>
+                    <tbody>
+                        <tr><td>Mode</td><td>Master / Slave</td></tr>
+                        <tr><td>Interface</td><td>I2S Left / Right / DSP</td></tr>
+                        <tr><td>Sample Rate</td><td>8 kHz ~ 96 kHz</td></tr>
+                        <tr><td>Frame / Data Size</td><td>8 / 16 / 24 / 32 bit</td></tr>
+                        <tr><td>Channels</td><td>Mono / Stereo</td></tr>
+                        <tr><td>FIFO Depth</td><td>8 entries</td></tr>
+                        <tr><td>DMA</td><td>TX: DMA_CH5/CH6</td></tr>
+                        <tr><td>MCLK Output</td><td>Via RCLK_O pin</td></tr>
+                        <tr><td>EVB Default</td><td>Master, Left-justified, 16 kHz, Mono, 16-bit</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Complete GPIO Alternate Function Table -->
+            <div class="pinout-table-container" style="margin-bottom: 2rem;">
+                <h3>GPIO0 ~ GPIO31 Complete Alternate Function Table</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">Only functions relevant to peripheral circuit design are listed. Every GPIO also supports the generic functions GPIO (11), JTAG (14), and Debug (15), omitted here.</p>
+
+                <h4>GPIO0 ~ GPIO15</h4>
+                <div style="overflow-x: auto;">
+                <table class="pinout-table" style="font-size: 0.8rem;">
+                    <thead>
+                        <tr>
+                            <th>Func</th>
+                            <th>GPIO0</th><th>GPIO1</th><th>GPIO2</th><th>GPIO3</th>
+                            <th>GPIO4</th><th>GPIO5</th><th>GPIO6</th><th>GPIO7</th>
+                            <th>GPIO8</th><th>GPIO9</th><th>GPIO10</th><th>GPIO11</th>
+                            <th>GPIO12</th><th>GPIO13</th><th>GPIO14</th><th>GPIO15</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>3 I2S</strong></td>
+                            <td>BCLK</td><td>FS</td><td>DIO/DO</td><td>RCLK/DI</td>
+                            <td>BCLK</td><td>FS</td><td>DIO/DO</td><td>RCLK/DI</td>
+                            <td>BCLK</td><td>FS</td><td>DIO/DO</td><td>RCLK/DI</td>
+                            <td>BCLK</td><td>FS</td><td>DIO/DO</td><td>RCLK/DI</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4 SPI0</strong></td>
+                            <td>MOSI*</td><td>MISO*</td><td>SS</td><td>SCLK</td>
+                            <td>MOSI*</td><td>MISO*</td><td>SS</td><td>SCLK</td>
+                            <td>MOSI*</td><td>MISO*</td><td>SS</td><td>SCLK</td>
+                            <td>MOSI*</td><td>MISO*</td><td>SS</td><td>SCLK</td>
+                        </tr>
+                        <tr>
+                            <td><strong>6 I2C0</strong></td>
+                            <td>SCL</td><td>SDA</td><td>SCL</td><td>SDA</td>
+                            <td>SCL</td><td>SDA</td><td>SCL</td><td>SDA</td>
+                            <td>SCL</td><td>SDA</td><td>SCL</td><td>SDA</td>
+                            <td>SCL</td><td>SDA</td><td>SCL</td><td>SDA</td>
+                        </tr>
+                        <tr>
+                            <td><strong>7 UART</strong></td>
+                            <td>S0</td><td>S1</td><td>S2</td><td>S3</td>
+                            <td>S4</td><td>S5</td><td>S6</td><td>S7</td>
+                            <td>S8</td><td>S9</td><td>S10</td><td>S11</td>
+                            <td>S0</td><td>S1</td><td>S2</td><td>S3</td>
+                        </tr>
+                        <tr>
+                            <td><strong>8 PWM</strong></td>
+                            <td>CH0</td><td>CH1</td><td>CH2</td><td>CH3</td>
+                            <td>CH4</td><td>CH0</td><td>CH1</td><td>CH2</td>
+                            <td>CH3</td><td>CH4</td><td>CH0</td><td>CH1</td>
+                            <td>CH2</td><td>CH3</td><td>CH4</td><td>CH0</td>
+                        </tr>
+                        <tr>
+                            <td><strong>10 ADC</strong></td>
+                            <td>-</td><td>-</td><td>-</td><td>-</td>
+                            <td>-</td><td>-</td><td>-</td><td>CH6</td>
+                            <td>CH0</td><td>-</td><td>MICBIAS</td><td>CH3</td>
+                            <td>CH4</td><td>-</td><td>CH5</td><td>CH1</td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+                <p style="font-size: 0.8rem; color: var(--text-secondary);">* MOSI/MISO are swapped according to the <code>pin_swap_enable</code> setting. In the UART row, S<em>N</em> = <code>UART_SIG_N</code> (default <code>UART_SIG_SWAP_NONE</code>).</p>
+
+                <h4 style="margin-top: 1.5rem;">GPIO16 ~ GPIO31</h4>
+                <div style="overflow-x: auto;">
+                <table class="pinout-table" style="font-size: 0.8rem;">
+                    <thead>
+                        <tr>
+                            <th>Func</th>
+                            <th>GPIO16</th><th>GPIO17</th><th>GPIO18</th><th>GPIO19</th>
+                            <th>GPIO20</th><th>GPIO21</th><th>GPIO22</th><th>GPIO23</th>
+                            <th>GPIO24</th><th>GPIO25</th><th>GPIO26</th><th>GPIO27</th>
+                            <th>GPIO28</th><th>GPIO29</th><th>GPIO30</th><th>GPIO31</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>2 Flash</strong></td>
+                            <td>-</td><td>SF_IO0</td><td>SF_IO1</td><td>SF_CS</td>
+                            <td>SF_IO3</td><td>SF_CLK</td><td>SF_IO2</td><td>SF2_IO2</td>
+                            <td>SF2_IO1</td><td>SF2_CS</td><td>SF2_IO3</td><td>SF2_CLK</td>
+                            <td>SF2_IO0</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3 I2S</strong></td>
+                            <td>BCLK</td><td>FS</td><td>DIO/DO</td><td>RCLK/DI</td>
+                            <td>BCLK</td><td>FS</td><td>DIO/DO</td><td>RCLK/DI</td>
+                            <td>BCLK</td><td>FS</td><td>DIO/DO</td><td>RCLK/DI</td>
+                            <td>BCLK</td><td>FS</td><td>DIO/DO</td><td>RCLK/DI</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4 SPI0</strong></td>
+                            <td>MOSI*</td><td>MISO*</td><td>SS</td><td>SCLK</td>
+                            <td>MOSI*</td><td>MISO*</td><td>SS</td><td>SCLK</td>
+                            <td>MOSI*</td><td>MISO*</td><td>SS</td><td>SCLK</td>
+                            <td>MOSI*</td><td>MISO*</td><td>SS</td><td>SCLK</td>
+                        </tr>
+                        <tr>
+                            <td><strong>6 I2C0</strong></td>
+                            <td>SCL</td><td>SDA</td><td>SCL</td><td>SDA</td>
+                            <td>SCL</td><td>SDA</td><td>SCL</td><td>SDA</td>
+                            <td>SCL</td><td>SDA</td><td>SCL</td><td>SDA</td>
+                            <td>SCL</td><td>SDA</td><td>SCL</td><td>SDA</td>
+                        </tr>
+                        <tr>
+                            <td><strong>7 UART</strong></td>
+                            <td>S4</td><td>S5</td><td>S6</td><td>S7</td>
+                            <td>S8</td><td>S9</td><td>S10</td><td>S11</td>
+                            <td>S0</td><td>S1</td><td>S2</td><td>S3</td>
+                            <td>S4</td><td>S5</td><td>S6</td><td>S7</td>
+                        </tr>
+                        <tr>
+                            <td><strong>8 PWM</strong></td>
+                            <td>CH1</td><td>CH2</td><td>CH3</td><td>CH4</td>
+                            <td>CH0</td><td>CH1</td><td>CH2</td><td>CH3</td>
+                            <td>CH4</td><td>CH0</td><td>CH1</td><td>CH2</td>
+                            <td>CH3</td><td>CH4</td><td>CH0</td><td>CH1</td>
+                        </tr>
+                        <tr>
+                            <td><strong>10 ADC</strong></td>
+                            <td>-</td><td>CH2</td><td>CH8</td><td>CH9</td>
+                            <td>CH10</td><td>CH11</td><td>LED0</td><td>LED1</td>
+                            <td>-</td><td>-</td><td>-</td><td>-</td>
+                            <td>-</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>19 RMII</strong></td>
+                            <td>-</td><td>-</td><td>MDC</td><td>MDIO</td>
+                            <td>RXERR</td><td>TX_EN</td><td>RX_DV</td><td>-</td>
+                            <td>MDC</td><td>MDIO</td><td>RXERR</td><td>TX_EN</td>
+                            <td>RX_DV</td><td>-</td><td>-</td><td>-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>27 SDC</strong></td>
+                            <td>-</td><td>-</td><td>-</td><td>-</td>
+                            <td>-</td><td>-</td><td>-</td><td>-</td>
+                            <td>-</td><td>-</td><td>-</td><td>-</td>
+                            <td>CLK</td><td>CMD</td><td>DAT0</td><td>DAT1</td>
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+
+            <!-- EVB Default Pin Summary -->
+            <div class="pinout-table-container" style="margin-bottom: 2rem;">
+                <h3>EVB Default Pin Configuration Summary</h3>
+                <table class="pinout-table">
+                    <thead>
+                        <tr>
+                            <th>GPIO</th>
+                            <th>Function</th>
+                            <th>Signal</th>
+                            <th>Pull</th>
+                            <th>Drive</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="special-pin"><td><span class="pin-num">GPIO0</span></td><td>JTAG (14)</td><td>E21_TMS/TCK</td><td>Pull-Up</td><td>0</td><td>Debug</td></tr>
+                        <tr class="special-pin"><td><span class="pin-num">GPIO1</span></td><td>JTAG (14)</td><td>E21_TDI/TDO</td><td>Pull-Up</td><td>0</td><td>Debug</td></tr>
+                        <tr class="special-pin"><td><span class="pin-num">GPIO2</span></td><td>JTAG (14)</td><td>E21_TCK/TMS</td><td>Pull-Up</td><td>0</td><td>Debug</td></tr>
+                        <tr class="special-pin"><td><span class="pin-num">GPIO11</span></td><td>JTAG (14)</td><td>E21_TDO/TDI</td><td>Pull-Up</td><td>0</td><td>Debug</td></tr>
+                        <tr><td><span class="pin-num">GPIO15</span></td><td>GPIO (11)</td><td>Output</td><td>Pull-Down</td><td>2</td><td>SW Control</td></tr>
+                        <tr class="special-pin"><td><span class="pin-num">GPIO20</span></td><td>UART (7)</td><td>UART0_TXD</td><td>Pull-Up</td><td>0</td><td>Console TX (fixed by Boot ROM)</td></tr>
+                        <tr class="special-pin"><td><span class="pin-num">GPIO21</span></td><td>UART (7)</td><td>UART0_RXD</td><td>Pull-Up</td><td>0</td><td>Console RX (fixed by Boot ROM)</td></tr>
+                        <tr><td><span class="pin-num">GPIO28</span></td><td>SDC (27)</td><td>SDC_CLK</td><td>Pull-Up</td><td>2</td><td>SD Card</td></tr>
+                        <tr><td><span class="pin-num">GPIO29</span></td><td>SDC (27)</td><td>SDC_CMD</td><td>Pull-Up</td><td>2</td><td>SD Card</td></tr>
+                        <tr><td><span class="pin-num">GPIO30</span></td><td>SDC (27)</td><td>SDC_DAT0</td><td>None</td><td>2</td><td>SD Card</td></tr>
+                        <tr><td><span class="pin-num">GPIO31</span></td><td>SDC (27)</td><td>SDC_DAT1</td><td>Pull-Up</td><td>2</td><td>SD Card</td></tr>
+                        <tr><td><span class="pin-num">GPIO32</span></td><td>SDC (27)</td><td>SDC_DAT2</td><td>Pull-Up</td><td>2</td><td>SD Card</td></tr>
+                        <tr><td><span class="pin-num">GPIO33</span></td><td>SDC (27)</td><td>SDC_DAT3</td><td>Pull-Up</td><td>2</td><td>SD Card</td></tr>
+                    </tbody>
+                </table>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;"><strong>Available GPIOs</strong>: GPIO3~10, GPIO12~19, GPIO22~27, GPIO34~41 (not occupied by EVB defaults)</p>
+            </div>
+
+            <!-- Design Recommendations -->
             <div class="pin-notes">
-                <h4>⚠️ Important Notes</h4>
+                <h4>Pin Conflicts and Design Notes</h4>
                 <ul>
-                    <li><strong>GPIO8/9:</strong> Default USB 2.0 interface (D+/D-), connected to J40</li>
-                    <li><strong>GPIO14/15/17/20:</strong> JTAG Debug interface, connected to J23</li>
-                    <li><strong>GPIO16:</strong> Read at boot, also used for antenna switch control</li>
-                    <li><strong>GPIO18/19:</strong> 32.768kHz external crystal connection for RTC</li>
-                    <li><strong>DVP (GPIO22-33):</strong> 8-bit parallel camera interface, connected to J27</li>
-                    <li><strong>RF:</strong> Refer to SEVB Reference Design for antenna matching circuit</li>
+                    <li><strong>GPIO20/21:</strong> fixed for Boot ROM UART download, <strong>must not be reassigned</strong></li>
+                    <li><strong>GPIO0~2, GPIO11:</strong> JTAG debug by default; can be freed for use in production designs</li>
+                    <li><strong>GPIO17~22:</strong> shared with the internal flash (SF); unusable when internal flash is enabled</li>
+                    <li><strong>GPIO23~28:</strong> shared with external flash (SF2); watch for conflicts</li>
+                    <li><strong>GPIO28~33:</strong> SDC and SF2/SF3 are mutually exclusive, selected by <code>CONFIG_DISABLE_SDC_PINMUX</code></li>
                 </ul>
+
+                <h4 style="margin-top: 1rem;">Electrical Characteristics</h4>
+                <table class="pinout-table">
+                    <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+                    <tbody>
+                        <tr><td>I/O Voltage</td><td>3.3V (VDDIO)</td></tr>
+                        <tr><td>Drive Strength 0</td><td>~2 mA</td></tr>
+                        <tr><td>Drive Strength 1</td><td>~4 mA</td></tr>
+                        <tr><td>Drive Strength 2</td><td>~8 mA</td></tr>
+                        <tr><td>Drive Strength 3</td><td>~12 mA</td></tr>
+                        <tr><td>Internal Pull-Up/Down</td><td>~50 kOhm</td></tr>
+                        <tr><td>Schmitt Trigger</td><td>Available (per-pin configurable)</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -560,7 +1104,7 @@ lang: en
                             <span>IPRO7 System EVB</span>
                         </div>
                     </div>
-                    
+
                     <div class="evb-features-grid">
                         <div class="evb-features">
                             <h4><i class="fas fa-plug"></i> Power Supply</h4>
@@ -695,7 +1239,7 @@ lang: en
 │   │                           IPRO7 SoC (QFN56)                       │    │
 │   │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐               │    │
 │   │  │  RISC-V     │  │    BLE      │  │     RF      │◄─► Antenna    │    │
-│   │  │  RV64IMC    │  │  5.4 Core   │  │ Transceiver │    (J118-122) │    │
+│   │  │  RV32IMAFC  │  │  5.4 Core   │  │ Transceiver │    (J118-122) │    │
 │   │  └─────────────┘  └─────────────┘  └─────────────┘               │    │
 │   │         │                                                        │    │
 │   │  ┌──────┴───────────────────────────────────────────────────┐   │    │
@@ -755,15 +1299,14 @@ lang: en
                         <ul>
                             <li>GPIO: 42 pins (GPIO0-GPIO41)</li>
                             <li>USB: GPIO8/GPIO9</li>
-                            <li>32kHz Crystal: GPIO18/GPIO19</li>
                         </ul>
                     </div>
                     <div class="package-card">
-                        <h4>QFN48 (6×6mm)</h4>
+                        <h4>QFN32</h4>
                         <p>Compact package with reduced GPIO count, suitable for space-constrained applications.</p>
                         <ul>
-                            <li>GPIO: Reduced version</li>
-                            <li>Core functionality intact</li>
+                            <li>GPIO: reduced set (no GPIO41 and some other pins)</li>
+                            <li>No in-package PSRAM, no AI/NPU</li>
                             <li>Smaller PCB footprint</li>
                         </ul>
                     </div>
@@ -778,106 +1321,185 @@ lang: en
             <div class="peripheral-grid">
                 <div class="peripheral-card">
                     <h3><i class="fas fa-volume-up"></i> I2S Audio Codec</h3>
-                    <p>Connect external audio codec (e.g., ES8388, WM8978)</p>
+                    <p>Connect an external audio codec (e.g., ES8388, WM8978). Uses I2S Group 1 (GPIO4~7) + I2C0 for control.</p>
                     <table class="connection-table">
                         <tr>
                             <th>IPRO7</th>
+                            <th>Function</th>
                             <th>Codec</th>
                         </tr>
                         <tr>
-                            <td>GPIO8 (I2S_BCLK)</td>
+                            <td>GPIO4 (Fun=3, I2S0_BCLK)</td>
+                            <td>I2S Bit Clock</td>
                             <td>BCLK</td>
                         </tr>
                         <tr>
-                            <td>GPIO9 (I2S_LRCLK)</td>
-                            <td>LRCLK/WS</td>
+                            <td>GPIO5 (Fun=3, I2S0_FS)</td>
+                            <td>I2S Frame Sync</td>
+                            <td>LRCLK / WS</td>
                         </tr>
                         <tr>
-                            <td>GPIO6 (I2S_DO)</td>
-                            <td>DIN</td>
+                            <td>GPIO6 (Fun=3, I2S0_DO)</td>
+                            <td>I2S Data Out</td>
+                            <td>DIN (to codec)</td>
                         </tr>
                         <tr>
-                            <td>GPIO7 (I2S_DI)</td>
-                            <td>DOUT</td>
+                            <td>GPIO7 (Fun=3, I2S0_DI)</td>
+                            <td>I2S Data In</td>
+                            <td>DOUT (from codec)</td>
                         </tr>
                         <tr>
-                            <td>GPIO4 (I2C_SCL)</td>
+                            <td>GPIO12 (Fun=6, I2C0_SCL)</td>
+                            <td>I2C Clock</td>
                             <td>SCL</td>
                         </tr>
                         <tr>
-                            <td>GPIO5 (I2C_SDA)</td>
+                            <td>GPIO13 (Fun=6, I2C0_SDA)</td>
+                            <td>I2C Data</td>
                             <td>SDA</td>
                         </tr>
                     </table>
+                    <p style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(99, 102, 241, 0.1); border-radius: 4px; font-size: 0.8rem;">
+                        I2S can also use any other group (0~7); each group of 4 pins is BCLK/FS/DO/DI in order. See <a href="#i2s-pins">I2S Pin Assignment</a>.
+                    </p>
                 </div>
 
                 <div class="peripheral-card">
-                    <h3><i class="fas fa-sd-card"></i> SPI Flash</h3>
-                    <p>Extend external QSPI Flash storage</p>
+                    <h3><i class="fas fa-microchip"></i> SPI Peripherals (LCD / Sensor)</h3>
+                    <p>SPI0 connects an LCD or sensors. Uses Group 3 (GPIO12~15).</p>
                     <table class="connection-table">
                         <tr>
                             <th>IPRO7</th>
-                            <th>Flash</th>
+                            <th>Function</th>
+                            <th>Peripheral</th>
                         </tr>
                         <tr>
-                            <td>QSPI_CLK</td>
+                            <td>GPIO15 (Fun=4, SPI0_SCLK)</td>
+                            <td>SPI Clock</td>
+                            <td>SCK</td>
+                        </tr>
+                        <tr>
+                            <td>GPIO12 (Fun=4, SPI0_MOSI)</td>
+                            <td>SPI Master Out</td>
+                            <td>SDI / MOSI</td>
+                        </tr>
+                        <tr>
+                            <td>GPIO13 (Fun=4, SPI0_MISO)</td>
+                            <td>SPI Master In</td>
+                            <td>SDO / MISO</td>
+                        </tr>
+                        <tr>
+                            <td>GPIO14 (Fun=4, SPI0_SS)</td>
+                            <td>Chip Select</td>
+                            <td>CS#</td>
+                        </tr>
+                    </table>
+                    <p style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(245, 158, 11, 0.15); border-radius: 4px; font-size: 0.8rem; color: #f59e0b;">
+                        MOSI/MISO can be swapped via <code>pin_swap_enable</code>. SPI0 supports 8 pin groups; see <a href="#spi-pins">SPI Pin Assignment</a>.
+                    </p>
+                </div>
+
+                <div class="peripheral-card">
+                    <h3><i class="fas fa-sd-card"></i> SD Card (SDIO)</h3>
+                    <p>The SD card uses fixed pins GPIO28~33 and cannot be reassigned.</p>
+                    <table class="connection-table">
+                        <tr>
+                            <th>IPRO7</th>
+                            <th>SD Card</th>
+                        </tr>
+                        <tr>
+                            <td>GPIO28 (Fun=27, SDC_CLK)</td>
                             <td>CLK</td>
                         </tr>
                         <tr>
-                            <td>QSPI_CS</td>
-                            <td>CS#</td>
+                            <td>GPIO29 (Fun=27, SDC_CMD)</td>
+                            <td>CMD</td>
                         </tr>
                         <tr>
-                            <td>QSPI_D0</td>
-                            <td>DI/IO0</td>
+                            <td>GPIO30 (Fun=27, SDC_DAT0)</td>
+                            <td>DAT0</td>
                         </tr>
                         <tr>
-                            <td>QSPI_D1</td>
-                            <td>DO/IO1</td>
+                            <td>GPIO31 (Fun=27, SDC_DAT1)</td>
+                            <td>DAT1</td>
                         </tr>
                         <tr>
-                            <td>QSPI_D2</td>
-                            <td>WP#/IO2</td>
+                            <td>GPIO32 (Fun=27, SDC_DAT2)</td>
+                            <td>DAT2</td>
                         </tr>
                         <tr>
-                            <td>QSPI_D3</td>
-                            <td>HOLD#/IO3</td>
+                            <td>GPIO33 (Fun=27, SDC_DAT3)</td>
+                            <td>DAT3</td>
                         </tr>
                     </table>
+                    <p style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(245, 158, 11, 0.15); border-radius: 4px; font-size: 0.8rem; color: #f59e0b;">
+                        GPIO28~33 are shared with external flash (SF2/SF3). Define <code>CONFIG_DISABLE_SDC_PINMUX</code> to switch to flash mode. See <a href="#sdio-pins">SDIO Pin Assignment</a>.
+                    </p>
                 </div>
 
                 <div class="peripheral-card">
-                    <h3><i class="fas fa-thermometer-half"></i> Sensors</h3>
-                    <p>I2C interface sensor connection example</p>
+                    <h3><i class="fas fa-thermometer-half"></i> I2C Sensors</h3>
+                    <p>I2C0 sensor connection example. I2C0 can use any even/odd GPIO pairing (SCL = even pin, SDA = odd pin).</p>
                     <table class="connection-table">
                         <tr>
                             <th>IPRO7</th>
+                            <th>Function</th>
                             <th>Sensor</th>
                         </tr>
                         <tr>
-                            <td>GPIO4 (I2C_SCL)</td>
+                            <td>GPIO4 (Fun=6, I2C0_SCL)</td>
+                            <td>I2C Clock</td>
                             <td>SCL</td>
                         </tr>
                         <tr>
-                            <td>GPIO5 (I2C_SDA)</td>
+                            <td>GPIO5 (Fun=6, I2C0_SDA)</td>
+                            <td>I2C Data</td>
                             <td>SDA</td>
                         </tr>
                         <tr>
-                            <td>GPIO10</td>
-                            <td>INT (Optional)</td>
+                            <td>GPIO10 (Fun=11, GPIO)</td>
+                            <td>Interrupt</td>
+                            <td>INT (optional)</td>
                         </tr>
                         <tr>
                             <td>3V3</td>
+                            <td>Power</td>
                             <td>VDD</td>
                         </tr>
                         <tr>
                             <td>GND</td>
+                            <td>Ground</td>
                             <td>GND</td>
                         </tr>
                     </table>
-                    <p
-                        style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(245, 158, 11, 0.15); border-radius: 4px; font-size: 0.8rem; color: #f59e0b;">
-                        ⚠️ I2C requires 4.7kΩ pull-up resistors</p>
+                    <p style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(245, 158, 11, 0.15); border-radius: 4px; font-size: 0.8rem; color: #f59e0b;">
+                        I2C requires external 4.7 kOhm pull-up resistors (the internal ~50 kOhm pull-ups are too weak to drive a standard I2C bus). I2C1 (Fun=25) is an independent second I2C.
+                    </p>
+                </div>
+
+                <div class="peripheral-card">
+                    <h3><i class="fas fa-exchange-alt"></i> UART Expansion</h3>
+                    <p>UART1 can be assigned to any GPIO. This example uses GPIO14/15.</p>
+                    <table class="connection-table">
+                        <tr>
+                            <th>IPRO7</th>
+                            <th>Function</th>
+                            <th>Peripheral</th>
+                        </tr>
+                        <tr>
+                            <td>GPIO14 (Fun=7, UART_SIG2)</td>
+                            <td>UART1_TXD</td>
+                            <td>RXD</td>
+                        </tr>
+                        <tr>
+                            <td>GPIO15 (Fun=7, UART_SIG3)</td>
+                            <td>UART1_RXD</td>
+                            <td>TXD</td>
+                        </tr>
+                    </table>
+                    <p style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(239, 68, 68, 0.1); border-radius: 4px; font-size: 0.8rem; color: #ef4444;">
+                        UART0 (GPIO20 TXD, GPIO21 RXD) is fixed for the Boot ROM and must not be changed. See <a href="#uart-pins">UART Pin Assignment</a>.
+                    </p>
                 </div>
 
                 <div class="peripheral-card">
@@ -889,13 +1511,13 @@ lang: en
                         <li><strong>External Antenna:</strong> Best performance, requires U.FL connector</li>
                     </ul>
                     <div class="rf-matching">
-                        <p><strong>π Matching Circuit:</strong></p>
+                        <p><strong>Pi Matching Circuit:</strong></p>
                         <pre>
-RF_OUT ─┬─[L1]─┬─ ANT
-        │      │
-       [C1]   [C2]
-        │      │
-       GND    GND
+RF_OUT --+--[L1]--+-- ANT
+         |        |
+        [C1]     [C2]
+         |        |
+        GND      GND
                         </pre>
                     </div>
                 </div>
@@ -1092,7 +1714,7 @@ RF_OUT ─┬─[L1]─┬─ ANT
                         <tr>
                             <td>Active (CPU)</td>
                             <td>15 mA</td>
-                            <td>160MHz, executing code</td>
+                            <td>192MHz, executing code</td>
                         </tr>
                         <tr>
                             <td>BLE TX</td>
@@ -1121,6 +1743,7 @@ RF_OUT ─┬─[L1]─┬─ ANT
                         </tr>
                     </tbody>
                 </table>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">Values are datasheet typicals; actual current varies with system clock, enabled peripherals, and RF parameters.</p>
             </div>
         </div>
 

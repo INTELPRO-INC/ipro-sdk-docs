@@ -21,7 +21,7 @@ lang: zh-TW
                 <span>晶片概覽</span>
             </a>
             <a href="#wireless" class="hw-nav-item">
-                <i class="fas fa-wifi"></i>
+                <i class="fas fa-tower-broadcast"></i>
                 <span>無線規格</span>
             </a>
             <a href="#ai-multimedia" class="hw-nav-item">
@@ -62,10 +62,6 @@ lang: zh-TW
         <div id="chip-overview" class="hw-section">
             <h2><i class="fas fa-microchip"></i> IPRO7 晶片概覽</h2>
 
-            <div class="alert-warning" style="background: rgba(245, 158, 11, 0.1); border-left: 4px solid #f59e0b; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
-                <strong>⚠ Release SDK 注意事項：</strong>此為 Release SDK v1.0.1。IPRO7 不支援 WiFi。部分進階功能（Matter、Thread、Zigbee、AI/NPU）未包含在此版本中。
-            </div>
-
             <div class="chip-intro" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1)); border-radius: 16px; padding: 2rem; margin-bottom: 2rem;">
                 <h3 style="margin-top: 0; color: var(--primary);">2.4G 低功耗無線晶片</h3>
                 <p style="font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 1rem;">
@@ -87,7 +83,7 @@ lang: zh-TW
                     <ul>
                         <li>RISC-V RV32IMAFC @192MHz</li>
                         <li>L1 I/D Cache 16KB/16KB</li>
-                        <li>RAM 300KB</li>
+                        <li>OCRAM 256KB（另含 4KB HBN 保留 RAM）</li>
                         <li>ROM 128KB</li>
                         <li>eFuse 2Kb</li>
                         <li>RTC, Timer×2, WDT</li>
@@ -108,12 +104,12 @@ lang: zh-TW
                 </div>
 
                 <div class="spec-card">
-                    <div class="spec-icon"><i class="fas fa-wifi"></i></div>
+                    <div class="spec-icon"><i class="fas fa-tower-broadcast"></i></div>
                     <h3>無線功能</h3>
                     <ul>
                         <li>Bluetooth 5.4 / BLE</li>
                         <li>LE Audio (LC3 Codec)</li>
-                        <li>最多 16 個 BLE 連線</li>
+                        <li>最多 8 個同時連線（link8 controller 變體，依需求選擇 link1/link2/link4/link8）</li>
                         <li>2.4 GHz RF</li>
                     </ul>
                 </div>
@@ -183,8 +179,8 @@ lang: zh-TW
 │  │ Flash │  │ SHA   │  │ MJPEG │  │UART×2 │  │ LDO   │  │ QDEC IRR    │     │
 │  │ 64Mb  │  │ PKA   │  │ ADC   │  │SPI×2  │  │       │  │ KYS  RMII   │     │
 │  │ pSRAM │  │ TRNG  │  │ DAC   │  │I2C×2  │  │ Power │  │             │     │
-│  │ 300KB │  │       │  │ Camera│  │I2S    │  │ Modes │  │             │     │
-│  │ RAM   │  │       │  │ LCD   │  │USB2.0 │  │       │  │             │     │
+│  │ 256KB │  │       │  │ Camera│  │I2S    │  │ Modes │  │             │     │
+│  │ OCRAM │  │       │  │ LCD   │  │USB2.0 │  │       │  │             │     │
 │  └───────┘  └───────┘  └───────┘  └───────┘  └───────┘  └─────────────┘     │
 │                                                                              │
 ├──────────────────────────────────────────────────────────────────────────────┤
@@ -209,12 +205,13 @@ lang: zh-TW
                     </div>
                     <div class="app-card" style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.5rem;">
                         <h4 style="color: var(--primary); margin-top: 0;"><i class="fas fa-globe"></i> Matter IOT 連接</h4>
-                        <ul style="margin-bottom: 0;">
+                        <ul style="margin-bottom: 0.75rem;">
                             <li>Border Router 邊界路由器</li>
                             <li>智慧家庭閘道</li>
                             <li>多協定橋接器</li>
                             <li>Thread/Zigbee 轉換器</li>
                         </ul>
+                        <p style="margin-bottom: 0; font-size: 0.85rem; color: #f59e0b;">⚠ 能力展示 — Matter/Thread/Zigbee 未包含於本版 SDK，如需取得請聯絡原廠。</p>
                     </div>
                 </div>
             </div>
@@ -222,18 +219,18 @@ lang: zh-TW
 
         <!-- Wireless Specifications -->
         <div id="wireless" class="hw-section">
-            <h2><i class="fas fa-wifi"></i> 無線規格詳細</h2>
+            <h2><i class="fas fa-tower-broadcast"></i> 無線規格詳細</h2>
             
             <div class="spec-grid">
                 <div class="spec-card">
                     <div class="spec-icon"><i class="fas fa-satellite-dish"></i></div>
-                    <h3>Bluetooth (Matter 支援)</h3>
+                    <h3>Bluetooth</h3>
                     <ul>
                         <li>2.4 GHz RF 收發器</li>
                         <li>Bluetooth® 規範 v5.4</li>
                         <li>BLE 1Mbps 和 2Mbps</li>
                         <li>Long Range 500/125Kbps</li>
-                        <li>最多 16 個 BLE 連線</li>
+                        <li>最多 8 個同時連線（link8 controller 變體）</li>
                         <li>整合 RF balun, PA/LNA</li>
                         <li>支援外部 PA/LNA</li>
                     </ul>
@@ -245,7 +242,7 @@ lang: zh-TW
                     <ul>
                         <li>LE Audio CIS/BIS 串流</li>
                         <li>GAF/BAP/VCP/CAP 協定</li>
-                        <li>LC3 硬體加速編解碼</li>
+                        <li>LC3 編解碼（軟體 liblc3，RISC-V DSP 指令最佳化）</li>
                         <li>Auracast 廣播音訊</li>
                         <li>OTA 韌體更新</li>
                     </ul>
@@ -347,8 +344,8 @@ lang: zh-TW
                         </tr>
                         <tr>
                             <td>PWM</td>
-                            <td>×8</td>
-                            <td>脈寬調變輸出</td>
+                            <td>×4 通道</td>
+                            <td>脈寬調變輸出，每通道 H/L 互補輸出（共 8 路）</td>
                         </tr>
                         <tr>
                             <td>GPADC</td>
@@ -400,8 +397,8 @@ lang: zh-TW
                     <p>標準封裝，提供 42 個 GPIO (GPIO0-GPIO41)，適合大多數應用</p>
                 </div>
                 <div class="spec-card" style="flex: 1;">
-                    <h4>QFN48 (6x6mm)</h4>
-                    <p>精簡封裝，適合空間受限設計</p>
+                    <h4>QFN32</h4>
+                    <p>精簡封裝，適合空間受限設計。無封裝內 PSRAM、無 AI/NPU，bond-out GPIO 較少（如無 GPIO41）</p>
                 </div>
             </div>
 
@@ -459,16 +456,24 @@ lang: zh-TW
                         </tr>
                         <tr>
                             <td>9</td><td><code>CAM</code></td><td>Camera DVP</td>
-                            <td>25</td><td><code>I2C1</code></td><td>I2C1</td>
+                            <td>23</td><td><code>CAM_MISC</code></td><td>Camera PWRDN / RST / REF_CLK</td>
                         </tr>
                         <tr>
                             <td>10</td><td><code>ANALOG</code></td><td>ADC / DAC</td>
+                            <td>24</td><td><code>PIO</code></td><td>Programmable IO</td>
+                        </tr>
+                        <tr>
+                            <td>11</td><td><code>GPIO</code></td><td>General Purpose IO</td>
+                            <td>25</td><td><code>I2C1</code></td><td>I2C1</td>
+                        </tr>
+                        <tr>
+                            <td>12</td><td><code>RF_TEST</code></td><td>RF Test（內部測試用）</td>
                             <td style="background: rgba(99, 102, 241, 0.08);"><strong>26</strong></td>
                             <td style="background: rgba(99, 102, 241, 0.08);"><strong><code>SPI1</code></strong></td>
                             <td style="background: rgba(99, 102, 241, 0.08);"><strong>SPI1</strong></td>
                         </tr>
                         <tr>
-                            <td>11</td><td><code>GPIO</code></td><td>General Purpose IO</td>
+                            <td>13</td><td><code>SCAN</code></td><td>Scan Chain（內部測試用）</td>
                             <td style="background: rgba(99, 102, 241, 0.08);"><strong>27</strong></td>
                             <td style="background: rgba(99, 102, 241, 0.08);"><strong><code>SDC</code></strong></td>
                             <td style="background: rgba(99, 102, 241, 0.08);"><strong>SD Card (SDIO)</strong></td>
@@ -530,67 +535,81 @@ lang: zh-TW
                 </table>
 
                 <h4 style="margin-top: 1.5rem;">UART Signal Routing — GPIO 對應表</h4>
-                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">GPIO 設為 function 7 後，依 pin number 產生對應的 UART_SIG，再透過 <code>GLB_UART_Fun_Sel()</code> 映射到 UART0/1 的 TXD/RXD/CTS/RTS。</p>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">GPIO 設為 function 7 後，依 pin number 產生對應的 UART_SIG（<strong>SIG = GPIO 編號 mod 12</strong>，共 12 個 signal SIG_0~SIG_11），再透過 <code>GLB_UART_Fun_Sel()</code> 映射到 UART0/1 的 TXD/RXD/CTS/RTS。</p>
                 <table class="pinout-table">
                     <thead>
                         <tr>
-                            <th>GPIO</th><th>Primary SIG</th><th>Swap SIG</th>
-                            <th>GPIO</th><th>Primary SIG</th><th>Swap SIG</th>
-                            <th>GPIO</th><th>Primary SIG</th><th>Swap SIG</th>
-                            <th>GPIO</th><th>Primary SIG</th><th>Swap SIG</th>
+                            <th>GPIO</th><th>UART SIG</th>
+                            <th>GPIO</th><th>UART SIG</th>
+                            <th>GPIO</th><th>UART SIG</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><span class="pin-num">0</span></td><td>SIG_0</td><td>SIG_4</td>
-                            <td><span class="pin-num">8</span></td><td>SIG_0</td><td>SIG_4</td>
-                            <td><span class="pin-num">16</span></td><td>SIG_0</td><td>SIG_4</td>
-                            <td><span class="pin-num">24</span></td><td>SIG_0</td><td>SIG_4</td>
+                            <td><span class="pin-num">0</span></td><td>SIG_0</td>
+                            <td><span class="pin-num">12</span></td><td>SIG_0</td>
+                            <td><span class="pin-num">24</span></td><td>SIG_0</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">1</span></td><td>SIG_1</td><td>SIG_5</td>
-                            <td><span class="pin-num">9</span></td><td>SIG_1</td><td>SIG_5</td>
-                            <td><span class="pin-num">17</span></td><td>SIG_1</td><td>SIG_5</td>
-                            <td><span class="pin-num">25</span></td><td>SIG_1</td><td>SIG_5</td>
+                            <td><span class="pin-num">1</span></td><td>SIG_1</td>
+                            <td><span class="pin-num">13</span></td><td>SIG_1</td>
+                            <td><span class="pin-num">25</span></td><td>SIG_1</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">2</span></td><td>SIG_2</td><td>SIG_6</td>
-                            <td><span class="pin-num">10</span></td><td>SIG_2</td><td>SIG_6</td>
-                            <td><span class="pin-num">18</span></td><td>SIG_2</td><td>SIG_6</td>
-                            <td><span class="pin-num">26</span></td><td>SIG_2</td><td>SIG_6</td>
+                            <td><span class="pin-num">2</span></td><td>SIG_2</td>
+                            <td><span class="pin-num">14</span></td><td>SIG_2</td>
+                            <td><span class="pin-num">26</span></td><td>SIG_2</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">3</span></td><td>SIG_3</td><td>SIG_7</td>
-                            <td><span class="pin-num">11</span></td><td>SIG_3</td><td>SIG_7</td>
-                            <td><span class="pin-num">19</span></td><td>SIG_3</td><td>SIG_7</td>
-                            <td><span class="pin-num">27</span></td><td>SIG_3</td><td>SIG_7</td>
+                            <td><span class="pin-num">3</span></td><td>SIG_3</td>
+                            <td><span class="pin-num">15</span></td><td>SIG_3</td>
+                            <td><span class="pin-num">27</span></td><td>SIG_3</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">4</span></td><td>SIG_4</td><td>SIG_0</td>
-                            <td><span class="pin-num">12</span></td><td>SIG_4</td><td>SIG_0</td>
-                            <td><span class="pin-num">20</span></td><td>SIG_4</td><td>SIG_0</td>
-                            <td><span class="pin-num">28</span></td><td>SIG_4</td><td>SIG_0</td>
+                            <td><span class="pin-num">4</span></td><td>SIG_4</td>
+                            <td><span class="pin-num">16</span></td><td>SIG_4</td>
+                            <td><span class="pin-num">28</span></td><td>SIG_4</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">5</span></td><td>SIG_5</td><td>SIG_1</td>
-                            <td><span class="pin-num">13</span></td><td>SIG_5</td><td>SIG_1</td>
-                            <td><span class="pin-num">21</span></td><td>SIG_5</td><td>SIG_1</td>
-                            <td><span class="pin-num">29</span></td><td>SIG_5</td><td>SIG_1</td>
+                            <td><span class="pin-num">5</span></td><td>SIG_5</td>
+                            <td><span class="pin-num">17</span></td><td>SIG_5</td>
+                            <td><span class="pin-num">29</span></td><td>SIG_5</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">6</span></td><td>SIG_6</td><td>SIG_2</td>
-                            <td><span class="pin-num">14</span></td><td>SIG_6</td><td>SIG_2</td>
-                            <td><span class="pin-num">22</span></td><td>SIG_6</td><td>SIG_2</td>
-                            <td><span class="pin-num">30</span></td><td>SIG_6</td><td>SIG_2</td>
+                            <td><span class="pin-num">6</span></td><td>SIG_6</td>
+                            <td><span class="pin-num">18</span></td><td>SIG_6</td>
+                            <td><span class="pin-num">30</span></td><td>SIG_6</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">7</span></td><td>SIG_7</td><td>SIG_3</td>
-                            <td><span class="pin-num">15</span></td><td>SIG_7</td><td>SIG_3</td>
-                            <td><span class="pin-num">23</span></td><td>SIG_7</td><td>SIG_3</td>
-                            <td><span class="pin-num">31</span></td><td>SIG_7</td><td>SIG_3</td>
+                            <td><span class="pin-num">7</span></td><td>SIG_7</td>
+                            <td><span class="pin-num">19</span></td><td>SIG_7</td>
+                            <td><span class="pin-num">31</span></td><td>SIG_7</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">8</span></td><td>SIG_8</td>
+                            <td><span class="pin-num">20</span></td><td>SIG_8</td>
+                            <td><span class="pin-num">32</span></td><td>SIG_8</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">9</span></td><td>SIG_9</td>
+                            <td><span class="pin-num">21</span></td><td>SIG_9</td>
+                            <td><span class="pin-num">33</span></td><td>SIG_9</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">10</span></td><td>SIG_10</td>
+                            <td><span class="pin-num">22</span></td><td>SIG_10</td>
+                            <td></td><td></td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">11</span></td><td>SIG_11</td>
+                            <td><span class="pin-num">23</span></td><td>SIG_11</td>
+                            <td></td><td></td>
                         </tr>
                     </tbody>
                 </table>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0.5rem;">
+                    <strong>Signal Swap：</strong><code>GLB_UART_Sig_Swap_Set()</code> 可對三個 pin 群組（GPIO0~7、GPIO8~15、GPIO16~22）啟用 swap，將該群組的 <code>uart_sig[0:3]</code> 與 <code>uart_sig[4:7]</code> 互換。系統預設為 <code>UART_SIG_SWAP_NONE</code>（不交換），上表為預設值的對應。
+                </p>
 
                 <h4 style="margin-top: 1.5rem;">UART Signal Function 映射</h4>
                 <table class="pinout-table">
@@ -629,9 +648,9 @@ GLB_GPIO_Cfg_Type uart_pins[] = {
 GLB_GPIO_Init(&uart_pins[0]);
 GLB_GPIO_Init(&uart_pins[1]);
 
-/* GPIO14 -> UART_SIG_6, GPIO15 -> UART_SIG_7 */
-GLB_UART_Fun_Sel(GLB_UART_SIG_6, GLB_UART_SIG_FUN_UART1_TXD);
-GLB_UART_Fun_Sel(GLB_UART_SIG_7, GLB_UART_SIG_FUN_UART1_RXD);</code></pre>
+/* GPIO14 -> UART_SIG_2, GPIO15 -> UART_SIG_3 (SIG = GPIO 編號 mod 12) */
+GLB_UART_Fun_Sel(GLB_UART_SIG_2, GLB_UART_SIG_FUN_UART1_TXD);
+GLB_UART_Fun_Sel(GLB_UART_SIG_3, GLB_UART_SIG_FUN_UART1_RXD);</code></pre>
             </div>
 
             <!-- SPI Pin Assignment -->
@@ -955,10 +974,10 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                         </tr>
                         <tr>
                             <td><strong>7 UART</strong></td>
-                            <td>S0/4</td><td>S1/5</td><td>S2/6</td><td>S3/7</td>
-                            <td>S4/0</td><td>S5/1</td><td>S6/2</td><td>S7/3</td>
-                            <td>S0/4</td><td>S1/5</td><td>S2/6</td><td>S3/7</td>
-                            <td>S4/0</td><td>S5/1</td><td>S6/2</td><td>S7/3</td>
+                            <td>S0</td><td>S1</td><td>S2</td><td>S3</td>
+                            <td>S4</td><td>S5</td><td>S6</td><td>S7</td>
+                            <td>S8</td><td>S9</td><td>S10</td><td>S11</td>
+                            <td>S0</td><td>S1</td><td>S2</td><td>S3</td>
                         </tr>
                         <tr>
                             <td><strong>8 PWM</strong></td>
@@ -977,7 +996,7 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                     </tbody>
                 </table>
                 </div>
-                <p style="font-size: 0.8rem; color: var(--text-secondary);">* MOSI/MISO 依 <code>pin_swap_enable</code> 設定交換</p>
+                <p style="font-size: 0.8rem; color: var(--text-secondary);">* MOSI/MISO 依 <code>pin_swap_enable</code> 設定交換。UART 列的 S<em>N</em> = <code>UART_SIG_N</code>（預設 <code>UART_SIG_SWAP_NONE</code>）。</p>
 
                 <h4 style="margin-top: 1.5rem;">GPIO16 ~ GPIO31</h4>
                 <div style="overflow-x: auto;">
@@ -1022,10 +1041,10 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                         </tr>
                         <tr>
                             <td><strong>7 UART</strong></td>
-                            <td>S0/4</td><td>S1/5</td><td>S2/6</td><td>S3/7</td>
-                            <td>S4/0</td><td>S5/1</td><td>S6/2</td><td>S7/3</td>
-                            <td>S0/4</td><td>S1/5</td><td>S2/6</td><td>S3/7</td>
-                            <td>S4/0</td><td>S5/1</td><td>S6/2</td><td>S7/3</td>
+                            <td>S4</td><td>S5</td><td>S6</td><td>S7</td>
+                            <td>S8</td><td>S9</td><td>S10</td><td>S11</td>
+                            <td>S0</td><td>S1</td><td>S2</td><td>S3</td>
+                            <td>S4</td><td>S5</td><td>S6</td><td>S7</td>
                         </tr>
                         <tr>
                             <td><strong>8 PWM</strong></td>
@@ -1272,7 +1291,7 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
 │   │                           IPRO7 SoC (QFN56)                       │    │
 │   │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐               │    │
 │   │  │  RISC-V     │  │    BLE      │  │     RF      │◄─► Antenna    │    │
-│   │  │  RV64IMC    │  │  5.4 Core   │  │ Transceiver │    (J118-122) │    │
+│   │  │  RV32IMAFC  │  │  5.4 Core   │  │ Transceiver │    (J118-122) │    │
 │   │  └─────────────┘  └─────────────┘  └─────────────┘               │    │
 │   │         │                                                        │    │
 │   │  ┌──────┴───────────────────────────────────────────────────┐   │    │
@@ -1332,15 +1351,14 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                         <ul>
                             <li>GPIO: 42 pins (GPIO0-GPIO41)</li>
                             <li>USB: GPIO8/GPIO9</li>
-                            <li>32kHz Crystal: GPIO18/GPIO19</li>
                         </ul>
                     </div>
                     <div class="package-card">
-                        <h4>QFN48 (6×6mm)</h4>
+                        <h4>QFN32</h4>
                         <p>精簡封裝，減少部分 GPIO，適合空間受限的應用。</p>
                         <ul>
-                            <li>GPIO: 精簡版本</li>
-                            <li>核心功能完整</li>
+                            <li>GPIO: 精簡版本（無 GPIO41 等部分腳位）</li>
+                            <li>無封裝內 PSRAM、無 AI/NPU</li>
                             <li>較小 PCB 空間</li>
                         </ul>
                     </div>
@@ -1521,12 +1539,12 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                             <th>外設</th>
                         </tr>
                         <tr>
-                            <td>GPIO14 (Fun=7, UART_SIG6)</td>
+                            <td>GPIO14 (Fun=7, UART_SIG2)</td>
                             <td>UART1_TXD</td>
                             <td>RXD</td>
                         </tr>
                         <tr>
-                            <td>GPIO15 (Fun=7, UART_SIG7)</td>
+                            <td>GPIO15 (Fun=7, UART_SIG3)</td>
                             <td>UART1_RXD</td>
                             <td>TXD</td>
                         </tr>
@@ -1748,7 +1766,7 @@ RF_OUT --+--[L1]--+-- ANT
                         <tr>
                             <td>Active (CPU)</td>
                             <td>15 mA</td>
-                            <td>160MHz, 執行程式</td>
+                            <td>192MHz, 執行程式</td>
                         </tr>
                         <tr>
                             <td>BLE TX</td>
@@ -1777,6 +1795,7 @@ RF_OUT --+--[L1]--+-- ANT
                         </tr>
                     </tbody>
                 </table>
+                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">表列為 datasheet typical 值，實際電流依系統時鐘、外設啟用狀態與 RF 參數而異。</p>
             </div>
         </div>
 
