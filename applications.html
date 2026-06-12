@@ -13,10 +13,15 @@ title: 應用範例
                 <li><a href="#ipro-ble-remote" class="sidebar-link">ipro_ble_remote</a></li>
                 <li><a href="#ipro-throughput-test" class="sidebar-link">ipro_throughput_test</a></li>
                 <li><a href="#ipro-ble-transparent" class="sidebar-link">ipro_ble_transparent</a></li>
+                <li><a href="#ipro-ble-img-capture" class="sidebar-link">ipro_ble_img_capture</a></li>
                 <li class="sidebar-section-title">LE Audio 應用</li>
                 <li><a href="#ipro-le-audio-headset" class="sidebar-link">ipro_le_audio_headset</a></li>
                 <li><a href="#ipro-le-audio-bis-source" class="sidebar-link">ipro_le_audio_bis_source</a></li>
                 <li><a href="#ipro-le-audio-bis-sink" class="sidebar-link">ipro_le_audio_bis_sink</a></li>
+                <li class="sidebar-section-title">多媒體應用</li>
+                <li><a href="#ipro-agora-sentino" class="sidebar-link">ipro_agora_sentino</a></li>
+                <li class="sidebar-section-title">網路應用</li>
+                <li><a href="#ipro-voice-assistant" class="sidebar-link">ipro_voice_assistant</a></li>
                 <li class="sidebar-section-title">平台應用</li>
                 <li><a href="#ipro7-demo" class="sidebar-link">ipro7_demo</a></li>
                 <li class="sidebar-section-title">其他</li>
@@ -31,7 +36,7 @@ title: 應用範例
 
         <section id="overview">
             <h2>應用概覽</h2>
-            <p>本 Release SDK 包含 <strong>7 個參考應用</strong>，分為 BLE 應用（3 個）、LE Audio 應用（3 個）與平台應用（1 個）三大類：</p>
+            <p>本 Release SDK 包含 <strong>10 個參考應用</strong>，分為 BLE 應用（4 個）、LE Audio 應用（3 個）、多媒體應用（1 個）、網路應用（1 個）與平台應用（1 個）五大類：</p>
 
             <h3>BLE 應用</h3>
             <div class="table-wrapper">
@@ -64,8 +69,15 @@ title: 應用範例
                             <td><code>ipro_ble_transparent</code></td>
                             <td><code>apps/bluetooth/ble/ipro_ble_transparent</code></td>
                             <td>FreeRTOS</td>
-                            <td>BLE 透傳通訊</td>
+                            <td>UART-BLE 透傳橋接 + AT 命令</td>
                             <td>串口透傳/資料橋接</td>
+                        </tr>
+                        <tr>
+                            <td><code>ipro_ble_img_capture</code></td>
+                            <td><code>apps/bluetooth/ble/ipro_ble_img_capture</code></td>
+                            <td>FreeRTOS</td>
+                            <td>PIR 觸發影像擷取 + BLE 影像傳輸</td>
+                            <td>低功耗影像感測節點</td>
                         </tr>
                     </tbody>
                 </table>
@@ -88,14 +100,14 @@ title: 應用範例
                             <td><code>ipro_le_audio_headset</code></td>
                             <td><code>apps/bluetooth/le_audio/ipro_le_audio_headset</code></td>
                             <td>FreeRTOS</td>
-                            <td>GAF/BAP LE Audio 耳機</td>
+                            <td>BAP Unicast 耳機（CIS 雙向串流）</td>
                             <td>LE Audio 耳機/音訊裝置</td>
                         </tr>
                         <tr>
                             <td><code>ipro_le_audio_bis_source</code></td>
                             <td><code>apps/bluetooth/le_audio/ipro_le_audio_bis_source</code></td>
                             <td>FreeRTOS</td>
-                            <td>BIS 廣播音訊來源</td>
+                            <td>BIS 廣播音訊來源（Auracast 相容）</td>
                             <td>LE Audio 廣播發射端</td>
                         </tr>
                         <tr>
@@ -104,6 +116,54 @@ title: 應用範例
                             <td>FreeRTOS</td>
                             <td>BIS 廣播音訊接收</td>
                             <td>LE Audio 廣播接收端</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>多媒體應用</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>應用名稱</th>
+                            <th>路徑</th>
+                            <th>RTOS</th>
+                            <th>主要功能</th>
+                            <th>適用場景</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>ipro_agora_sentino</code></td>
+                            <td><code>apps/multimedia/ipro_agora_sentino</code></td>
+                            <td>FreeRTOS</td>
+                            <td>AI 語音對話閘道器（Agora RTC）</td>
+                            <td>雲端 AI 即時語音互動</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>網路應用</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>應用名稱</th>
+                            <th>路徑</th>
+                            <th>RTOS</th>
+                            <th>主要功能</th>
+                            <th>適用場景</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>ipro_voice_assistant</code></td>
+                            <td><code>apps/network/ipro_voice_assistant</code></td>
+                            <td>FreeRTOS</td>
+                            <td>AI 語音助理（語音對話 + 文字聊天）</td>
+                            <td>AI 語音互動裝置</td>
                         </tr>
                     </tbody>
                 </table>
@@ -132,6 +192,25 @@ title: 應用範例
                     </tbody>
                 </table>
             </div>
+
+            <h3>統一建構工作流程</h3>
+            <p>除了在各應用目錄執行 <code>make</code>，SDK 根目錄的 <code>build_freertos.sh</code> 提供統一的建構入口，可串接建構、燒錄與監看：</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">build_freertos.sh 工作流程</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 列出所有可建構的專案
+./build_freertos.sh -l
+
+# 建構單一應用（專案名稱或完整路徑皆可）
+./build_freertos.sh ipro_ble_remote build
+./build_freertos.sh bluetooth/ble/ipro_ble_remote build
+
+# 完整開發循環：建構 + 燒錄 + 序列埠監看
+./build_freertos.sh ipro_ble_remote build flash monitor</code></pre>
+            </div>
+            <p>建構輸出位於 <code>apps/&lt;category&gt;/&lt;name&gt;/build/build_out/</code>，二進位檔名包含晶片後綴，例如 <code>ipro_ble_remote_IPRO7.bin</code>。</p>
         </section>
 
         <!-- ==================== BLE Apps ==================== -->
@@ -143,8 +222,8 @@ title: 應用範例
             <h3>功能特色</h3>
             <ul>
                 <li><strong>6 個 GATT 服務</strong>：LED 控制、按鈕、環境感測、UART、PIR 圖片、OTA 更新</li>
-                <li><strong>手機友好</strong>：完整的協定規格，適合 Android/iOS App 開發</li>
-                <li><strong>圖片傳輸</strong>：320x480 JPEG 透過 BLE 傳輸，MTU 517 支援</li>
+                <li><strong>手機友好</strong>：完整的協定規格，適合 Android/iOS App 開發；應用目錄隨附 Android demo App（<code>ipro_remote_demo.apk</code>）可直接安裝測試</li>
+                <li><strong>圖片傳輸</strong>：JPEG 影像透過 BLE 分塊傳輸，MTU 517 下實測 <strong>101.4 KB/s</strong>（56KB 影像 542ms 完成）</li>
                 <li><strong>高速 OTA</strong>：MTU 517 自動協商，12.3 KB/s 傳輸速度</li>
             </ul>
 
@@ -210,11 +289,11 @@ title: 應用範例
             <h3>功能特色</h3>
             <ul>
                 <li><strong>原生 Zephyr API</strong>：直接使用 <code>bt_gatt_notify</code>/<code>bt_gatt_write_without_response</code></li>
-                <li><strong>雙向資料傳輸</strong>：使用自訂 GATT 服務</li>
-                <li><strong>即時統計</strong>：顯示 Kbps 傳輸速度</li>
+                <li><strong>雙角色支援</strong>：Slave（Peripheral）與 Master（Central），使用自訂 GATT 服務雙向傳輸</li>
+                <li><strong>即時統計</strong>：每秒更新 Kbps 傳輸速度</li>
                 <li><strong>PHY 選擇</strong>：1M/2M/Coded</li>
-                <li><strong>DLE 最佳化</strong>：Data Length Extension 251 bytes</li>
-                <li><strong>TX Descriptor 最佳化</strong>：多重傳輸描述符提升吞吐量</li>
+                <li><strong>DLE 最佳化</strong>：Data Length Extension 251 bytes，ATT MTU 247 bytes</li>
+                <li><strong>連線間隔可調</strong>：7.5ms ~ 4s</li>
             </ul>
 
             <h3>效能測試結果</h3>
@@ -222,22 +301,42 @@ title: 應用範例
                 <table>
                     <thead>
                         <tr>
-                            <th>配置</th>
+                            <th>PHY</th>
+                            <th>連線間隔</th>
+                            <th>封包大小</th>
                             <th>傳輸速度</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>1M PHY, 7.5ms CI, 244B</td>
-                            <td>~180-200 Kbps</td>
+                            <td>1M</td>
+                            <td>7.5 ms</td>
+                            <td>244 B</td>
+                            <td>507 Kbps</td>
                         </tr>
                         <tr>
-                            <td>2M PHY, 7.5ms CI, 244B</td>
-                            <td>~350-400 Kbps</td>
-                        </tr>
-                        <tr>
-                            <td>2M PHY + DLE 251B + TX Desc</td>
+                            <td>2M</td>
+                            <td>7.5 ms</td>
+                            <td>244 B</td>
                             <td><strong>999 Kbps</strong></td>
+                        </tr>
+                        <tr>
+                            <td>2M</td>
+                            <td>15 ms</td>
+                            <td>244 B</td>
+                            <td>984 Kbps</td>
+                        </tr>
+                        <tr>
+                            <td>2M</td>
+                            <td>7.5 ms</td>
+                            <td>100 B</td>
+                            <td>610 Kbps</td>
+                        </tr>
+                        <tr>
+                            <td>2M</td>
+                            <td>7.5 ms</td>
+                            <td>20 B</td>
+                            <td>187 Kbps</td>
                         </tr>
                     </tbody>
                 </table>
@@ -275,7 +374,7 @@ tp conn 6 6      # 最小連線間隔</code></pre>
 
         <section id="ipro-ble-transparent">
             <h2>ipro_ble_transparent</h2>
-            <p>BLE 透傳通訊應用，實作串口資料透過 BLE 的雙向傳輸。</p>
+            <p>BLE 透傳通訊應用，實作 UART-BLE 雙向資料橋接，支援 AT 命令介面設定。交付組態預設使用 USB CDC ACM 作為傳輸層（<code>CONFIG_AT_TRANSPORT_CDC=y</code>），可修改 <code>.config</code> 切回 UART。</p>
 
             <h3>建構</h3>
             <div class="code-block">
@@ -287,19 +386,73 @@ tp conn 6 6      # 最小連線間隔</code></pre>
             </div>
         </section>
 
+        <section id="ipro-ble-img-capture">
+            <h2>ipro_ble_img_capture</h2>
+            <p>BLE 影像擷取應用，結合 PIR 動作感測、ISP 影像擷取與 BLE 影像傳輸，適合低功耗影像感測節點開發。GATT 服務架構承襲 <code>ipro_ble_remote</code>。</p>
+
+            <h3>功能特色</h3>
+            <ul>
+                <li><strong>PIR 觸發擷取</strong>：PIR 感測器 GPIO 中斷偵測動作，事件通知手機並觸發影像擷取</li>
+                <li><strong>低功耗循環</strong>：睡眠/喚醒循環運作，平時進入低功耗模式，動作觸發後喚醒擷取</li>
+                <li><strong>ISP + JPEG</strong>：ISP 攝影機擷取搭配 JPEG 壓縮，解析度可設定（QVGA/VGA/720p/1080p）</li>
+                <li><strong>影像分塊傳輸</strong>：依協商 MTU 動態調整 chunk 大小，MTU 517 下實測 101.4 KB/s（56KB 影像）</li>
+                <li><strong>影像上傳服務</strong>：手機端可反向上傳影像至裝置，含 PAUSE/RESUME 流量控制</li>
+                <li><strong>OTA 更新</strong>：與 <code>ipro_ble_remote</code> 相同的 OTA 服務（<code>0xFF60</code>）</li>
+            </ul>
+
+            <h3>服務列表</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>服務</th>
+                            <th>UUID</th>
+                            <th>功能</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>PIR Image</td>
+                            <td><code>0xFF50</code></td>
+                            <td>動作事件通知、影像擷取控制與分塊傳輸</td>
+                        </tr>
+                        <tr>
+                            <td>Image Upload</td>
+                            <td><code>0xFF70</code></td>
+                            <td>手機→裝置影像上傳（流量控制）</td>
+                        </tr>
+                        <tr>
+                            <td>OTA</td>
+                            <td><code>0xFF60</code></td>
+                            <td>韌體更新</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>建構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構 BLE Image Capture</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">make -C apps/bluetooth/ble/ipro_ble_img_capture</code></pre>
+            </div>
+        </section>
+
         <!-- ==================== LE Audio Apps ==================== -->
 
         <section id="ipro-le-audio-headset">
             <h2>ipro_le_audio_headset</h2>
-            <p>LE Audio 耳機參考應用，實作 GAF (Generic Audio Framework) 與 BAP (Basic Audio Profile)。</p>
+            <p>LE Audio Unicast 耳機參考應用，基於 GAF (Generic Audio Framework) 實作完整的無線耳機，透過 CIS (Connected Isochronous Stream) 與手機/PC 等 Unicast Client（CAP）來源端進行雙向音訊串流。</p>
 
             <h3>功能特色</h3>
             <ul>
-                <li><strong>GAF/BAP</strong>：完整的 LE Audio 通用音訊框架</li>
+                <li><strong>BAP Unicast Server</strong>：CIS 雙向音訊串流（Basic Audio Profile）</li>
                 <li><strong>LC3 Codec</strong>：低複雜度通訊編解碼</li>
-                <li><strong>VCP</strong>：Volume Control Profile 音量控制</li>
-                <li><strong>MCP</strong>：Media Control Profile 媒體控制</li>
-                <li><strong>CAP</strong>：Common Audio Profile 公共音訊設定</li>
+                <li><strong>VCP Server</strong>：Volume Control Profile，由來源端遠端控制音量</li>
+                <li><strong>MCP</strong>：Media Control Profile 媒體播放控制（預留，供後續開發）</li>
+                <li><strong>CCP</strong>：Call Control Profile 通話控制（預留，供後續開發）</li>
             </ul>
 
             <h3>建構</h3>
@@ -314,7 +467,7 @@ tp conn 6 6      # 最小連線間隔</code></pre>
 
         <section id="ipro-le-audio-bis-source">
             <h2>ipro_le_audio_bis_source</h2>
-            <p>BIS 廣播音訊來源端，負責編碼並廣播 LE Audio 音訊串流。</p>
+            <p>BIS 廣播音訊來源端，負責編碼並廣播 LE Audio 音訊串流，與 Auracast 廣播接收裝置相容。</p>
 
             <h3>建構</h3>
             <div class="code-block">
@@ -328,7 +481,7 @@ tp conn 6 6      # 最小連線間隔</code></pre>
 
         <section id="ipro-le-audio-bis-sink">
             <h2>ipro_le_audio_bis_sink</h2>
-            <p>BIS 廣播音訊接收端，接收並解碼 LE Audio 廣播串流。</p>
+            <p>BIS 廣播音訊接收端，接收並解碼 LE Audio 廣播串流，支援 BASE 解析與音訊重取樣。</p>
 
             <h3>建構</h3>
             <div class="code-block">
@@ -337,6 +490,110 @@ tp conn 6 6      # 最小連線間隔</code></pre>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash">make -C apps/bluetooth/le_audio/ipro_le_audio_bis_sink</code></pre>
+            </div>
+        </section>
+
+        <!-- ==================== Multimedia Apps ==================== -->
+
+        <section id="ipro-agora-sentino">
+            <h2>ipro_agora_sentino</h2>
+            <p>嵌入式 AI 語音對話閘道器。透過 AMIC 差分麥克風擷取語音，經由網路傳送至 Agora RTC 雲端，與 AI 對話機器人進行即時雙向語音通話，並透過 LCD 顯示狀態、USB CDC 虛擬串口輸出語音辨識（STT）文字。</p>
+
+            <h3>功能特色</h3>
+            <ul>
+                <li><strong>即時雙向語音</strong>：AMIC 擷取（16 kHz / 16-bit / 單聲道）→ Agora RTC 雲端 ↔ AI 對話機器人，Opus 編解碼由 SDK 內部處理</li>
+                <li><strong>音訊輸出</strong>：DAC 喇叭播放，含 soft limiter、TPDF dither 與自動靜音（auto-mute）</li>
+                <li><strong>連網方式</strong>：乙太網路（RMII）或 USB NCM 網路共享，lwIP + DHCP</li>
+                <li><strong>LCD 狀態顯示</strong>：ILI9341 SPI LCD 即時顯示 IP、頻道、連線狀態、AI 狀態、音量與統計</li>
+                <li><strong>STT 文字輸出</strong>：USB CDC ACM 虛擬串口將語音辨識文字輸出至 Host</li>
+                <li><strong>自動連線</strong>：開機後自動初始化網路、取得 Token、加入 RTC 頻道並啟動 AI 對話</li>
+            </ul>
+
+            <h3>硬體連接</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>功能</th>
+                            <th>介面</th>
+                            <th>說明</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>AMIC 麥克風</td>
+                            <td>GPIO4 / GPIO7</td>
+                            <td>差分輸入（正/負）</td>
+                        </tr>
+                        <tr>
+                            <td>DAC 輸出</td>
+                            <td>GPIO23</td>
+                            <td>類比音訊輸出，GPIO22 喇叭致能</td>
+                        </tr>
+                        <tr>
+                            <td>LCD</td>
+                            <td>SPI0</td>
+                            <td>ILI9341 狀態顯示</td>
+                        </tr>
+                        <tr>
+                            <td>網路</td>
+                            <td>RMII / USB NCM</td>
+                            <td>乙太網路或 USB 網路共享</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>建構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構 Agora Sentino</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">make -C apps/multimedia/ipro_agora_sentino</code></pre>
+            </div>
+        </section>
+
+        <!-- ==================== Network Apps ==================== -->
+
+        <section id="ipro-voice-assistant">
+            <h2>ipro_voice_assistant</h2>
+            <p>運行在 IPRO7 上的 AI 語音助理，結合即時語音對話與 Telegram 文字聊天機器人：可透過麥克風與 AI 對話，或透過 Telegram 傳送文字訊息。</p>
+
+            <h3>功能特色</h3>
+            <ul>
+                <li><strong>語音對話</strong>：AMIC 麥克風收音 → VAD 語音偵測 → 語音辨識 → AI 回覆 → TTS 語音合成 → DAC 喇叭播放</li>
+                <li><strong>AI Agent</strong>：支援多家雲端 AI 供應商，具備 ReAct 工具呼叫能力（網路搜尋、排程任務、持久記憶）</li>
+                <li><strong>Telegram 聊天</strong>：透過 Telegram Bot API 長輪詢接收訊息，AI 回覆後自動傳送</li>
+                <li><strong>LCD 動態顯示</strong>：ILI9341 SPI LCD（240×320）顯示狀態動畫（閒置、聆聽中、思考中、說話中）</li>
+                <li><strong>持久記憶</strong>：LittleFS 檔案系統儲存 AI 人格、使用者資料與對話記憶</li>
+                <li><strong>網路連線</strong>：乙太網路（RMII）或 4G LTE Modem（PPPoS）二擇一，交付組態預設為 LTE；IPRO7 不內建 Wi-Fi</li>
+            </ul>
+
+            <h3>API 金鑰設定</h3>
+            <p>應用需要雲端服務 API 金鑰才能運作。請勿將金鑰硬編碼或提交至版本控制——以範本檔建立 <code>secrets.h</code>（已列入 <code>.gitignore</code>），或於執行時透過 Shell 指令設定（金鑰持久化儲存於 LittleFS）：</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">設定 API 金鑰</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 方式一：編譯時設定（建議）
+cd apps/network/ipro_voice_assistant
+cp secrets.h.example secrets.h
+# 編輯 secrets.h 填入金鑰後重新建構
+
+# 方式二：執行時透過 Shell 指令設定（免重新燒錄）
+set_api_key &lt;key&gt;
+set_telegram_token &lt;token&gt;</code></pre>
+            </div>
+
+            <h3>建構</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建構 Voice Assistant</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">make -C apps/network/ipro_voice_assistant</code></pre>
             </div>
         </section>
 
@@ -352,7 +609,7 @@ tp conn 6 6      # 最小連線間隔</code></pre>
                 <li><strong>USB 裝置</strong>：CDC, MSC, HID, UAC (音訊), UVC (視訊) via CherryUSB</li>
                 <li><strong>多媒體</strong>：ISP 攝影機, MJPEG 編解碼, LCD 顯示 (ILI9488)</li>
                 <li><strong>音訊</strong>：AUADC 音訊輸入, DAC 喇叭輸出</li>
-                <li><strong>網路</strong>：EMAC 乙太網, lwIP 協定棧, iPerf 測試</li>
+                <li><strong>網路</strong>：EMAC 乙太網, lwIP 協定棧, iPerf 測試（交付組態預設未啟用，需於 <code>.config</code> 加入 <code>CONFIG_COMPONENTS_IPERF_ENABLE=y</code>）</li>
                 <li><strong>儲存</strong>：SD 卡 (SDH), FatFS 檔案系統</li>
                 <li><strong>FreeRTOS</strong>：多任務管理與執行時間統計</li>
             </ul>
@@ -398,108 +655,145 @@ void gpio_example(void)
             <h2>建立新應用</h2>
             <p>按照以下步驟建立您自己的應用程式。建議以 <code>ipro_ble_remote</code> 為範本複製後修改。</p>
 
-            <div class="info-box">
-                <p><strong>提示：</strong>最快的方式是複製現有應用作為起點：</p>
-                <pre><code class="language-bash">cp -r apps/bluetooth/ble/ipro_ble_remote apps/bluetooth/ble/my_app</code></pre>
-                <p>然後修改 <code>CMakeLists.txt</code> 中的 <code>APP_NAME</code> 和原始檔案即可。</p>
+            <div class="alert alert-info">
+                <p><strong><i class="fas fa-info-circle"></i> 提示：</strong>最快的方式是複製現有應用作為起點：</p>
+                <pre><code class="language-bash">cp -r apps/bluetooth/ble/ipro_ble_remote apps/bluetooth/ble/my_app
+rm -rf apps/bluetooth/ble/my_app/build</code></pre>
+                <p>然後修改 <code>CMakeLists.txt</code> 末行 <code>setup_project()</code> 的名稱與 <code>Makefile</code> 中的 <code>PROJECT_NAME</code>，並保留複製來的 <code>.config</code> 即可。</p>
             </div>
 
             <h3>步驟 1：建立目錄</h3>
-            <p>應用需放在 <code>apps/</code> 下的分類子目錄中，例如 BLE 應用放在 <code>apps/bluetooth/ble/</code>。</p>
+            <p>應用需放在 <code>apps/</code> 下的分類子目錄中（<code>apps/&lt;category&gt;/&lt;name&gt;</code>），例如 BLE 應用放在 <code>apps/bluetooth/ble/</code>。</p>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">建立應用目錄</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">mkdir -p apps/bluetooth/ble/my_app/include</code></pre>
+                <pre><code class="language-bash">mkdir -p apps/bluetooth/ble/my_app/include
+mkdir -p apps/bluetooth/ble/my_app/src</code></pre>
             </div>
 
             <h3>步驟 2：建立 CMakeLists.txt</h3>
-            <p>注意 <code>IPRO_SDK_BASE</code> 的相對路徑需根據應用所在的目錄深度調整。例如位於 <code>apps/bluetooth/ble/my_app/</code> 時，需要向上四層才能到達 SDK 根目錄。</p>
+            <p>應用的 CMakeLists.txt 由 SDK 根目錄的 <code>project.build</code> 驅動，<strong>不需要</strong> <code>cmake_minimum_required()</code> 或 <code>project()</code>，直接使用 SDK 提供的建構函式即可：</p>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">apps/bluetooth/ble/my_app/CMakeLists.txt</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-cmake">cmake_minimum_required(VERSION 3.13)
+                <pre><code class="language-cmake"># 添加頭文件目錄
+__component_add_include_dirs(include)
 
-# 設置應用名稱
-set(APP_NAME my_app)
-
-# 包含 SDK 建構系統（根據目錄深度調整相對路徑）
-include(${IPRO_SDK_BASE}/cmake/extension.cmake)
-
-# 添加原始檔
+# 添加應用原始檔
+# 注意：main.c 不可加入 target_sources，否則會與
+# --whole-archive 連結造成重複符號錯誤
 target_sources(app PRIVATE
-    main.c
+    src/my_module.c
 )
 
-# 添加頭文件目錄
-target_include_directories(app PRIVATE
-    include
-)</code></pre>
+# 將 app 函式庫加入 SDK 連結清單
+set_property(GLOBAL APPEND PROPERTY SDK_LIBS app)
+# 若應用有註冊 Shell 命令，需強制 whole-archive 連結
+set_property(GLOBAL APPEND PROPERTY SDK_WHOLE_ARCHIVE_LIBS app)
+
+# 指定主程式檔案並完成專案設置
+__set_main_file(main.c)
+setup_project(my_app)</code></pre>
             </div>
 
             <h3>步驟 3：建立主程式</h3>
+            <p>所有 FreeRTOS 應用共用 <code>freertos_app_hooks</code> 元件提供的預設 heap、FreeRTOS hooks 與平台初始化（皆為 weak 函式，可在應用內定義同名函式覆寫），<code>main.c</code> 只需保留最小骨架：</p>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">apps/bluetooth/ble/my_app/main.c</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">#include &lt;stdio.h&gt;
-#include "FreeRTOS.h"
-#include "task.h"
+                <pre><code class="language-c">#include "freertos_app_hooks.h"
 #include "ipro_log.h"
+#include &lt;FreeRTOS.h&gt;
+#include &lt;task.h&gt;
 
 #define TAG "MY_APP"
 
-void app_task(void *params)
+static void app_task(void *params)
 {
-    IPRO_LOG_INFO(TAG, "My App Started!");
+    IPRO_LOGI(TAG, "My App Started!");
 
     while (1) {
-        IPRO_LOG_INFO(TAG, "Running...");
+        IPRO_LOGI(TAG, "Running...");
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
 
 int main(void)
 {
-    // 系統初始化
-    system_init();
+    // 平台初始化：heap + boot2 + log + shell（共用 weak 預設）
+    ipro_platform_init();
 
     // 建立應用任務
-    xTaskCreate(app_task, "app", 4096, NULL, 5, NULL);
+    xTaskCreate(app_task, "app", 1024, NULL, 5, NULL);
 
     // 啟動排程器
     vTaskStartScheduler();
 
-    return 0;
+    while (1) {}
 }</code></pre>
             </div>
 
-            <h3>步驟 4：建立 Makefile</h3>
-            <p>Makefile 中的 <code>IPRO_SDK_BASE</code> 需要指向 SDK 根目錄。路徑深度取決於應用的位置。</p>
+            <h3>步驟 4：建立組態 (.config)</h3>
+            <p>建構系統會以應用目錄下的 <code>.config</code> 產生 <code>generated/autoconf.h</code>，<strong>沒有 <code>.config</code> 將無法建構</strong>。最簡單的做法是從範本應用複製：</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建立組態</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 從範本應用複製組態
+cp apps/bluetooth/ble/ipro_ble_remote/.config apps/bluetooth/ble/my_app/.config</code></pre>
+            </div>
+            <p>關鍵組態項目：</p>
+            <ul>
+                <li><code>CONFIG_IPRO7=y</code> — SoC 選擇</li>
+                <li><code>CONFIG_CPU_ID="intelpro_ipro7"</code> — 工具鏈目標</li>
+                <li><code>CONFIG_FREERTOS_SUPPORT=y</code> — RTOS 選擇</li>
+            </ul>
+            <p>範本應用的 Makefile 內建組態管理 target：<code>make defconfig</code>（載入預設組態）、<code>make savedefconfig</code>（儲存目前組態為 defconfig）、<code>make show-config</code>（顯示目前組態）、<code>make list-defconfigs</code>（列出可用 defconfig）。這些 target 需在步驟 5 複製範本 Makefile 後才可使用；新應用尚無 defconfig 來源檔，請先以 <code>make savedefconfig</code> 從目前 <code>.config</code> 產生。</p>
+
+            <h3>步驟 5：建立 Makefile</h3>
+            <p>應用 Makefile 採委派模式，將建構轉交給 SDK 根目錄的 <code>project.build</code>。注意 <code>IPRO_SDK_BASE</code> 的相對深度需依應用位置調整（<code>apps/bluetooth/ble/my_app/</code> 需向上 4 層）。建議直接複製範本應用的 Makefile（內含完整組態管理 target），只修改 <code>PROJECT_NAME</code>：</p>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">apps/bluetooth/ble/my_app/Makefile</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-makefile"># 根據應用目錄深度設定 SDK 根目錄相對路徑
-# apps/bluetooth/ble/my_app/ -> 需向上 4 層
-IPRO_SDK_BASE ?= ../../../..
+                <pre><code class="language-makefile"># 依應用目錄深度設定 SDK 根目錄
+# apps/bluetooth/ble/my_app/ -> 向上 4 層
+IPRO_SDK_BASE ?= $(abspath ../../../../)
+export IPRO_SDK_BASE
 
-include $(IPRO_SDK_BASE)/project.mk</code></pre>
+PROJECT_PATH ?= $(abspath .)
+PROJECT_NAME ?= my_app
+
+all:
+	$(MAKE) -C $(IPRO_SDK_BASE) -f project.build PROJECT_PATH=$(CURDIR)
+
+clean:
+	$(MAKE) -C $(IPRO_SDK_BASE) -f project.build PROJECT_PATH=$(CURDIR) clean
+
+# 組態管理 target（defconfig / savedefconfig 等）請從範本應用的 Makefile 複製
+.PHONY: all clean</code></pre>
             </div>
 
-            <h3>步驟 5：建構</h3>
+            <h3>步驟 6：建構</h3>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">建構新應用</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">make -C apps/bluetooth/ble/my_app</code></pre>
+                <pre><code class="language-bash">make -C apps/bluetooth/ble/my_app
+
+# 或使用統一建構入口
+./build_freertos.sh my_app build</code></pre>
             </div>
+            <p>建構輸出位於 <code>apps/bluetooth/ble/my_app/build/build_out/my_app_IPRO7.bin</code>。</p>
         </section>
     </article>
 </div>

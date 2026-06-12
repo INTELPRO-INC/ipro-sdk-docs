@@ -12,12 +12,17 @@ title: Applications - IPRO SDK
                 <li><a href="#overview" class="sidebar-link">Applications Overview</a></li>
                 <li class="sidebar-section-title">BLE Apps</li>
                 <li><a href="#ipro-ble-remote" class="sidebar-link">ipro_ble_remote</a></li>
-                <li><a href="#ipro-ble-transparent" class="sidebar-link">ipro_ble_transparent</a></li>
                 <li><a href="#ipro-throughput-test" class="sidebar-link">ipro_throughput_test</a></li>
+                <li><a href="#ipro-ble-transparent" class="sidebar-link">ipro_ble_transparent</a></li>
+                <li><a href="#ipro-ble-img-capture" class="sidebar-link">ipro_ble_img_capture</a></li>
                 <li class="sidebar-section-title">LE Audio Apps</li>
                 <li><a href="#ipro-le-audio-headset" class="sidebar-link">ipro_le_audio_headset</a></li>
                 <li><a href="#ipro-le-audio-bis-source" class="sidebar-link">ipro_le_audio_bis_source</a></li>
                 <li><a href="#ipro-le-audio-bis-sink" class="sidebar-link">ipro_le_audio_bis_sink</a></li>
+                <li class="sidebar-section-title">Multimedia Apps</li>
+                <li><a href="#ipro-agora-sentino" class="sidebar-link">ipro_agora_sentino</a></li>
+                <li class="sidebar-section-title">Network Apps</li>
+                <li><a href="#ipro-voice-assistant" class="sidebar-link">ipro_voice_assistant</a></li>
                 <li class="sidebar-section-title">Platform Apps</li>
                 <li><a href="#ipro7-demo" class="sidebar-link">ipro7_demo</a></li>
                 <li class="sidebar-section-title">Other</li>
@@ -28,11 +33,11 @@ title: Applications - IPRO SDK
 
     <article class="doc-content">
         <h1>Applications</h1>
-        <p>IPRO SDK provides multiple complete reference applications demonstrating best practices for various features. Each application can be built, flashed, and tested directly.</p>
+        <p>The IPRO SDK Release provides multiple complete reference applications demonstrating best practices for various features. Each application can be built, flashed, and tested directly.</p>
 
         <section id="overview">
             <h2>Applications Overview</h2>
-            <p>Release SDK v1.0.1 includes <strong>7 reference applications</strong>, organized into BLE Apps (3), LE Audio Apps (3), and Platform Apps (1):</p>
+            <p>This Release SDK includes <strong>10 reference applications</strong>, organized into five categories: BLE Apps (4), LE Audio Apps (3), Multimedia Apps (1), Network Apps (1), and Platform Apps (1):</p>
 
             <h3>BLE Applications</h3>
             <div class="table-wrapper">
@@ -41,6 +46,7 @@ title: Applications - IPRO SDK
                         <tr>
                             <th>Application</th>
                             <th>Path</th>
+                            <th>RTOS</th>
                             <th>Main Features</th>
                             <th>Use Cases</th>
                         </tr>
@@ -48,21 +54,31 @@ title: Applications - IPRO SDK
                     <tbody>
                         <tr>
                             <td><code>ipro_ble_remote</code></td>
-                            <td><code>apps/bluetooth/ble/</code></td>
+                            <td><code>apps/bluetooth/ble/ipro_ble_remote</code></td>
+                            <td>FreeRTOS</td>
                             <td>LED/Button/Env/UART/PIR/OTA (6 GATT Services)</td>
                             <td>Mobile App Interaction</td>
                         </tr>
                         <tr>
+                            <td><code>ipro_throughput_test</code></td>
+                            <td><code>apps/bluetooth/ble/ipro_throughput_test</code></td>
+                            <td>FreeRTOS</td>
+                            <td>Native Zephyr bt_* APIs, 999 Kbps</td>
+                            <td>BLE Performance Testing & Benchmark</td>
+                        </tr>
+                        <tr>
                             <td><code>ipro_ble_transparent</code></td>
-                            <td><code>apps/bluetooth/ble/</code></td>
-                            <td>BLE Transparent Communication</td>
+                            <td><code>apps/bluetooth/ble/ipro_ble_transparent</code></td>
+                            <td>FreeRTOS</td>
+                            <td>UART-BLE Bridge + AT Commands</td>
                             <td>Serial Pass-through / Data Bridge</td>
                         </tr>
                         <tr>
-                            <td><code>ipro_throughput_test</code></td>
-                            <td><code>apps/bluetooth/ble/</code></td>
-                            <td>Native Zephyr bt_* APIs, 999 Kbps</td>
-                            <td>BLE Performance Testing & Benchmark</td>
+                            <td><code>ipro_ble_img_capture</code></td>
+                            <td><code>apps/bluetooth/ble/ipro_ble_img_capture</code></td>
+                            <td>FreeRTOS</td>
+                            <td>PIR-Triggered Image Capture + BLE Image Transfer</td>
+                            <td>Low-Power Image Sensing Node</td>
                         </tr>
                     </tbody>
                 </table>
@@ -75,6 +91,7 @@ title: Applications - IPRO SDK
                         <tr>
                             <th>Application</th>
                             <th>Path</th>
+                            <th>RTOS</th>
                             <th>Main Features</th>
                             <th>Use Cases</th>
                         </tr>
@@ -82,21 +99,72 @@ title: Applications - IPRO SDK
                     <tbody>
                         <tr>
                             <td><code>ipro_le_audio_headset</code></td>
-                            <td><code>apps/bluetooth/le_audio/</code></td>
-                            <td>GAF/BAP LE Audio Headset</td>
+                            <td><code>apps/bluetooth/le_audio/ipro_le_audio_headset</code></td>
+                            <td>FreeRTOS</td>
+                            <td>BAP Unicast Headset (Bidirectional CIS Streaming)</td>
                             <td>LE Audio Headset/Audio Device</td>
                         </tr>
                         <tr>
                             <td><code>ipro_le_audio_bis_source</code></td>
-                            <td><code>apps/bluetooth/le_audio/</code></td>
-                            <td>BIS Broadcast Audio Source</td>
+                            <td><code>apps/bluetooth/le_audio/ipro_le_audio_bis_source</code></td>
+                            <td>FreeRTOS</td>
+                            <td>BIS Broadcast Audio Source (Auracast-Compatible)</td>
                             <td>LE Audio Broadcast Transmitter</td>
                         </tr>
                         <tr>
                             <td><code>ipro_le_audio_bis_sink</code></td>
-                            <td><code>apps/bluetooth/le_audio/</code></td>
+                            <td><code>apps/bluetooth/le_audio/ipro_le_audio_bis_sink</code></td>
+                            <td>FreeRTOS</td>
                             <td>BIS Broadcast Audio Sink</td>
                             <td>LE Audio Broadcast Receiver</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Multimedia Applications</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Application</th>
+                            <th>Path</th>
+                            <th>RTOS</th>
+                            <th>Main Features</th>
+                            <th>Use Cases</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>ipro_agora_sentino</code></td>
+                            <td><code>apps/multimedia/ipro_agora_sentino</code></td>
+                            <td>FreeRTOS</td>
+                            <td>AI Voice Conversation Gateway (Agora RTC)</td>
+                            <td>Real-Time Cloud AI Voice Interaction</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Network Applications</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Application</th>
+                            <th>Path</th>
+                            <th>RTOS</th>
+                            <th>Main Features</th>
+                            <th>Use Cases</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>ipro_voice_assistant</code></td>
+                            <td><code>apps/network/ipro_voice_assistant</code></td>
+                            <td>FreeRTOS</td>
+                            <td>AI Voice Assistant (Voice Dialog + Text Chat)</td>
+                            <td>AI Voice Interaction Device</td>
                         </tr>
                     </tbody>
                 </table>
@@ -109,6 +177,7 @@ title: Applications - IPRO SDK
                         <tr>
                             <th>Application</th>
                             <th>Path</th>
+                            <th>RTOS</th>
                             <th>Main Features</th>
                             <th>Use Cases</th>
                         </tr>
@@ -116,88 +185,36 @@ title: Applications - IPRO SDK
                     <tbody>
                         <tr>
                             <td><code>ipro7_demo</code></td>
-                            <td><code>apps/platform/</code></td>
+                            <td><code>apps/platform/ipro7_demo</code></td>
+                            <td>FreeRTOS</td>
                             <td>USB/LCD/Camera/Audio/Ethernet/SD</td>
                             <td>SDK Introduction & Hardware Testing</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-        </section>
 
-        <!-- ==================== General Apps ==================== -->
+            <h3>Unified Build Workflow</h3>
+            <p>Besides running <code>make</code> in each application directory, <code>build_freertos.sh</code> at the SDK root provides a unified entry point that can chain build, flash, and monitor stages:</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">build_freertos.sh Workflow</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># List all buildable projects
+./build_freertos.sh -l
+
+# Build a single application (short name or full path)
+./build_freertos.sh ipro_ble_remote build
+./build_freertos.sh bluetooth/ble/ipro_ble_remote build
+
+# Full development cycle: build + flash + serial monitor
+./build_freertos.sh ipro_ble_remote build flash monitor</code></pre>
+            </div>
+            <p>Build output goes to <code>apps/&lt;category&gt;/&lt;name&gt;/build/build_out/</code>; the binary name includes a chip suffix, e.g. <code>ipro_ble_remote_IPRO7.bin</code>.</p>
+        </section>
 
         <!-- ==================== BLE Apps ==================== -->
-
-        <section id="ipro-throughput-test">
-            <h2>ipro_throughput_test</h2>
-            <p>High-performance BLE throughput test application using native Zephyr <code>bt_*</code> APIs, achieving <strong>999 Kbps</strong> between two IPRO7 development boards.</p>
-
-            <h3>Features</h3>
-            <ul>
-                <li><strong>Native Zephyr APIs</strong>: Direct use of <code>bt_gatt_notify</code>/<code>bt_gatt_write_without_response</code></li>
-                <li><strong>Bidirectional Data Transfer</strong>: Custom GATT service</li>
-                <li><strong>Real-time Statistics</strong>: Live Kbps throughput display</li>
-                <li><strong>PHY Selection</strong>: 1M/2M/Coded</li>
-                <li><strong>DLE Optimization</strong>: Data Length Extension 251 bytes</li>
-                <li><strong>TX Descriptor Optimization</strong>: Multiple TX descriptors for higher throughput</li>
-            </ul>
-
-            <h3>Performance Results</h3>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Configuration</th>
-                            <th>Throughput</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>1M PHY, 7.5ms CI, 244B</td>
-                            <td>~180-200 Kbps</td>
-                        </tr>
-                        <tr>
-                            <td>2M PHY, 7.5ms CI, 244B</td>
-                            <td>~350-400 Kbps</td>
-                        </tr>
-                        <tr>
-                            <td>2M PHY + DLE 251B + TX Desc</td>
-                            <td><strong>999 Kbps</strong></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <h3>Quick Start</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Test Workflow</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Board 1 (Slave)
-tp slave
-
-# Board 2 (Master)
-tp master
-
-# Start test after connection (244 bytes, 10 seconds)
-tp start 244 10
-
-# Optimize speed
-tp phy 2         # Use 2M PHY
-tp conn 6 6      # Minimum connection interval</code></pre>
-            </div>
-
-            <h3>Build</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build Throughput Test</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash">make -C apps/bluetooth/ble/ipro_throughput_test</code></pre>
-            </div>
-        </section>
 
         <section id="ipro-ble-remote">
             <h2>ipro_ble_remote</h2>
@@ -206,8 +223,8 @@ tp conn 6 6      # Minimum connection interval</code></pre>
             <h3>Features</h3>
             <ul>
                 <li><strong>6 GATT Services</strong>: LED Control, Button, Environment, UART, PIR Image, OTA Update</li>
-                <li><strong>Mobile Friendly</strong>: Complete protocol spec for Android/iOS app development</li>
-                <li><strong>Image Transfer</strong>: 320x480 JPEG via BLE with MTU 517 support</li>
+                <li><strong>Mobile Friendly</strong>: Complete protocol spec for Android/iOS app development; an Android demo app (<code>ipro_remote_demo.apk</code>) is bundled in the application directory for direct testing</li>
+                <li><strong>Image Transfer</strong>: Chunked JPEG transfer over BLE, measured at <strong>101.4 KB/s</strong> with MTU 517 (56KB image in 542ms)</li>
                 <li><strong>High-speed OTA</strong>: MTU 517 auto-negotiation, 12.3 KB/s transfer speed</li>
             </ul>
 
@@ -266,17 +283,177 @@ tp conn 6 6      # Minimum connection interval</code></pre>
             </div>
         </section>
 
-        <section id="ipro-le-audio-headset">
-            <h2>ipro_le_audio_headset</h2>
-            <p>LE Audio headset reference application implementing GAF (Generic Audio Framework) and BAP (Basic Audio Profile).</p>
+        <section id="ipro-throughput-test">
+            <h2>ipro_throughput_test</h2>
+            <p>High-performance BLE throughput test application using native Zephyr <code>bt_*</code> APIs, achieving <strong>999 Kbps</strong> between two IPRO7 development boards.</p>
 
             <h3>Features</h3>
             <ul>
-                <li><strong>GAF/BAP</strong>: Complete LE Audio Generic Audio Framework</li>
+                <li><strong>Native Zephyr APIs</strong>: Direct use of <code>bt_gatt_notify</code>/<code>bt_gatt_write_without_response</code></li>
+                <li><strong>Dual-Role Support</strong>: Slave (Peripheral) and Master (Central) with a custom GATT service for bidirectional transfer</li>
+                <li><strong>Real-time Statistics</strong>: Throughput in Kbps updated every second</li>
+                <li><strong>PHY Selection</strong>: 1M/2M/Coded</li>
+                <li><strong>DLE Optimization</strong>: Data Length Extension 251 bytes, ATT MTU 247 bytes</li>
+                <li><strong>Configurable Connection Interval</strong>: 7.5ms ~ 4s</li>
+            </ul>
+
+            <h3>Performance Results</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>PHY</th>
+                            <th>Interval</th>
+                            <th>Payload</th>
+                            <th>Throughput</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1M</td>
+                            <td>7.5 ms</td>
+                            <td>244 B</td>
+                            <td>507 Kbps</td>
+                        </tr>
+                        <tr>
+                            <td>2M</td>
+                            <td>7.5 ms</td>
+                            <td>244 B</td>
+                            <td><strong>999 Kbps</strong></td>
+                        </tr>
+                        <tr>
+                            <td>2M</td>
+                            <td>15 ms</td>
+                            <td>244 B</td>
+                            <td>984 Kbps</td>
+                        </tr>
+                        <tr>
+                            <td>2M</td>
+                            <td>7.5 ms</td>
+                            <td>100 B</td>
+                            <td>610 Kbps</td>
+                        </tr>
+                        <tr>
+                            <td>2M</td>
+                            <td>7.5 ms</td>
+                            <td>20 B</td>
+                            <td>187 Kbps</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Quick Start</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Test Workflow</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Board 1 (Slave)
+tp slave
+
+# Board 2 (Master)
+tp master
+
+# Start test after connection (244 bytes, 10 seconds)
+tp start 244 10
+
+# Optimize speed
+tp phy 2         # Use 2M PHY
+tp conn 6 6      # Minimum connection interval</code></pre>
+            </div>
+
+            <h3>Build</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build Throughput Test</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">make -C apps/bluetooth/ble/ipro_throughput_test</code></pre>
+            </div>
+        </section>
+
+        <section id="ipro-ble-transparent">
+            <h2>ipro_ble_transparent</h2>
+            <p>BLE transparent communication application implementing a bidirectional UART-BLE data bridge with an AT command interface. The shipped configuration uses USB CDC ACM as the transport layer by default (<code>CONFIG_AT_TRANSPORT_CDC=y</code>); edit <code>.config</code> to switch back to UART.</p>
+
+            <h3>Build</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build BLE Transparent</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">make -C apps/bluetooth/ble/ipro_ble_transparent</code></pre>
+            </div>
+        </section>
+
+        <section id="ipro-ble-img-capture">
+            <h2>ipro_ble_img_capture</h2>
+            <p>BLE image capture application combining PIR motion sensing, ISP image capture, and BLE image transfer, suited for low-power image sensing node development. The GATT service architecture is derived from <code>ipro_ble_remote</code>.</p>
+
+            <h3>Features</h3>
+            <ul>
+                <li><strong>PIR-Triggered Capture</strong>: PIR sensor GPIO interrupt detects motion, notifies the phone, and triggers image capture</li>
+                <li><strong>Low-Power Cycle</strong>: Sleep/wake cycle operation — stays in low-power mode and wakes on motion to capture</li>
+                <li><strong>ISP + JPEG</strong>: ISP camera capture with JPEG compression, configurable resolution (QVGA/VGA/720p/1080p)</li>
+                <li><strong>Chunked Image Transfer</strong>: Chunk size dynamically adjusted to the negotiated MTU; measured 101.4 KB/s with MTU 517 (56KB image)</li>
+                <li><strong>Image Upload Service</strong>: Phones can upload images back to the device, with PAUSE/RESUME flow control</li>
+                <li><strong>OTA Update</strong>: Same OTA service as <code>ipro_ble_remote</code> (<code>0xFF60</code>)</li>
+            </ul>
+
+            <h3>Service List</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>UUID</th>
+                            <th>Function</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>PIR Image</td>
+                            <td><code>0xFF50</code></td>
+                            <td>Motion Event Notification, Image Capture Control & Chunked Transfer</td>
+                        </tr>
+                        <tr>
+                            <td>Image Upload</td>
+                            <td><code>0xFF70</code></td>
+                            <td>Phone-to-Device Image Upload (Flow Control)</td>
+                        </tr>
+                        <tr>
+                            <td>OTA</td>
+                            <td><code>0xFF60</code></td>
+                            <td>Firmware Update</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Build</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build BLE Image Capture</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">make -C apps/bluetooth/ble/ipro_ble_img_capture</code></pre>
+            </div>
+        </section>
+
+        <!-- ==================== LE Audio Apps ==================== -->
+
+        <section id="ipro-le-audio-headset">
+            <h2>ipro_le_audio_headset</h2>
+            <p>LE Audio Unicast headset reference application built on GAF (Generic Audio Framework), implementing a full-featured wireless headset with bidirectional audio streaming over CIS (Connected Isochronous Stream) against Unicast Client (CAP) sources such as phones and PCs.</p>
+
+            <h3>Features</h3>
+            <ul>
+                <li><strong>BAP Unicast Server</strong>: Bidirectional audio streaming over CIS (Basic Audio Profile)</li>
                 <li><strong>LC3 Codec</strong>: Low Complexity Communication Codec</li>
-                <li><strong>VCP</strong>: Volume Control Profile</li>
-                <li><strong>MCP</strong>: Media Control Profile</li>
-                <li><strong>CAP</strong>: Common Audio Profile</li>
+                <li><strong>VCP Server</strong>: Volume Control Profile — remote volume control from the source device</li>
+                <li><strong>MCP</strong>: Media Control Profile — media playback control (reserved for future development)</li>
+                <li><strong>CCP</strong>: Call Control Profile — call handling (reserved for future development)</li>
             </ul>
 
             <h3>Build</h3>
@@ -291,7 +468,7 @@ tp conn 6 6      # Minimum connection interval</code></pre>
 
         <section id="ipro-le-audio-bis-source">
             <h2>ipro_le_audio_bis_source</h2>
-            <p>BIS broadcast audio source, responsible for encoding and broadcasting LE Audio streams.</p>
+            <p>BIS broadcast audio source, responsible for encoding and broadcasting LE Audio streams, compatible with Auracast broadcast receivers.</p>
 
             <h3>Build</h3>
             <div class="code-block">
@@ -305,7 +482,7 @@ tp conn 6 6      # Minimum connection interval</code></pre>
 
         <section id="ipro-le-audio-bis-sink">
             <h2>ipro_le_audio_bis_sink</h2>
-            <p>BIS broadcast audio receiver, receives and decodes LE Audio broadcast streams.</p>
+            <p>BIS broadcast audio receiver, receives and decodes LE Audio broadcast streams with BASE parsing and audio resampling support.</p>
 
             <h3>Build</h3>
             <div class="code-block">
@@ -317,17 +494,107 @@ tp conn 6 6      # Minimum connection interval</code></pre>
             </div>
         </section>
 
-        <section id="ipro-ble-transparent">
-            <h2>ipro_ble_transparent</h2>
-            <p>BLE transparent communication application implementing bidirectional serial data transfer over BLE.</p>
+        <!-- ==================== Multimedia Apps ==================== -->
+
+        <section id="ipro-agora-sentino">
+            <h2>ipro_agora_sentino</h2>
+            <p>Embedded AI voice conversation gateway. Captures speech via a differential AMIC microphone, streams it over the network to the Agora RTC cloud for real-time bidirectional voice conversation with an AI chatbot, with LCD status display and speech-to-text (STT) output over a USB CDC virtual serial port.</p>
+
+            <h3>Features</h3>
+            <ul>
+                <li><strong>Real-Time Bidirectional Voice</strong>: AMIC capture (16 kHz / 16-bit / mono) → Agora RTC cloud ↔ AI chatbot, with Opus codec handled inside the SDK</li>
+                <li><strong>Audio Output</strong>: DAC speaker playback with soft limiter, TPDF dither, and auto-mute</li>
+                <li><strong>Connectivity</strong>: Ethernet (RMII) or USB NCM network sharing, lwIP + DHCP</li>
+                <li><strong>LCD Status Display</strong>: ILI9341 SPI LCD showing IP, channel, connection state, AI state, volume, and statistics in real time</li>
+                <li><strong>STT Text Output</strong>: USB CDC ACM virtual serial port streams recognized text to the host</li>
+                <li><strong>Auto Connect</strong>: After boot, automatically initializes the network, obtains a token, joins the RTC channel, and starts the AI conversation</li>
+            </ul>
+
+            <h3>Hardware Connections</h3>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Function</th>
+                            <th>Interface</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>AMIC Microphone</td>
+                            <td>GPIO4 / GPIO7</td>
+                            <td>Differential input (positive/negative)</td>
+                        </tr>
+                        <tr>
+                            <td>DAC Output</td>
+                            <td>GPIO23</td>
+                            <td>Analog audio output, GPIO22 speaker enable</td>
+                        </tr>
+                        <tr>
+                            <td>LCD</td>
+                            <td>SPI0</td>
+                            <td>ILI9341 status display</td>
+                        </tr>
+                        <tr>
+                            <td>Network</td>
+                            <td>RMII / USB NCM</td>
+                            <td>Ethernet or USB network sharing</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
             <h3>Build</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">Build BLE Transparent</span>
+                    <span class="code-block-title">Build Agora Sentino</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">make -C apps/bluetooth/ble/ipro_ble_transparent</code></pre>
+                <pre><code class="language-bash">make -C apps/multimedia/ipro_agora_sentino</code></pre>
+            </div>
+        </section>
+
+        <!-- ==================== Network Apps ==================== -->
+
+        <section id="ipro-voice-assistant">
+            <h2>ipro_voice_assistant</h2>
+            <p>AI voice assistant running on IPRO7, combining real-time voice conversation with a Telegram text chatbot: talk to the AI through a microphone, or send text messages via Telegram.</p>
+
+            <h3>Features</h3>
+            <ul>
+                <li><strong>Voice Conversation</strong>: AMIC microphone capture → VAD voice detection → speech recognition → AI response → TTS speech synthesis → DAC speaker playback</li>
+                <li><strong>AI Agent</strong>: Supports multiple cloud AI providers, with ReAct tool-calling capabilities (web search, scheduled tasks, persistent memory)</li>
+                <li><strong>Telegram Chat</strong>: Receives messages via Telegram Bot API long polling and sends AI replies automatically</li>
+                <li><strong>Animated LCD Display</strong>: ILI9341 SPI LCD (240×320) showing state animations (idle, listening, thinking, speaking)</li>
+                <li><strong>Persistent Memory</strong>: LittleFS file system stores AI persona, user profile, and conversation memory</li>
+                <li><strong>Network Connectivity</strong>: Ethernet (RMII) or a 4G LTE modem (PPPoS) — the shipped configuration defaults to LTE; IPRO7 has no built-in Wi-Fi</li>
+            </ul>
+
+            <h3>API Key Setup</h3>
+            <p>The application requires cloud service API keys to operate. Never hardcode keys or commit them to version control — create <code>secrets.h</code> from the bundled template (already listed in <code>.gitignore</code>), or set keys at runtime via shell commands (persisted in LittleFS):</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Set API Keys</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Option 1: Compile-time setup (recommended)
+cd apps/network/ipro_voice_assistant
+cp secrets.h.example secrets.h
+# Edit secrets.h with your keys, then rebuild
+
+# Option 2: Runtime setup via shell commands (no reflash needed)
+set_api_key &lt;key&gt;
+set_telegram_token &lt;token&gt;</code></pre>
+            </div>
+
+            <h3>Build</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Build Voice Assistant</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">make -C apps/network/ipro_voice_assistant</code></pre>
             </div>
         </section>
 
@@ -343,7 +610,7 @@ tp conn 6 6      # Minimum connection interval</code></pre>
                 <li><strong>USB Device</strong>: CDC, MSC, HID, UAC (Audio), UVC (Video) via CherryUSB</li>
                 <li><strong>Multimedia</strong>: ISP Camera, MJPEG Codec, LCD Display (ILI9488)</li>
                 <li><strong>Audio</strong>: AUADC Audio Input, DAC Speaker Output</li>
-                <li><strong>Network</strong>: EMAC Ethernet, lwIP Protocol Stack, iPerf Testing</li>
+                <li><strong>Network</strong>: EMAC Ethernet, lwIP Protocol Stack, iPerf Testing (disabled in the shipped configuration — add <code>CONFIG_COMPONENTS_IPERF_ENABLE=y</code> to <code>.config</code>)</li>
                 <li><strong>Storage</strong>: SD Card (SDH), FatFS File System</li>
                 <li><strong>FreeRTOS</strong>: Multi-task Management & Runtime Statistics</li>
             </ul>
@@ -387,88 +654,147 @@ void gpio_example(void)
 
         <section id="creating-apps">
             <h2>Creating New Applications</h2>
-            <p>Follow these steps to create your own application.</p>
+            <p>Follow these steps to create your own application. We recommend copying <code>ipro_ble_remote</code> as a template and modifying it.</p>
+
+            <div class="alert alert-info">
+                <p><strong><i class="fas fa-info-circle"></i> Tip:</strong> The fastest way is to copy an existing application as a starting point:</p>
+                <pre><code class="language-bash">cp -r apps/bluetooth/ble/ipro_ble_remote apps/bluetooth/ble/my_app
+rm -rf apps/bluetooth/ble/my_app/build</code></pre>
+                <p>Then change the name in <code>setup_project()</code> on the last line of <code>CMakeLists.txt</code> and the <code>PROJECT_NAME</code> in the <code>Makefile</code>, and keep the copied <code>.config</code>.</p>
+            </div>
 
             <h3>Step 1: Create Directory</h3>
+            <p>Applications must live in a category subdirectory under <code>apps/</code> (<code>apps/&lt;category&gt;/&lt;name&gt;</code>); for example, BLE applications go in <code>apps/bluetooth/ble/</code>.</p>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">Create Application Directory</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">mkdir -p apps/my_app/include</code></pre>
+                <pre><code class="language-bash">mkdir -p apps/bluetooth/ble/my_app/include
+mkdir -p apps/bluetooth/ble/my_app/src</code></pre>
             </div>
 
             <h3>Step 2: Create CMakeLists.txt</h3>
+            <p>The application CMakeLists.txt is driven by <code>project.build</code> at the SDK root — it does <strong>not</strong> need <code>cmake_minimum_required()</code> or <code>project()</code>; just use the build functions provided by the SDK:</p>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">apps/my_app/CMakeLists.txt</span>
+                    <span class="code-block-title">apps/bluetooth/ble/my_app/CMakeLists.txt</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-cmake">cmake_minimum_required(VERSION 3.13)
+                <pre><code class="language-cmake"># Add include directories
+__component_add_include_dirs(include)
 
-# Set application name
-set(APP_NAME my_app)
-
-# Include SDK build system
-include(${IPRO_SDK_BASE}/cmake/extension.cmake)
-
-# Add source files
+# Add application source files
+# Note: main.c must NOT be added to target_sources, or it will
+# cause duplicate symbol errors with --whole-archive linking
 target_sources(app PRIVATE
-    main.c
+    src/my_module.c
 )
 
-# Add include directories
-target_include_directories(app PRIVATE
-    include
-)</code></pre>
+# Add the app library to the SDK link list
+set_property(GLOBAL APPEND PROPERTY SDK_LIBS app)
+# Force whole-archive linking if the app registers shell commands
+set_property(GLOBAL APPEND PROPERTY SDK_WHOLE_ARCHIVE_LIBS app)
+
+# Set the main file and finalize project setup
+__set_main_file(main.c)
+setup_project(my_app)</code></pre>
             </div>
 
             <h3>Step 3: Create Main Program</h3>
+            <p>All FreeRTOS applications share the <code>freertos_app_hooks</code> component, which provides default heap, FreeRTOS hooks, and platform initialization (all weak functions, overridable by defining a non-weak version in your app). <code>main.c</code> only needs the minimal skeleton:</p>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">apps/my_app/main.c</span>
+                    <span class="code-block-title">apps/bluetooth/ble/my_app/main.c</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">#include &lt;stdio.h&gt;
-#include "FreeRTOS.h"
-#include "task.h"
+                <pre><code class="language-c">#include "freertos_app_hooks.h"
 #include "ipro_log.h"
+#include &lt;FreeRTOS.h&gt;
+#include &lt;task.h&gt;
 
 #define TAG "MY_APP"
 
-void app_task(void *params)
+static void app_task(void *params)
 {
-    IPRO_LOG_INFO(TAG, "My App Started!");
+    IPRO_LOGI(TAG, "My App Started!");
 
     while (1) {
-        IPRO_LOG_INFO(TAG, "Running...");
+        IPRO_LOGI(TAG, "Running...");
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
 
 int main(void)
 {
-    // System initialization
-    system_init();
+    // Platform init: heap + boot2 + log + shell (shared weak defaults)
+    ipro_platform_init();
 
     // Create application task
-    xTaskCreate(app_task, "app", 4096, NULL, 5, NULL);
+    xTaskCreate(app_task, "app", 1024, NULL, 5, NULL);
 
     // Start scheduler
     vTaskStartScheduler();
 
-    return 0;
+    while (1) {}
 }</code></pre>
             </div>
 
-            <h3>Step 4: Build</h3>
+            <h3>Step 4: Create Configuration (.config)</h3>
+            <p>The build system generates <code>generated/autoconf.h</code> from the <code>.config</code> in the application directory — <strong>the build fails without a <code>.config</code></strong>. The simplest approach is to copy one from a template application:</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Create Configuration</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Copy the configuration from a template application
+cp apps/bluetooth/ble/ipro_ble_remote/.config apps/bluetooth/ble/my_app/.config</code></pre>
+            </div>
+            <p>Key configuration entries:</p>
+            <ul>
+                <li><code>CONFIG_IPRO7=y</code> — SoC selection</li>
+                <li><code>CONFIG_CPU_ID="intelpro_ipro7"</code> — toolchain target</li>
+                <li><code>CONFIG_FREERTOS_SUPPORT=y</code> — RTOS selection</li>
+            </ul>
+            <p>The template application Makefiles include built-in configuration management targets: <code>make defconfig</code> (load default config), <code>make savedefconfig</code> (save current config as defconfig), <code>make show-config</code> (show current config), and <code>make list-defconfigs</code> (list available defconfigs). These targets only become available after copying a template Makefile in Step 5; a new application has no defconfig source file yet — run <code>make savedefconfig</code> first to create one from the current <code>.config</code>.</p>
+
+            <h3>Step 5: Create Makefile</h3>
+            <p>The application Makefile uses a delegation pattern, handing the build over to <code>project.build</code> at the SDK root. Note that the relative depth of <code>IPRO_SDK_BASE</code> depends on the application location (<code>apps/bluetooth/ble/my_app/</code> needs 4 levels up). We recommend copying the Makefile from a template application (which includes the full set of configuration management targets) and changing only <code>PROJECT_NAME</code>:</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">apps/bluetooth/ble/my_app/Makefile</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-makefile"># Set the SDK root according to the application directory depth
+# apps/bluetooth/ble/my_app/ -> 4 levels up
+IPRO_SDK_BASE ?= $(abspath ../../../../)
+export IPRO_SDK_BASE
+
+PROJECT_PATH ?= $(abspath .)
+PROJECT_NAME ?= my_app
+
+all:
+	$(MAKE) -C $(IPRO_SDK_BASE) -f project.build PROJECT_PATH=$(CURDIR)
+
+clean:
+	$(MAKE) -C $(IPRO_SDK_BASE) -f project.build PROJECT_PATH=$(CURDIR) clean
+
+# Copy the configuration management targets (defconfig / savedefconfig, etc.) from a template application's Makefile
+.PHONY: all clean</code></pre>
+            </div>
+
+            <h3>Step 6: Build</h3>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">Build New Application</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">make -C apps/my_app</code></pre>
+                <pre><code class="language-bash">make -C apps/bluetooth/ble/my_app
+
+# Or use the unified build entry point
+./build_freertos.sh my_app build</code></pre>
             </div>
+            <p>The build output is located at <code>apps/bluetooth/ble/my_app/build/build_out/my_app_IPRO7.bin</code>.</p>
         </section>
     </article>
 </div>
