@@ -12,11 +12,13 @@ title: VS Code Extension - IPRO SDK
                 <li><a href="#overview" class="sidebar-link">Overview</a></li>
                 <li><a href="#features" class="sidebar-link">Features</a></li>
                 <li><a href="#installation" class="sidebar-link">Installation Guide</a></li>
-                <li><a href="#remote-dev" class="sidebar-link">Remote Development</a></li>
                 <li><a href="#workflow" class="sidebar-link">Development Workflow</a></li>
-                <li><a href="#flash" class="sidebar-link">Remote Flashing</a></li>
+                <li><a href="#flash" class="sidebar-link">Flashing &amp; Monitoring</a></li>
+                <li><a href="#memory-map" class="sidebar-link">Memory Map Visualization</a></li>
                 <li><a href="#faq" class="sidebar-link">FAQ</a></li>
                 <li><a href="#cli-tools" class="sidebar-link">CLI Tools</a></li>
+                <li><a href="#shortcuts" class="sidebar-link">Keyboard Shortcuts</a></li>
+                <li><a href="#version" class="sidebar-link">Version Information</a></li>
             </ul>
         </nav>
     </aside>
@@ -24,58 +26,54 @@ title: VS Code Extension - IPRO SDK
     <article class="doc-content">
         <h1>IPRO SDK VS Code Extension</h1>
         <div class="alert alert-warning">
-            <strong>&#9888; Release SDK Notice:</strong> This feature is not included in Release SDK v1.0.1. The content below is for reference only. Related components and tools must be obtained separately.
+            <strong>&#9888; Release SDK Notice:</strong> This extension is not included in Release SDK v1.0.1. The content below is for reference only. Contact the vendor to obtain the extension (<code>.vsix</code>) and the tools it invokes: the flash tool (<code>tools/ipro_iot_tool_lite/</code>) and the serial monitor (<code>tools/serial_monitor.py</code>).
         </div>
-        <p>A VS Code extension designed specifically for IPRO SDK, supporting both local and remote development environments with one-click build and flash capabilities.</p>
+        <p>A VS Code extension designed specifically for IPRO SDK, providing an all-in-one development experience on Windows, macOS, and Linux: build, flash, serial monitoring, Kconfig configuration, and memory analysis.</p>
 
         <section id="overview">
             <h2>Overview</h2>
-            <p>IPRO SDK Extension is a complete development toolkit that includes two collaborative extensions:</p>
+            <p>The <strong>IPRO SDK Extension (v2.1.0)</strong> is a single extension that activates automatically when you open a workspace containing <code>build_freertos.sh</code> — no companion extensions required.</p>
 
             <div class="info-box">
-                <h4><i class="fas fa-wrench"></i> IPRO SDK Extension (v0.0.7)</h4>
-                <p>Main development extension, installed on remote server or local environment</p>
+                <h4><i class="fas fa-wrench"></i> Core Capabilities</h4>
                 <ul>
-                    <li>Project management and configuration</li>
-                    <li>CMake build integration</li>
-                    <li>Automatic toolchain detection</li>
-                    <li>Flash interface</li>
+                    <li>Project overview and switching (Projects / Device / Quick Actions sidebar views)</li>
+                    <li>One-click Build / Clean / Flash / Serial Monitor</li>
+                    <li>Menuconfig editing (graphical UI + terminal menuconfig)</li>
+                    <li>Memory Map visualization and build-time memory analysis</li>
+                    <li>Build Profiles (debug / release / size) and batch builds</li>
                 </ul>
             </div>
 
-            <div class="info-box">
-                <h4><i class="fas fa-bolt"></i> IPRO Flash Tool Extension (v1.0.0)</h4>
-                <p>Flash tool extension, installed on local Windows computer</p>
-                <ul>
-                    <li>Local flash execution</li>
-                    <li>Real-time progress reporting</li>
-                    <li>Automatic flash tool detection</li>
-                </ul>
-            </div>
-
-            <h3>Supported Development Scenarios</h3>
+            <h3>System Requirements</h3>
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
-                            <th>Scenario</th>
-                            <th>SDK Location</th>
-                            <th>Flash Tool</th>
-                            <th>Use Case</th>
+                            <th>Item</th>
+                            <th>Requirement</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>Local Development</strong></td>
-                            <td>Local Windows</td>
-                            <td>Local</td>
-                            <td>Personal development environment</td>
+                            <td>VS Code</td>
+                            <td>1.102 or later</td>
                         </tr>
                         <tr>
-                            <td><strong>Remote Development</strong></td>
-                            <td>Remote Linux Server</td>
-                            <td>Local Windows</td>
-                            <td>Team shared build server</td>
+                            <td>Operating System</td>
+                            <td>Windows / macOS / Linux</td>
+                        </tr>
+                        <tr>
+                            <td>Build Tools</td>
+                            <td>CMake (&ge; 3.20) + Make or Ninja</td>
+                        </tr>
+                        <tr>
+                            <td>Toolchain</td>
+                            <td>RISC-V cross-compiler (default <code>/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-</code>)</td>
+                        </tr>
+                        <tr>
+                            <td>Python 3</td>
+                            <td>Required for automatic download-mode entry before flashing and for terminal menuconfig (<code>pip install kconfiglib</code>)</td>
                         </tr>
                     </tbody>
                 </table>
@@ -88,381 +86,307 @@ title: VS Code Extension - IPRO SDK
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon"><i class="fas fa-bullseye"></i></div>
-                    <h3>Smart Project Management</h3>
-                    <p>Automatically detects all application projects in the SDK, providing a dropdown menu for quick switching.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-wrench"></i></div>
-                    <h3>Automatic Toolchain Detection</h3>
-                    <p>Automatically detects cmake, ninja, and riscv64-unknown-elf-gcc in PATH, no manual configuration required.</p>
+                    <h3>Three-View Sidebar</h3>
+                    <p>The Projects view auto-scans all projects in the SDK with Pin-to-top and Recent Projects support; the Device view shows the serial port, SDK and toolchain versions; Quick Actions provides one-click operations.</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon"><i class="fas fa-hammer"></i></div>
-                    <h3>One-Click Build</h3>
-                    <p>Integrated CMake + Ninja build system, providing Configure and Build buttons.</p>
+                    <h3>One-Click Build &amp; Flash</h3>
+                    <p>Build / Clean / Flash / Serial Monitor can all be triggered from Quick Actions or keyboard shortcuts, with build results and duration shown in the status bar.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-bolt"></i></div>
-                    <h3>Remote Flashing</h3>
-                    <p>Transfers firmware to local via Base64, supporting real-time progress display.</p>
+                    <div class="feature-icon"><i class="fas fa-sliders-h"></i></div>
+                    <h3>Menuconfig Integration</h3>
+                    <p>Four ways to edit Kconfig settings: graphical .config editor, terminal menuconfig, Load Defconfig, and opening .config directly.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
-                    <h3>Real-time Progress</h3>
-                    <p>Displays real-time progress bars and detailed logs during build and flash processes.</p>
+                    <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
+                    <h3>Memory Map Visualization</h3>
+                    <p>Flash / RAM donut charts, stacked region bars, component treemap, and build-to-build comparison, with CSV or Markdown report export.</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-link"></i></div>
-                    <h3>Remote SSH Integration</h3>
-                    <p>Full support for VS Code Remote SSH, remote compilation with local flashing.</p>
+                    <div class="feature-icon"><i class="fas fa-layer-group"></i></div>
+                    <h3>Build Profiles</h3>
+                    <p>Switch between debug (-O0 -g) / release (-O2) / size (-Os) build configurations with one click, plus multi-project Batch Build support.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-plug"></i></div>
+                    <h3>Serial Port Auto-Detection</h3>
+                    <p>Polls USB serial devices every 3 seconds, updating the status bar and Device view instantly on plug/unplug; macOS automatically lists <code>/dev/cu.usb*</code> devices.</p>
                 </div>
             </div>
+
+            <p>In addition, after a successful build the extension auto-detects <code>compile_commands.json</code> and configures IntelliSense for the C/C++ extension; built-in problem matchers (<code>$ipro-gcc-error</code>, <code>$ipro-gcc-warning</code>, <code>$ipro-linker</code>, <code>$ipro-cmake</code>) make compile and link errors clickable, jumping straight to the source.</p>
         </section>
 
         <section id="installation">
             <h2>Installation Guide</h2>
 
-            <h3>Remote Linux Server Preparation</h3>
-
-            <h4>1. Install Required Tools</h4>
+            <h3>1. Install the Extension</h3>
+            <ol>
+                <li>Obtain <code>ipro-sdk-extension-2.1.0.vsix</code> from the vendor</li>
+                <li>Open the VS Code Extensions panel (<code>Ctrl+Shift+X</code>) and drag the <code>.vsix</code> file into the panel, or install from the command line:</li>
+            </ol>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">Install Development Tools</span>
+                    <span class="code-block-title">Command-line Installation</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># Install CMake and Ninja
-sudo apt-get install cmake ninja-build
-
-# Manual RISC-V toolchain installation (recommended)
-# Download and extract toolchain to /opt/toolchain/riscv_ipro7/
-echo 'export PATH=/opt/toolchain/riscv_ipro7/bin:$PATH' >> ~/.bashrc
-source ~/.bashrc
-
-# Verify installation
-which cmake ninja riscv64-unknown-elf-gcc
-cmake --version
-riscv64-unknown-elf-gcc --version</code></pre>
+                <pre><code class="language-bash">code --install-extension ipro-sdk-extension-2.1.0.vsix</code></pre>
             </div>
 
-            <h3>Local Windows Preparation</h3>
-
-            <h4>1. Install VS Code Extensions</h4>
-            <ol>
-                <li>Install <a href="https://code.visualstudio.com/" target="_blank">Visual Studio Code</a></li>
-                <li>Install <strong>Remote - SSH</strong> extension</li>
-                <li>Prepare flash tool <code>ipro_iot_tool.exe</code></li>
-            </ol>
-
-            <h4>2. Flash Tool Path</h4>
-            <p>The extension will automatically detect the following common paths:</p>
+            <h3>2. Prepare the Toolchain</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">Common Flash Tool Paths</span>
+                    <span class="code-block-title">Install RISC-V Toolchain (macOS / Linux)</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code>C:\Work\IPRO\ipro_sdk\tools\download\ipro_iot_tool.exe
-C:\IPRO\tools\download\ipro_iot_tool.exe
-C:\Program Files\IPRO\tools\download\ipro_iot_tool.exe</code></pre>
+                <pre><code class="language-bash"># Download and extract the toolchain to /opt/toolchain/riscv_ipro7/
+# The extension uses this path by default — no extra configuration needed
+
+# Verify installation
+/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-gcc --version</code></pre>
             </div>
+            <p>If your toolchain is installed elsewhere, override the cross-compiler prefix with the <code>devtool.toolchainPath</code> setting (e.g., <code>/your/path/bin/riscv64-unknown-elf-</code>).</p>
 
-            <h3>Install Extensions</h3>
-
-            <div class="warning-box">
-                <h4><i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> Important Installation Order</h4>
-                <ul>
-                    <li><strong>IPRO SDK Extension</strong>: Install on <strong>remote server</strong> (via Remote SSH)</li>
-                    <li><strong>IPRO Flash Tool Extension</strong>: Install on <strong>local</strong> (required!)</li>
-                </ul>
-            </div>
-
-            <h4>Installation Steps</h4>
+            <h3>3. Open the SDK Workspace</h3>
             <ol>
-                <li>After connecting to the remote server, open Extensions panel (<code>Ctrl+Shift+X</code>)</li>
-                <li>Search for <strong>IPRO SDK Extension</strong>, click "Install in SSH: server-name"</li>
-                <li>Disconnect SSH or open a new local window</li>
-                <li>Search for <strong>IPRO Flash Tool</strong>, click "Install" (make sure it's not "Install in SSH")</li>
-                <li>Reload window: <code>F1</code> → <code>Developer: Reload Window</code></li>
+                <li>Select <code>File</code> → <code>Open Folder...</code> and open the IPRO SDK root directory</li>
+                <li>Once <code>build_freertos.sh</code> is detected, the extension activates automatically and the <strong>IPRO SDK</strong> icon appears in the left activity bar</li>
+                <li>If the SDK is not at the workspace root, run <code>F1</code> → <code>IPRO SDK: Set SDK Root</code> to set the path manually</li>
             </ol>
-        </section>
 
-        <section id="remote-dev">
-            <h2>Remote Development Architecture</h2>
-
-            <div class="architecture-diagram">
-                <pre>
-┌─────────────────────────────────────────────────────────────────┐
-│                    Remote Linux Server                          │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │  IPRO SDK Extension                                      │   │
-│  │  • Project Management • CMake Config • Build             │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌───────────────┐   │
-│  │   IPRO SDK      │  │   Toolchain     │  │ Firmware Out  │   │
-│  │ /home/user/sdk  │  │ riscv64-gcc     │  │ *.bin files   │   │
-│  └─────────────────┘  └─────────────────┘  └───────────────┘   │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              │ VS Code Remote SSH
-                              │ Base64 Firmware Transfer
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    Local Windows Computer                       │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │  IPRO Flash Tool Extension                               │   │
-│  │  • Receive Firmware • Execute Flash • Report Progress    │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│  ┌─────────────────┐  ┌─────────────────────────────────────┐   │
-│  │ ipro_iot_tool   │  │      Dev Board (USB COM Port)       │   │
-│  │     .exe        │──│           IPRO7 FPGA               │   │
-│  └─────────────────┘  └─────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────┘</pre>
+            <div class="info-box">
+                <h4><i class="fas fa-bolt"></i> Automatic Flash Tool Location</h4>
+                <p>Flashing uses the SDK's built-in <code>tools/ipro_iot_tool_lite/ipro_iot_tool_lite</code> (<code>.exe</code> on Windows). The extension locates it automatically from the SDK root — no separate download or path configuration needed.</p>
             </div>
         </section>
 
         <section id="workflow">
             <h2>Development Workflow</h2>
 
-            <h3>1. Connect to Remote Server</h3>
+            <h3>1. Select a Project</h3>
             <ol>
-                <li>Press <code>F1</code> to open command palette</li>
-                <li>Select <code>Remote-SSH: Connect to Host...</code></li>
-                <li>Select or add SSH host</li>
-                <li>Enter password or use SSH key</li>
+                <li>Click the <strong>IPRO SDK</strong> icon in the left activity bar</li>
+                <li>Click a project in the <strong>Projects</strong> view (right-click to Pin to top; the 5 most recently used projects are listed below pinned ones)</li>
+                <li>The project description shows build status and time (e.g., <code>IPRO7 ✓ 2m ago</code>)</li>
             </ol>
 
-            <h3>2. Open SDK Folder</h3>
-            <ol>
-                <li>Select <code>File</code> → <code>Open Folder...</code></li>
-                <li>Select IPRO SDK root directory (e.g., <code>/home/username/ipro_sdk/</code>)</li>
-            </ol>
+            <h3>2. Configure (Optional)</h3>
+            <ul>
+                <li><strong>Menuconfig</strong>: Edit the project's <code>.config</code> graphically</li>
+                <li><strong>Load Defconfig</strong>: Load a default configuration file</li>
+                <li><strong>Open .config</strong>: Open the configuration file directly in the text editor</li>
+                <li><strong>Build Profile</strong>: Switch between debug / release / size with <code>IPRO SDK: Select Build Profile</code>; the current profile is shown in the status bar</li>
+            </ul>
 
-            <h3>3. Use IPRO Sidebar</h3>
-            <ol>
-                <li>Click the <strong>IPRO icon</strong> in the left activity bar</li>
-                <li>Select project in <strong>Project Manager</strong></li>
-                <li>Click <strong>Configure</strong> button to configure</li>
-                <li>Click <strong>Build</strong> button to compile</li>
-            </ol>
-
-            <h3>Configure Output Example</h3>
+            <h3>3. Build</h3>
+            <p>Click <strong>Build</strong> in Quick Actions, or press <code>Ctrl+Shift+B</code> in the editor. The build generator defaults to <code>make</code> and can be switched to <code>ninja</code> via the <code>devtool.generator</code> setting.</p>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">Configure Log</span>
+                    <span class="code-block-title">Build Output Example</span>
                 </div>
-                <pre><code class="language-bash">[11:00:00 PM] Loaded project: ipro_ble_remote
-[11:00:00 PM] Starting Configure...
-[11:00:00 PM] <i class="fas fa-link"></i> Remote workspace detected, using toolchain from PATH: riscv64-unknown-elf-
-[11:00:01 PM] [CMake] Setting CC=/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-gcc, ...
-[11:00:02 PM] -- The C compiler identification is GNU 10.2.0
-[11:00:03 PM] <i class="fas fa-check-circle"></i> Configure completed successfully</code></pre>
+                <pre><code class="language-bash">[Build] [1/45] Building C object ...
+[Build] [45/45] Linking C executable ...
+Build OK (12.3s)</code></pre>
             </div>
+            <p>After the build completes, the firmware file is located at (the <code>apps/</code> directory uses a nested <code>&lt;category&gt;/&lt;name&gt;</code> structure):</p>
+            <code>apps/&lt;category&gt;/&lt;name&gt;/build/build_out/&lt;name&gt;_IPRO7.bin</code>
+            <p style="margin-top: 1rem;">After a successful build, the extension automatically applies <code>compile_commands.json</code> to C/C++ IntelliSense and refreshes the Memory Map panel; compile errors and warnings are clickable in the Problems panel.</p>
 
-            <h3>Build Output Example</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build Log</span>
-                </div>
-                <pre><code class="language-bash">[11:01:00 PM] Starting Build...
-[11:01:01 PM] [Build] [1/45] Building C object ...
-[11:01:30 PM] [Build] [45/45] Linking C executable ...
-[11:01:31 PM] <i class="fas fa-check-circle"></i> Build completed successfully</code></pre>
-            </div>
+            <h3>4. Batch Build</h3>
+            <p>Run <code>IPRO SDK: Batch Build</code> to select multiple projects and build them sequentially with overall progress tracking — useful for verifying several applications at once.</p>
 
-            <p>After compilation, firmware files are located at:</p>
-            <code>apps/&lt;project_name&gt;/build/build_out/&lt;project_name&gt;_IPRO7.bin</code>
+            <h3>Other Helper Commands</h3>
+            <ul>
+                <li><strong>IPRO SDK: New Project</strong>: Create a new project from a template</li>
+                <li><strong>IPRO SDK: Dashboard</strong>: Open the project overview panel showing build state and firmware size</li>
+            </ul>
         </section>
 
         <section id="flash">
-            <h2>Remote Flashing</h2>
+            <h2>Flashing &amp; Monitoring</h2>
 
-            <h3>Flashing Steps</h3>
-
-            <h4>1. Prepare Hardware</h4>
+            <h3>Flashing</h3>
             <ol>
-                <li>Connect the development board to local Windows computer via USB</li>
-                <li>Open Device Manager to confirm COM port number (e.g., <code>COM4</code>)</li>
+                <li>Connect the development board via USB</li>
+                <li>Click <strong>Flash</strong> in Quick Actions, or press <code>Ctrl+Shift+F</code> in the editor</li>
+                <li>If no serial port is configured, the extension lists the detected devices for selection (macOS lists <code>/dev/cu.usb*</code>, Linux lists <code>/dev/ttyUSB*</code> and <code>/dev/ttyACM*</code>, Windows lists COM ports)</li>
+                <li>The extension first sends <code>reboot_dl</code> via <code>tools/serial_monitor.py</code> to put the board into download mode, then invokes <code>ipro_iot_tool_lite</code> to flash</li>
             </ol>
 
-            <h4>2. Open Flash Panel</h4>
-            <ol>
-                <li>In the sidebar <strong>Quick Actions</strong> section</li>
-                <li>Click <strong>Flash to Device</strong> button</li>
-            </ol>
-
-            <h4>3. Configure Parameters</h4>
+            <h4>Configuration Parameters</h4>
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
-                            <th>Parameter</th>
+                            <th>Setting</th>
                             <th>Description</th>
                             <th>Default Value</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>COM Port</td>
-                            <td>COM port connected to development board</td>
-                            <td>COM4</td>
+                            <td><code>devtool.serialPort</code></td>
+                            <td>Serial port used for flashing and monitoring</td>
+                            <td>Empty (auto-detection + QuickPick selection)</td>
                         </tr>
                         <tr>
-                            <td>Chip Name</td>
-                            <td>Chip model</td>
-                            <td>ipro7</td>
+                            <td><code>devtool.baudRate</code></td>
+                            <td>Serial transfer rate</td>
+                            <td>921600</td>
                         </tr>
                         <tr>
-                            <td>Baudrate</td>
-                            <td>Transfer rate</td>
-                            <td>2000000</td>
+                            <td><code>devtool.flashPin</code></td>
+                            <td>Flash pin parameter passed to <code>ipro_iot_tool_lite</code></td>
+                            <td>0x02</td>
+                        </tr>
+                        <tr>
+                            <td><code>devtool.partitionTable</code></td>
+                            <td>Partition table file path (optional, maps to the <code>--pt</code> parameter)</td>
+                            <td>Empty</td>
+                        </tr>
+                        <tr>
+                            <td><code>devtool.autoDetectPort</code></td>
+                            <td>Auto-detect serial ports when USB devices are plugged in/out</td>
+                            <td>true</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+            <p>The chip name (e.g., <code>ipro7</code>) is filled in automatically from the project configuration — no manual input required.</p>
 
-            <h4>4. Flash Progress</h4>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Progress</th>
-                            <th>Stage</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>5%</td>
-                            <td><i class="fas fa-check-circle"></i> Device connected successfully</td>
-                            <td>Establishing connection with development board</td>
-                        </tr>
-                        <tr>
-                            <td>8%</td>
-                            <td><i class="fas fa-thumbtack"></i> Flash chip detected</td>
-                            <td>Identifying Flash model</td>
-                        </tr>
-                        <tr>
-                            <td>25-30%</td>
-                            <td><i class="fas fa-fire"></i> Erasing main firmware area</td>
-                            <td>Clearing old firmware</td>
-                        </tr>
-                        <tr>
-                            <td>30-90%</td>
-                            <td><i class="fas fa-pen-to-square"></i> Writing main firmware</td>
-                            <td>Flashing new firmware</td>
-                        </tr>
-                        <tr>
-                            <td>92%</td>
-                            <td><i class="fas fa-check-circle"></i> Main firmware write complete</td>
-                            <td>Flash completed</td>
-                        </tr>
-                        <tr>
-                            <td>96%</td>
-                            <td><i class="fas fa-check-circle"></i> Main firmware verification successful</td>
-                            <td>Checksum passed</td>
-                        </tr>
-                        <tr>
-                            <td>100%</td>
-                            <td><i class="fas fa-circle-check"></i> Flash complete!</td>
-                            <td>All done</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <h4>Flash Progress</h4>
+            <p>Flash progress is shown in the VS Code notification area at the bottom right, passing through four stages:</p>
+            <ol>
+                <li><strong>boot / partition</strong>: Writes the bootloader and partition table</li>
+                <li><strong>Firmware write</strong>: Flashes the main firmware with a live percentage</li>
+                <li><strong>Verify</strong>: Firmware verification</li>
+                <li><strong>Complete</strong>: Shows a <code>Flash complete</code> notification</li>
+            </ol>
+
+            <h3>Serial Monitoring</h3>
+            <p>Click <strong>Monitor</strong> in Quick Actions, or press <code>Ctrl+Shift+S</code> in the editor. The extension opens an integrated terminal and connects to the board using the SDK's built-in <code>tools/serial_monitor.py</code> (automatically sending <code>reboot</code> to restart and capture the full boot log). If the tool is not present in the SDK, it falls back to system utilities (<code>screen</code> on macOS / Linux).</p>
+
+            <div class="warning-box">
+                <h4>macOS Serial Port</h4>
+                <p>On macOS, you must use <code>/dev/cu.*</code> devices (e.g., <code>/dev/cu.usbserial-XXXX</code> — the actual name depends on your device), not <code>/dev/tty.*</code>. The <code>tty.*</code> devices block waiting for the DCD signal. The extension's auto-detection already lists only <code>cu.*</code> devices.</p>
             </div>
+        </section>
+
+        <section id="memory-map">
+            <h2>Memory Map Visualization</h2>
+            <p>Run <code>IPRO SDK: Memory Map</code> (or click <strong>Memory Map</strong> in Quick Actions) to open the memory analysis panel, which parses the <code>.map</code> file produced by the build:</p>
+            <ul>
+                <li><strong>Flash / RAM donut charts</strong>: Colored segments show each section's share, with the usage percentage in the center</li>
+                <li><strong>Stacked region bars</strong>: Each memory region shows the distribution of <code>.text</code>, <code>.rodata</code>, <code>.data</code>, <code>.bss</code>, and other sections; usage is color-coded (green &lt;70%, yellow 70&ndash;85%, red &gt;85%)</li>
+                <li><strong>Component table</strong>: Sortable and searchable, with expandable rows showing per-section breakdown for each component</li>
+                <li><strong>Component treemap</strong>: Shows the top 20 components by size with proportional rectangles</li>
+                <li><strong>Build comparison</strong>: Automatically compares against the previous build, marking deltas (&plusmn;KB) in red/green</li>
+                <li><strong>Export</strong>: One-click export to CSV (component breakdown) or Markdown (full report)</li>
+            </ul>
+            <p>When Flash or RAM usage exceeds the threshold (<code>devtool.memoryThresholdFlash</code> / <code>devtool.memoryThresholdRam</code>, default 85%), the extension proactively shows a warning notification. The panel refreshes automatically after a successful build.</p>
+
+            <p>For IPRO7's memory layout reference: Flash 1 MB, PSRAM 8 MB, OCRAM 256 KB. See <a href="{{ '/en/hardware' | relative_url }}">Hardware Specifications</a> for details.</p>
         </section>
 
         <section id="faq">
             <h2>FAQ</h2>
 
             <div class="faq-item">
-                <h4>Q1: Cannot find cmake or toolchain on remote</h4>
-                <p><strong>Problem:</strong> <code>CMAKE_C_COMPILER not found in PATH</code></p>
+                <h4>Q1: The sidebar shows "No IPRO SDK detected"</h4>
+                <p><strong>Problem:</strong> The extension cannot find the SDK.</p>
                 <p><strong>Solution:</strong></p>
                 <ol>
-                    <li>Verify tools are installed: <code>which cmake riscv64-unknown-elf-gcc</code></li>
-                    <li>Add to PATH: <code>echo 'export PATH=/opt/toolchain/riscv_ipro7/bin:$PATH' >> ~/.bashrc</code></li>
-                    <li>Reload window: <code>F1</code> → <code>Developer: Reload Window</code></li>
+                    <li>Verify the opened workspace contains <code>build_freertos.sh</code> at the SDK root</li>
+                    <li>Or run <code>F1</code> → <code>IPRO SDK: Set SDK Root</code> to set the SDK path manually (written to the <code>devtool.sdkRoot</code> setting)</li>
                 </ol>
             </div>
 
             <div class="faq-item">
-                <h4>Q2: Local Flash Tool Extension not installed</h4>
-                <p><strong>Problem:</strong> Cannot call local Flash Tool Extension</p>
+                <h4>Q2: Toolchain not found</h4>
+                <p><strong>Problem:</strong> Build fails because <code>riscv64-unknown-elf-gcc</code> cannot be found.</p>
                 <p><strong>Solution:</strong></p>
                 <ol>
-                    <li>Disconnect SSH, install in local VS Code</li>
-                    <li>Verify it shows "Install" not "Install in SSH"</li>
-                    <li>Reconnect to remote and reload window</li>
+                    <li>Verify the toolchain is installed at the default path <code>/opt/toolchain/riscv_ipro7/bin/</code></li>
+                    <li>If installed elsewhere, set the cross-compiler prefix via the <code>devtool.toolchainPath</code> setting (e.g., <code>/your/path/bin/riscv64-unknown-elf-</code>)</li>
                 </ol>
             </div>
 
             <div class="faq-item">
-                <h4>Q3: Flash tool path not configured</h4>
-                <p><strong>Problem:</strong> <code>Flash tool not configured</code></p>
+                <h4>Q3: Serial port not listed or connection failed</h4>
+                <p><strong>Problem:</strong> No serial port found when flashing or monitoring, or the connection fails.</p>
                 <p><strong>Solution:</strong></p>
                 <ol>
-                    <li>Run command: <code>F1</code> → <code>IPRO: Configure Flash Tool Path</code></li>
-                    <li>Select <code>ipro_iot_tool.exe</code> location</li>
+                    <li>Verify the USB cable is connected and the driver is working, then run <code>IPRO SDK: Select Serial Port</code> to re-select</li>
+                    <li>Close other programs occupying the serial port (terminals, other monitoring tools)</li>
+                    <li>On macOS, make sure you selected a <code>/dev/cu.*</code> device</li>
+                    <li>Verify <code>devtool.autoDetectPort</code> is enabled, and wait about 3 seconds after plugging in USB for auto-detection to update</li>
                 </ol>
             </div>
 
             <div class="faq-item">
-                <h4>Q4: COM port connection failed</h4>
-                <p><strong>Problem:</strong> <code>shake hand failed</code></p>
+                <h4>Q4: "Binary not found" when flashing</h4>
+                <p><strong>Problem:</strong> The firmware file does not exist.</p>
                 <p><strong>Solution:</strong></p>
                 <ol>
-                    <li>Verify USB cable is connected and driver is working</li>
-                    <li>Check if COM port number is correct</li>
-                    <li>Close other programs using the COM port</li>
-                    <li>Press RESET button and start flashing immediately</li>
+                    <li>Run Build first (<code>Ctrl+Shift+B</code>)</li>
+                    <li>Verify <code>&lt;name&gt;_IPRO7.bin</code> exists under <code>apps/&lt;category&gt;/&lt;name&gt;/build/build_out/</code></li>
                 </ol>
             </div>
 
             <div class="faq-item">
-                <h4>Q5: Firmware file does not exist</h4>
-                <p><strong>Problem:</strong> Firmware file does not exist, please build the project first</p>
+                <h4>Q5: "Flash tool (ipro_iot_tool_lite) not found in SDK tools/"</h4>
+                <p><strong>Problem:</strong> The flash tool cannot be found in the SDK.</p>
                 <p><strong>Solution:</strong></p>
                 <ol>
-                    <li>Verify Configure and Build have been executed</li>
-                    <li>Check <code>apps/&lt;project&gt;/build/build_out/</code> directory</li>
-                    <li>If no files exist, re-run Build</li>
+                    <li>Verify <code>tools/ipro_iot_tool_lite/ipro_iot_tool_lite</code> exists under the SDK root</li>
+                    <li>This tool is not included in Release SDK v1.0.1 — contact the vendor to obtain it, then place it at the path above</li>
                 </ol>
             </div>
         </section>
 
         <section id="cli-tools">
             <h2>CLI Tools Integration</h2>
-            <p>In addition to the VS Code Extension GUI, you can also use command-line tools directly for development.</p>
+            <p>In addition to the VS Code Extension GUI, you can also use command-line tools directly for development. The <code>apps/</code> directory uses a nested <code>&lt;category&gt;/&lt;name&gt;</code> structure, so <code>make -C</code> requires the full path; use <code>./build_freertos.sh -l</code> to list all projects.</p>
 
             <h3>Build</h3>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">Command-line Build</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># Recommended build method
-make -C apps/ipro_ble_remote
+                <pre><code class="language-bash"># List all projects
+./build_freertos.sh -l
 
-# Or using build_freertos.sh
+# Recommended build method (full nested path)
+make -C apps/bluetooth/ble/ipro_ble_remote
+
+# Or using build_freertos.sh (accepts the project name)
 ./build_freertos.sh ipro_ble_remote build
 
 # Clean build
-make -C apps/ipro_ble_remote clean</code></pre>
+make -C apps/bluetooth/ble/ipro_ble_remote clean</code></pre>
             </div>
 
             <h3>Flash Tool</h3>
             <p>The SDK's built-in flash tool is at <code>tools/ipro_iot_tool_lite/ipro_iot_tool_lite</code> (not OpenOCD):</p>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">Command-line Flash (macOS/Linux)</span>
+                    <span class="code-block-title">Command-line Flash (macOS / Linux)</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+                <pre><code class="language-bash"># Serial port name depends on your device (use /dev/cu.* on macOS)
+tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
     --chipname ipro7 \
-    --port /dev/cu.usbserial-2120 \
-    --firmware apps/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
+    --port /dev/cu.usbserial-XXXX \
+    --firmware apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
     --baudrate 921600 --flash-pin 0x02</code></pre>
             </div>
 
             <div class="warning-box">
                 <h4>macOS Serial Port</h4>
-                <p>On macOS, you must use <code>/dev/cu.usbserial-2120</code> (<code>cu.*</code>), not <code>/dev/tty.*</code>. The <code>tty.*</code> devices block waiting for the DCD signal.</p>
+                <p>On macOS, you must use <code>/dev/cu.usbserial-XXXX</code> (<code>cu.*</code> — the actual name depends on your device), not <code>/dev/tty.*</code>. The <code>tty.*</code> devices block waiting for the DCD signal.</p>
             </div>
 
             <h3>Automated Testing</h3>
@@ -470,9 +394,10 @@ make -C apps/ipro_ble_remote clean</code></pre>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">Automated Board Testing</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># Full test cycle (build + flash + monitor + parse results)
-tools/board_test.sh --project apps/ipro_unit_test
+tools/board_test.sh --project apps/test/ipro_unit_test
 
 # Exit codes: 0=pass, 1=fail, 2=timeout</code></pre>
             </div>
@@ -480,30 +405,41 @@ tools/board_test.sh --project apps/ipro_unit_test
 
         <section id="shortcuts">
             <h2>Keyboard Shortcuts</h2>
+            <p>The extension provides three dedicated shortcuts (the editor must be focused):</p>
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
                             <th>Function</th>
                             <th>Shortcut</th>
+                            <th>Description</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
+                            <td>Build</td>
+                            <td><code>Ctrl+Shift+B</code></td>
+                            <td>Build the currently selected project</td>
+                        </tr>
+                        <tr>
+                            <td>Flash</td>
+                            <td><code>Ctrl+Shift+F</code></td>
+                            <td>Flash firmware to the development board</td>
+                        </tr>
+                        <tr>
+                            <td>Serial Monitor</td>
+                            <td><code>Ctrl+Shift+S</code></td>
+                            <td>Open the serial monitor</td>
+                        </tr>
+                        <tr>
                             <td>Open Command Palette</td>
                             <td><code>Ctrl+Shift+P</code> or <code>F1</code></td>
-                        </tr>
-                        <tr>
-                            <td>Open Terminal</td>
-                            <td><code>Ctrl+`</code></td>
-                        </tr>
-                        <tr>
-                            <td>Toggle Sidebar</td>
-                            <td><code>Ctrl+B</code></td>
+                            <td>Standard VS Code (search "IPRO SDK" to list all commands)</td>
                         </tr>
                         <tr>
                             <td>Extensions Panel</td>
                             <td><code>Ctrl+Shift+X</code></td>
+                            <td>Standard VS Code</td>
                         </tr>
                     </tbody>
                 </table>
@@ -513,18 +449,23 @@ tools/board_test.sh --project apps/ipro_unit_test
         <section id="version">
             <h2>Version Information</h2>
             <div class="info-box">
-                <h4>v0.0.7 (2025-07-25)</h4>
+                <h4>v2.1.0 (2026-03-26)</h4>
                 <ul>
-                    <li><i class="fas fa-check-circle"></i> Full Remote SSH support</li>
-                    <li><i class="fas fa-check-circle"></i> Auto-detect remote environment and use PATH tools</li>
-                    <li><i class="fas fa-check-circle"></i> Base64 firmware transfer mechanism</li>
-                    <li><i class="fas fa-check-circle"></i> Dual Extension collaboration architecture</li>
-                    <li><i class="fas fa-check-circle"></i> Real-time flash progress synchronization</li>
-                    <li><i class="fas fa-check-circle"></i> Local flash tool auto-configuration</li>
-                    <li><i class="fas fa-wrench"></i> Simplified sidebar interface</li>
-                    <li><i class="fas fa-wrench"></i> Optimized CMake compiler detection</li>
-                    <li><i class="fas fa-wrench"></i> Improved error message prompts</li>
-                    <li><i class="fas fa-wrench"></i> Enhanced BLE project configuration support</li>
+                    <li><i class="fas fa-check-circle"></i> Build Profiles: one-click switching between debug / release / size, with the current profile shown in the status bar</li>
+                    <li><i class="fas fa-check-circle"></i> Memory Map overhaul: donut charts, stacked region bars, component treemap, build comparison, CSV / Markdown export</li>
+                    <li><i class="fas fa-check-circle"></i> Memory threshold alerts (<code>devtool.memoryThresholdFlash</code> / <code>devtool.memoryThresholdRam</code>)</li>
+                    <li><i class="fas fa-check-circle"></i> IntelliSense auto-configuration: applies <code>compile_commands.json</code> automatically after builds</li>
+                    <li><i class="fas fa-check-circle"></i> Serial port auto-detection: polls USB devices every 3 seconds, updating instantly on plug/unplug</li>
+                    <li><i class="fas fa-check-circle"></i> Enhanced problem matchers: compile, linker, and CMake errors are clickable</li>
+                    <li><i class="fas fa-check-circle"></i> Build time tracking: status bar shows "Build OK (12.3s)"</li>
+                </ul>
+            </div>
+            <div class="info-box">
+                <h4>v2.0.0 (2026-02-23)</h4>
+                <ul>
+                    <li><i class="fas fa-wrench"></i> Complete rewrite to a modular service-based architecture, removing more than 20 legacy modules</li>
+                    <li><i class="fas fa-wrench"></i> Sidebar refactored into three native TreeViews: Projects / Device / Quick Actions</li>
+                    <li><i class="fas fa-wrench"></i> Added Pin / Recent Projects, build status indicators, Dashboard project overview, and Batch Build</li>
                 </ul>
             </div>
         </section>

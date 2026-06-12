@@ -11,70 +11,68 @@ title: VS Code Extension - IPRO SDK
                 <li><a href="#overview" class="sidebar-link">概覽</a></li>
                 <li><a href="#features" class="sidebar-link">功能特色</a></li>
                 <li><a href="#installation" class="sidebar-link">安裝指南</a></li>
-                <li><a href="#remote-dev" class="sidebar-link">遠端開發</a></li>
                 <li><a href="#workflow" class="sidebar-link">開發流程</a></li>
-                <li><a href="#flash" class="sidebar-link">遠端燒錄</a></li>
+                <li><a href="#flash" class="sidebar-link">燒錄與監控</a></li>
+                <li><a href="#memory-map" class="sidebar-link">Memory Map 視覺化</a></li>
                 <li><a href="#faq" class="sidebar-link">常見問題</a></li>
                 <li><a href="#cli-tools" class="sidebar-link">命令列工具</a></li>
+                <li><a href="#shortcuts" class="sidebar-link">快捷鍵</a></li>
+                <li><a href="#version" class="sidebar-link">版本資訊</a></li>
             </ul>
         </nav>
     </aside>
 
     <article class="doc-content">
-        <div class="alert alert-warning" style="margin-bottom: 2rem;">
-            <strong>⚠ Release SDK 注意事項：</strong>此功能未包含在 Release SDK v1.0.1 中。以下內容僅供參考，相關元件與工具需另行取得。
-        </div>
         <h1>IPRO SDK VS Code Extension</h1>
-        <p>專為 IPRO SDK 設計的 VS Code 擴充套件，支援本地與遠端開發環境，提供一鍵建構、燒錄等功能。</p>
+        <div class="alert alert-warning">
+            <strong>&#9888; Release SDK 注意事項：</strong>此擴充套件未包含在 Release SDK v1.0.1 中，以下內容僅供參考。擴充套件（<code>.vsix</code>）及其呼叫的燒錄工具（<code>tools/ipro_iot_tool_lite/</code>）與串口監控工具（<code>tools/serial_monitor.py</code>）請聯絡原廠取得。
+        </div>
+        <p>專為 IPRO SDK 設計的 VS Code 擴充套件，在 Windows、macOS、Linux 上提供建構、燒錄、序列埠監控、Kconfig 設定與記憶體分析等一站式開發體驗。</p>
 
         <section id="overview">
             <h2>概覽</h2>
-            <p>IPRO SDK Extension 是一套完整的開發工具套件，包含兩個互相協作的擴充套件：</p>
+            <p><strong>IPRO SDK Extension（v2.1.0）</strong>是單一擴充套件，開啟含有 <code>build_freertos.sh</code> 的 SDK 工作區即自動啟用，無需額外安裝其他配套套件。</p>
 
             <div class="info-box">
-                <h4><i class="fas fa-wrench"></i> IPRO SDK Extension (v0.0.7)</h4>
-                <p>主要開發擴充套件，安裝於遠端伺服器或本地環境</p>
+                <h4><i class="fas fa-wrench"></i> 核心能力</h4>
                 <ul>
-                    <li>專案管理與配置</li>
-                    <li>CMake 建構整合</li>
-                    <li>自動偵測工具鏈</li>
-                    <li>燒錄介面</li>
+                    <li>專案總覽與切換（Projects / Device / Quick Actions 三個側邊欄視圖）</li>
+                    <li>一鍵 Build / Clean / Flash / Serial Monitor</li>
+                    <li>Menuconfig 設定編輯（圖形介面 + 終端機 menuconfig）</li>
+                    <li>Memory Map 視覺化與建置記憶體分析</li>
+                    <li>Build Profiles（debug / release / size）與批次建構</li>
                 </ul>
             </div>
 
-            <div class="info-box">
-                <h4><i class="fas fa-bolt"></i> IPRO Flash Tool Extension (v1.0.0)</h4>
-                <p>燒錄工具擴充套件，安裝於本地 Windows 電腦</p>
-                <ul>
-                    <li>本地燒錄執行</li>
-                    <li>即時進度回報</li>
-                    <li>自動偵測燒錄工具</li>
-                </ul>
-            </div>
-
-            <h3>支援的開發場景</h3>
+            <h3>系統需求</h3>
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
-                            <th>場景</th>
-                            <th>SDK 位置</th>
-                            <th>燒錄工具</th>
-                            <th>適用情況</th>
+                            <th>項目</th>
+                            <th>需求</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>本地開發</strong></td>
-                            <td>本地 Windows</td>
-                            <td>本地</td>
-                            <td>個人開發環境</td>
+                            <td>VS Code</td>
+                            <td>1.102 或以上</td>
                         </tr>
                         <tr>
-                            <td><strong>遠端開發</strong></td>
-                            <td>遠端 Linux 伺服器</td>
-                            <td>本地 Windows</td>
-                            <td>團隊共用編譯伺服器</td>
+                            <td>作業系統</td>
+                            <td>Windows / macOS / Linux</td>
+                        </tr>
+                        <tr>
+                            <td>建構工具</td>
+                            <td>CMake（&ge; 3.20）+ Make 或 Ninja</td>
+                        </tr>
+                        <tr>
+                            <td>工具鏈</td>
+                            <td>RISC-V 交叉編譯器（預設 <code>/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-</code>）</td>
+                        </tr>
+                        <tr>
+                            <td>Python 3</td>
+                            <td>燒錄前自動進入 download mode 與終端機 menuconfig（<code>pip install kconfiglib</code>）需要</td>
                         </tr>
                     </tbody>
                 </table>
@@ -87,381 +85,307 @@ title: VS Code Extension - IPRO SDK
             <div class="features-grid">
                 <div class="feature-card">
                     <div class="feature-icon"><i class="fas fa-bullseye"></i></div>
-                    <h3>智慧專案管理</h3>
-                    <p>自動偵測 SDK 內的所有應用專案，提供下拉選單快速切換。</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-wrench"></i></div>
-                    <h3>自動工具鏈偵測</h3>
-                    <p>自動偵測 PATH 中的 cmake、ninja、riscv64-unknown-elf-gcc，無需手動配置。</p>
+                    <h3>三視圖側邊欄</h3>
+                    <p>Projects 視圖自動掃描 SDK 內所有專案，支援 Pin 置頂與最近使用清單；Device 視圖顯示序列埠、SDK 與工具鏈版本；Quick Actions 提供一鍵操作。</p>
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon"><i class="fas fa-hammer"></i></div>
-                    <h3>一鍵建構</h3>
-                    <p>整合 CMake + Ninja 建構系統，提供 Configure 和 Build 按鈕。</p>
+                    <h3>一鍵建構與燒錄</h3>
+                    <p>Build / Clean / Flash / Serial Monitor 皆可從 Quick Actions 或快捷鍵觸發，狀態列即時顯示建置結果與耗時。</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-bolt"></i></div>
-                    <h3>遠端燒錄</h3>
-                    <p>透過 Base64 傳輸韌體到本地，支援即時進度顯示。</p>
+                    <div class="feature-icon"><i class="fas fa-sliders-h"></i></div>
+                    <h3>Menuconfig 整合</h3>
+                    <p>圖形化 .config 編輯器、終端機 menuconfig、Load Defconfig 與直接開啟 .config 四種 Kconfig 編輯方式。</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
-                    <h3>即時進度</h3>
-                    <p>建構和燒錄過程中顯示即時進度條和詳細日誌。</p>
+                    <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
+                    <h3>Memory Map 視覺化</h3>
+                    <p>Flash / RAM 環圈圖、區段堆疊條、元件 treemap 與建置差異比較，可匯出 CSV 或 Markdown 報告。</p>
                 </div>
                 <div class="feature-card">
-                    <div class="feature-icon"><i class="fas fa-link"></i></div>
-                    <h3>Remote SSH 整合</h3>
-                    <p>完整支援 VS Code Remote SSH，遠端編譯本地燒錄。</p>
+                    <div class="feature-icon"><i class="fas fa-layer-group"></i></div>
+                    <h3>Build Profiles</h3>
+                    <p>debug（-O0 -g）/ release（-O2）/ size（-Os）三種建置設定一鍵切換，並支援多專案 Batch Build。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-plug"></i></div>
+                    <h3>序列埠自動偵測</h3>
+                    <p>每 3 秒輪詢 USB 序列裝置，插拔即時更新狀態列與 Device 視圖；macOS 自動列出 <code>/dev/cu.usb*</code> 裝置。</p>
                 </div>
             </div>
+
+            <p>此外，建置成功後會自動偵測 <code>compile_commands.json</code> 並設定 C/C++ 擴充套件的 IntelliSense；內建 problem matchers（<code>$ipro-gcc-error</code>、<code>$ipro-gcc-warning</code>、<code>$ipro-linker</code>、<code>$ipro-cmake</code>）讓編譯與連結錯誤可直接點擊跳轉到原始碼。</p>
         </section>
 
         <section id="installation">
             <h2>安裝指南</h2>
 
-            <h3>遠端 Linux 伺服器準備</h3>
-
-            <h4>1. 安裝必要工具</h4>
+            <h3>1. 安裝擴充套件</h3>
+            <ol>
+                <li>向原廠取得 <code>ipro-sdk-extension-2.1.0.vsix</code></li>
+                <li>開啟 VS Code 的 Extensions 面板（<code>Ctrl+Shift+X</code>），將 <code>.vsix</code> 檔案拖曳進面板；或使用命令列安裝：</li>
+            </ol>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">安裝開發工具</span>
+                    <span class="code-block-title">命令列安裝</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 安裝 CMake 和 Ninja
-sudo apt-get install cmake ninja-build
-
-# 手動安裝 RISC-V 工具鏈（推薦）
-# 下載並解壓工具鏈到 /opt/toolchain/riscv_ipro7/
-echo 'export PATH=/opt/toolchain/riscv_ipro7/bin:$PATH' >> ~/.bashrc
-source ~/.bashrc
-
-# 驗證安裝
-which cmake ninja riscv64-unknown-elf-gcc
-cmake --version
-riscv64-unknown-elf-gcc --version</code></pre>
+                <pre><code class="language-bash">code --install-extension ipro-sdk-extension-2.1.0.vsix</code></pre>
             </div>
 
-            <h3>本地 Windows 準備</h3>
-
-            <h4>1. 安裝 VS Code 擴充功能</h4>
-            <ol>
-                <li>安裝 <a href="https://code.visualstudio.com/" target="_blank">Visual Studio Code</a></li>
-                <li>安裝 <strong>Remote - SSH</strong> 擴充功能</li>
-                <li>準備燒錄工具 <code>ipro_iot_tool.exe</code></li>
-            </ol>
-
-            <h4>2. 燒錄工具路徑</h4>
-            <p>Extension 會自動偵測以下常見路徑：</p>
+            <h3>2. 準備工具鏈</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">常見燒錄工具路徑</span>
+                    <span class="code-block-title">安裝 RISC-V 工具鏈（macOS / Linux）</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code>C:\Work\IPRO\ipro_sdk\tools\download\ipro_iot_tool.exe
-C:\IPRO\tools\download\ipro_iot_tool.exe
-C:\Program Files\IPRO\tools\download\ipro_iot_tool.exe</code></pre>
+                <pre><code class="language-bash"># 下載並解壓工具鏈到 /opt/toolchain/riscv_ipro7/
+# 擴充套件預設使用此路徑，無需額外設定
+
+# 驗證安裝
+/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-gcc --version</code></pre>
             </div>
+            <p>若工具鏈安裝在其他位置，可在設定中以 <code>devtool.toolchainPath</code> 覆寫交叉編譯器前綴（例如 <code>/your/path/bin/riscv64-unknown-elf-</code>）。</p>
 
-            <h3>安裝 Extensions</h3>
-
-            <div class="warning-box">
-                <h4><i class="fas fa-exclamation-triangle" style="color: var(--warning);"></i> 重要安裝順序</h4>
-                <ul>
-                    <li><strong>IPRO SDK Extension</strong>：安裝在 <strong>遠端伺服器</strong>（透過 Remote SSH）</li>
-                    <li><strong>IPRO Flash Tool Extension</strong>：安裝在 <strong>本地</strong>（必須！）</li>
-                </ul>
-            </div>
-
-            <h4>安裝步驟</h4>
+            <h3>3. 開啟 SDK 工作區</h3>
             <ol>
-                <li>連接到遠端伺服器後，打開 Extensions 面板（<code>Ctrl+Shift+X</code>）</li>
-                <li>搜尋 <strong>IPRO SDK Extension</strong>，點擊 "Install in SSH: server-name"</li>
-                <li>中斷 SSH 連接或開啟新的本地視窗</li>
-                <li>搜尋 <strong>IPRO Flash Tool</strong>，點擊 "Install"（確認不是 "Install in SSH"）</li>
-                <li>重新載入視窗：<code>F1</code> → <code>Developer: Reload Window</code></li>
+                <li>選擇 <code>File</code> → <code>Open Folder...</code>，開啟 IPRO SDK 根目錄</li>
+                <li>偵測到 <code>build_freertos.sh</code> 後擴充套件自動啟用，左側活動列出現 <strong>IPRO SDK</strong> 圖示</li>
+                <li>若 SDK 不在工作區根目錄，可執行 <code>F1</code> → <code>IPRO SDK: Set SDK Root</code> 手動指定</li>
             </ol>
-        </section>
 
-        <section id="remote-dev">
-            <h2>遠端開發架構</h2>
-
-            <div class="architecture-diagram">
-                <pre>
-┌─────────────────────────────────────────────────────────────────┐
-│                    遠端 Linux 伺服器                               │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │  IPRO SDK Extension                                      │   │
-│  │  • 專案管理 • CMake 配置 • 編譯建構                        │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌───────────────┐   │
-│  │   IPRO SDK      │  │   工具鏈         │  │   韌體輸出     │   │
-│  │ /home/user/sdk  │  │ riscv64-gcc     │  │ *.bin files   │   │
-│  └─────────────────┘  └─────────────────┘  └───────────────┘   │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              │ VS Code Remote SSH
-                              │ Base64 韌體傳輸
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    本地 Windows 電腦                              │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │  IPRO Flash Tool Extension                               │   │
-│  │  • 接收韌體 • 執行燒錄 • 回報進度                          │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│  ┌─────────────────┐  ┌─────────────────────────────────────┐   │
-│  │ ipro_iot_tool   │  │        開發板 (USB COM Port)         │   │
-│  │     .exe        │──│           IPRO7 FPGA               │   │
-│  └─────────────────┘  └─────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────┘</pre>
+            <div class="info-box">
+                <h4><i class="fas fa-bolt"></i> 燒錄工具自動定位</h4>
+                <p>燒錄使用 SDK 內建的 <code>tools/ipro_iot_tool_lite/ipro_iot_tool_lite</code>（Windows 為 <code>.exe</code>），擴充套件會自動從 SDK 根目錄定位，無需另行下載或設定路徑。</p>
             </div>
         </section>
 
         <section id="workflow">
             <h2>開發流程</h2>
 
-            <h3>1. 連接遠端伺服器</h3>
+            <h3>1. 選擇專案</h3>
             <ol>
-                <li>按 <code>F1</code> 打開命令面板</li>
-                <li>選擇 <code>Remote-SSH: Connect to Host...</code></li>
-                <li>選擇或新增 SSH 主機</li>
-                <li>輸入密碼或使用 SSH 金鑰</li>
+                <li>點擊左側活動列的 <strong>IPRO SDK</strong> 圖示</li>
+                <li>在 <strong>Projects</strong> 視圖中點選專案（支援右鍵 Pin 置頂，最近使用的 5 個專案會自動列在置頂專案下方）</li>
+                <li>專案描述會顯示建置狀態與時間（例如 <code>IPRO7 ✓ 2m ago</code>）</li>
             </ol>
 
-            <h3>2. 打開 SDK 資料夾</h3>
-            <ol>
-                <li>選擇 <code>File</code> → <code>Open Folder...</code></li>
-                <li>選擇 IPRO SDK 根目錄（例如：<code>/home/username/ipro_sdk/</code>）</li>
-            </ol>
+            <h3>2. 設定（可選）</h3>
+            <ul>
+                <li><strong>Menuconfig</strong>：圖形化編輯專案 <code>.config</code></li>
+                <li><strong>Load Defconfig</strong>：載入預設設定檔</li>
+                <li><strong>Open .config</strong>：直接以文字編輯器開啟設定檔</li>
+                <li><strong>Build Profile</strong>：以 <code>IPRO SDK: Select Build Profile</code> 切換 debug / release / size，目前 profile 顯示於狀態列</li>
+            </ul>
 
-            <h3>3. 使用 IPRO 側邊欄</h3>
-            <ol>
-                <li>點擊左側活動列的 <strong>IPRO 圖示</strong></li>
-                <li>在 <strong>Project Manager</strong> 選擇專案</li>
-                <li>點擊 <strong>Configure</strong> 按鈕進行配置</li>
-                <li>點擊 <strong>Build</strong> 按鈕進行編譯</li>
-            </ol>
-
-            <h3>Configure 輸出範例</h3>
+            <h3>3. 建構</h3>
+            <p>在 Quick Actions 點擊 <strong>Build</strong>，或在編輯器中按 <code>Ctrl+Shift+B</code>。建構產生器預設為 <code>make</code>，可透過 <code>devtool.generator</code> 設定切換為 <code>ninja</code>。</p>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">Configure 日誌</span>
+                    <span class="code-block-title">Build 輸出範例</span>
                 </div>
-                <pre><code class="language-bash">[11:00:00 PM] 已載入專案: ipro_ble_remote
-[11:00:00 PM] 開始 Configure...
-[11:00:00 PM] <i class="fas fa-link"></i> Remote workspace detected, using toolchain from PATH: riscv64-unknown-elf-
-[11:00:01 PM] [CMake] Setting CC=/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-gcc, ...
-[11:00:02 PM] -- The C compiler identification is GNU 10.2.0
-[11:00:03 PM] <i class="fas fa-check-circle"></i> Configure completed successfully</code></pre>
+                <pre><code class="language-bash">[Build] [1/45] Building C object ...
+[Build] [45/45] Linking C executable ...
+Build OK (12.3s)</code></pre>
             </div>
+            <p>建構完成後，韌體檔案位於（<code>apps/</code> 採 <code>&lt;category&gt;/&lt;name&gt;</code> 巢狀結構）：</p>
+            <code>apps/&lt;category&gt;/&lt;name&gt;/build/build_out/&lt;name&gt;_IPRO7.bin</code>
+            <p style="margin-top: 1rem;">建置成功後擴充套件會自動套用 <code>compile_commands.json</code> 到 C/C++ IntelliSense，並自動更新 Memory Map 面板；編譯錯誤與警告可在 Problems 面板點擊跳轉。</p>
 
-            <h3>Build 輸出範例</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build 日誌</span>
-                </div>
-                <pre><code class="language-bash">[11:01:00 PM] 開始 Build...
-[11:01:01 PM] [Build] [1/45] Building C object ...
-[11:01:30 PM] [Build] [45/45] Linking C executable ...
-[11:01:31 PM] <i class="fas fa-check-circle"></i> Build completed successfully</code></pre>
-            </div>
+            <h3>4. 批次建構</h3>
+            <p>執行 <code>IPRO SDK: Batch Build</code> 可勾選多個專案依序建構，並顯示整體進度，適合一次驗證多個應用。</p>
 
-            <p>編譯完成後，韌體檔案位於：</p>
-            <code>apps/&lt;project_name&gt;/build/build_out/&lt;project_name&gt;_IPRO7.bin</code>
+            <h3>其他輔助指令</h3>
+            <ul>
+                <li><strong>IPRO SDK: New Project</strong>：從範本建立新專案</li>
+                <li><strong>IPRO SDK: Dashboard</strong>：開啟專案總覽面板，顯示建置狀態與韌體大小</li>
+            </ul>
         </section>
 
         <section id="flash">
-            <h2>遠端燒錄</h2>
+            <h2>燒錄與監控</h2>
 
-            <h3>燒錄步驟</h3>
-
-            <h4>1. 準備硬體</h4>
+            <h3>燒錄</h3>
             <ol>
-                <li>將開發板通過 USB 連接到本地 Windows 電腦</li>
-                <li>開啟裝置管理員，確認 COM 埠號（例如：<code>COM4</code>）</li>
+                <li>以 USB 連接開發板</li>
+                <li>在 Quick Actions 點擊 <strong>Flash</strong>，或在編輯器中按 <code>Ctrl+Shift+F</code></li>
+                <li>若未設定序列埠，擴充套件會自動列出偵測到的裝置供選擇（macOS 列出 <code>/dev/cu.usb*</code>，Linux 列出 <code>/dev/ttyUSB*</code>、<code>/dev/ttyACM*</code>，Windows 列出 COM 埠）</li>
+                <li>擴充套件先透過 <code>tools/serial_monitor.py</code> 送出 <code>reboot_dl</code> 讓開發板進入 download mode，再呼叫 <code>ipro_iot_tool_lite</code> 燒錄</li>
             </ol>
 
-            <h4>2. 開啟燒錄面板</h4>
-            <ol>
-                <li>在側邊欄 <strong>快速操作</strong> 區塊</li>
-                <li>點擊 <strong>Flash to Device</strong> 按鈕</li>
-            </ol>
-
-            <h4>3. 設定參數</h4>
+            <h4>設定參數</h4>
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
-                            <th>參數</th>
+                            <th>設定</th>
                             <th>說明</th>
                             <th>預設值</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>COM Port</td>
-                            <td>開發板連接的 COM 埠</td>
-                            <td>COM4</td>
+                            <td><code>devtool.serialPort</code></td>
+                            <td>燒錄與監控使用的序列埠</td>
+                            <td>空（自動偵測 + QuickPick 選擇）</td>
                         </tr>
                         <tr>
-                            <td>Chip Name</td>
-                            <td>晶片型號</td>
-                            <td>ipro7</td>
+                            <td><code>devtool.baudRate</code></td>
+                            <td>序列埠傳輸速率</td>
+                            <td>921600</td>
                         </tr>
                         <tr>
-                            <td>Baudrate</td>
-                            <td>傳輸速率</td>
-                            <td>2000000</td>
+                            <td><code>devtool.flashPin</code></td>
+                            <td>傳給 <code>ipro_iot_tool_lite</code> 的 flash pin 參數</td>
+                            <td>0x02</td>
+                        </tr>
+                        <tr>
+                            <td><code>devtool.partitionTable</code></td>
+                            <td>分割表檔案路徑（選填，對應 <code>--pt</code> 參數）</td>
+                            <td>空</td>
+                        </tr>
+                        <tr>
+                            <td><code>devtool.autoDetectPort</code></td>
+                            <td>USB 裝置插拔時自動偵測序列埠</td>
+                            <td>true</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+            <p>晶片型號（如 <code>ipro7</code>）由專案設定自動帶入，無需手動指定。</p>
 
-            <h4>4. 燒錄進度</h4>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>進度</th>
-                            <th>階段</th>
-                            <th>說明</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>5%</td>
-                            <td><i class="fas fa-check-circle"></i> 連接裝置成功</td>
-                            <td>與開發板建立連接</td>
-                        </tr>
-                        <tr>
-                            <td>8%</td>
-                            <td><i class="fas fa-thumbtack"></i> 偵測到 Flash 晶片</td>
-                            <td>識別 Flash 型號</td>
-                        </tr>
-                        <tr>
-                            <td>25-30%</td>
-                            <td><i class="fas fa-fire"></i> 擦除主韌體區域</td>
-                            <td>清除舊韌體</td>
-                        </tr>
-                        <tr>
-                            <td>30-90%</td>
-                            <td><i class="fas fa-pen-to-square"></i> 寫入主韌體中</td>
-                            <td>燒錄新韌體</td>
-                        </tr>
-                        <tr>
-                            <td>92%</td>
-                            <td><i class="fas fa-check-circle"></i> 主韌體寫入完成</td>
-                            <td>燒錄完成</td>
-                        </tr>
-                        <tr>
-                            <td>96%</td>
-                            <td><i class="fas fa-check-circle"></i> 主韌體驗證成功</td>
-                            <td>校驗成功</td>
-                        </tr>
-                        <tr>
-                            <td>100%</td>
-                            <td><i class="fas fa-circle-check"></i> 燒錄完成！</td>
-                            <td>全部完成</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <h4>燒錄進度</h4>
+            <p>燒錄進度顯示於 VS Code 右下角通知列，依序經過四個階段：</p>
+            <ol>
+                <li><strong>boot / partition</strong>：寫入開機程式與分割表</li>
+                <li><strong>韌體寫入</strong>：主韌體燒錄，顯示即時百分比</li>
+                <li><strong>驗證</strong>：韌體校驗</li>
+                <li><strong>完成</strong>：顯示 <code>Flash complete</code> 通知</li>
+            </ol>
+
+            <h3>序列埠監控</h3>
+            <p>在 Quick Actions 點擊 <strong>Monitor</strong>，或在編輯器中按 <code>Ctrl+Shift+S</code>，擴充套件會開啟整合終端機並以 SDK 內建的 <code>tools/serial_monitor.py</code> 連接開發板（自動送出 <code>reboot</code> 重新啟動以擷取完整開機日誌）。若 SDK 中沒有該工具，會改用系統內建指令（macOS / Linux 為 <code>screen</code>）連接。</p>
+
+            <div class="warning-box">
+                <h4>macOS 序列埠</h4>
+                <p>在 macOS 上必須使用 <code>/dev/cu.*</code> 裝置（例如 <code>/dev/cu.usbserial-XXXX</code>，實際名稱依裝置而定），而非 <code>/dev/tty.*</code>。<code>tty.*</code> 裝置會等待 DCD 信號導致掛住。擴充套件的自動偵測已只列出 <code>cu.*</code> 裝置。</p>
             </div>
+        </section>
+
+        <section id="memory-map">
+            <h2>Memory Map 視覺化</h2>
+            <p>執行 <code>IPRO SDK: Memory Map</code>（或在 Quick Actions 點擊 <strong>Memory Map</strong>）可開啟記憶體分析面板，解析建置產生的 <code>.map</code> 檔案：</p>
+            <ul>
+                <li><strong>Flash / RAM 環圈圖</strong>：以彩色區段顯示各 section 占比，中央顯示使用率百分比</li>
+                <li><strong>區段堆疊條</strong>：每個記憶體區域顯示 <code>.text</code>、<code>.rodata</code>、<code>.data</code>、<code>.bss</code> 等 section 的分布；使用率以顏色標示（綠 &lt;70%、黃 70&ndash;85%、紅 &gt;85%）</li>
+                <li><strong>元件表格</strong>：可排序、可搜尋，展開列可查看單一元件各 section 的占用明細</li>
+                <li><strong>元件 treemap</strong>：以面積比例顯示前 20 大元件</li>
+                <li><strong>建置比較</strong>：自動與前一次建置比較，以紅綠增減量（&plusmn;KB）標示差異</li>
+                <li><strong>匯出</strong>：一鍵匯出 CSV（元件明細）或 Markdown（完整報告）</li>
+            </ul>
+            <p>當 Flash 或 RAM 使用率超過門檻（<code>devtool.memoryThresholdFlash</code> / <code>devtool.memoryThresholdRam</code>，預設 85%）時，擴充套件會主動跳出警告通知。建置成功後面板會自動更新。</p>
+
+            <p>IPRO7 的記憶體配置可參考：Flash 1 MB、PSRAM 8 MB、OCRAM 256 KB。詳見 <a href="{{ '/hardware' | relative_url }}">硬體規格</a>。</p>
         </section>
 
         <section id="faq">
             <h2>常見問題</h2>
 
             <div class="faq-item">
-                <h4>Q1: 遠端無法找到 cmake 或工具鏈</h4>
-                <p><strong>問題：</strong><code>CMAKE_C_COMPILER not found in PATH</code></p>
+                <h4>Q1: 側邊欄顯示「No IPRO SDK detected」</h4>
+                <p><strong>問題：</strong>擴充套件找不到 SDK。</p>
                 <p><strong>解決方法：</strong></p>
                 <ol>
-                    <li>確認工具已安裝：<code>which cmake riscv64-unknown-elf-gcc</code></li>
-                    <li>添加到 PATH：<code>echo 'export PATH=/opt/toolchain/riscv_ipro7/bin:$PATH' >> ~/.bashrc</code></li>
-                    <li>重新載入視窗：<code>F1</code> → <code>Developer: Reload Window</code></li>
+                    <li>確認開啟的工作區包含 SDK 根目錄的 <code>build_freertos.sh</code></li>
+                    <li>或執行 <code>F1</code> → <code>IPRO SDK: Set SDK Root</code> 手動指定 SDK 路徑（寫入 <code>devtool.sdkRoot</code> 設定）</li>
                 </ol>
             </div>
 
             <div class="faq-item">
-                <h4>Q2: 本地 Flash Tool Extension 未安裝</h4>
-                <p><strong>問題：</strong>無法呼叫本地 Flash Tool Extension</p>
+                <h4>Q2: 找不到工具鏈</h4>
+                <p><strong>問題：</strong>建構失敗，找不到 <code>riscv64-unknown-elf-gcc</code>。</p>
                 <p><strong>解決方法：</strong></p>
                 <ol>
-                    <li>中斷 SSH 連接，在本地 VS Code 中安裝</li>
-                    <li>確認顯示 "Install" 而非 "Install in SSH"</li>
-                    <li>重新連接遠端並重新載入視窗</li>
+                    <li>確認工具鏈已安裝在預設路徑 <code>/opt/toolchain/riscv_ipro7/bin/</code></li>
+                    <li>若安裝在其他位置，在設定中以 <code>devtool.toolchainPath</code> 指定交叉編譯器前綴（例如 <code>/your/path/bin/riscv64-unknown-elf-</code>）</li>
                 </ol>
             </div>
 
             <div class="faq-item">
-                <h4>Q3: 燒錄工具路徑未配置</h4>
-                <p><strong>問題：</strong><code>Flash tool not configured</code></p>
+                <h4>Q3: 序列埠未列出或連接失敗</h4>
+                <p><strong>問題：</strong>燒錄或監控時找不到序列埠，或連線失敗。</p>
                 <p><strong>解決方法：</strong></p>
                 <ol>
-                    <li>執行命令：<code>F1</code> → <code>IPRO: Configure Flash Tool Path</code></li>
-                    <li>選擇 <code>ipro_iot_tool.exe</code> 位置</li>
+                    <li>確認 USB 線已連接且驅動正常，執行 <code>IPRO SDK: Select Serial Port</code> 重新選擇</li>
+                    <li>關閉其他占用序列埠的程式（終端機、其他監控工具）</li>
+                    <li>macOS 上確認選擇的是 <code>/dev/cu.*</code> 裝置</li>
+                    <li>確認 <code>devtool.autoDetectPort</code> 為開啟狀態，插拔 USB 後等待約 3 秒讓自動偵測更新</li>
                 </ol>
             </div>
 
             <div class="faq-item">
-                <h4>Q4: COM 埠連接失敗</h4>
-                <p><strong>問題：</strong><code>shake hand failed</code></p>
+                <h4>Q4: 燒錄時顯示「Binary not found」</h4>
+                <p><strong>問題：</strong>韌體檔案不存在。</p>
                 <p><strong>解決方法：</strong></p>
                 <ol>
-                    <li>確認 USB 線已連接且驅動正常</li>
-                    <li>檢查 COM 埠號是否正確</li>
-                    <li>關閉其他占用 COM 埠的程式</li>
-                    <li>按下 RESET 按鈕後立即開始燒錄</li>
+                    <li>先執行 Build（<code>Ctrl+Shift+B</code>）</li>
+                    <li>確認 <code>apps/&lt;category&gt;/&lt;name&gt;/build/build_out/</code> 目錄下有 <code>&lt;name&gt;_IPRO7.bin</code></li>
                 </ol>
             </div>
 
             <div class="faq-item">
-                <h4>Q5: 韌體檔案不存在</h4>
-                <p><strong>問題：</strong>韌體檔案不存在，請先建置專案</p>
+                <h4>Q5: 顯示「Flash tool (ipro_iot_tool_lite) not found in SDK tools/」</h4>
+                <p><strong>問題：</strong>SDK 內找不到燒錄工具。</p>
                 <p><strong>解決方法：</strong></p>
                 <ol>
-                    <li>確認已執行 Configure 和 Build</li>
-                    <li>檢查 <code>apps/&lt;project&gt;/build/build_out/</code> 目錄</li>
-                    <li>如果沒有檔案，重新執行 Build</li>
+                    <li>確認 <code>tools/ipro_iot_tool_lite/ipro_iot_tool_lite</code> 存在於 SDK 根目錄下</li>
+                    <li>此工具未包含在 Release SDK v1.0.1 中，請聯絡原廠取得後放置於上述路徑</li>
                 </ol>
             </div>
         </section>
 
         <section id="cli-tools">
             <h2>命令列工具整合</h2>
-            <p>除了 VS Code Extension 的圖形介面外，也可以直接使用命令列工具進行開發。</p>
+            <p>除了 VS Code Extension 的圖形介面外，也可以直接使用命令列工具進行開發。<code>apps/</code> 目錄採 <code>&lt;category&gt;/&lt;name&gt;</code> 巢狀結構，<code>make -C</code> 需使用完整路徑；可用 <code>./build_freertos.sh -l</code> 列出所有專案。</p>
 
             <h3>建構</h3>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">命令列建構</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 推薦的建構方式
-make -C apps/ipro_ble_remote
+                <pre><code class="language-bash"># 列出所有專案
+./build_freertos.sh -l
 
-# 或使用 build_freertos.sh
+# 推薦的建構方式（完整巢狀路徑）
+make -C apps/bluetooth/ble/ipro_ble_remote
+
+# 或使用 build_freertos.sh（接受專案名稱）
 ./build_freertos.sh ipro_ble_remote build
 
 # 清除編譯
-make -C apps/ipro_ble_remote clean</code></pre>
+make -C apps/bluetooth/ble/ipro_ble_remote clean</code></pre>
             </div>
 
             <h3>燒錄工具</h3>
             <p>SDK 內建燒錄工具位於 <code>tools/ipro_iot_tool_lite/ipro_iot_tool_lite</code>（非 OpenOCD）：</p>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">命令列燒錄（macOS/Linux）</span>
+                    <span class="code-block-title">命令列燒錄（macOS / Linux）</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash">tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+                <pre><code class="language-bash"># 序列埠名稱依實際裝置而定（macOS 使用 /dev/cu.*）
+tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
     --chipname ipro7 \
-    --port /dev/cu.usbserial-2120 \
-    --firmware apps/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
+    --port /dev/cu.usbserial-XXXX \
+    --firmware apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
     --baudrate 921600 --flash-pin 0x02</code></pre>
             </div>
 
             <div class="warning-box">
                 <h4>macOS 序列埠</h4>
-                <p>在 macOS 上必須使用 <code>/dev/cu.usbserial-2120</code>（<code>cu.*</code>），而非 <code>/dev/tty.*</code>。<code>tty.*</code> 裝置會等待 DCD 信號導致掛住。</p>
+                <p>在 macOS 上必須使用 <code>/dev/cu.usbserial-XXXX</code>（<code>cu.*</code>，實際名稱依裝置而定），而非 <code>/dev/tty.*</code>。<code>tty.*</code> 裝置會等待 DCD 信號導致掛住。</p>
             </div>
 
             <h3>自動化測試</h3>
@@ -469,9 +393,10 @@ make -C apps/ipro_ble_remote clean</code></pre>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">自動化板級測試</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 完整測試流程（建構 + 燒錄 + 監控 + 解析結果）
-tools/board_test.sh --project apps/ipro_unit_test
+tools/board_test.sh --project apps/test/ipro_unit_test
 
 # 結束代碼：0=通過, 1=失敗, 2=超時</code></pre>
             </div>
@@ -479,30 +404,41 @@ tools/board_test.sh --project apps/ipro_unit_test
 
         <section id="shortcuts">
             <h2>快捷鍵</h2>
+            <p>擴充套件提供三個專屬快捷鍵（需編輯器處於聚焦狀態）：</p>
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
                             <th>功能</th>
                             <th>快捷鍵</th>
+                            <th>說明</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
+                            <td>Build</td>
+                            <td><code>Ctrl+Shift+B</code></td>
+                            <td>建構目前選擇的專案</td>
+                        </tr>
+                        <tr>
+                            <td>Flash</td>
+                            <td><code>Ctrl+Shift+F</code></td>
+                            <td>燒錄韌體到開發板</td>
+                        </tr>
+                        <tr>
+                            <td>Serial Monitor</td>
+                            <td><code>Ctrl+Shift+S</code></td>
+                            <td>開啟序列埠監控</td>
+                        </tr>
+                        <tr>
                             <td>打開命令面板</td>
                             <td><code>Ctrl+Shift+P</code> 或 <code>F1</code></td>
-                        </tr>
-                        <tr>
-                            <td>打開終端</td>
-                            <td><code>Ctrl+`</code></td>
-                        </tr>
-                        <tr>
-                            <td>切換側邊欄</td>
-                            <td><code>Ctrl+B</code></td>
+                            <td>VS Code 通用（搜尋「IPRO SDK」可列出所有指令）</td>
                         </tr>
                         <tr>
                             <td>Extensions 面板</td>
                             <td><code>Ctrl+Shift+X</code></td>
+                            <td>VS Code 通用</td>
                         </tr>
                     </tbody>
                 </table>
@@ -512,18 +448,23 @@ tools/board_test.sh --project apps/ipro_unit_test
         <section id="version">
             <h2>版本資訊</h2>
             <div class="info-box">
-                <h4>v0.0.7 (2025-07-25)</h4>
+                <h4>v2.1.0 (2026-03-26)</h4>
                 <ul>
-                    <li><i class="fas fa-check-circle"></i> Remote SSH 完整支援</li>
-                    <li><i class="fas fa-check-circle"></i> 自動偵測遠端環境並使用 PATH 工具</li>
-                    <li><i class="fas fa-check-circle"></i> Base64 韌體傳輸機制</li>
-                    <li><i class="fas fa-check-circle"></i> 雙 Extension 協作架構</li>
-                    <li><i class="fas fa-check-circle"></i> 即時燒錄進度同步</li>
-                    <li><i class="fas fa-check-circle"></i> 本地燒錄工具自動配置</li>
-                    <li><i class="fas fa-wrench"></i> 簡化側邊欄介面</li>
-                    <li><i class="fas fa-wrench"></i> 優化 CMake 編譯器偵測</li>
-                    <li><i class="fas fa-wrench"></i> 改進錯誤訊息提示</li>
-                    <li><i class="fas fa-wrench"></i> 增強 BLE 專案配置支援</li>
+                    <li><i class="fas fa-check-circle"></i> Build Profiles：debug / release / size 一鍵切換，狀態列顯示目前 profile</li>
+                    <li><i class="fas fa-check-circle"></i> Memory Map 全面改版：環圈圖、區段堆疊條、元件 treemap、建置比較、CSV / Markdown 匯出</li>
+                    <li><i class="fas fa-check-circle"></i> 記憶體門檻警示（<code>devtool.memoryThresholdFlash</code> / <code>devtool.memoryThresholdRam</code>）</li>
+                    <li><i class="fas fa-check-circle"></i> IntelliSense 自動配置：建置後自動套用 <code>compile_commands.json</code></li>
+                    <li><i class="fas fa-check-circle"></i> 序列埠自動偵測：每 3 秒輪詢 USB 裝置，插拔即時更新</li>
+                    <li><i class="fas fa-check-circle"></i> 強化 problem matchers：編譯、連結與 CMake 錯誤可點擊跳轉</li>
+                    <li><i class="fas fa-check-circle"></i> 建置耗時追蹤：狀態列顯示「Build OK (12.3s)」</li>
+                </ul>
+            </div>
+            <div class="info-box">
+                <h4>v2.0.0 (2026-02-23)</h4>
+                <ul>
+                    <li><i class="fas fa-wrench"></i> 全面重寫為模組化服務架構，移除超過 20 個舊版模組</li>
+                    <li><i class="fas fa-wrench"></i> 側邊欄改為 Projects / Device / Quick Actions 三個原生 TreeView</li>
+                    <li><i class="fas fa-wrench"></i> 新增 Pin / Recent Projects、建置狀態指示、Dashboard 專案總覽、Batch Build</li>
                 </ul>
             </div>
         </section>
