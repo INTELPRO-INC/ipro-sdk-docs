@@ -38,7 +38,7 @@ title: 快速開始
 
             <h3>硬體需求</h3>
             <ul>
-                <li>IPRO7 開發板（EVB 或 FPGA 版本）</li>
+                <li>IPRO7 開發板（EVB）</li>
                 <li>USB 連接線（用於燒錄與串口通訊）</li>
             </ul>
 
@@ -46,9 +46,9 @@ title: 快速開始
             <ul>
                 <li><strong>作業系統：</strong>Linux（Ubuntu 20.04+ 建議）或 macOS</li>
                 <li><strong>工具鏈：</strong>RISC-V GCC 交叉編譯器（<code>/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-*</code>）</li>
-                <li><strong>建構工具：</strong>CMake 3.20+, Ninja, Make</li>
+                <li><strong>建構工具：</strong>CMake 3.19+, Ninja, Make</li>
                 <li><strong>Python：</strong>Python 3.8+（用於開發工具與腳本）</li>
-                <li><strong>Git：</strong>版本控制</li>
+                <li><strong>tar：</strong>解壓縮 Release SDK 套件</li>
             </ul>
 
             <div class="code-block">
@@ -138,11 +138,16 @@ ls /opt/toolchain/riscv_ipro7/bin/
 │   │   ├── ble/                  # BLE 應用
 │   │   │   ├── ipro_ble_remote/          # BLE 遙控器（GATT + OTA）
 │   │   │   ├── ipro_ble_transparent/     # BLE 透傳
+│   │   │   ├── ipro_ble_img_capture/     # BLE 影像擷取傳輸
 │   │   │   └── ipro_throughput_test/     # BLE 效能測試
 │   │   └── le_audio/             # LE Audio 應用
 │   │       ├── ipro_le_audio_headset/    # GAF/BAP LE Audio 耳機
 │   │       ├── ipro_le_audio_bis_source/ # BIS LE Audio 來源
 │   │       └── ipro_le_audio_bis_sink/   # BIS LE Audio 接收
+│   ├── multimedia/               # 多媒體應用
+│   │   └── ipro_agora_sentino/   # AI 語音對話閘道器（Ethernet/USB NCM 連網）
+│   ├── network/                  # 網路應用
+│   │   └── ipro_voice_assistant/ # AI 語音助理（Ethernet 連網）
 │   └── platform/
 │       └── ipro7_demo/           # 綜合平台展示
 │
@@ -152,12 +157,14 @@ ls /opt/toolchain/riscv_ipro7/bin/
 │   └── hal/                      # 硬體抽象層
 │
 ├── components/                   # 共享中間件
-│   ├── wireless/bluetooth/       # BLE 棧（Host + Controller + Profiles）
+│   ├── wireless/bluetooth/       # BLE 棧（Zephyr-based Host 原始碼 + Controller prebuilt linkN 函式庫）
+│   ├── wireless/rf/              # RF 驅動（prebuilt 函式庫）
 │   ├── os/freertos/              # FreeRTOS RTOS
 │   ├── network/                  # 網路棧（lwIP）
 │   ├── crypto/                   # 加密元件（mbedTLS）
 │   ├── fs/                       # 檔案系統（LittleFS, FatFS）
-│   └── cherryusb/                # USB 裝置/主機棧
+│   ├── cherryusb/                # USB 裝置/主機棧
+│   └── 3rdparty/liblc3/          # LC3 音訊編解碼器（prebuilt 函式庫）
 │
 ├── cmake/                        # 建構系統（toolchain.cmake 自動偵測 GCC）
 ├── tools/                        # 開發工具
@@ -212,18 +219,19 @@ make -C apps/bluetooth/ble/ipro_ble_remote clean</code></pre>
                     <span class="code-block-title">CMake 建構指令</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 設定專案
-cmake -S . -B build \
+                <pre><code class="language-bash"># 設定專案（巢狀路徑的應用必須指定 CONFIG_APP_CATEGORY）
+cmake -S . -B apps/bluetooth/ble/ipro_ble_remote/build \
     -G "Ninja" \
     -DIPRO_SDK_BASE=$(pwd) \
     -DCONFIG_BUILD_PORJECT=ipro_ble_remote \
+    -DCONFIG_APP_CATEGORY=bluetooth/ble \
     -DCMAKE_PREFIX_PATH=$(pwd)/cmake \
     -DCUSTOM_CONFIG_DIR=$(pwd)/apps/bluetooth/ble/ipro_ble_remote \
     -DCONFIG_APPS=1 \
     -DCROSS_COMPILE=/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-
 
 # 執行建構
-cmake --build build</code></pre>
+cmake --build apps/bluetooth/ble/ipro_ble_remote/build</code></pre>
             </div>
         </section>
 
@@ -249,10 +257,11 @@ cmake --build build</code></pre>
                 <pre><code class="language-bash"># 列出建構產出
 ls -la apps/bluetooth/ble/ipro_ble_remote/build/build_out/
 
-# 應該看到：
-# ipro_ble_remote_IPRO7.bin  - 二進位燒錄檔（檔名包含晶片後綴）
-# ipro_ble_remote.elf        - ELF 執行檔
-# ipro_ble_remote.map        - 記憶體映射檔</code></pre>
+# 應該看到（所有產物檔名都包含晶片後綴）：
+# ipro_ble_remote_IPRO7.bin  - 二進位燒錄檔
+# ipro_ble_remote_IPRO7.elf  - ELF 執行檔
+# ipro_ble_remote_IPRO7.map  - 記憶體映射檔
+# lib/                       - 元件靜態函式庫</code></pre>
             </div>
 
             <div class="alert alert-success">
@@ -266,9 +275,9 @@ ls -la apps/bluetooth/ble/ipro_ble_remote/build/build_out/
 
             <h3>配置檔案結構</h3>
             <ul>
-                <li><strong>根配置：</strong><code>Kconfig</code> - 定義所有可用選項</li>
-                <li><strong>預設配置：</strong><code>kconfigs/*.config</code> - 各功能模組的預設值</li>
-                <li><strong>應用配置：</strong><code>apps/&lt;project&gt;/.config</code> - 應用專屬配置覆蓋</li>
+                <li><strong>根配置：</strong><code>Kconfig</code> - 彙總所有選項定義（透過 <code>source</code> 引入下層 Kconfig）</li>
+                <li><strong>各層選項定義：</strong><code>bsp/Kconfig</code> 與 <code>components/Kconfig</code> - BSP 與中間件元件的選項定義</li>
+                <li><strong>應用配置：</strong><code>apps/&lt;category&gt;/&lt;project&gt;/.config</code> - 每個應用的完整建構配置，建構時據此生成 <code>generated/autoconf.h</code></li>
             </ul>
 
             <h3>常用配置選項</h3>
@@ -287,12 +296,12 @@ CONFIG_FREERTOS_SUPPORT=y
 # 無線功能
 CONFIG_BLUETOOTH_LE_ENABLE=y
 
+# BLE Controller prebuilt 函式庫變體選擇
+CONFIG_BTBLECONTROLLER_LIB="link2"
+
 # 元件啟用
 CONFIG_LWIP=y
-CONFIG_MBEDTLS=y
-
-# 測試自動執行
-CONFIG_TEST_AUTO_RUN=y</code></pre>
+CONFIG_MBEDTLS=y</code></pre>
             </div>
 
             <div class="alert alert-info">
@@ -317,7 +326,7 @@ CONFIG_TEST_AUTO_RUN=y</code></pre>
             <h2>串口監控</h2>
 
             <div class="alert alert-warning">
-                <strong><i class="fas fa-exclamation-triangle"></i> Release SDK 說明：</strong>串口監控工具 <code>serial_monitor.py</code> 未包含在此 Release SDK 套件中。如需串口監控工具，請聯繫 IntelPro 取得完整開發工具套件。您也可以使用第三方串口工具（如 <code>minicom</code>、<code>screen</code> 或 <code>picocom</code>）進行串口監控。
+                <strong><i class="fas fa-exclamation-triangle"></i> Release SDK 說明：</strong>串口監控工具 <code>serial_monitor.py</code> 未包含在此 Release SDK 套件中。如需串口監控工具，請聯繫 IntelPro 取得完整開發工具套件。您也可以使用第三方串口工具（如 <code>minicom</code>、<code>screen</code> 或 <code>picocom</code>）進行串口監控。串口參數：115200 8N1。
             </div>
         </section>
 
@@ -338,9 +347,9 @@ CONFIG_TEST_AUTO_RUN=y</code></pre>
                     <span class="code-block-title">啟動 GDB 除錯</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 使用 RISC-V GDB 除錯
+                <pre><code class="language-bash"># 使用 RISC-V GDB 除錯（ELF 檔名包含晶片後綴）
 /opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-gdb \
-    apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote.elf</code></pre>
+    apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.elf</code></pre>
             </div>
 
             <h3>串口除錯</h3>
@@ -455,6 +464,11 @@ CONFIG_TEST_AUTO_RUN=y</code></pre>
                     <div class="feature-icon"><i class="fas fa-box"></i></div>
                     <h3 class="feature-title">研究範例</h3>
                     <p class="feature-description">探索各種參考應用的實作細節。</p>
+                </a>
+                <a href="{{ '/tools-debugging' | relative_url }}" class="feature-card" style="text-decoration: none;">
+                    <div class="feature-icon"><i class="fas fa-screwdriver-wrench"></i></div>
+                    <h3 class="feature-title">工具與除錯</h3>
+                    <p class="feature-description">了解除錯工具與開發流程。</p>
                 </a>
             </div>
         </section>
