@@ -1,6 +1,6 @@
 ---
 layout: default
-title: WiFi & Networking
+title: Networking
 lang: en
 ---
 
@@ -9,69 +9,67 @@ lang: en
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">Table of Contents</h4>
             <ul class="sidebar-links">
-                <li><a href="#overview" class="sidebar-link">WiFi 6 Overview</a></li>
+                <li><a href="#overview" class="sidebar-link">Overview</a></li>
                 <li><a href="#architecture" class="sidebar-link">Network Architecture</a></li>
-                <li><a href="#wifi-config" class="sidebar-link">WiFi Configuration</a></li>
-                <li><a href="#station-mode" class="sidebar-link">Station Mode</a></li>
-                <li><a href="#ap-mode" class="sidebar-link">Access Point Mode</a></li>
-                <li><a href="#wifi-events" class="sidebar-link">WiFi Event Handling</a></li>
+                <li><a href="#network-config" class="sidebar-link">Network Configuration</a></li>
                 <li><a href="#lwip" class="sidebar-link">lwIP Integration</a></li>
                 <li><a href="#emac" class="sidebar-link">Ethernet (EMAC)</a></li>
                 <li><a href="#mbedtls" class="sidebar-link">Security (mbedTLS)</a></li>
-                <li><a href="#provisioning" class="sidebar-link">Network Provisioning</a></li>
-                <li><a href="#wifi-api" class="sidebar-link">WiFi API Reference</a></li>
+                <li><a href="#http-client" class="sidebar-link">HTTP Client</a></li>
+                <li><a href="#wifi-ipro6" class="sidebar-link">Wi-Fi (IPRO6 Companion)</a></li>
                 <li><a href="#reference-apps" class="sidebar-link">Reference Applications</a></li>
             </ul>
         </nav>
     </aside>
 
     <article class="doc-content">
-        <h1>WiFi & Networking</h1>
-        <div class="alert alert-warning">
-            <strong>&#9888; Release SDK Notice:</strong> IPRO7 does not support WiFi. This page is not applicable to Release SDK v1.0.1.
-        </div>
-        <p>The IPRO SDK provides comprehensive WiFi 6 (802.11ax) wireless connectivity, integrated with the lwIP TCP/IP stack and mbedTLS cryptographic library. This enables a wide range of network applications from simple HTTP clients to complex IoT gateways.</p>
+        <h1>Networking</h1>
+        <p>IPRO7 is the main application SoC in the system, handling application logic, NPU inference, and BLE connectivity. <strong>It does not include a Wi-Fi radio.</strong> The IPRO SDK integrates the lwIP TCP/IP stack and the mbedTLS cryptographic library, providing two paths to network connectivity:</p>
+        <ul>
+            <li><strong>Ethernet (EMAC)</strong> — IPRO7 features a built-in Ethernet MAC controller that pairs with lwIP for wired networking. Release SDK v1.0.1 includes full source code and reference applications.</li>
+            <li><strong>Wi-Fi (via IPRO6 companion chip)</strong> — Wi-Fi 6 (802.11ax) is provided by an IPRO6-series connectivity companion chip, bridged to IPRO7's lwIP stack over an SDIO interface. The complete solution is available separately; please contact the vendor.</li>
+        </ul>
+        <p>The SDK also provides LTE modem PPP dial-up (<code>components/network/lte_modem/</code>, UART AT interface) as a WAN option besides EMAC.</p>
 
         <!-- Overview -->
         <section id="overview">
-            <h2>WiFi 6 Overview</h2>
-            <p>The IPRO7 SoC features an integrated WiFi 6 (802.11ax) radio module combined with a high-performance RISC-V processor, delivering a low-power, high-throughput wireless networking solution.</p>
+            <h2>Overview</h2>
 
             <div class="features-grid" style="margin: 2rem 0;">
-                <div class="feature-card">
-                    <h3 class="feature-title">WiFi 6 (802.11ax)</h3>
-                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
-                        <li>2.4 GHz band support</li>
-                        <li>OFDMA multi-user scheduling</li>
-                        <li>TWT (Target Wake Time) power saving</li>
-                        <li>WPA2 / WPA3-SAE security</li>
-                    </ul>
-                </div>
                 <div class="feature-card">
                     <h3 class="feature-title">TCP/IP Stack</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
                         <li>lwIP lightweight TCP/IP stack</li>
-                        <li>TCP / UDP Socket API</li>
+                        <li>TCP / UDP Socket API (BSD-style)</li>
                         <li>DHCP client and server</li>
-                        <li>DNS / mDNS / SNTP</li>
+                        <li>DNS / SNTP / Ping</li>
+                    </ul>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">Ethernet (EMAC)</h3>
+                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
+                        <li>Built-in Ethernet MAC controller on IPRO7</li>
+                        <li>Wired networking with an external PHY</li>
+                        <li>Automatic IP via DHCP</li>
+                        <li>Reference app included in the Release SDK</li>
                     </ul>
                 </div>
                 <div class="feature-card">
                     <h3 class="feature-title">Security & Encryption</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
-                        <li>mbedTLS (TLS 1.2 / 1.3)</li>
-                        <li>DTLS support (secure UDP)</li>
+                        <li>mbedTLS 2.28 LTS (TLS 1.2 / DTLS 1.2)</li>
                         <li>X.509 certificate management</li>
-                        <li>Hardware crypto acceleration</li>
+                        <li>Hardware-accelerated bignum operations</li>
+                        <li>HTTPS / secure IoT communication</li>
                     </ul>
                 </div>
                 <div class="feature-card">
-                    <h3 class="feature-title">Operating Modes</h3>
+                    <h3 class="feature-title">Wi-Fi (IPRO6 Companion)</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
-                        <li>Station (STA) mode</li>
-                        <li>Access Point (AP) mode</li>
-                        <li>STA + AP concurrent mode</li>
-                        <li>Sniffer / monitor mode</li>
+                        <li>Wi-Fi 6 (802.11ax) provided by the IPRO6 chip</li>
+                        <li>SDIO interface to the IPRO7 host</li>
+                        <li>Data plane bridged into IPRO7's lwIP</li>
+                        <li>Contact the vendor for the complete solution</li>
                     </ul>
                 </div>
             </div>
@@ -80,293 +78,77 @@ lang: en
         <!-- Architecture -->
         <section id="architecture">
             <h2>Network Architecture</h2>
-            <p>The IPRO SDK networking subsystem uses a layered architecture with well-defined interfaces between the hardware and application layers:</p>
+            <p>The IPRO SDK networking subsystem uses a layered architecture. EMAC and the SDIO Wi-Fi bridge share the same lwIP stack, so application code does not need to change when the physical interface differs:</p>
 
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">Network Protocol Stack Architecture</span>
                 </div>
 <pre><code>┌─────────────────────────────────────────────────┐
-│      Application (HTTP, MQTT, CoAP, WebSocket)   │
+│     Application (HTTP Client, MQTT, CoAP, ...)   │
 ├─────────────────────────────────────────────────┤
-│      TLS / DTLS (mbedTLS)                        │
-│      components/crypto/mbedtls/                  │
+│     TLS / DTLS (mbedTLS 2.28 LTS)                │
+│     components/crypto/mbedtls/                   │
 ├─────────────────────────────────────────────────┤
-│      TCP / UDP (lwIP Socket API)                 │
+│     TCP / UDP (lwIP Socket API)                  │
 │    ┌─────┬──────┬───────┬────────┐              │
-│    │DHCP │ DNS  │ mDNS  │  SNTP  │              │
+│    │DHCP │ DNS  │ SNTP  │  Ping  │              │
 │    └─────┴──────┴───────┴────────┘              │
-│      components/network/lwip/                    │
+│     components/network/lwip/                     │
 ├──────────────────────┬──────────────────────────┤
-│  WiFi 6 Driver       │  EMAC Driver             │
-│  (802.11ax)          │  (Ethernet)              │
-│  wifi6_lwip_adapter/ │  bsp/drivers/drv_emac    │
+│  EMAC Driver         │  SDIO Network Bridge      │
+│  (Ethernet)          │  IPRO7 SDH ↔ IPRO6        │
+│  bsp/.../drv_emac.c  │  (contact the vendor)     │
 ├──────────────────────┴──────────────────────────┤
-│      Hardware (RF + MAC / Ethernet PHY)          │
+│  Ethernet PHY        │  IPRO6 Wi-Fi 6 Companion  │
 └─────────────────────────────────────────────────┘</code></pre>
             </div>
 
             <h3>Core Component Paths</h3>
+            <div class="table-wrapper">
             <table>
                 <thead>
                     <tr><th>Component</th><th>SDK Path</th><th>Description</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td>WiFi 6 Driver</td><td><code>components/wireless/wifi6/</code></td><td>802.11ax MAC/PHY driver and management layer</td></tr>
-                    <tr><td>WiFi Manager</td><td><code>components/wireless/wifi6/ipro_fhost/</code></td><td>WiFi connection management API (wifi_mgmr)</td></tr>
-                    <tr><td>WPA Supplicant</td><td><code>components/wireless/wifi6/ipro_wpa_supplicant/</code></td><td>WPA2/WPA3 authentication protocol implementation</td></tr>
-                    <tr><td>lwIP Adapter</td><td><code>components/wireless/wifi6/wifi6_lwip_adapter/</code></td><td>Bridge layer between WiFi and lwIP</td></tr>
                     <tr><td>lwIP Stack</td><td><code>components/network/lwip/</code></td><td>Lightweight TCP/IP protocol stack</td></tr>
-                    <tr><td>lwIP Apps</td><td><code>components/network/lwip/lwip_apps/</code></td><td>Network utilities (ping, etc.)</td></tr>
-                    <tr><td>mbedTLS</td><td><code>components/crypto/mbedtls/</code></td><td>TLS/DTLS cryptographic library</td></tr>
+                    <tr><td>lwIP Utilities</td><td><code>components/network/lwip/lwip_apps/</code></td><td>Network diagnostics tools (ping, etc.)</td></tr>
+                    <tr><td>mbedTLS</td><td><code>components/crypto/mbedtls/</code></td><td>TLS 1.2 / DTLS 1.2 cryptographic library (2.28 LTS)</td></tr>
                     <tr><td>EMAC Driver</td><td><code>bsp/drivers/ipro7_soc/std_drv/src/drv_emac.c</code></td><td>Ethernet MAC controller driver</td></tr>
-                    <tr><td>OS Adapter</td><td><code>components/wireless/wifi6/ipro_os_adapter/</code></td><td>RTOS abstraction layer (FreeRTOS)</td></tr>
+                    <tr><td>HTTP Client</td><td><code>components/http_client/</code></td><td>HTTP/HTTPS client (connection pool + TLS + multipart); not included in Release SDK v1.0.1 — contact the vendor</td></tr>
+                    <tr><td>LTE Modem</td><td><code>components/network/lte_modem/</code></td><td>4G LTE PPP dial-up (UART AT interface)</td></tr>
+                    <tr><td>SDIO Wi-Fi Bridge</td><td><code>components/network/sdiowifi/</code></td><td>IPRO6 companion data-plane bridge component; not included in Release SDK v1.0.1 — contact the vendor for the complete solution</td></tr>
                 </tbody>
             </table>
+            </div>
         </section>
 
-        <!-- WiFi Configuration -->
-        <section id="wifi-config">
-            <h2>WiFi Configuration</h2>
-            <p>Enable WiFi and networking features in your application's <code>.config</code> file:</p>
+        <!-- Network Configuration -->
+        <section id="network-config">
+            <h2>Network Configuration</h2>
+            <p>Enable networking features in your application's <code>.config</code> file:</p>
 
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">.config - WiFi & Network Configuration</span>
+                    <span class="code-block-title">.config - Network Configuration</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-<pre><code class="language-bash"># Enable WiFi 6
-CONFIG_WIFI6=y
-
-# Enable lwIP TCP/IP stack
+<pre><code class="language-bash"># Enable lwIP TCP/IP stack
 CONFIG_COMPONENTS_LWIP_ENABLE=y
 CONFIG_COMPONENTS_LWIP_APP_ENABLE=y
 
-# Enable DHCP server (required for AP mode)
-CONFIG_DHCPD=y
+# Enable ping command (network diagnostics)
+CONFIG_PING=y
+
+# Enable Ethernet (EMAC)
+CONFIG_ETHERNET=y
 
 # Enable mbedTLS encryption support
-CONFIG_COMPONENTS_MBEDTLS_ENABLE=y
-
-# Enable Ethernet (optional)
-CONFIG_ETHERNET=y</code></pre>
+CONFIG_COMPONENTS_MBEDTLS_ENABLE=y</code></pre>
             </div>
 
-            <h3>WiFi iperf Testing (Optional)</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">.config - iperf Throughput Testing</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-<pre><code class="language-bash"># Enable WiFi iperf testing tool
-CONFIG_WIFI_IPERF=y</code></pre>
-            </div>
-        </section>
-
-        <!-- Station Mode -->
-        <section id="station-mode">
-            <h2>Station (STA) Mode</h2>
-            <p>Station mode connects your device to an existing WiFi access point. Below is the complete STA mode connection flow:</p>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">STA Mode - Connect to a WiFi AP</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-<pre><code class="language-c">#include "wifi_mgmr_ext.h"
-#include "wifi_mgmr.h"
-
-/* WiFi event callback */
-static void wifi_event_handler(int event, int code)
-{
-    wifi_conf_t conf = { .country_code = "US" };
-
-    switch (code) {
-        case CODE_WIFI_ON_INIT_DONE:
-            printf("[WiFi] Init done\r\n");
-            wifi_mgmr_init(&amp;conf);
-            break;
-
-        case CODE_WIFI_ON_MGMR_DONE:
-            printf("[WiFi] Manager ready, connecting\r\n");
-            /* Connect to the specified AP */
-            wifi_sta_connect("MySSID",    /* SSID */
-                           "MyPassword",  /* Password */
-                           NULL,          /* BSSID (NULL = auto) */
-                           NULL,          /* AKM (NULL = auto-detect) */
-                           1,             /* PMF config */
-                           0, 0,          /* Frequency (0 = auto scan) */
-                           1);            /* Use DHCP */
-            break;
-
-        case CODE_WIFI_ON_CONNECTED:
-            printf("[WiFi] Connected to AP\r\n");
-            break;
-
-        case CODE_WIFI_ON_GOT_IP:
-            printf("[WiFi] Got IP address\r\n");
-            /* Network communication can begin now */
-            break;
-
-        case CODE_WIFI_ON_DISCONNECT:
-            printf("[WiFi] Disconnected\r\n");
-            break;
-    }
-}</code></pre>
-            </div>
-
-            <h3>Advanced Connection Parameters</h3>
-            <p>Use <code>wifi_mgmr_sta_connect()</code> for finer control over connection behavior:</p>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Advanced Connection Parameters</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-<pre><code class="language-c">wifi_mgmr_sta_connect_params_t params = {0};
-
-/* Basic connection info */
-strncpy(params.ssid, "MySSID", MGMR_SSID_LEN);
-params.ssid_len = strlen("MySSID");
-strncpy(params.key, "MyPassword", MGMR_KEY_LEN);
-params.key_len = strlen("MyPassword");
-
-/* Advanced options */
-params.use_dhcp = 1;              /* Use DHCP */
-params.listen_interval = 3;       /* Beacon listen interval (1-100) */
-params.scan_mode = 1;             /* Quick scan (connect to first match) */
-params.quick_connect = 0;         /* Normal connection mode */
-params.timeout_ms = 15000;        /* Connection timeout (ms) */
-params.pmf_cfg = 1;               /* Enable PMF */
-
-int ret = wifi_mgmr_sta_connect(&amp;params);
-if (ret &lt; 0) {
-    printf("WiFi connect failed: %d\r\n", ret);
-}</code></pre>
-            </div>
-
-            <h3>Static IP Configuration</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Static IP Setup</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-<pre><code class="language-c">/* Set static IP (when DHCP is not used) */
-uint32_t ip   = ipaddr_addr("192.168.1.100");
-uint32_t mask = ipaddr_addr("255.255.255.0");
-uint32_t gw   = ipaddr_addr("192.168.1.1");
-uint32_t dns  = ipaddr_addr("8.8.8.8");
-
-wifi_mgmr_sta_ip_set(ip, mask, gw, dns);
-
-/* Query current IP information */
-uint32_t cur_ip, cur_mask, cur_gw, cur_dns;
-wifi_sta_ip4_addr_get(&amp;cur_ip, &amp;cur_mask, &amp;cur_gw, &amp;cur_dns);</code></pre>
-            </div>
-        </section>
-
-        <!-- AP Mode -->
-        <section id="ap-mode">
-            <h2>Access Point (AP) Mode</h2>
-            <p>AP mode allows the device to act as a WiFi access point, letting other devices connect. This is commonly used for device provisioning or local network communication.</p>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Starting the Access Point</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-<pre><code class="language-c">#include "wifi_mgmr_ext.h"
-
-void start_soft_ap(void)
-{
-    wifi_mgmr_ap_params_t ap_config = {
-        .ssid      = "IPRO_AP",
-        .key       = "12345678",
-        .akm       = "WPA2",
-        .channel   = 6,
-        .use_dhcpd = true,        /* Enable DHCP server */
-        .start     = 100,         /* DHCP pool start offset */
-        .limit     = 50,          /* DHCP pool size */
-        .ap_ipaddr = ipaddr_addr("192.168.4.1"),
-        .ap_mask   = ipaddr_addr("255.255.255.0"),
-        .hidden_ssid = false,     /* Broadcast SSID */
-        .isolation   = false,     /* Allow inter-STA communication */
-    };
-
-    int ret = wifi_mgmr_ap_start(&amp;ap_config);
-    if (ret == 0) {
-        printf("AP started: SSID=%s\r\n", ap_config.ssid);
-    }
-}
-
-/* Stop AP */
-void stop_soft_ap(void)
-{
-    wifi_mgmr_ap_stop();
-}
-
-/* List connected stations */
-void list_connected_stations(void)
-{
-    wifi_sta_basic_info_t info;
-    for (uint8_t i = 0; i &lt; 4; i++) {
-        if (wifi_mgmr_ap_sta_info_get(&amp;info, i) == 0 &amp;&amp; info.is_used) {
-            printf("STA[%d] MAC=%02X:%02X:%02X:%02X:%02X:%02X\r\n",
-                   i, info.sta_mac[0], info.sta_mac[1], info.sta_mac[2],
-                   info.sta_mac[3], info.sta_mac[4], info.sta_mac[5]);
-        }
-    }
-}</code></pre>
-            </div>
-        </section>
-
-        <!-- WiFi Events -->
-        <section id="wifi-events">
-            <h2>WiFi Event Handling</h2>
-            <p>The WiFi subsystem uses asynchronous events to notify the application of state changes. Applications must register an event handler to respond to WiFi state transitions.</p>
-
-            <table>
-                <thead>
-                    <tr><th>Event Code</th><th>Value</th><th>Description</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td><code>CODE_WIFI_ON_INIT_DONE</code></td><td>1</td><td>WiFi hardware initialized, call <code>wifi_mgmr_init()</code></td></tr>
-                    <tr><td><code>CODE_WIFI_ON_MGMR_DONE</code></td><td>2</td><td>WiFi Manager ready, can start connecting</td></tr>
-                    <tr><td><code>CODE_WIFI_ON_CONNECTED</code></td><td>4</td><td>Connected to AP (L2 link established)</td></tr>
-                    <tr><td><code>CODE_WIFI_ON_DISCONNECT</code></td><td>5</td><td>Disconnected from AP</td></tr>
-                    <tr><td><code>CODE_WIFI_ON_GOT_IP</code></td><td>7</td><td>IP address obtained via DHCP</td></tr>
-                    <tr><td><code>CODE_WIFI_ON_GOT_IP6</code></td><td>25</td><td>IPv6 address obtained</td></tr>
-                    <tr><td><code>CODE_WIFI_ON_SCAN_DONE</code></td><td>9</td><td>WiFi scan completed</td></tr>
-                    <tr><td><code>CODE_WIFI_ON_AP_STARTED</code></td><td>11</td><td>AP mode started</td></tr>
-                    <tr><td><code>CODE_WIFI_ON_AP_STOPPED</code></td><td>12</td><td>AP mode stopped</td></tr>
-                    <tr><td><code>CODE_WIFI_ON_AP_STA_ADD</code></td><td>21</td><td>A station connected to our AP</td></tr>
-                    <tr><td><code>CODE_WIFI_ON_AP_STA_DEL</code></td><td>22</td><td>A station disconnected from our AP</td></tr>
-                </tbody>
-            </table>
-
-            <h3>WiFi Scanning</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Scanning for Nearby APs</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-<pre><code class="language-c">/* Start scanning */
-wifi_mgmr_scan_params_t scan = {0};
-scan.channels_cnt = 0;  /* 0 = scan all channels */
-scan.passive = false;   /* Active scan */
-wifi_mgmr_sta_scan(&amp;scan);
-
-/* Read results in CODE_WIFI_ON_SCAN_DONE event handler */
-static void on_scan_complete(void *env, void *arg, wifi_mgmr_scan_item_t *item)
-{
-    if (item-&gt;is_used) {
-        printf("SSID: %-32s  RSSI: %d  CH: %d  Auth: %s\r\n",
-               item-&gt;ssid, item-&gt;rssi, item-&gt;channel,
-               wifi_mgmr_auth_to_str(item-&gt;auth));
-    }
-}
-
-wifi_mgmr_scan_ap_all(NULL, NULL, on_scan_complete);</code></pre>
+            <div class="alert alert-info">
+                <strong>Tip:</strong> The configuration above matches <code>apps/platform/ipro7_demo</code> in the Release SDK — you can use that project's <code>.config</code> as a starting point.
             </div>
         </section>
 
@@ -462,26 +244,27 @@ int udp_send_example(const char *dest_ip, uint16_t port)
             </div>
 
             <h3>lwIP Components</h3>
+            <div class="table-wrapper">
             <table>
                 <thead>
-                    <tr><th>Component</th><th>Description</th><th>Default State</th></tr>
+                    <tr><th>Component</th><th>Description</th><th>How to Enable</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td>DHCP Client</td><td>Automatic IP address assignment</td><td>Enabled by default in STA mode</td></tr>
-                    <tr><td>DHCP Server</td><td>Assigns IPs to STAs in AP mode</td><td>Requires <code>CONFIG_DHCPD=y</code></td></tr>
+                    <tr><td>DHCP Client</td><td>Automatic IP address assignment</td><td>Enabled with lwIP</td></tr>
+                    <tr><td>DHCP Server</td><td>Assigns IPs to devices on the local network</td><td>Requires <code>CONFIG_DHCPD=y</code></td></tr>
                     <tr><td>DNS</td><td>Domain name resolution (<code>gethostbyname()</code>)</td><td>Enabled with lwIP</td></tr>
-                    <tr><td>mDNS</td><td>Local service discovery (Bonjour)</td><td>Optional</td></tr>
                     <tr><td>SNTP</td><td>Network time synchronization</td><td>Optional</td></tr>
-                    <tr><td>Ping</td><td>ICMP connectivity testing</td><td>Requires <code>CONFIG_COMPONENTS_LWIP_APP_ENABLE=y</code></td></tr>
+                    <tr><td>Ping</td><td>ICMP connectivity testing</td><td>Requires <code>CONFIG_PING=y</code></td></tr>
                     <tr><td>IPv6</td><td>IPv6 address support</td><td>Optional</td></tr>
                 </tbody>
             </table>
+            </div>
         </section>
 
         <!-- EMAC -->
         <section id="emac">
             <h2>Ethernet (EMAC)</h2>
-            <p>The IPRO7 features a built-in EMAC (Ethernet MAC) controller for wired Ethernet connectivity. It shares the same lwIP stack with WiFi, making it suitable for gateways, industrial controllers, and other applications requiring wired networking.</p>
+            <p>The IPRO7 features a built-in EMAC (Ethernet MAC) controller. Paired with an external Ethernet PHY, it provides wired networking suitable for gateways, industrial controllers, and other applications requiring a wired connection. This is the recommended primary networking path in Release SDK v1.0.1.</p>
 
             <div class="code-block">
                 <div class="code-block-header">
@@ -521,23 +304,24 @@ void emac_init(void)
 }</code></pre>
             </div>
 
-            <p>To enable Ethernet, set <code>CONFIG_ETHERNET=y</code> in your <code>.config</code>. The driver is located at <code>bsp/drivers/ipro7_soc/std_drv/src/drv_emac.c</code>.</p>
+            <p>To enable Ethernet, set <code>CONFIG_ETHERNET=y</code> in your <code>.config</code>. The driver is located at <code>bsp/drivers/ipro7_soc/std_drv/src/drv_emac.c</code>. The reference application <code>apps/platform/ipro7_demo</code> runs the <code>emac_lwip</code> command automatically at boot to perform the flow above.</p>
         </section>
 
         <!-- mbedTLS -->
         <section id="mbedtls">
             <h2>Security (mbedTLS)</h2>
-            <p>The IPRO SDK integrates the mbedTLS library, providing TLS/DTLS secure communication and various cryptographic algorithms.</p>
+            <p>The IPRO SDK integrates the mbedTLS 2.28 LTS library, providing TLS/DTLS secure communication and various cryptographic algorithms.</p>
 
             <h3>Features</h3>
             <ul>
-                <li><strong>TLS 1.2 / 1.3</strong> - Secure TCP connection encryption</li>
-                <li><strong>DTLS</strong> - Secure UDP communication (for CoAP and similar protocols)</li>
+                <li><strong>TLS 1.2</strong> - Secure TCP connection encryption</li>
+                <li><strong>DTLS 1.2</strong> - Secure UDP communication (for CoAP and similar protocols)</li>
                 <li><strong>X.509 Certificates</strong> - Server and client certificate verification</li>
                 <li><strong>Symmetric Encryption</strong> - AES-128/192/256, ChaCha20-Poly1305</li>
                 <li><strong>Hash Functions</strong> - SHA-256, SHA-384, SHA-512</li>
                 <li><strong>Asymmetric Encryption</strong> - RSA, ECDSA, ECDH (secp256r1, secp384r1)</li>
-                <li><strong>Random Number Generation</strong> - CTR-DRBG (hardware entropy source)</li>
+                <li><strong>Random Number Generation</strong> - CTR-DRBG</li>
+                <li><strong>Hardware Acceleration</strong> - Hardware-accelerated bignum operations (<code>CONFIG_MBEDTLS_BIGNUM_USE_HW=y</code>)</li>
             </ul>
 
             <div class="code-block">
@@ -617,161 +401,107 @@ cleanup:
             </ul>
         </section>
 
-        <!-- Provisioning -->
-        <section id="provisioning">
-            <h2>Network Provisioning</h2>
-            <p>The IPRO SDK supports multiple methods for delivering WiFi credentials to devices:</p>
+        <!-- HTTP Client -->
+        <section id="http-client">
+            <h2>HTTP Client</h2>
 
-            <h3>SoftAP Provisioning</h3>
-            <p>The device starts in AP mode, allowing users to connect from a phone or computer and transmit the target network's SSID and password via HTTP or a custom protocol.</p>
-            <ol>
-                <li>Device starts a SoftAP (e.g., SSID: <code>IPRO_PROV_XXXX</code>)</li>
-                <li>User connects their phone to this AP</li>
-                <li>WiFi credentials are entered via an HTTP interface or custom TCP protocol</li>
-                <li>Device switches to STA mode and connects to the target AP</li>
-            </ol>
+            <div class="alert alert-warning" style="margin-bottom: 2rem;">
+                <strong>&#9888; Release SDK Notice:</strong> The high-level HTTP/HTTPS client component <code>components/http_client/</code> is not included in Release SDK v1.0.1. The content below is for architectural reference only — please contact the vendor if you need this component.
+            </div>
 
-            <h3>BLE Provisioning</h3>
-            <p>WiFi credentials are transmitted over a BLE connection. This is the most common provisioning method for IoT devices. The WiFi event system includes built-in provisioning event codes:</p>
+            <p><code>components/http_client/</code> is a high-level HTTP/HTTPS client component built on top of lwIP and mbedTLS, eliminating the need to manage sockets and TLS handshakes manually:</p>
             <ul>
-                <li><code>CODE_WIFI_ON_PROV_SSID</code> - Provisioning SSID received</li>
-                <li><code>CODE_WIFI_ON_PROV_PASSWD</code> - Provisioning password received</li>
-                <li><code>CODE_WIFI_ON_PROV_CONNECT</code> - Provisioning connect request</li>
-                <li><code>CODE_WIFI_ON_PROV_DISCONNECT</code> - Provisioning disconnect</li>
+                <li><strong>Connection pool</strong> - Reuses TCP/TLS connections, reducing repeated handshake costs</li>
+                <li><strong>TLS support</strong> - HTTPS requests (uses mbedTLS internally)</li>
+                <li><strong>Multipart encoding</strong> - File/form upload support</li>
+                <li><strong>Keep-alive and timeout management</strong> - Tunable</li>
             </ul>
 
-            <h3>SmartConfig</h3>
-            <p>The SSID and password are extracted from specially encoded packets using WiFi sniffer mode. The device enters sniffer mode to listen for broadcast packets while a phone app encodes and broadcasts the WiFi credentials via UDP.</p>
+            <p>In Release SDK v1.0.1, the reference application <code>apps/network/ipro_voice_assistant</code> does not use this component. Instead, it performs TLS/HTTPS communication with its own in-app HTTP/TLS implementation (<code>src/net/iva_http_client.c</code>, <code>src/net/iva_tls.c</code>, also built on lwIP and mbedTLS), which can serve as a reference for implementing your own HTTPS client.</p>
         </section>
 
-        <!-- WiFi API Reference -->
-        <section id="wifi-api">
-            <h2>WiFi API Reference</h2>
-            <p>The following lists the main WiFi Manager (<code>wifi_mgmr</code>) API functions, defined in <code>components/wireless/wifi6/ipro_fhost/include/wifi_mgmr_ext.h</code>.</p>
+        <!-- Wi-Fi via IPRO6 -->
+        <section id="wifi-ipro6">
+            <h2>Wi-Fi (via IPRO6 Companion Chip)</h2>
 
-            <h3>Connection Management</h3>
-            <table>
-                <thead>
-                    <tr><th>Function</th><th>Description</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td><code>wifi_mgmr_init()</code></td><td>Initialize WiFi Manager</td></tr>
-                    <tr><td><code>wifi_sta_connect()</code></td><td>Connect to AP (simple version)</td></tr>
-                    <tr><td><code>wifi_mgmr_sta_connect()</code></td><td>Connect to AP (advanced parameters)</td></tr>
-                    <tr><td><code>wifi_mgmr_sta_quickconnect()</code></td><td>Quick connect to AP</td></tr>
-                    <tr><td><code>wifi_sta_disconnect()</code></td><td>Disconnect from AP</td></tr>
-                    <tr><td><code>wifi_mgmr_sta_autoconnect_enable()</code></td><td>Enable auto-reconnect</td></tr>
-                    <tr><td><code>wifi_mgmr_sta_autoconnect_disable()</code></td><td>Disable auto-reconnect</td></tr>
-                </tbody>
-            </table>
+            <div class="alert alert-warning" style="margin-bottom: 2rem;">
+                <strong>&#9888; Release SDK Notice:</strong> The SDIO Wi-Fi bridge solution (including the IPRO7-side <code>sdiowifi</code> bridge component, the IPRO6-side firmware, and the host-side reference design) is not included in Release SDK v1.0.1. The content below is for architectural reference only — please contact the vendor for the complete solution.
+            </div>
 
-            <h3>Status Queries</h3>
-            <table>
-                <thead>
-                    <tr><th>Function</th><th>Description</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td><code>wifi_mgmr_state_get()</code></td><td>Get overall WiFi state</td></tr>
-                    <tr><td><code>wifi_mgmr_sta_state_get()</code></td><td>Get STA state</td></tr>
-                    <tr><td><code>wifi_mgmr_ap_state_get()</code></td><td>Get AP state</td></tr>
-                    <tr><td><code>wifi_mgmr_sta_rssi_get()</code></td><td>Get current RSSI value</td></tr>
-                    <tr><td><code>wifi_mgmr_sta_channel_get()</code></td><td>Get current channel</td></tr>
-                    <tr><td><code>wifi_mgmr_connection_info()</code></td><td>Get detailed connection info</td></tr>
-                    <tr><td><code>wifi_sta_ip4_addr_get()</code></td><td>Get IPv4 address info</td></tr>
-                    <tr><td><code>wifi_mgmr_sta_get_bssid()</code></td><td>Get connected AP's BSSID</td></tr>
-                </tbody>
-            </table>
+            <p>The IPRO7 itself does not include a Wi-Fi radio. Products requiring Wi-Fi connectivity use a dual-chip architecture: IPRO7 as the main application SoC, paired with an IPRO6-series connectivity companion chip that provides Wi-Fi 6 (802.11ax) connectivity.</p>
 
-            <h3>AP Mode</h3>
-            <table>
-                <thead>
-                    <tr><th>Function</th><th>Description</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td><code>wifi_mgmr_ap_start()</code></td><td>Start AP mode</td></tr>
-                    <tr><td><code>wifi_mgmr_ap_stop()</code></td><td>Stop AP mode</td></tr>
-                    <tr><td><code>wifi_mgmr_ap_sta_info_get()</code></td><td>Get connected STA info</td></tr>
-                    <tr><td><code>wifi_mgmr_ap_sta_delete()</code></td><td>Force-disconnect a STA</td></tr>
-                    <tr><td><code>wifi_mgmr_conf_max_sta()</code></td><td>Set maximum STA connections</td></tr>
-                </tbody>
-            </table>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Dual-Chip Wi-Fi Architecture</span>
+                </div>
+<pre><code>┌───────────────────────────┐        ┌───────────────────────────┐
+│       IPRO7 (Host)        │        │  IPRO6 (Wi-Fi Companion)  │
+│                           │        │                           │
+│  App / NPU / BLE          │  SDIO  │  Wi-Fi 6 (802.11ax)       │
+│  lwIP netif ──── SDH ─────┼────────┼── SDIO network bridge FW  │
+│  (data plane into lwIP)   │ 4-bit  │  (STA assoc / auth)       │
+└───────────────────────────┘        └───────────────────────────┘</code></pre>
+            </div>
 
-            <h3>Scanning</h3>
-            <table>
-                <thead>
-                    <tr><th>Function</th><th>Description</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td><code>wifi_mgmr_sta_scan()</code></td><td>Start WiFi scan</td></tr>
-                    <tr><td><code>wifi_mgmr_sta_scanlist()</code></td><td>Print scan results</td></tr>
-                    <tr><td><code>wifi_mgmr_scan_ap_all()</code></td><td>Get all scan results (callback-based)</td></tr>
-                    <tr><td><code>wifi_mgmr_scan_filter_hidden_ssid()</code></td><td>Configure hidden SSID filtering</td></tr>
-                </tbody>
-            </table>
+            <ul>
+                <li><strong>Physical interface</strong> - IPRO7 acts as the SDIO host using its built-in SDH (SDIO Host) controller; IPRO6 acts as the SDIO slave.</li>
+                <li><strong>Data plane</strong> - Wi-Fi packets are bridged over SDIO into a lwIP network interface on the IPRO7 side, so applications use the same Socket API as EMAC with no changes.</li>
+                <li><strong>Control plane</strong> - Wi-Fi connection management (scanning, authentication, roaming) is handled by the IPRO6-side firmware.</li>
+                <li><strong>SDK component</strong> - The <code>components/network/sdiowifi/</code> SDIO network bridge component is not included in Release SDK v1.0.1; the complete solution (bridge component, IPRO6-side firmware, and host-side reference design) is available from the vendor.</li>
+            </ul>
 
-            <h3>System & Power</h3>
-            <table>
-                <thead>
-                    <tr><th>Function</th><th>Description</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td><code>wifi_mgmr_sta_ps_enter()</code></td><td>Enter power save mode</td></tr>
-                    <tr><td><code>wifi_mgmr_sta_ps_exit()</code></td><td>Exit power save mode</td></tr>
-                    <tr><td><code>wifi_mgmr_wifi_pwr_off()</code></td><td>Power off WiFi</td></tr>
-                    <tr><td><code>wifi_mgmr_wifi_pwr_on()</code></td><td>Power on WiFi</td></tr>
-                    <tr><td><code>wifi_mgmr_set_country_code()</code></td><td>Set country code (affects available channels)</td></tr>
-                    <tr><td><code>wifi_mgmr_mac_set()</code></td><td>Set MAC address</td></tr>
-                    <tr><td><code>wifi_mgmr_tpc_pwr_set()</code></td><td>Set TX power table</td></tr>
-                </tbody>
-            </table>
+            <p>To evaluate the dual-chip Wi-Fi solution (hardware reference design, IPRO6 firmware, production support), please contact the vendor.</p>
         </section>
 
         <!-- Reference Apps -->
         <section id="reference-apps">
             <h2>Reference Applications</h2>
 
-            <h3>WiFi Reference Applications</h3>
+            <h3>Networking Reference Applications</h3>
+            <div class="table-wrapper">
             <table>
                 <thead>
                     <tr><th>Application</th><th>Path</th><th>Description</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td>IPRO6 Demo</td><td><code>apps/ipro6_demo/</code></td><td>WiFi STA connection with event handling</td></tr>
-                    <tr><td>IPRO7 Demo</td><td><code>apps/ipro7_demo/</code></td><td>EMAC Ethernet + lwIP example</td></tr>
+                    <tr><td>IPRO7 Demo</td><td><code>apps/platform/ipro7_demo/</code></td><td>EMAC Ethernet + lwIP example (runs <code>emac_lwip</code> automatically at boot)</td></tr>
+                    <tr><td>Voice Assistant</td><td><code>apps/network/ipro_voice_assistant/</code></td><td>End-to-end networking application: lwIP + EMAC DHCP (or LTE modem PPP) + TLS/HTTPS client</td></tr>
                 </tbody>
             </table>
+            </div>
 
             <h3>Build Commands</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">Building WiFi Example Applications</span>
+                    <span class="code-block-title">Building Networking Example Applications</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-<pre><code class="language-bash"># Build WiFi demo (ensure CONFIG_WIFI6=y in .config)
-make -C apps/ipro6_demo
+<pre><code class="language-bash"># Build IPRO7 Demo (EMAC + lwIP)
+make -C apps/platform/ipro7_demo
 
 # Clean build
-make -C apps/ipro6_demo clean
+make -C apps/platform/ipro7_demo clean
 
 # Output firmware path
-# apps/ipro6_demo/build/build_out/ipro6_demo_IPRO6.bin</code></pre>
+# apps/platform/ipro7_demo/build/build_out/ipro7_demo_IPRO7.bin
+
+# Build Voice Assistant
+make -C apps/network/ipro_voice_assistant</code></pre>
             </div>
 
             <h3>Shell Commands</h3>
-            <p>WiFi example applications typically register the following shell commands, accessible via serial port:</p>
+            <p>The networking example applications register the following shell commands, accessible via serial port:</p>
+            <div class="table-wrapper">
             <table>
                 <thead>
                     <tr><th>Command</th><th>Description</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td><code>wifi_sta_connect &lt;ssid&gt; &lt;password&gt;</code></td><td>Connect to specified AP</td></tr>
-                    <tr><td><code>wifi_sta_disconnect</code></td><td>Disconnect from WiFi</td></tr>
-                    <tr><td><code>wifi_scan</code></td><td>Scan nearby APs</td></tr>
-                    <tr><td><code>wifi_ap_start &lt;ssid&gt; &lt;password&gt;</code></td><td>Start SoftAP</td></tr>
-                    <tr><td><code>ping &lt;ip&gt;</code></td><td>Ping test</td></tr>
-                    <tr><td><code>emac_lwip</code></td><td>Start EMAC + lwIP</td></tr>
+                    <tr><td><code>emac_lwip</code></td><td>Start EMAC + lwIP and obtain an IP via DHCP</td></tr>
+                    <tr><td><code>ping &lt;ip&gt;</code></td><td>Ping connectivity test (requires <code>CONFIG_PING=y</code>)</td></tr>
                 </tbody>
             </table>
+            </div>
         </section>
 
     </article>
