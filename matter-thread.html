@@ -11,9 +11,10 @@ title: Matter & Thread 開發指南
                 <li><a href="#overview" class="sidebar-link">概述</a></li>
                 <li><a href="#matter-architecture" class="sidebar-link">Matter 架構</a></li>
                 <li><a href="#matter-over-thread" class="sidebar-link">Matter over Thread</a></li>
-                <li><a href="#matter-over-wifi" class="sidebar-link">Matter over WiFi</a></li>
+                <li><a href="#matter-over-wifi" class="sidebar-link">Matter over Wi-Fi</a></li>
                 <li><a href="#openthread" class="sidebar-link">OpenThread</a></li>
                 <li><a href="#reference-apps" class="sidebar-link">參考應用</a></li>
+                <li><a href="#npu-embedding-stream" class="sidebar-link">NPU 視訊串流</a></li>
                 <li><a href="#configuration" class="sidebar-link">配置說明</a></li>
                 <li><a href="#dev-workflow" class="sidebar-link">開發流程</a></li>
             </ul>
@@ -22,10 +23,10 @@ title: Matter & Thread 開發指南
 
     <article class="doc-content">
         <div class="alert alert-warning" style="margin-bottom: 2rem;">
-            <strong>⚠ Release SDK 注意事項：</strong>此功能未包含在 Release SDK v1.0.1 中。以下內容僅供參考，相關元件與工具需另行取得。
+            <strong>⚠ Release SDK 注意事項：</strong>此功能未包含在 Release SDK v1.0.1 中。以下內容僅供參考；如需 Matter/Thread 相關元件與工具，請聯絡原廠取得。
         </div>
         <h1>Matter & Thread 開發指南</h1>
-        <p>IPRO SDK 支援 Matter 1.4 統一智慧家庭協定以及 Thread 1.2 低功耗網狀網路，讓您的裝置能夠與 Apple Home、Google Home、Amazon Alexa 等生態系統無縫互通。</p>
+        <p>IPRO SDK 支援 Matter 1.5 統一智慧家庭協定以及 Thread 1.4 低功耗網狀網路，讓您的裝置能夠與 Apple Home、Google Home、Amazon Alexa 等生態系統無縫互通。</p>
 
         <section id="overview">
             <h2>概述</h2>
@@ -34,7 +35,7 @@ title: Matter & Thread 開發指南
             <div class="features-grid" style="margin: 2rem 0;">
                 <div class="feature-card">
                     <div class="feature-icon"><i class="fas fa-house"></i></div>
-                    <h3 class="feature-title">Matter 1.4</h3>
+                    <h3 class="feature-title">Matter 1.5</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
                         <li>CSA 統一智慧家庭標準</li>
                         <li>多生態系統互通</li>
@@ -44,7 +45,7 @@ title: Matter & Thread 開發指南
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon"><i class="fas fa-diagram-project"></i></div>
-                    <h3 class="feature-title">Thread 1.2</h3>
+                    <h3 class="feature-title">Thread 1.4</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
                         <li>IEEE 802.15.4 低功耗網狀網路</li>
                         <li>自我修復拓撲</li>
@@ -57,7 +58,7 @@ title: Matter & Thread 開發指南
                     <h3 class="feature-title">多傳輸層</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
                         <li>Matter over Thread（低功耗）</li>
-                        <li>Matter over WiFi（高頻寬）</li>
+                        <li>Matter over Wi-Fi（需 IPRO6 companion 晶片）</li>
                         <li>BLE 配網通道</li>
                         <li>Border Router 橋接</li>
                     </ul>
@@ -67,7 +68,7 @@ title: Matter & Thread 開發指南
 
         <section id="matter-architecture">
             <h2>Matter 架構</h2>
-            <p>Matter 協定建構在 IP 網路之上，透過 Thread 或 WiFi 作為傳輸層，並使用 BLE 進行裝置配網（Commissioning）：</p>
+            <p>Matter 協定建構在 IP 網路之上，透過 Thread 或 Wi-Fi 作為傳輸層，並使用 BLE 進行裝置配網（Commissioning）。IPRO7 的 Matter 參考設計採用 Matter over Thread；Wi-Fi 傳輸需搭配 IPRO6 companion 晶片（SDIO 介面）：</p>
 
             <div class="protocol-stack">
                 <div class="stack-layer stack-green">
@@ -75,12 +76,12 @@ title: Matter & Thread 開發指南
                     <div class="layer-detail">Lighting / Switch / Sensor</div>
                 </div>
                 <div class="stack-layer stack-cyan">
-                    <div class="layer-name">Matter SDK (1.4)</div>
+                    <div class="layer-name">Matter SDK (1.5)</div>
                     <div class="layer-detail">Data Model / Interaction Model / Commissioning / Security (CASE/PASE)</div>
                 </div>
                 <div class="stack-layer stack-purple">
-                    <div class="layer-name">Thread 1.2 (802.15.4) | WiFi 6 (802.11ax)</div>
-                    <div class="layer-detail">IP 傳輸層</div>
+                    <div class="layer-name">Thread 1.4 (802.15.4)</div>
+                    <div class="layer-detail">IP 傳輸層（Wi-Fi 6 傳輸需經 IPRO6 companion 晶片，SDIO 介面）</div>
                 </div>
                 <div class="stack-layer stack-amber">
                     <div class="layer-name">BLE (Commissioning)</div>
@@ -88,7 +89,7 @@ title: Matter & Thread 開發指南
                 </div>
                 <div class="stack-layer stack-red">
                     <div class="layer-name">IPRO7 Hardware</div>
-                    <div class="layer-detail">802.15.4 Radio / WiFi / BLE Radio</div>
+                    <div class="layer-detail">802.15.4 Radio / BLE Radio</div>
                 </div>
             </div>
 
@@ -147,7 +148,7 @@ title: Matter & Thread 開發指南
                 <li>裝置啟動後進入配網模式，開始 BLE 廣播</li>
                 <li>手機 App 掃描 QR Code 或輸入配對碼</li>
                 <li>通過 PASE（Passcode-Authenticated Session Establishment）建立安全連線</li>
-                <li>App 將 Thread/WiFi 網路憑證傳送至裝置</li>
+                <li>App 將 Thread/Wi-Fi 網路憑證傳送至裝置</li>
                 <li>裝置加入 IP 網路，建立 CASE（Certificate-Authenticated Session Establishment）</li>
                 <li>裝置被加入 Matter Fabric，可以被控制</li>
             </ol>
@@ -158,7 +159,7 @@ title: Matter & Thread 開發指南
             <p>Thread 是為低功耗物聯網裝置設計的網狀網路協定。Matter over Thread 適合電池供電的感測器、開關和燈具等裝置。</p>
 
             <div class="alert alert-info">
-                <strong></strong> Thread 使用 IEEE 802.15.4 無線電，與 WiFi/BLE 使用不同的頻段（2.4 GHz ISM Band，但不同調變方式），IPRO7 同時支援 802.15.4、WiFi 和 BLE 三種無線電。
+                <strong></strong> Thread 使用 IEEE 802.15.4 無線電，與 Wi-Fi/BLE 使用不同的調變方式（同屬 2.4 GHz ISM 頻段）。IPRO7 同時支援 802.15.4 與 BLE 雙無線電；Wi-Fi 連線需搭配 IPRO6 companion 晶片（SDIO 介面）。
             </div>
 
             <h3>Thread 網路拓撲</h3>
@@ -166,7 +167,7 @@ title: Matter & Thread 開發指南
                 <div class="tree-level">
                     <div class="tree-node tree-root">
                         <div class="tree-node-label">Border Router</div>
-                        <div class="tree-node-detail">WiFi/Ethernet <i class="fas fa-arrow-right"></i> Internet</div>
+                        <div class="tree-node-detail">Wi-Fi/Ethernet <i class="fas fa-arrow-right"></i> Internet</div>
                     </div>
                 </div>
                 <div class="tree-connector"></div>
@@ -228,7 +229,7 @@ title: Matter & Thread 開發指南
                     <tr>
                         <td><strong>Border Router</strong></td>
                         <td>FTD</td>
-                        <td>橋接 Thread 與 WiFi/Ethernet 網路</td>
+                        <td>橋接 Thread 與 Wi-Fi/Ethernet 網路</td>
                     </tr>
                 </tbody>
             </table>
@@ -244,8 +245,12 @@ title: Matter & Thread 開發指南
         </section>
 
         <section id="matter-over-wifi">
-            <h2>Matter over WiFi</h2>
-            <p>Matter over WiFi 透過 WiFi 提供直接 IP 連線，適合需要較高頻寬的裝置，無需 Border Router 即可連接家庭網路。</p>
+            <h2>Matter over Wi-Fi</h2>
+            <p>Matter over Wi-Fi 透過 Wi-Fi 提供直接 IP 連線，適合需要較高頻寬的裝置，無需 Border Router 即可連接家庭網路。本節為協定背景知識，協助您在 Thread 與 Wi-Fi 之間做產品定位的取捨。</p>
+
+            <div class="alert alert-warning">
+                <strong>注意：</strong>IPRO7 本身不具備 Wi-Fi 無線電，IPRO SDK 的 Matter 參考設計為 Matter over Thread。如需 Matter over Wi-Fi 產品形態，需透過 IPRO6 companion 晶片（SDIO 介面）提供 Wi-Fi 連線，請聯絡原廠取得相關方案。
+            </div>
 
             <h3>適用場景</h3>
             <ul>
@@ -256,13 +261,13 @@ title: Matter & Thread 開發指南
                 <li>需要快速回應的控制裝置</li>
             </ul>
 
-            <h3>Matter over Thread vs WiFi 比較</h3>
+            <h3>Matter over Thread vs Wi-Fi 比較</h3>
             <table>
                 <thead>
                     <tr>
                         <th>特性</th>
                         <th>Thread</th>
-                        <th>WiFi</th>
+                        <th>Wi-Fi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -404,48 +409,56 @@ ot thread start</code></pre>
             <h2>參考應用</h2>
             <p>IPRO SDK 提供多個 Matter 與 Thread 參考應用程式：</p>
 
-            <h3>Matter Lighting App</h3>
-            <p>實作 Matter On/Off Light 裝置類型，包含開關與亮度控制 Cluster。</p>
+            <h3>Matter Lighting App（可用）</h3>
+            <p>實作 Matter On/Off Light 裝置類型，包含開關與亮度控制 Cluster，以 Matter over Thread（Thread MTD）運作，可完成配網並由生態系統控制。</p>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">建構 Matter Lighting App</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 建構
-make -C apps/matter/lighting-app
+make -C apps/matter/lighting-app/ipro7
 
 # 原始碼位置
-apps/matter/lighting-app/ipro/main.c       # 應用程式進入點
-apps/matter/lighting-app/ipro/defconfig     # 配置檔</code></pre>
+apps/matter/lighting-app/ipro7/main.c       # 應用程式進入點
+apps/matter/lighting-app/ipro7/.config      # 配置檔</code></pre>
             </div>
             <p>主要功能：</p>
             <ul>
                 <li>OnOff Cluster — 開關控制</li>
                 <li>LevelControl Cluster — 亮度調節（0-254）</li>
-                <li>Matter 配網（BLE Commissioning）</li>
-                <li>Vendor ID: 0xFFF1 / Product ID: 0x8000 / Device Type: 256（On/Off Light）</li>
+                <li>Matter 配網（BLE Commissioning），開機後於序列埠列印配網 QR Code 與配對碼</li>
+                <li>Thread MTD 連網（Matter over Thread）</li>
+                <li>Vendor ID: 0xFFF1 / Product ID: 0x8005 / Device Type: 256（On/Off Light）</li>
             </ul>
 
-            <h3>Matter All-Clusters App</h3>
-            <p>包含所有標準 Matter Cluster 的測試應用程式，用於開發與驗證。</p>
+            <div class="alert alert-info">
+                <strong></strong> Matter 應用採用 prebuilt libCHIP 整合模式：CHIP 函式庫（<code>ipro7-&lt;variant&gt;.a</code>）由 GN/Ninja 另行建置，SDK 的 CMake 透過 <code>MATTER_CHIP_ROOT</code> / <code>MATTER_OUT_DIR</code> 匯入 prebuilt .a 與產生的標頭，並非純 CMake in-tree 建構。詳見 SDK 內 <code>docs/matter-ipro7-integration.md</code>。
+            </div>
+
+            <h3>Matter Contact Sensor App（可用）</h3>
+            <p>實作 Matter Contact Sensor 裝置類型（門窗感測器），以 Thread MTD 低功耗模式運作，由 GPIO 輸入觸發開合狀態回報。</p>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">建構 All-Clusters App</span>
+                    <span class="code-block-title">建構 Matter Contact Sensor App</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 建構
-make -C apps/matter/all-clusters-app
+make -C apps/matter/contact-sensor/ipro7
 
 # 原始碼位置
-apps/matter/all-clusters-app/ipro/main.c    # 應用程式進入點
-apps/matter/all-clusters-app/ipro/defconfig  # 配置檔</code></pre>
+apps/matter/contact-sensor/ipro7/main.c     # 應用程式進入點
+apps/matter/contact-sensor/ipro7/.config    # 配置檔</code></pre>
             </div>
             <p>主要功能：</p>
             <ul>
-                <li>Root Node（Device Type: 17）— 包含所有標準 Cluster</li>
-                <li>適合 Matter 認證測試與功能驗證</li>
-                <li>Vendor ID: 0xFFF1 / Product ID: 0x8001</li>
+                <li>BooleanState Cluster — 開合狀態回報（GPIO 輸入觸發）</li>
+                <li>Matter 配網（BLE Commissioning）+ Thread MTD 連網</li>
+                <li>Vendor ID: 0xFFF1 / Product ID: 0x8015 / Device Type: 21（Contact Sensor，0x0015）</li>
             </ul>
+
+            <h3>Matter All-Clusters App（開發中）</h3>
+            <p>包含多種標準 Matter Cluster 的測試應用程式，目前仍在開發中，尚未提供可建構的 IPRO7 移植版本。如需 Matter 認證測試的相關進度與支援，請聯絡原廠。</p>
 
             <h3>Thread FTD CLI</h3>
             <p>Full Thread Device 參考應用，提供完整的 OpenThread CLI 介面，適合 Thread 網路開發與測試。</p>
@@ -455,13 +468,13 @@ apps/matter/all-clusters-app/ipro/defconfig  # 配置檔</code></pre>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 使用 Make
-make -C apps/ipro_thread_ftd_cli
+make -C apps/networking/thread/ipro_thread_ftd_cli
 
 # 使用建構腳本
 ./build_freertos.sh ipro_thread_ftd_cli build
 
 # 建構產出
-apps/ipro_thread_ftd_cli/build/build_out/ipro_thread_ftd_cli_IPRO7.bin</code></pre>
+apps/networking/thread/ipro_thread_ftd_cli/build/build_out/ipro_thread_ftd_cli_IPRO7.bin</code></pre>
             </div>
             <p>主要功能：</p>
             <ul>
@@ -471,31 +484,79 @@ apps/ipro_thread_ftd_cli/build/build_out/ipro_thread_ftd_cli_IPRO7.bin</code></p
                 <li>mbedTLS 硬體加速（SHA-1/SHA-256/SHA-512）</li>
                 <li>Flash: 377KB / OCRAM: 96KB</li>
             </ul>
+            <p>另提供 Thread MTD（Minimal Thread Device / Sleepy End Device）低功耗參考應用 <code>apps/networking/thread/ipro_thread_mtd</code>，適合電池供電的終端裝置開發。</p>
+        </section>
+
+        <section id="npu-embedding-stream">
+            <h2>NPU 嵌入式視訊串流 over Thread（能力展示）</h2>
+
+            <div class="alert alert-warning">
+                <strong>⚠ Release SDK 注意事項：</strong>本節為能力展示。NPU 嵌入式視訊串流參考應用（<code>ipro_embed_*</code>）未包含於 Release SDK v1.0.1，如需評估請聯絡原廠取得。
+            </div>
+
+            <p>IEEE 802.15.4 的實體層速率僅 250 kbps，傳統視訊編碼（MJPEG、H.264）即使在最低位元率下也無法於 Thread 網路串流。IPRO7-AI 改以 NPU 執行 autoencoder 神經網路，將整張 640×320 RGB 影格直接壓縮成 <strong>400 bytes</strong> 的 embedding（壓縮比超過 1500:1），接收端再以 NPU 解碼還原影像——讓視訊串流在標準 Thread mesh 上成為可能。</p>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">端到端管線</span>
+                </div>
+                <pre><code>┌─ 傳送端（IPRO7-AI）─────────────────┐        ┌─ 接收端（IPRO7-AI）─────────────────┐
+│ Camera（DVP, 640×320 RGB）          │        │ NPU Decoder（decoder .blai）        │
+│   → NPU Encoder（encoder .blai）    │ ─────► │   → 還原 640×320 RGB 影格           │
+│   → 400 B embedding / frame         │ Thread │   → USB UVC webcam 輸出至 PC        │
+│   → UDP unicast over Thread         │  UDP   │                                     │
+└─────────────────────────────────────┘        └─────────────────────────────────────┘</code></pre>
+            </div>
+
+            <p>主要設計：</p>
+            <ul>
+                <li><strong>NPU 編解碼</strong> — 編碼器與解碼器模型（<code>.blai</code>）部署於 mfg flash 分割區（與其他 AI 模型相同的<a href="{{ '/ai-npu' | relative_url }}#model-pipeline">部署流程</a>），開機時自 XIP 載入</li>
+                <li><strong>單播傳輸 + 輕量探索</strong> — 接收端以 link-local beacon（ff02::1，每秒 1 封包）廣播自身位址，傳送端學得位址後全程 UDP 單播；視訊流量不經 mesh 多播洪泛，避免 CSMA 通道競爭與訊息緩衝耗盡</li>
+                <li><strong>實測速率</strong> — 標準 Thread 鏈路約 2–3 fps（受 802.15.4 鏈路頻寬限制，非 NPU 運算瓶頸）</li>
+            </ul>
+
+            <p>參考應用（位於 <code>apps/networking/thread/</code>，未含於 release）：</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr><th>應用</th><th>角色</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><code>ipro_embed_sender</code></td><td>攝影機擷取 + NPU 編碼 + Thread UDP 傳送</td></tr>
+                        <tr><td><code>ipro_embed_rx</code></td><td>接收 embedding 並由序列埠輸出（供主機端解碼驗證）</td></tr>
+                        <tr><td><code>ipro_embed_uvc_rx</code></td><td>接收 + NPU 解碼 + USB UVC webcam 輸出至 PC</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>適用場景：電池供電或佈線困難環境的低頻寬視覺監控、Thread mesh 內的影像感測節點、事件觸發的遠端畫面確認。</p>
         </section>
 
         <section id="configuration">
             <h2>配置說明</h2>
 
             <h3>Matter 配置</h3>
-            <p>在應用程式的 <code>defconfig</code> 或 <code>.config</code> 中設定 Matter 相關選項：</p>
+            <p>在應用程式的 <code>.config</code> 中設定 Matter 相關選項（以 lighting-app ipro7 為例）：</p>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">Matter 配置選項</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 啟用 Matter
+                <pre><code class="language-bash"># 啟用 Matter（IPRO7 port）
 CONFIG_MATTER_ENABLE=y
-CONFIG_COMPONENTS_MATTER_ENABLE=y
+CONFIG_MATTER_DEMO_CHIP_IPRO7=y
+CONFIG_MATTER_APP_VARIANT="lighting-app"
 
 # 裝置資訊
 CONFIG_MATTER_VENDOR_ID=0xFFF1          # CSA 測試用 Vendor ID
-CONFIG_MATTER_PRODUCT_ID=0x8000         # 產品 ID
+CONFIG_MATTER_PRODUCT_ID=0x8005         # 產品 ID
 CONFIG_MATTER_DEVICE_TYPE=256           # 裝置類型（256 = On/Off Light）
 
 # 必要依賴
 CONFIG_FREERTOS_SUPPORT=y               # FreeRTOS
 CONFIG_COMPONENTS_MBEDTLS_ENABLE=y      # 安全層
-CONFIG_COMPONENTS_LWIP_ENABLE=y         # IP 網路棧</code></pre>
+CONFIG_LWIP_ENABLE=y                    # IP 網路棧
+CONFIG_LWIP_IPV6=y                      # IPv6（Thread 必要）</code></pre>
             </div>
 
             <h3>Thread / OpenThread 配置</h3>
@@ -540,23 +601,6 @@ CONFIG_OPENTHREAD_LOG_LEVEL=3</code></pre>
                 <strong></strong> 停用未使用的功能可顯著節省記憶體：Commissioner/Joiner 約需 150KB（DTLS/SSL），Border Router 約需 30KB，ECDSA 約需 15KB，SRP Client 約需 20KB。
             </div>
 
-            <h3>Matter over Thread vs WiFi 選擇</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">選擇傳輸層</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Matter over Thread（低功耗裝置）
-CONFIG_THREAD_ENABLE=y
-CONFIG_OPENTHREAD_ENABLE=y
-CONFIG_IEEE802154_ENABLE=y
-# CONFIG_WIFI6 is not set
-
-# Matter over WiFi（高頻寬裝置）
-CONFIG_WIFI6=y
-CONFIG_COMPONENTS_LWIP_ENABLE=y
-# CONFIG_THREAD_ENABLE is not set</code></pre>
-            </div>
         </section>
 
         <section id="dev-workflow">
@@ -565,9 +609,9 @@ CONFIG_COMPONENTS_LWIP_ENABLE=y
             <h3>1. 選擇參考應用</h3>
             <p>根據目標裝置類型選擇合適的參考應用作為起點：</p>
             <ul>
-                <li><strong>照明裝置</strong> — 以 <code>apps/matter/lighting-app</code> 為基礎</li>
-                <li><strong>多功能裝置</strong> — 以 <code>apps/matter/all-clusters-app</code> 為基礎</li>
-                <li><strong>Thread 網路開發</strong> — 以 <code>apps/ipro_thread_ftd_cli</code> 為基礎</li>
+                <li><strong>照明裝置</strong> — 以 <code>apps/matter/lighting-app/ipro7</code> 為基礎</li>
+                <li><strong>感測器裝置</strong> — 以 <code>apps/matter/contact-sensor/ipro7</code> 為基礎</li>
+                <li><strong>Thread 網路開發</strong> — 以 <code>apps/networking/thread/ipro_thread_ftd_cli</code> 為基礎</li>
             </ul>
 
             <h3>2. 建構韌體</h3>
@@ -577,13 +621,13 @@ CONFIG_COMPONENTS_LWIP_ENABLE=y
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 建構 Matter Lighting App
-make -C apps/matter/lighting-app
+make -C apps/matter/lighting-app/ipro7
 
 # 建構 Thread FTD CLI
-make -C apps/ipro_thread_ftd_cli
+make -C apps/networking/thread/ipro_thread_ftd_cli
 
 # 清除建構
-make -C apps/ipro_thread_ftd_cli clean</code></pre>
+make -C apps/networking/thread/ipro_thread_ftd_cli clean</code></pre>
             </div>
 
             <h3>3. 燒錄與測試</h3>
@@ -592,16 +636,16 @@ make -C apps/ipro_thread_ftd_cli clean</code></pre>
                     <span class="code-block-title">燒錄韌體</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 燒錄到開發板
+                <pre><code class="language-bash"># 燒錄到開發板（序列埠名稱依實際裝置而定）
 tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
     --chipname ipro7 \
-    --port /dev/cu.usbserial-2120 \
-    --firmware apps/ipro_thread_ftd_cli/build/build_out/ipro_thread_ftd_cli_IPRO7.bin \
+    --port /dev/cu.usbserial-XXXX \
+    --firmware apps/networking/thread/ipro_thread_ftd_cli/build/build_out/ipro_thread_ftd_cli_IPRO7.bin \
     --baudrate 921600 \
     --flash-pin 0x02
 
 # 連接序列埠監控
-python3 tools/serial_monitor.py /dev/cu.usbserial-2120</code></pre>
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX</code></pre>
             </div>
 
             <h3>4. Matter 配網測試</h3>
