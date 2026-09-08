@@ -1,0 +1,181 @@
+---
+layout: default
+title: Windows Installation & Updates
+---
+
+<div class="doc-layout">
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <ul class="sidebar-links">
+                <li><a href="#overview" class="sidebar-link">Package and versions</a></li>
+                <li><a href="#package-contents" class="sidebar-link">Files and installation layout</a></li>
+                <li><a href="#requirements" class="sidebar-link">Before installation</a></li>
+                <li><a href="#install-modes" class="sidebar-link">Choose an installation mode</a></li>
+                <li><a href="#full-install" class="sidebar-link">First full installation</a></li>
+                <li><a href="#extension-only" class="sidebar-link">Update only the extension</a></li>
+                <li><a href="#sdk-only" class="sidebar-link">Update only the SDK</a></li>
+                <li><a href="#settings" class="sidebar-link">Tool paths and settings</a></li>
+                <li><a href="#verify" class="sidebar-link">Verify the installation</a></li>
+                <li><a href="#troubleshooting" class="sidebar-link">Troubleshooting and rollback</a></li>
+            </ul>
+        </nav>
+    </aside>
+    <article class="doc-content">
+        <h1>Windows Installation & Updates</h1>
+<p>Set up a development environment with the full installer, or update the SDK and VS Code extension independently.</p>
+
+        <section id="overview">
+            <h2>Package and versions</h2>
+<p>The Windows installer assembles the SDK, build tools and VS Code integration for firmware development. Installer, SDK and extension versions are managed independently.</p>
+<div class="table-wrapper">
+<table>
+<thead><tr><th>Component</th><th>Version covered</th><th>Purpose</th></tr></thead>
+<tbody>
+<tr><td>Windows Installer</td><td>3.3.0</td><td>Install the SDK, extension and Windows tools</td></tr>
+<tr><td>IPRO SDK</td><td>V1.2.1 (2026-09-08)</td><td>Firmware sources, headers, prebuilt libraries and examples</td></tr>
+<tr><td>VS Code Extension</td><td>3.3.0 (2026-09-09)</td><td>Editor integration for projects, builds, flashing and analysis</td></tr>
+<tr><td>IntelProCube</td><td>0.7.0</td><td>GUI flashing, command-line flashing and OTA tools</td></tr>
+</tbody>
+</table>
+</div>
+<div class="alert alert-info">These instructions describe the 3.3.0 installer, VSIX and package manifest. Obtain the corresponding delivery files and SHA256SUMS.txt from INTELPRO; availability and supported platforms follow the delivery notice.</div>
+        </section>
+
+        <section id="package-contents">
+            <h2>Files and installation layout</h2>
+<div class="table-wrapper">
+<table>
+<thead><tr><th>File</th><th>Use</th></tr></thead>
+<tbody>
+<tr><td><code>IPRO-SDK-Setup-3.3.0.exe</code></td><td>Windows wizard with three installation modes</td></tr>
+<tr><td><code>ipro-sdk-extension-win32-x64-3.3.0.vsix</code></td><td>Windows x64 VS Code</td></tr>
+<tr><td><code>ipro-sdk-extension-win32-arm64-3.3.0.vsix</code></td><td>Windows ARM64 VS Code</td></tr>
+<tr><td>Standalone SDK archive / folder</td><td>Add an SDK version without installing the complete Windows tool environment</td></tr>
+</tbody>
+</table>
+</div>
+<pre><code class="language-text">C:\IPRO\
+  sdk\IPRO-IPRO7-SDK-V1.2.1\
+  extension\
+  toolchain\riscv_ipro7_win32\
+  tools\cmake\
+  tools\ninja\
+  tools\python\
+  IntelProCube\
+  openocd\
+  installer</code></pre>
+<p>The full package includes CMake 3.30.5, Ninja 1.12.1, Python 3.12.7 and pyserial 3.5. Tools omitted from the standalone SDK archive can be supplied by the full installer.</p>
+        </section>
+
+        <section id="requirements">
+            <h2>Before installation</h2>
+<ul>
+    <li>Use the package for your Windows x64 or ARM64 host. Select the VSIX architecture for the Windows host running VS Code, not the target RISC-V chip. An ARM64 package does not imply hardware validation of every bundled tool.</li>
+    <li>VS Code 1.102 or later is required. A full installation can download standard VS Code from Microsoft if it is missing; that step requires internet access. Extension-only requires VS Code to be installed first.</li>
+    <li>Choose a writable installation root, defaulting to C:\IPRO. Allow roughly 2 GB for the full environment plus extraction and build space; the SDK alone is about 333 MB.</li>
+    <li>Stop Build, Flash, Debug and Monitor operations. Back up SDK edits, projects and settings before using an existing destination; use a new SDK directory for an upgrade.</li>
+    <li>Installation and the first build do not require a board; flashing and serial validation require the board and a compatible Probe / UART.</li>
+</ul>
+        </section>
+
+        <section id="install-modes">
+            <h2>Choose an installation mode</h2>
+<div class="table-wrapper">
+<table>
+<thead><tr><th>Need / mode</th><th>Changes</th><th>Key behavior</th></tr></thead>
+<tbody>
+<tr><td>Full installation</td><td>SDK, extension, GCC, CMake, Ninja, Python, IntelProCube and bundled OpenOCD</td><td>Optional tasks configure paths, install VS Code and update user PATH; existing SDK files may be overwritten</td></tr>
+<tr><td>Extension only</td><td>Copy and install VSIX; preserve the SDK, tools, settings and PATH</td><td>Requires an existing standard VS Code installation; reload the window afterwards</td></tr>
+<tr><td>SDK only</td><td>Copy the SDK bundled in the EXE to a new version directory</td><td>Rejects existing destinations; optionally set only the user-level ipro.sdkRoot, unchecked by default</td></tr>
+</tbody>
+</table>
+</div>
+<figure>
+<img src="{{ '/assets/images/installation/component-modes-3.3.0.png' | relative_url }}" alt="IPRO 3.3.0 installation mode selection" loading="lazy" style="display:block;max-width:100%;height:auto;">
+<figcaption>The 3.3.0 wizard offers Full, Extension only and SDK only.</figcaption>
+</figure>
+        </section>
+
+        <section id="full-install">
+            <h2>First full installation</h2>
+<ol>
+    <li>Run IPRO-SDK-Setup-3.3.0.exe and select an installation root such as C:\IPRO, outside individual SDK projects.</li>
+    <li>Choose Full installation on the Choose installation mode page.</li>
+    <li>Select the optional tasks for VS Code, the IPRO extension, ipro.* tool paths and user PATH. Tool paths are generated from the selected installation root.</li>
+    <li>Review the destination and tasks on Ready to Install, then select Install. Existing SDK files with matching paths may be overwritten.</li>
+    <li>Wait for copying and post-install steps. If Some steps did not complete appears, check installer\updates\3.3.0\install.log.</li>
+    <li>Completely close and restart existing VS Code and terminal processes to pick up PATH changes. Open C:\IPRO\sdk\IPRO-IPRO7-SDK-V1.2.1.</li>
+    <li>Trust the SDK workspace after confirming its source, then run IPRO: Open Control Center and IPRO Setup: Run Diagnostics.</li>
+</ol>
+        </section>
+
+        <section id="extension-only">
+            <h2>Update only the extension</h2>
+<p>Choose Extension only in the EXE, or install the VSIX directly:</p>
+<ol>
+    <li>Keep the previous VSIX and stop builds, flashing and monitoring.</li>
+    <li>In the target VS Code window, press Ctrl+Shift+X → … → Install from VSIX… and choose the 3.3.0 package for the host architecture.</li>
+    <li>Run Developer: Reload Window. Search for @installed IPRO in Extensions and check the version of ipro.ipro-sdk-extension.</li>
+    <li>Run Diagnostics and check the SDK root and tool settings. With Profiles or remote windows, verify that the VSIX was installed in the intended environment.</li>
+</ol>
+<pre><code class="language-powershell">code --install-extension .\ipro-sdk-extension-win32-x64-3.3.0.vsix</code></pre>
+<p>VSIX installation does not copy the SDK or toolchain. To roll back, reinstall a compatible previous VSIX and reload the window.</p>
+        </section>
+
+        <section id="sdk-only">
+            <h2>Update only the SDK</h2>
+<p>SDK only in the EXE uses its bundled SDK. Choose a new directory name under &lt;installation root&gt;\sdk\&lt;new name&gt;. An existing directory is rejected even if empty.</p>
+<figure>
+<img src="{{ '/assets/images/installation/sdk-directory-3.3.0.png' | relative_url }}" alt="SDK-only new version directory" loading="lazy" style="display:block;max-width:100%;height:auto;">
+<figcaption>SDK-only creates a new directory and preserves the old SDK.</figcaption>
+</figure>
+<p>Set only ipro.sdkRoot… is unchecked by default. Selecting it updates only the user-level SDK root; workspace settings can still take precedence. Use the extension component updater for an external ZIP, extracted folder or Git source.</p><a href="{{ '/en/vscode-extension' | relative_url }}#component-updates">See the VS Code component update workflow</a>
+        </section>
+
+        <section id="settings">
+            <h2>Tool paths and settings</h2>
+<p>For the default C:\IPRO installation, the core settings are shown below. Substitute your installation path and merge the relevant fields into existing settings.</p>
+<pre><code class="language-json">{
+  "ipro.sdkRoot": "C:\\IPRO\\sdk\\IPRO-IPRO7-SDK-V1.2.1",
+  "ipro.toolchainPath": "C:\\IPRO\\toolchain\\riscv_ipro7_win32\\bin\\riscv64-unknown-elf-",
+  "ipro.cmakePath": "C:\\IPRO\\tools\\cmake\\bin\\cmake.exe",
+  "ipro.ninjaPath": "C:\\IPRO\\tools\\ninja\\ninja.exe",
+  "ipro.pythonPath": "C:\\IPRO\\tools\\python\\python.exe",
+  "ipro.flashToolPath": "C:\\IPRO\\IntelProCube",
+  "ipro.generator": "ninja"
+}</code></pre>
+<p>ipro.toolchainPath is the compiler prefix including its trailing hyphen. Installer settings target standard VS Code user settings; workspace .vscode/settings.json or another Profile can override them. Check the effective SDK root in Diagnostics after switching.</p>
+        </section>
+
+        <section id="verify">
+            <h2>Verify the installation</h2>
+<pre><code class="language-powershell">&amp; "C:\IPRO\tools\cmake\bin\cmake.exe" --version
+&amp; "C:\IPRO\tools\ninja\ninja.exe" --version
+&amp; "C:\IPRO\tools\python\python.exe" -c "import serial; print(serial.__version__)"
+&amp; "C:\IPRO\toolchain\riscv_ipro7_win32\bin\riscv64-unknown-elf-gcc.exe" --version</code></pre>
+<ul>
+    <li>The SDK root must contain CMakeLists.txt, apps and bsp.</li>
+    <li>Run IPRO: Go to Project…, select ipro7_demo, then run IPRO: Build.</li>
+    <li>Check the actual compiler path and build result in Terminal. The expected BIN is apps\platform\ipro7_demo\build\build_out\ipro7_demo_IPRO7.bin.</li>
+    <li>When using hardware, verify the UART, chip variant, partition table and monitor baud rate. A successful build does not mean the board has been flashed or validated.</li>
+</ul><a href="{{ '/en/vscode-extension' | relative_url }}#workflow">See build, flash and monitor instructions</a>
+        </section>
+
+        <section id="troubleshooting">
+            <h2>Troubleshooting and rollback</h2>
+<div class="table-wrapper">
+<table>
+<thead><tr><th>Symptom</th><th>Action</th></tr></thead>
+<tbody>
+<tr><td>Missing extension / post-install warning</td><td>Read installer\updates\3.3.0\install.log, check the VS Code location and Profile, then install the VSIX manually.</td></tr>
+<tr><td>Settings cannot be parsed</td><td>Keep the original file, check installer\ipro-settings.json and look for .ipro-backup files next to settings.json before merging settings.</td></tr>
+<tr><td>Old SDK still selected</td><td>Check the opened folder, workspace ipro.sdkRoot and user settings, then run Diagnostics.</td></tr>
+<tr><td>rules.ninja: lexing error</td><td>Check that ipro.cmakePath / ipro.ninjaPath select the packaged tools; clean and rebuild after correcting them.</td></tr>
+<tr><td>SDK update failed / cancelled</td><td>Keep the update logs and retry using a new directory name; continue using the old SDK until the new one is verified.</td></tr>
+</tbody>
+</table>
+</div>
+<p>To roll back the SDK, reopen the retained version and check its tool paths. Manage individual SDK directories separately; uninstalling the full package is not an SDK rollback and does not also remove VS Code or the extension.</p>
+        </section>
+    </article>
+</div>

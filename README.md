@@ -7,6 +7,17 @@ The site is bilingual — Traditional Chinese pages live at the repository root,
 English pages under `en/`. Every `*.html` page at the root has a same-named
 counterpart in `en/`.
 
+The current documentation baseline is **IPRO-IPRO7-SDK-V1.2.1**, released
+**2026-09-08** (`VERSION.txt`). Verify package contents and application `.config`
+files when updating availability claims; the package README may describe tools
+or examples that are distributed separately.
+
+Windows setup and editor integration cover **Installer / Extension 3.3.0**.
+See `windows-installation.html` for full and component-only installation,
+and `vscode-extension.html` for the Control Center and development workflow.
+The full Windows installer and the standalone SDK archive have different
+contents; keep their tool-availability descriptions explicit.
+
 ## 📁 Structure
 
 ```

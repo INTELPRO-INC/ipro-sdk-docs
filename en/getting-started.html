@@ -16,7 +16,7 @@ lang: en
                 <li><a href="#first-build" class="sidebar-link">First Build</a></li>
                 <li><a href="#kconfig" class="sidebar-link">Configuration System</a></li>
                 <li><a href="#flashing" class="sidebar-link">Flashing Firmware (Release Notice)</a></li>
-                <li><a href="#serial-monitor" class="sidebar-link">Serial Monitor (Release Notice)</a></li>
+                <li><a href="#serial-monitor" class="sidebar-link">Serial Monitor</a></li>
                 <li><a href="#board-testing" class="sidebar-link">Board Testing (Release Notice)</a></li>
                 <li><a href="#debugging" class="sidebar-link">Debugging</a></li>
                 <li><a href="#troubleshooting" class="sidebar-link">Troubleshooting</a></li>
@@ -30,8 +30,10 @@ lang: en
         <p>This guide will walk you through setting up the IPRO SDK Release package and building your first application.</p>
 
         <div class="alert alert-info">
-            <strong><i class="fas fa-info-circle"></i> Release SDK Notice:</strong> This is the Release version of the SDK package. Some development tools (flash tool, serial monitor, board test scripts, VS Code extension) are not included. To obtain the full development tool suite, please contact IntelPro.
+            <strong><i class="fas fa-info-circle"></i> Release SDK Notice:</strong> This is the Release version of the SDK package. Some development tools (flash tool, board test scripts, VS Code extension) are not included. To obtain the full development tool suite, please contact IntelPro.
         </div>
+
+        <div class="alert alert-info"><strong>Full Windows installer:</strong> Installer 3.3.0 provides SDK V1.2.1, extension 3.3.0, GCC, CMake, Ninja, Python, IntelProCube and bundled OpenOCD. The standalone SDK archive has a smaller scope; statements below about omitted tools refer to that archive. <a href="{{ '/en/windows-installation' | relative_url }}">Installation and independent updates</a> · <a href="{{ '/en/vscode-extension' | relative_url }}">Extension guide</a></div>
 
         <section id="prerequisites">
             <h2>Prerequisites</h2>
@@ -95,8 +97,9 @@ python3 --version</code></pre>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># Extract the SDK release package
-tar xzf ipro_sdk_release_*.tar.gz
-cd ipro_sdk</code></pre>
+# Enter the extracted release directory
+cd IPRO-IPRO7-SDK-V1.2.1
+cat VERSION.txt</code></pre>
             </div>
 
             <h3>2. Setup Toolchain</h3>
@@ -127,55 +130,39 @@ ls /opt/toolchain/riscv_ipro7/bin/
 
         <section id="directory-structure">
             <h2>SDK Directory Structure</h2>
-            <p>Understanding the SDK directory layout helps you quickly locate files and understand the project architecture.</p>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">SDK Directory Structure</span>
-                </div>
-                <pre><code>ipro_sdk/
-├── apps/                         # Applications (each with .config + CMakeLists.txt)
-│   ├── bluetooth/                # Bluetooth applications
-│   │   ├── ble/                  # BLE applications
-│   │   │   ├── ipro_ble_remote/      # BLE Remote (GATT + OTA)
-│   │   │   ├── ipro_ble_transparent/ # BLE transparent data bridge
-│   │   │   ├── ipro_ble_img_capture/ # BLE image capture and transfer
-│   │   │   └── ipro_throughput_test/ # BLE throughput test
-│   │   └── le_audio/             # LE Audio applications
-│   │       ├── ipro_le_audio_headset/    # GAF/BAP LE Audio headset
-│   │       ├── ipro_le_audio_bis_source/ # BIS broadcast source
-│   │       └── ipro_le_audio_bis_sink/   # BIS broadcast receiver
-│   ├── multimedia/               # Multimedia applications
-│   │   └── ipro_agora_sentino/   # AI voice chat gateway (Ethernet/USB NCM connectivity)
-│   ├── network/                  # Networking applications
-│   │   └── ipro_voice_assistant/ # AI voice assistant (Ethernet connectivity)
-│   └── platform/                 # Platform applications
-│       └── ipro7_demo/           # Comprehensive platform demo
-│
-├── bsp/                          # Board Support Package (HAL, drivers, linker scripts)
-│   ├── board/                    # Board configurations
-│   ├── drivers/                  # Peripheral drivers
-│   └── hal/                      # Hardware Abstraction Layer
-│
-├── components/                   # Shared middleware
-│   ├── wireless/bluetooth/       # BLE stack (Zephyr-based Host source + prebuilt linkN controller libs)
-│   ├── wireless/rf/              # RF driver (prebuilt library)
-│   ├── os/freertos/              # FreeRTOS RTOS
-│   ├── network/                  # Network stack (lwIP)
-│   ├── crypto/                   # Crypto components (mbedTLS)
-│   ├── fs/                       # File systems (LittleFS, FatFS)
-│   ├── cherryusb/                # USB device/host stack
-│   └── 3rdparty/liblc3/          # LC3 codec (prebuilt library)
-│
-├── cmake/                        # Build system (toolchain.cmake auto-detects GCC)
-├── tools/                        # Development tools
-│   ├── cmake/                    # Bundled CMake (Linux x86-64)
-│   └── script/                   # Helper scripts
-│
-├── build_freertos.sh             # FreeRTOS build script
-├── project.build                 # Project build configuration
-└── Kconfig                       # Root Kconfig configuration</code></pre>
-            </div>
+            <pre><code class="language-text">IPRO-IPRO7-SDK-V1.2.1/
+├── apps/
+│   ├── bluetooth/ble/
+│   │   ├── ipro_ble_remote/
+│   │   ├── ipro_ble_transparent/
+│   │   ├── ipro_ble_hid_keyboard/
+│   │   └── ipro_throughput_test/
+│   ├── bluetooth/le_audio/ipro_le_audio_headset/
+│   ├── multimedia/ipro_pdm_mic_demo/
+│   ├── platform/
+│   │   ├── ipro7_demo/
+│   │   ├── ipro7_sdio_wifi/
+│   │   └── ipro7ai_evk_demo/
+│   └── test/
+├── bsp/
+├── components/
+│   ├── wireless/bluetooth/
+│   ├── network/
+│   ├── ai/lib/libai.a
+│   ├── audio/
+│   ├── os/
+│   └── ...
+├── cmake/
+├── tools/
+│   ├── android/
+│   ├── script/
+│   └── serial_monitor.py
+├── build_freertos.sh
+├── project.build
+├── CMakeLists.txt
+├── Kconfig
+├── VERSION.txt
+└── PREBUILT-ARCHIVES-STRIPPED.txt</code></pre>
         </section>
 
         <section id="freertos-quickstart">
@@ -298,7 +285,13 @@ CONFIG_FREERTOS_SUPPORT=y
 CONFIG_BLUETOOTH_LE_ENABLE=y
 
 # BLE controller prebuilt library variant selection
-CONFIG_BTBLECONTROLLER_LIB="link2"
+CONFIG_BT_CTLR_IPRO=y
+CONFIG_BT_HOST_IPRO_V44=y
+CONFIG_IPRO_BLE_CTLR_LIB="link2"
+CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"
+CONFIG_IPRO_BLE_CTLR_CFG_DBG=n
+CONFIG_BT_CONN=2
+CONFIG_EM_SIZE=32
 
 # Component enables
 CONFIG_LWIP=y
@@ -324,11 +317,13 @@ CONFIG_MBEDTLS=y</code></pre>
         </section>
 
         <section id="serial-monitor">
+<p>On Windows, use the extension IPRO: Serial Monitor command with its built-in serialport console. The Python script below is for POSIX command-line environments.</p>
             <h2>Serial Monitor</h2>
-
-            <div class="alert alert-warning">
-                <strong><i class="fas fa-exclamation-triangle"></i> Release SDK Notice:</strong> The serial monitor tool <code>serial_monitor.py</code> is not included in this Release SDK package. To obtain the serial monitor tool, please contact IntelPro for the full development tool suite. You can also use third-party serial terminal tools (e.g., <code>minicom</code>, <code>screen</code>, or <code>picocom</code>) to monitor board output. Serial settings: 115200 8N1.
-            </div>
+            <p><code>tools/serial_monitor.py</code> is included in V1.2.1. It uses Python standard-library <code>termios</code> and <code>fcntl</code> on POSIX systems (Linux/macOS), and does not run directly in Windows Python. Use a Windows serial terminal or an environment with access to the serial device.</p>
+            <pre><code class="language-bash">python3 tools/serial_monitor.py /dev/ttyUSB0 --baud 115200 --timeout 30
+# macOS
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 115200 --timeout 30</code></pre>
+            <p>Use the baud rate configured by the application. This script accepts 9600, 19200, 38400, 57600, 115200 and 230400 baud.</p>
         </section>
 
         <section id="board-testing">
@@ -370,7 +365,7 @@ CONFIG_MBEDTLS=y</code></pre>
 
             <h3>macOS Serial Port Issues (General Knowledge)</h3>
             <div class="alert alert-info">
-                <strong>Note:</strong> This Release SDK does not include <code>serial_monitor.py</code>. The tips below are general guidance for using external serial terminal tools.
+                <strong>Note:</strong> V1.2.1 includes <code>tools/serial_monitor.py</code>. These troubleshooting tips also apply to external serial terminals.
             </div>
             <div class="table-wrapper">
                 <table>
@@ -439,7 +434,7 @@ CONFIG_MBEDTLS=y</code></pre>
                         </tr>
                         <tr>
                             <td>CI CMake does not work on macOS</td>
-                            <td>The CMake in <code>tools/cmake/</code> is a Linux x86-64 ELF binary. On macOS, install CMake from the system package manager.</td>
+                            <td>V1.2.1 requires a separately installed CMake 3.19+ on PATH; use a build for your host OS.</td>
                         </tr>
                     </tbody>
                 </table>

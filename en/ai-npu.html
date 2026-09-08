@@ -25,13 +25,13 @@ lang: en
     <article class="doc-content">
         <h1>AI & NPU</h1>
         <div class="alert alert-warning">
-            <strong>&#9888; Release SDK Notice:</strong> AI/NPU components are only partially included in Release SDK v1.0.1 (ai/ source code available, ISP algorithm is prebuilt library). Full AI development tools must be obtained separately.
+            <strong>Release SDK Notice:</strong> V1.2.1 includes the prebuilt AI runtime <code>components/ai/lib/libai.a</code>, public headers, and AI integration examples. AI implementation sources, <code>.blai</code> model files and conversion tools are not included. ISP algorithms are also supplied as a prebuilt library.
         </div>
         <p>IPRO7AI features a built-in 0.1 TOPS Neural Processing Unit (NPU) designed for edge AI inference. Combined with the IPROAI inference framework and YOLOv8 post-processing engine, it enables object detection, image classification, and keyword spotting at low power consumption.</p>
 
         <section id="overview">
             <h2>Overview</h2>
-            <p>The IPRO SDK provides a complete AI development toolchain, from model loading to inference output:</p>
+            <p>The IPRO SDK provides AI inference APIs and integration examples; models and conversion tools are supplied separately:</p>
 
             <div class="features-grid" style="margin: 2rem 0;">
                 <div class="feature-card">
@@ -216,33 +216,19 @@ vPortFree(buf);</code></pre>
 
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">Framework Source Structure</span>
+                    <span class="code-block-title">Framework Package Structure</span>
                 </div>
-                <pre><code>components/ai/
-├── iproai_def.h                    # Public type definitions (layers, activations, results)
-├── iproai_def_internal.h           # Internal debug flags
-├── Kconfig                         # CONFIG_AI_SUPPORT, CONFIG_AI_DEBUG, CONFIG_AI_CPU_NN_OPS ...
-├── CMakeLists.txt                  # Build config (supports prebuilt .a)
+                <pre><code class="language-text">components/ai/
+├── CMakeLists.txt
+├── iproai_def.h
+├── iproai_def_internal.h
+├── lib/libai.a
 └── src/
-    ├── core/
-    │   ├── include/iproai_core.h   # Core API (create, load, compute, free)
-    │   └── iproai_core.c           # Core implementation (model load + dispatch, always compiled)
-    └── inst/
-        ├── include/                # Headers matching each .c (with detect/ subdir)
-        ├── iproai_inst_npu.c            # NPU instruction execution
-        ├── iproai_inst_npu_ops.c        # NPU operator implementations
-        ├── iproai_inst_cpu.c            # CPU layer execution
-        ├── iproai_inst_cpu_ops.c        # CPU operators (generic, CONFIG_AI_CPU_NN_OPS)
-        ├── iproai_inst_cpu_ops_yolo.c   # CPU operators (YOLO-specific)
-        ├── iproai_inst_cpu_activation.c # CPU activation functions
-        ├── iproai_inst_process.c        # Inference scheduler
-        ├── iproai_inst_postprocess.c    # Post-processing
-        ├── iproai_inst_util.c           # Shared utilities
-        ├── iproai_nmsis_ops.c           # NMSIS DSP accelerated ops
-        ├── iproai_riscv_common.c        # RISC-V shared NN functions
-        └── detect/
-            ├── yolov8_detect.c             # YOLOv8 6-output post-processing
-            └── yolov8_person_pet_detect.c  # Person+Pet detection wrapper</code></pre>
+    ├── core/include/iproai_core.h
+    └── inst/include/
+        ├── audio/
+        ├── detect/
+        └── ...</code></pre>
             </div>
 
             <h3>Core API</h3>
@@ -282,7 +268,7 @@ IPROAI_Status_e iproai_setResultCB(iproai_model_hdl_t hdl, iproai_inference_cb c
 /* Free model resources */
 IPROAI_Status_e iproai_free(iproai_model_hdl_t hdl);</code></pre>
             </div>
-            <p>Note: <code>iproai_load_model_from_file()</code>, declared in the header, is currently not implemented (it always returns <code>IPROAI_STATUS_INVALID_INPUT</code>). Read the model into memory via filesystem APIs first, then load it with <code>iproai_load_model_from_buffer()</code> — exactly as in the SD card example above.</p>
+            <p>The examples load the model using filesystem APIs, then pass its buffer to <code>iproai_load_model_from_buffer()</code>. Use the same approach with a model supplied separately.</p>
 
             <h3>Kconfig Options</h3>
 
@@ -291,24 +277,14 @@ IPROAI_Status_e iproai_free(iproai_model_hdl_t hdl);</code></pre>
                     <span class="code-block-title">.config Settings</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># Enable AI/NPU support (automatically enables PSRAM)
-CONFIG_AI_SUPPORT=y
-
-# Enable AI debug output
-CONFIG_AI_DEBUG=y
-
-# CPU NN operators (default on; disable for pure-NPU models to save ~24KB flash)
-CONFIG_AI_CPU_NN_OPS=y
-
-# Use prebuilt static library (no source code needed)
-CONFIG_AI_PREBUILT=y
-CONFIG_AI_PREBUILT_PATH="components/ai/prebuilt/libai.a"</code></pre>
+                <pre><code class="language-ini">CONFIG_AI_SUPPORT=y
+CONFIG_USE_PSRAM=y</code></pre><p>The release component CMake file links <code>components/ai/lib/libai.a</code> directly. No separate PREBUILT path setting is required. Library-internal options cannot be changed by application configuration; use a compatible library supplied by INTELPRO.</p>
             </div>
         </section>
 
         <section id="supported-models">
             <h2>Supported Models</h2>
-            <p>The IPROAI framework supports several YOLOv8 detection models in <code>.blai</code> format; Release SDK v1.0.1 ships with two model files, <code>person_detect.blai</code> and <code>person_pet_detect.blai</code>. The detection models listed below take 640x360 input; the actual input resolution is defined by the model itself — query it with <code>iproai_getInputResolution()</code>:</p>
+            <p>IPROAI uses the <code>.blai</code> model format. No model files are included in V1.2.1; obtain compatible models from INTELPRO before running the examples. The table lists example model names. Query <code>iproai_getInputResolution()</code> for the actual input resolution.</p>
 
             <table>
                 <thead>
@@ -349,7 +325,7 @@ CONFIG_AI_PREBUILT_PATH="components/ai/prebuilt/libai.a"</code></pre>
 
             <h3>Speaker Recognition Models</h3>
             <div class="alert alert-warning">
-                <strong>⚠ Not included in Release SDK v1.0.1:</strong> Speaker recognition models and the corresponding audio front-end sources are not included in Release SDK v1.0.1 — please contact the vendor to obtain them.
+                <strong>⚠ Not included in Release SDK v1.2.1:</strong> Speaker recognition models and the corresponding audio front-end sources are not included in Release SDK v1.2.1 — please contact the vendor to obtain them.
             </div>
 
             <h3>Supported Application Types</h3>
@@ -368,10 +344,11 @@ CONFIG_AI_PREBUILT_PATH="components/ai/prebuilt/libai.a"</code></pre>
         </section>
 
         <section id="reference-apps">
+            <div class="alert alert-info">V1.2.1 also includes <code>apps/platform/ipro7ai_evk_demo/</code> with separate <code>config_ai</code>, <code>config_bt</code> and <code>config_video</code> configurations. AI inference requires compatible models supplied separately.</div>
             <h2>Reference Applications</h2>
 
             <h3>ipro7_demo — AI Inference Demo (Included in Release SDK)</h3>
-            <p>Located at <code>apps/platform/ipro7_demo/</code> and included in Release SDK v1.0.1. Its <code>demo/ai/</code> subdirectory demonstrates the complete model loading and inference flow:</p>
+            <p>Located at <code>apps/platform/ipro7_demo/</code> and included in Release SDK v1.2.1. Its <code>demo/ai/</code> subdirectory demonstrates the complete model loading and inference flow:</p>
             <ul>
                 <li>Loads <code>.blai</code> models from SD card <code>/sdcard/ai_model/</code>, covering person, person+pet, pet, and face detection</li>
                 <li>Driven by shell commands: <code>ai_test</code> (load model and run inference on a test image), <code>ai_inference</code> (run inference), <code>ai_status</code> (query status)</li>
@@ -386,13 +363,13 @@ CONFIG_AI_PREBUILT_PATH="components/ai/prebuilt/libai.a"</code></pre>
                 <li>A command-mode variant also exists: an external host MCU initiates capture and inference requests over an SPI master/slave protocol — useful when IPRO7AI is embedded as a co-processor in a larger system</li>
             </ul>
             <div class="alert alert-info">
-                The complete turnkey AI camera reference design (including the low-power firmware and production configuration) is not included in Release SDK v1.0.1 — please contact the vendor to obtain it.
+                The complete turnkey AI camera reference design (including the low-power firmware and production configuration) is not included in Release SDK v1.2.1 — please contact the vendor to obtain it.
             </div>
         
             <h3>NPU Embedding Video Streaming over Thread</h3>
             <p>An autoencoder running on the NPU compresses a 640×320 RGB frame into a 400-byte embedding (a compression ratio above 1500:1) for UDP streaming over Thread (IEEE 802.15.4); the receiver decodes it back on its own NPU and presents the result as a UVC webcam — enabling video at roughly 2–3 fps over a 250 kbps low-power mesh network. See <a href="{{ '/en/matter-thread' | relative_url }}#npu-embedding-stream">Matter &amp; Thread: NPU Embedding Video Streaming</a> for the architecture and transport design.</p>
             <div class="alert alert-info">
-                The embedding video streaming reference applications (<code>ipro_embed_*</code>) are not included in Release SDK v1.0.1 — contact the vendor to obtain them.
+                The embedding video streaming reference applications (<code>ipro_embed_*</code>) are not included in Release SDK v1.2.1 — contact the vendor to obtain them.
             </div>
         </section>
 
@@ -534,7 +511,7 @@ CONFIG_AI_DEBUG=y
         <section id="cloud-llm">
             <h2>Cloud LLM Agent</h2>
             <div class="alert alert-warning">
-                <strong>&#9888; Release SDK Notice:</strong> The <code>ai_client</code> component is not included in Release SDK v1.0.1; this section is a capability showcase. Please contact the vendor to obtain this component.
+                <strong>&#9888; Release SDK Notice:</strong> The <code>ai_client</code> component is not included in Release SDK v1.2.1; this section is a capability showcase. Please contact the vendor to obtain this component.
             </div>
             <p>In addition to on-device NPU inference, IPRO SDK ships a full cloud LLM agent framework in <code>components/ai_client/</code>. It wraps multiple providers behind a unified interface, includes a built-in ReAct tool-calling loop, and runs directly on IPRO7AI — letting you combine BLE and sensor data with conversational LLM agents in IoT products. Note that IPRO7AI itself has no Wi-Fi: network connectivity can be provided through the built-in Ethernet (RMII EMAC), or via the IPRO6 companion chip (SDIO Wi-Fi expansion, available separately), with HTTPS traffic sent via lwIP + mbedTLS.</p>
 
@@ -605,7 +582,7 @@ CONFIG_AI_CLIENT_RESPONSE_MAX=32768
             <p>Call <code>ai_agent_init()</code> once to create the serialization mutex; <code>ai_agent_process()</code> can then be called safely from multiple tasks.</p>
 
             <h3>Reference Applications</h3>
-            <p>The SDK team has validated several cloud LLM agent integration scenarios, including a gateway application that fuses BLE PAwR sensor data with LLM tool calling (a complete BLE controller + lwIP + LLM agent + sensor fusion pipeline), and service architectures that embed an LLM agent in a long-running IoT service while avoiding TLS contention between tasks. These reference applications are not included in Release SDK v1.0.1 — please contact the vendor to obtain them.</p>
+            <p>The SDK team has validated several cloud LLM agent integration scenarios, including a gateway application that fuses BLE PAwR sensor data with LLM tool calling (a complete BLE controller + lwIP + LLM agent + sensor fusion pipeline), and service architectures that embed an LLM agent in a long-running IoT service while avoiding TLS contention between tasks. These reference applications are not included in Release SDK v1.2.1 — please contact the vendor to obtain them.</p>
 
             <h3>NPU vs. Cloud AI Trade-offs</h3>
             <table class="api-table">

@@ -166,7 +166,7 @@ title: 架構概覽
             </div>
 
             <div class="alert alert-info">
-                <strong>提示：</strong>IPRO7 本身內建 EMAC 乙太網路 MAC，不需 companion 晶片即可透過有線乙太網路搭配 lwIP 連網（如 <code>ipro_voice_assistant</code> 參考應用）。Wi-Fi 雙晶片參考設計請聯絡原廠取得。
+                <strong>提示：</strong>IPRO7 本身內建 EMAC 乙太網路 MAC，不需 companion 晶片即可透過有線乙太網路搭配 lwIP 連網（如 <code>ipro7_demo</code> 參考應用）。Wi-Fi 雙晶片參考設計請聯絡原廠取得。
             </div>
         </section>
 
@@ -350,7 +350,7 @@ make -C apps/platform/ipro7_demo clean</code></pre>
                         <tr>
                             <td><strong>Bluetooth LE 5.4</strong></td>
                             <td><code>wireless/bluetooth/</code></td>
-                            <td>Zephyr BLE Host（<code>blestack/</code>，原始碼）+ RivieraWaves Controller（預建 linkN 函式庫），支援 LE Audio（GAF/BAP/VCP/MCP/CAP）</td>
+                            <td>Zephyr BLE Host（<code>ipro_bt_host/</code>，原始碼）+ RivieraWaves Controller（預建 linkN 函式庫），支援 LE Audio（GAF/BAP/VCP/MCP/CAP）</td>
                         </tr>
                         <tr>
                             <td><strong>RF</strong></td>
@@ -440,7 +440,7 @@ make -C apps/platform/ipro7_demo clean</code></pre>
                         <tr>
                             <td><strong>AI / NPU</strong></td>
                             <td><code>ai/</code></td>
-                            <td>AI 推論引擎，支援 0.1 TOPS NPU 加速（<code>CONFIG_AI_PREBUILT=y</code> 可改連結預建函式庫）</td>
+                            <td>AI 推理引擎與 NPU 加速；V1.2.1 連結 <code>components/ai/lib/libai.a</code> 並提供標頭。</td>
                         </tr>
                         <tr>
                             <td><strong>ISP</strong></td>
@@ -670,43 +670,20 @@ int main(void)
             </div>
 
             <h3>應用分類</h3>
-            <p>應用程式依功能分類組織在子目錄中，V1.0.1 發行版共包含 10 個參考應用：</p>
             <div class="table-wrapper">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>分類</th>
-                            <th>路徑</th>
-                            <th>範例應用</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>BLE</strong></td>
-                            <td><code>apps/bluetooth/ble/</code></td>
-                            <td>ipro_ble_remote、ipro_ble_transparent、ipro_throughput_test、ipro_ble_img_capture</td>
-                        </tr>
-                        <tr>
-                            <td><strong>LE Audio</strong></td>
-                            <td><code>apps/bluetooth/le_audio/</code></td>
-                            <td>ipro_le_audio_headset、ipro_le_audio_bis_source、ipro_le_audio_bis_sink</td>
-                        </tr>
-                        <tr>
-                            <td><strong>多媒體</strong></td>
-                            <td><code>apps/multimedia/</code></td>
-                            <td>ipro_agora_sentino（即時音訊雲端閘道）</td>
-                        </tr>
-                        <tr>
-                            <td><strong>網路</strong></td>
-                            <td><code>apps/network/</code></td>
-                            <td>ipro_voice_assistant（AI 語音助理，乙太網路連網）</td>
-                        </tr>
-                        <tr>
-                            <td><strong>平台展示</strong></td>
-                            <td><code>apps/platform/</code></td>
-                            <td>ipro7_demo</td>
-                        </tr>
-                    </tbody>
+                <thead><tr><th>應用</th><th>路徑</th><th>說明</th></tr></thead>
+                <tbody>
+                    <tr><td><code>ipro_ble_remote</code></td><td><code>apps/bluetooth/ble/ipro_ble_remote/</code></td><td>GATT 服務、影像傳輸與 OTA</td></tr>
+                    <tr><td><code>ipro_ble_transparent</code></td><td><code>apps/bluetooth/ble/ipro_ble_transparent/</code></td><td>UART / BLE 透傳</td></tr>
+                    <tr><td><code>ipro_throughput_test</code></td><td><code>apps/bluetooth/ble/ipro_throughput_test/</code></td><td>BLE 雙向吞吐量測試</td></tr>
+                    <tr><td><code>ipro_ble_hid_keyboard</code></td><td><code>apps/bluetooth/ble/ipro_ble_hid_keyboard/</code></td><td>HID over GATT 鍵盤</td></tr>
+                    <tr><td><code>ipro_le_audio_headset</code></td><td><code>apps/bluetooth/le_audio/ipro_le_audio_headset/</code></td><td>LE Audio 耳機，DAC / USB 音訊輸出配置</td></tr>
+                    <tr><td><code>ipro_pdm_mic_demo</code></td><td><code>apps/multimedia/ipro_pdm_mic_demo/</code></td><td>PDM 麥克風擷取、BLE 傳輸與 LC3 壓縮</td></tr>
+                    <tr><td><code>ipro7_demo</code></td><td><code>apps/platform/ipro7_demo/</code></td><td>周邊、影像、音訊與 Ethernet 示範</td></tr>
+                    <tr><td><code>ipro7_sdio_wifi</code></td><td><code>apps/platform/ipro7_sdio_wifi/</code></td><td>IPRO7 SDIO Host 搭配 IPRO6S Wi-Fi</td></tr>
+                    <tr><td><code>ipro7ai_evk_demo</code></td><td><code>apps/platform/ipro7ai_evk_demo/</code></td><td>IPRO7AI EVK 顯示、攝影機、音訊與 AI / BLE 配置</td></tr>
+                </tbody>
                 </table>
             </div>
 
@@ -718,136 +695,70 @@ int main(void)
         <!-- Section 8: Directory Structure -->
         <section id="directory">
             <h2>目錄結構</h2>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">SDK 目錄結構</span>
-                </div>
-                <pre><code>ipro_sdk/
-├── apps/                         # 應用程式專案（V1.0.1 含 10 個參考應用）
-│   ├── bluetooth/
-│   │   ├── ble/                  # BLE 應用範例（4 apps）
-│   │   └── le_audio/             # LE Audio 應用範例（3 apps）
-│   ├── multimedia/
-│   │   └── ipro_agora_sentino/   # 即時音訊雲端閘道
+            <pre><code class="language-text">IPRO-IPRO7-SDK-V1.2.1/
+├── apps/
+│   ├── bluetooth/ble/
+│   │   ├── ipro_ble_remote/
+│   │   ├── ipro_ble_transparent/
+│   │   ├── ipro_ble_hid_keyboard/
+│   │   └── ipro_throughput_test/
+│   ├── bluetooth/le_audio/ipro_le_audio_headset/
+│   ├── multimedia/ipro_pdm_mic_demo/
+│   ├── platform/
+│   │   ├── ipro7_demo/
+│   │   ├── ipro7_sdio_wifi/
+│   │   └── ipro7ai_evk_demo/
+│   └── test/
+├── bsp/
+├── components/
+│   ├── wireless/bluetooth/
 │   ├── network/
-│   │   └── ipro_voice_assistant/ # AI 語音助理
-│   └── platform/
-│       └── ipro7_demo/           # IPRO7 綜合平台展示
-│
-├── bsp/                          # Board Support Package
-│   ├── board/                    # 板級配置（腳位定義、時脈）
-│   ├── drivers/                  # 週邊驅動程式
-│   ├── hal/                      # 硬體抽象層 API（含 lp_framework 低功耗框架）
-│   └── common/                   # 共用啟動程式碼與連結腳本
-│
-├── components/                   # 可重用元件
-│   ├── wireless/                 # 無線：BLE（bluetooth/）、RF（rf/）
-│   ├── network/                  # 網路：lwIP
-│   ├── crypto/                   # 安全：Mbed TLS、Cipher Suite
-│   ├── os/                       # RTOS：FreeRTOS、FreeRTOS POSIX、OSAL
-│   ├── fs/                       # 檔案系統：FatFS、EasyFlash、LittleFS、EVFS
-│   ├── cherryusb/                # USB 協定棧
-│   ├── audio/                    # 音訊框架
-│   ├── ai/                       # AI/NPU 推論
-│   ├── sensor/                   # 攝影機感測器驅動
-│   ├── sys/                      # 系統服務（Shell、事件）
-│   ├── 3rdparty/                 # 第三方：LC3（預建）
-│   └── ...                       # libc、softcrc、utils、ISP 等
-│
-├── tools/                        # 開發工具
-│   ├── cmake/                    # CMake 設定
-│   └── script/                   # 建構輔助腳本
-│
-├── docs/                         # SDK 文件（BLE 指南、Configuration_System.md 等）
-├── cmake/                        # CMake 設定（toolchain.cmake）
-├── build_freertos.sh             # FreeRTOS 建構腳本
-└── Kconfig                       # 根 Kconfig</code></pre>
-            </div>
+│   ├── ai/lib/libai.a
+│   ├── audio/
+│   ├── os/
+│   └── ...
+├── cmake/
+├── tools/
+│   ├── android/
+│   ├── script/
+│   └── serial_monitor.py
+├── build_freertos.sh
+├── project.build
+├── CMakeLists.txt
+├── Kconfig
+├── VERSION.txt
+└── PREBUILT-ARCHIVES-STRIPPED.txt</code></pre>
+            <p>上圖列出本網站介紹的主要應用路徑；完整專案清單請執行 <code>./build_freertos.sh -l</code>。</p>
         </section>
 
         <!-- Section 9: BLE Stack -->
         <section id="ble-stack">
-            <h2>BLE 棧架構</h2>
-            <p>BLE 5.4 棧位於 <code>components/wireless/bluetooth/</code>，採用 Zephyr 風格回調式 GAP/GATT API：</p>
-
-            <div class="protocol-stack">
-                <div class="stack-layer stack-green">
-                    <div class="layer-name">Application</div>
-                    <div class="layer-detail">使用者應用程式</div>
-                </div>
-                <div class="stack-layer stack-cyan">
-                    <div class="layer-name">App-level Profiles / Services</div>
-                    <div class="layer-detail">各參考應用內實作（HOGP、OTA、透傳等）</div>
-                </div>
-                <div class="stack-layer stack-cyan">
-                    <div class="layer-name">GAP / GATT / SMP</div>
-                    <div class="layer-detail">Zephyr BLE Host API</div>
-                </div>
-                <div class="stack-layer stack-purple">
-                    <div class="layer-name">L2CAP</div>
-                    <div class="layer-detail">邏輯通道管理</div>
-                </div>
-                <div class="stack-layer stack-amber">
-                    <div class="layer-name">HCI (On-chip)</div>
-                    <div class="layer-detail">ipro_hci_wrapper</div>
-                </div>
-                <div class="stack-layer stack-red">
-                    <div class="layer-name">Controller (btblecontroller/)</div>
-                    <div class="layer-detail">RivieraWaves 預編譯 linkN 變體</div>
-                </div>
-            </div>
-
-            <h3>控制器變體（linkN 命名）</h3>
-            <p>控制器使用統一連線池設計，以 <code>linkN</code> 命名（取代舊的 <code>mXsY</code> 命名）：</p>
+            <h2>BLE 協定棧</h2>
+            <p>Zephyr 4.4 Host 透過移植層執行於 FreeRTOS，並以記憶體內的 HCI 位元組串流與 RivieraWaves v14.0.2 Controller 通訊。</p>
+            <pre><code class="language-text">components/wireless/bluetooth/
+├── ipro_bt_host/
+│   ├── upstream/zephyr/include/zephyr/bluetooth/
+│   ├── upstream/zephyr/subsys/bluetooth/
+│   ├── port/
+│   └── tinycrypt/
+├── ipro_ble_controller/
+│   ├── include/
+│   ├── lib/
+│   └── CMakeLists.txt
+└── ble_common.cmake</code></pre>
             <div class="table-wrapper">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>變體</th>
-                            <th>BLE 版本</th>
-                            <th>說明</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>link1_periph</code>, <code>link1</code>, <code>link2</code>, <code>link4</code>, <code>link8</code></td>
-                            <td>BLE 5.0+</td>
-                            <td>基礎 BLE，不同連線數（1/2/4/8 連線）</td>
-                        </tr>
-                        <tr>
-                            <td><code>link1_53</code>, <code>link1_54</code>, <code>link2_54</code></td>
-                            <td>BLE 5.3 / 5.4</td>
-                            <td>BLE 5.3/5.4 功能，不含 LE Audio</td>
-                        </tr>
-                        <tr>
-                            <td><code>link1_leaudio</code>, <code>link2_leaudio</code></td>
-                            <td>BLE 5.2</td>
-                            <td>含 LE Audio 支援（ISO、CIS/BIS）</td>
-                        </tr>
-                        <tr>
-                            <td><code>link1_leaudio_53_54</code>, <code>link2_leaudio_53_54</code>, <code>link4_leaudio_53_54</code></td>
-                            <td>BLE 5.4</td>
-                            <td>完整 LE Audio + BLE 5.3/5.4 功能</td>
-                        </tr>
-                    </tbody>
+                <thead><tr><th>LIB</th><th>ACL</th><th>角色</th></tr></thead>
+                <tbody>
+                    <tr><td><code>link1_periph</code></td><td>1</td><td>Peripheral</td></tr>
+                    <tr><td><code>link1</code></td><td>1</td><td>Central + Peripheral</td></tr>
+                    <tr><td><code>link2</code></td><td>2</td><td>Central + Peripheral</td></tr>
+                    <tr><td><code>link4</code></td><td>4</td><td>Central + Peripheral</td></tr>
+                </tbody>
                 </table>
             </div>
-
-            <h3>預建函式庫</h3>
-            <p>BLE 控制器以預建 <code>.a</code> 靜態函式庫形式提供，共包含 13 種變體，位於各自的 <code>btblecontroller_ipro7_&lt;variant&gt;/</code> 目錄中。本發行版不包含控制器原始碼與建構腳本，<code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> 在本發行版中不支援；應用程式透過 Kconfig 選擇所需的控制器變體即可。</p>
-
-            <div class="alert alert-info">
-                <strong>提示：</strong>預建函式庫檔案命名為 <code>libbtblecontroller_ipro7_&lt;variant&gt;.a</code>，建構系統會根據 <code>.config</code> 中的設定自動連結對應的變體。
-            </div>
-
-            <h3>LE Audio 應用框架</h3>
-            <p>LE Audio 應用採用三層框架設計：</p>
-            <ul>
-                <li><strong>Mediator（協調器）</strong>：統籌管理所有元件與狀態機</li>
-                <li><strong>Applets（可重用元件）</strong>：封裝 BLE Profile 功能（GAF, BAP, VCP, MCP, CAP）</li>
-                <li><strong>Intermediaries（協定橋接）</strong>：連接不同協定層的資料流</li>
-            </ul>
+            <p>基本 BLE 選擇 <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code>；BLE 5.4 與兩路 ISO 串流（CIS/BIS）選擇 <code>"bt54_iso2"</code>，後者要求 <code>CONFIG_EM_SIZE</code> 至少 32 KB。<code>CONFIG_BT_CONN</code> 應與所選 ACL 連線數一致。</p>
+            <p>Host 原始碼已隨附；Controller 實作則以 16 個預編譯函式庫交付。配置與初始化方式請參考 BLE 開發指南。</p>
         </section>
 
         <!-- Section 10: BSP & Drivers -->

@@ -26,10 +26,10 @@ lang: en
         <h1>Networking</h1>
         <p>IPRO7 is the main application SoC in the system, handling application logic, NPU inference, and BLE connectivity. <strong>It does not include a Wi-Fi radio.</strong> The IPRO SDK integrates the lwIP TCP/IP stack and the mbedTLS cryptographic library, providing two paths to network connectivity:</p>
         <ul>
-            <li><strong>Ethernet (EMAC)</strong> — IPRO7 features a built-in Ethernet MAC controller that pairs with lwIP for wired networking. Release SDK v1.0.1 includes full source code and reference applications.</li>
-            <li><strong>Wi-Fi (via IPRO6 companion chip)</strong> — Wi-Fi 6 (802.11ax) is provided by an IPRO6-series connectivity companion chip, bridged to IPRO7's lwIP stack over an SDIO interface. The complete solution is available separately; please contact the vendor.</li>
+            <li><strong>Ethernet (EMAC)</strong> — IPRO7 features a built-in Ethernet MAC controller that pairs with lwIP for wired networking. Release SDK v1.2.1 includes full source code and reference applications.</li>
+            <li><strong>Wi-Fi (via IPRO6 companion chip)</strong> — Wi-Fi 6 (802.11ax) is provided by an IPRO6-series connectivity companion chip, bridged to IPRO7's lwIP stack over an SDIO interface. The IPRO7 host components and example are included; matching IPRO6S firmware is supplied separately.</li>
         </ul>
-        <p>The SDK also provides LTE modem PPP dial-up (<code>components/network/lte_modem/</code>, UART AT interface) as a WAN option besides EMAC.</p>
+        <p>The LTE modem component <code>components/network/lte_modem/</code> is not included in V1.2.1.</p>
 
         <!-- Overview -->
         <section id="overview">
@@ -128,9 +128,9 @@ lang: en
                     <tr><td>lwIP Utilities</td><td><code>components/network/lwip/lwip_apps/</code></td><td>Network diagnostics tools (ping, etc.)</td></tr>
                     <tr><td>mbedTLS</td><td><code>components/crypto/mbedtls/</code></td><td>TLS 1.2 / DTLS 1.2 cryptographic library (2.28 LTS)</td></tr>
                     <tr><td>EMAC Driver</td><td><code>bsp/drivers/ipro7_soc/std_drv/src/drv_emac.c</code></td><td>Ethernet MAC controller driver</td></tr>
-                    <tr><td>HTTP Client</td><td><code>components/http_client/</code></td><td>HTTP/HTTPS client (connection pool + TLS + multipart); not included in Release SDK v1.0.1 — contact the vendor</td></tr>
+                    <tr><td>HTTP Client</td><td><code>components/http_client/</code></td><td>HTTP/HTTPS client (connection pool + TLS + multipart); not included in Release SDK v1.2.1 — contact the vendor</td></tr>
                     <tr><td>LTE Modem</td><td><code>components/network/lte_modem/</code></td><td>4G LTE PPP dial-up (UART AT interface)</td></tr>
-                    <tr><td>SDIO Wi-Fi Bridge</td><td><code>components/network/sdiowifi/</code></td><td>IPRO6 companion data-plane bridge component; not included in Release SDK v1.0.1 — contact the vendor for the complete solution</td></tr>
+                    <tr><td>SDIO Wi-Fi Host</td><td><code>components/network/ipronet_host/</code><br><code>components/network/sdiowifi/</code></td><td>Included; companion firmware is separate</td></tr>
                 </tbody>
             </table>
             </div>
@@ -277,7 +277,7 @@ int udp_send_example(const char *dest_ip, uint16_t port)
         <!-- EMAC -->
         <section id="emac">
             <h2>Ethernet (EMAC)</h2>
-            <p>The IPRO7 features a built-in EMAC (Ethernet MAC) controller. Paired with an external Ethernet PHY, it provides wired networking suitable for gateways, industrial controllers, and other applications requiring a wired connection. This is the recommended primary networking path in Release SDK v1.0.1.</p>
+            <p>The IPRO7 features a built-in EMAC (Ethernet MAC) controller. Paired with an external Ethernet PHY, it provides wired networking suitable for gateways, industrial controllers, and other applications requiring a wired connection. This is the recommended primary networking path in Release SDK v1.2.1.</p>
 
             <div class="code-block">
                 <div class="code-block-header">
@@ -419,7 +419,7 @@ cleanup:
             <h2>HTTP Client</h2>
 
             <div class="alert alert-warning" style="margin-bottom: 2rem;">
-                <strong>&#9888; Release SDK Notice:</strong> The high-level HTTP/HTTPS client component <code>components/http_client/</code> is not included in Release SDK v1.0.1. The content below is for architectural reference only — please contact the vendor if you need this component.
+                <strong>&#9888; Release SDK Notice:</strong> The high-level HTTP/HTTPS client component <code>components/http_client/</code> is not included in Release SDK v1.2.1. The content below is for architectural reference only — please contact the vendor if you need this component.
             </div>
 
             <p><code>components/http_client/</code> is a high-level HTTP/HTTPS client component built on top of lwIP and mbedTLS, eliminating the need to manage sockets and TLS handshakes manually:</p>
@@ -430,99 +430,43 @@ cleanup:
                 <li><strong>Keep-alive and timeout management</strong> - Tunable</li>
             </ul>
 
-            <p>In Release SDK v1.0.1, the reference application <code>apps/network/ipro_voice_assistant</code> does not use this component. Instead, it performs TLS/HTTPS communication with its own in-app HTTP/TLS implementation (<code>src/net/iva_http_client.c</code>, <code>src/net/iva_tls.c</code>, also built on lwIP and mbedTLS), which can serve as a reference for implementing your own HTTPS client.</p>
+            <p>The previous <code>ipro_voice_assistant</code> application is not included in V1.2.1. Use the bundled lwIP and mbedTLS components as the basis for network clients.</p>
         </section>
 
         <!-- Wi-Fi via IPRO6 -->
         <section id="wifi-ipro6">
-            <h2>Wi-Fi (via IPRO6 Companion Chip)</h2>
-
-            <div class="alert alert-warning" style="margin-bottom: 2rem;">
-                <strong>&#9888; Release SDK Notice:</strong> The SDIO Wi-Fi bridge solution (including the IPRO7-side <code>sdiowifi</code> bridge component, the IPRO6-side firmware, and the host-side reference design) is not included in Release SDK v1.0.1. The content below is for architectural reference only — please contact the vendor for the complete solution.
-            </div>
-
-            <p>The IPRO7 itself does not include a Wi-Fi radio. Products requiring Wi-Fi connectivity use a dual-chip architecture: IPRO7 as the main application SoC, paired with an IPRO6-series connectivity companion chip that provides Wi-Fi 6 (802.11ax) connectivity.</p>
-
-            <div class="dg" role="img" aria-label="Dual-chip Wi-Fi architecture diagram">
-                <div class="dg-title">Dual-Chip Wi-Fi Architecture</div>
-                <div class="dg-row">
-                    <div class="dg-group dg-group--solid">
-                        <div class="dg-group-title"><i class="fas fa-microchip"></i> IPRO7 (Host)</div>
-                        <div class="dg-node">
-                            <div class="dg-node-title">App / NPU / BLE</div>
-                            <div class="dg-node-desc">lwIP netif ↔ SDH<br>(data plane into lwIP)</div>
-                        </div>
-                    </div>
-                    <div class="dg-arrow dg-arrow--bi"><span class="dg-arrow-label">SDIO 4-bit</span></div>
-                    <div class="dg-group">
-                        <div class="dg-group-title"><i class="fas fa-wifi"></i> IPRO6 (Wi-Fi Companion)</div>
-                        <div class="dg-node dg-node--accent">
-                            <div class="dg-node-title">Wi-Fi 6 (802.11ax)</div>
-                            <div class="dg-node-desc">SDIO network bridge FW<br>(STA assoc / auth)</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <ul>
-                <li><strong>Physical interface</strong> - IPRO7 acts as the SDIO host using its built-in SDH (SDIO Host) controller; IPRO6 acts as the SDIO slave.</li>
-                <li><strong>Data plane</strong> - Wi-Fi packets are bridged over SDIO into a lwIP network interface on the IPRO7 side, so applications use the same Socket API as EMAC with no changes.</li>
-                <li><strong>Control plane</strong> - Wi-Fi connection management (scanning, authentication, roaming) is handled by the IPRO6-side firmware.</li>
-                <li><strong>SDK component</strong> - The <code>components/network/sdiowifi/</code> SDIO network bridge component is not included in Release SDK v1.0.1; the complete solution (bridge component, IPRO6-side firmware, and host-side reference design) is available from the vendor.</li>
-            </ul>
-
-            <p>To evaluate the dual-chip Wi-Fi solution (hardware reference design, IPRO6 firmware, production support), please contact the vendor.</p>
+            <h2>Wi-Fi via IPRO6S Companion</h2>
+            <p>IPRO7 has no built-in Wi-Fi radio. V1.2.1 includes the IPRO7-side <code>ipronet_host</code> and <code>sdiowifi</code> components and the <code>apps/platform/ipro7_sdio_wifi/</code> example. An IPRO6S companion provides the radio; its matching firmware is supplied separately.</p>
+            <pre><code class="language-text">IPRO7 application / lwIP (iproeth0)
+              |
+         ipronet_host
+              | SDIO 4-bit (SDH)
+              v
+       IPRO6S Wi-Fi firmware
+              |
+         Wi-Fi access point</code></pre>
+            <pre><code class="language-bash">./build_freertos.sh ipro7_sdio_wifi build</code></pre>
+            <p>After flashing both chips with compatible firmware, run the following on the IPRO7 console using your network credentials:</p>
+            <pre><code class="language-text">ipronet_up &lt;SSID&gt; &lt;PASSWORD&gt;
+# Disconnect and stop
+ipronet_down</code></pre>
+            <p>The public API is <code>components/network/ipronet_host/ipronet_host.h</code>: call <code>ipronet_config_default()</code>, <code>ipronet_start()</code> and <code>ipronet_connect()</code>. Wait for <code>on_got_ip</code> before using BSD sockets. Callbacks run in the RX task: do not block or call connection-control APIs from them; hand work to an application task.</p>
         </section>
 
         <!-- Reference Apps -->
         <section id="reference-apps">
             <h2>Reference Applications</h2>
-
-            <h3>Networking Reference Applications</h3>
             <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr><th>Application</th><th>Path</th><th>Description</th></tr>
-                </thead>
+                <table>
+                <thead><tr><th>App</th><th>Path</th></tr></thead>
                 <tbody>
-                    <tr><td>IPRO7 Demo</td><td><code>apps/platform/ipro7_demo/</code></td><td>EMAC Ethernet + lwIP example (runs <code>emac_lwip</code> automatically at boot)</td></tr>
-                    <tr><td>Voice Assistant</td><td><code>apps/network/ipro_voice_assistant/</code></td><td>End-to-end networking application: lwIP + EMAC DHCP (or LTE modem PPP) + TLS/HTTPS client</td></tr>
+                    <tr><td>IPRO7 Demo</td><td><code>apps/platform/ipro7_demo/</code></td></tr>
+                    <tr><td>SDIO Wi-Fi Host</td><td><code>apps/platform/ipro7_sdio_wifi/</code></td></tr>
                 </tbody>
-            </table>
+                </table>
             </div>
-
-            <h3>Build Commands</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Building Networking Example Applications</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-<pre><code class="language-bash"># Build IPRO7 Demo (EMAC + lwIP)
-make -C apps/platform/ipro7_demo
-
-# Clean build
-make -C apps/platform/ipro7_demo clean
-
-# Output firmware path
-# apps/platform/ipro7_demo/build/build_out/ipro7_demo_IPRO7.bin
-
-# Build Voice Assistant
-make -C apps/network/ipro_voice_assistant</code></pre>
-            </div>
-
-            <h3>Shell Commands</h3>
-            <p>The networking example applications register the following shell commands, accessible via serial port:</p>
-            <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr><th>Command</th><th>Description</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td><code>emac_lwip</code></td><td>Start EMAC + lwIP and obtain an IP via DHCP</td></tr>
-                    <tr><td><code>ping &lt;ip&gt;</code></td><td>Ping connectivity test (requires <code>CONFIG_PING=y</code>)</td></tr>
-                </tbody>
-            </table>
-            </div>
+            <pre><code class="language-bash">./build_freertos.sh ipro7_demo build
+./build_freertos.sh ipro7_sdio_wifi build</code></pre>
         </section>
 
     </article>

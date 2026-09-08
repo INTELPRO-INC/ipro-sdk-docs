@@ -8,6 +8,8 @@ title: 更新日誌
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">版本</h4>
             <ul class="sidebar-links">
+                <li><a href="#tools-3-3-0" class="sidebar-link">安裝包 / Extension 3.3.0</a></li>
+                <li><a href="#v1-2-1" class="sidebar-link">IPRO-IPRO7-SDK-V1.2.1</a></li>
                 <li><a href="#v1-0-1" class="sidebar-link">IPROREL-IPRO7-V1.0.1</a></li>
                 <li><a href="#v0-0-1" class="sidebar-link">IPRO-BLE-SDK-V0.0.1</a></li>
                 <li><a href="#doc-history" class="sidebar-link">文件更新紀錄</a></li>
@@ -18,6 +20,43 @@ title: 更新日誌
     <article class="doc-content">
         <h1>更新日誌</h1>
         <p>IPRO SDK 的正式釋出版本紀錄。SDK 交付包的整體說明請參考包內的 <code>README.md</code> 檔案。</p>
+
+        <section id="tools-3-3-0">
+            <h2>開發工具：Windows 安裝包 / Extension 3.3.0</h2>
+            <p>安裝包與 Extension 獨立計版，本次文件對應 SDK V1.2.1。Windows 安裝精靈提供 Full、Extension only 與 SDK only；Extension 新增 VSIX、SDK ZIP／資料夾／Git 快照的元件更新入口，並延續控制中心與 Windows 內建串口監看。</p>
+            <p>完整操作請見<a href="{{ '/windows-installation' | relative_url }}">Windows 安裝與更新</a>及<a href="{{ '/vscode-extension' | relative_url }}">Extension 介紹</a>。套件與支援平台以原廠正式交付通知為準。</p>
+        </section>
+
+        <section id="v1-2-1">
+            <h2>IPRO-IPRO7-SDK-V1.2.1</h2>
+            <p><strong>釋出日期:</strong> 2026-09-08</p>
+            <p>以下內容依交付包的 <code>VERSION.txt</code>、建構配置與實際檔案核對。</p>
+            <ul>
+                <li>Zephyr 4.4 Host 位於 <code>ipro_bt_host</code>；RivieraWaves v14.0.2 Controller 位於 <code>ipro_ble_controller</code>。</li>
+                <li>16 個 Controller 預編譯函式庫：4 種 ACL 配置 × 2 種功能配置 × debug/release 組合；不包含 Controller 實作原始碼。</li>
+                <li>包含 IPRO7 端 <code>ipronet_host</code>、<code>sdiowifi</code> 元件與 <code>ipro7_sdio_wifi</code> 範例；相容 IPRO6S 韌體需另行取得。</li>
+                <li>AI 推理以 <code>components/ai/lib/libai.a</code> 與標頭交付；未隨附 <code>.blai</code> 模型檔。</li>
+                <li>已隨附 <code>tools/serial_monitor.py</code>；燒錄工具、板級測試腳本、當機解析工具與 OpenOCD 配置仍需另行取得。</li>
+                <li>依 <code>PREBUILT-ARCHIVES-STRIPPED.txt</code>，AI、ISP、RF、LC3 與低功耗框架函式庫已移除除錯資訊，以相容 binutils 2.41 之前的連結器；此交付包無法在這些函式庫內進行原始碼層級單步除錯。</li>
+            </ul>
+            <div class="table-wrapper">
+                <table>
+                <thead><tr><th>應用</th><th>路徑</th><th>說明</th></tr></thead>
+                <tbody>
+                    <tr><td><code>ipro_ble_remote</code></td><td><code>apps/bluetooth/ble/ipro_ble_remote/</code></td><td>GATT 服務、影像傳輸與 OTA</td></tr>
+                    <tr><td><code>ipro_ble_transparent</code></td><td><code>apps/bluetooth/ble/ipro_ble_transparent/</code></td><td>UART / BLE 透傳</td></tr>
+                    <tr><td><code>ipro_throughput_test</code></td><td><code>apps/bluetooth/ble/ipro_throughput_test/</code></td><td>BLE 雙向吞吐量測試</td></tr>
+                    <tr><td><code>ipro_ble_hid_keyboard</code></td><td><code>apps/bluetooth/ble/ipro_ble_hid_keyboard/</code></td><td>HID over GATT 鍵盤</td></tr>
+                    <tr><td><code>ipro_le_audio_headset</code></td><td><code>apps/bluetooth/le_audio/ipro_le_audio_headset/</code></td><td>LE Audio 耳機，DAC / USB 音訊輸出配置</td></tr>
+                    <tr><td><code>ipro_pdm_mic_demo</code></td><td><code>apps/multimedia/ipro_pdm_mic_demo/</code></td><td>PDM 麥克風擷取、BLE 傳輸與 LC3 壓縮</td></tr>
+                    <tr><td><code>ipro7_demo</code></td><td><code>apps/platform/ipro7_demo/</code></td><td>周邊、影像、音訊與 Ethernet 示範</td></tr>
+                    <tr><td><code>ipro7_sdio_wifi</code></td><td><code>apps/platform/ipro7_sdio_wifi/</code></td><td>IPRO7 SDIO Host 搭配 IPRO6S Wi-Fi</td></tr>
+                    <tr><td><code>ipro7ai_evk_demo</code></td><td><code>apps/platform/ipro7ai_evk_demo/</code></td><td>IPRO7AI EVK 顯示、攝影機、音訊與 AI / BLE 配置</td></tr>
+                </tbody>
+                </table>
+            </div>
+            <div class="alert alert-info">V1.0.1 的獨立影像擷取、BIS source/sink、雲端音訊閘道與語音助理應用未包含於此交付包。</div>
+        </section>
 
         <section id="v1-0-1">
             <h2>IPROREL-IPRO7-V1.0.1</h2>

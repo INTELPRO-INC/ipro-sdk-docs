@@ -1,0 +1,181 @@
+---
+layout: default
+title: Windows 安裝與更新
+---
+
+<div class="doc-layout">
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <ul class="sidebar-links">
+                <li><a href="#overview" class="sidebar-link">安裝包與版本</a></li>
+                <li><a href="#package-contents" class="sidebar-link">檔案與安裝目錄</a></li>
+                <li><a href="#requirements" class="sidebar-link">安裝前準備</a></li>
+                <li><a href="#install-modes" class="sidebar-link">選擇安裝模式</a></li>
+                <li><a href="#full-install" class="sidebar-link">首次完整安裝</a></li>
+                <li><a href="#extension-only" class="sidebar-link">只更新 Extension</a></li>
+                <li><a href="#sdk-only" class="sidebar-link">只更新 SDK</a></li>
+                <li><a href="#settings" class="sidebar-link">工具路徑與設定</a></li>
+                <li><a href="#verify" class="sidebar-link">安裝後驗證</a></li>
+                <li><a href="#troubleshooting" class="sidebar-link">問題排查與回復</a></li>
+            </ul>
+        </nav>
+    </aside>
+    <article class="doc-content">
+        <h1>Windows 安裝與更新</h1>
+<p>從完整安裝包建立開發環境，或獨立更新 SDK 與 VS Code Extension。</p>
+
+        <section id="overview">
+            <h2>安裝包與版本</h2>
+<p>Windows 完整安裝包將韌體開發所需的 SDK、編譯工具與 VS Code 整合集中安裝。安裝包、SDK 與 Extension 的版本分開管理；只更新其中一項時，不必一起更換其他元件。</p>
+<div class="table-wrapper">
+<table>
+<thead><tr><th>元件</th><th>本頁對應版本</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td>Windows Installer</td><td>3.3.0</td><td>安裝 SDK、Extension 與 Windows 工具</td></tr>
+<tr><td>IPRO SDK</td><td>V1.2.1 (2026-09-08)</td><td>韌體原始碼、標頭、預編譯函式庫與範例</td></tr>
+<tr><td>VS Code Extension</td><td>3.3.0 (2026-09-09)</td><td>編輯器內的專案、建構、燒錄與分析功能</td></tr>
+<tr><td>IntelProCube</td><td>0.7.0</td><td>圖形化燒錄、命令列燒錄與 OTA 工具</td></tr>
+</tbody>
+</table>
+</div>
+<div class="alert alert-info">本頁依 3.3.0 安裝器、VSIX 與交付清單編寫。請向 INTELPRO 取得對應版本的正式交付檔案與 SHA256SUMS.txt；檔案取得方式與支援平台以交付通知為準。</div>
+        </section>
+
+        <section id="package-contents">
+            <h2>檔案與安裝目錄</h2>
+<div class="table-wrapper">
+<table>
+<thead><tr><th>檔案</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td><code>IPRO-SDK-Setup-3.3.0.exe</code></td><td>Windows 安裝精靈，內含三種安裝模式</td></tr>
+<tr><td><code>ipro-sdk-extension-win32-x64-3.3.0.vsix</code></td><td>Windows x64 VS Code</td></tr>
+<tr><td><code>ipro-sdk-extension-win32-arm64-3.3.0.vsix</code></td><td>Windows ARM64 VS Code</td></tr>
+<tr><td>SDK 獨立壓縮包／資料夾</td><td>新增 SDK 版本；不包含完整 Windows 工具環境</td></tr>
+</tbody>
+</table>
+</div>
+<pre><code class="language-text">C:\IPRO\
+  sdk\IPRO-IPRO7-SDK-V1.2.1\
+  extension\
+  toolchain\riscv_ipro7_win32\
+  tools\cmake\
+  tools\ninja\
+  tools\python\
+  IntelProCube\
+  openocd\
+  installer</code></pre>
+<p>完整包包含 CMake 3.30.5、Ninja 1.12.1、Python 3.12.7 與 pyserial 3.5。SDK 壓縮包本身未隨附的工具，可由完整安裝包提供；兩者的交付範圍不同。</p>
+        </section>
+
+        <section id="requirements">
+            <h2>安裝前準備</h2>
+<ul>
+    <li>使用 Windows x64 或 ARM64 對應的交付包；VSIX 架構依執行 VS Code 的 Windows 主機選擇，不依板端 RISC-V 架構選擇。ARM64 套件存在不代表所有工具已完成 ARM64 實機驗證。</li>
+    <li>VS Code 需 1.102 或以上。完整安裝時若未偵測到一般版 VS Code，可選擇從 Microsoft 下載，該步需要網路；Extension-only 需先安裝 VS Code。</li>
+    <li>選擇可寫入的安裝根目錄，預設為 C:\IPRO。完整環境約 2 GB，另預留解壓暫存與建構空間；單獨 SDK 約 333 MB。</li>
+    <li>停止 Build、Flash、Debug 與 Monitor。若目的地已有個人程式，先備份 SDK、專案與設定；版本升級建議使用新的 SDK 目錄。</li>
+    <li>安裝與首次建構不需要連接開發板；燒錄與串口驗證時才需要板子及相容 Probe／UART。</li>
+</ul>
+        </section>
+
+        <section id="install-modes">
+            <h2>選擇安裝模式</h2>
+<div class="table-wrapper">
+<table>
+<thead><tr><th>需求／模式</th><th>變更範圍</th><th>操作重點</th></tr></thead>
+<tbody>
+<tr><td>Full installation</td><td>SDK、Extension、GCC、CMake、Ninja、Python、IntelProCube 與隨附 OpenOCD</td><td>依附加工作設定路徑、安裝 VS Code 與更新 user PATH；現有 SDK 同名檔案可能被覆寫</td></tr>
+<tr><td>Extension only</td><td>複製並安裝 VSIX；保留 SDK、工具、設定與 PATH</td><td>需要已安裝一般版 VS Code；完成後 Reload Window</td></tr>
+<tr><td>SDK only</td><td>將 EXE 內的 SDK 放入新的版本目錄</td><td>拒絕覆蓋既有目錄；可選擇只設定 User 層 ipro.sdkRoot，預設不勾選</td></tr>
+</tbody>
+</table>
+</div>
+<figure>
+<img src="{{ '/assets/images/installation/component-modes-3.3.0.png' | relative_url }}" alt="IPRO 3.3.0 安裝模式選單" loading="lazy" style="display:block;max-width:100%;height:auto;">
+<figcaption>3.3.0 安裝精靈：Full、Extension only 與 SDK only。</figcaption>
+</figure>
+        </section>
+
+        <section id="full-install">
+            <h2>首次完整安裝</h2>
+<ol>
+    <li>執行 IPRO-SDK-Setup-3.3.0.exe，指定安裝根目錄（例如 C:\IPRO），不要選到個別 SDK 專案內。</li>
+    <li>在 Choose installation mode 選擇 Full installation。</li>
+    <li>依需求勾選安裝 VS Code、安裝 IPRO Extension、設定 ipro.* 工具路徑與加入 user PATH。工具路徑依選定的安裝目錄產生。</li>
+    <li>在 Ready to Install 核對目的地及工作，再按 Install；現有 SDK 的同名檔案可能被覆寫。</li>
+    <li>等待複製與後處理完成。如出現 Some steps did not complete，查看 installer\updates\3.3.0\install.log。</li>
+    <li>完全關閉並重開原本的 VS Code／Terminal，讓程序取得新的 PATH。開啟 C:\IPRO\sdk\IPRO-IPRO7-SDK-V1.2.1。</li>
+    <li>確認可信工作區後，執行 IPRO: Open Control Center，再執行 IPRO Setup: Run Diagnostics。</li>
+</ol>
+        </section>
+
+        <section id="extension-only">
+            <h2>只更新 Extension</h2>
+<p>可選擇 EXE 的 Extension only，或直接安裝 VSIX：</p>
+<ol>
+    <li>保留舊版 VSIX，停止建構、燒錄與監看。</li>
+    <li>在目標 VS Code 視窗按 Ctrl+Shift+X → … → Install from VSIX…，選擇符合主機架構的 3.3.0 套件。</li>
+    <li>執行 Developer: Reload Window；在 Extensions 搜尋 @installed IPRO，確認 ipro.ipro-sdk-extension 的版本。</li>
+    <li>執行 Diagnostics，檢查 SDK Root 與工具設定。使用 Profiles 或遠端視窗時，確認 VSIX 安裝在正確環境。</li>
+</ol>
+<pre><code class="language-powershell">code --install-extension .\ipro-sdk-extension-win32-x64-3.3.0.vsix</code></pre>
+<p>VSIX 安裝不會複製 SDK 或工具鏈。需要回復時，重新安裝保留的相容舊版 VSIX 並重新載入視窗。</p>
+        </section>
+
+        <section id="sdk-only">
+            <h2>只更新 SDK</h2>
+<p>EXE 的 SDK only 使用安裝包內的 SDK；選擇全新的目錄名稱，SDK 會放在 &lt;安裝根目錄&gt;\sdk\&lt;新名稱&gt;。既有目錄即使是空的也不會重用。</p>
+<figure>
+<img src="{{ '/assets/images/installation/sdk-directory-3.3.0.png' | relative_url }}" alt="SDK-only 選擇新的版本目錄" loading="lazy" style="display:block;max-width:100%;height:auto;">
+<figcaption>SDK-only 建立新目錄，保留舊 SDK。</figcaption>
+</figure>
+<p>Set only ipro.sdkRoot… 預設不勾選；勾選時只更新 User 層的 SDK Root，不修改其他工具路徑。工作區設定仍可能優先。外部 ZIP、已解壓資料夾或 Git 來源，請使用 Extension 的元件更新入口。</p><a href="{{ '/vscode-extension' | relative_url }}#component-updates">查看 VS Code 元件更新流程</a>
+        </section>
+
+        <section id="settings">
+            <h2>工具路徑與設定</h2>
+<p>預設安裝在 C:\IPRO 時，核心設定如下；自訂安裝目錄請換成實際路徑，合併必要欄位即可。</p>
+<pre><code class="language-json">{
+  "ipro.sdkRoot": "C:\\IPRO\\sdk\\IPRO-IPRO7-SDK-V1.2.1",
+  "ipro.toolchainPath": "C:\\IPRO\\toolchain\\riscv_ipro7_win32\\bin\\riscv64-unknown-elf-",
+  "ipro.cmakePath": "C:\\IPRO\\tools\\cmake\\bin\\cmake.exe",
+  "ipro.ninjaPath": "C:\\IPRO\\tools\\ninja\\ninja.exe",
+  "ipro.pythonPath": "C:\\IPRO\\tools\\python\\python.exe",
+  "ipro.flashToolPath": "C:\\IPRO\\IntelProCube",
+  "ipro.generator": "ninja"
+}</code></pre>
+<p>ipro.toolchainPath 必須是含最後連字號的編譯器前綴。安裝器設定寫入一般版 VS Code 的 User settings；工作區 .vscode/settings.json 或其他 Profile 可覆寫。SDK 切換後請以 Diagnostics 顯示的實際根目錄為準。</p>
+        </section>
+
+        <section id="verify">
+            <h2>安裝後驗證</h2>
+<pre><code class="language-powershell">&amp; "C:\IPRO\tools\cmake\bin\cmake.exe" --version
+&amp; "C:\IPRO\tools\ninja\ninja.exe" --version
+&amp; "C:\IPRO\tools\python\python.exe" -c "import serial; print(serial.__version__)"
+&amp; "C:\IPRO\toolchain\riscv_ipro7_win32\bin\riscv64-unknown-elf-gcc.exe" --version</code></pre>
+<ul>
+    <li>SDK 根目錄應同時包含 CMakeLists.txt、apps 與 bsp。</li>
+    <li>執行 IPRO: Go to Project… 選擇 ipro7_demo，再執行 IPRO: Build。</li>
+    <li>檢查 Terminal 的實際編譯器路徑與建構結果；預期 BIN 位於 apps\platform\ipro7_demo\build\build_out\ipro7_demo_IPRO7.bin。</li>
+    <li>需要上板時，再核對 UART、晶片配置、分割表及 Monitor baud rate。建構成功不代表已燒錄或已通過硬體驗證。</li>
+</ul><a href="{{ '/vscode-extension' | relative_url }}#workflow">查看建構、燒錄與監看操作</a>
+        </section>
+
+        <section id="troubleshooting">
+            <h2>問題排查與回復</h2>
+<div class="table-wrapper">
+<table>
+<thead><tr><th>現象</th><th>處理方式</th></tr></thead>
+<tbody>
+<tr><td>沒有 Extension／安裝後有警告</td><td>查看 installer\updates\3.3.0\install.log，確認 VS Code 位置與 Profile，再以 VSIX 安裝。</td></tr>
+<tr><td>設定檔無法解析</td><td>保留原檔並檢查 installer\ipro-settings.json；在 settings.json 旁查找 .ipro-backup 備份後，合併所需設定。</td></tr>
+<tr><td>切換後仍使用舊 SDK</td><td>檢查開啟的資料夾、工作區 ipro.sdkRoot 與 User 設定；執行 Diagnostics。</td></tr>
+<tr><td>rules.ninja: lexing error</td><td>確認 ipro.cmakePath／ipro.ninjaPath 指向套件工具；工具修正後 Clean 並重新 Build。</td></tr>
+<tr><td>SDK 更新失敗／取消</td><td>保留更新紀錄，重試時使用新的目錄名稱；確認新版本前繼續使用舊 SDK。</td></tr>
+</tbody>
+</table>
+</div>
+<p>回復 SDK 時重新開啟保留的舊版本並核對工具路徑。單一 SDK 版本需個別管理；完整包解除安裝不是 SDK 回復功能，也不會同步移除 VS Code 與 Extension。</p>
+        </section>
+    </article>
+</div>

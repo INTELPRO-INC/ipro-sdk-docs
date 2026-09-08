@@ -39,23 +39,23 @@ title: API 參考
 
         <section id="ble-core">
             <h2>BLE 核心初始化</h2>
-            <p>BLE 子系統使用 Zephyr 風格的 <code>bt_*</code> API。呼叫 <code>bt_enable()</code> 之前，必須先依序完成 <code>ble_controller_init()</code> 與 <code>hci_driver_init()</code>，否則 <code>bt_enable()</code> 會失敗。</p>
+            <p>BLE 子系統使用 Zephyr 風格的 <code>bt_*</code> API。呼叫 <code>bt_enable()</code> 之前，必須先依序完成 <code>ipro_ble_ctlr_controller_init()</code> 與 <code>hci_driver_ipro_ble_ctlr_init()</code>，否則 <code>bt_enable()</code> 會失敗。</p>
 
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">ble_lib_api.h / hci_driver.h</span>
+                    <span class="code-block-title">ipro_ble_controller.h / hci_driver_ipro_ble_ctlr.h</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">/** 初始化 BLE Controller（建立 controller 任務，必須最先呼叫）
  *  @param task_priority  Controller 任務的 FreeRTOS 優先權
  *                        （參考應用使用 configMAX_PRIORITIES - 1）
  */
-void ble_controller_init(uint8_t task_priority);
+int ipro_ble_ctlr_controller_init(unsigned int task_priority);
 
 /** 初始化 HCI driver（必須在 bt_enable() 之前呼叫）
  *  @return 0 成功，負值錯誤碼
  */
-int hci_driver_init(void);</code></pre>
+int hci_driver_ipro_ble_ctlr_init(void);</code></pre>
             </div>
 
             <div class="code-block">
@@ -92,9 +92,9 @@ const char *bt_get_name(void);</code></pre>
 #include &lt;FreeRTOS.h&gt;
 #include &lt;task.h&gt;
 
-#include &lt;bluetooth/bluetooth.h&gt;
-#include &lt;hci_driver.h&gt;
-#include &lt;ble_lib_api.h&gt;
+#include &lt;zephyr/bluetooth/bluetooth.h&gt;
+#include &lt;hci_driver_ipro_ble_ctlr.h&gt;
+#include &lt;ipro_ble_controller.h&gt;
 
 #define TAG "APP"
 
@@ -111,11 +111,16 @@ static void bt_ready(int err)
 static void app_task(void *arg)
 {
     /* 1. 初始化 BLE Controller（必須最先執行） */
-    ble_controller_init(configMAX_PRIORITIES - 1);
+    int err = ipro_ble_ctlr_controller_init(configMAX_PRIORITIES - 1);
+    if (err) {
+        IPRO_LOGE(TAG, "Controller init failed (err %d)", err);
+        vTaskDelete(NULL);
+        return;
+    }
     vTaskDelay(pdMS_TO_TICKS(50));  /* 等待 controller 任務啟動 */
 
     /* 2. 初始化 HCI driver */
-    int err = hci_driver_init();
+    err = hci_driver_ipro_ble_ctlr_init();
     if (err == 0) {
         vTaskDelay(pdMS_TO_TICKS(50));
         /* 3. 啟用 BLE Host */
@@ -290,7 +295,7 @@ bt_le_scan_stop();</code></pre>
  *  @param param  連線參數
  *  @return 連線物件指標，NULL 表示失敗
  */
-struct bt_conn *bt_conn_create_le(const bt_addr_le_t *peer,
+struct bt_conn *bt_conn_le_create(const bt_addr_le_t *peer,
                                   const struct bt_le_conn_param *param);
 
 /** 斷開連線
@@ -856,7 +861,7 @@ IPRO_LOGV(tag, format, ...)   // 詳細等級
 IPRO_LOGI(TAG, "System started, version %d.%d", major, minor);</code></pre>
             </div>
             <div class="alert alert-info">
-                <p>BLE Host（blestack）內部提供 <code>logging/log.h</code> 相容墊片，僅供移植 Zephyr 程式碼使用；應用程式請一律使用 <code>ipro_log.h</code> 的 <code>IPRO_LOGx</code> 巨集。</p>
+                <p>BLE Host（ipro_bt_host）內部提供 <code>zephyr/logging/log.h</code> 相容墊片，僅供移植 Zephyr 程式碼使用；應用程式請一律使用 <code>ipro_log.h</code> 的 <code>IPRO_LOGx</code> 巨集。</p>
             </div>
         </section>
     </article>

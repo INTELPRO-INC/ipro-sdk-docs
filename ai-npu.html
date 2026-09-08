@@ -23,14 +23,14 @@ title: AI 與 NPU
 
     <article class="doc-content">
         <div class="alert alert-warning" style="margin-bottom: 2rem;">
-            <strong>⚠ Release SDK 注意事項：</strong>AI/NPU 元件在 Release SDK v1.0.1 中僅部分包含（ai/ 原始碼可用，ISP 演算法為預建函式庫）。完整 AI 開發工具需另行取得。
+            <strong>Release SDK 注意事項：</strong> V1.2.1 包含預編譯 AI 推理函式庫 <code>components/ai/lib/libai.a</code>、公開標頭與 AI 整合範例；未包含 AI 實作原始碼、<code>.blai</code> 模型檔與模型轉換工具。ISP 演算法亦以預編譯函式庫交付。
         </div>
         <h1>AI 與 NPU</h1>
         <p>IPRO7AI 內建 0.1 TOPS 神經網路處理器 (NPU)，專為邊緣 AI 推理設計。搭配 IPROAI 推理框架與 YOLOv8 後處理引擎，可在低功耗環境下實現物件偵測、影像分類與關鍵字辨識等應用。</p>
 
         <section id="overview">
             <h2>功能概覽</h2>
-            <p>IPRO SDK 提供完整的 AI 開發工具鏈，從模型載入到推理輸出一站式完成：</p>
+            <p>IPRO SDK 提供 AI 推理 API 與整合範例；模型與轉換工具需另行取得：</p>
 
             <div class="features-grid" style="margin: 2rem 0;">
                 <div class="feature-card">
@@ -215,33 +215,19 @@ vPortFree(buf);</code></pre>
 
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">框架原始碼結構</span>
+                    <span class="code-block-title">交付包中的框架結構</span>
                 </div>
-                <pre><code>components/ai/
-├── iproai_def.h                    # 公開型別定義（層類型、啟動函式、結果結構）
-├── iproai_def_internal.h           # 內部除錯旗標
-├── Kconfig                         # CONFIG_AI_SUPPORT, CONFIG_AI_DEBUG, CONFIG_AI_CPU_NN_OPS ...
-├── CMakeLists.txt                  # 建構設定（支援 prebuilt .a）
+                <pre><code class="language-text">components/ai/
+├── CMakeLists.txt
+├── iproai_def.h
+├── iproai_def_internal.h
+├── lib/libai.a
 └── src/
-    ├── core/
-    │   ├── include/iproai_core.h   # 核心 API（create, load, compute, free）
-    │   └── iproai_core.c           # 核心實作（模型載入與分派，恆編譯）
-    └── inst/
-        ├── include/                # 對應各 .c 的標頭（含 detect/ 子目錄）
-        ├── iproai_inst_npu.c            # NPU 指令執行
-        ├── iproai_inst_npu_ops.c        # NPU 算子實作
-        ├── iproai_inst_cpu.c            # CPU 層執行
-        ├── iproai_inst_cpu_ops.c        # CPU 算子（通用，CONFIG_AI_CPU_NN_OPS）
-        ├── iproai_inst_cpu_ops_yolo.c   # CPU 算子（YOLO 專用）
-        ├── iproai_inst_cpu_activation.c # CPU 啟動函式
-        ├── iproai_inst_process.c        # 推理排程器
-        ├── iproai_inst_postprocess.c    # 後處理
-        ├── iproai_inst_util.c           # 共用工具
-        ├── iproai_nmsis_ops.c           # NMSIS DSP 加速算子
-        ├── iproai_riscv_common.c        # RISC-V 共用 NN 函式
-        └── detect/
-            ├── yolov8_detect.c             # YOLOv8 6-output 後處理
-            └── yolov8_person_pet_detect.c  # Person+Pet 偵測封裝</code></pre>
+    ├── core/include/iproai_core.h
+    └── inst/include/
+        ├── audio/
+        ├── detect/
+        └── ...</code></pre>
             </div>
 
             <h3>核心 API</h3>
@@ -281,7 +267,7 @@ IPROAI_Status_e iproai_setResultCB(iproai_model_hdl_t hdl, iproai_inference_cb c
 /* 釋放模型資源 */
 IPROAI_Status_e iproai_free(iproai_model_hdl_t hdl);</code></pre>
             </div>
-            <p>注意：標頭中宣告的 <code>iproai_load_model_from_file()</code> 目前未實作（恆回傳 <code>IPROAI_STATUS_INVALID_INPUT</code>）。請以檔案系統 API 先將模型讀入記憶體，再使用 <code>iproai_load_model_from_buffer()</code> 載入（與上方 SD 卡範例一致）。</p>
+            <p>範例使用檔案系統 API 將模型讀入記憶體，再交由 <code>iproai_load_model_from_buffer()</code> 載入。請使用另行取得的相容模型。</p>
 
             <h3>Kconfig 設定</h3>
 
@@ -290,24 +276,14 @@ IPROAI_Status_e iproai_free(iproai_model_hdl_t hdl);</code></pre>
                     <span class="code-block-title">.config 相關設定</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 啟用 AI/NPU 支援（自動啟用 PSRAM）
-CONFIG_AI_SUPPORT=y
-
-# 啟用 AI 除錯輸出
-CONFIG_AI_DEBUG=y
-
-# CPU NN 算子（預設啟用；純 NPU 模型可關閉，省約 24KB flash）
-CONFIG_AI_CPU_NN_OPS=y
-
-# 使用預建構靜態庫（無需原始碼）
-CONFIG_AI_PREBUILT=y
-CONFIG_AI_PREBUILT_PATH="components/ai/prebuilt/libai.a"</code></pre>
+                <pre><code class="language-ini">CONFIG_AI_SUPPORT=y
+CONFIG_USE_PSRAM=y</code></pre><p>Release 元件的 CMake 檔直接連結 <code>components/ai/lib/libai.a</code>，無需另設 PREBUILT 路徑。應用配置無法修改函式庫內部的編譯選項；如需不同配置，請向原廠取得相容函式庫。</p>
             </div>
         </section>
 
         <section id="supported-models">
             <h2>支援模型</h2>
-            <p>IPROAI 框架支援多種 YOLOv8 偵測模型，使用 <code>.blai</code> 格式；Release SDK v1.0.1 隨附 <code>person_detect.blai</code> 與 <code>person_pet_detect.blai</code> 兩個模型檔。表列偵測模型的輸入為 640x360；實際輸入解析度由模型本身決定，請以 <code>iproai_getInputResolution()</code> 查詢為準：</p>
+            <p>IPROAI 使用 <code>.blai</code> 模型格式。V1.2.1 未隨附模型檔，執行範例前請向原廠取得相容模型。下表列出模型名稱範例；實際輸入解析度請以 <code>iproai_getInputResolution()</code> 查詢。</p>
 
             <table>
                 <thead>
@@ -348,7 +324,7 @@ CONFIG_AI_PREBUILT_PATH="components/ai/prebuilt/libai.a"</code></pre>
 
             <h3>語者辨識模型</h3>
             <div class="alert alert-warning">
-                <strong>⚠ 未包含於 Release SDK v1.0.1：</strong>語者辨識（speaker recognition）模型與對應的音訊前端原始碼未隨附於 Release SDK v1.0.1，請聯絡原廠取得。
+                <strong>⚠ 未包含於 Release SDK v1.2.1：</strong>語者辨識（speaker recognition）模型與對應的音訊前端原始碼未隨附於 Release SDK v1.2.1，請聯絡原廠取得。
             </div>
 
             <h3>支援的應用類型</h3>
@@ -367,10 +343,11 @@ CONFIG_AI_PREBUILT_PATH="components/ai/prebuilt/libai.a"</code></pre>
         </section>
 
         <section id="reference-apps">
+            <div class="alert alert-info">V1.2.1 另包含 <code>apps/platform/ipro7ai_evk_demo/</code>，提供 <code>config_ai</code>、<code>config_bt</code> 與 <code>config_video</code> 配置。執行 AI 推理需另行取得相容模型。</div>
             <h2>參考應用</h2>
 
             <h3>ipro7_demo — AI 推理示範（Release SDK 內含）</h3>
-            <p>位於 <code>apps/platform/ipro7_demo/</code>，包含於 Release SDK v1.0.1。其 <code>demo/ai/</code> 子目錄示範完整的模型載入與推理流程：</p>
+            <p>位於 <code>apps/platform/ipro7_demo/</code>，包含於 Release SDK v1.2.1。其 <code>demo/ai/</code> 子目錄示範完整的模型載入與推理流程：</p>
             <ul>
                 <li>自 SD 卡 <code>/sdcard/ai_model/</code> 載入 <code>.blai</code> 模型，涵蓋人形、人形+寵物、寵物與人臉偵測</li>
                 <li>透過 shell 指令操作：<code>ai_test</code>（載入模型並以測試影像推理）、<code>ai_inference</code>（執行推理）、<code>ai_status</code>（查詢狀態）</li>
@@ -385,13 +362,13 @@ CONFIG_AI_PREBUILT_PATH="components/ai/prebuilt/libai.a"</code></pre>
                 <li>另有命令模式變體：由外部主控 MCU 經 SPI 主從協議主動發起拍攝與推理請求，適合將 IPRO7AI 作為協同處理器整合進更大的系統</li>
             </ul>
             <div class="alert alert-info">
-                完整的 turnkey AI 攝影機參考設計（含低功耗韌體與量產配置）未包含於 Release SDK v1.0.1，請聯絡原廠取得。
+                完整的 turnkey AI 攝影機參考設計（含低功耗韌體與量產配置）未包含於 Release SDK v1.2.1，請聯絡原廠取得。
             </div>
 
             <h3>NPU 嵌入式視訊串流 over Thread</h3>
             <p>以 NPU 執行 autoencoder，將 640×320 RGB 影格壓縮為 400-byte embedding（壓縮比超過 1500:1）後經 Thread（IEEE 802.15.4）UDP 串流，接收端再以 NPU 解碼還原影像並輸出 UVC webcam 畫面——讓視訊得以在 250 kbps 的低功耗 mesh 網路上以約 2–3 fps 串流。架構與傳輸設計詳見 <a href="{{ '/matter-thread' | relative_url }}#npu-embedding-stream">Matter &amp; Thread：NPU 嵌入式視訊串流</a>。</p>
             <div class="alert alert-info">
-                嵌入式視訊串流參考應用（<code>ipro_embed_*</code>）未包含於 Release SDK v1.0.1，請聯絡原廠取得。
+                嵌入式視訊串流參考應用（<code>ipro_embed_*</code>）未包含於 Release SDK v1.2.1，請聯絡原廠取得。
             </div>
         </section>
 
@@ -533,7 +510,7 @@ CONFIG_AI_DEBUG=y
         <section id="cloud-llm">
             <h2>雲端 LLM Agent</h2>
             <div class="alert alert-warning">
-                <strong>⚠ Release SDK 注意事項：</strong><code>ai_client</code> 元件未包含於 Release SDK v1.0.1，本節內容為能力展示。需要此元件請聯絡原廠取得。
+                <strong>⚠ Release SDK 注意事項：</strong><code>ai_client</code> 元件未包含於 Release SDK v1.2.1，本節內容為能力展示。需要此元件請聯絡原廠取得。
             </div>
             <p>除了端側 NPU 推理之外，IPRO SDK 透過 <code>components/ai_client/</code> 提供完整的雲端 LLM agent 框架。它把多家供應商封裝成統一介面，內建 ReAct 工具呼叫迴圈，可在 IPRO7AI 直接執行對話式 agent，搭配 BLE 與感測器建立 IoT × LLM 應用。請注意：IPRO7AI 本身不含 Wi-Fi，網路連線可透過內建乙太網路（RMII EMAC）或 IPRO6 companion 晶片（SDIO，Wi-Fi 擴充方案，需另行取得）提供，HTTPS 流量經 lwIP + mbedTLS 送出。</p>
 
@@ -604,7 +581,7 @@ CONFIG_AI_CLIENT_RESPONSE_MAX=32768
             <p>呼叫 <code>ai_agent_init()</code> 一次以建立序列化 mutex；之後可從多個 task 安全呼叫 <code>ai_agent_process()</code>。</p>
 
             <h3>參考應用</h3>
-            <p>SDK 團隊已驗證多種雲端 LLM agent 整合場景，包括 BLE PAwR 感測資料 × LLM 工具呼叫的 gateway 應用（BLE controller + lwIP + LLM agent + 感測器資料融合的完整 pipeline），以及將 LLM agent 嵌進長時運行 IoT 服務、避免多 task 競爭 TLS 連線的服務架構。相關參考應用未包含於 Release SDK v1.0.1，請聯絡原廠取得。</p>
+            <p>SDK 團隊已驗證多種雲端 LLM agent 整合場景，包括 BLE PAwR 感測資料 × LLM 工具呼叫的 gateway 應用（BLE controller + lwIP + LLM agent + 感測器資料融合的完整 pipeline），以及將 LLM agent 嵌進長時運行 IoT 服務、避免多 task 競爭 TLS 連線的服務架構。相關參考應用未包含於 Release SDK v1.2.1，請聯絡原廠取得。</p>
 
             <h3>NPU 與雲端 AI 的取捨</h3>
             <table class="api-table">

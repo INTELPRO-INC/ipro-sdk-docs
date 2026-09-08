@@ -9,6 +9,8 @@ title: Changelog - IPRO SDK
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">Releases</h4>
             <ul class="sidebar-links">
+                <li><a href="#tools-3-3-0" class="sidebar-link">Installer / Extension 3.3.0</a></li>
+                <li><a href="#v1-2-1" class="sidebar-link">IPRO-IPRO7-SDK-V1.2.1</a></li>
                 <li><a href="#v1-0-1" class="sidebar-link">IPROREL-IPRO7-V1.0.1</a></li>
                 <li><a href="#v0-0-1" class="sidebar-link">IPRO-BLE-SDK-V0.0.1</a></li>
                 <li><a href="#doc-history" class="sidebar-link">Documentation History</a></li>
@@ -19,6 +21,43 @@ title: Changelog - IPRO SDK
     <article class="doc-content">
         <h1>Changelog</h1>
         <p>Official release history for the IPRO SDK. For an overview of the SDK delivery package, refer to the <code>README.md</code> file included in the package.</p>
+
+        <section id="tools-3-3-0">
+            <h2>Development Tools: Windows Installer / Extension 3.3.0</h2>
+            <p>The installer and extension are versioned independently; these instructions cover SDK V1.2.1. The Windows wizard offers Full, Extension only and SDK only modes. The extension adds component updates from VSIX, SDK ZIP / folder and Git snapshots, alongside Control Center and its built-in Windows serial monitor.</p>
+            <p>See <a href="{{ '/en/windows-installation' | relative_url }}">Windows Installation &amp; Updates</a> and the <a href="{{ '/en/vscode-extension' | relative_url }}">Extension guide</a>. Package availability and supported platforms follow the official delivery notice.</p>
+        </section>
+
+        <section id="v1-2-1">
+            <h2>IPRO-IPRO7-SDK-V1.2.1</h2>
+            <p><strong>Release date:</strong> 2026-09-08</p>
+            <p>The following scope was verified against <code>VERSION.txt</code>, build configurations and files in the release package.</p>
+            <ul>
+                <li>Zephyr 4.4 Host: <code>ipro_bt_host</code>; RivieraWaves v14.0.2 controller: <code>ipro_ble_controller</code>.</li>
+                <li>16 controller archives: four ACL variants × two feature profiles × debug/release configurations. Controller implementation sources are not included.</li>
+                <li>IPRO7-side <code>ipronet_host</code> and <code>sdiowifi</code> components, plus <code>ipro7_sdio_wifi</code>. Matching IPRO6S firmware is required separately.</li>
+                <li>AI inference is supplied as <code>components/ai/lib/libai.a</code> with headers. No <code>.blai</code> model files are included.</li>
+                <li><code>tools/serial_monitor.py</code> is included. The flash tool, board-test script, crash parser and OpenOCD configurations remain separate.</li>
+                <li>See <code>PREBUILT-ARCHIVES-STRIPPED.txt</code>: debug information was removed from the AI, ISP, RF, LC3 and low-power framework archives for compatibility with binutils older than 2.41. Source-level stepping inside those libraries is unavailable in this package.</li>
+            </ul>
+            <div class="table-wrapper">
+                <table>
+                <thead><tr><th>Application</th><th>Path</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td><code>ipro_ble_remote</code></td><td><code>apps/bluetooth/ble/ipro_ble_remote/</code></td><td>GATT services, image transfer and OTA</td></tr>
+                    <tr><td><code>ipro_ble_transparent</code></td><td><code>apps/bluetooth/ble/ipro_ble_transparent/</code></td><td>UART / BLE transparent transfer</td></tr>
+                    <tr><td><code>ipro_throughput_test</code></td><td><code>apps/bluetooth/ble/ipro_throughput_test/</code></td><td>Bidirectional BLE throughput test</td></tr>
+                    <tr><td><code>ipro_ble_hid_keyboard</code></td><td><code>apps/bluetooth/ble/ipro_ble_hid_keyboard/</code></td><td>HID over GATT keyboard</td></tr>
+                    <tr><td><code>ipro_le_audio_headset</code></td><td><code>apps/bluetooth/le_audio/ipro_le_audio_headset/</code></td><td>LE Audio headset with DAC / USB audio output configurations</td></tr>
+                    <tr><td><code>ipro_pdm_mic_demo</code></td><td><code>apps/multimedia/ipro_pdm_mic_demo/</code></td><td>PDM microphone capture, BLE transfer and LC3 compression</td></tr>
+                    <tr><td><code>ipro7_demo</code></td><td><code>apps/platform/ipro7_demo/</code></td><td>Peripheral, imaging, audio and Ethernet demo</td></tr>
+                    <tr><td><code>ipro7_sdio_wifi</code></td><td><code>apps/platform/ipro7_sdio_wifi/</code></td><td>IPRO7 SDIO host with IPRO6S Wi-Fi</td></tr>
+                    <tr><td><code>ipro7ai_evk_demo</code></td><td><code>apps/platform/ipro7ai_evk_demo/</code></td><td>IPRO7AI EVK display, camera, audio and AI / BLE configurations</td></tr>
+                </tbody>
+                </table>
+            </div>
+            <div class="alert alert-info">The V1.0.1 image-capture, standalone BIS source/sink, cloud audio gateway and voice-assistant applications are not included in this package.</div>
+        </section>
 
         <section id="v1-0-1">
             <h2>IPROREL-IPRO7-V1.0.1</h2>

@@ -50,7 +50,13 @@ CONFIG_FREERTOS_SUPPORT=y
 
 # BLE Host + controller variant (prebuilt linkN library)
 CONFIG_BLUETOOTH_LE_ENABLE=y
-CONFIG_BTBLECONTROLLER_LIB="link1"
+CONFIG_BT_CTLR_IPRO=y
+CONFIG_BT_HOST_IPRO_V44=y
+CONFIG_IPRO_BLE_CTLR_LIB="link1"
+CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"
+CONFIG_IPRO_BLE_CTLR_CFG_DBG=n
+CONFIG_BT_CONN=1
+CONFIG_EM_SIZE=32
 
 # NVDS -- BLE pairing/bonding data storage (required for flash BLE apps;
 # without it the link fails with undefined symbol __nvds_start)
@@ -65,29 +71,22 @@ CONFIG_SHELL=y</code></pre>
                 <pre><code class="language-c">#include &lt;stdio.h&gt;
 #include &lt;FreeRTOS.h&gt;
 #include &lt;task.h&gt;
-#include "ble_lib_api.h"          // ble_controller_init()
+#include "ipro_ble_controller.h"          // ipro_ble_ctlr_controller_init()
 #include "freertos_app_hooks.h"   // ipro_platform_init()
 
 static void app_task(void *arg);  // Application main loop (see Step 4)
-
-// Symbol required by the BLE stack, called when stack init completes
-void app_init(void)
-{
-    printf("BLE 5.4 stack initialized\r\n");
-}
 
 int main(void)
 {
     // 1. Platform init (heap + boot2 + log + shell, provided by freertos_app_hooks)
     ipro_platform_init();
 
-    // 2. Initialize the BLE Controller
-    ble_controller_init(configMAX_PRIORITIES - 1);
+    // BLE initialization runs in app_task after scheduler startup.
 
-    // 3. Create the application task
+    // 2. Create the application task
     xTaskCreate(app_task, "app", 2048, NULL, 3, NULL);
 
-    // 4. Start the FreeRTOS scheduler
+    // 3. Start the FreeRTOS scheduler
     vTaskStartScheduler();
     return 0;
 }</code></pre>
@@ -96,10 +95,10 @@ int main(void)
                 </div>
 
                 <h3>Step 4: Enable the BLE Host and Set Up Advertising</h3>
-                <p>In your application task, call <code>hci_driver_init()</code> followed by <code>bt_enable()</code> (the order is fixed: <code>ble_controller_init</code> → <code>hci_driver_init</code> → <code>bt_enable</code>), then start advertising in the ready callback:</p>
-                <pre><code class="language-c">#include &lt;bluetooth/bluetooth.h&gt;
-#include &lt;bluetooth/conn.h&gt;
-#include &lt;hci_driver.h&gt;
+                <p>In your application task, call <code>hci_driver_ipro_ble_ctlr_init()</code> followed by <code>bt_enable()</code> (the order is fixed: <code>ipro_ble_ctlr_controller_init</code> → <code>hci_driver_ipro_ble_ctlr_init</code> → <code>bt_enable</code>), then start advertising in the ready callback:</p>
+                <pre><code class="language-c">#include &lt;zephyr/bluetooth/bluetooth.h&gt;
+#include &lt;zephyr/bluetooth/conn.h&gt;
+#include &lt;hci_driver_ipro_ble_ctlr.h&gt;
 
 static const struct bt_data ad[] = {
     BT_DATA_BYTES(BT_DATA_FLAGS,
@@ -124,13 +123,21 @@ static void bt_ready(int err)
 static void app_task(void *arg)
 {
     // The HCI driver must be initialized before bt_enable()
-    int err = hci_driver_init();
+    int err = ipro_ble_ctlr_controller_init(configMAX_PRIORITIES - 1);
+    if (err) {
+        printf("Controller init failed (err %d)\n", err);
+        vTaskDelete(NULL);
+        return;
+    }
+    vTaskDelay(pdMS_TO_TICKS(50));
+    err = hci_driver_ipro_ble_ctlr_init();
     if (err) {
         printf("HCI driver init failed (err %d)\n", err);
         vTaskDelete(NULL);
         return;
     }
 
+    vTaskDelay(pdMS_TO_TICKS(50));
     err = bt_enable(bt_ready);
     if (err) {
         printf("bt_enable failed (err %d)\n", err);
@@ -236,7 +243,13 @@ CONFIG_FREERTOS_SUPPORT=y
 
 # BLE features and controller variant
 CONFIG_BLUETOOTH_LE_ENABLE=y
-CONFIG_BTBLECONTROLLER_LIB="link1"
+CONFIG_BT_CTLR_IPRO=y
+CONFIG_BT_HOST_IPRO_V44=y
+CONFIG_IPRO_BLE_CTLR_LIB="link1"
+CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"
+CONFIG_IPRO_BLE_CTLR_CFG_DBG=n
+CONFIG_BT_CONN=1
+CONFIG_EM_SIZE=32
 
 # NVDS -- BLE pairing/bonding data storage (required for flash BLE apps)
 CONFIG_ENABLE_NVDS=y
@@ -393,29 +406,21 @@ RX: 0 packets, 0 bytes, 0.00 Kbps (0.00 KBps)</code></pre>
                 </ul>
 
                 <h3>Controller Variant Selection</h3>
-                <p>LE Audio requires controller variants with <code>_leaudio</code> suffix:</p>
                 <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr><th>Variant</th><th>Description</th><th>Use Case</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td><code>link1_leaudio</code></td><td>BLE 5.2 + LE Audio, 1 connection</td><td>Simple headset</td></tr>
-                            <tr><td><code>link2_leaudio</code></td><td>BLE 5.2 + LE Audio, 2 connections</td><td>TWS earbuds</td></tr>
-                            <tr><td><code>link1_leaudio_53_54</code></td><td>BLE 5.4 + LE Audio, 1 connection</td><td>Latest features</td></tr>
-                            <tr><td><code>link2_leaudio_53_54</code></td><td>BLE 5.4 + LE Audio, 2 connections</td><td>Latest TWS</td></tr>
-                            <tr><td><code>link4_leaudio_53_54</code></td><td>BLE 5.4 + LE Audio, 4 connections</td><td>Multi-device scenarios</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+                <table>
+                <thead><tr><th>LIB</th><th>ACL</th><th>Roles</th></tr></thead>
+                <tbody>
+                    <tr><td><code>link1_periph</code></td><td>1</td><td>Peripheral</td></tr>
+                    <tr><td><code>link1</code></td><td>1</td><td>Central + Peripheral</td></tr>
+                    <tr><td><code>link2</code></td><td>2</td><td>Central + Peripheral</td></tr>
+                    <tr><td><code>link4</code></td><td>4</td><td>Central + Peripheral</td></tr>
+                </tbody>
+                </table>
+            </div>
+            <p>Choose <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code> for basic BLE or <code>"bt54_iso2"</code> for BLE 5.4 with two ISO streams (CIS/BIS). The latter requires <code>CONFIG_EM_SIZE</code> of at least 32 KB. Set <code>CONFIG_BT_CONN</code> to the selected ACL connection count.</p>
 
-                <h3>BIS Broadcast Example (Source)</h3>
-                <p>Use <code>ipro_le_audio_bis_source</code> as broadcast source:</p>
-                <pre><code class="language-bash"># Build BIS Source example
-make -C apps/bluetooth/le_audio/ipro_le_audio_bis_source
-
-# Build BIS Sink example
-make -C apps/bluetooth/le_audio/ipro_le_audio_bis_sink</code></pre>
+                <h3>BIS Broadcast Examples</h3>
+            <div class="alert alert-info">Standalone <code>ipro_le_audio_bis_source</code> and <code>ipro_le_audio_bis_sink</code> applications are not included in V1.2.1. The host includes broadcast APIs; contact INTELPRO for complete broadcast reference applications.</div>
 
                 <h3>CIS Unicast Example (Headset)</h3>
                 <p>Use <code>ipro_le_audio_headset</code> as an LE Audio headset:</p>
@@ -423,26 +428,26 @@ make -C apps/bluetooth/le_audio/ipro_le_audio_bis_sink</code></pre>
 make -C apps/bluetooth/le_audio/ipro_le_audio_headset</code></pre>
 
                 <h3>.config Key Settings</h3>
-                <pre><code class="language-bash"># Required LE Audio settings
-CONFIG_BLUETOOTH_LE_ENABLE=y
+                <pre><code class="language-ini">CONFIG_BLUETOOTH_LE_ENABLE=y
+CONFIG_BT_CTLR_IPRO=y
+CONFIG_BT_HOST_IPRO_V44=y
+CONFIG_IPRO_BLE_CTLR_LIB=&quot;link1_periph&quot;
+CONFIG_IPRO_BLE_CTLR_FEATURE=&quot;bt54_iso2&quot;
+CONFIG_IPRO_BLE_CTLR_CFG_DBG=n
+CONFIG_BT_CONN=1
+CONFIG_EM_SIZE=32
 CONFIG_BT_AUDIO=y
-
-# Choose BAP settings according to the application role
-CONFIG_BT_BAP_BROADCAST_SOURCE=y    # BIS broadcast source
-# CONFIG_BT_BAP_UNICAST_SERVER=y    # CIS unicast headset
-
-# LC3 codec
-CONFIG_COMPONENTS_LC3_ENABLE=y
-
-# Controller variant (choose a leaudio version; the Release headset example defaults to link1_leaudio_53_54)
-CONFIG_BTBLECONTROLLER_LIB="link1_leaudio_53_54"</code></pre>
+CONFIG_BT_BAP_UNICAST_SERVER=y
+CONFIG_BT_ASCS=y
+CONFIG_BT_PACS=y
+CONFIG_COMPONENTS_LC3_ENABLE=y</code></pre>
 
                 <div class="info-box">
                     <h4>Reference Applications</h4>
                     <ul>
                         <li><code>apps/bluetooth/le_audio/ipro_le_audio_headset/</code> - GAF/BAP Unicast headset</li>
-                        <li><code>apps/bluetooth/le_audio/ipro_le_audio_bis_source/</code> - BIS broadcast audio source</li>
-                        <li><code>apps/bluetooth/le_audio/ipro_le_audio_bis_sink/</code> - BIS audio sink</li>
+
+
                     </ul>
                 </div>
             </div>

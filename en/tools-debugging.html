@@ -26,11 +26,13 @@ lang: en
     <article class="doc-content">
         <h1>Tools & Debugging</h1>
         <div class="alert alert-warning">
-            <strong>&#9888; Release SDK Notice:</strong> The following tools are <strong>not included</strong> in Release SDK v1.0.1: flash tool (<code>tools/ipro_iot_tool_lite/</code>), serial monitor (<code>tools/serial_monitor.py</code>), board test script (<code>tools/board_test.sh</code>), crash parser (<code>tools/parse_backtrace.py</code>), and OpenOCD configurations (<code>tools/openocd/</code>). Contact the vendor to obtain them. The unified development entry point bundled with the Release SDK is <code>./build_freertos.sh</code> at the SDK root.
+            <strong>Release SDK Notice:</strong> V1.2.1 includes <code>build_freertos.sh</code>, build helper scripts and <code>tools/serial_monitor.py</code>. Install CMake separately. The flash tool, board-test script, crash parser and OpenOCD configurations are not included.
         </div>
         <p>The IPRO SDK provides an integrated toolchain covering the complete development cycle: build, flash, monitor, and debug.</p>
 
         <!-- ============================================================ -->
+        <div class="alert alert-info"><strong>Full Windows installer:</strong> Installer 3.3.0 provides SDK V1.2.1, extension 3.3.0, GCC, CMake, Ninja, Python, IntelProCube and bundled OpenOCD. The standalone SDK archive has a smaller scope; statements below about omitted tools refer to that archive. <a href="{{ '/en/windows-installation' | relative_url }}">Installation and independent updates</a> · <a href="{{ '/en/vscode-extension' | relative_url }}">Extension guide</a></div>
+
         <section id="overview">
             <h2>Overview</h2>
             <p>A typical embedded development workflow follows this cycle:</p>
@@ -51,7 +53,7 @@ lang: en
                         <th>Tool</th>
                         <th>Path</th>
                         <th>Purpose</th>
-                        <th>Release SDK v1.0.1</th>
+                        <th>Release SDK v1.2.1</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -62,10 +64,10 @@ lang: en
                         <td>Included</td>
                     </tr>
                     <tr>
-                        <td>Bundled CMake</td>
-                        <td><code>tools/cmake/</code></td>
-                        <td>CMake used by the build system (Linux x86-64)</td>
-                        <td>Included</td>
+                        <td>CMake</td>
+                        <td><code>cmake</code> (PATH)</td>
+                        <td>CMake 3.19+</td>
+                        <td>Install separately</td>
                     </tr>
                     <tr>
                         <td>Kconfig Parser Script</td>
@@ -83,7 +85,7 @@ lang: en
                         <td>Serial Monitor</td>
                         <td><code>tools/serial_monitor.py</code></td>
                         <td>Serial communication and log capture</td>
-                        <td>Not included (contact vendor)</td>
+                        <td>Included (POSIX)</td>
                     </tr>
                     <tr>
                         <td>Board Test</td>
@@ -232,7 +234,7 @@ lang: en
             </div>
 
             <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> The <code>flash</code>, <code>monitor</code>, and <code>test</code> actions invoke <code>tools/ipro_iot_tool_lite/</code> and <code>tools/serial_monitor.py</code>. These two tools are not included in Release SDK v1.0.1 — contact the vendor to obtain them, then place them at the paths above to use these actions.
+                <strong>&#9888;&#65039;</strong> The flash action still requires the separately supplied flash tool. The monitor action can use the bundled <code>tools/serial_monitor.py</code>.
             </div>
         </section>
 
@@ -240,7 +242,7 @@ lang: en
         <section id="flash-tool">
             <h2>Flash Tool</h2>
             <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> <code>ipro_iot_tool_lite</code> is not included in Release SDK v1.0.1 — contact the vendor to obtain it. Once placed at <code>tools/ipro_iot_tool_lite/</code>, <code>./build_freertos.sh flash &lt;project&gt;</code> will invoke it automatically.
+                <strong>&#9888;&#65039;</strong> <code>ipro_iot_tool_lite</code> is not included in Release SDK v1.2.1 — contact the vendor to obtain it. Once placed at <code>tools/ipro_iot_tool_lite/</code>, <code>./build_freertos.sh flash &lt;project&gt;</code> will invoke it automatically.
             </div>
             <p>The IPRO SDK uses <code>ipro_iot_tool_lite</code> to flash compiled firmware to the development board's Flash memory.</p>
 
@@ -317,7 +319,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --send reboot_dl --timeou
         <section id="serial-monitor">
             <h2>Serial Monitor</h2>
             <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> <code>serial_monitor.py</code> is not included in Release SDK v1.0.1 — contact the vendor to obtain it. Once placed at <code>tools/serial_monitor.py</code>, <code>./build_freertos.sh monitor &lt;project&gt;</code> will invoke it automatically.
+                <strong>V1.2.1:</strong> <code>tools/serial_monitor.py</code> is included for POSIX systems (Linux/macOS). Its <code>termios</code>/<code>fcntl</code> imports are unavailable in native Windows Python.
             </div>
             <p><code>serial_monitor.py</code> is a Python3 termios-based serial monitor that requires no external dependencies such as pyserial.</p>
 
@@ -359,7 +361,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX \
                     </tr>
                     <tr>
                         <td><code>--baud RATE</code></td>
-                        <td>Baud rate (default <code>115200</code>; up to <code>921600</code> supported on macOS)</td>
+                        <td>Baud rate (default <code>115200</code>; supported: 9600, 19200, 38400, 57600, 115200, 230400)</td>
                     </tr>
                     <tr>
                         <td><code>--send CMD</code></td>
@@ -405,7 +407,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX \
         <section id="automated-testing">
             <h2>Automated Testing</h2>
             <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> Neither <code>board_test.sh</code> nor the <code>ipro_unit_test</code> project is included in Release SDK v1.0.1 — contact the vendor for the full board-test environment. The equivalent command bundled with the Release SDK is <code>./build_freertos.sh test &lt;project&gt;</code>.
+                <strong>&#9888;&#65039;</strong> Neither <code>board_test.sh</code> nor the <code>ipro_unit_test</code> project is included in Release SDK v1.2.1 — contact the vendor for the full board-test environment. The equivalent command bundled with the Release SDK is <code>./build_freertos.sh test &lt;project&gt;</code>.
             </div>
             <p><code>board_test.sh</code> integrates the full build, flash, and test workflow, suitable for automated verification and local development.</p>
 
@@ -516,9 +518,10 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX \
 
         <!-- ============================================================ -->
         <section id="gdb-debugging">
+            <div class="alert alert-info">See <code>PREBUILT-ARCHIVES-STRIPPED.txt</code>: AI, ISP, RF, LC3 and low-power framework archives in this package have no debug information. They can be linked, but source-level stepping inside them is unavailable.</div>
             <h2>GDB Debugging</h2>
             <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> The OpenOCD configurations (<code>tools/openocd/</code>) are not included in Release SDK v1.0.1 — contact the vendor to obtain them.
+                <strong>&#9888;&#65039;</strong> The OpenOCD configurations (<code>tools/openocd/</code>) are not included in Release SDK v1.2.1 — contact the vendor to obtain them.
             </div>
             <p>The IPRO SDK supports JTAG debugging through OpenOCD + GDB. The IPRO7 JTAG pins are GPIO0 (TMS), GPIO1 (TDI), GPIO2 (TCK), and GPIO9 (TDO).</p>
 
@@ -605,7 +608,7 @@ openocd -f tools/openocd/openocd_ipro6.cfg
         <section id="crash-analysis">
             <h2>Crash Analysis</h2>
             <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> <code>parse_backtrace.py</code> is not included in Release SDK v1.0.1 — contact the vendor to obtain it. Even without this tool, you can resolve addresses manually with the toolchain's built-in <code>addr2line</code> (see below).
+                <strong>&#9888;&#65039;</strong> <code>parse_backtrace.py</code> is not included in Release SDK v1.2.1 — contact the vendor to obtain it. Even without this tool, you can resolve addresses manually with the toolchain's built-in <code>addr2line</code> (see below).
             </div>
             <p>When the firmware encounters an exception, the exception handler outputs the exception PC, SP (with its owning stack range), saved s0(fp) / ra, and a stack dump. <code>parse_backtrace.py</code> converts these addresses into source file names and line numbers.</p>
 
@@ -678,7 +681,7 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
         <!-- ============================================================ -->
         <section id="size-analysis">
             <h2>Build Size Analysis</h2>
-            <p>Use <code>./build_freertos.sh size &lt;project&gt;</code> (bundled with Release SDK v1.0.1) to inspect firmware memory usage and understand how much Flash and RAM the firmware consumes.</p>
+            <p>Use <code>./build_freertos.sh size &lt;project&gt;</code> (bundled with Release SDK v1.2.1) to inspect firmware memory usage and understand how much Flash and RAM the firmware consumes.</p>
 
             <h3>Usage</h3>
             <div class="code-block">
@@ -762,7 +765,7 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
             </table>
 
             <h3>Bundled CMake</h3>
-            <p>The CMake bundled at <code>tools/cmake/</code> is a Linux x86-64 ELF binary and cannot run on macOS. For macOS development, install CMake via <code>brew install cmake</code> instead.</p>
+            <p>V1.2.1 does not bundle CMake. Install CMake 3.19+ using your system package manager and ensure <code>cmake</code> is on PATH (macOS: <code>brew install cmake</code>).</p>
 
             <h3>Common Issues and Solutions</h3>
             <table>
@@ -790,8 +793,8 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
                         <td>Close the holding process; use Python approach</td>
                     </tr>
                     <tr>
-                        <td>Bundled CMake won't run</td>
-                        <td><code>tools/cmake/</code> is a Linux x86-64 ELF</td>
+                        <td>CMake won't run</td>
+                        <td><code>cmake</code> (PATH) is a Linux x86-64 ELF</td>
                         <td>Use <code>brew install cmake</code></td>
                     </tr>
                 </tbody>
@@ -886,7 +889,7 @@ make -C apps/platform/ipro7_demo</code></pre>
                 <pre><code class="language-bash"># Bundled with the Release SDK: build + flash + monitor, waiting for test results
 ./build_freertos.sh test &lt;project&gt;
 
-# board_test.sh (not included in Release SDK v1.0.1)
+# board_test.sh (not included in Release SDK v1.2.1)
 tools/board_test.sh --project apps/test/ipro_unit_test --report test_results/
 
 # Skip build, flash and test only

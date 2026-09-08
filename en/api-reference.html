@@ -40,23 +40,23 @@ title: API Reference - IPRO SDK
 
         <section id="ble-core">
             <h2>BLE Core Initialization</h2>
-            <p>The BLE subsystem uses Zephyr-style <code>bt_*</code> APIs. Before calling <code>bt_enable()</code>, you must first call <code>ble_controller_init()</code> and then <code>hci_driver_init()</code> in that order — otherwise <code>bt_enable()</code> will fail.</p>
+            <p>The BLE subsystem uses Zephyr-style <code>bt_*</code> APIs. Before calling <code>bt_enable()</code>, you must first call <code>ipro_ble_ctlr_controller_init()</code> and then <code>hci_driver_ipro_ble_ctlr_init()</code> in that order — otherwise <code>bt_enable()</code> will fail.</p>
 
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">ble_lib_api.h / hci_driver.h</span>
+                    <span class="code-block-title">ipro_ble_controller.h / hci_driver_ipro_ble_ctlr.h</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">/** Initialize the BLE controller (creates the controller task, must be called first)
  *  @param task_priority  FreeRTOS priority of the controller task
  *                        (the reference application uses configMAX_PRIORITIES - 1)
  */
-void ble_controller_init(uint8_t task_priority);
+int ipro_ble_ctlr_controller_init(unsigned int task_priority);
 
 /** Initialize the HCI driver (must be called before bt_enable())
  *  @return 0 on success, negative error code on failure
  */
-int hci_driver_init(void);</code></pre>
+int hci_driver_ipro_ble_ctlr_init(void);</code></pre>
             </div>
 
             <div class="code-block">
@@ -93,9 +93,9 @@ const char *bt_get_name(void);</code></pre>
 #include &lt;FreeRTOS.h&gt;
 #include &lt;task.h&gt;
 
-#include &lt;bluetooth/bluetooth.h&gt;
-#include &lt;hci_driver.h&gt;
-#include &lt;ble_lib_api.h&gt;
+#include &lt;zephyr/bluetooth/bluetooth.h&gt;
+#include &lt;hci_driver_ipro_ble_ctlr.h&gt;
+#include &lt;ipro_ble_controller.h&gt;
 
 #define TAG "APP"
 
@@ -112,11 +112,16 @@ static void bt_ready(int err)
 static void app_task(void *arg)
 {
     /* 1. Initialize the BLE controller (must run first) */
-    ble_controller_init(configMAX_PRIORITIES - 1);
+    int err = ipro_ble_ctlr_controller_init(configMAX_PRIORITIES - 1);
+    if (err) {
+        IPRO_LOGE(TAG, "Controller init failed (err %d)", err);
+        vTaskDelete(NULL);
+        return;
+    }
     vTaskDelay(pdMS_TO_TICKS(50));  /* Give the controller task time to start */
 
     /* 2. Initialize the HCI driver */
-    int err = hci_driver_init();
+    err = hci_driver_ipro_ble_ctlr_init();
     if (err == 0) {
         vTaskDelay(pdMS_TO_TICKS(50));
         /* 3. Enable the BLE Host */
@@ -291,7 +296,7 @@ bt_le_scan_stop();</code></pre>
  *  @param param  Connection parameters
  *  @return Connection object pointer, NULL on failure
  */
-struct bt_conn *bt_conn_create_le(const bt_addr_le_t *peer,
+struct bt_conn *bt_conn_le_create(const bt_addr_le_t *peer,
                                   const struct bt_le_conn_param *param);
 
 /** Disconnect a connection
@@ -860,7 +865,7 @@ IPRO_LOGV(tag, format, ...)   // Verbose level
 IPRO_LOGI(TAG, "System started, version %d.%d", major, minor);</code></pre>
             </div>
             <div class="alert alert-info">
-                <p>The BLE Host (blestack) provides an internal <code>logging/log.h</code> compatibility shim intended only for porting Zephyr code; applications should always use the <code>IPRO_LOGx</code> macros from <code>ipro_log.h</code>.</p>
+                <p>The BLE Host (ipro_bt_host) provides an internal <code>zephyr/logging/log.h</code> compatibility shim intended only for porting Zephyr code; applications should always use the <code>IPRO_LOGx</code> macros from <code>ipro_log.h</code>.</p>
             </div>
         </section>
     </article>

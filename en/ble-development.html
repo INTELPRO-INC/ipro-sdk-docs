@@ -32,10 +32,10 @@ lang: en
         <!-- ============================================================ -->
         <section id="zephyr-host">
             <h2>Zephyr BLE Host Architecture</h2>
-            <p>The IPRO SDK's operating system is <strong>FreeRTOS</strong> — Zephyr's role in the SDK is as the source of the BLE Host protocol stack, not as the RTOS kernel. <code>components/wireless/bluetooth/blestack/</code> is ported from the Zephyr BLE Host (GAP, GATT, L2CAP, SMP, ISO, LE Audio) and runs on top of FreeRTOS via the <code>port/</code> layer. Applications always develop against the Zephyr-style <code>bt_*</code> APIs.</p>
+            <p>The IPRO SDK's operating system is <strong>FreeRTOS</strong> — Zephyr's role in the SDK is as the source of the BLE Host protocol stack, not as the RTOS kernel. <code>components/wireless/bluetooth/ipro_bt_host/</code> is ported from the Zephyr BLE Host (GAP, GATT, L2CAP, SMP, ISO, LE Audio) and runs on top of FreeRTOS via the <code>port/</code> layer. Applications always develop against the Zephyr-style <code>bt_*</code> APIs.</p>
             <ul>
-                <li><strong>Host — buildable source</strong>: <code>blestack/</code> is ported from Zephyr; full source ships with the SDK and can be read and debugged directly</li>
-                <li><strong>Controller — prebuilt static libraries</strong>: the RivieraWaves controller ships as prebuilt <code>linkN</code> variant libraries, 13 variants in total: <code>link1_periph</code>, <code>link1</code>, <code>link1_53</code>, <code>link1_54</code>, <code>link2</code>, <code>link2_54</code>, <code>link4</code>, <code>link8</code>, <code>link1_leaudio</code>, <code>link2_leaudio</code>, <code>link1_leaudio_53_54</code>, <code>link2_leaudio_53_54</code>, <code>link4_leaudio_53_54</code></li>
+                <li><strong>Host — Zephyr 4.4 source</strong>: <code>ipro_bt_host/</code> is ported from Zephyr; full source ships with the SDK and can be read and debugged directly</li>
+                <li><strong>Controller</strong>: <code>ipro_ble_controller/lib/</code> — 16 prebuilt archives; see the configuration matrix below.</li>
                 <li><strong>RTOS — FreeRTOS</strong>: scheduling, queues, and timers are all provided by FreeRTOS; the Zephyr kernel is not present in the system</li>
             </ul>
             <div class="alert alert-info">
@@ -56,12 +56,12 @@ lang: en
                     <div class="layer-detail">GAP / GATT Services / Profiles</div>
                 </div>
                 <div class="stack-layer stack-cyan">
-                    <div class="layer-name">BLE Host (Zephyr-based)</div>
+                    <div class="layer-name">BLE Host (Zephyr 4.4)</div>
                     <div class="layer-detail">GAP / GATT / L2CAP / SMP / ISO</div>
                 </div>
                 <div class="stack-layer stack-amber">
                     <div class="layer-name">HCI (On-Chip)</div>
-                    <div class="layer-detail">ipro_hci_wrapper</div>
+                    <div class="layer-detail">ipro_ble_ctlr_hcitl</div>
                 </div>
                 <div class="stack-layer stack-red">
                     <div class="layer-name">BLE Controller (RivieraWaves)</div>
@@ -82,27 +82,17 @@ lang: en
                 <div class="code-block-header">
                     <span class="code-block-title">BLE Component Directory</span>
                 </div>
-                <pre><code>components/wireless/bluetooth/
-├── blestack/                        # Zephyr BLE Host Stack (buildable source)
-│   └── src/
-│       ├── include/bluetooth/       # Public headers
-│       │   ├── bluetooth.h          # bt_enable(), bt_le_adv_start()
-│       │   ├── conn.h               # bt_conn_create_le(), bt_conn_cb_register()
-│       │   ├── gatt.h               # bt_gatt_service_register(), bt_gatt_notify()
-│       │   ├── uuid.h               # BT_UUID_DECLARE_16() etc.
-│       │   ├── hci_host.h           # HCI commands/events (incl. PAwR V2 0x25)
-│       │   └── audio/               # LE Audio APIs (BAP, CAP, VCP, MCP...)
-│       ├── host/                    # GAP / GATT / L2CAP / SMP / ATT / hci_core
-│       ├── audio/                   # LE Audio profile implementations
-│       ├── services/                # Built-in GATT services (bas, dis, hog, ias, scps, spp, atvv, oad)
-│       ├── ipro_hci_wrapper/        # On-chip HCI bridge (Host ↔ Controller)
-│       └── port/                    # FreeRTOS port layer
-├── btblecontroller/                 # Controller public headers (btble_inc/) and port layer (btblecontroller_port/)
-│                                    #   Controller source is not included in the release
-├── btblecontroller_ipro7_&lt;variant&gt;/ # Prebuilt controller static libraries
-├── blemesh/                         # Bluetooth Mesh support
-├── blemesh_model/                   # Mesh model implementations
-└── ble_common.cmake                 # Controller variant configuration (PRIV_CONFIG_GEN_BLE)</code></pre>
+                <pre><code class="language-text">components/wireless/bluetooth/
+├── ipro_bt_host/
+│   ├── upstream/zephyr/include/zephyr/bluetooth/
+│   ├── upstream/zephyr/subsys/bluetooth/
+│   ├── port/
+│   └── tinycrypt/
+├── ipro_ble_controller/
+│   ├── include/
+│   ├── lib/
+│   └── CMakeLists.txt
+└── ble_common.cmake</code></pre>
             </div>
         </section>
 
@@ -110,157 +100,49 @@ lang: en
         <!-- Controller Variants -->
         <!-- ============================================================ -->
         <section id="controller-variants">
-            <h2>Controller Variants</h2>
-            <p>The controller uses a unified connection pool architecture. In <code>linkN</code>, N represents the total simultaneous connection count. Each connection slot can be used as either Central or Peripheral (any role combination).</p>
-
-            <h3>Available Variants</h3>
+            <h2>Controller Configuration</h2>
             <div class="table-wrapper">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Variant</th>
-                            <th>Max Links</th>
-                            <th>BLE Version</th>
-                            <th>LE Audio</th>
-                            <th>Use Case</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>link1_periph</code></td>
-                            <td>1</td>
-                            <td>5.0+</td>
-                            <td>No</td>
-                            <td>Peripheral-only role, minimal footprint (HID, sensor tags)</td>
-                        </tr>
-                        <tr>
-                            <td><code>link1</code></td>
-                            <td>1</td>
-                            <td>5.0+</td>
-                            <td>No</td>
-                            <td>Single connection, all roles (default)</td>
-                        </tr>
-                        <tr>
-                            <td><code>link1_53</code></td>
-                            <td>1</td>
-                            <td>5.3</td>
-                            <td>No</td>
-                            <td>Single connection + BLE 5.3 features</td>
-                        </tr>
-                        <tr>
-                            <td><code>link1_54</code></td>
-                            <td>1</td>
-                            <td>5.4</td>
-                            <td>No</td>
-                            <td>Single connection + BLE 5.4 (incl. PAwR)</td>
-                        </tr>
-                        <tr>
-                            <td><code>link2</code></td>
-                            <td>2</td>
-                            <td>5.0+</td>
-                            <td>No</td>
-                            <td>Dual connection (any 2C+0P / 1C+1P / 0C+2P combo)</td>
-                        </tr>
-                        <tr>
-                            <td><code>link2_54</code></td>
-                            <td>2</td>
-                            <td>5.4</td>
-                            <td>No</td>
-                            <td>Dual connection + PAwR (gateway use cases)</td>
-                        </tr>
-                        <tr>
-                            <td><code>link4</code></td>
-                            <td>4</td>
-                            <td>5.0+</td>
-                            <td>No</td>
-                            <td>Multi-connection applications</td>
-                        </tr>
-                        <tr>
-                            <td><code>link8</code></td>
-                            <td>8</td>
-                            <td>5.0+</td>
-                            <td>No</td>
-                            <td>Hub / gateway</td>
-                        </tr>
-                        <tr>
-                            <td><code>link1_leaudio</code></td>
-                            <td>1</td>
-                            <td>5.2</td>
-                            <td>Yes</td>
-                            <td>LE Audio peripheral</td>
-                        </tr>
-                        <tr>
-                            <td><code>link2_leaudio</code></td>
-                            <td>2</td>
-                            <td>5.2</td>
-                            <td>Yes</td>
-                            <td>LE Audio with 2 links</td>
-                        </tr>
-                        <tr>
-                            <td><code>link1_leaudio_53_54</code></td>
-                            <td>1</td>
-                            <td>5.4</td>
-                            <td>Yes</td>
-                            <td>Latest BLE + LE Audio (single link)</td>
-                        </tr>
-                        <tr>
-                            <td><code>link2_leaudio_53_54</code></td>
-                            <td>2</td>
-                            <td>5.4</td>
-                            <td>Yes</td>
-                            <td>Latest BLE + LE Audio (typical headset)</td>
-                        </tr>
-                        <tr>
-                            <td><code>link4_leaudio_53_54</code></td>
-                            <td>4</td>
-                            <td>5.4</td>
-                            <td>Yes</td>
-                            <td>Quad-link LE Audio (multi-device sync)</td>
-                        </tr>
-                        <tr>
-                            <td><code>uarthci</code></td>
-                            <td>—</td>
-                            <td>—</td>
-                            <td>No</td>
-                            <td>UART HCI bridge mode (host stack disabled, an external host drives HCI commands directly); no prebuilt library — requires controller source, not included in the release, contact the vendor</td>
-                        </tr>
-                    </tbody>
+                <thead><tr><th>LIB</th><th>ACL</th><th>Roles</th></tr></thead>
+                <tbody>
+                    <tr><td><code>link1_periph</code></td><td>1</td><td>Peripheral</td></tr>
+                    <tr><td><code>link1</code></td><td>1</td><td>Central + Peripheral</td></tr>
+                    <tr><td><code>link2</code></td><td>2</td><td>Central + Peripheral</td></tr>
+                    <tr><td><code>link4</code></td><td>4</td><td>Central + Peripheral</td></tr>
+                </tbody>
                 </table>
             </div>
-
-            <h3>Kconfig Configuration</h3>
-            <p>Select the controller variant in your application's <code>.config</code> by specifying the full variant name in <code>CONFIG_BTBLECONTROLLER_LIB</code> (recommended — consistent with every reference application in the SDK):</p>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">.config Variant Selection</span>
-                    <button type="button" class="code-copy-btn" aria-label="Copy code"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Specify the full variant name directly (recommended)
-CONFIG_BTBLECONTROLLER_LIB="link2_leaudio_53_54"
-
-# Or use boolean flag composition (suffixes appended automatically)
-CONFIG_BTBLECONTROLLER_LIB="link2"
-CONFIG_BTBLECONTROLLER_LE_AUDIO=y     # Appends _leaudio
-CONFIG_BTBLECONTROLLER_BT_53=y        # Appends _53
-CONFIG_BTBLECONTROLLER_BT_54=y        # Appends _54
-# Resulting variant: link2_leaudio_53_54</code></pre>
-            </div>
-
-            <div class="alert alert-warning">
-                <strong>Note:</strong> the result of flag composition must map to a prebuilt library directory that actually exists. LE Audio variants are only provided as <code>_leaudio_53_54</code> libraries — raw <code>.config</code> builds do not resolve Kconfig <code>select</code>, so both <code>CONFIG_BTBLECONTROLLER_BT_53=y</code> and <code>CONFIG_BTBLECONTROLLER_BT_54=y</code> must be set explicitly. Base variants (without LE Audio) have no <code>_53_54</code> combination (the existing libraries are <code>link1_53</code>, <code>link1_54</code>, and <code>link2_54</code>) — set only one of the two flags; setting both composes a nonexistent directory and the link stage fails. Specifying the full name directly in <code>CONFIG_BTBLECONTROLLER_LIB</code> avoids this pitfall.
-            </div>
-
-            <div class="alert alert-warning">
-                <strong>NVDS must be enabled:</strong> flash-based BLE applications must set <code>CONFIG_ENABLE_NVDS=y</code> and <code>CONFIG_CFG_NVDS=y</code> in <code>.config</code>, otherwise the controller link stage fails with undefined symbols such as <code>__nvds_start</code>.
-            </div>
-
-            <p>Prebuilt libraries are located at: <code>components/wireless/bluetooth/btblecontroller_ipro7_&lt;variant&gt;/</code></p>
+            <p>Choose <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code> for basic BLE or <code>"bt54_iso2"</code> for BLE 5.4 with two ISO streams (CIS/BIS). The latter requires <code>CONFIG_EM_SIZE</code> of at least 32 KB. Set <code>CONFIG_BT_CONN</code> to the selected ACL connection count.</p>
+            <pre><code class="language-ini">CONFIG_BLUETOOTH_LE_ENABLE=y
+CONFIG_BT_CTLR_IPRO=y
+CONFIG_BT_HOST_IPRO_V44=y
+CONFIG_IPRO_BLE_CTLR_LIB=&quot;link1_periph&quot;
+CONFIG_IPRO_BLE_CTLR_FEATURE=&quot;bt52&quot;
+CONFIG_IPRO_BLE_CTLR_CFG_DBG=n
+CONFIG_BT_CONN=1
+CONFIG_EM_SIZE=16</code></pre>
+            <p>For LE Audio, start from the headset application configuration:</p>
+            <pre><code class="language-ini">CONFIG_BLUETOOTH_LE_ENABLE=y
+CONFIG_BT_CTLR_IPRO=y
+CONFIG_BT_HOST_IPRO_V44=y
+CONFIG_IPRO_BLE_CTLR_LIB=&quot;link1_periph&quot;
+CONFIG_IPRO_BLE_CTLR_FEATURE=&quot;bt54_iso2&quot;
+CONFIG_IPRO_BLE_CTLR_CFG_DBG=n
+CONFIG_BT_CONN=1
+CONFIG_EM_SIZE=32
+CONFIG_BT_AUDIO=y
+CONFIG_BT_BAP_UNICAST_SERVER=y
+CONFIG_BT_ASCS=y
+CONFIG_BT_PACS=y
+CONFIG_COMPONENTS_LC3_ENABLE=y</code></pre>
+            <div class="alert alert-info">Copy a current application configuration when migrating from V1.0.1. The old combined linkN suffixes and BTBLECONTROLLER settings no longer select the current controller.</div>
         </section>
 
         <!-- ============================================================ -->
         <!-- API Patterns -->
         <!-- ============================================================ -->
         <section id="api-patterns">
+            <div class="alert alert-info">Initialize the controller and HCI driver before calling <code>bt_enable()</code>. See the initialization example in <a href="{{ '/en/tutorials' | relative_url }}">Tutorials</a>.</div>
             <h2>API Patterns</h2>
             <p>Applications use Zephyr-style callback-based BLE APIs. The legacy RivieraWaves <code>ke_msg</code> message passing mechanism is internal to the controller only and is not exposed to applications.</p>
 
@@ -270,8 +152,8 @@ CONFIG_BTBLECONTROLLER_BT_54=y        # Appends _54
                     <span class="code-block-title">GAP Advertising Operations</span>
                     <button type="button" class="code-copy-btn" aria-label="Copy code"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">#include &lt;bluetooth/bluetooth.h&gt;
-#include &lt;bluetooth/conn.h&gt;
+                <pre><code class="language-c">#include &lt;zephyr/bluetooth/bluetooth.h&gt;
+#include &lt;zephyr/bluetooth/conn.h&gt;
 
 /* Advertising data */
 static const struct bt_data ad[] = {
@@ -334,8 +216,8 @@ void app_init(void)
                     <span class="code-block-title">Static GATT Service Definition</span>
                     <button type="button" class="code-copy-btn" aria-label="Copy code"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">#include &lt;bluetooth/gatt.h&gt;
-#include &lt;bluetooth/uuid.h&gt;
+                <pre><code class="language-c">#include &lt;zephyr/bluetooth/gatt.h&gt;
+#include &lt;zephyr/bluetooth/uuid.h&gt;
 
 /* Custom UUIDs */
 static struct bt_uuid_128 my_svc_uuid = BT_UUID_INIT_128(
@@ -372,7 +254,7 @@ bt_gatt_notify(conn, &amp;my_svc.attrs[1], my_value, sizeof(my_value));</code></
             </div>
 
             <div class="alert alert-info">
-                <strong>Note:</strong> The legacy RivieraWaves <code>ke_msg</code> API is deprecated. <code>ble_lib_api.h</code> remains the current controller bring-up API — <code>ble_controller_init()</code> is still used alongside the Zephyr <code>bt_*</code> host APIs (see the API Reference). All new application host-layer code should use the Zephyr <code>bt_*</code> APIs.
+                <strong>Note:</strong> The legacy RivieraWaves <code>ke_msg</code> API is deprecated. <code>ipro_ble_controller.h</code> remains the current controller bring-up API — <code>ipro_ble_ctlr_controller_init()</code> is still used alongside the Zephyr <code>bt_*</code> host APIs (see the API Reference). All new application host-layer code should use the Zephyr <code>bt_*</code> APIs.
             </div>
         </section>
 
@@ -381,7 +263,7 @@ bt_gatt_notify(conn, &amp;my_svc.attrs[1], my_value, sizeof(my_value));</code></
         <!-- ============================================================ -->
         <section id="le-audio">
             <h2>LE Audio Ecosystem</h2>
-            <p>The SDK supports comprehensive LE Audio functionality, requiring controller variants with the <code>_leaudio</code> suffix. Headers are located at <code>bluetooth/audio/</code>.</p>
+            <p>LE Audio requires <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt54_iso2"</code>. Headers are under <code>ipro_bt_host/upstream/zephyr/include/zephyr/bluetooth/audio/</code>.</p>
 
             <h3>LE Audio Profiles</h3>
             <div class="table-wrapper">
@@ -433,7 +315,19 @@ bt_gatt_notify(conn, &amp;my_svc.attrs[1], my_value, sizeof(my_value));</code></
                     <button type="button" class="code-copy-btn" aria-label="Copy code"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># Enable the LE Audio controller (BLE 5.4 + LE Audio)
-CONFIG_BTBLECONTROLLER_LIB="link2_leaudio_53_54"
+CONFIG_BLUETOOTH_LE_ENABLE=y
+CONFIG_BT_CTLR_IPRO=y
+CONFIG_BT_HOST_IPRO_V44=y
+CONFIG_IPRO_BLE_CTLR_LIB="link1_periph"
+CONFIG_IPRO_BLE_CTLR_FEATURE="bt54_iso2"
+CONFIG_IPRO_BLE_CTLR_CFG_DBG=n
+CONFIG_BT_CONN=1
+CONFIG_EM_SIZE=32
+CONFIG_BT_AUDIO=y
+CONFIG_BT_BAP_UNICAST_SERVER=y
+CONFIG_BT_ASCS=y
+CONFIG_BT_PACS=y
+CONFIG_COMPONENTS_LC3_ENABLE=y
 
 # Enable LE Audio Host features
 CONFIG_BT_AUDIO=y
@@ -564,6 +458,7 @@ bt_le_per_adv_set_response_data(sync_handle, &amp;rsp_params, &amp;rsp_buf);</co
         <!-- Low Power BLE -->
         <!-- ============================================================ -->
         <section id="low-power">
+            <div class="alert alert-info">For V1.2.1 low-power integration, start with <code>ipro_ble_remote</code> or <code>ipro_pdm_mic_demo</code> and their <code>link1_periph / bt52</code>, 16 KB EM configuration. The controller restricts retained-EM PDS entry to the qualified 16 KB profile; the larger <code>bt54_iso2</code> profile requires at least 32 KB EM and must not inherit that PDS configuration.</div>
             <h2>Low Power BLE</h2>
             <p>IPRO7 supports multiple low-power tiers; BLE applications can enter PDS (Power Down Sleep) between advertising / connection events to reach µA-level average current.</p>
 
@@ -635,111 +530,20 @@ bt_le_per_adv_set_response_data(sync_handle, &amp;rsp_params, &amp;rsp_buf);</co
         <!-- ============================================================ -->
         <section id="reference-apps">
             <h2>Reference Applications</h2>
-            <p>The SDK provides several BLE reference applications covering common Bluetooth use cases.</p>
-
-            <h3>Reference Applications Included in the Release</h3>
             <div class="table-wrapper">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Application</th>
-                            <th>Description</th>
-                            <th>Controller Variant</th>
-                            <th>Path</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>ipro_ble_remote</strong></td>
-                            <td>GATT services + OTA update, multi-service, image transfer at 101 KB/s</td>
-                            <td>link1</td>
-                            <td><code>apps/bluetooth/ble/ipro_ble_remote/</code></td>
-                        </tr>
-                        <tr>
-                            <td><strong>ipro_throughput_test</strong></td>
-                            <td>Throughput benchmark (up to 999 Kbps), native Zephyr bt_* API, Master/Slave roles</td>
-                            <td>link2</td>
-                            <td><code>apps/bluetooth/ble/ipro_throughput_test/</code></td>
-                        </tr>
-                        <tr>
-                            <td><strong>ipro_ble_transparent</strong></td>
-                            <td>UART ↔ BLE transparent bridge</td>
-                            <td>link1</td>
-                            <td><code>apps/bluetooth/ble/ipro_ble_transparent/</code></td>
-                        </tr>
-                        <tr>
-                            <td><strong>ipro_ble_img_capture</strong></td>
-                            <td>BLE image capture demo (paired with ISP)</td>
-                            <td>link1</td>
-                            <td><code>apps/bluetooth/ble/ipro_ble_img_capture/</code></td>
-                        </tr>
-                        <tr>
-                            <td><strong>ipro_le_audio_headset</strong></td>
-                            <td>GAF/BAP unicast audio headset with VCP and CSIP</td>
-                            <td>link1_leaudio_53_54</td>
-                            <td><code>apps/bluetooth/le_audio/ipro_le_audio_headset/</code></td>
-                        </tr>
-                        <tr>
-                            <td><strong>ipro_le_audio_bis_source</strong></td>
-                            <td>BIS broadcaster (audio broadcast source)</td>
-                            <td>link1_leaudio_53_54</td>
-                            <td><code>apps/bluetooth/le_audio/ipro_le_audio_bis_source/</code></td>
-                        </tr>
-                        <tr>
-                            <td><strong>ipro_le_audio_bis_sink</strong></td>
-                            <td>BIS receiver (audio broadcast sink)</td>
-                            <td>link1_leaudio_53_54</td>
-                            <td><code>apps/bluetooth/le_audio/ipro_le_audio_bis_sink/</code></td>
-                        </tr>
-                    </tbody>
+                <thead><tr><th>App</th><th>Description</th><th>LIB / FEATURE</th></tr></thead>
+                <tbody>
+                    <tr><td><code>ipro_ble_remote</code></td><td>GATT services, image transfer and OTA</td><td><code>link1_periph</code> / <code>bt52</code></td></tr>
+                    <tr><td><code>ipro_ble_transparent</code></td><td>UART / BLE transparent transfer</td><td><code>link1</code> / <code>bt52</code></td></tr>
+                    <tr><td><code>ipro_throughput_test</code></td><td>Bidirectional BLE throughput test</td><td><code>link2</code> / <code>bt52</code></td></tr>
+                    <tr><td><code>ipro_ble_hid_keyboard</code></td><td>HID over GATT keyboard</td><td><code>link1</code> / <code>bt52</code></td></tr>
+                    <tr><td><code>ipro_le_audio_headset</code></td><td>LE Audio headset with DAC / USB audio output configurations</td><td><code>link1_periph</code> / <code>bt54_iso2</code></td></tr>
+                    <tr><td><code>ipro_pdm_mic_demo</code></td><td>PDM microphone capture, BLE transfer and LC3 compression</td><td><code>link1_periph</code> / <code>bt52</code></td></tr>
+                </tbody>
                 </table>
             </div>
-
-            <h3>Additional Capability Demonstrations</h3>
-            <p>The following applications demonstrate advanced SDK capabilities. They are not included in the release package — contact the vendor to obtain them for evaluation:</p>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Application</th>
-                            <th>Description</th>
-                            <th>Controller Variant</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>ipro_ble_hid_keyboard</strong></td>
-                            <td>HID over GATT (HOGP) keyboard with modifier key support</td>
-                            <td>link1</td>
-                        </tr>
-                        <tr>
-                            <td><strong>ipro_walkie_talkie</strong></td>
-                            <td>BIS-based LE Audio push-to-talk</td>
-                            <td>link1_leaudio_53_54</td>
-                        </tr>
-                        <tr>
-                            <td><strong>ipro_throughput_demo</strong></td>
-                            <td>Throughput demo variant paired with an Android demo app</td>
-                            <td>link2</td>
-                        </tr>
-                        <tr>
-                            <td><strong>ipro_ble_lowpower_test</strong></td>
-                            <td>PDS31 low-power BLE verification (RF reinit, register save/restore)</td>
-                            <td>link1</td>
-                        </tr>
-                        <tr>
-                            <td><strong>ipro_ble_stress_test</strong></td>
-                            <td>Long-running stress test (connect/disconnect/reconnect loops)</td>
-                            <td>link2</td>
-                        </tr>
-                        <tr>
-                            <td><strong>ipro_blecontroller_test</strong></td>
-                            <td>Controller-only validation (UART HCI mode), bypasses the host stack for low-level testing; depends on controller source, which is not included in the release</td>
-                            <td>uarthci</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+            <p>Standalone BIS source/sink and ESL applications are not included in V1.2.1; contact INTELPRO for availability.</p>
         </section>
 
         <!-- ============================================================ -->
@@ -747,37 +551,12 @@ bt_le_per_adv_set_response_data(sync_handle, &amp;rsp_params, &amp;rsp_buf);</co
         <!-- ============================================================ -->
         <section id="prebuilt-libs">
             <h2>Prebuilt Libraries</h2>
-            <p>The BLE controller is always provided as prebuilt static libraries (<code>.a</code>), each accompanied by <code>.a.version</code> version metadata. Applications only need to specify the variant name in <code>.config</code> (see Controller Variants); the build system links the matching library automatically — no extra build step is required.</p>
-
-            <div class="alert alert-warning">
-                <strong>Important:</strong> the release package does not include controller source, and <code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> is not supported. For custom controller variants (link count, feature combinations), contact the vendor.
-            </div>
-
-            <h3>Library Locations</h3>
-            <p>Prebuilt libraries are stored under <code>components/wireless/bluetooth/</code>, one directory per variant:</p>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Prebuilt Library Directories (all 13 variants)</span>
-                </div>
-                <pre><code>btblecontroller_ipro7_&lt;variant&gt;/
-├── libbtblecontroller_ipro7_&lt;variant&gt;.a          # Prebuilt static library
-├── libbtblecontroller_ipro7_&lt;variant&gt;.a.version  # Version metadata
-└── CMakeLists.txt
-
-btblecontroller_ipro7_link1/
-btblecontroller_ipro7_link1_53/
-btblecontroller_ipro7_link1_54/
-btblecontroller_ipro7_link1_leaudio/
-btblecontroller_ipro7_link1_leaudio_53_54/
-btblecontroller_ipro7_link1_periph/
-btblecontroller_ipro7_link2/
-btblecontroller_ipro7_link2_54/
-btblecontroller_ipro7_link2_leaudio/
-btblecontroller_ipro7_link2_leaudio_53_54/
-btblecontroller_ipro7_link4/
-btblecontroller_ipro7_link4_leaudio_53_54/
-btblecontroller_ipro7_link8/</code></pre>
-            </div>
+            <p><code>components/wireless/bluetooth/ipro_ble_controller/lib/</code></p>
+            <p>The build selects an archive using LIB, FEATURE and <code>CONFIG_IPRO_BLE_CTLR_CFG_DBG</code>. The default is <code>n</code>, selecting a <code>_release.a</code> archive; <code>y</code> selects the archive without that suffix.</p>
+            <pre><code class="language-text">libipro_ble_controller_ipro7_link1_periph_release.a
+libipro_ble_controller_ipro7_link1_periph_bt54_iso2_release.a
+libipro_ble_controller_ipro7_link1_periph_bt54_iso2.a</code></pre>
+            <div class="alert alert-info">Controller implementation sources are omitted. Do not enable <code>CONFIG_IPRO_BLE_CTLR_FORCE_SOURCE_BUILD</code> in this package. Contact INTELPRO for custom controller configurations.</div>
         </section>
     </article>
 </div>

@@ -25,11 +25,13 @@ title: 工具與除錯
     <article class="doc-content">
         <h1>工具與除錯</h1>
         <div class="alert alert-warning">
-            <strong>&#9888; Release SDK 注意事項：</strong>以下工具<strong>未包含</strong>在 Release SDK v1.0.1 中：燒錄工具（<code>tools/ipro_iot_tool_lite/</code>）、串口監控（<code>tools/serial_monitor.py</code>）、板級測試腳本（<code>tools/board_test.sh</code>）、當機解析工具（<code>tools/parse_backtrace.py</code>）與 OpenOCD 配置檔（<code>tools/openocd/</code>）。如有需要請聯絡原廠取得。Release SDK 內建的統一開發入口為 SDK 根目錄的 <code>./build_freertos.sh</code>。
+            <strong>Release SDK 注意事項：</strong> V1.2.1 已隨附 <code>build_freertos.sh</code>、建構輔助腳本與 <code>tools/serial_monitor.py</code>。CMake 需自行安裝；燒錄工具、板級測試腳本、當機解析工具與 OpenOCD 配置未隨附。
         </div>
         <p>IPRO SDK 提供了完整的開發工具鏈，涵蓋從建構、燒錄、監控到除錯的完整開發週期。</p>
 
         <!-- ============================================================ -->
+        <div class="alert alert-info"><strong>Windows 完整安裝包：</strong>首次 Windows 開發可使用 Installer 3.3.0，一次取得 SDK V1.2.1、Extension 3.3.0、GCC、CMake、Ninja、Python、IntelProCube 與隨附 OpenOCD。下方「未隨附」說明是指 SDK 獨立原始碼交付包。 <a href="{{ '/windows-installation' | relative_url }}">安裝與獨立更新步驟</a> · <a href="{{ '/vscode-extension' | relative_url }}">Extension 操作指南</a></div>
+
         <section id="overview">
             <h2>概述</h2>
             <p>典型的嵌入式開發流程如下：</p>
@@ -51,7 +53,7 @@ title: 工具與除錯
                         <th>工具</th>
                         <th>路徑</th>
                         <th>用途</th>
-                        <th>Release SDK v1.0.1</th>
+                        <th>Release SDK v1.2.1</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -62,10 +64,10 @@ title: 工具與除錯
                         <td>內含</td>
                     </tr>
                     <tr>
-                        <td>綁定 CMake</td>
-                        <td><code>tools/cmake/</code></td>
-                        <td>建構系統使用的 CMake（Linux x86-64）</td>
-                        <td>內含</td>
+                        <td>CMake</td>
+                        <td><code>cmake</code> (PATH)</td>
+                        <td>CMake 3.19+</td>
+                        <td>需自行安裝</td>
                     </tr>
                     <tr>
                         <td>Kconfig 解析腳本</td>
@@ -83,7 +85,7 @@ title: 工具與除錯
                         <td>串口監控</td>
                         <td><code>tools/serial_monitor.py</code></td>
                         <td>串口通訊與日誌擷取</td>
-                        <td>未內含（請聯絡原廠）</td>
+                        <td>內含（POSIX）</td>
                     </tr>
                     <tr>
                         <td>板級測試</td>
@@ -232,7 +234,7 @@ title: 工具與除錯
             </div>
 
             <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> <code>flash</code>、<code>monitor</code> 與 <code>test</code> action 會呼叫 <code>tools/ipro_iot_tool_lite/</code> 與 <code>tools/serial_monitor.py</code>。這兩個工具未包含於 Release SDK v1.0.1，請聯絡原廠取得，放置於上述路徑後即可直接使用。
+                <strong>&#9888;&#65039;</strong> <code>flash</code> 仍需另行取得燒錄工具；<code>monitor</code> 可使用已隨附的 <code>tools/serial_monitor.py</code>。
             </div>
         </section>
 
@@ -240,7 +242,7 @@ title: 工具與除錯
         <section id="flash-tool">
             <h2>燒錄工具</h2>
             <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> <code>ipro_iot_tool_lite</code> 未包含於 Release SDK v1.0.1，請聯絡原廠取得。取得後放置於 <code>tools/ipro_iot_tool_lite/</code>，<code>./build_freertos.sh flash &lt;project&gt;</code> 即會自動呼叫。
+                <strong>&#9888;&#65039;</strong> <code>ipro_iot_tool_lite</code> 未包含於 Release SDK v1.2.1，請聯絡原廠取得。取得後放置於 <code>tools/ipro_iot_tool_lite/</code>，<code>./build_freertos.sh flash &lt;project&gt;</code> 即會自動呼叫。
             </div>
             <p>IPRO SDK 使用 <code>ipro_iot_tool_lite</code> 將編譯好的韌體燒錄到開發板的 Flash 記憶體中。</p>
 
@@ -317,7 +319,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --send reboot_dl --timeou
         <section id="serial-monitor">
             <h2>串口監控</h2>
             <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> <code>serial_monitor.py</code> 未包含於 Release SDK v1.0.1，請聯絡原廠取得。取得後放置於 <code>tools/serial_monitor.py</code>，<code>./build_freertos.sh monitor &lt;project&gt;</code> 即會自動呼叫。
+                <strong>V1.2.1:</strong> <code>tools/serial_monitor.py</code> 已隨附，適用於 Linux/macOS 等 POSIX 環境；原生 Windows Python 不提供其所需的 <code>termios</code>/<code>fcntl</code>。
             </div>
             <p><code>serial_monitor.py</code> 是一個基於 Python3 termios 的串口監控工具，不需要安裝 pyserial 等額外依賴。</p>
 
@@ -359,7 +361,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX \
                     </tr>
                     <tr>
                         <td><code>--baud RATE</code></td>
-                        <td>鮑率（預設 <code>115200</code>，macOS 上支援至 <code>921600</code>）</td>
+                        <td>鮑率（預設 <code>115200</code>，支援 9600、19200、38400、57600、115200、230400）</td>
                     </tr>
                     <tr>
                         <td><code>--send CMD</code></td>
@@ -405,7 +407,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX \
         <section id="automated-testing">
             <h2>自動化測試</h2>
             <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> <code>board_test.sh</code> 與 <code>ipro_unit_test</code> 測試專案皆未包含於 Release SDK v1.0.1，如需完整板級測試環境請聯絡原廠取得。Release SDK 內建的等效指令為 <code>./build_freertos.sh test &lt;project&gt;</code>。
+                <strong>&#9888;&#65039;</strong> <code>board_test.sh</code> 與 <code>ipro_unit_test</code> 測試專案皆未包含於 Release SDK v1.2.1，如需完整板級測試環境請聯絡原廠取得。Release SDK 內建的等效指令為 <code>./build_freertos.sh test &lt;project&gt;</code>。
             </div>
             <p><code>board_test.sh</code> 整合了建構、燒錄與測試的完整流程，適用於自動化驗證與本地開發。</p>
 
@@ -516,9 +518,10 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX \
 
         <!-- ============================================================ -->
         <section id="gdb-debugging">
+            <div class="alert alert-info">依 <code>PREBUILT-ARCHIVES-STRIPPED.txt</code>，交付包中的 AI、ISP、RF、LC3 與低功耗框架函式庫已移除除錯資訊；可正常連結，但無法於庫內進行原始碼層級單步除錯。</div>
             <h2>GDB 除錯</h2>
             <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> OpenOCD 配置檔（<code>tools/openocd/</code>）未包含於 Release SDK v1.0.1，請聯絡原廠取得。
+                <strong>&#9888;&#65039;</strong> OpenOCD 配置檔（<code>tools/openocd/</code>）未包含於 Release SDK v1.2.1，請聯絡原廠取得。
             </div>
             <p>IPRO SDK 支援透過 OpenOCD + GDB 進行 JTAG 除錯。IPRO7 的 JTAG 腳位為 GPIO0（TMS）、GPIO1（TDI）、GPIO2（TCK）、GPIO9（TDO）。</p>
 
@@ -604,7 +607,7 @@ openocd -f tools/openocd/openocd_ipro6.cfg
         <section id="crash-analysis">
             <h2>當機分析</h2>
             <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> <code>parse_backtrace.py</code> 未包含於 Release SDK v1.0.1，請聯絡原廠取得。即使沒有此工具，也可以使用工具鏈內建的 <code>addr2line</code> 手動解析（見下方）。
+                <strong>&#9888;&#65039;</strong> <code>parse_backtrace.py</code> 未包含於 Release SDK v1.2.1，請聯絡原廠取得。即使沒有此工具，也可以使用工具鏈內建的 <code>addr2line</code> 手動解析（見下方）。
             </div>
             <p>當韌體發生異常（exception）時，異常處理程式會輸出異常 PC、SP（含所屬堆疊範圍）、saved s0(fp) / ra 與堆疊內容傾印。<code>parse_backtrace.py</code> 可以將這些位址轉換為對應的原始碼檔案與行號。</p>
 
@@ -677,7 +680,7 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
         <!-- ============================================================ -->
         <section id="size-analysis">
             <h2>建構分析</h2>
-            <p>使用 <code>./build_freertos.sh size &lt;project&gt;</code>（Release SDK v1.0.1 內建）可以檢視韌體的記憶體使用情況，幫助您了解韌體佔用了多少 Flash 與 RAM。</p>
+            <p>使用 <code>./build_freertos.sh size &lt;project&gt;</code>（Release SDK v1.2.1 內建）可以檢視韌體的記憶體使用情況，幫助您了解韌體佔用了多少 Flash 與 RAM。</p>
 
             <h3>使用方式</h3>
             <div class="code-block">
@@ -761,7 +764,7 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
             </table>
 
             <h3>綁定 CMake</h3>
-            <p><code>tools/cmake/</code> 內綁定的 CMake 為 Linux x86-64 ELF 二進位檔，無法在 macOS 上執行。macOS 開發請改用 <code>brew install cmake</code> 安裝系統 CMake。</p>
+            <p>V1.2.1 未綁定 CMake。請透過系統套件管理器安裝 CMake 3.19+，並確認 PATH 中可執行 <code>cmake</code>；macOS 可使用 <code>brew install cmake</code>。</p>
 
             <h3>常見問題與解決方案</h3>
             <table>
@@ -789,8 +792,8 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
                         <td>關閉佔用程序，使用 Python 方案</td>
                     </tr>
                     <tr>
-                        <td>綁定 CMake 無法執行</td>
-                        <td><code>tools/cmake/</code> 為 Linux x86-64 ELF</td>
+                        <td>CMake 無法執行</td>
+                        <td><code>cmake</code> (PATH) 為 Linux x86-64 ELF</td>
                         <td>使用 <code>brew install cmake</code></td>
                     </tr>
                 </tbody>
@@ -885,7 +888,7 @@ make -C apps/platform/ipro7_demo</code></pre>
                 <pre><code class="language-bash"># Release SDK 內建：建構 + 燒錄 + 監控並等待測試結果
 ./build_freertos.sh test &lt;project&gt;
 
-# board_test.sh（未包含於 Release SDK v1.0.1）
+# board_test.sh（未包含於 Release SDK v1.2.1）
 tools/board_test.sh --project apps/test/ipro_unit_test --report test_results/
 
 # 跳過建構，僅燒錄與測試

@@ -50,7 +50,13 @@ CONFIG_FREERTOS_SUPPORT=y
 
 # BLE Host + Controller 變體（prebuilt linkN library）
 CONFIG_BLUETOOTH_LE_ENABLE=y
-CONFIG_BTBLECONTROLLER_LIB="link1"
+CONFIG_BT_CTLR_IPRO=y
+CONFIG_BT_HOST_IPRO_V44=y
+CONFIG_IPRO_BLE_CTLR_LIB="link1"
+CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"
+CONFIG_IPRO_BLE_CTLR_CFG_DBG=n
+CONFIG_BT_CONN=1
+CONFIG_EM_SIZE=32
 
 # NVDS — BLE 配對/綁定資料儲存（flash BLE app 必須啟用，
 # 缺少時會在連結階段出現 __nvds_start 未定義錯誤）
@@ -65,29 +71,22 @@ CONFIG_SHELL=y</code></pre>
                 <pre><code class="language-c">#include &lt;stdio.h&gt;
 #include &lt;FreeRTOS.h&gt;
 #include &lt;task.h&gt;
-#include "ble_lib_api.h"          // ble_controller_init()
+#include "ipro_ble_controller.h"          // ipro_ble_ctlr_controller_init()
 #include "freertos_app_hooks.h"   // ipro_platform_init()
 
 static void app_task(void *arg);  // 應用主迴圈（見步驟 4）
-
-// BLE stack 要求的符號，stack 初始化完成時會被呼叫
-void app_init(void)
-{
-    printf("BLE 5.4 stack initialized\r\n");
-}
 
 int main(void)
 {
     // 1. 平台初始化（heap + boot2 + log + shell，由 freertos_app_hooks 提供）
     ipro_platform_init();
 
-    // 2. 初始化 BLE Controller
-    ble_controller_init(configMAX_PRIORITIES - 1);
+    // BLE 初始化由排程器啟動後的 app_task 執行。
 
-    // 3. 建立應用 Task
+    // 2. 建立應用 Task
     xTaskCreate(app_task, "app", 2048, NULL, 3, NULL);
 
-    // 4. 啟動 FreeRTOS 排程器
+    // 3. 啟動 FreeRTOS 排程器
     vTaskStartScheduler();
     return 0;
 }</code></pre>
@@ -96,10 +95,10 @@ int main(void)
                 </div>
 
                 <h3>步驟 4：啟用 BLE Host 與設定 Advertising</h3>
-                <p>在應用 Task 中依序呼叫 <code>hci_driver_init()</code> 與 <code>bt_enable()</code>（順序固定：<code>ble_controller_init</code> → <code>hci_driver_init</code> → <code>bt_enable</code>），並在 ready 回呼中啟動廣播：</p>
-                <pre><code class="language-c">#include &lt;bluetooth/bluetooth.h&gt;
-#include &lt;bluetooth/conn.h&gt;
-#include &lt;hci_driver.h&gt;
+                <p>在應用 Task 中依序呼叫 <code>hci_driver_ipro_ble_ctlr_init()</code> 與 <code>bt_enable()</code>（順序固定：<code>ipro_ble_ctlr_controller_init</code> → <code>hci_driver_ipro_ble_ctlr_init</code> → <code>bt_enable</code>），並在 ready 回呼中啟動廣播：</p>
+                <pre><code class="language-c">#include &lt;zephyr/bluetooth/bluetooth.h&gt;
+#include &lt;zephyr/bluetooth/conn.h&gt;
+#include &lt;hci_driver_ipro_ble_ctlr.h&gt;
 
 static const struct bt_data ad[] = {
     BT_DATA_BYTES(BT_DATA_FLAGS,
@@ -124,13 +123,21 @@ static void bt_ready(int err)
 static void app_task(void *arg)
 {
     // HCI driver 必須在 bt_enable() 之前初始化
-    int err = hci_driver_init();
+    int err = ipro_ble_ctlr_controller_init(configMAX_PRIORITIES - 1);
+    if (err) {
+        printf("Controller init failed (err %d)\n", err);
+        vTaskDelete(NULL);
+        return;
+    }
+    vTaskDelay(pdMS_TO_TICKS(50));
+    err = hci_driver_ipro_ble_ctlr_init();
     if (err) {
         printf("HCI driver init failed (err %d)\n", err);
         vTaskDelete(NULL);
         return;
     }
 
+    vTaskDelay(pdMS_TO_TICKS(50));
     err = bt_enable(bt_ready);
     if (err) {
         printf("bt_enable failed (err %d)\n", err);
@@ -236,7 +243,13 @@ CONFIG_FREERTOS_SUPPORT=y
 
 # BLE 功能與 Controller 變體
 CONFIG_BLUETOOTH_LE_ENABLE=y
-CONFIG_BTBLECONTROLLER_LIB="link1"
+CONFIG_BT_CTLR_IPRO=y
+CONFIG_BT_HOST_IPRO_V44=y
+CONFIG_IPRO_BLE_CTLR_LIB="link1"
+CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"
+CONFIG_IPRO_BLE_CTLR_CFG_DBG=n
+CONFIG_BT_CONN=1
+CONFIG_EM_SIZE=32
 
 # NVDS — BLE 配對/綁定資料儲存（flash BLE app 必須）
 CONFIG_ENABLE_NVDS=y
@@ -393,29 +406,21 @@ RX: 0 packets, 0 bytes, 0.00 Kbps (0.00 KBps)</code></pre>
                 </ul>
 
                 <h3>Controller 變體選擇</h3>
-                <p>LE Audio 需要使用帶 <code>_leaudio</code> 後綴的 Controller 變體：</p>
                 <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr><th>變體</th><th>說明</th><th>適用場景</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td><code>link1_leaudio</code></td><td>BLE 5.2 + LE Audio, 1 連線</td><td>簡單耳機</td></tr>
-                            <tr><td><code>link2_leaudio</code></td><td>BLE 5.2 + LE Audio, 2 連線</td><td>TWS 耳機</td></tr>
-                            <tr><td><code>link1_leaudio_53_54</code></td><td>BLE 5.4 + LE Audio, 1 連線</td><td>最新功能</td></tr>
-                            <tr><td><code>link2_leaudio_53_54</code></td><td>BLE 5.4 + LE Audio, 2 連線</td><td>最新 TWS</td></tr>
-                            <tr><td><code>link4_leaudio_53_54</code></td><td>BLE 5.4 + LE Audio, 4 連線</td><td>多裝置場景</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+                <table>
+                <thead><tr><th>LIB</th><th>ACL</th><th>角色</th></tr></thead>
+                <tbody>
+                    <tr><td><code>link1_periph</code></td><td>1</td><td>Peripheral</td></tr>
+                    <tr><td><code>link1</code></td><td>1</td><td>Central + Peripheral</td></tr>
+                    <tr><td><code>link2</code></td><td>2</td><td>Central + Peripheral</td></tr>
+                    <tr><td><code>link4</code></td><td>4</td><td>Central + Peripheral</td></tr>
+                </tbody>
+                </table>
+            </div>
+            <p>基本 BLE 選擇 <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code>；BLE 5.4 與兩路 ISO 串流（CIS/BIS）選擇 <code>"bt54_iso2"</code>，後者要求 <code>CONFIG_EM_SIZE</code> 至少 32 KB。<code>CONFIG_BT_CONN</code> 應與所選 ACL 連線數一致。</p>
 
-                <h3>BIS 廣播範例 (Source)</h3>
-                <p>使用 <code>ipro_le_audio_bis_source</code> 作為廣播源：</p>
-                <pre><code class="language-bash"># 建構 BIS Source 範例
-make -C apps/bluetooth/le_audio/ipro_le_audio_bis_source
-
-# 建構 BIS Sink 範例
-make -C apps/bluetooth/le_audio/ipro_le_audio_bis_sink</code></pre>
+                <h3>BIS 廣播範例</h3>
+            <div class="alert alert-info">V1.2.1 未隨附獨立 <code>ipro_le_audio_bis_source</code> 與 <code>ipro_le_audio_bis_sink</code> 應用。Host 包含廣播 API；完整廣播參考應用請聯絡原廠取得。</div>
 
                 <h3>CIS Unicast 範例 (Headset)</h3>
                 <p>使用 <code>ipro_le_audio_headset</code> 作為 LE Audio 耳機：</p>
@@ -423,26 +428,26 @@ make -C apps/bluetooth/le_audio/ipro_le_audio_bis_sink</code></pre>
 make -C apps/bluetooth/le_audio/ipro_le_audio_headset</code></pre>
 
                 <h3>.config 設定重點</h3>
-                <pre><code class="language-bash"># LE Audio 必要設定
-CONFIG_BLUETOOTH_LE_ENABLE=y
+                <pre><code class="language-ini">CONFIG_BLUETOOTH_LE_ENABLE=y
+CONFIG_BT_CTLR_IPRO=y
+CONFIG_BT_HOST_IPRO_V44=y
+CONFIG_IPRO_BLE_CTLR_LIB=&quot;link1_periph&quot;
+CONFIG_IPRO_BLE_CTLR_FEATURE=&quot;bt54_iso2&quot;
+CONFIG_IPRO_BLE_CTLR_CFG_DBG=n
+CONFIG_BT_CONN=1
+CONFIG_EM_SIZE=32
 CONFIG_BT_AUDIO=y
-
-# 依應用角色選擇 BAP 設定
-CONFIG_BT_BAP_BROADCAST_SOURCE=y    # BIS 廣播源
-# CONFIG_BT_BAP_UNICAST_SERVER=y    # CIS Unicast 耳機
-
-# LC3 編解碼器
-CONFIG_COMPONENTS_LC3_ENABLE=y
-
-# Controller 變體（選擇 leaudio 版本；Release 的 headset 範例預設為 link1_leaudio_53_54）
-CONFIG_BTBLECONTROLLER_LIB="link1_leaudio_53_54"</code></pre>
+CONFIG_BT_BAP_UNICAST_SERVER=y
+CONFIG_BT_ASCS=y
+CONFIG_BT_PACS=y
+CONFIG_COMPONENTS_LC3_ENABLE=y</code></pre>
 
                 <div class="info-box">
                     <h4>參考應用</h4>
                     <ul>
                         <li><code>apps/bluetooth/le_audio/ipro_le_audio_headset/</code> - GAF/BAP Unicast 耳機</li>
-                        <li><code>apps/bluetooth/le_audio/ipro_le_audio_bis_source/</code> - BIS 廣播音訊源</li>
-                        <li><code>apps/bluetooth/le_audio/ipro_le_audio_bis_sink/</code> - BIS 音訊接收器</li>
+
+
                     </ul>
                 </div>
             </div>

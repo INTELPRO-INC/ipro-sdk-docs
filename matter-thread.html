@@ -23,7 +23,7 @@ title: Matter & Thread 開發指南
 
     <article class="doc-content">
         <div class="alert alert-warning" style="margin-bottom: 2rem;">
-            <strong>⚠ Release SDK 注意事項：</strong>此功能未包含在 Release SDK v1.0.1 中。以下內容僅供參考；如需 Matter/Thread 相關元件與工具，請聯絡原廠取得。
+            <strong>⚠ Release SDK 注意事項：</strong>此功能未包含在 Release SDK v1.2.1 中。以下內容僅供參考；如需 Matter/Thread 相關元件與工具，請聯絡原廠取得。
         </div>
         <h1>Matter & Thread 開發指南</h1>
         <p>IPRO SDK 支援 Matter 1.5 統一智慧家庭協定以及 Thread 1.4 低功耗網狀網路，讓您的裝置能夠與 Apple Home、Google Home、Amazon Alexa 等生態系統無縫互通。</p>
@@ -491,7 +491,7 @@ apps/networking/thread/ipro_thread_ftd_cli/build/build_out/ipro_thread_ftd_cli_I
             <h2>NPU 嵌入式視訊串流 over Thread（能力展示）</h2>
 
             <div class="alert alert-warning">
-                <strong>⚠ Release SDK 注意事項：</strong>本節為能力展示。NPU 嵌入式視訊串流參考應用（<code>ipro_embed_*</code>）未包含於 Release SDK v1.0.1，如需評估請聯絡原廠取得。
+                <strong>⚠ Release SDK 注意事項：</strong>本節為能力展示。NPU 嵌入式視訊串流參考應用（<code>ipro_embed_*</code>）未包含於 Release SDK v1.2.1，如需評估請聯絡原廠取得。
             </div>
 
             <p>IEEE 802.15.4 的實體層速率僅 250 kbps，傳統視訊編碼（MJPEG、H.264）即使在最低位元率下也無法於 Thread 網路串流。IPRO7-AI 改以 NPU 執行 autoencoder 神經網路，將整張 640×320 RGB 影格直接壓縮成 <strong>400 bytes</strong> 的 embedding（壓縮比超過 1500:1），接收端再以 NPU 解碼還原影像——讓視訊串流在標準 Thread mesh 上成為可能。</p>

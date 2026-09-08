@@ -178,29 +178,27 @@ riscv64-unknown-elf-nm --size-sort apps/bluetooth/ble/ipro_ble_remote/build/buil
                 <div class="faq-answer">
                     <p>根據應用需求選擇合適的 Controller 變體：</p>
                     <div class="table-wrapper">
-                        <table>
-                            <thead>
-                                <tr><th>變體</th><th>連線數</th><th>說明</th><th>適用場景</th></tr>
-                            </thead>
-                            <tbody>
-                                <tr><td><code>link1_periph</code></td><td>1</td><td>僅 Peripheral</td><td>最小 footprint 的簡單周邊裝置</td></tr>
-                                <tr><td><code>link1</code></td><td>1</td><td>Central + Peripheral</td><td>單一連線應用</td></tr>
-                                <tr><td><code>link2</code></td><td>2</td><td>Central + Peripheral</td><td>雙連線應用</td></tr>
-                                <tr><td><code>link4</code></td><td>4</td><td>多連線</td><td>閘道器、多裝置管理</td></tr>
-                                <tr><td><code>link8</code></td><td>8</td><td>多連線</td><td>大型多連線場景</td></tr>
-                                <tr><td><code>link2_54</code></td><td>2</td><td>BLE 5.4</td><td>需要 BLE 5.4 功能的雙連線應用</td></tr>
-                                <tr><td><code>link1_leaudio</code></td><td>1</td><td>BLE 5.2 + LE Audio</td><td>簡單 LE Audio 耳機</td></tr>
-                                <tr><td><code>link2_leaudio</code></td><td>2</td><td>BLE 5.2 + LE Audio</td><td>TWS 耳機</td></tr>
-                                <tr><td><code>link1_leaudio_53_54</code></td><td>1</td><td>BLE 5.4 + LE Audio</td><td>最新 LE Audio 功能</td></tr>
-                                <tr><td><code>link2_leaudio_53_54</code></td><td>2</td><td>BLE 5.4 + LE Audio</td><td>最新 TWS 功能</td></tr>
-                                <tr><td><code>link4_leaudio_53_54</code></td><td>4</td><td>BLE 5.4 + LE Audio</td><td>多連線 LE Audio 應用</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <p>在應用程式的 <code>.config</code> 中以 <code>CONFIG_BTBLECONTROLLER_LIB</code> 選擇變體：</p>
+                <table>
+                <thead><tr><th>LIB</th><th>ACL</th><th>角色</th></tr></thead>
+                <tbody>
+                    <tr><td><code>link1_periph</code></td><td>1</td><td>Peripheral</td></tr>
+                    <tr><td><code>link1</code></td><td>1</td><td>Central + Peripheral</td></tr>
+                    <tr><td><code>link2</code></td><td>2</td><td>Central + Peripheral</td></tr>
+                    <tr><td><code>link4</code></td><td>4</td><td>Central + Peripheral</td></tr>
+                </tbody>
+                </table>
+            </div>
+            <p>基本 BLE 選擇 <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code>；BLE 5.4 與兩路 ISO 串流（CIS/BIS）選擇 <code>"bt54_iso2"</code>，後者要求 <code>CONFIG_EM_SIZE</code> 至少 32 KB。<code>CONFIG_BT_CONN</code> 應與所選 ACL 連線數一致。</p>
+                    <p>在應用程式的 <code>.config</code> 中以 <code>CONFIG_IPRO_BLE_CTLR_LIB</code> 選擇變體：</p>
                     <pre><code class="language-bash"># 選擇 Controller 變體
-CONFIG_BTBLECONTROLLER_LIB="link1"</code></pre>
-                    <p>SDK 範例的預設值：BLE 範例（<code>ipro_ble_remote</code>、<code>ipro_ble_transparent</code>）預設 <code>link1</code>，LE Audio headset 範例預設 <code>link1_leaudio_53_54</code>。連線模型採用統一連線池，任何連線都可以是 Central 或 Peripheral 角色，可自由組合。</p>
+CONFIG_BT_CTLR_IPRO=y
+CONFIG_BT_HOST_IPRO_V44=y
+CONFIG_IPRO_BLE_CTLR_LIB="link1"
+CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"
+CONFIG_IPRO_BLE_CTLR_CFG_DBG=n
+CONFIG_BT_CONN=1
+CONFIG_EM_SIZE=32</code></pre>
+                    <p>V1.2.1 預設值：Remote 使用 <code>link1_periph / bt52</code>；Transparent 與 HID Keyboard 使用 <code>link1 / bt52</code>；Throughput Test 使用 <code>link2 / bt52</code>；Headset 使用 <code>link1_periph / bt54_iso2</code>。只有 <code>link1</code>、<code>link2</code> 與 <code>link4</code> 支援 Central 與 Peripheral 雙角色。</p>
                 </div>
             </div>
 
@@ -211,10 +209,16 @@ CONFIG_BTBLECONTROLLER_LIB="link1"</code></pre>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>BLE Controller 僅以預編譯靜態函式庫（<code>.a</code>）形式提供，依 linkN 變體分別放在 <code>components/wireless/bluetooth/btblecontroller_ipro7_link*/</code> 目錄。Controller 原始碼不包含在 SDK 中。</p>
+                    <p>BLE Controller 僅以預編譯靜態函式庫（<code>.a</code>）形式提供，依 ACL 連線数、功能配置與 CFG_DBG 選擇，存放在 <code>components/wireless/bluetooth/ipro_ble_controller/lib/</code> 目錄。Controller 原始碼不包含在 SDK 中。</p>
                     <p>在應用程式的 <code>.config</code> 中設定要連結的變體即可：</p>
                     <pre><code class="language-bash"># 選擇 Controller 變體
-CONFIG_BTBLECONTROLLER_LIB="link1"</code></pre>
+CONFIG_BT_CTLR_IPRO=y
+CONFIG_BT_HOST_IPRO_V44=y
+CONFIG_IPRO_BLE_CTLR_LIB="link1"
+CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"
+CONFIG_IPRO_BLE_CTLR_CFG_DBG=n
+CONFIG_BT_CONN=1
+CONFIG_EM_SIZE=32</code></pre>
                     <div class="warning-box">
                         <h4>注意</h4>
                         <p>預編譯函式庫不可修改。若需要客製化的 Controller 變體（例如不同連線數或功能組合），請聯絡原廠取得支援。</p>
@@ -282,7 +286,7 @@ bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad),
                     </ul>
                     <pre><code class="language-c">// 建議的 LE Audio 參數（48_4 設定集）：
 // 48kHz 取樣率、10ms frame duration、每 frame 120 octets
-// blestack 提供對應的巨集（include/bluetooth/audio/lc3.h）：
+// ipro_bt_host 提供對應的巨集（include/bluetooth/audio/lc3.h）：
 BT_CODEC_LC3_CONFIG_48_4(loc, stream_context)</code></pre>
                     <p>完整的 codec 設定流程請參考 LE Audio headset 範例：<code>apps/bluetooth/le_audio/ipro_le_audio_headset</code>。</p>
                 </div>

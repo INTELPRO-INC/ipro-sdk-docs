@@ -2,7 +2,9 @@
 # GitHub Pages Configuration
 
 title: IPRO SDK
-sdk_version: "v1.0.1"
+sdk_version: "v1.2.1"
+installer_version: "3.3.0"
+extension_version: "3.3.0"
 description: A Comprehensive Software Development Kit for IPRO Hardware Platforms
 baseurl: "/ipro-sdk-docs" # Your GitHub Pages repository name
 url: "https://intelpro-inc.github.io" # Your GitHub Pages URL
@@ -49,10 +51,12 @@ nav:
   - title: 文件
     dropdown:
       - { title: 快速開始, desc: 環境設定與第一個專案, icon: fa-rocket, url: /getting-started }
+      - { title: Windows 安裝, desc: 安裝包與元件更新, icon: fa-download, url: /windows-installation }
+      - { title: VS Code 擴充, desc: 控制中心與開發流程, icon: fa-plug, url: /vscode-extension }
       - { title: 教學, desc: 逐步開發教學, icon: fa-graduation-cap, url: /tutorials }
       - { title: 系統架構, desc: SDK 整體架構概覽, icon: fa-sitemap, url: /architecture }
       - { title: BLE 開發, desc: BLE 與 LE Audio, icon: fa-bluetooth-b, url: /ble-development }
-      - { title: 應用範例, desc: 10 個參考應用程式, icon: fa-box, url: /applications }
+      - { title: 應用範例, desc: BLE、音訊與平台範例, icon: fa-box, url: /applications }
       - { title: API 參考, desc: BLE、HAL、RTOS API, icon: fa-code, url: /api-reference }
   - title: 主題
     dropdown:
@@ -63,9 +67,8 @@ nav:
       - { title: 更新日誌, desc: 版本發行紀錄, icon: fa-clock-rotate-left, url: /changelog }
   - title: 進階功能
     dropdown:
-      - { title: AI 與 NPU, badge: Roadmap, desc: 端側 AI 推理, icon: fa-brain, url: /ai-npu }
+      - { title: AI 與 NPU, badge: Prebuilt, desc: 端側 AI 推理, icon: fa-brain, url: /ai-npu }
       - { title: Matter & Thread, badge: Roadmap, desc: 智慧家庭協定, icon: fa-house-signal, url: /matter-thread }
-      - { title: VS Code 擴充, badge: Roadmap, desc: IDE 開發整合, icon: fa-plug, url: /vscode-extension }
   - title: FAQ
     url: /faq
 
@@ -74,10 +77,12 @@ nav_en:
   - title: Docs
     dropdown:
       - { title: Getting Started, desc: Setup & first project, icon: fa-rocket, url: /en/getting-started }
+      - { title: Windows Installation, desc: Installer & component updates, icon: fa-download, url: /en/windows-installation }
+      - { title: VS Code Extension, desc: Control Center & development workflow, icon: fa-plug, url: /en/vscode-extension }
       - { title: Tutorials, desc: Step-by-step guides, icon: fa-graduation-cap, url: /en/tutorials }
       - { title: Architecture, desc: System overview, icon: fa-sitemap, url: /en/architecture }
       - { title: BLE Development, desc: BLE & LE Audio, icon: fa-bluetooth-b, url: /en/ble-development }
-      - { title: Applications, desc: 10 reference apps, icon: fa-box, url: /en/applications }
+      - { title: Applications, desc: BLE, audio & platform examples, icon: fa-box, url: /en/applications }
       - { title: API Reference, desc: BLE, HAL, RTOS APIs, icon: fa-code, url: /en/api-reference }
   - title: Topics
     dropdown:
@@ -88,9 +93,8 @@ nav_en:
       - { title: Changelog, desc: Release history, icon: fa-clock-rotate-left, url: /en/changelog }
   - title: Advanced
     dropdown:
-      - { title: AI & NPU, badge: Roadmap, desc: On-device AI inference, icon: fa-brain, url: /en/ai-npu }
+      - { title: AI & NPU, badge: Prebuilt, desc: On-device AI inference, icon: fa-brain, url: /en/ai-npu }
       - { title: Matter & Thread, badge: Roadmap, desc: Smart home protocols, icon: fa-house-signal, url: /en/matter-thread }
-      - { title: VS Code Extension, badge: Roadmap, desc: IDE integration, icon: fa-plug, url: /en/vscode-extension }
   - title: FAQ
     url: /en/faq
 
@@ -109,8 +113,8 @@ languages:
 # google_analytics: UA-XXXXXXXX-X
 
 # Site-wide release scope notice — rendered by _layouts/default.html below the navbar
-release_notice: "本文件對應 IPRO SDK Release V1.0.1（2026-03-13）。IPRO7 不內建 Wi-Fi，可透過 IPRO6 companion 晶片（SDIO）擴充連網；進階功能（AI/NPU、Matter、Thread）未包含於此版本，如需取得請聯絡原廠。"
-release_notice_en: "This documentation covers IPRO SDK Release V1.0.1 (2026-03-13). IPRO7 has no built-in Wi-Fi — network connectivity is available via the IPRO6 companion chip (SDIO). Advanced features (AI/NPU, Matter, Thread) are not included in this release; contact INTELPRO for availability."
+release_notice: "本文件對應 IPRO SDK Release V1.2.1（2026-09-08）。IPRO7 不內建 Wi-Fi；本版包含 IPRO7 端 SDIO Host 元件與範例，IPRO6S companion 韌體需另行取得。AI/NPU 以預編譯函式庫與標頭提供，模型與轉換工具需另行取得；Matter、Thread 未包含於此版本。"
+release_notice_en: "This documentation covers IPRO SDK Release V1.2.1 (2026-09-08). IPRO7 has no built-in Wi-Fi. IPRO7-side SDIO host components and an example are included; IPRO6S companion firmware is supplied separately. AI/NPU libraries and headers are included; models and conversion tools are supplied separately. Matter and Thread are not included."
 
 exclude:
   - Gemfile

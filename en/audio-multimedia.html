@@ -75,7 +75,7 @@ lang: en
 │   └── include/mp3_decoder.h       # MP3 decoder
 ├── 3rdparty/liblc3/                # LC3 codec library (prebuilt)
 ├── wireless/bluetooth/
-│   └── blestack/src/audio/         # LE Audio protocol stack
+│   └── ipro_bt_host/upstream/zephyr/subsys/bluetooth/audio/         # LE Audio protocol stack
 │       ├── bap_*.c                 # Basic Audio Profile
 │       ├── cap_*.c                 # Common Audio Profile
 │       ├── vcp_*.c                 # Volume Control Profile
@@ -282,99 +282,8 @@ int bap_server_init(void)
 
         <section id="broadcast-audio">
             <h2>Broadcast Audio (BIS)</h2>
-            <p>Broadcast Isochronous Stream (BIS) provides one-to-many unidirectional audio transport. Receivers do not need to establish a connection to listen. This is the foundation of Auracast technology.</p>
-
-            <h3>BIS Architecture</h3>
-            <div class="broadcast-diagram">
-                <div class="broadcast-source">
-                    <div class="broadcast-source-title">Broadcast Source</div>
-                    <div class="broadcast-source-items">
-                        <span class="pill">BAP Source</span>
-                        <span class="pill">Audio Encoder</span>
-                        <span class="pill">BIG Management</span>
-                    </div>
-                </div>
-                <div class="broadcast-arrows">
-                    <div class="broadcast-arrow"><i class="fas fa-arrow-right"></i></div>
-                    <div class="broadcast-arrow"><i class="fas fa-arrow-right"></i></div>
-                    <div class="broadcast-arrow"><i class="fas fa-arrow-right"></i></div>
-                </div>
-                <div class="broadcast-sinks">
-                    <div class="broadcast-sink">Broadcast Sink 1</div>
-                    <div class="broadcast-sink">Broadcast Sink 2</div>
-                    <div class="broadcast-sink">Broadcast Sink N</div>
-                </div>
-                <div class="broadcast-note">BIS (Connectionless) -- Use cases: walkie-talkie, PA system, hearing aids, tour guides</div>
-            </div>
-
-            <h3>Broadcast Source Example</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">BIS Source (apps/bluetooth/le_audio/ipro_le_audio_bis_source/src/app_broadcast_source.c)</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">/* Create Broadcast Source (BAP layer)
- * Full flow: bt_le_ext_adv_create → bt_le_per_adv_set_param
- *           → bt_bap_broadcast_source_create → bt_bap_broadcast_source_start */
-static int create_broadcast_source(void)
-{
-    struct bt_bap_broadcast_source_create_param create_param = {
-        .params_count = 1,
-        .params = &amp;subgroup_param,
-        .qos = &amp;qos,
-        .packing = BT_ISO_PACKING_SEQUENTIAL,
-        .encryption = false,
-    };
-
-    int err = bt_bap_broadcast_source_create(&amp;create_param, &amp;source);
-    if (err) {
-        IPRO_LOGE(LOG_TAG, "Broadcast source create failed: %d", err);
-        return err;
-    }
-
-    /* Start broadcasting (bound to the extended advertising set) */
-    err = bt_bap_broadcast_source_start(source, adv);
-    return err;
-}</code></pre>
-            </div>
-
-            <h3>Broadcast Sink Example</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">BIS Sink (apps/bluetooth/le_audio/ipro_le_audio_bis_sink/src/app_broadcast.c)</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">/* The Broadcast Sink on the IPRO blestack does not use the
- * bt_bap_broadcast_sink_* APIs. The receive flow is:
- * Scan → PA sync (raw HCI) → BIG sync → ISO receive
- *
- *   1. bt_le_scan_start() scans for the Broadcast Audio
- *      Announcement (UUID 0x1852)
- *   2. PA sync via the HCI LE_Periodic_Advertising_Create_Sync command
- *      (bt_hci_cmd_create / bt_hci_cmd_send_sync,
- *       opcode BT_HCI_OP_LE_PER_ADV_CREATE_SYNC)
- *   3. After the BIGInfo report arrives, call bt_iso_big_sync()
- *      to sync to the BIG
- *   4. Receive ISO audio data through bt_iso_chan_ops and decode
- */
-
-/* ISO channel callbacks: receive BIS audio data */
-static struct bt_iso_chan_ops bis_chan_ops = {
-    .connected    = bis_connected_cb,
-    .disconnected = bis_disconnected_cb,
-    .recv         = bis_recv_cb,      /* LC3 audio in → decode → output */
-};
-
-/* Scan for the broadcast source */
-static void scan_for_broadcast(void)
-{
-    bt_le_scan_start(BT_LE_SCAN_PASSIVE, scan_recv_cb);
-}</code></pre>
-            </div>
-
-            <div class="alert alert-warning">
-                <strong>Important:</strong> the BIS push-to-talk reference application (<code>ipro_walkie_talkie</code>) is not included in the release package — contact the vendor to obtain it for evaluation.
-            </div>
+            <p>The Zephyr 4.4 host provides <code>bt_bap_broadcast_source_*</code> and <code>bt_bap_broadcast_sink_*</code> APIs in <code>zephyr/bluetooth/audio/bap.h</code>. Use the <code>bt54_iso2</code> controller profile and enable the required BAP role in your application configuration.</p>
+            <div class="alert alert-info">Standalone BIS source/sink reference applications are not bundled with V1.2.1; contact INTELPRO for complete examples. The bundled headset is the unicast reference.</div>
         </section>
 
         <section id="audio-profiles">
@@ -390,61 +299,61 @@ static void scan_for_broadcast(void)
                         <td><strong>BAP</strong></td>
                         <td>Basic Audio Profile</td>
                         <td>Audio stream establishment and management (CIS/BIS)</td>
-                        <td><code>blestack/src/audio/bap_*.c</code></td>
+                        <td><code>ipro_bt_host/upstream/zephyr/subsys/bluetooth/audio/bap_*.c</code></td>
                     </tr>
                     <tr>
                         <td><strong>CAP</strong></td>
                         <td>Common Audio Profile</td>
                         <td>Coordinated set audio operations (L/R ear sync)</td>
-                        <td><code>blestack/src/audio/cap_*.c</code></td>
+                        <td><code>ipro_bt_host/upstream/zephyr/subsys/bluetooth/audio/cap_*.c</code></td>
                     </tr>
                     <tr>
                         <td><strong>VCP</strong></td>
                         <td>Volume Control Profile</td>
                         <td>Volume control and mute</td>
-                        <td><code>blestack/src/audio/vcp_*.c</code></td>
+                        <td><code>ipro_bt_host/upstream/zephyr/subsys/bluetooth/audio/vcp_*.c</code></td>
                     </tr>
                     <tr>
                         <td><strong>MCP</strong></td>
                         <td>Media Control Profile</td>
                         <td>Media playback control (play/pause/track)</td>
-                        <td><code>blestack/src/audio/mcc.c, mcs.c</code></td>
+                        <td><code>ipro_bt_host/upstream/zephyr/subsys/bluetooth/audio/mcc.c, mcs.c</code></td>
                     </tr>
                     <tr>
                         <td><strong>CSIP</strong></td>
                         <td>Coordinated Set Identification Profile</td>
                         <td>Identify device sets (e.g., a pair of earbuds)</td>
-                        <td><code>blestack/src/audio/csip_*.c</code></td>
+                        <td><code>ipro_bt_host/upstream/zephyr/subsys/bluetooth/audio/csip_*.c</code></td>
                     </tr>
                     <tr>
                         <td><strong>PACS</strong></td>
                         <td>Published Audio Capabilities Service</td>
                         <td>Publish supported audio capabilities</td>
-                        <td><code>blestack/src/audio/pacs.c</code></td>
+                        <td><code>ipro_bt_host/upstream/zephyr/subsys/bluetooth/audio/pacs.c</code></td>
                     </tr>
                     <tr>
                         <td><strong>ASCS</strong></td>
                         <td>Audio Stream Control Service</td>
                         <td>Audio stream endpoint state machine</td>
-                        <td><code>blestack/src/audio/ascs.c</code></td>
+                        <td><code>ipro_bt_host/upstream/zephyr/subsys/bluetooth/audio/ascs.c</code></td>
                     </tr>
                     <tr>
                         <td><strong>MICP</strong></td>
                         <td>Microphone Control Profile</td>
                         <td>Microphone mute control</td>
-                        <td><code>blestack/src/audio/micp_*.c</code></td>
+                        <td><code>ipro_bt_host/upstream/zephyr/subsys/bluetooth/audio/micp_*.c</code></td>
                     </tr>
                     <tr>
                         <td><strong>TMAP</strong></td>
                         <td>Telephony and Media Audio Profile</td>
                         <td>Telephony and media audio role definition</td>
-                        <td><code>blestack/src/audio/tmap.c</code></td>
+                        <td><code>ipro_bt_host/upstream/zephyr/subsys/bluetooth/audio/tmap.c</code></td>
                     </tr>
                 </tbody>
             </table>
 
             <h3>LC3 Codec</h3>
-            <p>LC3 (Low Complexity Communication Codec) is the mandatory codec for LE Audio. It delivers better audio quality than SBC at lower bitrates. The SDK ships the LC3 codec as the prebuilt library <code>components/3rdparty/liblc3</code>; <code>blestack/src/audio/codec.c</code> handles LE Audio codec capability and configuration parsing.</p>
+            <p>LC3 (Low Complexity Communication Codec) is the mandatory codec for LE Audio. It delivers better audio quality than SBC at lower bitrates. The SDK ships the LC3 codec as the prebuilt library <code>components/3rdparty/liblc3</code>; <code>ipro_bt_host/upstream/zephyr/subsys/bluetooth/audio/codec.c</code> handles LE Audio codec capability and configuration parsing.</p>
             <ul>
                 <li><strong>Sample Rate</strong>: 8 / 16 / 24 / 32 / 48 kHz</li>
                 <li><strong>Bitrate</strong>: 16 - 320 kbps (common LE Audio presets are 16 - 124 kbps per channel)</li>
@@ -454,7 +363,7 @@ static void scan_for_broadcast(void)
             </ul>
 
             <div class="alert alert-info">
-                <strong>About Opus:</strong> The SDK also includes the Opus codec (<code>components/3rdparty/opus</code>), used by networked voice-streaming applications (for example, speech synthesis playback in <code>ipro_voice_assistant</code>). It is not used for LE Audio ISO channel audio — LE Audio always uses LC3.
+                <strong>Opus:</strong> The package includes <code>components/3rdparty/opus</code> for application audio codecs. LE Audio ISO streams use LC3; the earlier voice-assistant example is not included in V1.2.1.
             </div>
         </section>
 
@@ -632,7 +541,7 @@ bsp/hal/inc/
 └── stream_control.c        # Stream control</code></pre>
             </div>
 
-            <p>To transfer camera images over BLE (for scenarios without a USB connection), see the BLE image capture reference application <code>apps/bluetooth/ble/ipro_ble_img_capture</code>.</p>
+            <p>For BLE image transfer, refer to <code>apps/bluetooth/ble/ipro_ble_remote/</code>. The separate image-capture application is not bundled with V1.2.1.</p>
         </section>
 
         <section id="audio-hardware">
@@ -725,104 +634,34 @@ audio_output_destroy(out);</code></pre>
 
         <section id="reference-apps">
             <h2>Reference Applications</h2>
-
-            <h3>ipro_le_audio_headset</h3>
-            <p>Complete LE Audio headset reference design supporting both unicast and broadcast audio:</p>
-            <table>
-                <thead>
-                    <tr><th>Feature</th><th>Description</th></tr>
-                </thead>
+            <div class="table-wrapper">
+                <table>
+                <thead><tr><th>App</th><th>Description</th></tr></thead>
                 <tbody>
-                    <tr><td>BAP Unicast Server</td><td>Accept audio streams from phone</td></tr>
-                    <tr><td>CAP Acceptor</td><td>Coordinated set audio (L/R ear sync)</td></tr>
-                    <tr><td>VCP Volume Renderer</td><td>Remote volume control</td></tr>
-                    <tr><td>USB Audio (UAC)</td><td>USB audio input/output</td></tr>
-                    <tr><td>DAC Output</td><td>Built-in DAC speaker driver</td></tr>
+                    <tr><td><code>ipro_le_audio_headset</code></td><td>LE Audio headset with DAC / USB audio output configurations</td></tr>
+                    <tr><td><code>ipro_pdm_mic_demo</code></td><td>PDM microphone capture, BLE transfer and LC3 compression</td></tr>
+                    <tr><td><code>ipro7_demo</code></td><td>Peripheral, imaging, audio and Ethernet demo</td></tr>
+                    <tr><td><code>ipro7ai_evk_demo</code></td><td>IPRO7AI EVK display, camera, audio and AI / BLE configurations</td></tr>
                 </tbody>
-            </table>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build LE Audio Headset</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Build
-make -C apps/bluetooth/le_audio/ipro_le_audio_headset
-
-# Output binary
-# apps/bluetooth/le_audio/ipro_le_audio_headset/build/build_out/ipro_le_audio_headset_IPRO7.bin</code></pre>
+                </table>
             </div>
-
-            <h3>ipro_le_audio_bis_source / ipro_le_audio_bis_sink</h3>
-            <p>BIS broadcast audio applications demonstrating one-to-many connectionless audio:</p>
-            <table>
-                <thead>
-                    <tr><th>Application</th><th>Description</th></tr>
-                </thead>
+            <pre><code class="language-bash">./build_freertos.sh ipro_le_audio_headset build
+./build_freertos.sh ipro_pdm_mic_demo build
+./build_freertos.sh ipro7_demo build
+./build_freertos.sh ipro7ai_evk_demo build</code></pre>
+            <div class="table-wrapper">
+                <table>
+                <thead><tr><th>LIB</th><th>ACL</th><th>Roles</th></tr></thead>
                 <tbody>
-                    <tr><td>ipro_le_audio_bis_source</td><td>Broadcast side, encodes and transmits BIS audio streams</td></tr>
-                    <tr><td>ipro_le_audio_bis_sink</td><td>Receiver side, syncs and decodes BIS audio streams; ships with two configurations — <code>DAC.config</code> (built-in DAC speaker output) and <code>UAC.config</code> (USB Audio output to a PC) — copy one to <code>.config</code> to switch</td></tr>
+                    <tr><td><code>link1_periph</code></td><td>1</td><td>Peripheral</td></tr>
+                    <tr><td><code>link1</code></td><td>1</td><td>Central + Peripheral</td></tr>
+                    <tr><td><code>link2</code></td><td>2</td><td>Central + Peripheral</td></tr>
+                    <tr><td><code>link4</code></td><td>4</td><td>Central + Peripheral</td></tr>
                 </tbody>
-            </table>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build BIS Broadcast Apps</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Build BIS Source
-make -C apps/bluetooth/le_audio/ipro_le_audio_bis_source
-
-# Build BIS Sink
-make -C apps/bluetooth/le_audio/ipro_le_audio_bis_sink</code></pre>
+                </table>
             </div>
-
-            <h3>ipro7_demo</h3>
-            <p>Multimedia demonstration platform integrating ISP, MJPEG, LCD, USB audio/video, and more:</p>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build Multimedia Demo</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Build
-make -C apps/platform/ipro7_demo
-
-# Output binary
-# apps/platform/ipro7_demo/build/build_out/ipro7_demo_IPRO7.bin</code></pre>
-            </div>
-
-            <h3>ipro_agora_sentino</h3>
-            <p>Embedded AI voice-conversation gateway reference application (<code>apps/multimedia/ipro_agora_sentino</code>): captures speech through an AMIC microphone, encodes it with Opus, connects over Ethernet (RMII) or USB NCM, and holds two-way voice conversations with a cloud real-time audio streaming (RTC) service. It also supports LCD status display and USB CDC text output. This application integrates a third-party RTC SDK; contact the vendor for integration details.</p>
-
-            <h3>ipro_voice_assistant</h3>
-            <p>AI voice assistant reference application (<code>apps/network/ipro_voice_assistant</code>): captures speech with <code>audio_capture</code> (AMIC microphone) and VAD voice detection, connects over Ethernet (RMII) for cloud speech recognition and AI conversation, then decodes the Opus (Ogg) reply and plays it through the DAC — demonstrating the full "capture → recognize → converse → synthesize and play" audio chain.</p>
-            <div class="alert alert-info">
-                <strong>Network connectivity:</strong> The two applications above connect via Ethernet (RMII) or USB NCM. The IPRO7 itself has no Wi-Fi; for Wi-Fi connectivity, pair it with an IPRO6 companion chip (SDIO interface).
-            </div>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Build Networked Audio Applications</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Build the AI voice-conversation gateway
-make -C apps/multimedia/ipro_agora_sentino
-
-# Build the AI voice assistant
-make -C apps/network/ipro_voice_assistant</code></pre>
-            </div>
-
-            <h3>Controller Variant Selection</h3>
-            <p>LE Audio applications require a controller variant that supports ISO Channels:</p>
-            <table>
-                <thead>
-                    <tr><th>Variant</th><th>BLE Version</th><th>LE Audio</th><th>Use Case</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td><code>link1_leaudio</code></td><td>5.2</td><td>Supported</td><td>Single-connection LE Audio device</td></tr>
-                    <tr><td><code>link2_leaudio</code></td><td>5.2</td><td>Supported</td><td>Dual-connection LE Audio device</td></tr>
-                    <tr><td><code>link1_leaudio_53_54</code></td><td>5.4</td><td>Supported</td><td>Single-connection BLE 5.4 + LE Audio</td></tr>
-                    <tr><td><code>link2_leaudio_53_54</code></td><td>5.4</td><td>Supported</td><td>Dual-connection BLE 5.4 + LE Audio</td></tr>
-                    <tr><td><code>link4_leaudio_53_54</code></td><td>5.4</td><td>Supported</td><td>Four-connection BLE 5.4 + LE Audio</td></tr>
-                </tbody>
-            </table>
+            <p>Choose <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code> for basic BLE or <code>"bt54_iso2"</code> for BLE 5.4 with two ISO streams (CIS/BIS). The latter requires <code>CONFIG_EM_SIZE</code> of at least 32 KB. Set <code>CONFIG_BT_CONN</code> to the selected ACL connection count.</p>
+            <div class="alert alert-info">Standalone BIS source/sink, cloud audio gateway and voice-assistant applications from earlier releases are not included in V1.2.1.</div>
         </section>
     </article>
 </div>

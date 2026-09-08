@@ -15,7 +15,7 @@ title: 快速開始
                 <li><a href="#first-build" class="sidebar-link">第一次建構</a></li>
                 <li><a href="#kconfig" class="sidebar-link">配置系統</a></li>
                 <li><a href="#flashing" class="sidebar-link">燒錄韌體（Release 說明）</a></li>
-                <li><a href="#serial-monitor" class="sidebar-link">串口監控（Release 說明）</a></li>
+                <li><a href="#serial-monitor" class="sidebar-link">串口監控</a></li>
                 <li><a href="#board-testing" class="sidebar-link">板級測試（Release 說明）</a></li>
                 <li><a href="#debugging" class="sidebar-link">除錯設置</a></li>
                 <li><a href="#troubleshooting" class="sidebar-link">疑難排解</a></li>
@@ -29,8 +29,10 @@ title: 快速開始
         <p>本指南將帶您完成 IPRO SDK Release 套件的安裝設置，並建構您的第一個應用程式。</p>
 
         <div class="alert alert-info">
-            <strong><i class="fas fa-info-circle"></i> Release SDK 說明：</strong>此為 Release 版本的 SDK 套件，部分開發工具（燒錄工具、串口監控、板級測試腳本、VS Code 擴充套件）未包含在內。如需完整開發工具，請聯繫 IntelPro 取得。
+            <strong><i class="fas fa-info-circle"></i> Release SDK 說明：</strong>此為 Release 版本的 SDK 套件，部分開發工具（燒錄工具、板級測試腳本、VS Code 擴充套件）未包含在內。如需完整開發工具，請聯繫 IntelPro 取得。
         </div>
+
+        <div class="alert alert-info"><strong>Windows 完整安裝包：</strong>首次 Windows 開發可使用 Installer 3.3.0，一次取得 SDK V1.2.1、Extension 3.3.0、GCC、CMake、Ninja、Python、IntelProCube 與隨附 OpenOCD。下方「未隨附」說明是指 SDK 獨立原始碼交付包。 <a href="{{ '/windows-installation' | relative_url }}">安裝與獨立更新步驟</a> · <a href="{{ '/vscode-extension' | relative_url }}">Extension 操作指南</a></div>
 
         <section id="prerequisites">
             <h2>系統需求</h2>
@@ -94,8 +96,9 @@ python3 --version</code></pre>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-bash"># 解壓縮 Release SDK 套件
-tar xzf ipro_sdk_release_*.tar.gz
-cd ipro_sdk</code></pre>
+# 進入已解壓縮的交付包目錄
+cd IPRO-IPRO7-SDK-V1.2.1
+cat VERSION.txt</code></pre>
             </div>
 
             <h3>2. 設置工具鏈</h3>
@@ -126,55 +129,39 @@ ls /opt/toolchain/riscv_ipro7/bin/
 
         <section id="directory-structure">
             <h2>SDK 目錄結構</h2>
-            <p>了解 SDK 的目錄結構有助於快速定位檔案與理解專案架構。</p>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">SDK 目錄結構</span>
-                </div>
-                <pre><code>ipro_sdk/
-├── apps/                         # 應用程式專案（每個應用含 .config + CMakeLists.txt）
-│   ├── bluetooth/                # Bluetooth 應用
-│   │   ├── ble/                  # BLE 應用
-│   │   │   ├── ipro_ble_remote/          # BLE 遙控器（GATT + OTA）
-│   │   │   ├── ipro_ble_transparent/     # BLE 透傳
-│   │   │   ├── ipro_ble_img_capture/     # BLE 影像擷取傳輸
-│   │   │   └── ipro_throughput_test/     # BLE 效能測試
-│   │   └── le_audio/             # LE Audio 應用
-│   │       ├── ipro_le_audio_headset/    # GAF/BAP LE Audio 耳機
-│   │       ├── ipro_le_audio_bis_source/ # BIS LE Audio 來源
-│   │       └── ipro_le_audio_bis_sink/   # BIS LE Audio 接收
-│   ├── multimedia/               # 多媒體應用
-│   │   └── ipro_agora_sentino/   # AI 語音對話閘道器（Ethernet/USB NCM 連網）
-│   ├── network/                  # 網路應用
-│   │   └── ipro_voice_assistant/ # AI 語音助理（Ethernet 連網）
-│   └── platform/
-│       └── ipro7_demo/           # 綜合平台展示
-│
-├── bsp/                          # Board Support Package（HAL、驅動、連結腳本）
-│   ├── board/                    # 板級配置
-│   ├── drivers/                  # 週邊驅動
-│   └── hal/                      # 硬體抽象層
-│
-├── components/                   # 共享中間件
-│   ├── wireless/bluetooth/       # BLE 棧（Zephyr-based Host 原始碼 + Controller prebuilt linkN 函式庫）
-│   ├── wireless/rf/              # RF 驅動（prebuilt 函式庫）
-│   ├── os/freertos/              # FreeRTOS RTOS
-│   ├── network/                  # 網路棧（lwIP）
-│   ├── crypto/                   # 加密元件（mbedTLS）
-│   ├── fs/                       # 檔案系統（LittleFS, FatFS）
-│   ├── cherryusb/                # USB 裝置/主機棧
-│   └── 3rdparty/liblc3/          # LC3 音訊編解碼器（prebuilt 函式庫）
-│
-├── cmake/                        # 建構系統（toolchain.cmake 自動偵測 GCC）
-├── tools/                        # 開發工具
-│   ├── cmake/                    # 內建 CMake（Linux x86-64）
-│   └── script/                   # 輔助腳本
-│
-├── build_freertos.sh             # FreeRTOS 建構腳本
-├── project.build                 # 專案建構配置
-└── Kconfig                       # 根 Kconfig 配置</code></pre>
-            </div>
+            <pre><code class="language-text">IPRO-IPRO7-SDK-V1.2.1/
+├── apps/
+│   ├── bluetooth/ble/
+│   │   ├── ipro_ble_remote/
+│   │   ├── ipro_ble_transparent/
+│   │   ├── ipro_ble_hid_keyboard/
+│   │   └── ipro_throughput_test/
+│   ├── bluetooth/le_audio/ipro_le_audio_headset/
+│   ├── multimedia/ipro_pdm_mic_demo/
+│   ├── platform/
+│   │   ├── ipro7_demo/
+│   │   ├── ipro7_sdio_wifi/
+│   │   └── ipro7ai_evk_demo/
+│   └── test/
+├── bsp/
+├── components/
+│   ├── wireless/bluetooth/
+│   ├── network/
+│   ├── ai/lib/libai.a
+│   ├── audio/
+│   ├── os/
+│   └── ...
+├── cmake/
+├── tools/
+│   ├── android/
+│   ├── script/
+│   └── serial_monitor.py
+├── build_freertos.sh
+├── project.build
+├── CMakeLists.txt
+├── Kconfig
+├── VERSION.txt
+└── PREBUILT-ARCHIVES-STRIPPED.txt</code></pre>
         </section>
 
         <section id="freertos-quickstart">
@@ -297,7 +284,13 @@ CONFIG_FREERTOS_SUPPORT=y
 CONFIG_BLUETOOTH_LE_ENABLE=y
 
 # BLE Controller prebuilt 函式庫變體選擇
-CONFIG_BTBLECONTROLLER_LIB="link2"
+CONFIG_BT_CTLR_IPRO=y
+CONFIG_BT_HOST_IPRO_V44=y
+CONFIG_IPRO_BLE_CTLR_LIB="link2"
+CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"
+CONFIG_IPRO_BLE_CTLR_CFG_DBG=n
+CONFIG_BT_CONN=2
+CONFIG_EM_SIZE=32
 
 # 元件啟用
 CONFIG_LWIP=y
@@ -323,11 +316,13 @@ CONFIG_MBEDTLS=y</code></pre>
         </section>
 
         <section id="serial-monitor">
+<p>Windows 使用 Extension 的 IPRO: Serial Monitor，可透過內建 serialport 直接監看；下方 Python 腳本用於 POSIX 命令列環境。</p>
             <h2>串口監控</h2>
-
-            <div class="alert alert-warning">
-                <strong><i class="fas fa-exclamation-triangle"></i> Release SDK 說明：</strong>串口監控工具 <code>serial_monitor.py</code> 未包含在此 Release SDK 套件中。如需串口監控工具，請聯繫 IntelPro 取得完整開發工具套件。您也可以使用第三方串口工具（如 <code>minicom</code>、<code>screen</code> 或 <code>picocom</code>）進行串口監控。串口參數：115200 8N1。
-            </div>
+            <p><code>tools/serial_monitor.py</code> 已包含於 V1.2.1，使用 Python 標準函式庫的 <code>termios</code> 與 <code>fcntl</code>，適用於 Linux/macOS 等 POSIX 環境，無法直接在 Windows Python 執行。Windows 可使用串口終端工具或能存取串口裝置的環境。</p>
+            <pre><code class="language-bash">python3 tools/serial_monitor.py /dev/ttyUSB0 --baud 115200 --timeout 30
+# macOS
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 115200 --timeout 30</code></pre>
+            <p>請使用應用設定的鮑率；本版腳本接受 9600、19200、38400、57600、115200 與 230400 baud。</p>
         </section>
 
         <section id="board-testing">
@@ -369,7 +364,7 @@ CONFIG_MBEDTLS=y</code></pre>
 
             <h3>macOS 串口問題（一般知識）</h3>
             <div class="alert alert-info">
-                <strong>注意：</strong>此 Release SDK 未包含 <code>serial_monitor.py</code>，以下為使用外部串口工具時的一般性提示。
+                <strong>注意：</strong>V1.2.1 已隨附 <code>tools/serial_monitor.py</code>；以下提示亦適用於外部串口工具。
             </div>
             <div class="table-wrapper">
                 <table>
@@ -438,7 +433,7 @@ CONFIG_MBEDTLS=y</code></pre>
                         </tr>
                         <tr>
                             <td>CI 環境的 CMake 在 macOS 上無法使用</td>
-                            <td><code>tools/cmake/</code> 中的 CMake 是 Linux x86-64 ELF 格式，macOS 請安裝系統 CMake。</td>
+                            <td>V1.2.1 需另行安裝適合主機作業系統的 CMake 3.19+，並加入 PATH。</td>
                         </tr>
                     </tbody>
                 </table>
