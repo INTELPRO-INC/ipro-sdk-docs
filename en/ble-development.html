@@ -4,11 +4,13 @@ title: BLE Development Guide
 lang: en
 ---
 
-<div class="doc-layout">
+            <div class="doc-layout">
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">Table of Contents</h4>
             <ul class="sidebar-links">
+                <li><a href="#ipro6s-btdm" class="sidebar-link">IPRO6S BLE + BR/EDR</a></li>
+
                 <li><a href="#zephyr-host" class="sidebar-link">Zephyr BLE Host Architecture</a></li>
                 <li><a href="#stack-architecture" class="sidebar-link">Stack Architecture</a></li>
                 <li><a href="#controller-variants" class="sidebar-link">Controller Variants</a></li>
@@ -25,7 +27,7 @@ lang: en
 
     <article class="doc-content">
         <h1>BLE Development Guide</h1>
-        <p>This guide covers BLE application development with the IPRO SDK's Bluetooth stack. The SDK uses the Zephyr BLE Host Stack paired with a RivieraWaves prebuilt controller, providing full BLE 5.4 support.</p>
+        <p>This guide covers BLE application development with the IPRO SDK's Bluetooth stack. The SDK uses the Zephyr BLE Host Stack paired with a RivieraWaves prebuilt controller, with features determined by the selected controller profile.</p>
 
         <!-- ============================================================ -->
         <!-- Zephyr BLE Host -->
@@ -35,7 +37,7 @@ lang: en
             <p>The IPRO SDK's operating system is <strong>FreeRTOS</strong> — Zephyr's role in the SDK is as the source of the BLE Host protocol stack, not as the RTOS kernel. <code>components/wireless/bluetooth/ipro_bt_host/</code> is ported from the Zephyr BLE Host (GAP, GATT, L2CAP, SMP, ISO, LE Audio) and runs on top of FreeRTOS via the <code>port/</code> layer. Applications always develop against the Zephyr-style <code>bt_*</code> APIs.</p>
             <ul>
                 <li><strong>Host — Zephyr 4.4 source</strong>: <code>ipro_bt_host/</code> is ported from Zephyr; full source ships with the SDK and can be read and debugged directly</li>
-                <li><strong>Controller</strong>: <code>ipro_ble_controller/lib/</code> — 16 prebuilt archives; see the configuration matrix below.</li>
+                <li><strong>Controller</strong>: <code>ipro_ble_controller/lib/</code> — 16 IPRO7 and 6 IPRO6S prebuilt archives; see the configuration matrix below.</li>
                 <li><strong>RTOS — FreeRTOS</strong>: scheduling, queues, and timers are all provided by FreeRTOS; the Zephyr kernel is not present in the system</li>
             </ul>
             <div class="alert alert-info">
@@ -112,7 +114,7 @@ lang: en
                 </tbody>
                 </table>
             </div>
-            <p>Choose <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code> for basic BLE or <code>"bt54_iso2"</code> for BLE 5.4 with two ISO streams (CIS/BIS). The latter requires <code>CONFIG_EM_SIZE</code> of at least 32 KB. Set <code>CONFIG_BT_CONN</code> to the selected ACL connection count.</p>
+            <p>Choose <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code> for basic BLE or <code>"bt54_iso2"</code> for BLE 5.4 with two ISO streams (CIS/BIS). The latter requires <code>CONFIG_EM_SIZE</code> of at least 32 KB. Keep the host connection limit within the controller capacity. Preserve the shipped PDM configuration: <code>link2</code> with <code>CONFIG_BT_CONN=1</code>.</p>
             <pre><code class="language-ini">CONFIG_BLUETOOTH_LE_ENABLE=y
 CONFIG_BT_CTLR_IPRO=y
 CONFIG_BT_HOST_IPRO_V44=y
@@ -141,6 +143,12 @@ CONFIG_COMPONENTS_LC3_ENABLE=y</code></pre>
         <!-- ============================================================ -->
         <!-- API Patterns -->
         <!-- ============================================================ -->
+        <section id="ipro6s-btdm">
+            <h2>IPRO6S BLE + BR/EDR</h2>
+            <p>IPRO6S shares the Zephyr 4.4 host but selects its own dual-mode controller. The package includes six <code>libipro_ble_controller_ipro6s_link{1,2,4}_br[_release].a</code> archives (RivieraWaves v13.0.18), separate from IPRO7 v14.0.2. No <code>_pawr</code> archive is shipped; a Kconfig option alone does not supply that variant.</p>
+            <p>Start from <code>apps/platform/ipro6_btdm_phyrf/.config</code>: <code>CONFIG_IPRO6=y</code>, <code>CONFIG_BTDM_ENABLE=y</code>, <code>CONFIG_BTDM_BT_ENABLE=y</code> and <code>CONFIG_BTDM_MAX_ACL_CONNECTIONS=4</code>. It demonstrates A2DP sink (SBC), AVRCP, HFP-HF and SCO audio over I2S.</p><pre><code class="language-bash">./build_freertos.sh ipro6_btdm_phyrf build</code></pre>
+        </section>
+
         <section id="api-patterns">
             <div class="alert alert-info">Initialize the controller and HCI driver before calling <code>bt_enable()</code>. See the initialization example in <a href="{{ '/en/tutorials' | relative_url }}">Tutorials</a>.</div>
             <h2>API Patterns</h2>
@@ -184,7 +192,7 @@ bt_le_scan_start(BT_LE_SCAN_ACTIVE, scan_cb);</code></pre>
                     <span class="code-block-title">Connection Management</span>
                     <button type="button" class="code-copy-btn" aria-label="Copy code"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">static void connected(struct bt_conn *conn, u8_t err)
+                <pre><code class="language-c">static void connected(struct bt_conn *conn, uint8_t err)
 {
     if (err) {
         printk("Connection failed (err %u)\n", err);
@@ -193,7 +201,7 @@ bt_le_scan_start(BT_LE_SCAN_ACTIVE, scan_cb);</code></pre>
     printk("Connected\n");
 }
 
-static void disconnected(struct bt_conn *conn, u8_t reason)
+static void disconnected(struct bt_conn *conn, uint8_t reason)
 {
     printk("Disconnected (reason %u)\n", reason);
 }
@@ -233,7 +241,7 @@ static uint8_t my_value[256];
 /* Read callback */
 static ssize_t read_my_char(struct bt_conn *conn,
                             const struct bt_gatt_attr *attr,
-                            void *buf, u16_t len, u16_t offset)
+                            void *buf, uint16_t len, uint16_t offset)
 {
     return bt_gatt_attr_read(conn, attr, buf, len, offset,
                              my_value, sizeof(my_value));
@@ -306,7 +314,7 @@ bt_gatt_notify(conn, &amp;my_svc.attrs[1], my_value, sizeof(my_value));</code></
             </div>
 
             <h3>LC3 Codec Pipeline</h3>
-            <p>LE Audio uses LC3 (Low Complexity Communication Codec) as its mandatory codec, supporting 32-320 kbps bitrates with audio latency below 20ms. Audio data is transported over Isochronous Channels (CIS/BIS).</p>
+            <p>LE Audio uses LC3 (Low Complexity Communication Codec) as its mandatory codec, with bitrate and latency determined by the negotiated codec preset, transport and application buffers. Audio data is transported over Isochronous Channels (CIS/BIS).</p>
 
             <h3>Configuration Example</h3>
             <div class="code-block">
@@ -347,143 +355,16 @@ CONFIG_BT_CSIP_SET_MEMBER=y</code></pre>
         <!-- PAwR & ESL -->
         <!-- ============================================================ -->
         <section id="pawr-esl">
-            <h2>PAwR &amp; ESL</h2>
-            <p>BLE 5.4 introduces <strong>PAwR (Periodic Advertising with Responses)</strong>, letting a broadcaster collect responses from observers in fixed subevent slots without establishing one-to-one connections. The SDK supports PAwR in both host and controller layers — it is the foundation of IPRO's large-scale sensor and ESL applications.</p>
-
-            <h3>Typical Architecture</h3>
-            <ul>
-                <li><strong>Gateway / Broadcaster</strong>: broadcasts a PAwR train every PA interval, containing multiple subevents. Subevent 0 is typically the provisioning channel; subevents 1+ are assigned to paired sensors.</li>
-                <li><strong>Sensor / Observer</strong>: wakes up only in its assigned subevent slot, parses the broadcaster command, returns sensor data, and goes back to deep sleep.</li>
-                <li><strong>Connectionless</strong>: the sensor count can far exceed controller link limits (typical 32 sensors per interval).</li>
-            </ul>
-
-            <h3>Key API</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">PAwR Host API</span>
-                    <button type="button" class="code-copy-btn" aria-label="Copy code"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">/* ── Broadcaster (gateway side) ─────────────────────────── */
-/* 1. Create an ext adv set with PAwR callbacks attached */
-static const struct bt_le_ext_adv_cb adv_cb = {
-    .pawr_data_request = pawr_data_request_cb,  /* controller asks for subevent data */
-    .pawr_response     = pawr_response_cb,      /* response received from an observer */
-};
-bt_le_ext_adv_create(&amp;adv_param, &amp;adv_cb, &amp;adv);
-
-/* 2. Configure the PAwR train parameters and start */
-struct bt_le_per_adv_param per_param = {
-    .interval_min          = 800,   /* N * 1.25 ms = 1 s */
-    .interval_max          = 800,
-    .num_subevents         = 32,
-    .subevent_interval     = 24,    /* N * 1.25 ms = 30 ms */
-    .response_slot_delay   = 12,    /* N * 1.25 ms = 15 ms */
-    .response_slot_spacing = 8,     /* N * 0.125 ms = 1 ms */
-    .num_response_slots    = 4,
-};
-bt_le_per_adv_set_param(adv, &amp;per_param);
-bt_le_per_adv_start(adv);
-
-/* 3. Provide per-subevent data inside the pawr_data_request callback */
-bt_le_per_adv_set_subevent_data(adv, num_subevents, subevent_params);
-
-/* ── Observer (sensor / tag side) ───────────────────────── */
-/* 1. Register PA sync and PAwR data callbacks, scan, then create the PA sync */
-bt_le_pa_sync_cb_register(pa_sync_established);
-bt_le_pa_sync_lost_cb_register(pa_sync_lost);
-bt_le_pa_pawr_data_cb_register(pawr_data_received);
-bt_le_scan_start(&amp;scan_param, scan_cb);
-/* After the broadcaster is found, sync is created with the
- * HCI LE Periodic Advertising Create Sync command; the sync
- * handle is delivered via the pa_sync_established callback */
-
-/* 2. After sync is established: subscribe to the subevents to listen on */
-struct bt_le_per_adv_sync_subevent_params se_params = {
-    .num_subevents = 1,
-    .subevents     = my_subevents,
-};
-bt_le_per_adv_sync_subevent(sync_handle, &amp;se_params);
-
-/* 3. Return data in a response slot inside the pawr_data_received callback */
-struct bt_le_per_adv_response_params rsp_params = {
-    .request_event     = periodic_event_counter,
-    .request_subevent  = subevent,
-    .response_subevent = subevent,
-    .response_slot     = 0,
-};
-bt_le_per_adv_set_response_data(sync_handle, &amp;rsp_params, &amp;rsp_buf);</code></pre>
-            </div>
-
-            <div class="alert alert-warning">
-                <strong>Note:</strong> <code>subevent_interval</code> must leave the host enough data-preparation headroom — with too short an interval, the host cannot deliver data before the next round of subevents. If the subevent payload requires extra processing (e.g., encryption), widen the interval further.
-            </div>
-
-            <h3>PAwR Validation Applications</h3>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Application</th>
-                            <th>Role</th>
-                            <th>Purpose</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>apps/bluetooth/esl/ipro_pawr_test_ap/</code></td>
-                            <td>Broadcaster</td>
-                            <td>PAwR link characterization: subevent data delivery, response slot reception statistics, PA interval / subevent count adjustable via CLI</td>
-                        </tr>
-                        <tr>
-                            <td><code>apps/bluetooth/esl/ipro_pawr_test_tag/</code></td>
-                            <td>Observer</td>
-                            <td>PA sync establishment, subevent subscription, response slot uplink, with sequence/gap statistics</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <p>These validation applications are not included in the release package — contact the vendor to obtain them for evaluation. Turnkey reference designs for large-scale PAwR sensor gateways (including cloud AI inference integration) are also available from the vendor.</p>
-
-            <h3>ESL (Electronic Shelf Label)</h3>
-            <p>The host and controller provide the BLE 5.4 capabilities required by the SIG ESL Profile:</p>
-            <ul>
-                <li><strong>PAwR subevent provisioning</strong>: subevent 0 serves as the provisioning channel; subevents 1+ are assigned to paired tags</li>
-                <li><strong>PAST (Periodic Advertising Sync Transfer)</strong>: <code>bt_le_per_adv_sync_transfer()</code> / <code>bt_le_per_adv_sync_transfer_subscribe()</code> / <code>bt_le_per_adv_sync_transfer_unsubscribe()</code> — the AP can hand off an established PA sync while the GATT link is up, eliminating the tag's post-provisioning scan window</li>
-                <li><strong>Shared protocol definitions</strong>: <code>components/wireless/bluetooth/include/esl_defs.h</code> — opcodes aligned with SIG ESL Profile v1.0.1 (incl. <code>READ_SENSOR 0x10</code>) plus PAwR packet structures</li>
-            </ul>
-            <p>Complete ESL turnkey reference designs (tag + gateway) are available from the vendor on request.</p>
+<h2>PAwR and ESL Availability</h2>
+<p>V2.0.1 host headers expose periodic advertising interfaces, but the release includes neither complete PAwR/ESL applications nor a dedicated <code>_pawr</code> controller archive. Header declarations and configuration options alone do not establish controller support.</p><p>For evaluation, obtain the matching controller, host configuration and test firmware from INTELPRO, then integrate against this release’s <code>zephyr/bluetooth/bluetooth.h</code>. For ordinary BLE applications, retain the controller combination supplied with the example.</p>
         </section>
 
         <!-- ============================================================ -->
         <!-- Low Power BLE -->
         <!-- ============================================================ -->
         <section id="low-power">
-            <div class="alert alert-info">For V1.2.1 low-power integration, start with <code>ipro_ble_remote</code> or <code>ipro_pdm_mic_demo</code> and their <code>link1_periph / bt52</code>, 16 KB EM configuration. The controller restricts retained-EM PDS entry to the qualified 16 KB profile; the larger <code>bt54_iso2</code> profile requires at least 32 KB EM and must not inherit that PDS configuration.</div>
-            <h2>Low Power BLE</h2>
-            <p>IPRO7 supports multiple low-power tiers; BLE applications can enter PDS (Power Down Sleep) between advertising / connection events to reach µA-level average current.</p>
-
-            <h3>PDS Level 31 — Deep Sleep</h3>
-            <ul>
-                <li><strong>Full OCRAM retention</strong>: all 256 KB of OCRAM banks are retained by default — no <code>PDS_RAM_Config()</code> call required.</li>
-                <li><strong>BLE Exchange Memory</strong>: lives at the top of OCRAM (0x1104_0000~), outside the retention partition.</li>
-                <li><strong>BZ Controller</strong>: with <code>pdsCtl4.BzRst=1, BzGateClk=1</code> the PDS resets and gates the BLE controller clock during sleep; the controller is re-initialized on wakeup.</li>
-                <li><strong>Automatic RF shutdown</strong>: <code>pdsCtlRfSel=1</code> in <code>hal_pm.c</code> lets the PDS hardware shut down RF analog blocks during sleep, dropping current from 80 µA to ~10 µA.</li>
-                <li><strong>turnoffDLL=0</strong>: under cpuRst=1 the post-WFI path skips the DLL re-initialization sequence.</li>
-            </ul>
-
-            <h3>Cold Boot with Detection</h3>
-            <p>Hardware testing has shown that <code>cpuRst=0</code> (pure WFI resume) is not viable in BLE controller mode. The verified approach is cpuRst=1 + RSV0=0 + RSV2=flag, detecting the wakeup cause during cold boot and jumping back to BLE state after bootrom. Wakeup latency is roughly 100 ms — suitable for sparse wakeup cycles; maintaining live BLE connections still requires sleep clock calibration.</p>
-
-            <h3>Low-Power BLE Application Patterns</h3>
-            <ul>
-                <li><strong>PDS31 verification app</strong> (<code>ipro_ble_lowpower_test</code>) — covers RF reinit, register save/restore, and sleep margin measurement; PDS31 entry/exit is hardware-verified. This app is a capability demonstration not included in the release — contact the vendor to obtain it.</li>
-                <li><strong>PAwR sensor tag</strong> — the observer wakes only for its assigned subevent and returns to deep sleep immediately after responding (see the PAwR &amp; ESL section).</li>
-                <li><strong>Sensor-triggered wakeup</strong> — wake on an external sensor interrupt, with application data retained in PSRAM across sleep cycles; suited to event-driven products. Turnkey reference designs are available from the vendor.</li>
-            </ul>
-
-            <div class="alert alert-info">
-                <strong>Tip:</strong> Before tweaking LP/PDS configuration, rule out application-level bugs first. Most "current went up" reports are tasks failing to enter idle or timers not being released, not the LP settings themselves.
-            </div>
+<h2>BLE Low-Power Validation</h2>
+<p>Start with shipped configurations: <code>ipro_ble_remote</code> uses <code>link1_periph / bt52</code>; <code>ipro_pdm_mic_demo</code> uses <code>link2 / bt52</code> with a one-connection host. Both use 16 KB EM. <code>bt54_iso2</code> needs at least 32 KB EM and cannot reuse the same 16 KB retention configuration.</p><p>For general sleep testing, start with <code>apps/test/ipro_lp_test/</code> and its <code>pds</code> command and board configuration. Record the board, measurement point, wake source, advertising/connection state and active peripherals. Measure current and wake latency for that setup.</p><p>Before sleeping, coordinate DMA, audio, timers and pending flash writes. Verify OCRAM/PSRAM retention and peripheral restoration for the selected mode. Persist bonding data through the Settings backend; RAM retention does not replace persistent storage.</p>
         </section>
 
         <!-- ============================================================ -->
@@ -539,11 +420,11 @@ bt_le_per_adv_set_response_data(sync_handle, &amp;rsp_params, &amp;rsp_buf);</co
                     <tr><td><code>ipro_throughput_test</code></td><td>Bidirectional BLE throughput test</td><td><code>link2</code> / <code>bt52</code></td></tr>
                     <tr><td><code>ipro_ble_hid_keyboard</code></td><td>HID over GATT keyboard</td><td><code>link1</code> / <code>bt52</code></td></tr>
                     <tr><td><code>ipro_le_audio_headset</code></td><td>LE Audio headset with DAC / USB audio output configurations</td><td><code>link1_periph</code> / <code>bt54_iso2</code></td></tr>
-                    <tr><td><code>ipro_pdm_mic_demo</code></td><td>PDM microphone capture, BLE transfer and LC3 compression</td><td><code>link1_periph</code> / <code>bt52</code></td></tr>
+                    <tr><td><code>ipro_pdm_mic_demo</code></td><td>PDM microphone capture, BLE transfer and LC3 compression</td><td><code>link2</code> / <code>bt52</code></td></tr>
                 </tbody>
                 </table>
             </div>
-            <p>Standalone BIS source/sink and ESL applications are not included in V1.2.1; contact INTELPRO for availability.</p>
+            <p>Standalone BIS source/sink and ESL applications are not included in V2.0.1; contact INTELPRO for availability.</p>
         </section>
 
         <!-- ============================================================ -->

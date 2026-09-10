@@ -4,6 +4,7 @@ title: 教學系列 Tutorials
 lang: zh-TW
 ---
 
+
 <section class="page-header-section">
     <div class="container">
         <h1 class="page-title">教學系列 Tutorials</h1>
@@ -13,6 +14,7 @@ lang: zh-TW
 
 <section class="tutorials-section">
     <div class="container">
+        <div class="alert alert-info">CLI 的 <code>flash／monitor／test</code> 範例需額外取得燒錄與監看工具。V2.0.1 未附 <code>tools/serial_monitor.py</code>，未取得腳本時請改用下方外部終端指令。</div>
 
         <!-- Tutorial 1: First BLE Application -->
         <div class="tutorial-card">
@@ -35,7 +37,7 @@ lang: zh-TW
   CMakeLists.txt     # 建構設定
   main.c             # 應用程式進入點</code></pre>
                 <div class="alert alert-warning">
-                    <p>複製範本後請修改 <code>Makefile</code> 中的 <code>PROJECT_NAME</code> 為新專案名稱。<code>IPRO_SDK_BASE ?= $(abspath ../../../../)</code> 是相對路徑，若專案放在不同深度的目錄，需同步調整層數。</p>
+                    <p>複製範本後，修改 <code>Makefile</code> 的 <code>PROJECT_NAME</code> 與 <code>CMakeLists.txt</code> 的 <code>setup_project()</code> 專案名稱。<code>IPRO_SDK_BASE ?= $(abspath ../../../../)</code> 依專案目錄深度調整。</p>
                 </div>
 
                 <h3>步驟 2：.config 設定</h3>
@@ -58,7 +60,7 @@ CONFIG_IPRO_BLE_CTLR_CFG_DBG=n
 CONFIG_BT_CONN=1
 CONFIG_EM_SIZE=32
 
-# NVDS — BLE 配對/綁定資料儲存（flash BLE app 必須啟用，
+# NVDS: controller configuration storage; host bonds use BT_SETTINGS
 # 缺少時會在連結階段出現 __nvds_start 未定義錯誤）
 CONFIG_ENABLE_NVDS=y
 CONFIG_CFG_NVDS=y
@@ -113,7 +115,7 @@ static void bt_ready(int err)
         return;
     }
     // 啟動廣播
-    err = bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad),
+    err = bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ad, ARRAY_SIZE(ad),
                           NULL, 0);
     if (err) {
         printf("Advertising failed (err %d)\n", err);
@@ -163,7 +165,7 @@ static void disconnected(struct bt_conn *conn, uint8_t reason)
 {
     printf("Disconnected (reason 0x%02x)\n", reason);
     // 重新啟動廣播
-    bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad),
+    bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ad, ARRAY_SIZE(ad),
                     NULL, 0);
 }
 
@@ -181,7 +183,7 @@ make -C apps/bluetooth/ble/my_ble_app
 # → apps/bluetooth/ble/my_ble_app/build/build_out/my_ble_app_IPRO7.bin
 
 # 燒錄（序列埠名稱依實際裝置而定）
-tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+/path/to/ipro_iot_tool_lite \
     --chipname ipro7 \
     --port /dev/cu.usbserial-XXXX \
     --firmware apps/bluetooth/ble/my_ble_app/build/build_out/my_ble_app_IPRO7.bin \
@@ -251,7 +253,7 @@ CONFIG_IPRO_BLE_CTLR_CFG_DBG=n
 CONFIG_BT_CONN=1
 CONFIG_EM_SIZE=32
 
-# NVDS — BLE 配對/綁定資料儲存（flash BLE app 必須）
+# NVDS: controller configuration storage; host bonds use BT_SETTINGS
 CONFIG_ENABLE_NVDS=y
 CONFIG_CFG_NVDS=y
 
@@ -259,9 +261,9 @@ CONFIG_CFG_NVDS=y
 CONFIG_SHELL=y</code></pre>
 
                 <h3>燒錄韌體</h3>
-                <p>使用 SDK 內建的燒錄工具 <code>ipro_iot_tool_lite</code>（序列埠名稱依實際裝置而定，macOS 可用 <code>ls /dev/cu.usbserial-*</code> 查詢）：</p>
+                <p>使用 另行安裝的燒錄工具 <code>ipro_iot_tool_lite</code>（序列埠名稱依實際裝置而定，macOS 可用 <code>ls /dev/cu.usbserial-*</code> 查詢）：</p>
                 <pre><code class="language-bash"># 基本燒錄指令
-tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+/path/to/ipro_iot_tool_lite \
     --chipname ipro7 \
     --port /dev/cu.usbserial-XXXX \
     --firmware apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
@@ -274,14 +276,10 @@ tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
                 </div>
 
                 <h3>序列埠監控</h3>
-                <p>使用 <code>serial_monitor.py</code> 監控序列埠輸出：</p>
-                <pre><code class="language-bash"># 監控序列埠（序列埠名稱依實際裝置而定）
-python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX
-
-# 發送重啟指令並等待預期輸出（--wait-for 為 regex）
-python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX \
-    --send reboot --timeout 30 \
-    --wait-for "BLE 5.4 stack initialized"</code></pre>
+                <p>V2.0.1 未附舊版監看腳本，可另行安裝 pyserial 並開啟終端：</p>
+                <pre><code class="language-bash"># 另行安裝；埠名與鮑率請依韌體設定調整
+python3 -m pip install pyserial
+python3 -m serial.tools.miniterm /dev/cu.usbserial-XXXX 115200</code></pre>
 
                 <h3>自動化流程</h3>
                 <p><code>build_freertos.sh</code> 可將建構、燒錄、監看串成一條指令，搭配 <code>-w</code>/<code>-t</code> 等待預期輸出，適合整合進自動化指令稿：</p>
@@ -315,7 +313,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX \
 make -C apps/bluetooth/ble/ipro_throughput_test
 
 # 燒錄到兩塊板子
-tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+/path/to/ipro_iot_tool_lite \
     --chipname ipro7 --port /dev/cu.usbserial-XXXX \
     --firmware apps/bluetooth/ble/ipro_throughput_test/build/build_out/ipro_throughput_test_IPRO7.bin \
     --baudrate 921600 --flash-pin 0x02</code></pre>
@@ -417,10 +415,10 @@ RX: 0 packets, 0 bytes, 0.00 Kbps (0.00 KBps)</code></pre>
                 </tbody>
                 </table>
             </div>
-            <p>基本 BLE 選擇 <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code>；BLE 5.4 與兩路 ISO 串流（CIS/BIS）選擇 <code>"bt54_iso2"</code>，後者要求 <code>CONFIG_EM_SIZE</code> 至少 32 KB。<code>CONFIG_BT_CONN</code> 應與所選 ACL 連線數一致。</p>
+            <p>基本 BLE 選擇 <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code>；BLE 5.4 與兩路 ISO 串流（CIS/BIS）選擇 <code>"bt54_iso2"</code>，後者要求 <code>CONFIG_EM_SIZE</code> 至少 32 KB。Host 連線上限不可超過控制器容量；請保留各應用隨附配置。</p>
 
                 <h3>BIS 廣播範例</h3>
-            <div class="alert alert-info">V1.2.1 未隨附獨立 <code>ipro_le_audio_bis_source</code> 與 <code>ipro_le_audio_bis_sink</code> 應用。Host 包含廣播 API；完整廣播參考應用請聯絡原廠取得。</div>
+            <div class="alert alert-info">V2.0.1 未隨附獨立 <code>ipro_le_audio_bis_source</code> 與 <code>ipro_le_audio_bis_sink</code> 應用。Host 包含廣播 API；完整廣播參考應用請聯絡原廠取得。</div>
 
                 <h3>CIS Unicast 範例 (Headset)</h3>
                 <p>使用 <code>ipro_le_audio_headset</code> 作為 LE Audio 耳機：</p>

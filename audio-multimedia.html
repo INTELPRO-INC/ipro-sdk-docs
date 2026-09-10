@@ -3,11 +3,13 @@ layout: default
 title: 音訊與多媒體
 ---
 
-<div class="doc-layout">
+            <div class="doc-layout">
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">本頁目錄</h4>
             <ul class="sidebar-links">
+                <li><a href="#pdm-recording" class="sidebar-link">PDM 錄音（V2.0.1）</a></li>
+
                 <li><a href="#overview" class="sidebar-link">概述</a></li>
                 <li><a href="#le-audio-pipeline" class="sidebar-link">LE Audio 音訊管線</a></li>
                 <li><a href="#unicast-audio" class="sidebar-link">單播音訊 (CIS)</a></li>
@@ -167,13 +169,13 @@ bsp/hal/inc/
                     <tr><td>位元率</td><td>16 - 320 kbps（LE Audio 常用 16-124 kbps/聲道）</td></tr>
                     <tr><td>取樣率</td><td>8 / 16 / 24 / 32 / 48 kHz</td></tr>
                     <tr><td>聲道</td><td>單聲道、立體聲</td></tr>
-                    <tr><td>延遲</td><td>&lt; 20ms 端到端</td></tr>
+                    <tr><td>延遲</td><td>依串流設定與緩衝量測 端到端</td></tr>
                     <tr><td>傳輸模式</td><td>CIS（單播）、BIS（廣播）</td></tr>
                 </tbody>
             </table>
         </section>
 
-        <section id="unicast-audio">
+        <section id="unicast-audio"><p>下方初始化函式節錄自本版 <code>bap_server.c</code>；能力宣告與回呼由同一檔案提供，請在完整 headset 專案中使用。</p>
             <h2>單播音訊 (CIS)</h2>
             <p>Connected Isochronous Stream（CIS）提供點對點的雙向音訊傳輸，適用於耳機、助聽器等需要穩定連線的場景。</p>
 
@@ -243,38 +245,73 @@ bsp/hal/inc/
                     <span class="code-block-title">BAP Server 初始化 (apps/bluetooth/le_audio/ipro_le_audio_headset/src/bap_server.c)</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">/* 註冊 BAP Unicast Server 回呼 */
-static const struct bt_bap_unicast_server_cb unicast_server_cb = {
-    .config = bap_server_config,
-    .reconfig = bap_server_reconfig,
-    .qos = bap_server_qos,
-    .enable = bap_server_enable,
-    .start = bap_server_start,
-    .metadata = bap_server_metadata,
-    .disable = bap_server_disable,
-    .stop = bap_server_stop,
-    .release = bap_server_release,
-};
-
-int bap_server_init(void)
+                <pre><code class="language-c">int bap_server_init(void)
 {
-    /* 初始化 PACS 服務（須先於 ASCS） */
-    bt_pacs_init();
+	int err;
+	struct bt_pacs_register_param pacs_param = {
+#if defined(CONFIG_BT_PAC_SNK)
+		.snk_pac = true,
+#endif
+#if defined(CONFIG_BT_PAC_SNK_LOC)
+		.snk_loc = true,
+#endif
+	};
+	struct bt_bap_unicast_server_register_param server_param = {
+		.snk_cnt = CONFIG_BT_ASCS_MAX_ASE_SNK_COUNT,
+		.src_cnt = CONFIG_BT_ASCS_MAX_ASE_SRC_COUNT,
+	};
 
-    /* 註冊 LC3 sink 音訊能力 */
-    bt_pacs_cap_register(BT_AUDIO_DIR_SINK, &amp;lc3_sink_cap);
+	IPRO_LOGI(LOG_TAG, &quot;Initializing BAP Unicast Server&quot;);
 
-    /* 設定音訊位置與 audio context */
-    bt_pacs_set_location(BT_AUDIO_DIR_SINK, BT_AUDIO_LOCATION_FRONT_LEFT);
-    bt_pacs_set_supported_contexts(BT_AUDIO_DIR_SINK,
-                                   BT_AUDIO_CONTEXT_TYPE_MEDIA |
-                                   BT_AUDIO_CONTEXT_TYPE_CONVERSATIONAL |
-                                   BT_AUDIO_CONTEXT_TYPE_UNSPECIFIED);
+	/* 1. Register PACS service (must be done before publishing caps) */
+	err = bt_pacs_register(&amp;pacs_param);
+	if (err != 0 &amp;&amp; err != -EALREADY) {
+		IPRO_LOGE(LOG_TAG, &quot;Failed to register PACS (err %d)&quot;, err);
+		return err;
+	}
+	IPRO_LOGI(LOG_TAG, &quot;PACS service registered&quot;);
 
-    /* 向 ASCS 註冊 Unicast Server 回呼 */
-    bt_bap_unicast_server_register_cb(&amp;unicast_server_cb);
+	/* 2. Register LC3 sink codec capability with PACS */
+	err = bt_pacs_cap_register(BT_AUDIO_DIR_SINK, &amp;lc3_sink_cap);
+	if (err != 0) {
+		IPRO_LOGE(LOG_TAG, &quot;Failed to register sink cap (err %d)&quot;, err);
+		return err;
+	}
+	IPRO_LOGI(LOG_TAG, &quot;LC3 sink capability registered&quot;);
 
-    return 0;
+	/* 3. Set audio location (mono front left for single headset) */
+	err = bt_pacs_set_location(BT_AUDIO_DIR_SINK, BT_AUDIO_LOCATION_FRONT_LEFT);
+	if (err != 0) {
+		IPRO_LOGE(LOG_TAG, &quot;Failed to set sink location (err %d)&quot;, err);
+		return err;
+	}
+
+	/* 4. Set supported and available audio contexts */
+	bt_pacs_set_supported_contexts(BT_AUDIO_DIR_SINK,
+				       BT_AUDIO_CONTEXT_TYPE_MEDIA |
+				       BT_AUDIO_CONTEXT_TYPE_CONVERSATIONAL |
+				       BT_AUDIO_CONTEXT_TYPE_UNSPECIFIED);
+
+	bt_pacs_set_available_contexts(BT_AUDIO_DIR_SINK,
+				       BT_AUDIO_CONTEXT_TYPE_MEDIA |
+				       BT_AUDIO_CONTEXT_TYPE_CONVERSATIONAL |
+				       BT_AUDIO_CONTEXT_TYPE_UNSPECIFIED);
+
+	/* 5. Register ASCS ASE instances, then BAP callbacks. */
+	err = bt_bap_unicast_server_register(&amp;server_param);
+	if (err != 0 &amp;&amp; err != -EALREADY) {
+		IPRO_LOGE(LOG_TAG, &quot;Failed to register ASCS (err %d)&quot;, err);
+		return err;
+	}
+
+	err = bt_bap_unicast_server_register_cb(&amp;unicast_server_cb);
+	if (err != 0) {
+		IPRO_LOGE(LOG_TAG, &quot;Failed to register BAP callbacks (err %d)&quot;, err);
+		return err;
+	}
+
+	IPRO_LOGI(LOG_TAG, &quot;BAP Unicast Server initialized successfully&quot;);
+	return 0;
 }</code></pre>
             </div>
         </section>
@@ -282,7 +319,7 @@ int bap_server_init(void)
         <section id="broadcast-audio">
             <h2>廣播音訊（BIS）</h2>
             <p>Zephyr 4.4 Host 在 <code>zephyr/bluetooth/audio/bap.h</code> 提供 <code>bt_bap_broadcast_source_*</code> 與 <code>bt_bap_broadcast_sink_*</code> API。控制器需選用 <code>bt54_iso2</code>，並於應用配置啟用對應 BAP 角色。</p>
-            <div class="alert alert-info">V1.2.1 未隨附獨立 BIS source/sink 參考應用，完整範例請聯絡原廠取得。已隨附的耳機應用供單播開發參考。</div>
+            <div class="alert alert-info">V2.0.1 未隨附獨立 BIS source/sink 參考應用，完整範例請聯絡原廠取得。已隨附的耳機應用供單播開發參考。</div>
         </section>
 
         <section id="audio-profiles">
@@ -358,11 +395,11 @@ int bap_server_init(void)
                 <li><strong>位元率</strong>：16 - 320 kbps（LE Audio 常用 preset 為每聲道 16 - 124 kbps）</li>
                 <li><strong>幀長度</strong>：LE Audio 標準為 7.5ms 或 10ms；隨附的 liblc3 另支援 2.5ms 與 5ms</li>
                 <li><strong>聲道</strong>：單聲道、立體聲</li>
-                <li><strong>優勢</strong>：以 160 kbps 達到 SBC 328 kbps 的音質</li>
+
             </ul>
 
             <div class="alert alert-info">
-                <strong>Opus:</strong> 交付包包含 <code>components/3rdparty/opus</code>，供應用音訊編解碼使用。LE Audio ISO 串流使用 LC3；先前的語音助理範例未隨附於 V1.2.1。
+                <strong>Opus:</strong> 交付包包含 <code>components/3rdparty/opus</code>，供應用音訊編解碼使用。LE Audio ISO 串流使用 LC3；先前的語音助理範例未隨附於 V2.0.1。
             </div>
         </section>
 
@@ -539,7 +576,7 @@ bsp/hal/inc/
 └── stream_control.c        # 串流控制</code></pre>
             </div>
 
-            <p>BLE 影像傳輸可參考 <code>apps/bluetooth/ble/ipro_ble_remote/</code>；V1.2.1 未隨附獨立影像擷取應用。</p>
+            <p>BLE 影像傳輸可參考 <code>apps/bluetooth/ble/ipro_ble_remote/</code>；V2.0.1 未隨附獨立影像擷取應用。</p>
         </section>
 
         <section id="audio-hardware">
@@ -658,8 +695,15 @@ audio_output_destroy(out);</code></pre>
                 </tbody>
                 </table>
             </div>
-            <p>基本 BLE 選擇 <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code>；BLE 5.4 與兩路 ISO 串流（CIS/BIS）選擇 <code>"bt54_iso2"</code>，後者要求 <code>CONFIG_EM_SIZE</code> 至少 32 KB。<code>CONFIG_BT_CONN</code> 應與所選 ACL 連線數一致。</p>
-            <div class="alert alert-info">V1.2.1 未包含舊版的獨立 BIS source/sink、雲端音訊閘道與語音助理應用。</div>
+            <p>基本 BLE 選擇 <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code>；BLE 5.4 與兩路 ISO 串流（CIS/BIS）選擇 <code>"bt54_iso2"</code>，後者要求 <code>CONFIG_EM_SIZE</code> 至少 32 KB。Host 連線上限不可超過控制器容量；請保留各應用隨附配置。</p>
+            <div class="alert alert-info">V2.0.1 未包含舊版的獨立 BIS source/sink、雲端音訊閘道與語音助理應用。</div>
         </section>
+        <section id="pdm-recording">
+            <h2>PDM 錄音（V2.0.1）</h2>
+            <p>支援 16 kHz／16-bit 單聲道 PDM 擷取、LC3 串流、SMP 配對儲存與 PDS31 喚醒重連。V2.0.1 邏輯錄音最長 4 小時；實體 PSRAM ring 僅保留 240 秒，需透過 <code>CHUNK_READY</code>／<code>GET_CHUNK</code> 每 30 秒取回一段。覆寫後 <code>GET_AUDIO</code> 只能取得最後 240 秒。</p>
+            <p>使用隨附的 <code>link2 / bt52</code>、16 KB EM 配置；Host 的 <code>CONFIG_BT_CONN=1</code> 與控制器的兩連線容量不同，請保留完整板型配置，不要強制將兩個數值改成一致。</p><pre><code class="language-bash">make -C apps/multimedia/ipro_pdm_mic_demo
+make -C apps/multimedia/ipro_pdm_mic_demo BOARD=evk</code></pre>            <p>EVB 輸出位於 <code>build/build_out/</code>；EVK 位於 <code>build_config_evk/build_out/</code>，檔名皆為 <code>ipro_pdm_mic_demo_IPRO7.bin</code>。Android 原始碼位於 <code>tools/android/IproMicDemo/</code>；配套 APK 與測試韌體見 <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1 Release</a>。</p>
+        </section>
+
     </article>
 </div>

@@ -3,11 +3,13 @@ layout: default
 title: 網路開發
 ---
 
-<div class="doc-layout">
+            <div class="doc-layout">
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">本頁目錄</h4>
             <ul class="sidebar-links">
+                <li><a href="#ipro6s-wifi6" class="sidebar-link">IPRO6S Wi-Fi 6</a></li>
+
                 <li><a href="#overview" class="sidebar-link">概覽</a></li>
                 <li><a href="#architecture" class="sidebar-link">網路架構</a></li>
                 <li><a href="#network-config" class="sidebar-link">網路配置</a></li>
@@ -25,10 +27,10 @@ title: 網路開發
         <h1>網路開發</h1>
         <p>IPRO7 是系統的主控 SoC，負責應用邏輯、NPU 推論與 BLE 連線，<strong>本身不內建 Wi-Fi 射頻</strong>。IPRO SDK 透過 lwIP TCP/IP 協定堆疊與 mbedTLS 加密程式庫，提供兩條對外連網路徑：</p>
         <ul>
-            <li><strong>乙太網路 (EMAC)</strong> — IPRO7 內建 Ethernet MAC 控制器，搭配 lwIP 即可有線上網。Release SDK v1.2.1 內含完整原始碼與參考應用。</li>
-            <li><strong>Wi-Fi（經 IPRO6 companion 晶片）</strong> — Wi-Fi 6 (802.11ax) 由 IPRO6 系列 connectivity companion 晶片提供，經 SDIO 介面橋接至 IPRO7 的 lwIP 堆疊。完整方案需另行取得，請聯絡原廠。</li>
+            <li><strong>乙太網路 (EMAC)</strong> — IPRO7 內建 Ethernet MAC 控制器，搭配 lwIP 即可有線上網。Release SDK v2.0.1 內含完整原始碼與參考應用。</li>
+            <li><strong>Wi-Fi（經 IPRO6 companion 晶片）</strong> — Wi-Fi 6 (802.11ax) 由 IPRO6 系列 connectivity companion 晶片提供，經 SDIO 介面橋接至 IPRO7 的 lwIP 堆疊。V2.0.1 已包含 IPRO7 Host 與 IPRO6S 無線端應用原始碼。</li>
         </ul>
-        <p>V1.2.1 未包含 LTE modem 元件 <code>components/network/lte_modem/</code>。</p>
+        <p>V2.0.1 未包含 LTE modem 元件 <code>components/network/lte_modem/</code>。</p>
 
         <!-- Overview -->
         <section id="overview">
@@ -56,7 +58,7 @@ title: 網路開發
                 <div class="feature-card">
                     <h3 class="feature-title">安全與加密</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
-                        <li>mbedTLS 2.28 LTS (TLS 1.2 / DTLS 1.2)</li>
+                        <li>mbedTLS 2.28.2 (TLS 1.2 / DTLS 1.2)</li>
                         <li>X.509 憑證管理</li>
                         <li>硬體加速大數運算</li>
                         <li>HTTPS / 安全 IoT 通訊</li>
@@ -68,7 +70,7 @@ title: 網路開發
                         <li>Wi-Fi 6 (802.11ax) 由 IPRO6 晶片提供</li>
                         <li>SDIO 介面連接 IPRO7 主控</li>
                         <li>數據面橋接至 IPRO7 lwIP</li>
-                        <li>完整方案請聯絡原廠取得</li>
+                        <li>已附 IPRO7 Host 與 IPRO6S Device 範例</li>
                     </ul>
                 </div>
             </div>
@@ -86,7 +88,7 @@ title: 網路開發
                         <div class="layer-label">應用層 (HTTP Client, MQTT, CoAP, ...)</div>
                     </div>
                     <div class="layer layer-cyan">
-                        <div class="layer-label">TLS / DTLS (mbedTLS 2.28 LTS)</div>
+                        <div class="layer-label">TLS / DTLS (mbedTLS 2.28.2)</div>
                         <div class="layer-desc">components/crypto/mbedtls/</div>
                     </div>
                     <div class="layer layer-purple">
@@ -103,7 +105,7 @@ title: 網路開發
                         <div class="layer-label">驅動層</div>
                         <div class="layer-items">
                             <span class="pill">EMAC 驅動（乙太網路）— bsp/.../drv_emac.c</span>
-                            <span class="pill">SDIO 網路橋接 — IPRO7 SDH ↔ IPRO6（需聯絡原廠取得）</span>
+                            <span class="pill">SDIO 網路橋接 — IPRO7 SDH ↔ IPRO6S（ipro6_if_wifi）</span>
                         </div>
                     </div>
                     <div class="layer layer-red">
@@ -125,11 +127,11 @@ title: 網路開發
                 <tbody>
                     <tr><td>lwIP 堆疊</td><td><code>components/network/lwip/</code></td><td>輕量化 TCP/IP 協定堆疊</td></tr>
                     <tr><td>lwIP 工具</td><td><code>components/network/lwip/lwip_apps/</code></td><td>Ping 等網路診斷工具</td></tr>
-                    <tr><td>mbedTLS</td><td><code>components/crypto/mbedtls/</code></td><td>TLS 1.2 / DTLS 1.2 加密通訊程式庫（2.28 LTS）</td></tr>
+                    <tr><td>mbedTLS</td><td><code>components/crypto/mbedtls/</code></td><td>TLS 1.2 / DTLS 1.2 加密通訊程式庫（2.28.2）</td></tr>
                     <tr><td>EMAC 驅動</td><td><code>bsp/drivers/ipro7_soc/std_drv/src/drv_emac.c</code></td><td>乙太網路 MAC 控制器驅動</td></tr>
-                    <tr><td>HTTP Client</td><td><code>components/http_client/</code></td><td>HTTP/HTTPS 用戶端（連線池 + TLS + multipart）；未包含於 Release SDK v1.2.1，請聯絡原廠取得</td></tr>
-                    <tr><td>LTE Modem</td><td><code>components/network/lte_modem/</code></td><td>4G LTE PPP 撥號（UART AT 介面）</td></tr>
-                    <tr><td>SDIO Wi-Fi Host</td><td><code>components/network/ipronet_host/</code><br><code>components/network/sdiowifi/</code></td><td>已隨附；companion 韌體需另行取得</td></tr>
+                    <tr><td>HTTP Client</td><td><code>components/http_client/</code></td><td>HTTP/HTTPS 用戶端（連線池 + TLS + multipart）；未包含於 Release SDK v2.0.1，請聯絡原廠取得</td></tr>
+
+                    <tr><td>SDIO Wi-Fi Host</td><td><code>components/network/ipronet_host/</code><br><code>components/network/sdiowifi/</code></td><td>已隨附；亦提供 IPRO6S 無線端原始碼</td></tr>
                 </tbody>
             </table>
             </div>
@@ -276,7 +278,7 @@ int udp_send_example(const char *dest_ip, uint16_t port)
         <!-- EMAC -->
         <section id="emac">
             <h2>乙太網路 (EMAC)</h2>
-            <p>IPRO7 內建 EMAC (Ethernet MAC) 控制器，外接 Ethernet PHY 即可支援有線網路連線，適用於閘道器、工業控制等需要有線網路的應用場景。這是 Release SDK v1.2.1 內建議的主要連網路徑。</p>
+            <p>IPRO7 內建 EMAC (Ethernet MAC) 控制器，外接 Ethernet PHY 即可支援有線網路連線，適用於閘道器、工業控制等需要有線網路的應用場景。這是 Release SDK v2.0.1 內建議的主要連網路徑。</p>
 
             <div class="code-block">
                 <div class="code-block-header">
@@ -321,135 +323,27 @@ void emac_init(void)
 
         <!-- mbedTLS -->
         <section id="mbedtls">
-            <h2>安全加密 (mbedTLS)</h2>
-            <p>IPRO SDK 整合 mbedTLS 2.28 LTS 程式庫，提供 TLS/DTLS 安全通訊能力以及各種密碼學演算法。</p>
-
-            <h3>功能特性</h3>
-            <ul>
-                <li><strong>TLS 1.2</strong> - 安全的 TCP 連線加密</li>
-                <li><strong>DTLS 1.2</strong> - 基於 UDP 的安全通訊 (適用於 CoAP 等協定)</li>
-                <li><strong>X.509 憑證</strong> - 伺服器與用戶端憑證驗證</li>
-                <li><strong>對稱加密</strong> - AES-128/192/256, ChaCha20-Poly1305</li>
-                <li><strong>雜湊函式</strong> - SHA-256, SHA-384, SHA-512</li>
-                <li><strong>非對稱加密</strong> - RSA, ECDSA, ECDH (secp256r1, secp384r1)</li>
-                <li><strong>隨機數產生</strong> - CTR-DRBG</li>
-                <li><strong>硬體加速</strong> - 大數運算硬體加速 (<code>CONFIG_MBEDTLS_BIGNUM_USE_HW=y</code>)</li>
-            </ul>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">TLS 用戶端連線範例</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-<pre><code class="language-c">#include "mbedtls/net_sockets.h"
-#include "mbedtls/ssl.h"
-#include "mbedtls/entropy.h"
-#include "mbedtls/ctr_drbg.h"
-
-int tls_connect_example(const char *hostname, const char *port)
-{
-    mbedtls_net_context server_fd;
-    mbedtls_ssl_context ssl;
-    mbedtls_ssl_config conf;
-    mbedtls_entropy_context entropy;
-    mbedtls_ctr_drbg_context ctr_drbg;
-
-    /* 初始化 */
-    mbedtls_net_init(&amp;server_fd);
-    mbedtls_ssl_init(&amp;ssl);
-    mbedtls_ssl_config_init(&amp;conf);
-    mbedtls_entropy_init(&amp;entropy);
-    mbedtls_ctr_drbg_init(&amp;ctr_drbg);
-
-    /* 設定亂數產生器 */
-    mbedtls_ctr_drbg_seed(&amp;ctr_drbg, mbedtls_entropy_func,
-                          &amp;entropy, NULL, 0);
-
-    /* TCP 連線 */
-    mbedtls_net_connect(&amp;server_fd, hostname, port,
-                        MBEDTLS_NET_PROTO_TCP);
-
-    /* TLS 設定 */
-    mbedtls_ssl_config_defaults(&amp;conf, MBEDTLS_SSL_IS_CLIENT,
-                                MBEDTLS_SSL_TRANSPORT_STREAM,
-                                MBEDTLS_SSL_PRESET_DEFAULT);
-    mbedtls_ssl_conf_rng(&amp;conf, mbedtls_ctr_drbg_random, &amp;ctr_drbg);
-    mbedtls_ssl_setup(&amp;ssl, &amp;conf);
-    mbedtls_ssl_set_hostname(&amp;ssl, hostname);
-
-    /* 綁定 socket */
-    mbedtls_ssl_set_bio(&amp;ssl, &amp;server_fd,
-                        mbedtls_net_send, mbedtls_net_recv, NULL);
-
-    /* 執行 TLS 交握 */
-    int ret = mbedtls_ssl_handshake(&amp;ssl);
-    if (ret != 0) {
-        printf("TLS 交握失敗: -0x%04X\r\n", -ret);
-        goto cleanup;
-    }
-
-    /* 透過 TLS 傳送資料 */
-    const char *request = "GET / HTTP/1.1\r\nHost: example.com\r\n\r\n";
-    mbedtls_ssl_write(&amp;ssl, (const unsigned char *)request,
-                      strlen(request));
-
-cleanup:
-    mbedtls_ssl_close_notify(&amp;ssl);
-    mbedtls_net_free(&amp;server_fd);
-    mbedtls_ssl_free(&amp;ssl);
-    mbedtls_ssl_config_free(&amp;conf);
-    mbedtls_entropy_free(&amp;entropy);
-    mbedtls_ctr_drbg_free(&amp;ctr_drbg);
-    return ret;
-}</code></pre>
-            </div>
-
-            <h3>mbedTLS 配置檔案</h3>
-            <p>mbedTLS 的功能可透過配置標頭檔進行裁剪，SDK 提供範例配置：</p>
-            <ul>
-                <li><code>components/crypto/mbedtls/mbedtls_sample_config.h</code> - 通用範例配置</li>
-                <li><code>components/crypto/mbedtls/kvs_webrtc_mbedtls_config.h</code> - WebRTC 專用配置</li>
-                <li>應用程式可自訂 <code>mbedtls_config.h</code> 以啟用/停用特定演算法</li>
-            </ul>
+<h2>TLS／DTLS（mbedTLS）</h2>
+<p>本版附 mbedTLS <strong>2.28.2</strong>，以 <code>CONFIG_COMPONENTS_MBEDTLS_ENABLE=y</code> 啟用；實際演算法由選用的設定標頭決定。版本號代表隨 SDK 交付的版本。</p><p>TLS client 可參考已附的 <code>components/crypto/mbedtls/mbedtls/programs/ssl/ssl_client1.c</code>，移植時完成下列步驟：</p><ol><li>初始化 entropy 與 CTR-DRBG，確認平台提供有效的熵來源，並檢查每個初始化與連線呼叫的回傳值。</li><li>載入目標服務信任的 CA 憑證，以 <code>mbedtls_ssl_conf_ca_chain()</code> 設定，並使用 <code>MBEDTLS_SSL_VERIFY_REQUIRED</code>。</li><li>以 <code>mbedtls_ssl_set_hostname()</code> 設定實際主機名稱；平台時間需能正確驗證憑證有效期。</li><li>握手與讀寫時處理 <code>MBEDTLS_ERR_SSL_WANT_READ</code>／<code>MBEDTLS_ERR_SSL_WANT_WRITE</code>、部分傳輸及逾時；成功後確認憑證驗證結果。</li><li>HTTP Host 必須對應連線目標，處理回應後關閉 TLS 與 socket，所有錯誤路徑都釋放資源。</li></ol><p>上游範例的測試憑證與主機需替換成產品實際設定；它是移植參考，不會自動為開發板設定網路或信任憑證。</p>
         </section>
 
         <!-- HTTP Client -->
         <section id="http-client">
-            <h2>HTTP Client</h2>
-
-            <div class="alert alert-warning" style="margin-bottom: 2rem;">
-                <strong>⚠ Release SDK 注意事項：</strong>高階 HTTP/HTTPS 用戶端元件 <code>components/http_client/</code> 未包含在 Release SDK v1.2.1 中。以下內容僅供架構參考，如需此元件請聯絡原廠取得。
-            </div>
-
-            <p><code>components/http_client/</code> 是建構於 lwIP 與 mbedTLS 之上的高階 HTTP/HTTPS 用戶端元件，免去手動管理 socket 與 TLS 交握的細節：</p>
-            <ul>
-                <li><strong>連線池</strong> - 重複使用 TCP/TLS 連線，降低重複交握成本</li>
-                <li><strong>TLS 支援</strong> - HTTPS 請求（內部使用 mbedTLS）</li>
-                <li><strong>Multipart 編碼</strong> - 支援檔案/表單上傳</li>
-                <li><strong>Keep-Alive 與逾時管理</strong> - 可調整</li>
-            </ul>
-
-            <p>V1.2.1 未隨附先前的 <code>ipro_voice_assistant</code> 應用；網路用戶端可基於已隨附的 lwIP 與 mbedTLS 元件整合。</p>
+<h2>HTTP Client</h2>
+<p>V2.0.1 未附 <code>components/http_client/</code> 高階用戶端。開發 HTTP／HTTPS 時，以已附的 lwIP 與 mbedTLS 建立傳輸，或另行整合相容的 HTTP 函式庫；請處理 HTTP 狀態碼、分塊傳輸、長度限制與逾時。</p>
         </section>
 
         <!-- Wi-Fi via IPRO6 -->
+        <section id="ipro6s-wifi6">
+            <h2>IPRO6S Wi-Fi 6</h2>
+            <p>IPRO6S 獨立連網請使用 <code>apps/platform/ipro6_demo/</code>，配置啟用 <code>CONFIG_WIFI6=y</code> 與 <code>CONFIG_USE_MACSW=y</code>。Wi-Fi MAC 以 <code>components/wireless/macsw/lib/libmacsw.a</code> 交付；<code>components/wireless/wifi6/</code> 提供 fhost、wpa_supplicant 及 lwIP adapter 原始碼。</p><pre><code class="language-bash">./build_freertos.sh ipro6_demo build</code></pre>            <p>本版僅附一般 MAC 函式庫；未取得相容 <code>libmacsw_lpfw.a</code> 前，請勿啟用 <code>CONFIG_PHY_LPFW</code>。</p>
+        </section>
+
         <section id="wifi-ipro6">
-            <h2>Wi-Fi（經 IPRO6S Companion 晶片）</h2>
-            <p>IPRO7 不內建 Wi-Fi 射頻。V1.2.1 已隨附 IPRO7 端 <code>ipronet_host</code>、<code>sdiowifi</code> 元件與 <code>apps/platform/ipro7_sdio_wifi/</code> 範例。Wi-Fi 由 IPRO6S companion 提供，其相容韌體需另行取得。</p>
-            <pre><code class="language-text">IPRO7 application / lwIP (iproeth0)
-              |
-         ipronet_host
-              | SDIO 4-bit (SDH)
-              v
-       IPRO6S Wi-Fi firmware
-              |
-         Wi-Fi access point</code></pre>
-            <pre><code class="language-bash">./build_freertos.sh ipro7_sdio_wifi build</code></pre>
-            <p>兩顆晶片燒錄相容韌體後，在 IPRO7 串口輸入以下指令，並替換為您的網路資訊：</p>
-            <pre><code class="language-text">ipronet_up &lt;SSID&gt; &lt;PASSWORD&gt;
-# Disconnect and stop
-ipronet_down</code></pre>
-            <p>公開 API 位於 <code>components/network/ipronet_host/ipronet_host.h</code>：依序呼叫 <code>ipronet_config_default()</code>、<code>ipronet_start()</code> 與 <code>ipronet_connect()</code>，收到 <code>on_got_ip</code> 後再使用 BSD Socket。回呼在 RX task 執行，不可阻塞或直接呼叫連線控制 API；請交由應用 task 處理。</p>
+            <h2>IPRO7 + IPRO6S SDIO Wi-Fi</h2>
+            <p>IPRO7 不內建 Wi-Fi。V2.0.1 已包含 <code>apps/platform/ipro7_sdio_wifi/</code>（IPRO7 Host）及 <code>apps/platform/ipro6_if_wifi/</code>（IPRO6S 無線端）。IPRO6S 需選用 <code>defconfig_ipro6_sdio</code>；兩顆晶片需各自建置與燒錄。</p><pre><code class="language-bash">./build_freertos.sh -d defconfig_ipro6_sdio build ipro6_if_wifi
+./build_freertos.sh build ipro7_sdio_wifi</code></pre>            <p>輸出為 <code>apps/platform/ipro6_if_wifi/build_ipro6_sdio/build_out/ipro6_if_wifi_IPRO6.bin</code> 與 <code>apps/platform/ipro7_sdio_wifi/build/build_out/ipro7_sdio_wifi_IPRO7.bin</code>。燒錄前確認板子接線、電源控制及各晶片的燒錄設定。</p><pre><code class="language-text">ipronet_up &lt;SSID&gt; &lt;PASSWORD&gt;
+ipronet_down</code></pre>            <p>上述指令於 IPRO7 串口執行。<code>components/network/ipronet_host/ipronet_host.h</code> 提供 <code>ipronet_config_default()</code>、<code>ipronet_start()</code> 與 <code>ipronet_connect()</code>；收到 <code>on_got_ip</code> 後才使用 socket。RX task 回呼應將工作交給應用 task，不可阻塞或直接呼叫連線控制 API。</p>
         </section>
 
         <!-- Reference Apps -->

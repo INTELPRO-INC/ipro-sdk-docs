@@ -3,10 +3,12 @@ layout: default
 title: IPRO SDK VS Code Extension
 ---
 
-<div class="doc-layout">
+            <div class="doc-layout">
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
             <ul class="sidebar-links">
+                <li><a href="#sdk-2-0-1" class="sidebar-link">SDK V2.0.1</a></li>
+
                 <li><a href="#overview" class="sidebar-link">Extension 概覽</a></li>
                 <li><a href="#features" class="sidebar-link">功能介紹</a></li>
                 <li><a href="#installation" class="sidebar-link">安裝與設定</a></li>
@@ -24,17 +26,17 @@ title: IPRO SDK VS Code Extension
     </aside>
     <article class="doc-content">
         <h1>IPRO SDK VS Code Extension</h1>
-<p>在 VS Code 完成環境設定、建構、燒錄與監看，並管理獨立的 SDK 與 Extension 更新。</p>
+            <p>在 VS Code 完成環境設定、建構、燒錄與監看，並管理獨立的 SDK 與 Extension 更新。</p>
 
         <section id="overview">
             <h2>Extension 概覽</h2>
-<p>IPRO SDK Extension 3.3.0（識別碼 ipro.ipro-sdk-extension）將 FreeRTOS 專案探索、CMake 建構、IntelProCube 燒錄、串口主控台與記憶體分析整合至 VS Code。Windows 首次使用可透過完整安裝包取得所需工具。</p>
-<p>本頁對應 SDK V1.2.1、Extension 3.3.0 與 Windows 安裝包 3.3.0。VS Code 需 1.102 或以上；本頁 VSIX 為 Windows x64／ARM64，其他平台請取得對應套件與工具。</p><a href="{{ '/windows-installation' | relative_url }}">Windows 安裝與更新指南</a>
+            <p>IPRO SDK Extension 3.3.0（識別碼 ipro.ipro-sdk-extension）將 FreeRTOS 專案探索、CMake 建構、IntelProCube 燒錄、串口主控台與記憶體分析整合至 VS Code。Windows 首次使用可透過完整安裝包取得所需工具。</p>
+            <p>本頁說明 Extension 3.3.0（需 VS Code 1.102+）。SDK V2.0.1 與 Online Installer 3.4.0 獨立管理版本；目前套件清單仍選用 SDK 1.2.1。V2.0.1 請匯入解壓後資料夾並確認工具鏈相容性。</p><a href="{{ '/windows-installation' | relative_url }}">Windows 安裝與更新指南</a>
         </section>
 
         <section id="features">
             <h2>功能介紹</h2>
-<div class="table-wrapper">
+            <div class="table-wrapper">
 <table>
 <thead><tr><th>功能</th><th>用途</th></tr></thead>
 <tbody>
@@ -62,12 +64,12 @@ title: IPRO SDK VS Code Extension
 
         <section id="control-center">
             <h2>控制中心</h2>
-<p>按 F1 → IPRO: Open Control Center。控制中心顯示目前 SDK／專案、UART、設定與實際 Monitor 鮑率，並依工作狀態啟用操作。開啟面板本身不會燒錄或重設開發板。</p>
+            <p>按 F1 → IPRO: Open Control Center。控制中心顯示目前 SDK／專案、UART、設定與實際 Monitor 鮑率，並依工作狀態啟用操作。開啟面板本身不會燒錄或重設開發板。</p>
 <figure>
 <img src="{{ '/assets/images/installation/control-center.png' | relative_url }}" alt="IPRO 控制中心與 Target 側欄" loading="lazy" style="display:block;max-width:100%;height:auto;">
 <figcaption>控制中心介面（3.2.4 引入，3.3.0 延續此介面並加入元件更新入口）。</figcaption>
 </figure>
-<p>支援明暗／高對比主題、窄視窗排版與鍵盤焦點；動畫可暫停，並遵循降低動態效果的偏好。</p>
+            <p>支援明暗／高對比主題、窄視窗排版與鍵盤焦點；動畫可暫停，並遵循降低動態效果的偏好。</p>
         </section>
 
         <section id="workflow">
@@ -80,7 +82,7 @@ title: IPRO SDK VS Code Extension
     <li>確認 BIN 與 ELF 產生。SDK 或工具路徑更動後，Clean 並重新 Build，避免沿用舊快取。</li>
 </ol>
 <pre><code class="language-text">apps/platform/ipro7_demo/build/build_out/ipro7_demo_IPRO7.bin</code></pre>
-<p>安裝器預設使用 Ninja；Extension 的 ipro.generator 亦可設定 auto、make 或 ninja。IPRO: Batch Build 可一次建構多個選定專案。</p>
+            <p>安裝器預設使用 Ninja；Extension 的 ipro.generator 亦可設定 auto、make 或 ninja。IPRO: Batch Build 可一次建構多個選定專案。</p>
         </section>
 
         <section id="flash">
@@ -92,7 +94,7 @@ title: IPRO SDK VS Code Extension
     <li>執行 IPRO: Flash，確認燒錄工具的驗證與成功訊息。Extension 會先釋放自己的 Monitor 連線；其他程式占用串口時仍需先關閉。</li>
     <li>用 IPRO Config: Set Monitor Baud Rate 設定符合韌體的主控台速率，再執行 IPRO: Serial Monitor。修改速率後關閉並重開 Monitor，或使用提供的重新連線操作。</li>
 </ol>
-<div class="table-wrapper">
+            <div class="table-wrapper">
 <table>
 <thead><tr><th>設定</th><th>意義</th></tr></thead>
 <tbody>
@@ -102,23 +104,23 @@ title: IPRO SDK VS Code Extension
 </tbody>
 </table>
 </div>
-<div class="alert alert-info">Extension 3.2.0 起使用內建 serialport，Windows Monitor 不依賴 SDK 的 POSIX serial_monitor.py，也不會在開啟時自動 reboot。要重啟板子可執行 IPRO: Reset Board，或在支援的韌體主控台輸入 reboot。</div>
+            <div class="alert alert-info">Extension 3.2.0 起使用內建 serialport，Windows Monitor 不依賴 SDK 的 POSIX serial_monitor.py，也不會在開啟時自動 reboot。要重啟板子可執行 IPRO: Reset Board，或在支援的韌體主控台輸入 reboot。</div>
         </section>
 
         <section id="memory-map">
             <h2>記憶體與除錯工具</h2>
-<p>建構後執行 IPRO Analyse: Memory Map，檢視各記憶體區域、元件用量與前後建構差異，並可匯出 CSV／Markdown。容量判斷仍需對照 linker 輸出與實際分割表。</p>
-<p>IPRO Analyse: Decode Crash Report 可將例外回溯轉為來源位置；IPRO Debug: Pin Function Lookup 查詢腳位。Register Explorer 需相容 Probe、CCI 連線與正確的板端設定。Extension 3.3.0 未提供一般 GDB debug adapter；安装 OpenOCD 不等於可直接按 F5 完成來源碼除錯。</p>
+            <p>建構後執行 IPRO Analyse: Memory Map，檢視各記憶體區域、元件用量與前後建構差異，並可匯出 CSV／Markdown。容量判斷仍需對照 linker 輸出與實際分割表。</p>
+            <p>IPRO Analyse: Decode Crash Report 可將例外回溯轉為來源位置；IPRO Debug: Pin Function Lookup 查詢腳位。Register Explorer 需相容 Probe、CCI 連線與正確的板端設定。Extension 3.3.0 未提供一般 GDB debug adapter；安装 OpenOCD 不等於可直接按 F5 完成來源碼除錯。</p>
         </section>
 
         <section id="component-updates">
             <h2>元件獨立更新</h2>
-<p>Extension 3.3.0 提供 F1 → IPRO Setup: Update Components，也可從控制中心進入。</p>
+            <p>Extension 3.3.0 提供 F1 → IPRO Setup: Update Components，也可從控制中心進入。</p>
 <figure>
 <img src="{{ '/assets/images/installation/component-updates-3.3.0.png' | relative_url }}" alt="VS Code 元件更新選單" loading="lazy" style="display:block;max-width:100%;height:auto;">
 <figcaption>VSIX、SDK ZIP、資料夾與 Git 四種更新來源。</figcaption>
 </figure>
-<div class="table-wrapper">
+            <div class="table-wrapper">
 <table>
 <thead><tr><th>來源</th><th>行為</th></tr></thead>
 <tbody>
@@ -139,12 +141,12 @@ title: IPRO SDK VS Code Extension
   sdk\          SDK root: CMakeLists.txt, apps, bsp
   update.json   Source, timestamp, checksum / Git commit
   update.log    Update result</code></pre>
-<p>VS Code 匯入的根目錄在新版本目錄內的 sdk\；EXE SDK-only 則直接使用所選新目錄。失敗／取消時保留未完成目錄與紀錄；重試使用新名稱。Git 匯入是快照，不是後續可直接 pull 的工作樹；不支援 submodule、未解析的 LFS pointer 或符號連結，也不自動更新工具鏈。</p>
+            <p>VS Code 匯入的根目錄在新版本目錄內的 sdk\；EXE SDK-only 則直接使用所選新目錄。失敗／取消時保留未完成目錄與紀錄；重試使用新名稱。Git 匯入是快照，不是後續可直接 pull 的工作樹；不支援 submodule、未解析的 LFS pointer 或符號連結，也不自動更新工具鏈。</p>
         </section>
 
         <section id="faq">
             <h2>常見問題</h2>
-<div class="table-wrapper">
+            <div class="table-wrapper">
 <table>
 <thead><tr><th>現象</th><th>處理</th></tr></thead>
 <tbody>
@@ -160,15 +162,15 @@ title: IPRO SDK VS Code Extension
 
         <section id="cli-tools">
             <h2>IntelProCube 與命令列</h2>
-<p>完整包中的 C:\IPRO\IntelProCube\IProCube.exe 是圖形化工具；ipro_iot_tool.exe 提供命令列燒錄，ipro_ota_creator.exe 與 ipro_ota_update_tool.exe 用於 OTA 套件建立與更新。圖形介面操作手冊位於 IntelProCube\docs\USER_GUIDE.html。</p>
+            <p>完整包中的 C:\IPRO\IntelProCube\IProCube.exe 是圖形化工具；ipro_iot_tool.exe 提供命令列燒錄，ipro_ota_creator.exe 與 ipro_ota_update_tool.exe 用於 OTA 套件建立與更新。圖形介面操作手冊位於 IntelProCube\docs\USER_GUIDE.html。</p>
 <pre><code class="language-powershell">&amp; "C:\IPRO\IntelProCube\ipro_iot_tool.exe" --help</code></pre>
-<p>使用命令列前依該版 --help 與實際板子設定參數。Windows 原生開發可直接使用 Extension 的 CMake／Ninja 流程；SDK 的 build_freertos.sh 為 Bash 入口。</p>
+            <p>使用命令列前依該版 --help 與實際板子設定參數。Windows 原生開發可直接使用 Extension 的 CMake／Ninja 流程；SDK 的 build_freertos.sh 為 Bash 入口。</p>
         </section>
 
         <section id="shortcuts">
             <h2>命令與快捷入口</h2>
-<p>F1 或 Ctrl+Shift+P 開啟命令面板，Ctrl+Shift+X 開啟 Extensions。3.3.0 未宣告專用 Flash／Monitor 快捷鍵，請使用下列命令或自行綁定鍵盤。Ctrl+Shift+B 使用 VS Code 的建構工作設定。</p>
-<div class="table-wrapper">
+            <p>F1 或 Ctrl+Shift+P 開啟命令面板，Ctrl+Shift+X 開啟 Extensions。3.3.0 未宣告專用 Flash／Monitor 快捷鍵，請使用下列命令或自行綁定鍵盤。Ctrl+Shift+B 使用 VS Code 的建構工作設定。</p>
+            <div class="table-wrapper">
 <table>
 <thead><tr><th>命令</th><th>用途</th></tr></thead>
 <tbody>
@@ -201,8 +203,15 @@ title: IPRO SDK VS Code Extension
 
         <section id="version">
             <h2>版本與交付範圍</h2>
-<p>3.3.0 新增元件獨立更新；3.2.4 引入控制中心；3.2.3 改善 Monitor／Flash 串口交接與 UART／CCI 選擇；3.2.2 提供獨立 Monitor 鮑率；3.2.1 加入 Windows 工具路徑固定設定；3.2.0 提供內建 serialport Monitor。</p>
-<div class="alert alert-info">SDK 原始碼交付包、Extension VSIX 與完整 Windows 安裝包分開計版。SDK 包內沒有 VSIX，不代表 Windows 完整包沒有 Extension；請以取得的安裝包 manifest 與 Extensions 面板實際版本為準。</div>
+            <p>3.3.0 新增元件獨立更新；3.2.4 引入控制中心；3.2.3 改善 Monitor／Flash 串口交接與 UART／CCI 選擇；3.2.2 提供獨立 Monitor 鮑率；3.2.1 加入 Windows 工具路徑固定設定；3.2.0 提供內建 serialport Monitor。</p>
+            <div class="alert alert-info">SDK 原始碼交付包、Extension VSIX 與完整 Windows 安裝包分開計版。SDK 包內沒有 VSIX，不代表 Windows 完整包沒有 Extension；請以取得的安裝包 manifest 與 Extensions 面板實際版本為準。</div>
         </section>
+        <section id="sdk-2-0-1">
+            <h2>SDK V2.0.1</h2>
+            <p>由 <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1 Release</a> 下載 <code>IPRO-SDK-V2.0.1.tar.gz</code> 及其 checksum，解壓至新的 SDK 目錄。確認 <code>VERSION.txt</code> 的 IPRO7／IPRO6 皆為 V2.0.1，選取的根目錄包含 <code>CMakeLists.txt</code>、<code>apps/</code> 與 <code>bsp/</code>。</p><pre><code class="language-powershell">Get-FileHash .\IPRO-SDK-V2.0.1.tar.gz -Algorithm SHA256
+Get-Content .\IPRO-SDK-V2.0.1.tar.gz.sha256</code></pre>            <p>比對下載的 checksum 與計算結果。Extension 3.3.0 可由 <code>IPRO Setup: Update Components</code> 匯入解壓後資料夾，或直接選擇該 SDK 根目錄；壓縮檔匯入入口接受 ZIP，<code>.tar.gz</code> 請先解壓。重新開啟新 SDK 並執行 <code>IPRO Setup: Run Diagnostics</code>。</p>
+            <p>SDK README 指定 GCC 14；目前 Windows 清單僅對 SDK 1.2.1 宣告 GCC 13.1.1 的相容組合，V2.0.1 請另行取得並驗證相容工具鏈。原生 Windows Make 請明確傳入 <code>CMAKE=</code>，因 <code>project.build</code> 預設引用未隨附的 <code>tools/cmake_win-x86_64/</code>。在完成新版本建置及板端驗證前，保留可用的 1.2.1 環境。</p>
+        </section>
+
     </article>
 </div>

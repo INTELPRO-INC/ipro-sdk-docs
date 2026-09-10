@@ -4,7 +4,7 @@ title: Tools & Debugging - IPRO SDK
 lang: en
 ---
 
-<div class="doc-layout">
+            <div class="doc-layout">
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">Table of Contents</h4>
@@ -24,14 +24,13 @@ lang: en
     </aside>
 
     <article class="doc-content">
+            <div class="alert alert-info">CLI <code>flash / monitor / test</code> examples require separate flash and monitor tools. V2.0.1 does not bundle <code>tools/serial_monitor.py</code>; use the external terminal commands below if the helper is unavailable.</div>
         <h1>Tools & Debugging</h1>
-        <div class="alert alert-warning">
-            <strong>Release SDK Notice:</strong> V1.2.1 includes <code>build_freertos.sh</code>, build helper scripts and <code>tools/serial_monitor.py</code>. Install CMake separately. The flash tool, board-test script, crash parser and OpenOCD configurations are not included.
-        </div>
+        <div class="alert alert-info" style="margin-bottom: 2rem;">V2.0.1 includes the build CLI, Kconfig helper scripts, Linux x86-64 CMake and Android demo source. The flash tool, serial monitor helper, board-test script, crash parser and OpenOCD configurations are separate.</div>
         <p>The IPRO SDK provides an integrated toolchain covering the complete development cycle: build, flash, monitor, and debug.</p>
 
         <!-- ============================================================ -->
-        <div class="alert alert-info"><strong>Full Windows installer:</strong> Installer 3.3.0 provides SDK V1.2.1, extension 3.3.0, GCC, CMake, Ninja, Python, IntelProCube and bundled OpenOCD. The standalone SDK archive has a smaller scope; statements below about omitted tools refer to that archive. <a href="{{ '/en/windows-installation' | relative_url }}">Installation and independent updates</a> · <a href="{{ '/en/vscode-extension' | relative_url }}">Extension guide</a></div>
+        <div class="alert alert-info"><p>Online Installer 3.4.0 reads the component catalog; the fixed 3.3.0 installer bundles SDK 1.2.1. As of 2026-09-10, the catalog also selects SDK 1.2.1. Obtain V2.0.1 from its release page and select its extracted directory explicitly. <a href="{{ '/en/windows-installation' | relative_url }}">Installation and version selection</a></p></div>
 
         <section id="overview">
             <h2>Overview</h2>
@@ -53,7 +52,7 @@ lang: en
                         <th>Tool</th>
                         <th>Path</th>
                         <th>Purpose</th>
-                        <th>Release SDK v1.2.1</th>
+                        <th>Release SDK v2.0.1</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -63,12 +62,7 @@ lang: en
                         <td>Single entry point for build, clean, flash, monitor, size analysis, and test</td>
                         <td>Included</td>
                     </tr>
-                    <tr>
-                        <td>CMake</td>
-                        <td><code>cmake</code> (PATH)</td>
-                        <td>CMake 3.19+</td>
-                        <td>Install separately</td>
-                    </tr>
+                    <tr><td>CMake</td><td><code>tools/cmake/</code></td><td>Use CMake 3.19+ for development</td><td>Bundled Linux x86-64 fallback; install a current build for your host OS</td></tr>
                     <tr>
                         <td>Kconfig Parser Script</td>
                         <td><code>tools/script/parse_kconfig_dynamic.py</code></td>
@@ -81,12 +75,7 @@ lang: en
                         <td>Flash firmware to the development board</td>
                         <td>Not included (contact vendor)</td>
                     </tr>
-                    <tr>
-                        <td>Serial Monitor</td>
-                        <td><code>tools/serial_monitor.py</code></td>
-                        <td>Serial communication and log capture</td>
-                        <td>Included (POSIX)</td>
-                    </tr>
+                    <tr><td>Serial Monitor</td><td><code>tools/serial_monitor.py</code></td><td>Serial terminal</td><td>Not included; use extension or external terminal</td></tr>
                     <tr>
                         <td>Board Test</td>
                         <td><code>tools/board_test.sh</code></td>
@@ -233,16 +222,14 @@ lang: en
 ./build_freertos.sh size platform/ipro7_demo</code></pre>
             </div>
 
-            <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> The flash action still requires the separately supplied flash tool. The monitor action can use the bundled <code>tools/serial_monitor.py</code>.
-            </div>
+            <div class="alert alert-warning">The CLI actions <code>flash</code>, <code>monitor</code> and <code>test</code> require separately installed tools. The referenced monitor helper is absent from V2.0.1.</div>
         </section>
 
         <!-- ============================================================ -->
         <section id="flash-tool">
             <h2>Flash Tool</h2>
             <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> <code>ipro_iot_tool_lite</code> is not included in Release SDK v1.2.1 — contact the vendor to obtain it. Once placed at <code>tools/ipro_iot_tool_lite/</code>, <code>./build_freertos.sh flash &lt;project&gt;</code> will invoke it automatically.
+                <strong>&#9888;&#65039;</strong> <code>ipro_iot_tool_lite</code> is not included in Release SDK v2.0.1 — contact the vendor to obtain it. Once placed at <code>tools/ipro_iot_tool_lite/</code>, <code>./build_freertos.sh flash &lt;project&gt;</code> will invoke it automatically.
             </div>
             <p>The IPRO SDK uses <code>ipro_iot_tool_lite</code> to flash compiled firmware to the development board's Flash memory.</p>
 
@@ -306,8 +293,9 @@ tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
                     <span class="code-block-title">Enter Download Mode</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># Send reboot_dl command via serial monitor
-python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --send reboot_dl --timeout 1</code></pre>
+                <pre><code class="language-bash"># Install separately; select the port and baud rate for your firmware
+python3 -m pip install pyserial
+python3 -m serial.tools.miniterm /dev/cu.usbserial-XXXX 115200</code></pre>
             </div>
 
             <div class="alert alert-warning">
@@ -317,203 +305,15 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --send reboot_dl --timeou
 
         <!-- ============================================================ -->
         <section id="serial-monitor">
-            <h2>Serial Monitor</h2>
-            <div class="alert alert-warning">
-                <strong>V1.2.1:</strong> <code>tools/serial_monitor.py</code> is included for POSIX systems (Linux/macOS). Its <code>termios</code>/<code>fcntl</code> imports are unavailable in native Windows Python.
-            </div>
-            <p><code>serial_monitor.py</code> is a Python3 termios-based serial monitor that requires no external dependencies such as pyserial.</p>
-
-            <h3>Basic Monitoring</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Basic Serial Monitoring</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Default baud rate: 115200; serial port path depends on your device
-python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX</code></pre>
-            </div>
-
-            <h3>Send Commands and Wait for Output</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Send Command and Wait for Pattern</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Send reboot and wait for test results
-python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX \
-    --send reboot \
-    --timeout 30 \
-    --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
-            </div>
-
-            <h3>Parameters</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Parameter</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>PORT</code></td>
-                        <td>Serial device path (positional argument)</td>
-                    </tr>
-                    <tr>
-                        <td><code>--baud RATE</code></td>
-                        <td>Baud rate (default <code>115200</code>; supported: 9600, 19200, 38400, 57600, 115200, 230400)</td>
-                    </tr>
-                    <tr>
-                        <td><code>--send CMD</code></td>
-                        <td>Command to send after connecting</td>
-                    </tr>
-                    <tr>
-                        <td><code>--timeout SEC</code></td>
-                        <td>Timeout in seconds (default <code>30</code>)</td>
-                    </tr>
-                    <tr>
-                        <td><code>--wait-for PATTERN</code></td>
-                        <td>Regex pattern to wait for (supports <code>|</code> for multiple patterns)</td>
-                    </tr>
-                    <tr>
-                        <td><code>--log FILE</code></td>
-                        <td>Save output to a log file</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>Board Shell Commands</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Command</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>reboot</code></td>
-                        <td>Normal board reset</td>
-                    </tr>
-                    <tr>
-                        <td><code>reboot_dl</code></td>
-                        <td>Reset and enter download mode (for flashing)</td>
-                    </tr>
-                </tbody>
-            </table>
+            <h2>Serial Monitoring</h2>
+            <p>V2.0.1 does not include <code>tools/serial_monitor.py</code>. The CLI still references that path, so its <code>monitor</code> and <code>test</code> actions need the separate helper. Use the extension's <code>IPRO: Serial Monitor</code> or a serial terminal instead.</p>
+            <p>Choose the console baud rate from the selected application and board configuration. On macOS use <code>/dev/cu.*</code>. Stop monitoring before flashing to release the port.</p>
         </section>
 
         <!-- ============================================================ -->
         <section id="automated-testing">
-            <h2>Automated Testing</h2>
-            <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> Neither <code>board_test.sh</code> nor the <code>ipro_unit_test</code> project is included in Release SDK v1.2.1 — contact the vendor for the full board-test environment. The equivalent command bundled with the Release SDK is <code>./build_freertos.sh test &lt;project&gt;</code>.
-            </div>
-            <p><code>board_test.sh</code> integrates the full build, flash, and test workflow, suitable for automated verification and local development.</p>
-
-            <h3>Full Test Cycle</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Full Build, Flash, and Test</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Full cycle: build → flash → serial capture → result parsing
-tools/board_test.sh --project apps/test/ipro_unit_test</code></pre>
-            </div>
-
-            <h3>Options</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Option</th>
-                        <th>Description</th>
-                        <th>Default</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>--project PATH</code></td>
-                        <td>Project directory path</td>
-                        <td><code>apps/test/ipro_unit_test</code></td>
-                    </tr>
-                    <tr>
-                        <td><code>--port PORT</code></td>
-                        <td>Serial device path</td>
-                        <td>Set per your actual device (e.g. <code>/dev/cu.usbserial-XXXX</code>)</td>
-                    </tr>
-                    <tr>
-                        <td><code>--skip-build</code></td>
-                        <td>Skip the build step</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td><code>--skip-flash</code></td>
-                        <td>Skip the flash step</td>
-                        <td>-</td>
-                    </tr>
-                    <tr>
-                        <td><code>--timeout SEC</code></td>
-                        <td>Serial monitor timeout in seconds</td>
-                        <td><code>30</code></td>
-                    </tr>
-                    <tr>
-                        <td><code>--report DIR</code></td>
-                        <td>Generate test report in the specified directory</td>
-                        <td>Disabled</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>Exit Codes</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Exit Code</th>
-                        <th>Meaning</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>0</code></td>
-                        <td>All tests passed (<code>ALL TESTS PASSED</code>)</td>
-                    </tr>
-                    <tr>
-                        <td><code>1</code></td>
-                        <td>Some tests failed (<code>SOME TESTS FAILED</code>)</td>
-                    </tr>
-                    <tr>
-                        <td><code>2</code></td>
-                        <td>Timeout - no test result detected</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>Equivalent Command in the Release SDK</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">build_freertos.sh test</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Build + flash + monitor, waiting for "ALL TESTS PASSED|SOME TESTS FAILED"
-./build_freertos.sh test &lt;project&gt;</code></pre>
-            </div>
-
-            <h3>Quick Retest (No Rebuild or Reflash)</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Quick Retest</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Reboot the board and capture test results only
-python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX \
-    --send reboot \
-    --timeout 30 \
-    --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
-            </div>
-
-            <div class="alert alert-info">
-                <strong>&#128161;</strong> Set <code>CONFIG_TEST_AUTO_RUN=y</code> in your <code>.config</code> file to have tests run automatically on boot without manual triggering.
-            </div>
+            <h2>On-board Tests</h2>
+            <p>The SDK includes <code>apps/test/ipro_unit_test/</code> for HAL and shared-component tests. Build it, flash the matching board with the separate flash tool, then inspect the console for <code>ALL TESTS PASSED</code> or <code>SOME TESTS FAILED</code>.</p><pre><code class="language-bash">make -C apps/test/ipro_unit_test</code></pre>            <p>Neither <code>tools/board_test.sh</code> nor <code>tools/serial_monitor.py</code> is bundled. The build CLI's <code>test</code> command also requires those external flash / monitor tools; it is not a complete test environment by itself.</p>
         </section>
 
         <!-- ============================================================ -->
@@ -521,7 +321,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX \
             <div class="alert alert-info">See <code>PREBUILT-ARCHIVES-STRIPPED.txt</code>: AI, ISP, RF, LC3 and low-power framework archives in this package have no debug information. They can be linked, but source-level stepping inside them is unavailable.</div>
             <h2>GDB Debugging</h2>
             <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> The OpenOCD configurations (<code>tools/openocd/</code>) are not included in Release SDK v1.2.1 — contact the vendor to obtain them.
+                <strong>&#9888;&#65039;</strong> The OpenOCD configurations (<code>tools/openocd/</code>) are not included in Release SDK v2.0.1 — contact the vendor to obtain them.
             </div>
             <p>The IPRO SDK supports JTAG debugging through OpenOCD + GDB. The IPRO7 JTAG pins are GPIO0 (TMS), GPIO1 (TDI), GPIO2 (TCK), and GPIO9 (TDO).</p>
 
@@ -608,7 +408,7 @@ openocd -f tools/openocd/openocd_ipro6.cfg
         <section id="crash-analysis">
             <h2>Crash Analysis</h2>
             <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> <code>parse_backtrace.py</code> is not included in Release SDK v1.2.1 — contact the vendor to obtain it. Even without this tool, you can resolve addresses manually with the toolchain's built-in <code>addr2line</code> (see below).
+                <strong>&#9888;&#65039;</strong> <code>parse_backtrace.py</code> is not included in Release SDK v2.0.1 — contact the vendor to obtain it. Even without this tool, you can resolve addresses manually with the toolchain's built-in <code>addr2line</code> (see below).
             </div>
             <p>When the firmware encounters an exception, the exception handler outputs the exception PC, SP (with its owning stack range), saved s0(fp) / ra, and a stack dump. <code>parse_backtrace.py</code> converts these addresses into source file names and line numbers.</p>
 
@@ -681,7 +481,7 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
         <!-- ============================================================ -->
         <section id="size-analysis">
             <h2>Build Size Analysis</h2>
-            <p>Use <code>./build_freertos.sh size &lt;project&gt;</code> (bundled with Release SDK v1.2.1) to inspect firmware memory usage and understand how much Flash and RAM the firmware consumes.</p>
+            <p>Use <code>./build_freertos.sh size &lt;project&gt;</code> (bundled with Release SDK v2.0.1) to inspect firmware memory usage and understand how much Flash and RAM the firmware consumes.</p>
 
             <h3>Usage</h3>
             <div class="code-block">
@@ -765,7 +565,7 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
             </table>
 
             <h3>Bundled CMake</h3>
-            <p>V1.2.1 does not bundle CMake. Install CMake 3.19+ using your system package manager and ensure <code>cmake</code> is on PATH (macOS: <code>brew install cmake</code>).</p>
+            <p>V2.0.1 includes a Linux x86-64 CMake under <code>tools/cmake/</code>; it is not a macOS executable. Install CMake 3.19+ for macOS (for example, <code>brew install cmake</code>) and put it on PATH. <code>project.build</code> prefers system CMake on POSIX hosts.</p>
 
             <h3>Common Issues and Solutions</h3>
             <table>
@@ -785,7 +585,7 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
                     <tr>
                         <td>Incomplete <code>cat</code> output</td>
                         <td>macOS buffering issues</td>
-                        <td>Use <code>serial_monitor.py</code></td>
+                        <td>Use an external serial terminal or the extension monitor</td>
                     </tr>
                     <tr>
                         <td>"Resource busy" error</td>
@@ -815,89 +615,10 @@ fd = os.open("/dev/cu.usbserial-XXXX", os.O_RDWR | os.O_NOCTTY | os.O_NONBLOCK)<
 
         <!-- ============================================================ -->
         <section id="dev-workflow">
-            <h2>Developer Workflow</h2>
-            <p>Below are common commands and workflows for daily development.</p>
-
-            <h3>Full Build and Flash (Unified CLI)</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Standard Development Workflow</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Build (default action)
-./build_freertos.sh platform/ipro7_demo
-
-# Build → flash → monitor in a single command
-./build_freertos.sh build flash monitor platform/ipro7_demo</code></pre>
-            </div>
-
-            <h3>Manual Step-by-Step</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Step-by-Step Build, Flash, and Monitor</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># 1. Build the project
-make -C apps/platform/ipro7_demo
-
-# 2. Flash to the development board (flash and monitor tools available from the vendor)
-python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --send reboot_dl --timeout 1
-tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
-    --chipname ipro7 \
-    --port /dev/cu.usbserial-XXXX \
-    --firmware apps/platform/ipro7_demo/build/build_out/ipro7_demo_IPRO7.bin \
-    --baudrate 921600 \
-    --flash-pin 0x02
-
-# 3. Monitor output
-python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX</code></pre>
-            </div>
-
-            <h3>Quick Retest (No Rebuild)</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Reboot Board Only</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Reboot and wait for results
-python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX \
-    --send reboot \
-    --timeout 30 \
-    --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
-            </div>
-
-            <h3>Clean Build</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Clean and Rebuild</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Using the unified CLI
-./build_freertos.sh clean build platform/ipro7_demo
-
-# Or using make
-make -C apps/platform/ipro7_demo clean
-make -C apps/platform/ipro7_demo</code></pre>
-            </div>
-
-            <h3>Automated Test Workflow</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">One-Command Testing (Build + Flash + Verify)</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Bundled with the Release SDK: build + flash + monitor, waiting for test results
-./build_freertos.sh test &lt;project&gt;
-
-# board_test.sh (not included in Release SDK v1.2.1)
-tools/board_test.sh --project apps/test/ipro_unit_test --report test_results/
-
-# Skip build, flash and test only
-tools/board_test.sh --project apps/test/ipro_unit_test --skip-build
-
-# Skip build and flash, test only
-tools/board_test.sh --project apps/test/ipro_unit_test --skip-build --skip-flash</code></pre>
-            </div>
+            <h2>Development Workflow</h2><pre><code class="language-bash">./build_freertos.sh -l
+./build_freertos.sh clean build ipro_ble_remote
+./build_freertos.sh size ipro_ble_remote</code></pre>            <p>After building, flash with the separately installed IntelPro tool and inspect the serial output with a terminal. In VS Code use <code>IPRO: Build</code>, <code>IPRO: Flash</code> and <code>IPRO: Serial Monitor</code> after verifying the active SDK and tool paths.</p>
+            <p>For HAL regression checks, build <code>ipro_unit_test</code> and follow the on-board test instructions above. Record the SDK version, board configuration and actual hardware result.</p>
         </section>
 
     </article>

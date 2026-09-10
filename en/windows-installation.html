@@ -3,15 +3,17 @@ layout: default
 title: Windows Installation & Updates
 ---
 
-<div class="doc-layout">
+            <div class="doc-layout">
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
             <ul class="sidebar-links">
+                <li><a href="#online-3-4-0" class="sidebar-link">Online Installer 3.4.0</a></li>
+                <li><a href="#sdk-2-0-1" class="sidebar-link">SDK V2.0.1 Manual Update</a></li>
                 <li><a href="#overview" class="sidebar-link">Package and versions</a></li>
                 <li><a href="#package-contents" class="sidebar-link">Files and installation layout</a></li>
                 <li><a href="#requirements" class="sidebar-link">Before installation</a></li>
                 <li><a href="#install-modes" class="sidebar-link">Choose an installation mode</a></li>
-                <li><a href="#full-install" class="sidebar-link">First full installation</a></li>
+                <li><a href="#full-install" class="sidebar-link">Fixed 3.3.0 full installation</a></li>
                 <li><a href="#extension-only" class="sidebar-link">Update only the extension</a></li>
                 <li><a href="#sdk-only" class="sidebar-link">Update only the SDK</a></li>
                 <li><a href="#settings" class="sidebar-link">Tool paths and settings</a></li>
@@ -22,12 +24,27 @@ title: Windows Installation & Updates
     </aside>
     <article class="doc-content">
         <h1>Windows Installation & Updates</h1>
-<p>Set up a development environment with the full installer, or update the SDK and VS Code extension independently.</p>
+            <p>Set up a development environment with the full installer, or update the SDK and VS Code extension independently.</p>
 
-        <section id="overview">
-            <h2>Package and versions</h2>
-<p>The Windows installer assembles the SDK, build tools and VS Code integration for firmware development. Installer, SDK and extension versions are managed independently.</p>
-<div class="table-wrapper">
+        <section id="online-3-4-0">
+            <h2>Online Installer 3.4.0</h2>
+            <p>Use <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/online-installer-v3.4.0">IPRO-SDK-Online-Setup-3.4.0.exe</a> for installation from the public component catalog; no GitHub login is required. It supports Full, SDK, toolchain, build tools, IntelProCube, OpenOCD and Extension modes.</p>
+            <p>Choose a new destination directory, select components and review their resolved versions before installing. <code>latest</code> follows each package's maintained stable / compatible version, not the newest repository release. Full mode checks declared dependencies; single-component mode does not validate your existing environment.</p>
+            <div class="alert alert-warning">Checked 2026-09-10: the <a href="https://github.com/INTELPRO-INC/IPRO-SDK/blob/main/packages/index.json">catalog</a> still lists SDK 1.2.1 as stable and does not register 2.0.1. Selecting <code>latest</code> therefore does not install SDK V2.0.1. Follow the manual V2.0.1 steps below.</div>
+            <p>Settings and PATH changes are unchecked by default. SDK mode can switch only <code>ipro.sdkRoot</code>; toolchain / build-tools / IntelProCube modes can switch their corresponding paths. OpenOCD mode only installs files; Extension mode optionally installs VSIX. Retain the old directories for rollback.</p><pre><code class="language-powershell">Start-Process .\IPRO-SDK-Online-Setup-3.4.0.exe -Wait -ArgumentList '/MODE=sdk', '/SDKVERSION=1.2.1', '/DIR="C:\IPRO\versions\sdk-1.2.1-new"', '/TASKS=""'</code></pre>            <p>This example deliberately pins the cataloged SDK 1.2.1 and requires a destination that does not exist. <code>/OFFLINE=1</code> uses cached metadata / ZIPs (or the initial bundled catalog); it cannot discover new releases while offline. ZIPs are checked against catalog SHA-256 values. Check installation logs if any follow-up step fails.</p>
+        </section>
+
+        <section id="sdk-2-0-1">
+            <h2>SDK V2.0.1 Manual Update</h2>
+            <p>Download <code>IPRO-SDK-V2.0.1.tar.gz</code> and its checksum from the <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1 Release</a> and extract them into a new SDK directory. Verify <code>VERSION.txt</code> reports V2.0.1 for both IPRO7 and IPRO6, then confirm <code>CMakeLists.txt</code>, <code>apps/</code> and <code>bsp/</code> are at the selected root.</p><pre><code class="language-powershell">Get-FileHash .\IPRO-SDK-V2.0.1.tar.gz -Algorithm SHA256
+Get-Content .\IPRO-SDK-V2.0.1.tar.gz.sha256</code></pre>            <p>Compare the hash with the downloaded checksum. In Extension 3.3.0, import the extracted folder using <code>IPRO Setup: Update Components</code>, or select the extracted SDK root. The archive importer accepts ZIP; extract <code>.tar.gz</code> first. Reopen the new SDK and run <code>IPRO Setup: Run Diagnostics</code>.</p>
+            <p>The SDK README specifies GCC 14. The current Windows catalog only declares its GCC 13.1.1 combination for SDK 1.2.1; obtain and validate a toolchain for V2.0.1. When using native Windows Make, pass <code>CMAKE=</code> explicitly because <code>project.build</code> otherwise expects an unbundled <code>tools/cmake_win-x86_64/</code> path. Keep your working 1.2.1 installation until the new build and board workflow are verified.</p>
+        </section>
+
+        <section id="overview"><h2>Fixed Installer 3.3.0 (SDK 1.2.1)</h2>
+            <p>The remaining sections describe the older offline full installer and its bundled versions. They are useful for maintaining existing 3.3.0 installations; its SDK-only mode installs the embedded 1.2.1 package.</p>
+            <p>The Windows installer assembles the SDK, build tools and VS Code integration for firmware development. Installer, SDK and extension versions are managed independently.</p>
+            <div class="table-wrapper">
 <table>
 <thead><tr><th>Component</th><th>Version covered</th><th>Purpose</th></tr></thead>
 <tbody>
@@ -38,12 +55,12 @@ title: Windows Installation & Updates
 </tbody>
 </table>
 </div>
-<div class="alert alert-info">These instructions describe the 3.3.0 installer, VSIX and package manifest. Obtain the corresponding delivery files and SHA256SUMS.txt from INTELPRO; availability and supported platforms follow the delivery notice.</div>
+            <div class="alert alert-info">These instructions describe the 3.3.0 installer, VSIX and package manifest. Obtain the corresponding delivery files and SHA256SUMS.txt from INTELPRO; availability and supported platforms follow the delivery notice.</div>
         </section>
 
         <section id="package-contents">
             <h2>Files and installation layout</h2>
-<div class="table-wrapper">
+            <div class="table-wrapper">
 <table>
 <thead><tr><th>File</th><th>Use</th></tr></thead>
 <tbody>
@@ -64,12 +81,12 @@ title: Windows Installation & Updates
   IntelProCube\
   openocd\
   installer</code></pre>
-<p>The full package includes CMake 3.30.5, Ninja 1.12.1, Python 3.12.7 and pyserial 3.5. Tools omitted from the standalone SDK archive can be supplied by the full installer.</p>
+            <p>The full package includes CMake 3.30.5, Ninja 1.12.1, Python 3.12.7 and pyserial 3.5. Tools omitted from the standalone SDK archive can be supplied by the full installer.</p>
         </section>
 
         <section id="requirements">
             <h2>Before installation</h2>
-<ul>
+            <ul>
     <li>Use the package for your Windows x64 or ARM64 host. Select the VSIX architecture for the Windows host running VS Code, not the target RISC-V chip. An ARM64 package does not imply hardware validation of every bundled tool.</li>
     <li>VS Code 1.102 or later is required. A full installation can download standard VS Code from Microsoft if it is missing; that step requires internet access. Extension-only requires VS Code to be installed first.</li>
     <li>Choose a writable installation root, defaulting to C:\IPRO. Allow roughly 2 GB for the full environment plus extraction and build space; the SDK alone is about 333 MB.</li>
@@ -80,7 +97,7 @@ title: Windows Installation & Updates
 
         <section id="install-modes">
             <h2>Choose an installation mode</h2>
-<div class="table-wrapper">
+            <div class="table-wrapper">
 <table>
 <thead><tr><th>Need / mode</th><th>Changes</th><th>Key behavior</th></tr></thead>
 <tbody>
@@ -111,7 +128,7 @@ title: Windows Installation & Updates
 
         <section id="extension-only">
             <h2>Update only the extension</h2>
-<p>Choose Extension only in the EXE, or install the VSIX directly:</p>
+            <p>Choose Extension only in the EXE, or install the VSIX directly:</p>
 <ol>
     <li>Keep the previous VSIX and stop builds, flashing and monitoring.</li>
     <li>In the target VS Code window, press Ctrl+Shift+X → … → Install from VSIX… and choose the 3.3.0 package for the host architecture.</li>
@@ -119,22 +136,22 @@ title: Windows Installation & Updates
     <li>Run Diagnostics and check the SDK root and tool settings. With Profiles or remote windows, verify that the VSIX was installed in the intended environment.</li>
 </ol>
 <pre><code class="language-powershell">code --install-extension .\ipro-sdk-extension-win32-x64-3.3.0.vsix</code></pre>
-<p>VSIX installation does not copy the SDK or toolchain. To roll back, reinstall a compatible previous VSIX and reload the window.</p>
+            <p>VSIX installation does not copy the SDK or toolchain. To roll back, reinstall a compatible previous VSIX and reload the window.</p>
         </section>
 
         <section id="sdk-only">
             <h2>Update only the SDK</h2>
-<p>SDK only in the EXE uses its bundled SDK. Choose a new directory name under &lt;installation root&gt;\sdk\&lt;new name&gt;. An existing directory is rejected even if empty.</p>
+            <p>SDK only in the EXE uses its bundled SDK. Choose a new directory name under &lt;installation root&gt;\sdk\&lt;new name&gt;. An existing directory is rejected even if empty.</p>
 <figure>
 <img src="{{ '/assets/images/installation/sdk-directory-3.3.0.png' | relative_url }}" alt="SDK-only new version directory" loading="lazy" style="display:block;max-width:100%;height:auto;">
 <figcaption>SDK-only creates a new directory and preserves the old SDK.</figcaption>
 </figure>
-<p>Set only ipro.sdkRoot… is unchecked by default. Selecting it updates only the user-level SDK root; workspace settings can still take precedence. Use the extension component updater for an external ZIP, extracted folder or Git source.</p><a href="{{ '/en/vscode-extension' | relative_url }}#component-updates">See the VS Code component update workflow</a>
+            <p>Set only ipro.sdkRoot… is unchecked by default. Selecting it updates only the user-level SDK root; workspace settings can still take precedence. Use the extension component updater for an external ZIP, extracted folder or Git source.</p><a href="{{ '/en/vscode-extension' | relative_url }}#component-updates">See the VS Code component update workflow</a>
         </section>
 
         <section id="settings">
             <h2>Tool paths and settings</h2>
-<p>For the default C:\IPRO installation, the core settings are shown below. Substitute your installation path and merge the relevant fields into existing settings.</p>
+            <p>For the default C:\IPRO installation, the core settings are shown below. Substitute your installation path and merge the relevant fields into existing settings.</p>
 <pre><code class="language-json">{
   "ipro.sdkRoot": "C:\\IPRO\\sdk\\IPRO-IPRO7-SDK-V1.2.1",
   "ipro.toolchainPath": "C:\\IPRO\\toolchain\\riscv_ipro7_win32\\bin\\riscv64-unknown-elf-",
@@ -144,7 +161,7 @@ title: Windows Installation & Updates
   "ipro.flashToolPath": "C:\\IPRO\\IntelProCube",
   "ipro.generator": "ninja"
 }</code></pre>
-<p>ipro.toolchainPath is the compiler prefix including its trailing hyphen. Installer settings target standard VS Code user settings; workspace .vscode/settings.json or another Profile can override them. Check the effective SDK root in Diagnostics after switching.</p>
+            <p>ipro.toolchainPath is the compiler prefix including its trailing hyphen. Installer settings target standard VS Code user settings; workspace .vscode/settings.json or another Profile can override them. Check the effective SDK root in Diagnostics after switching.</p>
         </section>
 
         <section id="verify">
@@ -153,7 +170,7 @@ title: Windows Installation & Updates
 &amp; "C:\IPRO\tools\ninja\ninja.exe" --version
 &amp; "C:\IPRO\tools\python\python.exe" -c "import serial; print(serial.__version__)"
 &amp; "C:\IPRO\toolchain\riscv_ipro7_win32\bin\riscv64-unknown-elf-gcc.exe" --version</code></pre>
-<ul>
+            <ul>
     <li>The SDK root must contain CMakeLists.txt, apps and bsp.</li>
     <li>Run IPRO: Go to Project…, select ipro7_demo, then run IPRO: Build.</li>
     <li>Check the actual compiler path and build result in Terminal. The expected BIN is apps\platform\ipro7_demo\build\build_out\ipro7_demo_IPRO7.bin.</li>
@@ -163,7 +180,7 @@ title: Windows Installation & Updates
 
         <section id="troubleshooting">
             <h2>Troubleshooting and rollback</h2>
-<div class="table-wrapper">
+            <div class="table-wrapper">
 <table>
 <thead><tr><th>Symptom</th><th>Action</th></tr></thead>
 <tbody>
@@ -175,7 +192,7 @@ title: Windows Installation & Updates
 </tbody>
 </table>
 </div>
-<p>To roll back the SDK, reopen the retained version and check its tool paths. Manage individual SDK directories separately; uninstalling the full package is not an SDK rollback and does not also remove VS Code or the extension.</p>
+            <p>To roll back the SDK, reopen the retained version and check its tool paths. Manage individual SDK directories separately; uninstalling the full package is not an SDK rollback and does not also remove VS Code or the extension.</p>
         </section>
     </article>
 </div>

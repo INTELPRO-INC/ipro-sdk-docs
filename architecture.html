@@ -3,7 +3,7 @@ layout: default
 title: 架構概覽
 ---
 
-<div class="doc-layout">
+            <div class="doc-layout">
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">本頁目錄</h4>
@@ -39,7 +39,7 @@ title: 架構概覽
                         <span class="pill">bluetooth/ble/</span>
                         <span class="pill">bluetooth/le_audio/</span>
                         <span class="pill">multimedia/</span>
-                        <span class="pill">network/</span>
+                        <span class="pill">ai/</span><span class="pill">test/</span>
                         <span class="pill">platform/ipro7_demo</span>
                     </div>
                 </div>
@@ -124,14 +124,7 @@ title: 架構概覽
                             <td>8 MB PSRAM + 256 KB OCRAM</td>
                             <td>BLE 5.4, LE Audio, ISP, 0.1 TOPS NPU</td>
                         </tr>
-                        <tr>
-                            <td><strong>IPRO6</strong> <em>(legacy)</em></td>
-                            <td>RISC-V</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>前代 SoC，可作為 IPRO7 的 Wi-Fi 連網 companion 晶片（BSP 中保留部分參考，本版不含 IPRO6 應用）</td>
-                        </tr>
+                        <tr><td><strong>IPRO6S</strong></td><td>RISC-V RV32IMAFC</td><td>依應用配置</td><td>2 MB</td><td>320 KB TCM + 160 KB Wi-Fi RAM</td><td>Wi-Fi 6, BLE 5.4 + BR/EDR (A2DP / AVRCP / HFP-HF / SCO)</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -166,7 +159,7 @@ title: 架構概覽
             </div>
 
             <div class="alert alert-info">
-                <strong>提示：</strong>IPRO7 本身內建 EMAC 乙太網路 MAC，不需 companion 晶片即可透過有線乙太網路搭配 lwIP 連網（如 <code>ipro7_demo</code> 參考應用）。Wi-Fi 雙晶片參考設計請聯絡原廠取得。
+                <strong>提示：</strong>IPRO7 本身內建 EMAC 乙太網路 MAC，不需 companion 晶片即可透過有線乙太網路搭配 lwIP 連網（如 <code>ipro7_demo</code> 參考應用）。V2.0.1 已包含 SDIO 雙端範例 <code>ipro7_sdio_wifi</code> 與 <code>ipro6_if_wifi</code>。
             </div>
         </section>
 
@@ -440,7 +433,7 @@ make -C apps/platform/ipro7_demo clean</code></pre>
                         <tr>
                             <td><strong>AI / NPU</strong></td>
                             <td><code>ai/</code></td>
-                            <td>AI 推理引擎與 NPU 加速；V1.2.1 連結 <code>components/ai/lib/libai.a</code> 並提供標頭。</td>
+                            <td>AI 推理引擎與 NPU 加速；V2.0.1 連結 <code>components/ai/lib/libai.a</code> 並提供標頭。</td>
                         </tr>
                         <tr>
                             <td><strong>ISP</strong></td>
@@ -585,8 +578,8 @@ CONFIG_FREERTOS_SUPPORT=y
 CONFIG_BLUETOOTH_LE_ENABLE=y
 
 # 元件啟用
-CONFIG_LWIP=y
-CONFIG_MBEDTLS=y
+CONFIG_COMPONENTS_LWIP_ENABLE=y
+CONFIG_COMPONENTS_MBEDTLS_ENABLE=y
 
 # 測試自動執行
 CONFIG_TEST_AUTO_RUN=y</code></pre>
@@ -602,7 +595,7 @@ CONFIG_TEST_AUTO_RUN=y</code></pre>
 #define CONFIG_CPU_ID "intelpro_ipro7"
 #define CONFIG_FREERTOS_SUPPORT 1
 #define CONFIG_BLUETOOTH_LE_ENABLE 1
-#define CONFIG_LWIP 1</code></pre>
+#define CONFIG_COMPONENTS_LWIP_ENABLE 1</code></pre>
             </div>
 
             <div class="alert alert-info">
@@ -687,15 +680,13 @@ int main(void)
                 </table>
             </div>
 
-            <div class="alert alert-info">
-                <strong>提示：</strong>位於子目錄（如 <code>apps/bluetooth/</code>）中的應用需要在 <code>.config</code> 設定 <code>CONFIG_APP_CATEGORY</code>，以便建構系統正確定位專案路徑。
-            </div>
+            <div class="alert alert-info"><p>組建系統由 <code>PROJECT_PATH</code> 自動推導 <code>CONFIG_APP_CATEGORY</code>。建立新應用時，確認 Makefile 的 SDK 相對路徑與 CMake 專案名稱。</p></div>
         </section>
 
         <!-- Section 8: Directory Structure -->
         <section id="directory">
             <h2>目錄結構</h2>
-            <pre><code class="language-text">IPRO-IPRO7-SDK-V1.2.1/
+            <pre><code class="language-text">IPRO-SDK-V2.0.1/
 ├── apps/
 │   ├── bluetooth/ble/
 │   │   ├── ipro_ble_remote/
@@ -704,10 +695,14 @@ int main(void)
 │   │   └── ipro_throughput_test/
 │   ├── bluetooth/le_audio/ipro_le_audio_headset/
 │   ├── multimedia/ipro_pdm_mic_demo/
+│   ├── ai/ipro_meeting_poc/
 │   ├── platform/
 │   │   ├── ipro7_demo/
 │   │   ├── ipro7_sdio_wifi/
-│   │   └── ipro7ai_evk_demo/
+│   │   ├── ipro7ai_evk_demo/
+│   │   ├── ipro6_demo/
+│   │   ├── ipro6_if_wifi/
+│   │   └── ipro6_btdm_phyrf/
 │   └── test/
 ├── bsp/
 ├── components/
@@ -721,13 +716,12 @@ int main(void)
 ├── tools/
 │   ├── android/
 │   ├── script/
-│   └── serial_monitor.py
+│   └── cmake/
 ├── build_freertos.sh
 ├── project.build
 ├── CMakeLists.txt
 ├── Kconfig
-├── VERSION.txt
-└── PREBUILT-ARCHIVES-STRIPPED.txt</code></pre>
+└── VERSION.txt</code></pre>
             <p>上圖列出本網站介紹的主要應用路徑；完整專案清單請執行 <code>./build_freertos.sh -l</code>。</p>
         </section>
 
@@ -757,8 +751,8 @@ int main(void)
                 </tbody>
                 </table>
             </div>
-            <p>基本 BLE 選擇 <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code>；BLE 5.4 與兩路 ISO 串流（CIS/BIS）選擇 <code>"bt54_iso2"</code>，後者要求 <code>CONFIG_EM_SIZE</code> 至少 32 KB。<code>CONFIG_BT_CONN</code> 應與所選 ACL 連線數一致。</p>
-            <p>Host 原始碼已隨附；Controller 實作則以 16 個預編譯函式庫交付。配置與初始化方式請參考 BLE 開發指南。</p>
+            <p>基本 BLE 選擇 <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code>；BLE 5.4 與兩路 ISO 串流（CIS/BIS）選擇 <code>"bt54_iso2"</code>，後者要求 <code>CONFIG_EM_SIZE</code> 至少 32 KB。Host 連線上限不可超過控制器容量；PDM 請保留 <code>link2</code>／<code>CONFIG_BT_CONN=1</code> 配置。</p>
+            <p>Host 提供原始碼。共用控制器套件含 16 個 IPRO7 與 6 個 IPRO6S BR/EDR 預編譯函式庫，依平台及配置選用。</p>
         </section>
 
         <!-- Section 10: BSP & Drivers -->

@@ -4,6 +4,7 @@ title: Tutorials - IPRO SDK
 lang: en
 ---
 
+
 <section class="page-header-section">
     <div class="container">
         <h1 class="page-title">Tutorials</h1>
@@ -13,6 +14,7 @@ lang: en
 
 <section class="tutorials-section">
     <div class="container">
+        <div class="alert alert-info">CLI <code>flash / monitor / test</code> examples require separate flash and monitor tools. V2.0.1 does not bundle <code>tools/serial_monitor.py</code>; use the external terminal commands below if the helper is unavailable.</div>
 
         <!-- Tutorial 1: First BLE Application -->
         <div class="tutorial-card">
@@ -35,7 +37,7 @@ lang: en
   CMakeLists.txt     # Build configuration
   main.c             # Application entry point</code></pre>
                 <div class="alert alert-warning">
-                    <p>After copying the template, update <code>PROJECT_NAME</code> in the <code>Makefile</code> to your new project name. <code>IPRO_SDK_BASE ?= $(abspath ../../../../)</code> is a relative path -- if your project sits at a different directory depth, adjust the number of levels accordingly.</p>
+                    <p>After copying the template, update <code>PROJECT_NAME</code> in <code>Makefile</code> and the project name passed to <code>setup_project()</code> in <code>CMakeLists.txt</code>. Adjust <code>IPRO_SDK_BASE ?= $(abspath ../../../../)</code> for the project’s directory depth.</p>
                 </div>
 
                 <h3>Step 2: .config Settings</h3>
@@ -58,8 +60,7 @@ CONFIG_IPRO_BLE_CTLR_CFG_DBG=n
 CONFIG_BT_CONN=1
 CONFIG_EM_SIZE=32
 
-# NVDS -- BLE pairing/bonding data storage (required for flash BLE apps;
-# without it the link fails with undefined symbol __nvds_start)
+# NVDS: controller configuration storage; host bonds use BT_SETTINGS
 CONFIG_ENABLE_NVDS=y
 CONFIG_CFG_NVDS=y
 
@@ -113,7 +114,7 @@ static void bt_ready(int err)
         return;
     }
     // Start advertising
-    err = bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad),
+    err = bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ad, ARRAY_SIZE(ad),
                           NULL, 0);
     if (err) {
         printf("Advertising failed (err %d)\n", err);
@@ -163,7 +164,7 @@ static void disconnected(struct bt_conn *conn, uint8_t reason)
 {
     printf("Disconnected (reason 0x%02x)\n", reason);
     // Restart advertising
-    bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad),
+    bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ad, ARRAY_SIZE(ad),
                     NULL, 0);
 }
 
@@ -181,7 +182,7 @@ make -C apps/bluetooth/ble/my_ble_app
 # → apps/bluetooth/ble/my_ble_app/build/build_out/my_ble_app_IPRO7.bin
 
 # Flash (serial port name depends on your device)
-tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+/path/to/ipro_iot_tool_lite \
     --chipname ipro7 \
     --port /dev/cu.usbserial-XXXX \
     --firmware apps/bluetooth/ble/my_ble_app/build/build_out/my_ble_app_IPRO7.bin \
@@ -251,7 +252,7 @@ CONFIG_IPRO_BLE_CTLR_CFG_DBG=n
 CONFIG_BT_CONN=1
 CONFIG_EM_SIZE=32
 
-# NVDS -- BLE pairing/bonding data storage (required for flash BLE apps)
+# NVDS: controller configuration storage; host bonds use BT_SETTINGS
 CONFIG_ENABLE_NVDS=y
 CONFIG_CFG_NVDS=y
 
@@ -259,9 +260,9 @@ CONFIG_CFG_NVDS=y
 CONFIG_SHELL=y</code></pre>
 
                 <h3>Flash Firmware</h3>
-                <p>Use the SDK's built-in flash tool <code>ipro_iot_tool_lite</code> (the serial port name depends on your device; on macOS, find it with <code>ls /dev/cu.usbserial-*</code>):</p>
+                <p>Use the separately installed flash tool <code>ipro_iot_tool_lite</code> (the serial port name depends on your device; on macOS, find it with <code>ls /dev/cu.usbserial-*</code>):</p>
                 <pre><code class="language-bash"># Basic flash command
-tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+/path/to/ipro_iot_tool_lite \
     --chipname ipro7 \
     --port /dev/cu.usbserial-XXXX \
     --firmware apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
@@ -274,16 +275,12 @@ tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
                 </div>
 
                 <h3>Serial Monitor</h3>
-                <p>Use <code>serial_monitor.py</code> to monitor serial output:</p>
-                <pre><code class="language-bash"># Monitor serial port (port name depends on your device)
-python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX
+                <p>V2.0.1 omits the old monitor helper. Install pyserial and open its terminal:</p>
+                <pre><code class="language-bash"># Install separately; select the port and baud rate for your firmware
+python3 -m pip install pyserial
+python3 -m serial.tools.miniterm /dev/cu.usbserial-XXXX 115200</code></pre>
 
-# Send reboot command and wait for expected output (--wait-for takes a regex)
-python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX \
-    --send reboot --timeout 30 \
-    --wait-for "BLE 5.4 stack initialized"</code></pre>
-
-                <h3>Automated Workflow</h3>
+                <h3>Automated Workflow (Separate Helpers Required)</h3>
                 <p><code>build_freertos.sh</code> can chain build, flash, and monitor into a single command. Combine it with <code>-w</code>/<code>-t</code> to wait for expected output, which makes it easy to integrate into automation scripts:</p>
                 <pre><code class="language-bash"># One line: build + flash + monitor
 ./build_freertos.sh ipro_ble_remote build flash monitor
@@ -315,7 +312,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX \
 make -C apps/bluetooth/ble/ipro_throughput_test
 
 # Flash to both boards
-tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
+/path/to/ipro_iot_tool_lite \
     --chipname ipro7 --port /dev/cu.usbserial-XXXX \
     --firmware apps/bluetooth/ble/ipro_throughput_test/build/build_out/ipro_throughput_test_IPRO7.bin \
     --baudrate 921600 --flash-pin 0x02</code></pre>
@@ -417,10 +414,10 @@ RX: 0 packets, 0 bytes, 0.00 Kbps (0.00 KBps)</code></pre>
                 </tbody>
                 </table>
             </div>
-            <p>Choose <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code> for basic BLE or <code>"bt54_iso2"</code> for BLE 5.4 with two ISO streams (CIS/BIS). The latter requires <code>CONFIG_EM_SIZE</code> of at least 32 KB. Set <code>CONFIG_BT_CONN</code> to the selected ACL connection count.</p>
+            <p>Choose <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code> for basic BLE or <code>"bt54_iso2"</code> for BLE 5.4 with two ISO streams (CIS/BIS). The latter requires <code>CONFIG_EM_SIZE</code> of at least 32 KB. Keep the host connection limit within controller capacity; preserve each shipped application configuration.</p>
 
                 <h3>BIS Broadcast Examples</h3>
-            <div class="alert alert-info">Standalone <code>ipro_le_audio_bis_source</code> and <code>ipro_le_audio_bis_sink</code> applications are not included in V1.2.1. The host includes broadcast APIs; contact INTELPRO for complete broadcast reference applications.</div>
+            <div class="alert alert-info">Standalone <code>ipro_le_audio_bis_source</code> and <code>ipro_le_audio_bis_sink</code> applications are not included in V2.0.1. The host includes broadcast APIs; contact INTELPRO for complete broadcast reference applications.</div>
 
                 <h3>CIS Unicast Example (Headset)</h3>
                 <p>Use <code>ipro_le_audio_headset</code> as an LE Audio headset:</p>

@@ -3,12 +3,15 @@ layout: default
 title: 應用範例
 ---
 
-<div class="doc-layout">
+            <div class="doc-layout">
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">本頁目錄</h4>
             <ul class="sidebar-links">
+
+
 <li><a href="#overview" class="sidebar-link">應用概覽</a></li>
+<li><a href="#sdk-2-apps" class="sidebar-link">V2.0 應用目錄</a></li>
 <li><a href="#ipro-ble-remote" class="sidebar-link">ipro_ble_remote</a></li>
 <li><a href="#ipro-ble-transparent" class="sidebar-link">ipro_ble_transparent</a></li>
 <li><a href="#ipro-throughput-test" class="sidebar-link">ipro_throughput_test</a></li>
@@ -18,7 +21,7 @@ title: 應用範例
 <li><a href="#ipro7-demo" class="sidebar-link">ipro7_demo</a></li>
 <li><a href="#ipro7-sdio-wifi" class="sidebar-link">ipro7_sdio_wifi</a></li>
 <li><a href="#ipro7ai-evk-demo" class="sidebar-link">ipro7ai_evk_demo</a></li>
-<li class="sidebar-section-title">V1.2.1 未隨附</li>
+<li class="sidebar-section-title">V2.0.1 未隨附</li>
 <li><a href="#ipro-ble-img-capture" class="sidebar-link">ipro_ble_img_capture</a></li>
 <li><a href="#ipro-le-audio-bis-source" class="sidebar-link">ipro_le_audio_bis_source</a></li>
 <li><a href="#ipro-le-audio-bis-sink" class="sidebar-link">ipro_le_audio_bis_sink</a></li>
@@ -31,7 +34,7 @@ title: 應用範例
 
     <article class="doc-content">
         <h1>應用範例</h1>
-<p>以下參考應用已依 V1.2.1 交付包核對；建構所需元件與板級配置依應用而異。</p>
+            <p>以下參考應用已依 V2.0.1 交付包核對；建構所需元件與板級配置依應用而異。</p>
 
         <section id="overview">
             <h2>應用概覽</h2>
@@ -55,10 +58,39 @@ title: 應用範例
             <p>在 SDK 根目錄列出專案並建構：</p>
             <pre><code class="language-bash">./build_freertos.sh -l
 ./build_freertos.sh ipro_ble_remote build</code></pre>
-            <div class="alert alert-info">燒錄需另行取得燒錄工具。<code>tools/serial_monitor.py</code> 已隨附，供 POSIX 環境串口監控使用。</div>
+            <div class="alert alert-info">燒錄與串口監看需另行安裝工具；V2.0.1 未包含 <code>tools/serial_monitor.py</code>。</div>
         </section>
 
         <!-- ==================== BLE Apps ==================== -->
+
+        <section id="sdk-2-apps">
+            <h2>V2.0 應用目錄</h2>
+            <p>除既有九個 BLE／音訊／IPRO7 參考應用外，下列範例使本版具有 <code>.config</code> 的專案總數達 31 個。部分需要外接硬體或配置模型，建置成功不等於功能已在板上驗證。</p>
+            <div class="table-wrapper"><table><thead><tr><th>路徑</th><th>用途</th><th>SoC</th></tr></thead><tbody>
+<tr><td><code>apps/platform/ipro6_demo/</code></td><td>Wi-Fi 6 STA／SoftAP</td><td>IPRO6S</td></tr>
+<tr><td><code>apps/platform/ipro6_if_wifi/</code></td><td>SDIO 無線端</td><td>IPRO6S</td></tr>
+<tr><td><code>apps/platform/ipro6_btdm_phyrf/</code></td><td>BLE + BR/EDR、SCO 至 I2S</td><td>IPRO6S</td></tr>
+<tr><td><code>apps/ai/ipro_meeting_poc/</code></td><td>NPU 語者辨識</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_npu_yolo/</code></td><td>NPU YOLO 推理</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_ai_bench/</code></td><td>NPU／CPU 計時比較</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_tflm_test/</code></td><td>TFLM 模型測試</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_tflm_yolo/</code></td><td>CPU YOLO</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_nmsis_nn_test/</code></td><td>NMSIS-NN 算子測試</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_tinymaix_demo/</code></td><td>TinyMaix 推理</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_unit_test/</code></td><td>HAL 與共用元件測試</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_gh7007_test/</code></td><td>SPI LCD</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_gh7007_video/</code></td><td>LCD 影片播放</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_epd_test/</code></td><td>電子紙</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_epd_el036/</code></td><td>EL036 電子紙</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/kw307_radar_test/</code></td><td>UART 雷達</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/mpu6500_test/</code></td><td>I2C IMU</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_enc28j60_test/</code></td><td>SPI Ethernet</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_pio_sdh_test/</code></td><td>PIO SD Host</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_sdio_probe/</code></td><td>SDIO 探測</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_atbm_probe/</code></td><td>ATBM6162 SDIO 探測</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_lp_test/</code></td><td>PDS 低功耗</td><td>IPRO7</td></tr>
+</tbody></table></div>
+        </section>
 
         <section id="ipro-ble-remote">
             <h2>ipro_ble_remote</h2>
@@ -233,7 +265,7 @@ tp conn 6 6      # 最小連線間隔</code></pre>
 
         <section id="ipro-ble-img-capture">
             <h2>ipro_ble_img_capture</h2>
-            <div class="alert alert-info">此應用未包含於 V1.2.1。請參考上方的新版應用清單；如需此參考設計，請聯絡原廠。</div>
+            <div class="alert alert-info">此應用未包含於 V2.0.1。請參考上方的新版應用清單；如需此參考設計，請聯絡原廠。</div>
         </section>
 
         <!-- ==================== LE Audio Apps ==================== -->
@@ -263,26 +295,26 @@ tp conn 6 6      # 最小連線間隔</code></pre>
 
         <section id="ipro-le-audio-bis-source">
             <h2>ipro_le_audio_bis_source</h2>
-            <div class="alert alert-info">此應用未包含於 V1.2.1。請參考上方的新版應用清單；如需此參考設計，請聯絡原廠。</div>
+            <div class="alert alert-info">此應用未包含於 V2.0.1。請參考上方的新版應用清單；如需此參考設計，請聯絡原廠。</div>
         </section>
 
         <section id="ipro-le-audio-bis-sink">
             <h2>ipro_le_audio_bis_sink</h2>
-            <div class="alert alert-info">此應用未包含於 V1.2.1。請參考上方的新版應用清單；如需此參考設計，請聯絡原廠。</div>
+            <div class="alert alert-info">此應用未包含於 V2.0.1。請參考上方的新版應用清單；如需此參考設計，請聯絡原廠。</div>
         </section>
 
         <!-- ==================== Multimedia Apps ==================== -->
 
         <section id="ipro-agora-sentino">
             <h2>ipro_agora_sentino</h2>
-            <div class="alert alert-info">此應用未包含於 V1.2.1。請參考上方的新版應用清單；如需此參考設計，請聯絡原廠。</div>
+            <div class="alert alert-info">此應用未包含於 V2.0.1。請參考上方的新版應用清單；如需此參考設計，請聯絡原廠。</div>
         </section>
 
         <!-- ==================== Network Apps ==================== -->
 
         <section id="ipro-voice-assistant">
             <h2>ipro_voice_assistant</h2>
-            <div class="alert alert-info">此應用未包含於 V1.2.1。請參考上方的新版應用清單；如需此參考設計，請聯絡原廠。</div>
+            <div class="alert alert-info">此應用未包含於 V2.0.1。請參考上方的新版應用清單；如需此參考設計，請聯絡原廠。</div>
         </section>
 
         <!-- ==================== Platform Apps ==================== -->
@@ -347,22 +379,21 @@ void gpio_example(void)
         </section>
 <section id="ipro-pdm-mic-demo">
             <h2>ipro_pdm_mic_demo</h2>
-            <p>PDM 麥克風擷取、BLE 傳輸與 LC3 壓縮</p>
-            <p><code>apps/multimedia/ipro_pdm_mic_demo/</code></p>
-            <pre><code class="language-bash">./build_freertos.sh ipro_pdm_mic_demo build</code></pre>
+            <p>支援 16 kHz／16-bit 單聲道 PDM 擷取、LC3 串流、SMP 配對儲存與 PDS31 喚醒重連。V2.0.1 邏輯錄音最長 4 小時；實體 PSRAM ring 僅保留 240 秒，需透過 <code>CHUNK_READY</code>／<code>GET_CHUNK</code> 每 30 秒取回一段。覆寫後 <code>GET_AUDIO</code> 只能取得最後 240 秒。</p>
+            <p>使用隨附的 <code>link2 / bt52</code>、16 KB EM 配置；Host 的 <code>CONFIG_BT_CONN=1</code> 與控制器的兩連線容量不同，請保留完整板型配置，不要強制將兩個數值改成一致。</p><pre><code class="language-bash">make -C apps/multimedia/ipro_pdm_mic_demo
+make -C apps/multimedia/ipro_pdm_mic_demo BOARD=evk</code></pre>            <p>EVB 輸出位於 <code>build/build_out/</code>；EVK 位於 <code>build_config_evk/build_out/</code>，檔名皆為 <code>ipro_pdm_mic_demo_IPRO7.bin</code>。Android 原始碼位於 <code>tools/android/IproMicDemo/</code>；配套 APK 與測試韌體見 <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1 Release</a>。</p>
         </section>
 <section id="ipro7-sdio-wifi">
             <h2>ipro7_sdio_wifi</h2>
-            <p>IPRO7 SDIO Host 搭配 IPRO6S Wi-Fi</p>
-            <p><code>apps/platform/ipro7_sdio_wifi/</code></p>
-            <p>需搭配 IPRO6S companion 與另行取得的相容韌體；收到 <code>on_got_ip</code> 通知後再使用 Socket。</p>
-            <pre><code class="language-bash">./build_freertos.sh ipro7_sdio_wifi build</code></pre>
+            <p>IPRO7 不內建 Wi-Fi。V2.0.1 已包含 <code>apps/platform/ipro7_sdio_wifi/</code>（IPRO7 Host）及 <code>apps/platform/ipro6_if_wifi/</code>（IPRO6S 無線端）。IPRO6S 需選用 <code>defconfig_ipro6_sdio</code>；兩顆晶片需各自建置與燒錄。</p><pre><code class="language-bash">./build_freertos.sh -d defconfig_ipro6_sdio build ipro6_if_wifi
+./build_freertos.sh build ipro7_sdio_wifi</code></pre>            <p>輸出為 <code>apps/platform/ipro6_if_wifi/build_ipro6_sdio/build_out/ipro6_if_wifi_IPRO6.bin</code> 與 <code>apps/platform/ipro7_sdio_wifi/build/build_out/ipro7_sdio_wifi_IPRO7.bin</code>。燒錄前確認板子接線、電源控制及各晶片的燒錄設定。</p><pre><code class="language-text">ipronet_up &lt;SSID&gt; &lt;PASSWORD&gt;
+ipronet_down</code></pre>            <p>上述指令於 IPRO7 串口執行。<code>components/network/ipronet_host/ipronet_host.h</code> 提供 <code>ipronet_config_default()</code>、<code>ipronet_start()</code> 與 <code>ipronet_connect()</code>；收到 <code>on_got_ip</code> 後才使用 socket。RX task 回呼應將工作交給應用 task，不可阻塞或直接呼叫連線控制 API。</p>
         </section>
 <section id="ipro7ai-evk-demo">
             <h2>ipro7ai_evk_demo</h2>
             <p>IPRO7AI EVK 顯示、攝影機、音訊與 AI / BLE 配置</p>
             <p><code>apps/platform/ipro7ai_evk_demo/</code></p>
-            <p>依需求使用 <code>config_ai</code>、<code>config_bt</code> 或 <code>config_video</code>；AI 模型需另行取得。將選定配置複製為 <code>.config</code>，清除舊建構後重新編譯。</p>
+            <p>以 <code>DEFCONFIG=</code> 選用 <code>config_ai</code>、<code>config_bt</code> 或 <code>config_video</code>。V2.0.1 於 <code>apps/platform/ipro7_demo/demo/ai/ai_model/</code> 隨附部分模型，請依 EVK 應用所需的模型及載入路徑配置。</p>
             <pre><code class="language-bash">./build_freertos.sh ipro7ai_evk_demo build</code></pre>
         </section>
 <section id="creating-apps">
@@ -509,5 +540,7 @@ clean:
             </div>
             <p>建構輸出位於 <code>apps/bluetooth/ble/my_app/build/build_out/my_app_IPRO7.bin</code>。</p>
         </section>
+
+
     </article>
 </div>

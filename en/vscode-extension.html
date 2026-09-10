@@ -3,10 +3,12 @@ layout: default
 title: IPRO SDK VS Code Extension
 ---
 
-<div class="doc-layout">
+            <div class="doc-layout">
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
             <ul class="sidebar-links">
+                <li><a href="#sdk-2-0-1" class="sidebar-link">SDK V2.0.1</a></li>
+
                 <li><a href="#overview" class="sidebar-link">Extension overview</a></li>
                 <li><a href="#features" class="sidebar-link">Features</a></li>
                 <li><a href="#installation" class="sidebar-link">Install and configure</a></li>
@@ -24,17 +26,17 @@ title: IPRO SDK VS Code Extension
     </aside>
     <article class="doc-content">
         <h1>IPRO SDK VS Code Extension</h1>
-<p>Configure, build, flash and monitor from VS Code, and manage SDK and extension updates independently.</p>
+            <p>Configure, build, flash and monitor from VS Code, and manage SDK and extension updates independently.</p>
 
         <section id="overview">
             <h2>Extension overview</h2>
-<p>IPRO SDK Extension 3.3.0 (identifier ipro.ipro-sdk-extension) brings FreeRTOS project discovery, CMake builds, IntelProCube flashing, serial monitoring and memory analysis into VS Code. Windows users can start with the complete installer.</p>
-<p>This page covers SDK V1.2.1, extension 3.3.0 and Windows installer 3.3.0. VS Code 1.102 or later is required. The listed VSIX packages target Windows x64 / ARM64; other platforms require matching packages and tools.</p><a href="{{ '/en/windows-installation' | relative_url }}">Windows installation and update guide</a>
+            <p>IPRO SDK Extension 3.3.0 (identifier ipro.ipro-sdk-extension) brings FreeRTOS project discovery, CMake builds, IntelProCube flashing, serial monitoring and memory analysis into VS Code. Windows users can start with the complete installer.</p>
+            <p>This page describes Extension 3.3.0 (VS Code 1.102+). SDK V2.0.1 and Online Installer 3.4.0 are versioned separately; the current catalog still selects SDK 1.2.1. For V2.0.1, import its extracted folder and verify toolchain compatibility.</p><a href="{{ '/en/windows-installation' | relative_url }}">Windows installation and update guide</a>
         </section>
 
         <section id="features">
             <h2>Features</h2>
-<div class="table-wrapper">
+            <div class="table-wrapper">
 <table>
 <thead><tr><th>Feature</th><th>What it does</th></tr></thead>
 <tbody>
@@ -62,12 +64,12 @@ title: IPRO SDK VS Code Extension
 
         <section id="control-center">
             <h2>Control Center</h2>
-<p>Press F1 → IPRO: Open Control Center. The panel shows the active SDK / project, UART and configured / actual monitor baud rate, and enables actions according to session state. Opening the panel does not flash or reset the board.</p>
+            <p>Press F1 → IPRO: Open Control Center. The panel shows the active SDK / project, UART and configured / actual monitor baud rate, and enables actions according to session state. Opening the panel does not flash or reset the board.</p>
 <figure>
 <img src="{{ '/assets/images/installation/control-center.png' | relative_url }}" alt="IPRO Control Center and Target sidebar" loading="lazy" style="display:block;max-width:100%;height:auto;">
 <figcaption>Control Center interface, introduced in 3.2.4 and retained in 3.3.0 with a component update entry.</figcaption>
 </figure>
-<p>Supports light, dark and high-contrast themes, narrow editors and keyboard focus. Animations can be paused and follow reduced-motion preferences.</p>
+            <p>Supports light, dark and high-contrast themes, narrow editors and keyboard focus. Animations can be paused and follow reduced-motion preferences.</p>
         </section>
 
         <section id="workflow">
@@ -80,7 +82,7 @@ title: IPRO SDK VS Code Extension
     <li>Confirm that BIN and ELF outputs were produced. Clean and rebuild after changing SDK or tool paths to avoid stale caches.</li>
 </ol>
 <pre><code class="language-text">apps/platform/ipro7_demo/build/build_out/ipro7_demo_IPRO7.bin</code></pre>
-<p>The installer selects Ninja; ipro.generator also supports auto, make or ninja. IPRO: Batch Build builds multiple selected projects.</p>
+            <p>The installer selects Ninja; ipro.generator also supports auto, make or ninja. IPRO: Batch Build builds multiple selected projects.</p>
         </section>
 
         <section id="flash">
@@ -92,7 +94,7 @@ title: IPRO SDK VS Code Extension
     <li>Run IPRO: Flash and confirm the tool verification and success messages. The extension releases its own monitor before flashing; close any other program holding the port.</li>
     <li>Set the firmware console rate with IPRO Config: Set Monitor Baud Rate, then run IPRO: Serial Monitor. After changing the rate, close and reopen the monitor or use the offered reconnect action.</li>
 </ol>
-<div class="table-wrapper">
+            <div class="table-wrapper">
 <table>
 <thead><tr><th>Setting</th><th>Meaning</th></tr></thead>
 <tbody>
@@ -102,23 +104,23 @@ title: IPRO SDK VS Code Extension
 </tbody>
 </table>
 </div>
-<div class="alert alert-info">Since 3.2.0, the extension uses its own serialport console. Windows monitoring does not depend on the SDK POSIX serial_monitor.py script and does not automatically reboot on opening. Use IPRO: Reset Board or the firmware console reboot command when needed.</div>
+            <div class="alert alert-info">Since 3.2.0, the extension uses its own serialport console. Windows monitoring does not depend on the SDK POSIX serial_monitor.py script and does not automatically reboot on opening. Use IPRO: Reset Board or the firmware console reboot command when needed.</div>
         </section>
 
         <section id="memory-map">
             <h2>Memory and debug tools</h2>
-<p>After building, run IPRO Analyse: Memory Map to inspect regions, component usage and changes between builds, with CSV / Markdown export. Compare capacity decisions with linker output and the actual partition table.</p>
-<p>IPRO Analyse: Decode Crash Report maps exception backtraces to source locations; IPRO Debug: Pin Function Lookup searches pins. Register Explorer requires a compatible Probe, a working CCI link and board configuration. Extension 3.3.0 does not provide a general GDB debug adapter; installing OpenOCD alone does not enable source debugging with F5.</p>
+            <p>After building, run IPRO Analyse: Memory Map to inspect regions, component usage and changes between builds, with CSV / Markdown export. Compare capacity decisions with linker output and the actual partition table.</p>
+            <p>IPRO Analyse: Decode Crash Report maps exception backtraces to source locations; IPRO Debug: Pin Function Lookup searches pins. Register Explorer requires a compatible Probe, a working CCI link and board configuration. Extension 3.3.0 does not provide a general GDB debug adapter; installing OpenOCD alone does not enable source debugging with F5.</p>
         </section>
 
         <section id="component-updates">
             <h2>Independent component updates</h2>
-<p>Extension 3.3.0 provides F1 → IPRO Setup: Update Components, also accessible from Control Center.</p>
+            <p>Extension 3.3.0 provides F1 → IPRO Setup: Update Components, also accessible from Control Center.</p>
 <figure>
 <img src="{{ '/assets/images/installation/component-updates-3.3.0.png' | relative_url }}" alt="VS Code component update menu" loading="lazy" style="display:block;max-width:100%;height:auto;">
 <figcaption>Four update sources: VSIX, SDK ZIP, folder and Git.</figcaption>
 </figure>
-<div class="table-wrapper">
+            <div class="table-wrapper">
 <table>
 <thead><tr><th>Source</th><th>Behavior</th></tr></thead>
 <tbody>
@@ -139,12 +141,12 @@ title: IPRO SDK VS Code Extension
   sdk\          SDK root: CMakeLists.txt, apps, bsp
   update.json   Source, timestamp, checksum / Git commit
   update.log    Update result</code></pre>
-<p>For VS Code imports, the SDK root is the sdk\ child of the version directory; EXE SDK-only uses the selected new directory directly. Failed or cancelled imports retain the incomplete directory and logs; retry with a new name. Git imports are snapshots rather than working trees for subsequent pulls; submodules, unresolved LFS pointers and symbolic links are unsupported, and toolchains are not updated automatically.</p>
+            <p>For VS Code imports, the SDK root is the sdk\ child of the version directory; EXE SDK-only uses the selected new directory directly. Failed or cancelled imports retain the incomplete directory and logs; retry with a new name. Git imports are snapshots rather than working trees for subsequent pulls; submodules, unresolved LFS pointers and symbolic links are unsupported, and toolchains are not updated automatically.</p>
         </section>
 
         <section id="faq">
             <h2>Troubleshooting</h2>
-<div class="table-wrapper">
+            <div class="table-wrapper">
 <table>
 <thead><tr><th>Symptom</th><th>Action</th></tr></thead>
 <tbody>
@@ -160,15 +162,15 @@ title: IPRO SDK VS Code Extension
 
         <section id="cli-tools">
             <h2>IntelProCube and command line</h2>
-<p>C:\IPRO\IntelProCube\IProCube.exe is the GUI tool. ipro_iot_tool.exe provides command-line flashing, while ipro_ota_creator.exe and ipro_ota_update_tool.exe create and apply OTA packages. The GUI manual is IntelProCube\docs\USER_GUIDE.html.</p>
+            <p>C:\IPRO\IntelProCube\IProCube.exe is the GUI tool. ipro_iot_tool.exe provides command-line flashing, while ipro_ota_creator.exe and ipro_ota_update_tool.exe create and apply OTA packages. The GUI manual is IntelProCube\docs\USER_GUIDE.html.</p>
 <pre><code class="language-powershell">&amp; "C:\IPRO\IntelProCube\ipro_iot_tool.exe" --help</code></pre>
-<p>Use the tool version’s --help and the actual board configuration when forming commands. Native Windows development can use the extension CMake / Ninja workflow; build_freertos.sh is the SDK Bash entry point.</p>
+            <p>Use the tool version’s --help and the actual board configuration when forming commands. Native Windows development can use the extension CMake / Ninja workflow; build_freertos.sh is the SDK Bash entry point.</p>
         </section>
 
         <section id="shortcuts">
             <h2>Commands and shortcuts</h2>
-<p>F1 or Ctrl+Shift+P opens the command palette; Ctrl+Shift+X opens Extensions. Version 3.3.0 does not declare dedicated Flash / Monitor keybindings; use the commands below or bind your own keys. Ctrl+Shift+B uses the configured VS Code build task.</p>
-<div class="table-wrapper">
+            <p>F1 or Ctrl+Shift+P opens the command palette; Ctrl+Shift+X opens Extensions. Version 3.3.0 does not declare dedicated Flash / Monitor keybindings; use the commands below or bind your own keys. Ctrl+Shift+B uses the configured VS Code build task.</p>
+            <div class="table-wrapper">
 <table>
 <thead><tr><th>Command</th><th>Purpose</th></tr></thead>
 <tbody>
@@ -201,8 +203,15 @@ title: IPRO SDK VS Code Extension
 
         <section id="version">
             <h2>Versions and delivery scope</h2>
-<p>3.3.0 adds independent component updates; 3.2.4 introduced Control Center; 3.2.3 improved monitor / flash port handover and UART / CCI selection; 3.2.2 added a separate monitor baud setting; 3.2.1 pinned Windows tool paths; 3.2.0 introduced the built-in serialport monitor.</p>
-<div class="alert alert-info">The SDK source package, extension VSIX and full Windows installer are versioned separately. A standalone SDK without a VSIX does not mean the full Windows installer omits the extension; check the delivered manifest and the installed version in Extensions.</div>
+            <p>3.3.0 adds independent component updates; 3.2.4 introduced Control Center; 3.2.3 improved monitor / flash port handover and UART / CCI selection; 3.2.2 added a separate monitor baud setting; 3.2.1 pinned Windows tool paths; 3.2.0 introduced the built-in serialport monitor.</p>
+            <div class="alert alert-info">The SDK source package, extension VSIX and full Windows installer are versioned separately. A standalone SDK without a VSIX does not mean the full Windows installer omits the extension; check the delivered manifest and the installed version in Extensions.</div>
         </section>
+        <section id="sdk-2-0-1">
+            <h2>SDK V2.0.1</h2>
+            <p>Download <code>IPRO-SDK-V2.0.1.tar.gz</code> and its checksum from the <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1 Release</a> and extract them into a new SDK directory. Verify <code>VERSION.txt</code> reports V2.0.1 for both IPRO7 and IPRO6, then confirm <code>CMakeLists.txt</code>, <code>apps/</code> and <code>bsp/</code> are at the selected root.</p><pre><code class="language-powershell">Get-FileHash .\IPRO-SDK-V2.0.1.tar.gz -Algorithm SHA256
+Get-Content .\IPRO-SDK-V2.0.1.tar.gz.sha256</code></pre>            <p>Compare the hash with the downloaded checksum. In Extension 3.3.0, import the extracted folder using <code>IPRO Setup: Update Components</code>, or select the extracted SDK root. The archive importer accepts ZIP; extract <code>.tar.gz</code> first. Reopen the new SDK and run <code>IPRO Setup: Run Diagnostics</code>.</p>
+            <p>The SDK README specifies GCC 14. The current Windows catalog only declares its GCC 13.1.1 combination for SDK 1.2.1; obtain and validate a toolchain for V2.0.1. When using native Windows Make, pass <code>CMAKE=</code> explicitly because <code>project.build</code> otherwise expects an unbundled <code>tools/cmake_win-x86_64/</code> path. Keep your working 1.2.1 installation until the new build and board workflow are verified.</p>
+        </section>
+
     </article>
 </div>

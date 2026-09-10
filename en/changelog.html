@@ -4,11 +4,13 @@ lang: en
 title: Changelog - IPRO SDK
 ---
 
-<div class="doc-layout">
+            <div class="doc-layout">
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">Releases</h4>
             <ul class="sidebar-links">
+                <li><a href="#v2-0-1" class="sidebar-link">IPRO-SDK-V2.0.1</a></li>
+                <li><a href="#tools-3-4-0" class="sidebar-link">Online Installer 3.4.0</a></li>
                 <li><a href="#tools-3-3-0" class="sidebar-link">Installer / Extension 3.3.0</a></li>
                 <li><a href="#v1-2-1" class="sidebar-link">IPRO-IPRO7-SDK-V1.2.1</a></li>
                 <li><a href="#v1-0-1" class="sidebar-link">IPROREL-IPRO7-V1.0.1</a></li>
@@ -21,6 +23,23 @@ title: Changelog - IPRO SDK
     <article class="doc-content">
         <h1>Changelog</h1>
         <p>Official release history for the IPRO SDK. For an overview of the SDK delivery package, refer to the <code>README.md</code> file included in the package.</p>
+
+        <section id="v2-0-1">
+            <h2>IPRO-SDK-V2.0.1</h2>
+            <p><strong>Release date:</strong> 2026-09-09</p>
+            <p>Maintenance release for continuous BLE audio, following the V2.0 expansion to IPRO6S and 31 application projects.</p>
+            <ul><li>Fixes Bluetooth host queue publication atomicity during sustained transfers.</li>
+                <li>PDM recording supports up to 4 logical hours with a 240-second PSRAM ring and automatic 30-second chunks. Android retains high connection priority between chunks.</li>
+                <li>PDM uses a link2 controller, a one-connection host and 2M PHY. EVB / EVK configurations and Android companion source are included.</li>
+                <li>Adds IPRO6S Wi-Fi / BR/EDR references, both SDIO link endpoints, NPU / TFLM examples and bundled .inm / .tflite models.</li>
+                <li>Includes ipro_unit_test and Linux x86-64 CMake. serial_monitor.py and PREBUILT-ARCHIVES-STRIPPED.txt from 1.2.1 are absent.</li></ul>
+            <p>The published release reports 31/31 application builds and a Pixel 7a + IPRO7AI five-minute recording test: ten 960,000-byte chunks, no lost packets / sequence gaps, successful ring wrap, and steady transfer at 84.2–91.2 KB/s. These results apply to that test setup and are not a guarantee for every board or phone. <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">Release notes, SDK, APK and firmware</a></p>
+        </section>
+
+        <section id="tools-3-4-0">
+            <h2>Online Installer 3.4.0</h2>
+            <p>Dynamic public catalog, independent package versions, full-install compatibility selection and cached offline installation. Extension remains 3.3.0. Checked 2026-09-10: catalog SDK stable remains 1.2.1; SDK V2.0.1 is a separate release download. <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/online-installer-v3.4.0">Download installer</a></p>
+        </section>
 
         <section id="tools-3-3-0">
             <h2>Development Tools: Windows Installer / Extension 3.3.0</h2>

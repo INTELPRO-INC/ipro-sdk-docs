@@ -7,15 +7,27 @@ lang: zh-TW
 <section class="page-header-section">
     <div class="container">
         <h1 class="page-title"><i class="fas fa-wrench"></i> 硬體參考 Hardware Reference</h1>
-        <p class="page-subtitle">IPRO7 晶片規格、腳位定義與評估板資訊</p>
+        <p class="page-subtitle">IPRO7 晶片規格、腳位與評估板，以及 IPRO6S 交付支援</p>
     </div>
 </section>
 
 <section class="hardware-section">
     <div class="container">
 
+        <section id="ipro6s">
+            <h2>IPRO6S</h2>
+            <p>V2.0.1 支援 IPRO6S 作為獨立 Wi-Fi 6／藍牙雙模 SoC，亦可作為 IPRO7 的 SDIO 無線端。使用 <code>CONFIG_IPRO6=y</code>，並共用 RISC-V 工具鏈目標 <code>CONFIG_CPU_ID="intelpro_ipro7"</code>；不具備 IPRO7 的 NPU／ISP。</p>
+            <div class="table-wrapper"><table><thead><tr><th>資源</th><th>容量</th></tr></thead><tbody>
+<tr><td>Flash</td><td>2 MB</td></tr>
+<tr><td>TCM RAM</td><td>320 KB (縮減配置為 280 KB)</td></tr>
+<tr><td>Wi-Fi RAM</td><td>160 KB (需扣除藍牙 EM 保留區)</td></tr>
+<tr><td>HBNRAM</td><td>4 KB</td></tr>
+</tbody></table></div>
+            <p>應用可用記憶體取決於 linker 配置與控制器設定，請參考 <code>apps/platform/ipro6_demo/</code>、<code>ipro6_if_wifi/</code> 與 <code>ipro6_btdm_phyrf/</code> 的配套配置。</p>
+        </section>
+
         <!-- Quick Navigation -->
-        <div class="hw-nav">
+        <div class="hw-nav"><a href="#ipro6s" class="hw-nav-item">IPRO6S</a>
             <a href="#chip-overview" class="hw-nav-item">
                 <i class="fas fa-microchip"></i>
                 <span>晶片概覽</span>
@@ -109,7 +121,7 @@ lang: zh-TW
                     <ul>
                         <li>Bluetooth 5.4 / BLE</li>
                         <li>LE Audio (LC3 Codec)</li>
-                        <li>V1.2.1 預編譯控制器支援最多 4 個 ACL 連線（link1_periph / link1 / link2 / link4）。</li>
+                        <li>V2.0.1 預編譯控制器支援最多 4 個 ACL 連線（link1_periph / link1 / link2 / link4）。</li>
                         <li>2.4 GHz RF</li>
                     </ul>
                 </div>
@@ -120,7 +132,7 @@ lang: zh-TW
                     <ul>
                         <li>Secure Boot 安全啟動</li>
                         <li>Secure Debug 安全除錯</li>
-                        <li>TrustZone 隔離保護</li>
+
                         <li>AES-CBC/CCM/GCM/XTS</li>
                         <li>MD5, SHA-1/224/256/384/512</li>
                         <li>TRNG 真隨機數產生器</li>
@@ -206,7 +218,7 @@ lang: zh-TW
                     </div>
                 </div>
             </div>
-            
+
             <!-- Applications -->
             <div class="applications-section" style="margin-top: 2rem;">
                 <h3><i class="fas fa-mobile-screen"></i> 應用場景</h3>
@@ -237,7 +249,7 @@ lang: zh-TW
         <!-- Wireless Specifications -->
         <div id="wireless" class="hw-section">
             <h2><i class="fas fa-tower-broadcast"></i> 無線規格詳細</h2>
-            
+
             <div class="spec-grid">
                 <div class="spec-card">
                     <div class="spec-icon"><i class="fas fa-satellite-dish"></i></div>
@@ -247,7 +259,7 @@ lang: zh-TW
                         <li>Bluetooth® 規範 v5.4</li>
                         <li>BLE 1Mbps 和 2Mbps</li>
                         <li>Long Range 500/125Kbps</li>
-                        <li>V1.2.1 預編譯控制器支援最多 4 個 ACL 連線（link1_periph / link1 / link2 / link4）。</li>
+                        <li>V2.0.1 預編譯控制器支援最多 4 個 ACL 連線（link1_periph / link1 / link2 / link4）。</li>
                         <li>整合 RF balun, PA/LNA</li>
                         <li>支援外部 PA/LNA</li>
                     </ul>
@@ -270,7 +282,7 @@ lang: zh-TW
         <!-- AI and Multimedia -->
         <div id="ai-multimedia" class="hw-section">
             <h2><i class="fas fa-brain"></i> AI 與多媒體</h2>
-            
+
             <div class="spec-grid">
                 <div class="spec-card">
                     <div class="spec-icon"><i class="fas fa-microchip"></i></div>
@@ -323,7 +335,7 @@ lang: zh-TW
         <!-- Interface Section -->
         <div id="interfaces" class="hw-section">
             <h2><i class="fas fa-plug"></i> 介面規格</h2>
-            
+
             <div class="table-wrapper">
                 <table class="spec-table">
                     <thead>
@@ -504,7 +516,7 @@ lang: zh-TW
                 <h3><i class="fas fa-exchange-alt"></i> UART Pin Assignment (Function = 7)</h3>
 
                 <div class="alert-warning" style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
-                    <strong>UART0 GPIO20/GPIO21 不可更改</strong> — Boot ROM 使用此 UART 進行 firmware download (DL mode)，更改將導致無法透過 UART 燒錄韌體。
+                    GPIO20/GPIO21 是 Boot ROM UART 下載使用的腳位。應用 Console 的 baud rate 由 <code>CONFIG_PLATFORM_UART_BAUDRATE</code> 決定：<code>ipro7_demo</code> 與 PDM EVB 為 115200；PDM EVK 與 <code>ipro7ai_evk_demo</code> 為 921600。
                 </div>
 
                 <p style="color: var(--text-secondary); margin-bottom: 1rem;">
@@ -529,16 +541,16 @@ lang: zh-TW
                             <td>TXD</td>
                             <td><span class="pin-num">GPIO20</span></td>
                             <td><code>GLB_UART_SIG_8</code></td>
-                            <td>2,000,000</td>
-                            <td>Console TX (Boot ROM 固定)</td>
+                            <td>115200 / 921600</td>
+                            <td>Console TX（應用設定）</td>
                         </tr>
                         <tr class="special-pin">
                             <td>UART0</td>
                             <td>RXD</td>
                             <td><span class="pin-num">GPIO21</span></td>
                             <td><code>GLB_UART_SIG_9</code></td>
-                            <td>2,000,000</td>
-                            <td>Console RX (Boot ROM 固定)</td>
+                            <td>115200 / 921600</td>
+                            <td>Console RX（應用設定）</td>
                         </tr>
                         <tr>
                             <td>UART1</td>
@@ -778,7 +790,7 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
             </div>
 
             <!-- SDIO Pin Assignment -->
-            <div id="sdio-pins" class="pinout-table-container" style="margin-bottom: 2rem;">
+            <div id="sdio-pins" class="pinout-table-container" style="margin-bottom: 2rem;"><p>腳位對照依 <code>bsp/board/ipro7/ipro7ai_evk_board_config.h</code> 的 <code>BOARD_SD_*</code> 定義；接線前請核對板本。</p>
                 <h3><i class="fas fa-sd-card"></i> SDIO / SD Card Pin Assignment (Function = 27)</h3>
 
                 <div class="alert-warning" style="background: rgba(245, 158, 11, 0.1); border-left: 4px solid #f59e0b; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
@@ -800,45 +812,45 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                     <tbody>
                         <tr>
                             <td><span class="pin-num">GPIO28</span></td>
-                            <td>SDC_CLK</td>
-                            <td>Pull-Up</td>
-                            <td>2 (8 mA)</td>
-                            <td>SD Clock</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pin-num">GPIO29</span></td>
-                            <td>SDC_CMD</td>
-                            <td>Pull-Up</td>
-                            <td>2 (8 mA)</td>
-                            <td>SD Command Line</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pin-num">GPIO30</span></td>
-                            <td>SDC_DAT0</td>
-                            <td>None</td>
-                            <td>2 (8 mA)</td>
-                            <td>SD Data Bit 0</td>
-                        </tr>
-                        <tr>
-                            <td><span class="pin-num">GPIO31</span></td>
                             <td>SDC_DAT1</td>
                             <td>Pull-Up</td>
-                            <td>2 (8 mA)</td>
+                            <td>2</td>
                             <td>SD Data Bit 1</td>
                         </tr>
                         <tr>
-                            <td><span class="pin-num">GPIO32</span></td>
-                            <td>SDC_DAT2</td>
+                            <td><span class="pin-num">GPIO29</span></td>
+                            <td>SDC_DAT0</td>
                             <td>Pull-Up</td>
-                            <td>2 (8 mA)</td>
-                            <td>SD Data Bit 2</td>
+                            <td>2</td>
+                            <td>SD Data Bit 0</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO30</span></td>
+                            <td>SDC_CLK</td>
+                            <td>None</td>
+                            <td>2</td>
+                            <td>SD Clock</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO31</span></td>
+                            <td>SDC_CMD</td>
+                            <td>Pull-Up</td>
+                            <td>2</td>
+                            <td>SD Command Line</td>
+                        </tr>
+                        <tr>
+                            <td><span class="pin-num">GPIO32</span></td>
+                            <td>SDC_DAT3</td>
+                            <td>Pull-Up</td>
+                            <td>2</td>
+                            <td>SD Data Bit 3</td>
                         </tr>
                         <tr>
                             <td><span class="pin-num">GPIO33</span></td>
-                            <td>SDC_DAT3</td>
+                            <td>SDC_DAT2</td>
                             <td>Pull-Up</td>
-                            <td>2 (8 mA)</td>
-                            <td>SD Data Bit 3</td>
+                            <td>2</td>
+                            <td>SD Data Bit 2</td>
                         </tr>
                     </tbody>
                 </table>
@@ -1089,7 +1101,7 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                             <td>-</td><td>-</td><td>-</td><td>-</td>
                             <td>-</td><td>-</td><td>-</td><td>-</td>
                             <td>-</td><td>-</td><td>-</td><td>-</td>
-                            <td>CLK</td><td>CMD</td><td>DAT0</td><td>DAT1</td>
+                            <td>DAT1</td><td>DAT0</td><td>CLK</td><td>CMD</td>
                         </tr>
                     </tbody>
                 </table>
@@ -1116,14 +1128,14 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                         <tr class="special-pin"><td><span class="pin-num">GPIO2</span></td><td>JTAG (14)</td><td>E21_TCK/TMS</td><td>Pull-Up</td><td>0</td><td>Debug</td></tr>
                         <tr class="special-pin"><td><span class="pin-num">GPIO11</span></td><td>JTAG (14)</td><td>E21_TDO/TDI</td><td>Pull-Up</td><td>0</td><td>Debug</td></tr>
                         <tr><td><span class="pin-num">GPIO15</span></td><td>GPIO (11)</td><td>Output</td><td>Pull-Down</td><td>2</td><td>SW Control</td></tr>
-                        <tr class="special-pin"><td><span class="pin-num">GPIO20</span></td><td>UART (7)</td><td>UART0_TXD</td><td>Pull-Up</td><td>0</td><td>Console TX (Boot ROM 固定)</td></tr>
-                        <tr class="special-pin"><td><span class="pin-num">GPIO21</span></td><td>UART (7)</td><td>UART0_RXD</td><td>Pull-Up</td><td>0</td><td>Console RX (Boot ROM 固定)</td></tr>
-                        <tr><td><span class="pin-num">GPIO28</span></td><td>SDC (27)</td><td>SDC_CLK</td><td>Pull-Up</td><td>2</td><td>SD Card</td></tr>
-                        <tr><td><span class="pin-num">GPIO29</span></td><td>SDC (27)</td><td>SDC_CMD</td><td>Pull-Up</td><td>2</td><td>SD Card</td></tr>
-                        <tr><td><span class="pin-num">GPIO30</span></td><td>SDC (27)</td><td>SDC_DAT0</td><td>None</td><td>2</td><td>SD Card</td></tr>
-                        <tr><td><span class="pin-num">GPIO31</span></td><td>SDC (27)</td><td>SDC_DAT1</td><td>Pull-Up</td><td>2</td><td>SD Card</td></tr>
-                        <tr><td><span class="pin-num">GPIO32</span></td><td>SDC (27)</td><td>SDC_DAT2</td><td>Pull-Up</td><td>2</td><td>SD Card</td></tr>
-                        <tr><td><span class="pin-num">GPIO33</span></td><td>SDC (27)</td><td>SDC_DAT3</td><td>Pull-Up</td><td>2</td><td>SD Card</td></tr>
+                        <tr class="special-pin"><td><span class="pin-num">GPIO20</span></td><td>UART (7)</td><td>UART0_TXD</td><td>Pull-Up</td><td>0</td><td>Console TX（應用設定）</td></tr>
+                        <tr class="special-pin"><td><span class="pin-num">GPIO21</span></td><td>UART (7)</td><td>UART0_RXD</td><td>Pull-Up</td><td>0</td><td>Console RX（應用設定）</td></tr>
+                        <tr><td><span class="pin-num">GPIO28</span></td><td>SDC (27)</td><td>SDC_DAT1</td><td>Pull-Up</td><td>2</td><td>SD Card</td></tr>
+                        <tr><td><span class="pin-num">GPIO29</span></td><td>SDC (27)</td><td>SDC_DAT0</td><td>Pull-Up</td><td>2</td><td>SD Card</td></tr>
+                        <tr><td><span class="pin-num">GPIO30</span></td><td>SDC (27)</td><td>SDC_CLK</td><td>None</td><td>2</td><td>SD Card</td></tr>
+                        <tr><td><span class="pin-num">GPIO31</span></td><td>SDC (27)</td><td>SDC_CMD</td><td>Pull-Up</td><td>2</td><td>SD Card</td></tr>
+                        <tr><td><span class="pin-num">GPIO32</span></td><td>SDC (27)</td><td>SDC_DAT3</td><td>Pull-Up</td><td>2</td><td>SD Card</td></tr>
+                        <tr><td><span class="pin-num">GPIO33</span></td><td>SDC (27)</td><td>SDC_DAT2</td><td>Pull-Up</td><td>2</td><td>SD Card</td></tr>
                     </tbody>
                 </table>
                 <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.9rem;"><strong>可用 GPIO</strong>：GPIO3~10, GPIO12~19, GPIO22~27, GPIO34~41 (未被 EVB 預設佔用)</p>
@@ -1133,9 +1145,9 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
             <div class="pin-notes">
                 <h4>Pin 衝突與設計注意事項</h4>
                 <ul>
-                    <li><strong>GPIO20/21：</strong>Boot ROM UART download 固定使用，<strong>不可重新分配</strong></li>
+                    <li>GPIO20/21：保留 Boot ROM UART 下載所需的板級連接；應用啟動後的 Console 由板級與應用設定決定。</li>
                     <li><strong>GPIO0~2, GPIO11：</strong>預設 JTAG Debug，正式產品可釋放使用</li>
-                    <li><strong>GPIO17~22：</strong>與內部 Flash (SF) 共用，若內部 Flash 啟用則不可使用</li>
+                    <li>GPIO17~22：Flash 與外設腳位需依封裝、Flash 配置及板圖檢查衝突；不能只依編號判斷可用性。</li>
                     <li><strong>GPIO23~28：</strong>與外部 Flash (SF2) 共用，需注意衝突</li>
                     <li><strong>GPIO28~33：</strong>SDC 與 SF2/SF3 互斥，由 <code>CONFIG_DISABLE_SDC_PINMUX</code> 選擇</li>
                 </ul>
@@ -1145,11 +1157,7 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                     <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
                     <tbody>
                         <tr><td>I/O Voltage</td><td>3.3V (VDDIO)</td></tr>
-                        <tr><td>Drive Strength 0</td><td>~2 mA</td></tr>
-                        <tr><td>Drive Strength 1</td><td>~4 mA</td></tr>
-                        <tr><td>Drive Strength 2</td><td>~8 mA</td></tr>
-                        <tr><td>Drive Strength 3</td><td>~12 mA</td></tr>
-                        <tr><td>Internal Pull-Up/Down</td><td>~50 kOhm</td></tr>
+
                         <tr><td>Schmitt Trigger</td><td>Available (per-pin configurable)</td></tr>
                     </tbody>
                 </table>
@@ -1173,7 +1181,7 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                             <span>IPRO7 System EVB</span>
                         </div>
                     </div>
-                    
+
                     <div class="evb-features-grid">
                         <div class="evb-features">
                             <h4><i class="fas fa-plug"></i> 電源與供電</h4>
@@ -1429,7 +1437,7 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                 <div class="peripheral-card">
                     <h3><i class="fas fa-volume-up"></i> I2S 音訊 Codec</h3>
                     <p>連接外部音訊編解碼器 (如 ES8388、WM8978)。使用 I2S Group 1 (GPIO4~7) + I2C0 控制。</p>
-                    <table class="connection-table">
+                    <div class="table-wrapper"><table class="connection-table">
                         <tr>
                             <th>IPRO7</th>
                             <th>Function</th>
@@ -1465,7 +1473,7 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                             <td>I2C Data</td>
                             <td>SDA</td>
                         </tr>
-                    </table>
+                    </table></div>
                     <p style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(99, 102, 241, 0.1); border-radius: 4px; font-size: 0.8rem;">
                         I2S 也可使用其他 Group (0~7)，每組 4 pin 依序為 BCLK/FS/DO/DI，詳見 <a href="#i2s-pins">I2S Pin Assignment</a>。
                     </p>
@@ -1474,7 +1482,7 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                 <div class="peripheral-card">
                     <h3><i class="fas fa-microchip"></i> SPI 外設 (LCD / Sensor)</h3>
                     <p>SPI0 接 LCD 或感測器。使用 Group 3 (GPIO12~15)。</p>
-                    <table class="connection-table">
+                    <div class="table-wrapper"><table class="connection-table">
                         <tr>
                             <th>IPRO7</th>
                             <th>Function</th>
@@ -1500,7 +1508,7 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                             <td>Chip Select</td>
                             <td>CS#</td>
                         </tr>
-                    </table>
+                    </table></div>
                     <p style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(245, 158, 11, 0.15); border-radius: 4px; font-size: 0.8rem; color: #f59e0b;">
                         MOSI/MISO 可透過 <code>pin_swap_enable</code> 交換。SPI0 支援 8 組 pin group，詳見 <a href="#spi-pins">SPI Pin Assignment</a>。
                     </p>
@@ -1509,36 +1517,36 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                 <div class="peripheral-card">
                     <h3><i class="fas fa-sd-card"></i> SD Card (SDIO)</h3>
                     <p>SD 卡使用固定 GPIO28~33，不可更改。</p>
-                    <table class="connection-table">
+                    <div class="table-wrapper"><table class="connection-table">
                         <tr>
                             <th>IPRO7</th>
                             <th>SD Card</th>
                         </tr>
                         <tr>
-                            <td>GPIO28 (Fun=27, SDC_CLK)</td>
-                            <td>CLK</td>
-                        </tr>
-                        <tr>
-                            <td>GPIO29 (Fun=27, SDC_CMD)</td>
-                            <td>CMD</td>
-                        </tr>
-                        <tr>
-                            <td>GPIO30 (Fun=27, SDC_DAT0)</td>
-                            <td>DAT0</td>
-                        </tr>
-                        <tr>
-                            <td>GPIO31 (Fun=27, SDC_DAT1)</td>
+                            <td>GPIO28 (Fun=27, SDC_DAT1)</td>
                             <td>DAT1</td>
                         </tr>
                         <tr>
-                            <td>GPIO32 (Fun=27, SDC_DAT2)</td>
-                            <td>DAT2</td>
+                            <td>GPIO29 (Fun=27, SDC_DAT0)</td>
+                            <td>DAT0</td>
                         </tr>
                         <tr>
-                            <td>GPIO33 (Fun=27, SDC_DAT3)</td>
+                            <td>GPIO30 (Fun=27, SDC_CLK)</td>
+                            <td>CLK</td>
+                        </tr>
+                        <tr>
+                            <td>GPIO31 (Fun=27, SDC_CMD)</td>
+                            <td>CMD</td>
+                        </tr>
+                        <tr>
+                            <td>GPIO32 (Fun=27, SDC_DAT3)</td>
                             <td>DAT3</td>
                         </tr>
-                    </table>
+                        <tr>
+                            <td>GPIO33 (Fun=27, SDC_DAT2)</td>
+                            <td>DAT2</td>
+                        </tr>
+                    </table></div>
                     <p style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(245, 158, 11, 0.15); border-radius: 4px; font-size: 0.8rem; color: #f59e0b;">
                         GPIO28~33 與外部 Flash (SF2/SF3) 共用。定義 <code>CONFIG_DISABLE_SDC_PINMUX</code> 切換為 Flash 模式。詳見 <a href="#sdio-pins">SDIO Pin Assignment</a>。
                     </p>
@@ -1547,7 +1555,7 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                 <div class="peripheral-card">
                     <h3><i class="fas fa-thermometer-half"></i> I2C 感測器</h3>
                     <p>I2C0 介面感測器連接範例。I2C0 可用任意偶數/奇數 GPIO 配對 (SCL=偶數位, SDA=奇數位)。</p>
-                    <table class="connection-table">
+                    <div class="table-wrapper"><table class="connection-table">
                         <tr>
                             <th>IPRO7</th>
                             <th>Function</th>
@@ -1578,7 +1586,7 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                             <td>Ground</td>
                             <td>GND</td>
                         </tr>
-                    </table>
+                    </table></div>
                     <p style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(245, 158, 11, 0.15); border-radius: 4px; font-size: 0.8rem; color: #f59e0b;">
                         I2C 需要外部 4.7 kOhm 上拉電阻（內部 pull-up ~50 kOhm 不足以驅動標準 I2C bus）。I2C1 (Fun=25) 為獨立的第二組 I2C。
                     </p>
@@ -1587,7 +1595,7 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                 <div class="peripheral-card">
                     <h3><i class="fas fa-exchange-alt"></i> UART 擴展</h3>
                     <p>UART1 可分配到任意 GPIO。範例使用 GPIO14/15。</p>
-                    <table class="connection-table">
+                    <div class="table-wrapper"><table class="connection-table">
                         <tr>
                             <th>IPRO7</th>
                             <th>Function</th>
@@ -1603,9 +1611,9 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                             <td>UART1_RXD</td>
                             <td>TXD</td>
                         </tr>
-                    </table>
+                    </table></div>
                     <p style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(239, 68, 68, 0.1); border-radius: 4px; font-size: 0.8rem; color: #ef4444;">
-                        UART0 (GPIO20 TXD, GPIO21 RXD) 為 Boot ROM 固定使用，不可更改。詳見 <a href="#uart-pins">UART Pin Assignment</a>。
+                        GPIO20 TXD／GPIO21 RXD 用於 Boot ROM UART 下載；應用 Console 設定另依專案決定。詳見 <a href="#uart-pins">UART Pin Assignment</a>。
                     </p>
                 </div>
 
@@ -1716,7 +1724,7 @@ RF_OUT --+--[L1]--+-- ANT
                 </div>
             </div>
 
-            <div class="power-rails">
+            <div class="power-rails table-wrapper">
                 <h3>電源軌道說明</h3>
                 <table class="pinout-table">
                     <thead>
@@ -1814,7 +1822,7 @@ RF_OUT --+--[L1]--+-- ANT
                         <i class="fas fa-check-circle"></i>
                         <div>
                             <h4>電源序列</h4>
-                            <p>確保 0.9V 核心電源優先建立，再上 IO 電源</p>
+                            <p>依實際晶片與板本的電源時序規格設計</p>
                         </div>
                     </div>
                     <div class="tip-item">
@@ -1834,51 +1842,7 @@ RF_OUT --+--[L1]--+-- ANT
                 </div>
             </div>
 
-            <div class="current-table">
-                <h3>典型電流消耗</h3>
-                <table class="pinout-table">
-                    <thead>
-                        <tr>
-                            <th>工作模式</th>
-                            <th>典型電流</th>
-                            <th>條件</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Active (CPU)</td>
-                            <td>15 mA</td>
-                            <td>192MHz, 執行程式</td>
-                        </tr>
-                        <tr>
-                            <td>BLE TX</td>
-                            <td>8.5 mA</td>
-                            <td>0 dBm, 1M PHY</td>
-                        </tr>
-                        <tr>
-                            <td>BLE RX</td>
-                            <td>7.5 mA</td>
-                            <td>1M PHY</td>
-                        </tr>
-                        <tr>
-                            <td>Light Sleep</td>
-                            <td>50 μA</td>
-                            <td>RAM 保持</td>
-                        </tr>
-                        <tr>
-                            <td>Deep Sleep</td>
-                            <td>5 μA</td>
-                            <td>RTC 運作</td>
-                        </tr>
-                        <tr>
-                            <td>Hibernate</td>
-                            <td>0.8 μA</td>
-                            <td>僅保持 HBNRAM</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <p style="margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">表列為 datasheet typical 值，實際電流依系統時鐘、外設啟用狀態與 RF 參數而異。</p>
-            </div>
+            <div class="current-table"><h3>功耗量測</h3><p>SDK 未提供可套用所有板型的電流保證。以實際資料表的條件及開發板實測為準，記錄電源量測點、CPU 時脈、RF 功率、外設、記憶體保留與睡眠模式。USB 轉接器、LED、感測器及穩壓器耗電需另行區分。</p></div>
         </div>
 
     </div>

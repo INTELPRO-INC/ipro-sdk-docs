@@ -4,7 +4,7 @@ title: AI & NPU
 lang: en
 ---
 
-<div class="doc-layout">
+            <div class="doc-layout">
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">Table of Contents</h4>
@@ -17,197 +17,31 @@ lang: en
                 <li><a href="#reference-apps" class="sidebar-link">Reference Applications</a></li>
                 <li><a href="#dev-guide" class="sidebar-link">Development Guide</a></li>
                 <li><a href="#performance" class="sidebar-link">Performance & Optimization</a></li>
-                <li><a href="#cloud-llm" class="sidebar-link">Cloud LLM Agent</a></li>
+                <li><a href="#cloud-llm" class="sidebar-link">Cloud Integration Scope</a></li>
             </ul>
         </nav>
     </aside>
 
     <article class="doc-content">
         <h1>AI & NPU</h1>
-        <div class="alert alert-warning">
-            <strong>Release SDK Notice:</strong> V1.2.1 includes the prebuilt AI runtime <code>components/ai/lib/libai.a</code>, public headers, and AI integration examples. AI implementation sources, <code>.blai</code> model files and conversion tools are not included. ISP algorithms are also supplied as a prebuilt library.
-        </div>
-        <p>IPRO7AI features a built-in 0.1 TOPS Neural Processing Unit (NPU) designed for edge AI inference. Combined with the IPROAI inference framework and YOLOv8 post-processing engine, it enables object detection, image classification, and keyword spotting at low power consumption.</p>
+        <div class="alert alert-info" style="margin-bottom: 2rem;">V2.0.1 includes the prebuilt AI runtime <code>components/ai/lib/libai.a</code>, public headers, example sources and selected <code>.inm</code> / <code>.tflite</code> models. AI runtime implementation sources and model conversion tools are separate. Choose a model supported by the example; changing its extension does not convert it.</div>
+        <p>The IPRO7 NPU accelerates edge inference. The following sections describe model formats and integration using the IPROAI and TFLite Micro examples actually included in V2.0.1.</p>
 
         <section id="overview">
-            <h2>Overview</h2>
-            <p>The IPRO SDK provides AI inference APIs and integration examples; models and conversion tools are supplied separately:</p>
-
-            <div class="features-grid" style="margin: 2rem 0;">
-                <div class="feature-card">
-                    <div class="feature-icon">NPU</div>
-                    <h3 class="feature-title">Hardware Acceleration</h3>
-                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
-                        <li>0.1 TOPS peak performance</li>
-                        <li>INT8 quantized inference</li>
-                        <li>CPU + NPU hybrid scheduling</li>
-                        <li>DMA direct memory access</li>
-                    </ul>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">AI</div>
-                    <h3 class="feature-title">IPROAI Framework</h3>
-                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
-                        <li>Custom inference engine</li>
-                        <li>.blai model format</li>
-                        <li>Built-in YOLOv8 post-processing</li>
-                        <li>SD card / Flash loading</li>
-                    </ul>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">APP</div>
-                    <h3 class="feature-title">Applications</h3>
-                    <ul style="margin-top: 1rem; color: var(--text-secondary);">
-                        <li>Person Detection</li>
-                        <li>Person + Pet Detection</li>
-                        <li>Face Detection</li>
-                        <li>PIR + AI Smart Camera</li>
-                    </ul>
-                </div>
-            </div>
+<h2>AI in This Release</h2>
+<p>This chapter covers bundled IPRO7 models and examples for person/pet detection, speech and inference benchmarks. Reproduce an example with its matching model before changing input processing or post-processing.</p>
         </section>
 
         <section id="architecture">
-            <h2>NPU Architecture</h2>
-            <p>The IPRO7 NPU works in tandem with the RISC-V CPU, supporting a hybrid execution mode. Each layer is automatically dispatched to the optimal execution device based on its operator type:</p>
-
-            <div class="dg" role="img" aria-label="AI system architecture layer diagram">
-                <div class="dg-title">AI System Architecture</div>
-                <div class="architecture-layers">
-                    <div class="layer layer-green">
-                        <div class="layer-label">Application Layer</div>
-                        <div class="layer-items">
-                            <span class="pill">ipro7_demo</span>
-                            <span class="pill">Custom App</span>
-                        </div>
-                    </div>
-                    <div class="layer layer-cyan">
-                        <div class="layer-label">IPROAI Framework (components/ai/)</div>
-                        <div class="layer-items">
-                            <span class="pill">iproai_core — Model Load</span>
-                            <span class="pill">iproai_inst — Layer Sched</span>
-                            <span class="pill">postprocess — YOLOv8 / NMS</span>
-                        </div>
-                    </div>
-                    <div class="layer layer-purple">
-                        <div class="layer-label">Execution Backend</div>
-                        <div class="layer-items">
-                            <span class="pill">CPU Backend: Softmax, YOLO, Route, Reshape, NMSIS DSP Ops</span>
-                            <span class="pill">NPU Backend: Conv, Pool, FC, DW-Conv, MatMul, Activation (HW)</span>
-                        </div>
-                    </div>
-                    <div class="layer layer-amber">
-                        <div class="layer-label">Memory / DMA Interface</div>
-                        <div class="layer-items">
-                            <span class="pill">PSRAM (8 MB)</span>
-                            <span class="pill">OCRAM (256 KB)</span>
-                            <span class="pill">Flash</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <h3>Supported Operators</h3>
-            <p>The NPU hardware accelerates the following operators. All other operators fall back to CPU execution:</p>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Backend</th>
-                        <th>Supported Operators</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>NPU</strong></td>
-                        <td>Convolution, Depthwise Conv, MaxPool, AvgPool, Fully Connected, MatMul, Activation (ReLU/ReLU6/Leaky)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>CPU</strong></td>
-                        <td>Softmax, YOLO, Route, Shortcut, Upsample, Reshape, Transpose, Pad, ArgMax, Resize Bilinear, SSD, Gather, Mean, Dequantize</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Activations</strong></td>
-                        <td>Leaky, ReLU, Linear, ReLU6, Mish, ELU, Logistic, Swish, GELU, Tanh, PReLU</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>Quantization Format</h3>
-            <p>IPROAI uses INT8 fixed-point (<code>fixed_point_t = int8_t</code>) for inference. It supports TFLite-style per-channel quantization parameters (multiplier + shift), allowing direct conversion from TensorFlow Lite quantized models.</p>
+<h2>NPU and Inference Runtime</h2>
+<p>IPROAI provides inference through <code>components/ai/lib/libai.a</code>. Public headers define model loading, input/output and execution interfaces. CPU/NPU dispatch, quantization and operator constraints depend on the model and compatible runtime.</p><p>Do not assume arbitrary TFLite models run on the NPU or that every unsupported operator falls back to the CPU. Native <code>.inm</code> and TFLite Micro examples use different loading paths. Confirm conversion tooling, tensor shapes, quantization and operator support for custom models.</p>
         </section>
 
         <section id="model-pipeline">
-            <h2>Model Deployment Pipeline</h2>
-            <p>The complete workflow from training to on-device deployment:</p>
-
-            <div class="dg" role="img" aria-label="Model deployment pipeline diagram">
-                <div class="dg-title">Model Pipeline</div>
-                <div class="dg-row">
-                    <div class="dg-node">
-                        <div class="dg-node-title">Training</div>
-                        <div class="dg-node-desc">(PyTorch / TensorFlow)<br>Float32 model<br>(YOLO, MobileNet)</div>
-                    </div>
-                    <div class="dg-arrow"></div>
-                    <div class="dg-node">
-                        <div class="dg-node-title">Quantization</div>
-                        <div class="dg-node-desc">(INT8)<br>TFLite INT8 model<br>(per-channel quant)</div>
-                    </div>
-                    <div class="dg-arrow"></div>
-                    <div class="dg-node">
-                        <div class="dg-node-title">Conversion</div>
-                        <div class="dg-node-desc">(<code>.blai</code>)<br>.blai binary<br>(NPU inst+weights)</div>
-                    </div>
-                    <div class="dg-arrow"></div>
-                    <div class="dg-node dg-node--success">
-                        <div class="dg-node-title">Deployment</div>
-                        <div class="dg-node-desc">(SD / Flash)<br>Load to PSRAM<br>NPU inference</div>
-                    </div>
-                </div>
-            </div>
-
-            <h3>.blai Model Format</h3>
-            <p>IPROAI uses a custom <code>.blai</code> binary model format. The model file contains the following sections:</p>
-            <ul>
-                <li><strong>Header (32 bytes)</strong>: 8 uint32 fields recording the size of each section</li>
-                <li><strong>CPU instruction section</strong>: Layer definitions, connectivity, quantization parameters</li>
-                <li><strong>NPU instruction section</strong>: NPU hardware instructions (16 bytes each)</li>
-                <li><strong>Weights section</strong>: INT8 quantized weight data</li>
-                <li><strong>Bias section</strong>: INT32 bias data</li>
-                <li><strong>Multiplier/Shift section</strong>: Per-channel quantization parameters</li>
-            </ul>
-
-            <h3>Model Loading Methods</h3>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Load from SD Card</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">/* Model stored on SD card at /sdcard/ai_model/person_pet_detect.blai */
-iproai_model_hdl_t hdl = iproai_create();
-uint8_t *buf = load_file_to_buffer("/sdcard/ai_model/person_pet_detect.blai");
-IPROAI_Status_e status = iproai_load_model_from_buffer(hdl, buf);
-vPortFree(buf);  /* Buffer can be freed after loading */</code></pre>
-            </div>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Load from Flash Partition</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">/* Model burned to the "mfg" partition; the model blob starts at partition base + 0x1000 */
-uint32_t flash_addr, part_size;
-hal_boot2_partition_addr_active("mfg", &amp;flash_addr, &amp;part_size);
-
-uint8_t *buf = pvPortMalloc(model_size);
-flash_read(flash_addr + 0x1000, buf, model_size);
-
-iproai_model_hdl_t hdl = iproai_create();
-iproai_load_model_from_buffer(hdl, buf);
-vPortFree(buf);</code></pre>
-            </div>
-            <p>Models live in the swappable <code>mfg</code> partition, separate from the firmware. The AI model field of the official flashing tool can update the model independently — no firmware rebuild or re-flash required.</p>
+            <h2>Model Deployment</h2>
+            <p>Start with a bundled model and its matching application. NPU examples use IPROAI <code>.inm</code> binaries; TensorFlow Lite Micro examples execute <code>.tflite</code> models on the CPU. Training and model conversion tools are not bundled.</p>
+            <p><code>ipro_npu_yolo</code> embeds <code>src/person_pet_detect.inm</code> through <code>model_inm.S</code>. <code>ipro_meeting_poc</code> defaults to loading a model from the <code>mfg</code> flash partition. Provision that model separately using the application README and the matching flash tool / partition layout; copying it onto an arbitrary filesystem is insufficient.</p>
+            <p>For custom models, obtain a compatible converter from INTELPRO and verify operators, tensor dimensions, quantization and memory requirements before deployment.</p>
         </section>
 
         <section id="iproai-framework">
@@ -241,7 +75,7 @@ vPortFree(buf);</code></pre>
                 <pre><code class="language-c">/* Create a model instance */
 iproai_model_hdl_t iproai_create(void);
 
-/* Load .blai model from memory buffer */
+/* Load the matching .inm model from a memory buffer */
 IPROAI_Status_e iproai_load_model_from_buffer(iproai_model_hdl_t hdl, const uint8_t *buffer);
 
 /* Get model input resolution */
@@ -268,7 +102,7 @@ IPROAI_Status_e iproai_setResultCB(iproai_model_hdl_t hdl, iproai_inference_cb c
 /* Free model resources */
 IPROAI_Status_e iproai_free(iproai_model_hdl_t hdl);</code></pre>
             </div>
-            <p>The examples load the model using filesystem APIs, then pass its buffer to <code>iproai_load_model_from_buffer()</code>. Use the same approach with a model supplied separately.</p>
+            <p>The examples load the model using filesystem APIs, then pass its buffer to <code>iproai_load_model_from_buffer()</code>. Use the matching bundled model and verify the application's loading path.</p>
 
             <h3>Kconfig Options</h3>
 
@@ -278,326 +112,52 @@ IPROAI_Status_e iproai_free(iproai_model_hdl_t hdl);</code></pre>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-ini">CONFIG_AI_SUPPORT=y
-CONFIG_USE_PSRAM=y</code></pre><p>The release component CMake file links <code>components/ai/lib/libai.a</code> directly. No separate PREBUILT path setting is required. Library-internal options cannot be changed by application configuration; use a compatible library supplied by INTELPRO.</p>
+CONFIG_USE_PSRAM=y</code></pre>            <p>The release component CMake file links <code>components/ai/lib/libai.a</code> directly. No separate PREBUILT path setting is required. Library-internal options cannot be changed by application configuration; use a compatible library supplied by INTELPRO.</p>
             </div>
         </section>
 
         <section id="supported-models">
-            <h2>Supported Models</h2>
-            <p>IPROAI uses the <code>.blai</code> model format. No model files are included in V1.2.1; obtain compatible models from INTELPRO before running the examples. The table lists example model names. Query <code>iproai_getInputResolution()</code> for the actual input resolution.</p>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Model</th>
-                        <th>Classes</th>
-                        <th>Output Layers</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>person_detect.blai</code></td>
-                        <td>person (1)</td>
-                        <td>4</td>
-                        <td>Person detection</td>
-                    </tr>
-                    <tr>
-                        <td><code>person_pet_detect.blai</code></td>
-                        <td>person, pet (2)</td>
-                        <td>6</td>
-                        <td>Person + Pet detection (3 box + 3 class outputs)</td>
-                    </tr>
-                    <tr>
-                        <td><code>pet_detect.blai</code></td>
-                        <td>pet (1)</td>
-                        <td>4</td>
-                        <td>Pet detection (model file must be obtained from the vendor)</td>
-                    </tr>
-                    <tr>
-                        <td><code>face_detect.blai</code></td>
-                        <td>face (1)</td>
-                        <td>4</td>
-                        <td>Face detection (model file must be obtained from the vendor)</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>Speaker Recognition Models</h3>
-            <div class="alert alert-warning">
-                <strong>⚠ Not included in Release SDK v1.2.1:</strong> Speaker recognition models and the corresponding audio front-end sources are not included in Release SDK v1.2.1 — please contact the vendor to obtain them.
-            </div>
-
-            <h3>Supported Application Types</h3>
-            <p>The IPROAI framework's <code>APPLICATION_TYPE</code> enumeration defines the following application scenarios:</p>
-            <ul>
-                <li><strong>CLASSIFICATION</strong> - Image classification</li>
-                <li><strong>OBJECT_DETECTION</strong> - Object detection (YOLO family)</li>
-                <li><strong>KEYPOINT_DETECTION</strong> - Keypoint detection</li>
-                <li><strong>FACE_RECONGNITION</strong> - Face recognition (with feature matching)</li>
-                <li><strong>FACE_LANDMARK</strong> - Facial landmark detection</li>
-                <li><strong>KEYWORD_SPOTTING</strong> - Keyword spotting / voice trigger</li>
-                <li><strong>SEGMENTATION</strong> - Semantic segmentation</li>
-                <li><strong>RETINA_FACE / RETINA_PERSON</strong> - RetinaNet detection</li>
-                <li><strong>CUSTOM</strong> - Custom post-processing</li>
-            </ul>
+            <h2>Bundled Models</h2>
+            <p>V2.0.1 includes the models below: NPU examples use <code>.inm</code>, while TensorFlow Lite Micro uses <code>.tflite</code>. Select the model and loading method expected by the matching example.</p>
+            <div class="table-wrapper"><table><thead><tr><th>Directory</th><th>Files</th></tr></thead><tbody>
+<tr><td><code>apps/platform/ipro7_demo/demo/ai/ai_model/</code></td><td><code>person_detect.inm</code>, <code>person_pet_detect.inm</code>, <code>res2dnet.inm</code>, <code>mbv2.inm</code></td></tr>
+<tr><td><code>apps/test/ipro_npu_yolo/src/</code></td><td><code>person_pet_detect.inm</code></td></tr>
+<tr><td><code>apps/test/ipro_tflm_test/src/</code></td><td><code>hello_world.tflite</code>, <code>person_detect.tflite</code>, <code>micro_speech.tflite</code>, <code>keyword_scrambled.tflite</code></td></tr>
+<tr><td><code>apps/test/ipro_tflm_yolo/src/</code></td><td><code>yolov8_person_pet.tflite</code></td></tr>
+</tbody></table></div>
+            <p>Speaker recognition source is in <code>apps/ai/ipro_meeting_poc/</code>; its model is <code>mbv2.inm</code> in the platform model directory above. Check the selected configuration's model-loading mode before flashing.</p>
         </section>
 
         <section id="reference-apps">
-            <div class="alert alert-info">V1.2.1 also includes <code>apps/platform/ipro7ai_evk_demo/</code> with separate <code>config_ai</code>, <code>config_bt</code> and <code>config_video</code> configurations. AI inference requires compatible models supplied separately.</div>
             <h2>Reference Applications</h2>
-
-            <h3>ipro7_demo — AI Inference Demo (Included in Release SDK)</h3>
-            <p>Located at <code>apps/platform/ipro7_demo/</code> and included in Release SDK v1.2.1. Its <code>demo/ai/</code> subdirectory demonstrates the complete model loading and inference flow:</p>
-            <ul>
-                <li>Loads <code>.blai</code> models from SD card <code>/sdcard/ai_model/</code>, covering person, person+pet, pet, and face detection</li>
-                <li>Driven by shell commands: <code>ai_test</code> (load model and run inference on a test image), <code>ai_inference</code> (run inference), <code>ai_status</code> (query status)</li>
-                <li>Shows YOLOv8 post-processing and detection result output — directly usable as an integration template for custom applications</li>
-            </ul>
-
-            <h3>Low-Power PIR-Triggered AI Camera Design Pattern</h3>
-            <p>An on-device AI camera design pattern validated on the SDK, integrating a PIR sensor, ISP, NPU inference, and USB UVC output:</p>
-            <ul>
-                <li>PIR triggers wakeup → ISP captures a 640×360 ARGB frame → NPU inference → results reported to the host over SPI/USB</li>
-                <li>The YOLOv8 detection model is loaded once at boot and stays resident in PSRAM; it is retained across low-power sleep, so no reload is needed on wakeup</li>
-                <li>A command-mode variant also exists: an external host MCU initiates capture and inference requests over an SPI master/slave protocol — useful when IPRO7AI is embedded as a co-processor in a larger system</li>
-            </ul>
-            <div class="alert alert-info">
-                The complete turnkey AI camera reference design (including the low-power firmware and production configuration) is not included in Release SDK v1.2.1 — please contact the vendor to obtain it.
-            </div>
-        
-            <h3>NPU Embedding Video Streaming over Thread</h3>
-            <p>An autoencoder running on the NPU compresses a 640×320 RGB frame into a 400-byte embedding (a compression ratio above 1500:1) for UDP streaming over Thread (IEEE 802.15.4); the receiver decodes it back on its own NPU and presents the result as a UVC webcam — enabling video at roughly 2–3 fps over a 250 kbps low-power mesh network. See <a href="{{ '/en/matter-thread' | relative_url }}#npu-embedding-stream">Matter &amp; Thread: NPU Embedding Video Streaming</a> for the architecture and transport design.</p>
-            <div class="alert alert-info">
-                The embedding video streaming reference applications (<code>ipro_embed_*</code>) are not included in Release SDK v1.2.1 — contact the vendor to obtain them.
-            </div>
+            <div class="table-wrapper"><table><thead><tr><th>Path</th><th>Purpose</th></tr></thead><tbody>
+<tr><td><code>apps/ai/ipro_meeting_poc/</code></td><td>PDM + BLE + NPU speaker recognition</td></tr>
+<tr><td><code>apps/test/ipro_npu_yolo/</code></td><td>NPU YOLO</td></tr>
+<tr><td><code>apps/test/ipro_ai_bench/</code></td><td>NPU / CPU timing</td></tr>
+<tr><td><code>apps/test/ipro_tflm_test/</code></td><td>TensorFlow Lite Micro + NMSIS-NN</td></tr>
+<tr><td><code>apps/test/ipro_tflm_yolo/</code></td><td>CPU YOLO</td></tr>
+<tr><td><code>apps/test/ipro_nmsis_nn_test/</code></td><td>NMSIS-NN operator tests</td></tr>
+<tr><td><code>apps/test/ipro_tinymaix_demo/</code></td><td>TinyMaix</td></tr>
+<tr><td><code>apps/platform/ipro7_demo/</code></td><td>AI / ISP / peripherals</td></tr>
+<tr><td><code>apps/platform/ipro7ai_evk_demo/</code></td><td>IPRO7AI EVK: <code>config_ai</code> / <code>config_bt</code> / <code>config_video</code></td></tr>
+</tbody></table></div><pre><code class="language-bash">make -C apps/test/ipro_npu_yolo
+make -C apps/test/ipro_tflm_test
+make -C apps/ai/ipro_meeting_poc</code></pre>            <p>Use <code>DEFCONFIG=config_ai</code> to select the EVK AI configuration without overwriting <code>.config</code>. Verify its expected model path, board peripherals and PSRAM configuration.</p>
         </section>
 
         <section id="dev-guide">
-            <h2>Development Guide</h2>
-
-            <h3>Adding AI Inference to Your Application</h3>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Complete Inference Example</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">#include &lt;iproai_core.h&gt;
-#include &lt;iproai_def.h&gt;
-#include "hal_npu.h"
-#include "detect/yolov8_person_pet_detect.h"
-
-static iproai_model_hdl_t g_hdl = NULL;
-
-int my_ai_init(const uint8_t *model_data)
-{
-    /* Step 1: Enable NPU clock */
-    GLB_PER_Clock_UnGate(GLB_AHB_CLOCK_MM);
-
-    /* Step 2: Create model instance */
-    g_hdl = iproai_create();
-    if (!g_hdl) return -1;
-
-    /* Step 3: Load model */
-    IPROAI_Status_e status = iproai_load_model_from_buffer(g_hdl, model_data);
-    if (status != IPROAI_STATUS_NO_ERROR) return -2;
-
-    return 0;
-}
-
-int my_ai_inference(uint32_t image_addr)
-{
-    /* Step 4: Set external image address (NPU reads directly) */
-    NPU_Img_Ext_Addr_Cfg(image_addr);
-
-    /* Step 5: Run inference */
-    IPROAI_Status_e status = iproai_startCompute(g_hdl);
-    if (status != IPROAI_STATUS_NO_ERROR) return -1;
-
-    /* Step 6: Post-processing */
-    struct iproai_net_info_t *net = iproai_getNetInfo(g_hdl);
-    uint8_t *data_buf = iproai_getInputBuffer(g_hdl);
-
-    yolov8_config_t yolo_cfg;
-    yolov8_result_t result;
-
-    yolov8_person_pet_init(&amp;yolo_cfg, net);
-    yolov8_person_pet_process(&amp;yolo_cfg, net, data_buf, &amp;result);
-    yolov8_person_pet_print_results(&amp;result);
-    yolov8_person_pet_deinit(&amp;yolo_cfg);
-
-    return result.num_detections;
-}</code></pre>
-            </div>
-
-            <h3>External Buffer Continuous Inference</h3>
-            <p>For scenarios where ISP continuously outputs frames. Uses a FreeRTOS Queue to push image addresses to the inference task:</p>
-
-            <h3>Memory Considerations</h3>
-            <ul>
-                <li><strong>PSRAM is required</strong>: <code>CONFIG_AI_SUPPORT</code> automatically enables <code>CONFIG_USE_PSRAM</code>. Model weights and intermediate results are stored in the 8 MB PSRAM.</li>
-                <li><strong>Model size</strong>: Typical YOLOv8 models are 200 KB - 2 MB in .blai format</li>
-                <li><strong>Inference buffers</strong>: Inference requires additional intermediate buffers (automatically managed). Ensure sufficient heap space is available.</li>
-                <li><strong>Activation memory budget</strong>: The NPU activation buffer is roughly "input pixels × 64 bytes", capped by the 8 MB PSRAM. Estimate the activation footprint before increasing input resolution.</li>
-                <li><strong>Sleep retention</strong>: PSRAM retains its contents during low-power sleep, so the model does not need to be reloaded after wakeup.</li>
-            </ul>
+<h2>Integration and Memory Planning</h2>
+<p>For native model integration, start with <code>person_pet_detect.inm</code> and <code>model_inm.S</code> in <code>apps/test/ipro_npu_yolo/</code>. For file-based loading, see <code>apps/platform/ipro7_demo/demo/ai/</code>. Preserve the example’s clock, PSRAM, image format and post-processing configuration.</p><p>Check results from <code>iproai_create()</code>, <code>iproai_load_model_from_buffer()</code> and <code>iproai_startCompute()</code>. Release allocated models and application buffers on failure. Keep external image buffers valid until inference completes and follow the example’s format and cache synchronization requirements.</p><p>Budget for weights, intermediate tensors, input images, post-processing and other tasks. Measure free heap before/after loading and during repeated inference; a fixed bytes-per-pixel formula is not valid for all models. Reusing a model after sleep also requires verifying PSRAM retention and NPU restoration for that mode.</p>
         </section>
 
         <section id="performance">
-            <h2>Performance & Optimization</h2>
-
-            <h3>Performance Reference</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Metric</th>
-                        <th>Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>NPU Peak Performance</td>
-                        <td>0.1 TOPS (INT8)</td>
-                    </tr>
-                    <tr>
-                        <td>Quantization Precision</td>
-                        <td>INT8 (per-channel)</td>
-                    </tr>
-                    <tr>
-                        <td>Input Format</td>
-                        <td>640x360 RGB888 / ARGB</td>
-                    </tr>
-                    <tr>
-                        <td>YOLOv8 Detection Thresholds</td>
-                        <td>Confidence: 0.25, IoU: 0.45</td>
-                    </tr>
-                    <tr>
-                        <td>Max Detections</td>
-                        <td>50 (after NMS)</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>Optimization Tips</h3>
-            <ul>
-                <li><strong>Use NPU-accelerated layers</strong>: Ensure Conv / Pool / FC layers run on NPU to avoid unnecessary CPU fallback</li>
-                <li><strong>Reduce model size</strong>: Use smaller input resolution, fewer channels, or prune unnecessary classes</li>
-                <li><strong>Enable PSRAM sleep retention</strong>: Avoid reloading the model after every wakeup cycle</li>
-                <li><strong>Use External Buffer mode</strong>: Use <code>NPU_Img_Ext_Addr_Cfg()</code> to let NPU read ISP output directly, reducing memory copies</li>
-                <li><strong>Pre-allocate memory pools</strong>: YOLOv8 post-processing uses <code>mem_pool</code> for pre-allocated buffers to avoid dynamic allocation during inference</li>
-                <li><strong>Review profiling output</strong>: Per-layer execution time (per-layer profiling) is printed by default; set <code>CONFIG_AI_DEBUG=y</code> to additionally view operator execution details and per-layer instructions</li>
-            </ul>
-
-            <h3>Debugging</h3>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Enable AI Debugging</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash"># Enable in .config
-CONFIG_AI_DEBUG=y
-
-# This enables the following debug information:
-# - IPROAI_NPU_OPS_DEBUG: NPU operator execution details
-# - IPROAI_SHOW_INST: Display per-layer instructions
-#
-# Per-layer execution time (IPROAI_PROFILING_EACH_LAYER) is controlled by
-# IPROAI_PROFILING, which is enabled by default — no CONFIG_AI_DEBUG needed</code></pre>
-            </div>
+<h2>Performance Measurement and Debugging</h2>
+<p>Use <code>apps/test/ipro_ai_bench/</code>, <code>ipro_npu_yolo</code> or the TFLite test examples. Record the model file, input dimensions, CPU clock, build configuration, heap use and repeated inference timings. Measure preprocessing, inference and post-processing separately; per-layer timings do not represent end-to-end latency.</p><p>Detection thresholds, NMS limits and input format are model/example settings, not fixed NPU specifications. After changing resolution or models, recheck output correctness, peak memory use and sustained operation.</p><p>This release links prebuilt <code>libai.a</code>. Application <code>.config</code> settings cannot rebuild profiling or debug features inside that archive. Use the output available in the example and obtain a matching diagnostic library when additional detail is needed.</p>
         </section>
 
         <section id="cloud-llm">
-            <h2>Cloud LLM Agent</h2>
-            <div class="alert alert-warning">
-                <strong>&#9888; Release SDK Notice:</strong> The <code>ai_client</code> component is not included in Release SDK v1.2.1; this section is a capability showcase. Please contact the vendor to obtain this component.
-            </div>
-            <p>In addition to on-device NPU inference, IPRO SDK ships a full cloud LLM agent framework in <code>components/ai_client/</code>. It wraps multiple providers behind a unified interface, includes a built-in ReAct tool-calling loop, and runs directly on IPRO7AI — letting you combine BLE and sensor data with conversational LLM agents in IoT products. Note that IPRO7AI itself has no Wi-Fi: network connectivity can be provided through the built-in Ethernet (RMII EMAC), or via the IPRO6 companion chip (SDIO Wi-Fi expansion, available separately), with HTTPS traffic sent via lwIP + mbedTLS.</p>
-
-            <h3>Supported Providers</h3>
-            <p>Each provider is implemented as an <code>ai_provider_t</code> handling request building, HTTP transport, and streaming response parsing. Application code only picks a provider and supplies an API key.</p>
-            <ul>
-                <li><strong>Anthropic Claude</strong> — <code>ai_provider_claude</code> (<code>ai_claude.h</code>)</li>
-                <li><strong>OpenAI</strong> — <code>ai_provider_openai</code> (<code>ai_openai.h</code>)</li>
-                <li><strong>Google Gemini</strong> — <code>ai_provider_gemini</code> (<code>ai_gemini.h</code>)</li>
-                <li><strong>MiniMax</strong> — <code>ai_provider_minimax</code> (<code>ai_minimax.h</code>)</li>
-            </ul>
-
-            <h3>ReAct Loop &amp; Tool Calls</h3>
-            <p><code>ai_agent_process()</code> drives the full reason-act-observe loop: model returns a tool_call → SDK invokes <code>ai_tool_dispatch_fn</code> → result is appended to history → model is re-invoked, until <code>AI_CLIENT_MAX_TOOL_DEPTH</code> (default 5) is reached or a final text reply is produced. Tool schemas are supplied via three format fields (Anthropic <code>tools_json</code> / OpenAI <code>tools_json_openai</code> / Gemini <code>tools_json_gemini</code>); MiniMax reuses the OpenAI format:</p>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">Minimal integration</span>
-                    <button type="button" class="code-copy-btn" aria-label="Copy code"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-c">#include "ai_agent.h"
-#include "ai_claude.h"
-
-static int my_tool_dispatch(const char *name, const char *input,
-                            char *output, uint32_t size)
-{
-    if (strcmp(name, "read_temperature") == 0) {
-        snprintf(output, size, "{\"temp_c\":%.1f}", sensor_read_temp());
-        return 0;
-    }
-    return -1;
-}
-
-void ask_ai(const char *user_text)
-{
-    ai_agent_ctx_t ctx = {
-        .provider      = &amp;ai_provider_claude,
-        .api_key       = CONFIG_CLAUDE_API_KEY,
-        .model         = "claude-sonnet-4-5",
-        .system_prompt = "You are an embedded assistant.",
-        .user_text     = user_text,
-        .tools_json    = TOOLS_SCHEMA_ANTHROPIC,
-        .tools_count   = 1,
-        .tool_dispatch = my_tool_dispatch,
-    };
-
-    char reply[1024];
-    if (ai_agent_process(&amp;ctx, reply, sizeof(reply)) == 0) {
-        printf("AI: %s\n", reply);
-    }
-}</code></pre>
-            </div>
-            <p>A streaming variant, <code>ai_agent_process_streaming()</code>, is also available: the reply is delivered sentence-by-sentence through a callback, and the <code>on_preflight</code> callback exposes intermediate text before tool execution. It automatically falls back to the synchronous <code>ai_agent_process()</code> if the provider lacks streaming support.</p>
-
-            <h3>Enabling the Component</h3>
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">.config</span>
-                    <button type="button" class="code-copy-btn" aria-label="Copy code"><i class="fas fa-copy"></i></button>
-                </div>
-                <pre><code class="language-bash">CONFIG_AI_CLIENT_ENABLE=y
-CONFIG_AI_CLIENT_MAX_TOOL_DEPTH=5
-CONFIG_AI_CLIENT_REQ_BUF_SIZE=16384
-CONFIG_AI_CLIENT_RESPONSE_MAX=32768
-# Dependencies: network connectivity (Ethernet RMII, or Wi-Fi via IPRO6 companion),
-#               json_utils, net_utils, mbedTLS (HTTPS)</code></pre>
-            </div>
-            <p>Call <code>ai_agent_init()</code> once to create the serialization mutex; <code>ai_agent_process()</code> can then be called safely from multiple tasks.</p>
-
-            <h3>Reference Applications</h3>
-            <p>The SDK team has validated several cloud LLM agent integration scenarios, including a gateway application that fuses BLE PAwR sensor data with LLM tool calling (a complete BLE controller + lwIP + LLM agent + sensor fusion pipeline), and service architectures that embed an LLM agent in a long-running IoT service while avoiding TLS contention between tasks. These reference applications are not included in Release SDK v1.2.1 — please contact the vendor to obtain them.</p>
-
-            <h3>NPU vs. Cloud AI Trade-offs</h3>
-            <table class="api-table">
-                <thead>
-                    <tr><th>Aspect</th><th>On-device NPU (IPROAI)</th><th>Cloud LLM (ai_client)</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td>Typical task</td><td>Image/audio classification, object detection</td><td>Conversation, reasoning, tool orchestration</td></tr>
-                    <tr><td>Network</td><td>None</td><td>Requires network connectivity (Ethernet, or Wi-Fi via IPRO6 companion) + HTTPS</td></tr>
-                    <tr><td>Latency</td><td>Tens of ms</td><td>Hundreds of ms to seconds</td></tr>
-                    <tr><td>Memory</td><td>PSRAM (model + intermediates)</td><td>~50 KB request/response buffers</td></tr>
-                    <tr><td>Low power</td><td>PSRAM-retained sleep supported</td><td>Must keep network link alive</td></tr>
-                    <tr><td>Privacy</td><td>Data stays on device</td><td>Sent to third-party provider</td></tr>
-                </tbody>
-            </table>
+            <h2>Cloud AI Availability</h2>
+            <p><code>components/ai_client/</code> and cloud-agent reference applications are not included in V2.0.1. Contact INTELPRO for availability. For released on-device inference, use the NPU and TFLM examples above. Network clients can build on the bundled lwIP and mbedTLS components.</p>
         </section>
     </article>
 </div>

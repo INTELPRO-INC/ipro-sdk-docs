@@ -84,8 +84,8 @@ CONFIG_IPRO7=y                          # Boolean: enabled
 CONFIG_CPU_ID="intelpro_ipro7"          # String value
 CONFIG_FREERTOS_SUPPORT=y               # RTOS selection
 CONFIG_BLUETOOTH_LE_ENABLE=y            # BLE enable
-# CONFIG_LWIP is not set                # Boolean: disabled</code></pre>
-                    <p>After modifying <code>.config</code>, rebuild is required. Common CONFIG variables include SoC selection (<code>CONFIG_IPRO7</code>), RTOS (<code>CONFIG_FREERTOS_SUPPORT</code>), and component enables (<code>CONFIG_BLUETOOTH_LE_ENABLE</code>, <code>CONFIG_LWIP</code>, <code>CONFIG_MBEDTLS</code>, etc.).</p>
+# CONFIG_COMPONENTS_LWIP_ENABLE is not set                # Boolean: disabled</code></pre>
+                    <p>After modifying <code>.config</code>, rebuild is required. Common CONFIG variables include SoC selection (<code>CONFIG_IPRO7</code>), RTOS (<code>CONFIG_FREERTOS_SUPPORT</code>), and component enables (<code>CONFIG_BLUETOOTH_LE_ENABLE</code>, <code>CONFIG_COMPONENTS_LWIP_ENABLE</code>, <code>CONFIG_COMPONENTS_MBEDTLS_ENABLE</code>, etc.).</p>
                 </div>
             </div>
 
@@ -188,7 +188,7 @@ riscv64-unknown-elf-nm --size-sort apps/bluetooth/ble/ipro_ble_remote/build/buil
                 </tbody>
                 </table>
             </div>
-            <p>Choose <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code> for basic BLE or <code>"bt54_iso2"</code> for BLE 5.4 with two ISO streams (CIS/BIS). The latter requires <code>CONFIG_EM_SIZE</code> of at least 32 KB. Set <code>CONFIG_BT_CONN</code> to the selected ACL connection count.</p>
+            <p>Choose <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code> for basic BLE or <code>"bt54_iso2"</code> for BLE 5.4 with two ISO streams (CIS/BIS). The latter requires <code>CONFIG_EM_SIZE</code> of at least 32 KB. Keep the host connection limit within controller capacity; preserve the shipped PDM <code>link2</code> / <code>CONFIG_BT_CONN=1</code> configuration.</p>
                     <p>Select the variant via <code>CONFIG_IPRO_BLE_CTLR_LIB</code> in your application's <code>.config</code>:</p>
                     <pre><code class="language-bash"># Select Controller variant
 CONFIG_BT_CTLR_IPRO=y
@@ -198,7 +198,7 @@ CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"
 CONFIG_IPRO_BLE_CTLR_CFG_DBG=n
 CONFIG_BT_CONN=1
 CONFIG_EM_SIZE=32</code></pre>
-                    <p>V1.2.1 defaults: Remote uses <code>link1_periph / bt52</code>; Transparent and HID Keyboard use <code>link1 / bt52</code>; Throughput Test uses <code>link2 / bt52</code>; Headset uses <code>link1_periph / bt54_iso2</code>. Only <code>link1</code>, <code>link2</code> and <code>link4</code> support both Central and Peripheral roles.</p>
+                    <p>V2.0.1 defaults: Remote uses <code>link1_periph / bt52</code>; Transparent and HID Keyboard use <code>link1 / bt52</code>; Throughput Test uses <code>link2 / bt52</code>; Headset uses <code>link1_periph / bt54_iso2</code>. PDM uses <code>link2 / bt52</code> with <code>CONFIG_BT_CONN=1</code>. Only <code>link1</code>, <code>link2</code> and <code>link4</code> support both Central and Peripheral roles.</p>
                 </div>
             </div>
 
@@ -265,7 +265,7 @@ static const struct bt_data ad[] = {
     BT_DATA_BYTES(BT_DATA_NAME_COMPLETE, 'I','P','R','O'),
 };
 
-bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad),
+bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ad, ARRAY_SIZE(ad),
                 NULL, 0);</code></pre>
                 </div>
             </div>
@@ -298,13 +298,9 @@ BT_CODEC_LC3_CONFIG_48_4(loc, stream_context)</code></pre>
                     <h3>BLE pairing (bonding) information is not persisted, or the Controller fails to link?</h3>
                     <i class="fas fa-chevron-down"></i>
                 </div>
-                <div class="faq-answer">
-                    <p>BLE applications need NVDS (Non-Volatile Data Storage) enabled to persist pairing keys and other data to flash. Configure in <code>.config</code>:</p>
-                    <pre><code class="language-bash"># Enable NVDS storage
-CONFIG_ENABLE_NVDS=y
-CONFIG_CFG_NVDS=y</code></pre>
-                    <p>Note: if NVDS is not enabled in a BLE application, the link stage fails due to missing NVDS-related symbols. The shipped BLE examples (e.g., <code>ipro_ble_remote</code>) already enable it by default.</p>
-                </div>
+                <div class="faq-answer"><p>Bluetooth Host bonding keys are persisted through the Settings backend. NVDS stores controller configuration and does not by itself persist host bonds. Follow the PDM or headset example:</p><pre><code class="language-ini">CONFIG_BT_SMP=y
+CONFIG_BT_SETTINGS=y
+CONFIG_EASYFLASH4=y</code></pre><p>After <code>bt_enable()</code> completes, call <code>settings_load_subtree("bt")</code> and check its result before advertising. Retain the example’s flash partition and storage initialization. If reflashing erases the store, remove the old bond on the peer and pair again.</p></div>
             </div>
 
             <div class="faq-item" data-category="ble">
@@ -349,11 +345,9 @@ CONFIG_CFG_NVDS=y</code></pre>
                         <li><code>/dev/cu.*</code> (Calling Unit) - <strong>You must use this device</strong>. Does not wait for DCD signal, opens immediately.</li>
                         <li><code>/dev/tty.*</code> (Teletype) - Waits for DCD signal, causing the program to hang.</li>
                     </ul>
-                    <pre><code class="language-bash"># Correct
-python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX
-
-# Wrong (will hang)
-python3 tools/serial_monitor.py /dev/tty.usbserial-XXXX</code></pre>
+                    <pre><code class="language-bash"># Install separately; select the port and baud rate for your firmware
+python3 -m pip install pyserial
+python3 -m serial.tools.miniterm /dev/cu.usbserial-XXXX 115200</code></pre>
                 </div>
             </div>
 
@@ -368,9 +362,9 @@ python3 tools/serial_monitor.py /dev/tty.usbserial-XXXX</code></pre>
                     <ol>
                         <li>Check and close programs using the port: <code>lsof /dev/cu.usbserial-XXXX</code> (the serial port name depends on your device)</li>
                         <li>Avoid using <code>stty -f</code>, which keeps the port busy</li>
-                        <li>Use <code>tools/serial_monitor.py</code> instead of <code>cat</code> or <code>screen</code></li>
+                        <li>Use one external serial terminal at a time, or the extension monitor</li>
                     </ol>
-                    <p><code>serial_monitor.py</code> uses Python3 termios with <code>O_NOCTTY | O_NONBLOCK</code> flags, requiring no pyserial dependency.</p>
+                    <p>The old monitor helper is not bundled in V2.0.1. Stop the active monitor before flashing or opening another terminal.</p>
                 </div>
             </div>
 
@@ -387,7 +381,7 @@ python3 tools/serial_monitor.py /dev/tty.usbserial-XXXX</code></pre>
 CONFIG_LOG_DEFAULT_LEVEL_DEBUG=y
 
 # Enable verbose BLE Host logs
-CONFIG_BT_DEBUG_LOG=y</code></pre>
+CONFIG_BT_DEBUG=y</code></pre>
                 </div>
             </div>
 

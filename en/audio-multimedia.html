@@ -4,11 +4,13 @@ title: Audio & Multimedia
 lang: en
 ---
 
-<div class="doc-layout">
+            <div class="doc-layout">
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">Table of Contents</h4>
             <ul class="sidebar-links">
+                <li><a href="#pdm-recording" class="sidebar-link">PDM Recording in V2.0.1</a></li>
+
                 <li><a href="#overview" class="sidebar-link">Overview</a></li>
                 <li><a href="#le-audio-pipeline" class="sidebar-link">LE Audio Pipeline</a></li>
                 <li><a href="#unicast-audio" class="sidebar-link">Unicast Audio (CIS)</a></li>
@@ -168,13 +170,13 @@ bsp/hal/inc/
                     <tr><td>Bitrate</td><td>16 - 320 kbps (LE Audio commonly 16-124 kbps per channel)</td></tr>
                     <tr><td>Sample Rate</td><td>8 / 16 / 24 / 32 / 48 kHz</td></tr>
                     <tr><td>Channels</td><td>Mono, Stereo</td></tr>
-                    <tr><td>Latency</td><td>&lt; 20ms end-to-end</td></tr>
+                    <tr><td>Latency</td><td>Measure with stream settings and buffers end-to-end</td></tr>
                     <tr><td>Transport</td><td>CIS (Unicast), BIS (Broadcast)</td></tr>
                 </tbody>
             </table>
         </section>
 
-        <section id="unicast-audio">
+        <section id="unicast-audio"><p>The initializer below is taken from this release’s <code>bap_server.c</code>. Its capabilities and callbacks are defined in that file; use it within the complete headset project.</p>
             <h2>Unicast Audio (CIS)</h2>
             <p>Connected Isochronous Stream (CIS) provides point-to-point bidirectional audio transport, suitable for headsets, hearing aids, and other scenarios requiring a stable connection.</p>
 
@@ -244,38 +246,73 @@ bsp/hal/inc/
                     <span class="code-block-title">BAP Server Init (apps/bluetooth/le_audio/ipro_le_audio_headset/src/bap_server.c)</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">/* Register BAP Unicast Server callbacks */
-static const struct bt_bap_unicast_server_cb unicast_server_cb = {
-    .config = bap_server_config,
-    .reconfig = bap_server_reconfig,
-    .qos = bap_server_qos,
-    .enable = bap_server_enable,
-    .start = bap_server_start,
-    .metadata = bap_server_metadata,
-    .disable = bap_server_disable,
-    .stop = bap_server_stop,
-    .release = bap_server_release,
-};
-
-int bap_server_init(void)
+                <pre><code class="language-c">int bap_server_init(void)
 {
-    /* Initialize PACS service (must precede ASCS) */
-    bt_pacs_init();
+	int err;
+	struct bt_pacs_register_param pacs_param = {
+#if defined(CONFIG_BT_PAC_SNK)
+		.snk_pac = true,
+#endif
+#if defined(CONFIG_BT_PAC_SNK_LOC)
+		.snk_loc = true,
+#endif
+	};
+	struct bt_bap_unicast_server_register_param server_param = {
+		.snk_cnt = CONFIG_BT_ASCS_MAX_ASE_SNK_COUNT,
+		.src_cnt = CONFIG_BT_ASCS_MAX_ASE_SRC_COUNT,
+	};
 
-    /* Register LC3 sink audio capability */
-    bt_pacs_cap_register(BT_AUDIO_DIR_SINK, &amp;lc3_sink_cap);
+	IPRO_LOGI(LOG_TAG, &quot;Initializing BAP Unicast Server&quot;);
 
-    /* Set audio location and audio contexts */
-    bt_pacs_set_location(BT_AUDIO_DIR_SINK, BT_AUDIO_LOCATION_FRONT_LEFT);
-    bt_pacs_set_supported_contexts(BT_AUDIO_DIR_SINK,
-                                   BT_AUDIO_CONTEXT_TYPE_MEDIA |
-                                   BT_AUDIO_CONTEXT_TYPE_CONVERSATIONAL |
-                                   BT_AUDIO_CONTEXT_TYPE_UNSPECIFIED);
+	/* 1. Register PACS service (must be done before publishing caps) */
+	err = bt_pacs_register(&amp;pacs_param);
+	if (err != 0 &amp;&amp; err != -EALREADY) {
+		IPRO_LOGE(LOG_TAG, &quot;Failed to register PACS (err %d)&quot;, err);
+		return err;
+	}
+	IPRO_LOGI(LOG_TAG, &quot;PACS service registered&quot;);
 
-    /* Register Unicast Server callbacks with ASCS */
-    bt_bap_unicast_server_register_cb(&amp;unicast_server_cb);
+	/* 2. Register LC3 sink codec capability with PACS */
+	err = bt_pacs_cap_register(BT_AUDIO_DIR_SINK, &amp;lc3_sink_cap);
+	if (err != 0) {
+		IPRO_LOGE(LOG_TAG, &quot;Failed to register sink cap (err %d)&quot;, err);
+		return err;
+	}
+	IPRO_LOGI(LOG_TAG, &quot;LC3 sink capability registered&quot;);
 
-    return 0;
+	/* 3. Set audio location (mono front left for single headset) */
+	err = bt_pacs_set_location(BT_AUDIO_DIR_SINK, BT_AUDIO_LOCATION_FRONT_LEFT);
+	if (err != 0) {
+		IPRO_LOGE(LOG_TAG, &quot;Failed to set sink location (err %d)&quot;, err);
+		return err;
+	}
+
+	/* 4. Set supported and available audio contexts */
+	bt_pacs_set_supported_contexts(BT_AUDIO_DIR_SINK,
+				       BT_AUDIO_CONTEXT_TYPE_MEDIA |
+				       BT_AUDIO_CONTEXT_TYPE_CONVERSATIONAL |
+				       BT_AUDIO_CONTEXT_TYPE_UNSPECIFIED);
+
+	bt_pacs_set_available_contexts(BT_AUDIO_DIR_SINK,
+				       BT_AUDIO_CONTEXT_TYPE_MEDIA |
+				       BT_AUDIO_CONTEXT_TYPE_CONVERSATIONAL |
+				       BT_AUDIO_CONTEXT_TYPE_UNSPECIFIED);
+
+	/* 5. Register ASCS ASE instances, then BAP callbacks. */
+	err = bt_bap_unicast_server_register(&amp;server_param);
+	if (err != 0 &amp;&amp; err != -EALREADY) {
+		IPRO_LOGE(LOG_TAG, &quot;Failed to register ASCS (err %d)&quot;, err);
+		return err;
+	}
+
+	err = bt_bap_unicast_server_register_cb(&amp;unicast_server_cb);
+	if (err != 0) {
+		IPRO_LOGE(LOG_TAG, &quot;Failed to register BAP callbacks (err %d)&quot;, err);
+		return err;
+	}
+
+	IPRO_LOGI(LOG_TAG, &quot;BAP Unicast Server initialized successfully&quot;);
+	return 0;
 }</code></pre>
             </div>
         </section>
@@ -283,7 +320,7 @@ int bap_server_init(void)
         <section id="broadcast-audio">
             <h2>Broadcast Audio (BIS)</h2>
             <p>The Zephyr 4.4 host provides <code>bt_bap_broadcast_source_*</code> and <code>bt_bap_broadcast_sink_*</code> APIs in <code>zephyr/bluetooth/audio/bap.h</code>. Use the <code>bt54_iso2</code> controller profile and enable the required BAP role in your application configuration.</p>
-            <div class="alert alert-info">Standalone BIS source/sink reference applications are not bundled with V1.2.1; contact INTELPRO for complete examples. The bundled headset is the unicast reference.</div>
+            <div class="alert alert-info">Standalone BIS source/sink reference applications are not bundled with V2.0.1; contact INTELPRO for complete examples. The bundled headset is the unicast reference.</div>
         </section>
 
         <section id="audio-profiles">
@@ -363,7 +400,7 @@ int bap_server_init(void)
             </ul>
 
             <div class="alert alert-info">
-                <strong>Opus:</strong> The package includes <code>components/3rdparty/opus</code> for application audio codecs. LE Audio ISO streams use LC3; the earlier voice-assistant example is not included in V1.2.1.
+                <strong>Opus:</strong> The package includes <code>components/3rdparty/opus</code> for application audio codecs. LE Audio ISO streams use LC3; the earlier voice-assistant example is not included in V2.0.1.
             </div>
         </section>
 
@@ -541,7 +578,7 @@ bsp/hal/inc/
 └── stream_control.c        # Stream control</code></pre>
             </div>
 
-            <p>For BLE image transfer, refer to <code>apps/bluetooth/ble/ipro_ble_remote/</code>. The separate image-capture application is not bundled with V1.2.1.</p>
+            <p>For BLE image transfer, refer to <code>apps/bluetooth/ble/ipro_ble_remote/</code>. The separate image-capture application is not bundled with V2.0.1.</p>
         </section>
 
         <section id="audio-hardware">
@@ -660,8 +697,15 @@ audio_output_destroy(out);</code></pre>
                 </tbody>
                 </table>
             </div>
-            <p>Choose <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code> for basic BLE or <code>"bt54_iso2"</code> for BLE 5.4 with two ISO streams (CIS/BIS). The latter requires <code>CONFIG_EM_SIZE</code> of at least 32 KB. Set <code>CONFIG_BT_CONN</code> to the selected ACL connection count.</p>
-            <div class="alert alert-info">Standalone BIS source/sink, cloud audio gateway and voice-assistant applications from earlier releases are not included in V1.2.1.</div>
+            <p>Choose <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code> for basic BLE or <code>"bt54_iso2"</code> for BLE 5.4 with two ISO streams (CIS/BIS). The latter requires <code>CONFIG_EM_SIZE</code> of at least 32 KB. Keep the host connection limit within controller capacity; preserve each shipped application configuration.</p>
+            <div class="alert alert-info">Standalone BIS source/sink, cloud audio gateway and voice-assistant applications from earlier releases are not included in V2.0.1.</div>
         </section>
+        <section id="pdm-recording">
+            <h2>PDM Recording in V2.0.1</h2>
+            <p>PDM capture at 16 kHz / 16-bit mono, optional LC3 streaming, persistent SMP bonding and PDS31 reconnect. V2.0.1 adds logical recordings up to 4 hours. The physical PSRAM ring retains 240 seconds; retrieve each 30-second segment using <code>CHUNK_READY</code> / <code>GET_CHUNK</code>. <code>GET_AUDIO</code> returns only the last 240 seconds after wrap.</p>
+            <p>Use the shipped <code>link2 / bt52</code>, 16 KB EM configuration. <code>CONFIG_BT_CONN=1</code> remains the host limit; the controller archive has two-link capacity. Copy the complete board configuration instead of forcing these two values to match.</p><pre><code class="language-bash">make -C apps/multimedia/ipro_pdm_mic_demo
+make -C apps/multimedia/ipro_pdm_mic_demo BOARD=evk</code></pre>            <p>EVB output uses <code>build/build_out/</code>; EVK output uses <code>build_config_evk/build_out/</code>. Both produce <code>ipro_pdm_mic_demo_IPRO7.bin</code>. Android source: <code>tools/android/IproMicDemo/</code>; matching APK and test firmware: <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1 Release</a>.</p>
+        </section>
+
     </article>
 </div>

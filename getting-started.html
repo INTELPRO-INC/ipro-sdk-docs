@@ -3,11 +3,13 @@ layout: default
 title: 快速開始
 ---
 
-<div class="doc-layout">
+            <div class="doc-layout">
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">本頁目錄</h4>
             <ul class="sidebar-links">
+                <li><a href="#sdk-2-0-1" class="sidebar-link">SDK V2.0.1</a></li>
+
                 <li><a href="#prerequisites" class="sidebar-link">系統需求</a></li>
                 <li><a href="#installation" class="sidebar-link">安裝設置</a></li>
                 <li><a href="#directory-structure" class="sidebar-link">SDK 目錄結構</a></li>
@@ -29,10 +31,16 @@ title: 快速開始
         <p>本指南將帶您完成 IPRO SDK Release 套件的安裝設置，並建構您的第一個應用程式。</p>
 
         <div class="alert alert-info">
-            <strong><i class="fas fa-info-circle"></i> Release SDK 說明：</strong>此為 Release 版本的 SDK 套件，部分開發工具（燒錄工具、板級測試腳本、VS Code 擴充套件）未包含在內。如需完整開發工具，請聯繫 IntelPro 取得。
+            <strong><i class="fas fa-info-circle"></i> Release SDK 說明：</strong>原始碼包未附燒錄工具、板級測試腳本或 VS Code 擴充套件。Windows 工具可參考<a href="{{ '/windows-installation' | relative_url }}">安裝與更新</a>章節，依元件版本另行安裝。
         </div>
 
-        <div class="alert alert-info"><strong>Windows 完整安裝包：</strong>首次 Windows 開發可使用 Installer 3.3.0，一次取得 SDK V1.2.1、Extension 3.3.0、GCC、CMake、Ninja、Python、IntelProCube 與隨附 OpenOCD。下方「未隨附」說明是指 SDK 獨立原始碼交付包。 <a href="{{ '/windows-installation' | relative_url }}">安裝與獨立更新步驟</a> · <a href="{{ '/vscode-extension' | relative_url }}">Extension 操作指南</a></div>
+        <div class="alert alert-info"><p>Online Installer 3.4.0 依元件清單下載；固定版 3.3.0 安裝包內含 SDK 1.2.1。截至 2026-09-10，元件清單亦仍選用 SDK 1.2.1。V2.0.1 請由正式 Release 下載，並明確切換至解壓後的新目錄。<a href="{{ '/windows-installation' | relative_url }}">安裝與版本選擇</a></p></div>
+
+        <section id="sdk-2-0-1">
+            <h2>SDK V2.0.1</h2>
+            <p>下載 <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">IPRO-SDK-V2.0.1</a>（2026-09-09）：提供原始碼、Android 麥克風示範 APK 與配套測試韌體。原始碼套件含 31 個應用配置；請以各範例隨附的板型設定建置。</p>
+            <p>將 <code>IPRO-SDK-V2.0.1.tar.gz</code> 解壓至新目錄並核對 <code>VERSION.txt</code>。工具鏈需另行取得；本版 README 指定 GCC 14。套件清單中的 Windows GCC 13.1.1 相容宣告對應 SDK 1.2.1，不能直接視為 2.0.1 的相容保證。</p>
+        </section>
 
         <section id="prerequisites">
             <h2>系統需求</h2>
@@ -97,7 +105,7 @@ python3 --version</code></pre>
                 </div>
                 <pre><code class="language-bash"># 解壓縮 Release SDK 套件
 # 進入已解壓縮的交付包目錄
-cd IPRO-IPRO7-SDK-V1.2.1
+cd IPRO-SDK-V2.0.1
 cat VERSION.txt</code></pre>
             </div>
 
@@ -129,7 +137,7 @@ ls /opt/toolchain/riscv_ipro7/bin/
 
         <section id="directory-structure">
             <h2>SDK 目錄結構</h2>
-            <pre><code class="language-text">IPRO-IPRO7-SDK-V1.2.1/
+            <pre><code class="language-text">IPRO-SDK-V2.0.1/
 ├── apps/
 │   ├── bluetooth/ble/
 │   │   ├── ipro_ble_remote/
@@ -138,10 +146,14 @@ ls /opt/toolchain/riscv_ipro7/bin/
 │   │   └── ipro_throughput_test/
 │   ├── bluetooth/le_audio/ipro_le_audio_headset/
 │   ├── multimedia/ipro_pdm_mic_demo/
+│   ├── ai/ipro_meeting_poc/
 │   ├── platform/
 │   │   ├── ipro7_demo/
 │   │   ├── ipro7_sdio_wifi/
-│   │   └── ipro7ai_evk_demo/
+│   │   ├── ipro7ai_evk_demo/
+│   │   ├── ipro6_demo/
+│   │   ├── ipro6_if_wifi/
+│   │   └── ipro6_btdm_phyrf/
 │   └── test/
 ├── bsp/
 ├── components/
@@ -155,13 +167,12 @@ ls /opt/toolchain/riscv_ipro7/bin/
 ├── tools/
 │   ├── android/
 │   ├── script/
-│   └── serial_monitor.py
+│   └── cmake/
 ├── build_freertos.sh
 ├── project.build
 ├── CMakeLists.txt
 ├── Kconfig
-├── VERSION.txt
-└── PREBUILT-ARCHIVES-STRIPPED.txt</code></pre>
+└── VERSION.txt</code></pre>
         </section>
 
         <section id="freertos-quickstart">
@@ -316,21 +327,14 @@ CONFIG_MBEDTLS=y</code></pre>
         </section>
 
         <section id="serial-monitor">
-<p>Windows 使用 Extension 的 IPRO: Serial Monitor，可透過內建 serialport 直接監看；下方 Python 腳本用於 POSIX 命令列環境。</p>
             <h2>串口監控</h2>
-            <p><code>tools/serial_monitor.py</code> 已包含於 V1.2.1，使用 Python 標準函式庫的 <code>termios</code> 與 <code>fcntl</code>，適用於 Linux/macOS 等 POSIX 環境，無法直接在 Windows Python 執行。Windows 可使用串口終端工具或能存取串口裝置的環境。</p>
-            <pre><code class="language-bash">python3 tools/serial_monitor.py /dev/ttyUSB0 --baud 115200 --timeout 30
-# macOS
-python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 115200 --timeout 30</code></pre>
-            <p>請使用應用設定的鮑率；本版腳本接受 9600、19200、38400、57600、115200 與 230400 baud。</p>
+            <p>V2.0.1 未隨附 <code>tools/serial_monitor.py</code>。建置腳本仍引用該路徑，因此 <code>monitor</code>／<code>test</code> 動作需額外取得腳本。可使用 Extension 的 <code>IPRO: Serial Monitor</code> 或串口終端工具。</p>
+            <p>鮑率以所選應用及板型配置為準；macOS 使用 <code>/dev/cu.*</code>。燒錄前停止監看以釋放串口。</p>
         </section>
 
         <section id="board-testing">
             <h2>板級測試</h2>
-
-            <div class="alert alert-warning">
-                <strong><i class="fas fa-exclamation-triangle"></i> Release SDK 說明：</strong>自動化板級測試腳本 <code>board_test.sh</code> 未包含在此 Release SDK 套件中。如需板級測試工具，請聯繫 IntelPro 取得完整開發工具套件。
-            </div>
+            <p>SDK 已包含 <code>apps/test/ipro_unit_test/</code>，測試 HAL 與共用元件。建置後以另行取得的燒錄工具寫入對應板子，再由串口確認 <code>ALL TESTS PASSED</code> 或 <code>SOME TESTS FAILED</code>。</p><pre><code class="language-bash">make -C apps/test/ipro_unit_test</code></pre>            <p><code>tools/board_test.sh</code> 與 <code>tools/serial_monitor.py</code> 未隨附。建置 CLI 的 <code>test</code> 動作仍依賴外部燒錄／監看工具，單靠原始碼包無法完成自動上板測試。</p>
         </section>
 
         <section id="debugging">
@@ -355,7 +359,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 115200 --timeout 3
             </ul>
 
             <div class="alert alert-info">
-                <strong>提示：</strong>VS Code 擴充套件未包含在此 Release SDK 套件中。如需圖形化除錯支援，請聯繫 IntelPro 取得 VS Code 擴充套件。
+                <strong>提示：</strong>VS Code 擴充套件需另行安裝。請依<a href="{{ '/vscode-extension' | relative_url }}">Extension 指南</a>設定 SDK、工具鏈與除錯工具路徑。
             </div>
         </section>
 
@@ -364,8 +368,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 115200 --timeout 3
 
             <h3>macOS 串口問題（一般知識）</h3>
             <div class="alert alert-info">
-                <strong>注意：</strong>V1.2.1 已隨附 <code>tools/serial_monitor.py</code>；以下提示亦適用於外部串口工具。
-            </div>
+                <strong>注意：</strong> V2.0.1 未附監看腳本，請使用外部串口終端工具。</div>
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -433,7 +436,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 115200 --timeout 3
                         </tr>
                         <tr>
                             <td>CI 環境的 CMake 在 macOS 上無法使用</td>
-                            <td>V1.2.1 需另行安裝適合主機作業系統的 CMake 3.19+，並加入 PATH。</td>
+                            <td>V2.0.1 需另行安裝適合主機作業系統的 CMake 3.19+，並加入 PATH。</td>
                         </tr>
                     </tbody>
                 </table>

@@ -4,11 +4,13 @@ title: Networking
 lang: en
 ---
 
-<div class="doc-layout">
+            <div class="doc-layout">
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">Table of Contents</h4>
             <ul class="sidebar-links">
+                <li><a href="#ipro6s-wifi6" class="sidebar-link">IPRO6S Wi-Fi 6</a></li>
+
                 <li><a href="#overview" class="sidebar-link">Overview</a></li>
                 <li><a href="#architecture" class="sidebar-link">Network Architecture</a></li>
                 <li><a href="#network-config" class="sidebar-link">Network Configuration</a></li>
@@ -26,10 +28,10 @@ lang: en
         <h1>Networking</h1>
         <p>IPRO7 is the main application SoC in the system, handling application logic, NPU inference, and BLE connectivity. <strong>It does not include a Wi-Fi radio.</strong> The IPRO SDK integrates the lwIP TCP/IP stack and the mbedTLS cryptographic library, providing two paths to network connectivity:</p>
         <ul>
-            <li><strong>Ethernet (EMAC)</strong> — IPRO7 features a built-in Ethernet MAC controller that pairs with lwIP for wired networking. Release SDK v1.2.1 includes full source code and reference applications.</li>
-            <li><strong>Wi-Fi (via IPRO6 companion chip)</strong> — Wi-Fi 6 (802.11ax) is provided by an IPRO6-series connectivity companion chip, bridged to IPRO7's lwIP stack over an SDIO interface. The IPRO7 host components and example are included; matching IPRO6S firmware is supplied separately.</li>
+            <li><strong>Ethernet (EMAC)</strong> — IPRO7 features a built-in Ethernet MAC controller that pairs with lwIP for wired networking. Release SDK v2.0.1 includes full source code and reference applications.</li>
+            <li><strong>Wi-Fi (via IPRO6 companion chip)</strong> — Wi-Fi 6 (802.11ax) is provided by an IPRO6-series connectivity companion chip, bridged to IPRO7's lwIP stack over an SDIO interface. V2.0.1 includes the IPRO7 host and IPRO6S device application sources.</li>
         </ul>
-        <p>The LTE modem component <code>components/network/lte_modem/</code> is not included in V1.2.1.</p>
+        <p>The LTE modem component <code>components/network/lte_modem/</code> is not included in V2.0.1.</p>
 
         <!-- Overview -->
         <section id="overview">
@@ -57,7 +59,7 @@ lang: en
                 <div class="feature-card">
                     <h3 class="feature-title">Security & Encryption</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
-                        <li>mbedTLS 2.28 LTS (TLS 1.2 / DTLS 1.2)</li>
+                        <li>mbedTLS 2.28.2 (TLS 1.2 / DTLS 1.2)</li>
                         <li>X.509 certificate management</li>
                         <li>Hardware-accelerated bignum operations</li>
                         <li>HTTPS / secure IoT communication</li>
@@ -69,7 +71,7 @@ lang: en
                         <li>Wi-Fi 6 (802.11ax) provided by the IPRO6 chip</li>
                         <li>SDIO interface to the IPRO7 host</li>
                         <li>Data plane bridged into IPRO7's lwIP</li>
-                        <li>Contact the vendor for the complete solution</li>
+                        <li>IPRO7 host and IPRO6S device examples included</li>
                     </ul>
                 </div>
             </div>
@@ -87,7 +89,7 @@ lang: en
                         <div class="layer-label">Application (HTTP Client, MQTT, CoAP, ...)</div>
                     </div>
                     <div class="layer layer-cyan">
-                        <div class="layer-label">TLS / DTLS (mbedTLS 2.28 LTS)</div>
+                        <div class="layer-label">TLS / DTLS (mbedTLS 2.28.2)</div>
                         <div class="layer-desc">components/crypto/mbedtls/</div>
                     </div>
                     <div class="layer layer-purple">
@@ -104,7 +106,7 @@ lang: en
                         <div class="layer-label">Driver Layer</div>
                         <div class="layer-items">
                             <span class="pill">EMAC Driver (Ethernet) — bsp/.../drv_emac.c</span>
-                            <span class="pill">SDIO Network Bridge — IPRO7 SDH ↔ IPRO6 (contact the vendor)</span>
+                            <span class="pill">SDIO Network Bridge — IPRO7 SDH ↔ IPRO6S (ipro6_if_wifi)</span>
                         </div>
                     </div>
                     <div class="layer layer-red">
@@ -126,11 +128,11 @@ lang: en
                 <tbody>
                     <tr><td>lwIP Stack</td><td><code>components/network/lwip/</code></td><td>Lightweight TCP/IP protocol stack</td></tr>
                     <tr><td>lwIP Utilities</td><td><code>components/network/lwip/lwip_apps/</code></td><td>Network diagnostics tools (ping, etc.)</td></tr>
-                    <tr><td>mbedTLS</td><td><code>components/crypto/mbedtls/</code></td><td>TLS 1.2 / DTLS 1.2 cryptographic library (2.28 LTS)</td></tr>
+                    <tr><td>mbedTLS</td><td><code>components/crypto/mbedtls/</code></td><td>TLS 1.2 / DTLS 1.2 cryptographic library (2.28.2)</td></tr>
                     <tr><td>EMAC Driver</td><td><code>bsp/drivers/ipro7_soc/std_drv/src/drv_emac.c</code></td><td>Ethernet MAC controller driver</td></tr>
-                    <tr><td>HTTP Client</td><td><code>components/http_client/</code></td><td>HTTP/HTTPS client (connection pool + TLS + multipart); not included in Release SDK v1.2.1 — contact the vendor</td></tr>
-                    <tr><td>LTE Modem</td><td><code>components/network/lte_modem/</code></td><td>4G LTE PPP dial-up (UART AT interface)</td></tr>
-                    <tr><td>SDIO Wi-Fi Host</td><td><code>components/network/ipronet_host/</code><br><code>components/network/sdiowifi/</code></td><td>Included; companion firmware is separate</td></tr>
+                    <tr><td>HTTP Client</td><td><code>components/http_client/</code></td><td>HTTP/HTTPS client (connection pool + TLS + multipart); not included in Release SDK v2.0.1 — contact the vendor</td></tr>
+
+                    <tr><td>SDIO Wi-Fi Host</td><td><code>components/network/ipronet_host/</code><br><code>components/network/sdiowifi/</code></td><td>Included; IPRO6S device source also included</td></tr>
                 </tbody>
             </table>
             </div>
@@ -277,7 +279,7 @@ int udp_send_example(const char *dest_ip, uint16_t port)
         <!-- EMAC -->
         <section id="emac">
             <h2>Ethernet (EMAC)</h2>
-            <p>The IPRO7 features a built-in EMAC (Ethernet MAC) controller. Paired with an external Ethernet PHY, it provides wired networking suitable for gateways, industrial controllers, and other applications requiring a wired connection. This is the recommended primary networking path in Release SDK v1.2.1.</p>
+            <p>The IPRO7 features a built-in EMAC (Ethernet MAC) controller. Paired with an external Ethernet PHY, it provides wired networking suitable for gateways, industrial controllers, and other applications requiring a wired connection. Use this path on boards with an attached Ethernet PHY; the SDIO companion path is also included.</p>
 
             <div class="code-block">
                 <div class="code-block-header">
@@ -322,135 +324,27 @@ void emac_init(void)
 
         <!-- mbedTLS -->
         <section id="mbedtls">
-            <h2>Security (mbedTLS)</h2>
-            <p>The IPRO SDK integrates the mbedTLS 2.28 LTS library, providing TLS/DTLS secure communication and various cryptographic algorithms.</p>
-
-            <h3>Features</h3>
-            <ul>
-                <li><strong>TLS 1.2</strong> - Secure TCP connection encryption</li>
-                <li><strong>DTLS 1.2</strong> - Secure UDP communication (for CoAP and similar protocols)</li>
-                <li><strong>X.509 Certificates</strong> - Server and client certificate verification</li>
-                <li><strong>Symmetric Encryption</strong> - AES-128/192/256, ChaCha20-Poly1305</li>
-                <li><strong>Hash Functions</strong> - SHA-256, SHA-384, SHA-512</li>
-                <li><strong>Asymmetric Encryption</strong> - RSA, ECDSA, ECDH (secp256r1, secp384r1)</li>
-                <li><strong>Random Number Generation</strong> - CTR-DRBG</li>
-                <li><strong>Hardware Acceleration</strong> - Hardware-accelerated bignum operations (<code>CONFIG_MBEDTLS_BIGNUM_USE_HW=y</code>)</li>
-            </ul>
-
-            <div class="code-block">
-                <div class="code-block-header">
-                    <span class="code-block-title">TLS Client Connection Example</span>
-                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
-                </div>
-<pre><code class="language-c">#include "mbedtls/net_sockets.h"
-#include "mbedtls/ssl.h"
-#include "mbedtls/entropy.h"
-#include "mbedtls/ctr_drbg.h"
-
-int tls_connect_example(const char *hostname, const char *port)
-{
-    mbedtls_net_context server_fd;
-    mbedtls_ssl_context ssl;
-    mbedtls_ssl_config conf;
-    mbedtls_entropy_context entropy;
-    mbedtls_ctr_drbg_context ctr_drbg;
-
-    /* Initialize */
-    mbedtls_net_init(&amp;server_fd);
-    mbedtls_ssl_init(&amp;ssl);
-    mbedtls_ssl_config_init(&amp;conf);
-    mbedtls_entropy_init(&amp;entropy);
-    mbedtls_ctr_drbg_init(&amp;ctr_drbg);
-
-    /* Seed the random number generator */
-    mbedtls_ctr_drbg_seed(&amp;ctr_drbg, mbedtls_entropy_func,
-                          &amp;entropy, NULL, 0);
-
-    /* TCP connection */
-    mbedtls_net_connect(&amp;server_fd, hostname, port,
-                        MBEDTLS_NET_PROTO_TCP);
-
-    /* TLS configuration */
-    mbedtls_ssl_config_defaults(&amp;conf, MBEDTLS_SSL_IS_CLIENT,
-                                MBEDTLS_SSL_TRANSPORT_STREAM,
-                                MBEDTLS_SSL_PRESET_DEFAULT);
-    mbedtls_ssl_conf_rng(&amp;conf, mbedtls_ctr_drbg_random, &amp;ctr_drbg);
-    mbedtls_ssl_setup(&amp;ssl, &amp;conf);
-    mbedtls_ssl_set_hostname(&amp;ssl, hostname);
-
-    /* Bind socket */
-    mbedtls_ssl_set_bio(&amp;ssl, &amp;server_fd,
-                        mbedtls_net_send, mbedtls_net_recv, NULL);
-
-    /* Perform TLS handshake */
-    int ret = mbedtls_ssl_handshake(&amp;ssl);
-    if (ret != 0) {
-        printf("TLS handshake failed: -0x%04X\r\n", -ret);
-        goto cleanup;
-    }
-
-    /* Send data over TLS */
-    const char *request = "GET / HTTP/1.1\r\nHost: example.com\r\n\r\n";
-    mbedtls_ssl_write(&amp;ssl, (const unsigned char *)request,
-                      strlen(request));
-
-cleanup:
-    mbedtls_ssl_close_notify(&amp;ssl);
-    mbedtls_net_free(&amp;server_fd);
-    mbedtls_ssl_free(&amp;ssl);
-    mbedtls_ssl_config_free(&amp;conf);
-    mbedtls_entropy_free(&amp;entropy);
-    mbedtls_ctr_drbg_free(&amp;ctr_drbg);
-    return ret;
-}</code></pre>
-            </div>
-
-            <h3>mbedTLS Configuration Files</h3>
-            <p>mbedTLS features can be customized through configuration header files. The SDK provides sample configurations:</p>
-            <ul>
-                <li><code>components/crypto/mbedtls/mbedtls_sample_config.h</code> - General-purpose sample configuration</li>
-                <li><code>components/crypto/mbedtls/kvs_webrtc_mbedtls_config.h</code> - WebRTC-specific configuration</li>
-                <li>Applications can provide a custom <code>mbedtls_config.h</code> to enable/disable specific algorithms</li>
-            </ul>
+<h2>TLS/DTLS (mbedTLS)</h2>
+<p>The release bundles mbedTLS <strong>2.28.2</strong>, enabled by <code>CONFIG_COMPONENTS_MBEDTLS_ENABLE=y</code>. The selected configuration header determines available algorithms. This identifies the bundled version.</p><p>For a TLS client, start with the included <code>components/crypto/mbedtls/mbedtls/programs/ssl/ssl_client1.c</code> and adapt the following steps:</p><ol><li>Initialize entropy and CTR-DRBG with a working platform entropy source; check every initialization and connection result.</li><li>Load the target service’s trusted CA certificates with <code>mbedtls_ssl_conf_ca_chain()</code> and require <code>MBEDTLS_SSL_VERIFY_REQUIRED</code>.</li><li>Set the real server name with <code>mbedtls_ssl_set_hostname()</code> and provide correct platform time for certificate validity checks.</li><li>Handle <code>MBEDTLS_ERR_SSL_WANT_READ</code>/<code>MBEDTLS_ERR_SSL_WANT_WRITE</code>, partial transfers and timeouts during handshake and I/O; verify the certificate result.</li><li>Match the HTTP Host to the connection target, process the response, and release TLS/socket resources on success and every error path.</li></ol><p>Replace upstream test certificates and hostnames with your application’s configuration. This is a porting reference; it does not automatically configure board networking or trusted certificates.</p>
         </section>
 
         <!-- HTTP Client -->
         <section id="http-client">
-            <h2>HTTP Client</h2>
-
-            <div class="alert alert-warning" style="margin-bottom: 2rem;">
-                <strong>&#9888; Release SDK Notice:</strong> The high-level HTTP/HTTPS client component <code>components/http_client/</code> is not included in Release SDK v1.2.1. The content below is for architectural reference only — please contact the vendor if you need this component.
-            </div>
-
-            <p><code>components/http_client/</code> is a high-level HTTP/HTTPS client component built on top of lwIP and mbedTLS, eliminating the need to manage sockets and TLS handshakes manually:</p>
-            <ul>
-                <li><strong>Connection pool</strong> - Reuses TCP/TLS connections, reducing repeated handshake costs</li>
-                <li><strong>TLS support</strong> - HTTPS requests (uses mbedTLS internally)</li>
-                <li><strong>Multipart encoding</strong> - File/form upload support</li>
-                <li><strong>Keep-alive and timeout management</strong> - Tunable</li>
-            </ul>
-
-            <p>The previous <code>ipro_voice_assistant</code> application is not included in V1.2.1. Use the bundled lwIP and mbedTLS components as the basis for network clients.</p>
+<h2>HTTP Client</h2>
+<p>V2.0.1 does not include the high-level <code>components/http_client/</code> client. Build transport on bundled lwIP and mbedTLS or integrate a compatible HTTP library. Handle HTTP status codes, chunked transfer, size limits and timeouts.</p>
         </section>
 
         <!-- Wi-Fi via IPRO6 -->
+        <section id="ipro6s-wifi6">
+            <h2>IPRO6S Wi-Fi 6</h2>
+            <p>For standalone IPRO6S networking, use <code>apps/platform/ipro6_demo/</code>. Its configuration enables <code>CONFIG_WIFI6=y</code> and <code>CONFIG_USE_MACSW=y</code>. The Wi-Fi MAC is the prebuilt <code>components/wireless/macsw/lib/libmacsw.a</code>; upper layers under <code>components/wireless/wifi6/</code> include fhost, wpa_supplicant and the lwIP adapter.</p><pre><code class="language-bash">./build_freertos.sh ipro6_demo build</code></pre>            <p>Only the standard MAC archive is bundled; do not enable <code>CONFIG_PHY_LPFW</code> without a matching <code>libmacsw_lpfw.a</code>.</p>
+        </section>
+
         <section id="wifi-ipro6">
-            <h2>Wi-Fi via IPRO6S Companion</h2>
-            <p>IPRO7 has no built-in Wi-Fi radio. V1.2.1 includes the IPRO7-side <code>ipronet_host</code> and <code>sdiowifi</code> components and the <code>apps/platform/ipro7_sdio_wifi/</code> example. An IPRO6S companion provides the radio; its matching firmware is supplied separately.</p>
-            <pre><code class="language-text">IPRO7 application / lwIP (iproeth0)
-              |
-         ipronet_host
-              | SDIO 4-bit (SDH)
-              v
-       IPRO6S Wi-Fi firmware
-              |
-         Wi-Fi access point</code></pre>
-            <pre><code class="language-bash">./build_freertos.sh ipro7_sdio_wifi build</code></pre>
-            <p>After flashing both chips with compatible firmware, run the following on the IPRO7 console using your network credentials:</p>
-            <pre><code class="language-text">ipronet_up &lt;SSID&gt; &lt;PASSWORD&gt;
-# Disconnect and stop
-ipronet_down</code></pre>
-            <p>The public API is <code>components/network/ipronet_host/ipronet_host.h</code>: call <code>ipronet_config_default()</code>, <code>ipronet_start()</code> and <code>ipronet_connect()</code>. Wait for <code>on_got_ip</code> before using BSD sockets. Callbacks run in the RX task: do not block or call connection-control APIs from them; hand work to an application task.</p>
+            <h2>IPRO7 + IPRO6S SDIO Wi-Fi</h2>
+            <p>IPRO7 has no built-in Wi-Fi. V2.0.1 includes both <code>apps/platform/ipro7_sdio_wifi/</code> (IPRO7 host) and <code>apps/platform/ipro6_if_wifi/</code> (IPRO6S radio). Build the latter with <code>defconfig_ipro6_sdio</code>; two chips require two firmware images.</p><pre><code class="language-bash">./build_freertos.sh -d defconfig_ipro6_sdio build ipro6_if_wifi
+./build_freertos.sh build ipro7_sdio_wifi</code></pre>            <p>Outputs: <code>apps/platform/ipro6_if_wifi/build_ipro6_sdio/build_out/ipro6_if_wifi_IPRO6.bin</code> and <code>apps/platform/ipro7_sdio_wifi/build/build_out/ipro7_sdio_wifi_IPRO7.bin</code>. Verify board wiring, power control and the flash configuration for each chip.</p><pre><code class="language-text">ipronet_up &lt;SSID&gt; &lt;PASSWORD&gt;
+ipronet_down</code></pre>            <p>Run those commands on IPRO7. The API in <code>components/network/ipronet_host/ipronet_host.h</code> provides <code>ipronet_config_default()</code>, <code>ipronet_start()</code> and <code>ipronet_connect()</code>. Wait for <code>on_got_ip</code> before using sockets. Hand work from RX-task callbacks to an application task; do not block or call connection-control APIs there.</p>
         </section>
 
         <!-- Reference Apps -->

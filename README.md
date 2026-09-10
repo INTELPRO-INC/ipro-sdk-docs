@@ -7,16 +7,15 @@ The site is bilingual — Traditional Chinese pages live at the repository root,
 English pages under `en/`. Every `*.html` page at the root has a same-named
 counterpart in `en/`.
 
-The current documentation baseline is **IPRO-IPRO7-SDK-V1.2.1**, released
-**2026-09-08** (`VERSION.txt`). Verify package contents and application `.config`
-files when updating availability claims; the package README may describe tools
-or examples that are distributed separately.
+The current documentation baseline is **IPRO-SDK-V2.0.1**, released
+**2026-09-09** (`VERSION.txt`), for IPRO7 and IPRO6S. Verify availability
+against the release files and application configurations, not just its README.
 
-Windows setup and editor integration cover **Installer / Extension 3.3.0**.
-See `windows-installation.html` for full and component-only installation,
-and `vscode-extension.html` for the Control Center and development workflow.
-The full Windows installer and the standalone SDK archive have different
-contents; keep their tool-availability descriptions explicit.
+Windows setup covers **Online Installer 3.4.0** and **Extension 3.3.0**,
+with retained instructions for the fixed 3.3.0 installer. As checked on
+2026-09-10, `packages/index.json` still selects SDK **1.2.1**; it does not
+yet register 2.0.1. Link directly to the V2.0.1 release for the latest SDK,
+and do not imply the installer's `latest` option installs it.
 
 ## 📁 Structure
 
@@ -26,7 +25,7 @@ ipro-sdk-docs/
 ├── _layouts/
 │   └── default.html      # Main layout (navbar, release notice, footer)
 ├── assets/
-│   ├── css/style.css     # Custom styles
+│   ├── css/site.css      # Custom styles
 │   ├── js/main.js        # Navigation / UI behavior
 │   └── favicon.svg
 ├── index.html            # Home (zh-TW)

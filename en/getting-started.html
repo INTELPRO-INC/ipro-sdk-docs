@@ -4,11 +4,13 @@ title: Getting Started
 lang: en
 ---
 
-<div class="doc-layout">
+            <div class="doc-layout">
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">Table of Contents</h4>
             <ul class="sidebar-links">
+                <li><a href="#sdk-2-0-1" class="sidebar-link">SDK V2.0.1</a></li>
+
                 <li><a href="#prerequisites" class="sidebar-link">Prerequisites</a></li>
                 <li><a href="#installation" class="sidebar-link">Installation</a></li>
                 <li><a href="#directory-structure" class="sidebar-link">SDK Directory Structure</a></li>
@@ -30,10 +32,16 @@ lang: en
         <p>This guide will walk you through setting up the IPRO SDK Release package and building your first application.</p>
 
         <div class="alert alert-info">
-            <strong><i class="fas fa-info-circle"></i> Release SDK Notice:</strong> This is the Release version of the SDK package. Some development tools (flash tool, board test scripts, VS Code extension) are not included. To obtain the full development tool suite, please contact IntelPro.
+            <strong><i class="fas fa-info-circle"></i> Release SDK Notice:</strong> The source archive omits the flash tool, board-test scripts and VS Code extension. For separately versioned Windows tools, see <a href="{{ '/en/windows-installation' | relative_url }}">Installation &amp; Updates</a>.
         </div>
 
-        <div class="alert alert-info"><strong>Full Windows installer:</strong> Installer 3.3.0 provides SDK V1.2.1, extension 3.3.0, GCC, CMake, Ninja, Python, IntelProCube and bundled OpenOCD. The standalone SDK archive has a smaller scope; statements below about omitted tools refer to that archive. <a href="{{ '/en/windows-installation' | relative_url }}">Installation and independent updates</a> · <a href="{{ '/en/vscode-extension' | relative_url }}">Extension guide</a></div>
+        <div class="alert alert-info"><p>Online Installer 3.4.0 reads the component catalog; the fixed 3.3.0 installer bundles SDK 1.2.1. As of 2026-09-10, the catalog also selects SDK 1.2.1. Obtain V2.0.1 from its release page and select its extracted directory explicitly. <a href="{{ '/en/windows-installation' | relative_url }}">Installation and version selection</a></p></div>
+
+        <section id="sdk-2-0-1">
+            <h2>SDK V2.0.1</h2>
+            <p>Download <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">IPRO-SDK-V2.0.1</a> (2026-09-09) for source, the Android microphone demo APK and the matching test firmware. The source package contains 31 application configurations; use the shipped configuration for your board.</p>
+            <p>Extract <code>IPRO-SDK-V2.0.1.tar.gz</code> into a new directory and verify <code>VERSION.txt</code>. Obtain the matching RISC-V toolchain separately; the release README specifies GCC 14. The catalog's Windows GCC 13.1.1 package is declared for SDK 1.2.1, so do not assume that declaration covers 2.0.1.</p>
+        </section>
 
         <section id="prerequisites">
             <h2>Prerequisites</h2>
@@ -98,7 +106,7 @@ python3 --version</code></pre>
                 </div>
                 <pre><code class="language-bash"># Extract the SDK release package
 # Enter the extracted release directory
-cd IPRO-IPRO7-SDK-V1.2.1
+cd IPRO-SDK-V2.0.1
 cat VERSION.txt</code></pre>
             </div>
 
@@ -130,7 +138,7 @@ ls /opt/toolchain/riscv_ipro7/bin/
 
         <section id="directory-structure">
             <h2>SDK Directory Structure</h2>
-            <pre><code class="language-text">IPRO-IPRO7-SDK-V1.2.1/
+            <pre><code class="language-text">IPRO-SDK-V2.0.1/
 ├── apps/
 │   ├── bluetooth/ble/
 │   │   ├── ipro_ble_remote/
@@ -139,10 +147,14 @@ ls /opt/toolchain/riscv_ipro7/bin/
 │   │   └── ipro_throughput_test/
 │   ├── bluetooth/le_audio/ipro_le_audio_headset/
 │   ├── multimedia/ipro_pdm_mic_demo/
+│   ├── ai/ipro_meeting_poc/
 │   ├── platform/
 │   │   ├── ipro7_demo/
 │   │   ├── ipro7_sdio_wifi/
-│   │   └── ipro7ai_evk_demo/
+│   │   ├── ipro7ai_evk_demo/
+│   │   ├── ipro6_demo/
+│   │   ├── ipro6_if_wifi/
+│   │   └── ipro6_btdm_phyrf/
 │   └── test/
 ├── bsp/
 ├── components/
@@ -156,13 +168,12 @@ ls /opt/toolchain/riscv_ipro7/bin/
 ├── tools/
 │   ├── android/
 │   ├── script/
-│   └── serial_monitor.py
+│   └── cmake/
 ├── build_freertos.sh
 ├── project.build
 ├── CMakeLists.txt
 ├── Kconfig
-├── VERSION.txt
-└── PREBUILT-ARCHIVES-STRIPPED.txt</code></pre>
+└── VERSION.txt</code></pre>
         </section>
 
         <section id="freertos-quickstart">
@@ -317,21 +328,14 @@ CONFIG_MBEDTLS=y</code></pre>
         </section>
 
         <section id="serial-monitor">
-<p>On Windows, use the extension IPRO: Serial Monitor command with its built-in serialport console. The Python script below is for POSIX command-line environments.</p>
-            <h2>Serial Monitor</h2>
-            <p><code>tools/serial_monitor.py</code> is included in V1.2.1. It uses Python standard-library <code>termios</code> and <code>fcntl</code> on POSIX systems (Linux/macOS), and does not run directly in Windows Python. Use a Windows serial terminal or an environment with access to the serial device.</p>
-            <pre><code class="language-bash">python3 tools/serial_monitor.py /dev/ttyUSB0 --baud 115200 --timeout 30
-# macOS
-python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 115200 --timeout 30</code></pre>
-            <p>Use the baud rate configured by the application. This script accepts 9600, 19200, 38400, 57600, 115200 and 230400 baud.</p>
+            <h2>Serial Monitoring</h2>
+            <p>V2.0.1 does not include <code>tools/serial_monitor.py</code>. The CLI still references that path, so its <code>monitor</code> and <code>test</code> actions need the separate helper. Use the extension's <code>IPRO: Serial Monitor</code> or a serial terminal instead.</p>
+            <p>Choose the console baud rate from the selected application and board configuration. On macOS use <code>/dev/cu.*</code>. Stop monitoring before flashing to release the port.</p>
         </section>
 
         <section id="board-testing">
             <h2>Board Testing</h2>
-
-            <div class="alert alert-warning">
-                <strong><i class="fas fa-exclamation-triangle"></i> Release SDK Notice:</strong> The automated board test script <code>board_test.sh</code> is not included in this Release SDK package. To obtain board testing tools, please contact IntelPro for the full development tool suite.
-            </div>
+            <p>The SDK includes <code>apps/test/ipro_unit_test/</code> for HAL and shared-component tests. Build it, flash the matching board with the separate flash tool, then inspect the console for <code>ALL TESTS PASSED</code> or <code>SOME TESTS FAILED</code>.</p><pre><code class="language-bash">make -C apps/test/ipro_unit_test</code></pre>            <p>Neither <code>tools/board_test.sh</code> nor <code>tools/serial_monitor.py</code> is bundled. The build CLI's <code>test</code> command also requires those external flash / monitor tools; it is not a complete test environment by itself.</p>
         </section>
 
         <section id="debugging">
@@ -356,7 +360,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 115200 --timeout 3
             </ul>
 
             <div class="alert alert-info">
-                <strong>Note:</strong> The VS Code extension is not included in this Release SDK package. For graphical debugging support, please contact IntelPro to obtain the VS Code extension.
+                <strong>Note:</strong> Install the VS Code extension separately. Follow the <a href="{{ '/en/vscode-extension' | relative_url }}">Extension guide</a> to configure SDK, toolchain and debugger paths.
             </div>
         </section>
 
@@ -365,8 +369,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 115200 --timeout 3
 
             <h3>macOS Serial Port Issues (General Knowledge)</h3>
             <div class="alert alert-info">
-                <strong>Note:</strong> V1.2.1 includes <code>tools/serial_monitor.py</code>. These troubleshooting tips also apply to external serial terminals.
-            </div>
+                <strong>Note:</strong> Use an external serial terminal; the monitor helper is absent from V2.0.1.</div>
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -434,7 +437,7 @@ python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 115200 --timeout 3
                         </tr>
                         <tr>
                             <td>CI CMake does not work on macOS</td>
-                            <td>V1.2.1 requires a separately installed CMake 3.19+ on PATH; use a build for your host OS.</td>
+                            <td>V2.0.1 requires a separately installed CMake 3.19+ on PATH; use a build for your host OS.</td>
                         </tr>
                     </tbody>
                 </table>

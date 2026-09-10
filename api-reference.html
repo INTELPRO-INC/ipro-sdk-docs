@@ -37,7 +37,7 @@ title: API 參考
 
         <!-- ==================== BLE Core ==================== -->
 
-        <section id="ble-core">
+        <section id="ble-core"><p>以下初始化流程適用於 IPRO7；IPRO6S 請以 <code>apps/platform/ipro6_demo/</code> 的 BTDM 初始化為準。</p>
             <h2>BLE 核心初始化</h2>
             <p>BLE 子系統使用 Zephyr 風格的 <code>bt_*</code> API。呼叫 <code>bt_enable()</code> 之前，必須先依序完成 <code>ipro_ble_ctlr_controller_init()</code> 與 <code>hci_driver_ipro_ble_ctlr_init()</code>，否則 <code>bt_enable()</code> 會失敗。</p>
 
@@ -93,6 +93,9 @@ const char *bt_get_name(void);</code></pre>
 #include &lt;task.h&gt;
 
 #include &lt;zephyr/bluetooth/bluetooth.h&gt;
+#if defined(CONFIG_BT_SETTINGS)
+#include &lt;zephyr/settings/settings.h&gt;
+#endif
 #include &lt;hci_driver_ipro_ble_ctlr.h&gt;
 #include &lt;ipro_ble_controller.h&gt;
 
@@ -104,6 +107,13 @@ static void bt_ready(int err)
         IPRO_LOGE(TAG, "BLE init failed (err %d)", err);
         return;
     }
+#if defined(CONFIG_BT_SETTINGS)
+    err = settings_load_subtree("bt");
+    if (err) {
+        IPRO_LOGE(TAG, "Bluetooth settings load failed (err %d)", err);
+        return;
+    }
+#endif
     IPRO_LOGI(TAG, "BLE initialized");
     /* 可以開始廣播或掃描 */
 }
@@ -180,10 +190,10 @@ int bt_le_adv_stop(void);</code></pre>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">// 可連線廣播（預設間隔）
-BT_LE_ADV_CONN
+BT_LE_ADV_CONN_FAST_1
 
 // 自訂廣播參數（options、最小/最大廣播間隔，單位 0.625 ms）
-BT_LE_ADV_PARAM(options, int_min, int_max)
+BT_LE_ADV_PARAM(options, int_min, int_max, NULL)
 
 // 廣播資料建構
 BT_DATA_BYTES(type, ...)        // 位元組資料
@@ -206,7 +216,7 @@ static const struct bt_data sd[] = {
 };
 
 // 開始可連線廣播
-int err = bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd));</code></pre>
+int err = bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd));</code></pre>
             </div>
         </section>
 
@@ -226,8 +236,8 @@ int err = bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd)
  *  @param adv_type 廣播類型
  *  @param buf      廣播資料緩衝區
  */
-typedef void bt_le_scan_cb_t(const bt_addr_le_t *addr, s8_t rssi,
-                             u8_t adv_type, struct net_buf_simple *buf);
+typedef void bt_le_scan_cb_t(const bt_addr_le_t *addr, int8_t rssi,
+                             uint8_t adv_type, struct net_buf_simple *buf);
 
 /** 開始 LE 掃描
  *  @param param  掃描參數（類型、重複過濾、間隔、視窗）
@@ -264,8 +274,8 @@ BT_LE_SCAN_PARAM(type, filter, interval, window)</code></pre>
                     <span class="code-block-title">掃描範例</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">static void scan_cb(const bt_addr_le_t *addr, s8_t rssi,
-                    u8_t adv_type, struct net_buf_simple *buf)
+                <pre><code class="language-c">static void scan_cb(const bt_addr_le_t *addr, int8_t rssi,
+                    uint8_t adv_type, struct net_buf_simple *buf)
 {
     char addr_str[BT_ADDR_LE_STR_LEN];
     bt_addr_le_to_str(addr, addr_str, sizeof(addr_str));
@@ -290,20 +300,22 @@ bt_le_scan_stop();</code></pre>
                     <span class="code-block-title">bluetooth/conn.h</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">/** 建立 LE 連線（Central 端）
- *  @param peer   遠端裝置地址
- *  @param param  連線參數
- *  @return 連線物件指標，NULL 表示失敗
+                <pre><code class="language-c">/** Create an LE connection (Central role).
+ * Returns 0 on success or a negative error code.
+ * On success, release the returned reference with bt_conn_unref()
+ * when the application no longer needs it. Completion is asynchronous.
  */
-struct bt_conn *bt_conn_le_create(const bt_addr_le_t *peer,
-                                  const struct bt_le_conn_param *param);
+int bt_conn_le_create(const bt_addr_le_t *peer,
+                      const struct bt_conn_le_create_param *create_param,
+                      const struct bt_le_conn_param *conn_param,
+                      struct bt_conn **conn);
 
 /** 斷開連線
  *  @param conn    連線物件
  *  @param reason  斷線原因碼 (BT_HCI_ERR_*)
  *  @return 0 成功，負值錯誤碼
  */
-int bt_conn_disconnect(struct bt_conn *conn, u8_t reason);
+int bt_conn_disconnect(struct bt_conn *conn, uint8_t reason);
 
 /** 增加連線參考計數 */
 struct bt_conn *bt_conn_ref(struct bt_conn *conn);
@@ -326,7 +338,7 @@ int bt_conn_le_param_update(struct bt_conn *conn,
                     <span class="code-block-title">連線事件回調</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">static void connected(struct bt_conn *conn, u8_t err)
+                <pre><code class="language-c">static void connected(struct bt_conn *conn, uint8_t err)
 {
     if (err) {
         printk("Connection failed (err 0x%02x)\n", err);
@@ -335,7 +347,7 @@ int bt_conn_le_param_update(struct bt_conn *conn,
     }
 }
 
-static void disconnected(struct bt_conn *conn, u8_t reason)
+static void disconnected(struct bt_conn *conn, uint8_t reason)
 {
     printk("Disconnected (reason 0x%02x)\n", reason);
 }
@@ -382,7 +394,7 @@ int bt_gatt_notify_cb(struct bt_conn *conn,
  *  @return 0 成功，負值錯誤碼
  */
 int bt_gatt_notify(struct bt_conn *conn, const struct bt_gatt_attr *attr,
-                   const void *data, u16_t len);
+                   const void *data, uint16_t len);
 
 /** 發送 GATT Indication
  *  @param conn   連線物件
@@ -400,6 +412,9 @@ int bt_gatt_indicate(struct bt_conn *conn,
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">// 自訂服務 UUID
+static uint8_t my_value;
+static struct bt_uuid_16 my_char_uuid = BT_UUID_INIT_16(0xfff1);
+
 static struct bt_uuid_128 my_svc_uuid = BT_UUID_INIT_128(
     0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
     0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef);
@@ -407,7 +422,7 @@ static struct bt_uuid_128 my_svc_uuid = BT_UUID_INIT_128(
 // 讀取回調
 static ssize_t read_value(struct bt_conn *conn,
                           const struct bt_gatt_attr *attr,
-                          void *buf, u16_t len, u16_t offset)
+                          void *buf, uint16_t len, uint16_t offset)
 {
     return bt_gatt_attr_read(conn, attr, buf, len, offset,
                              &my_value, sizeof(my_value));
@@ -468,18 +483,15 @@ int bt_gatt_write(struct bt_conn *conn,
  *  @return 0 成功，負值錯誤碼
  */
 int bt_gatt_write_without_response(struct bt_conn *conn,
-    u16_t handle, const void *data, u16_t length, bool sign);
+    uint16_t handle, const void *data, uint16_t length, bool sign);
 
-/** 寫入遠端屬性（無需回應，附傳輸完成回調）
- *  與 bt_gatt_write_without_response() 相同，但發送後會呼叫
- *  func 回調，且停用內部 flow control —— 在回調返回前
- *  不應再送出新資料。
- *  @param func       傳輸完成回調
- *  @param user_data  傳回給回調的使用者資料
- *  @return 0 成功，負值錯誤碼
+/** Queue a write without response and receive a completion callback.
+ * Callback runs in System Workqueue context. Keep it nonblocking.
+ * Returns 0 when queued; handle negative errors and retry only after
+ * resources become available. See gatt.h for context restrictions.
  */
 int bt_gatt_write_without_response_cb(struct bt_conn *conn,
-    u16_t handle, const void *data, u16_t length, bool sign,
+    uint16_t handle, const void *data, uint16_t length, bool sign,
     bt_gatt_complete_func_t func, void *user_data);</code></pre>
             </div>
         </section>
@@ -800,7 +812,7 @@ int main(void)
             <h2>FreeRTOS API</h2>
             <p>SDK 主要使用 FreeRTOS 作為即時作業系統。</p>
             <div class="alert alert-info">
-                <p>BLE Host 雖為 Zephyr-based，但透過內部 FreeRTOS port 層運作；應用程式一律使用 FreeRTOS API，不需要（也無法）使用 Zephyr kernel API（<code>k_thread_create</code>、<code>k_sleep</code> 等）。</p>
+                <p>BLE Host 的 Zephyr 相容層由 FreeRTOS port 支援。應用任務、延遲與同步請使用 FreeRTOS API；相容層只提供 Host 移植所需功能，不是完整 Zephyr kernel。</p>
             </div>
 
             <div class="code-block">

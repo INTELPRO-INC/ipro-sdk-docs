@@ -2,15 +2,15 @@
 # GitHub Pages Configuration
 
 title: IPRO SDK
-sdk_version: "v1.2.1"
-installer_version: "3.3.0"
+sdk_version: "v2.0.1"
+installer_version: "3.4.0"
 extension_version: "3.3.0"
 description: A Comprehensive Software Development Kit for IPRO Hardware Platforms
 baseurl: "/ipro-sdk-docs" # Your GitHub Pages repository name
 url: "https://intelpro-inc.github.io" # Your GitHub Pages URL
 
 # No theme: the site ships its own layout (_layouts/default.html) and CSS.
-# A remote_theme would race our assets/css/style.css on incremental rebuilds.
+# A remote_theme would race our assets/css/site.css on incremental rebuilds.
 
 # Build settings
 markdown: kramdown
@@ -61,7 +61,7 @@ nav:
   - title: 主題
     dropdown:
       - { title: 音訊與多媒體, desc: LE Audio、LC3、音訊管線, icon: fa-headphones, url: /audio-multimedia }
-      - { title: 網路開發, desc: lwIP 與 IPRO6 連網擴充, icon: fa-network-wired, url: /wifi-networking }
+      - { title: 網路開發, desc: lwIP 與 IPRO6S Wi-Fi 6, icon: fa-network-wired, url: /wifi-networking }
       - { title: 工具與除錯, desc: 建構、燒錄、GDB, icon: fa-wrench, url: /tools-debugging }
       - { title: 硬體規格, desc: IPRO7 規格與腳位, icon: fa-microchip, url: /hardware }
       - { title: 更新日誌, desc: 版本發行紀錄, icon: fa-clock-rotate-left, url: /changelog }
@@ -87,7 +87,7 @@ nav_en:
   - title: Topics
     dropdown:
       - { title: Audio & Multimedia, desc: LE Audio, LC3, audio pipeline, icon: fa-headphones, url: /en/audio-multimedia }
-      - { title: Networking, desc: lwIP & IPRO6 connectivity, icon: fa-network-wired, url: /en/wifi-networking }
+      - { title: Networking, desc: lwIP & IPRO6S Wi-Fi 6, icon: fa-network-wired, url: /en/wifi-networking }
       - { title: Tools & Debugging, desc: Build, flash, GDB, icon: fa-wrench, url: /en/tools-debugging }
       - { title: Hardware, desc: IPRO7 specs & pinout, icon: fa-microchip, url: /en/hardware }
       - { title: Changelog, desc: Release history, icon: fa-clock-rotate-left, url: /en/changelog }
@@ -113,8 +113,8 @@ languages:
 # google_analytics: UA-XXXXXXXX-X
 
 # Site-wide release scope notice — rendered by _layouts/default.html below the navbar
-release_notice: "本文件對應 IPRO SDK Release V1.2.1（2026-09-08）。IPRO7 不內建 Wi-Fi；本版包含 IPRO7 端 SDIO Host 元件與範例，IPRO6S companion 韌體需另行取得。AI/NPU 以預編譯函式庫與標頭提供，模型與轉換工具需另行取得；Matter、Thread 未包含於此版本。"
-release_notice_en: "This documentation covers IPRO SDK Release V1.2.1 (2026-09-08). IPRO7 has no built-in Wi-Fi. IPRO7-side SDIO host components and an example are included; IPRO6S companion firmware is supplied separately. AI/NPU libraries and headers are included; models and conversion tools are supplied separately. Matter and Thread are not included."
+release_notice: "本文件對應 IPRO SDK V2.0.1（2026-09-09），支援 IPRO7 與 IPRO6S。IPRO7 不內建 Wi-Fi；SDIO 雙晶片範例的兩端韌體原始碼皆已提供。AI 執行庫為預編譯函式庫，附部分 .inm／.tflite 模型；模型轉換工具、Matter 與 Thread 未包含。"
+release_notice_en: "This documentation covers IPRO SDK V2.0.1 (2026-09-09) for IPRO7 and IPRO6S. IPRO7 has no built-in Wi-Fi; sources for both sides of the SDIO link are included. AI uses a prebuilt runtime with selected .inm / .tflite models. Conversion tools, Matter and Thread are not included."
 
 exclude:
   - Gemfile

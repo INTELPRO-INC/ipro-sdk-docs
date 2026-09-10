@@ -84,8 +84,8 @@ CONFIG_IPRO7=y                          # 布林值：啟用
 CONFIG_CPU_ID="intelpro_ipro7"          # 字串值
 CONFIG_FREERTOS_SUPPORT=y               # RTOS 選擇
 CONFIG_BLUETOOTH_LE_ENABLE=y            # BLE 啟用
-# CONFIG_LWIP is not set                # 布林值：停用</code></pre>
-                    <p>修改 <code>.config</code> 後需要重新建構。常用的 CONFIG 變數包括 SoC 選擇（<code>CONFIG_IPRO7</code>）、RTOS（<code>CONFIG_FREERTOS_SUPPORT</code>）和元件啟用（<code>CONFIG_BLUETOOTH_LE_ENABLE</code>、<code>CONFIG_LWIP</code>、<code>CONFIG_MBEDTLS</code> 等）。</p>
+# CONFIG_COMPONENTS_LWIP_ENABLE is not set                # 布林值：停用</code></pre>
+                    <p>修改 <code>.config</code> 後需要重新建構。常用的 CONFIG 變數包括 SoC 選擇（<code>CONFIG_IPRO7</code>）、RTOS（<code>CONFIG_FREERTOS_SUPPORT</code>）和元件啟用（<code>CONFIG_BLUETOOTH_LE_ENABLE</code>、<code>CONFIG_COMPONENTS_LWIP_ENABLE</code>、<code>CONFIG_COMPONENTS_MBEDTLS_ENABLE</code> 等）。</p>
                 </div>
             </div>
 
@@ -188,7 +188,7 @@ riscv64-unknown-elf-nm --size-sort apps/bluetooth/ble/ipro_ble_remote/build/buil
                 </tbody>
                 </table>
             </div>
-            <p>基本 BLE 選擇 <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code>；BLE 5.4 與兩路 ISO 串流（CIS/BIS）選擇 <code>"bt54_iso2"</code>，後者要求 <code>CONFIG_EM_SIZE</code> 至少 32 KB。<code>CONFIG_BT_CONN</code> 應與所選 ACL 連線數一致。</p>
+            <p>基本 BLE 選擇 <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code>；BLE 5.4 與兩路 ISO 串流（CIS/BIS）選擇 <code>"bt54_iso2"</code>，後者要求 <code>CONFIG_EM_SIZE</code> 至少 32 KB。Host 連線上限不可超過控制器容量；PDM 請保留 <code>link2</code>／<code>CONFIG_BT_CONN=1</code> 配置。</p>
                     <p>在應用程式的 <code>.config</code> 中以 <code>CONFIG_IPRO_BLE_CTLR_LIB</code> 選擇變體：</p>
                     <pre><code class="language-bash"># 選擇 Controller 變體
 CONFIG_BT_CTLR_IPRO=y
@@ -198,7 +198,7 @@ CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"
 CONFIG_IPRO_BLE_CTLR_CFG_DBG=n
 CONFIG_BT_CONN=1
 CONFIG_EM_SIZE=32</code></pre>
-                    <p>V1.2.1 預設值：Remote 使用 <code>link1_periph / bt52</code>；Transparent 與 HID Keyboard 使用 <code>link1 / bt52</code>；Throughput Test 使用 <code>link2 / bt52</code>；Headset 使用 <code>link1_periph / bt54_iso2</code>。只有 <code>link1</code>、<code>link2</code> 與 <code>link4</code> 支援 Central 與 Peripheral 雙角色。</p>
+                    <p>V2.0.1 預設值：Remote 使用 <code>link1_periph / bt52</code>；Transparent 與 HID Keyboard 使用 <code>link1 / bt52</code>；Throughput Test 使用 <code>link2 / bt52</code>；Headset 使用 <code>link1_periph / bt54_iso2</code>。只有 <code>link1</code>、<code>link2</code> 與 <code>link4</code> 支援 Central 與 Peripheral 雙角色。</p>
                 </div>
             </div>
 
@@ -265,7 +265,7 @@ static const struct bt_data ad[] = {
     BT_DATA_BYTES(BT_DATA_NAME_COMPLETE, 'I','P','R','O'),
 };
 
-bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad),
+bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ad, ARRAY_SIZE(ad),
                 NULL, 0);</code></pre>
                 </div>
             </div>
@@ -298,13 +298,9 @@ BT_CODEC_LC3_CONFIG_48_4(loc, stream_context)</code></pre>
                     <h3>BLE 配對（bonding）資訊無法保存，或 Controller 連結失敗？</h3>
                     <i class="fas fa-chevron-down"></i>
                 </div>
-                <div class="faq-answer">
-                    <p>BLE 應用需要啟用 NVDS（Non-Volatile Data Storage）才能把配對金鑰等資訊保存到 flash。在 <code>.config</code> 中設定：</p>
-                    <pre><code class="language-bash"># 啟用 NVDS 儲存
-CONFIG_ENABLE_NVDS=y
-CONFIG_CFG_NVDS=y</code></pre>
-                    <p>注意：BLE 應用若未啟用 NVDS，連結階段會因缺少 NVDS 相關符號而失敗。SDK 出貨的 BLE 範例（如 <code>ipro_ble_remote</code>）已預設啟用。</p>
-                </div>
+                <div class="faq-answer"><p>配對金鑰由 Bluetooth Host 的 Settings 後端保存；NVDS 是 Controller 設定儲存，不能單獨取代 Host bonding。參考 PDM 或 headset 範例：</p><pre><code class="language-ini">CONFIG_BT_SMP=y
+CONFIG_BT_SETTINGS=y
+CONFIG_EASYFLASH4=y</code></pre><p>在 <code>bt_enable()</code> 完成後、開始廣播前呼叫 <code>settings_load_subtree("bt")</code> 並檢查錯誤。沿用範例的 Flash 分區與儲存初始化；重新燒錄時若清除儲存區，裝置及手機兩端都需要重新配對。</p></div>
             </div>
 
             <div class="faq-item" data-category="ble">
@@ -349,11 +345,9 @@ CONFIG_CFG_NVDS=y</code></pre>
                         <li><code>/dev/cu.*</code> (Calling Unit) - <strong>必須使用此裝置</strong>。不等待 DCD 信號，可直接開啟。</li>
                         <li><code>/dev/tty.*</code> (Teletype) - 會等待 DCD 信號，導致程式掛起無法使用。</li>
                     </ul>
-                    <pre><code class="language-bash"># 正確做法
-python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX
-
-# 錯誤做法（會掛住）
-python3 tools/serial_monitor.py /dev/tty.usbserial-XXXX</code></pre>
+                    <pre><code class="language-bash"># 另行安裝；埠名與鮑率請依韌體設定調整
+python3 -m pip install pyserial
+python3 -m serial.tools.miniterm /dev/cu.usbserial-XXXX 115200</code></pre>
                 </div>
             </div>
 
@@ -368,9 +362,9 @@ python3 tools/serial_monitor.py /dev/tty.usbserial-XXXX</code></pre>
                     <ol>
                         <li>檢查並關閉占用埠的程式：<code>lsof /dev/cu.usbserial-XXXX</code>（序列埠名稱依實際裝置而定）</li>
                         <li>避免使用 <code>stty -f</code>，它會保持埠忙碌</li>
-                        <li>使用 <code>tools/serial_monitor.py</code> 取代 <code>cat</code> 或 <code>screen</code></li>
+                        <li>同一時間僅使用一個外部串口終端或 Extension Monitor</li>
                     </ol>
-                    <p><code>serial_monitor.py</code> 使用 Python3 termios，以 <code>O_NOCTTY | O_NONBLOCK</code> 旗標開啟埠，不需要 pyserial 依賴。</p>
+                    <p>V2.0.1 未附舊版監看腳本；燒錄或開啟另一個終端前，請先停止目前的串口監看。</p>
                 </div>
             </div>
 
@@ -387,7 +381,7 @@ python3 tools/serial_monitor.py /dev/tty.usbserial-XXXX</code></pre>
 CONFIG_LOG_DEFAULT_LEVEL_DEBUG=y
 
 # 啟用 BLE Host 詳細 log
-CONFIG_BT_DEBUG_LOG=y</code></pre>
+CONFIG_BT_DEBUG=y</code></pre>
                 </div>
             </div>
 
@@ -458,7 +452,7 @@ rf_set_tx_power(-3);   // -3dBm（最小）</code></pre>
                 </div>
                 <div class="faq-answer">
                     <p>IPRO7 本身不內建 Wi-Fi。需要 Wi-Fi 連網的應用，請透過 IPRO6 companion 晶片（經 SDIO 介面）提供連線能力：IPRO7 作為主控 SoC 負責應用邏輯、BLE 與運算，IPRO6 作為 Wi-Fi 連線晶片。</p>
-                    <p>雙晶片參考設計與相關資料請聯絡原廠取得。</p>
+                    <p>本版已附 <code>ipro7_sdio_wifi</code> 與 <code>ipro6_if_wifi</code> 雙端程式；請依網路章節建置兩份韌體並確認板級接線。</p>
                 </div>
             </div>
 

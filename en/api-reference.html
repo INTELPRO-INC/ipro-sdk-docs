@@ -38,7 +38,7 @@ title: API Reference - IPRO SDK
 
         <!-- ==================== BLE Core ==================== -->
 
-        <section id="ble-core">
+        <section id="ble-core"><p>The initialization sequence below targets IPRO7. For IPRO6S, follow BTDM initialization in <code>apps/platform/ipro6_demo/</code>.</p>
             <h2>BLE Core Initialization</h2>
             <p>The BLE subsystem uses Zephyr-style <code>bt_*</code> APIs. Before calling <code>bt_enable()</code>, you must first call <code>ipro_ble_ctlr_controller_init()</code> and then <code>hci_driver_ipro_ble_ctlr_init()</code> in that order — otherwise <code>bt_enable()</code> will fail.</p>
 
@@ -94,6 +94,9 @@ const char *bt_get_name(void);</code></pre>
 #include &lt;task.h&gt;
 
 #include &lt;zephyr/bluetooth/bluetooth.h&gt;
+#if defined(CONFIG_BT_SETTINGS)
+#include &lt;zephyr/settings/settings.h&gt;
+#endif
 #include &lt;hci_driver_ipro_ble_ctlr.h&gt;
 #include &lt;ipro_ble_controller.h&gt;
 
@@ -105,6 +108,13 @@ static void bt_ready(int err)
         IPRO_LOGE(TAG, "BLE init failed (err %d)", err);
         return;
     }
+#if defined(CONFIG_BT_SETTINGS)
+    err = settings_load_subtree("bt");
+    if (err) {
+        IPRO_LOGE(TAG, "Bluetooth settings load failed (err %d)", err);
+        return;
+    }
+#endif
     IPRO_LOGI(TAG, "BLE initialized");
     /* Can start advertising or scanning */
 }
@@ -181,10 +191,10 @@ int bt_le_adv_stop(void);</code></pre>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">// Connectable advertising (default interval)
-BT_LE_ADV_CONN
+BT_LE_ADV_CONN_FAST_1
 
 // Custom advertising parameters (options, min/max advertising interval in 0.625 ms units)
-BT_LE_ADV_PARAM(options, int_min, int_max)
+BT_LE_ADV_PARAM(options, int_min, int_max, NULL)
 
 // Advertising data construction
 BT_DATA_BYTES(type, ...)        // Byte data
@@ -207,7 +217,7 @@ static const struct bt_data sd[] = {
 };
 
 // Start connectable advertising
-int err = bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd));</code></pre>
+int err = bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd));</code></pre>
             </div>
         </section>
 
@@ -227,8 +237,8 @@ int err = bt_le_adv_start(BT_LE_ADV_CONN, ad, ARRAY_SIZE(ad), sd, ARRAY_SIZE(sd)
  *  @param adv_type Advertising type
  *  @param buf      Advertising data buffer
  */
-typedef void bt_le_scan_cb_t(const bt_addr_le_t *addr, s8_t rssi,
-                             u8_t adv_type, struct net_buf_simple *buf);
+typedef void bt_le_scan_cb_t(const bt_addr_le_t *addr, int8_t rssi,
+                             uint8_t adv_type, struct net_buf_simple *buf);
 
 /** Start LE scanning
  *  @param param  Scan parameters (type, duplicate filter, interval, window)
@@ -265,8 +275,8 @@ BT_LE_SCAN_PARAM(type, filter, interval, window)</code></pre>
                     <span class="code-block-title">Scanning Example</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">static void scan_cb(const bt_addr_le_t *addr, s8_t rssi,
-                    u8_t adv_type, struct net_buf_simple *buf)
+                <pre><code class="language-c">static void scan_cb(const bt_addr_le_t *addr, int8_t rssi,
+                    uint8_t adv_type, struct net_buf_simple *buf)
 {
     char addr_str[BT_ADDR_LE_STR_LEN];
     bt_addr_le_to_str(addr, addr_str, sizeof(addr_str));
@@ -291,20 +301,22 @@ bt_le_scan_stop();</code></pre>
                     <span class="code-block-title">bluetooth/conn.h</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">/** Create an LE connection (Central role)
- *  @param peer   Remote device address
- *  @param param  Connection parameters
- *  @return Connection object pointer, NULL on failure
+                <pre><code class="language-c">/** Create an LE connection (Central role).
+ * Returns 0 on success or a negative error code.
+ * On success, release the returned reference with bt_conn_unref()
+ * when the application no longer needs it. Completion is asynchronous.
  */
-struct bt_conn *bt_conn_le_create(const bt_addr_le_t *peer,
-                                  const struct bt_le_conn_param *param);
+int bt_conn_le_create(const bt_addr_le_t *peer,
+                      const struct bt_conn_le_create_param *create_param,
+                      const struct bt_le_conn_param *conn_param,
+                      struct bt_conn **conn);
 
 /** Disconnect a connection
  *  @param conn    Connection object
  *  @param reason  Disconnect reason code (BT_HCI_ERR_*)
  *  @return 0 on success, negative error code on failure
  */
-int bt_conn_disconnect(struct bt_conn *conn, u8_t reason);
+int bt_conn_disconnect(struct bt_conn *conn, uint8_t reason);
 
 /** Increment connection reference count */
 struct bt_conn *bt_conn_ref(struct bt_conn *conn);
@@ -327,7 +339,7 @@ int bt_conn_le_param_update(struct bt_conn *conn,
                     <span class="code-block-title">Connection Event Callbacks</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">static void connected(struct bt_conn *conn, u8_t err)
+                <pre><code class="language-c">static void connected(struct bt_conn *conn, uint8_t err)
 {
     if (err) {
         printk("Connection failed (err 0x%02x)\n", err);
@@ -336,7 +348,7 @@ int bt_conn_le_param_update(struct bt_conn *conn,
     }
 }
 
-static void disconnected(struct bt_conn *conn, u8_t reason)
+static void disconnected(struct bt_conn *conn, uint8_t reason)
 {
     printk("Disconnected (reason 0x%02x)\n", reason);
 }
@@ -383,7 +395,7 @@ int bt_gatt_notify_cb(struct bt_conn *conn,
  *  @return 0 on success, negative error code on failure
  */
 int bt_gatt_notify(struct bt_conn *conn, const struct bt_gatt_attr *attr,
-                   const void *data, u16_t len);
+                   const void *data, uint16_t len);
 
 /** Send a GATT Indication
  *  @param conn   Connection object
@@ -401,6 +413,9 @@ int bt_gatt_indicate(struct bt_conn *conn,
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">// Custom service UUID
+static uint8_t my_value;
+static struct bt_uuid_16 my_char_uuid = BT_UUID_INIT_16(0xfff1);
+
 static struct bt_uuid_128 my_svc_uuid = BT_UUID_INIT_128(
     0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
     0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef);
@@ -408,7 +423,7 @@ static struct bt_uuid_128 my_svc_uuid = BT_UUID_INIT_128(
 // Read callback
 static ssize_t read_value(struct bt_conn *conn,
                           const struct bt_gatt_attr *attr,
-                          void *buf, u16_t len, u16_t offset)
+                          void *buf, uint16_t len, uint16_t offset)
 {
     return bt_gatt_attr_read(conn, attr, buf, len, offset,
                              &my_value, sizeof(my_value));
@@ -469,18 +484,15 @@ int bt_gatt_write(struct bt_conn *conn,
  *  @return 0 on success, negative error code on failure
  */
 int bt_gatt_write_without_response(struct bt_conn *conn,
-    u16_t handle, const void *data, u16_t length, bool sign);
+    uint16_t handle, const void *data, uint16_t length, bool sign);
 
-/** Write to a remote attribute (without response, with completion callback)
- *  Same as bt_gatt_write_without_response(), but the func callback
- *  is called after the write is sent, and internal flow control is
- *  disabled — do not submit more data until the callback fires.
- *  @param func       Transmission complete callback
- *  @param user_data  User data passed back to the callback
- *  @return 0 on success, negative error code on failure
+/** Queue a write without response and receive a completion callback.
+ * Callback runs in System Workqueue context. Keep it nonblocking.
+ * Returns 0 when queued; handle negative errors and retry only after
+ * resources become available. See gatt.h for context restrictions.
  */
 int bt_gatt_write_without_response_cb(struct bt_conn *conn,
-    u16_t handle, const void *data, u16_t length, bool sign,
+    uint16_t handle, const void *data, uint16_t length, bool sign,
     bt_gatt_complete_func_t func, void *user_data);</code></pre>
             </div>
         </section>
@@ -804,7 +816,7 @@ int main(void)
             <h2>FreeRTOS API</h2>
             <p>The SDK primarily uses FreeRTOS as the real-time operating system.</p>
             <div class="alert alert-info">
-                <p>The BLE Host is Zephyr-based, but it runs on top of an internal FreeRTOS port layer; applications always use the FreeRTOS API — the Zephyr kernel API (<code>k_thread_create</code>, <code>k_sleep</code>, etc.) is neither needed nor available.</p>
+                <p>The BLE Host uses a Zephyr compatibility layer backed by the FreeRTOS port. Use FreeRTOS APIs for application tasks, delays and synchronization. The shim implements host-port requirements, not a complete Zephyr kernel.</p>
             </div>
 
             <div class="code-block">

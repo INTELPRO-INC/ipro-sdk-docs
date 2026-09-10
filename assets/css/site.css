@@ -1052,6 +1052,35 @@ a:hover {
     border-radius: 0;
     padding: 0 2rem;
     max-width: 48rem;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.doc-content pre {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-wrap: normal;
+}
+
+.doc-content pre > code:not(.hljs) {
+    display: block;
+    color: #e8edf5;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+}
+
+.doc-content section > pre {
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: var(--radius-md);
+}
+
+.section-container code:not(pre code) {
+    overflow-wrap: anywhere;
+}
+
+.hardware-section #ipro6s {
+    overflow-wrap: anywhere;
 }
 
 .doc-content h1 {
@@ -4798,6 +4827,8 @@ pre:not(.code-block pre) .copy-btn.copied {
 }
 
 .peripheral-card {
+    min-width: 0;
+    overflow-wrap: anywhere;
     padding: 1.5rem;
     background: var(--bg-tertiary);
     border-radius: 12px;

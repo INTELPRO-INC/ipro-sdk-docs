@@ -3,11 +3,13 @@ layout: default
 title: 更新日誌
 ---
 
-<div class="doc-layout">
+            <div class="doc-layout">
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">版本</h4>
             <ul class="sidebar-links">
+                <li><a href="#v2-0-1" class="sidebar-link">IPRO-SDK-V2.0.1</a></li>
+                <li><a href="#tools-3-4-0" class="sidebar-link">Online Installer 3.4.0</a></li>
                 <li><a href="#tools-3-3-0" class="sidebar-link">安裝包 / Extension 3.3.0</a></li>
                 <li><a href="#v1-2-1" class="sidebar-link">IPRO-IPRO7-SDK-V1.2.1</a></li>
                 <li><a href="#v1-0-1" class="sidebar-link">IPROREL-IPRO7-V1.0.1</a></li>
@@ -20,6 +22,23 @@ title: 更新日誌
     <article class="doc-content">
         <h1>更新日誌</h1>
         <p>IPRO SDK 的正式釋出版本紀錄。SDK 交付包的整體說明請參考包內的 <code>README.md</code> 檔案。</p>
+
+        <section id="v2-0-1">
+            <h2>IPRO-SDK-V2.0.1</h2>
+            <p><strong>發行日期：</strong>2026-09-09</p>
+            <p>延續 V2.0 的 IPRO6S 支援及 31 個應用專案，修正長時間 BLE 音訊傳輸。</p>
+            <ul><li>修正連續傳輸時 Bluetooth Host queue 發布的原子性問題。</li>
+                <li>PDM 邏輯錄音最長 4 小時，PSRAM ring 保留 240 秒，每 30 秒自動分段傳輸；Android 在分段間維持高連線優先權。</li>
+                <li>PDM 改用 link2 控制器、單連線 Host 與 2M PHY，提供 EVB／EVK 配置與 Android 配套原始碼。</li>
+                <li>包含 IPRO6S Wi-Fi／BR/EDR 範例、SDIO 雙端韌體、NPU／TFLM 範例及 .inm／.tflite 模型。</li>
+                <li>包含 ipro_unit_test 與 Linux x86-64 CMake；1.2.1 的 serial_monitor.py 與 PREBUILT-ARCHIVES-STRIPPED.txt 已不在此包。</li></ul>
+            <p>正式發行紀錄記載 31/31 應用建置成功，並以 Pixel 7a + IPRO7AI 完成五分鐘錄音：十個 960,000-byte 區塊、無掉包或序號缺口、ring 覆寫成功，穩態傳輸為 84.2–91.2 KB/s。數值對應該測試組合，不代表所有板子與手機皆有相同結果。<a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">發行說明、SDK、APK 與測試韌體</a></p>
+        </section>
+
+        <section id="tools-3-4-0">
+            <h2>Online Installer 3.4.0</h2>
+            <p>新增動態公開清單、獨立套件版本、完整安裝相容性選擇及快取離線安裝。Extension 維持 3.3.0。2026-09-10 核對時，清單中的 SDK stable 仍為 1.2.1；SDK V2.0.1 需另由正式 Release 下載。<a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/online-installer-v3.4.0">下載安裝器</a></p>
+        </section>
 
         <section id="tools-3-3-0">
             <h2>開發工具：Windows 安裝包 / Extension 3.3.0</h2>

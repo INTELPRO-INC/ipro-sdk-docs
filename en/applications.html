@@ -4,12 +4,15 @@ lang: en
 title: Applications - IPRO SDK
 ---
 
-<div class="doc-layout">
+            <div class="doc-layout">
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">Table of Contents</h4>
             <ul class="sidebar-links">
+
+
 <li><a href="#overview" class="sidebar-link">Overview</a></li>
+<li><a href="#sdk-2-apps" class="sidebar-link">V2.0 Application Catalog</a></li>
 <li><a href="#ipro-ble-remote" class="sidebar-link">ipro_ble_remote</a></li>
 <li><a href="#ipro-ble-transparent" class="sidebar-link">ipro_ble_transparent</a></li>
 <li><a href="#ipro-throughput-test" class="sidebar-link">ipro_throughput_test</a></li>
@@ -19,7 +22,7 @@ title: Applications - IPRO SDK
 <li><a href="#ipro7-demo" class="sidebar-link">ipro7_demo</a></li>
 <li><a href="#ipro7-sdio-wifi" class="sidebar-link">ipro7_sdio_wifi</a></li>
 <li><a href="#ipro7ai-evk-demo" class="sidebar-link">ipro7ai_evk_demo</a></li>
-<li class="sidebar-section-title">Not included in V1.2.1</li>
+<li class="sidebar-section-title">Not included in V2.0.1</li>
 <li><a href="#ipro-ble-img-capture" class="sidebar-link">ipro_ble_img_capture</a></li>
 <li><a href="#ipro-le-audio-bis-source" class="sidebar-link">ipro_le_audio_bis_source</a></li>
 <li><a href="#ipro-le-audio-bis-sink" class="sidebar-link">ipro_le_audio_bis_sink</a></li>
@@ -32,7 +35,7 @@ title: Applications - IPRO SDK
 
     <article class="doc-content">
         <h1>Applications</h1>
-<p>Reference applications verified against the V1.2.1 package. Build requirements and board configuration vary by application.</p>
+            <p>Reference applications verified against the V2.0.1 package. Build requirements and board configuration vary by application.</p>
 
         <section id="overview">
             <h2>Application Overview</h2>
@@ -56,10 +59,39 @@ title: Applications - IPRO SDK
             <p>List projects and build from the SDK root:</p>
             <pre><code class="language-bash">./build_freertos.sh -l
 ./build_freertos.sh ipro_ble_remote build</code></pre>
-            <div class="alert alert-info">Flashing requires a separately supplied flash tool. <code>tools/serial_monitor.py</code> is included for POSIX serial monitoring.</div>
+            <div class="alert alert-info">Flashing and serial monitoring require separately installed tools; V2.0.1 does not include <code>tools/serial_monitor.py</code>.</div>
         </section>
 
         <!-- ==================== BLE Apps ==================== -->
+
+        <section id="sdk-2-apps">
+            <h2>V2.0 Application Catalog</h2>
+            <p>Alongside the nine BLE / audio / IPRO7 references in the overview, these applications bring the release to 31 projects with a <code>.config</code>. Some require external hardware or model provisioning; build success alone does not validate those functions.</p>
+            <div class="table-wrapper"><table><thead><tr><th>Path</th><th>Purpose</th><th>SoC</th></tr></thead><tbody>
+<tr><td><code>apps/platform/ipro6_demo/</code></td><td>Wi-Fi 6 station / soft-AP</td><td>IPRO6S</td></tr>
+<tr><td><code>apps/platform/ipro6_if_wifi/</code></td><td>SDIO radio firmware</td><td>IPRO6S</td></tr>
+<tr><td><code>apps/platform/ipro6_btdm_phyrf/</code></td><td>BLE + BR/EDR, SCO to I2S</td><td>IPRO6S</td></tr>
+<tr><td><code>apps/ai/ipro_meeting_poc/</code></td><td>NPU speaker recognition</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_npu_yolo/</code></td><td>NPU YOLO inference</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_ai_bench/</code></td><td>NPU / CPU timing</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_tflm_test/</code></td><td>TFLM model tests</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_tflm_yolo/</code></td><td>CPU YOLO</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_nmsis_nn_test/</code></td><td>NMSIS-NN operator tests</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_tinymaix_demo/</code></td><td>TinyMaix inference</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_unit_test/</code></td><td>HAL and shared-component tests</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_gh7007_test/</code></td><td>SPI LCD</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_gh7007_video/</code></td><td>LCD video playback</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_epd_test/</code></td><td>E-paper</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_epd_el036/</code></td><td>EL036 e-paper</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/kw307_radar_test/</code></td><td>UART radar</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/mpu6500_test/</code></td><td>I2C IMU</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_enc28j60_test/</code></td><td>SPI Ethernet</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_pio_sdh_test/</code></td><td>PIO SD host</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_sdio_probe/</code></td><td>SDIO probe</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_atbm_probe/</code></td><td>ATBM6162 SDIO probe</td><td>IPRO7</td></tr>
+<tr><td><code>apps/test/ipro_lp_test/</code></td><td>PDS low power</td><td>IPRO7</td></tr>
+</tbody></table></div>
+        </section>
 
         <section id="ipro-ble-remote">
             <h2>ipro_ble_remote</h2>
@@ -234,7 +266,7 @@ tp conn 6 6      # Minimum connection interval</code></pre>
 
         <section id="ipro-ble-img-capture">
             <h2>ipro_ble_img_capture</h2>
-            <div class="alert alert-info">This application is not included in V1.2.1. See the current application list above; contact INTELPRO for availability of this reference design.</div>
+            <div class="alert alert-info">This application is not included in V2.0.1. See the current application list above; contact INTELPRO for availability of this reference design.</div>
         </section>
 
         <!-- ==================== LE Audio Apps ==================== -->
@@ -264,26 +296,26 @@ tp conn 6 6      # Minimum connection interval</code></pre>
 
         <section id="ipro-le-audio-bis-source">
             <h2>ipro_le_audio_bis_source</h2>
-            <div class="alert alert-info">This application is not included in V1.2.1. See the current application list above; contact INTELPRO for availability of this reference design.</div>
+            <div class="alert alert-info">This application is not included in V2.0.1. See the current application list above; contact INTELPRO for availability of this reference design.</div>
         </section>
 
         <section id="ipro-le-audio-bis-sink">
             <h2>ipro_le_audio_bis_sink</h2>
-            <div class="alert alert-info">This application is not included in V1.2.1. See the current application list above; contact INTELPRO for availability of this reference design.</div>
+            <div class="alert alert-info">This application is not included in V2.0.1. See the current application list above; contact INTELPRO for availability of this reference design.</div>
         </section>
 
         <!-- ==================== Multimedia Apps ==================== -->
 
         <section id="ipro-agora-sentino">
             <h2>ipro_agora_sentino</h2>
-            <div class="alert alert-info">This application is not included in V1.2.1. See the current application list above; contact INTELPRO for availability of this reference design.</div>
+            <div class="alert alert-info">This application is not included in V2.0.1. See the current application list above; contact INTELPRO for availability of this reference design.</div>
         </section>
 
         <!-- ==================== Network Apps ==================== -->
 
         <section id="ipro-voice-assistant">
             <h2>ipro_voice_assistant</h2>
-            <div class="alert alert-info">This application is not included in V1.2.1. See the current application list above; contact INTELPRO for availability of this reference design.</div>
+            <div class="alert alert-info">This application is not included in V2.0.1. See the current application list above; contact INTELPRO for availability of this reference design.</div>
         </section>
 
         <!-- ==================== Platform Apps ==================== -->
@@ -348,22 +380,21 @@ void gpio_example(void)
         </section>
 <section id="ipro-pdm-mic-demo">
             <h2>ipro_pdm_mic_demo</h2>
-            <p>PDM microphone capture, BLE transfer and LC3 compression</p>
-            <p><code>apps/multimedia/ipro_pdm_mic_demo/</code></p>
-            <pre><code class="language-bash">./build_freertos.sh ipro_pdm_mic_demo build</code></pre>
+            <p>PDM capture at 16 kHz / 16-bit mono, optional LC3 streaming, persistent SMP bonding and PDS31 reconnect. V2.0.1 adds logical recordings up to 4 hours. The physical PSRAM ring retains 240 seconds; retrieve each 30-second segment using <code>CHUNK_READY</code> / <code>GET_CHUNK</code>. <code>GET_AUDIO</code> returns only the last 240 seconds after wrap.</p>
+            <p>Use the shipped <code>link2 / bt52</code>, 16 KB EM configuration. <code>CONFIG_BT_CONN=1</code> remains the host limit; the controller archive has two-link capacity. Copy the complete board configuration instead of forcing these two values to match.</p><pre><code class="language-bash">make -C apps/multimedia/ipro_pdm_mic_demo
+make -C apps/multimedia/ipro_pdm_mic_demo BOARD=evk</code></pre>            <p>EVB output uses <code>build/build_out/</code>; EVK output uses <code>build_config_evk/build_out/</code>. Both produce <code>ipro_pdm_mic_demo_IPRO7.bin</code>. Android source: <code>tools/android/IproMicDemo/</code>; matching APK and test firmware: <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1 Release</a>.</p>
         </section>
 <section id="ipro7-sdio-wifi">
             <h2>ipro7_sdio_wifi</h2>
-            <p>IPRO7 SDIO host with IPRO6S Wi-Fi</p>
-            <p><code>apps/platform/ipro7_sdio_wifi/</code></p>
-            <p>Requires an IPRO6S companion running matching firmware, supplied separately. Wait for <code>on_got_ip</code> before using sockets.</p>
-            <pre><code class="language-bash">./build_freertos.sh ipro7_sdio_wifi build</code></pre>
+            <p>IPRO7 has no built-in Wi-Fi. V2.0.1 includes both <code>apps/platform/ipro7_sdio_wifi/</code> (IPRO7 host) and <code>apps/platform/ipro6_if_wifi/</code> (IPRO6S radio). Build the latter with <code>defconfig_ipro6_sdio</code>; two chips require two firmware images.</p><pre><code class="language-bash">./build_freertos.sh -d defconfig_ipro6_sdio build ipro6_if_wifi
+./build_freertos.sh build ipro7_sdio_wifi</code></pre>            <p>Outputs: <code>apps/platform/ipro6_if_wifi/build_ipro6_sdio/build_out/ipro6_if_wifi_IPRO6.bin</code> and <code>apps/platform/ipro7_sdio_wifi/build/build_out/ipro7_sdio_wifi_IPRO7.bin</code>. Verify board wiring, power control and the flash configuration for each chip.</p><pre><code class="language-text">ipronet_up &lt;SSID&gt; &lt;PASSWORD&gt;
+ipronet_down</code></pre>            <p>Run those commands on IPRO7. The API in <code>components/network/ipronet_host/ipronet_host.h</code> provides <code>ipronet_config_default()</code>, <code>ipronet_start()</code> and <code>ipronet_connect()</code>. Wait for <code>on_got_ip</code> before using sockets. Hand work from RX-task callbacks to an application task; do not block or call connection-control APIs there.</p>
         </section>
 <section id="ipro7ai-evk-demo">
             <h2>ipro7ai_evk_demo</h2>
             <p>IPRO7AI EVK display, camera, audio and AI / BLE configurations</p>
             <p><code>apps/platform/ipro7ai_evk_demo/</code></p>
-            <p>Use <code>config_ai</code>, <code>config_bt</code> or <code>config_video</code> for the required board function. AI models are supplied separately; copy the selected configuration to <code>.config</code> and rebuild cleanly.</p>
+            <p>Choose <code>config_ai</code>, <code>config_bt</code> or <code>config_video</code> using <code>DEFCONFIG=</code>. V2.0.1 includes selected models under <code>apps/platform/ipro7_demo/demo/ai/ai_model/</code>; provision the model expected by the EVK application.</p>
             <pre><code class="language-bash">./build_freertos.sh ipro7ai_evk_demo build</code></pre>
         </section>
 <section id="creating-apps">
@@ -510,5 +541,7 @@ clean:
             </div>
             <p>The build output is located at <code>apps/bluetooth/ble/my_app/build/build_out/my_app_IPRO7.bin</code>.</p>
         </section>
+
+
     </article>
 </div>

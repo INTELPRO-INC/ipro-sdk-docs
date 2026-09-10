@@ -4,7 +4,7 @@ title: Architecture Overview
 lang: en
 ---
 
-<div class="doc-layout">
+            <div class="doc-layout">
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">Table of Contents</h4>
@@ -40,7 +40,7 @@ lang: en
                         <span class="pill">bluetooth/ble/</span>
                         <span class="pill">bluetooth/le_audio/</span>
                         <span class="pill">multimedia/</span>
-                        <span class="pill">network/</span>
+                        <span class="pill">ai/</span><span class="pill">test/</span>
                         <span class="pill">platform/ipro7_demo</span>
                     </div>
                 </div>
@@ -125,14 +125,7 @@ lang: en
                             <td>8 MB PSRAM + 256 KB OCRAM</td>
                             <td>BLE 5.4, LE Audio, ISP, 0.1 TOPS NPU</td>
                         </tr>
-                        <tr>
-                            <td><strong>IPRO6</strong> <em>(legacy)</em></td>
-                            <td>RISC-V</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td>Previous generation SoC; can serve as the Wi-Fi connectivity companion chip for IPRO7 (BSP references only, no IPRO6 apps in this release)</td>
-                        </tr>
+                        <tr><td><strong>IPRO6S</strong></td><td>RISC-V RV32IMAFC</td><td>Application configuration</td><td>2 MB</td><td>320 KB TCM + 160 KB Wi-Fi RAM</td><td>Wi-Fi 6, BLE 5.4 + BR/EDR (A2DP / AVRCP / HFP-HF / SCO)</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -167,7 +160,7 @@ lang: en
             </div>
 
             <div class="alert alert-info">
-                <strong>Tip:</strong> IPRO7 itself integrates an EMAC Ethernet MAC, so wired Ethernet networking with lwIP works without a companion chip (see the <code>ipro7_demo</code> reference application). Contact the vendor for the Wi-Fi dual-chip reference design.
+                <strong>Tip:</strong> IPRO7 itself integrates an EMAC Ethernet MAC, so wired Ethernet networking with lwIP works without a companion chip (see the <code>ipro7_demo</code> reference application). V2.0.1 includes <code>ipro7_sdio_wifi</code> and <code>ipro6_if_wifi</code> for the SDIO pair.
             </div>
         </section>
 
@@ -441,7 +434,7 @@ make -C apps/platform/ipro7_demo clean</code></pre>
                         <tr>
                             <td><strong>AI / NPU</strong></td>
                             <td><code>ai/</code></td>
-                            <td>AI inference engine with NPU acceleration; V1.2.1 links <code>components/ai/lib/libai.a</code> and supplies its headers.</td>
+                            <td>AI inference engine with NPU acceleration; V2.0.1 links <code>components/ai/lib/libai.a</code> and supplies its headers.</td>
                         </tr>
                         <tr>
                             <td><strong>ISP</strong></td>
@@ -586,8 +579,8 @@ CONFIG_FREERTOS_SUPPORT=y
 CONFIG_BLUETOOTH_LE_ENABLE=y
 
 # Component enables
-CONFIG_LWIP=y
-CONFIG_MBEDTLS=y
+CONFIG_COMPONENTS_LWIP_ENABLE=y
+CONFIG_COMPONENTS_MBEDTLS_ENABLE=y
 
 # Test auto-run
 CONFIG_TEST_AUTO_RUN=y</code></pre>
@@ -603,7 +596,7 @@ CONFIG_TEST_AUTO_RUN=y</code></pre>
 #define CONFIG_CPU_ID "intelpro_ipro7"
 #define CONFIG_FREERTOS_SUPPORT 1
 #define CONFIG_BLUETOOTH_LE_ENABLE 1
-#define CONFIG_LWIP 1</code></pre>
+#define CONFIG_COMPONENTS_LWIP_ENABLE 1</code></pre>
             </div>
 
             <div class="alert alert-info">
@@ -688,15 +681,13 @@ int main(void)
                 </table>
             </div>
 
-            <div class="alert alert-info">
-                <strong>Tip:</strong> Applications in subdirectories (e.g., <code>apps/bluetooth/</code>) need to set <code>CONFIG_APP_CATEGORY</code> in their <code>.config</code> so the build system can correctly locate the project path.
-            </div>
+            <div class="alert alert-info"><p>The build system derives <code>CONFIG_APP_CATEGORY</code> from <code>PROJECT_PATH</code>. For a new application, verify the Makefile’s relative SDK path and CMake project name.</p></div>
         </section>
 
         <!-- Section 8: Directory Structure -->
         <section id="directory">
             <h2>Directory Structure</h2>
-            <pre><code class="language-text">IPRO-IPRO7-SDK-V1.2.1/
+            <pre><code class="language-text">IPRO-SDK-V2.0.1/
 ├── apps/
 │   ├── bluetooth/ble/
 │   │   ├── ipro_ble_remote/
@@ -705,10 +696,14 @@ int main(void)
 │   │   └── ipro_throughput_test/
 │   ├── bluetooth/le_audio/ipro_le_audio_headset/
 │   ├── multimedia/ipro_pdm_mic_demo/
+│   ├── ai/ipro_meeting_poc/
 │   ├── platform/
 │   │   ├── ipro7_demo/
 │   │   ├── ipro7_sdio_wifi/
-│   │   └── ipro7ai_evk_demo/
+│   │   ├── ipro7ai_evk_demo/
+│   │   ├── ipro6_demo/
+│   │   ├── ipro6_if_wifi/
+│   │   └── ipro6_btdm_phyrf/
 │   └── test/
 ├── bsp/
 ├── components/
@@ -722,13 +717,12 @@ int main(void)
 ├── tools/
 │   ├── android/
 │   ├── script/
-│   └── serial_monitor.py
+│   └── cmake/
 ├── build_freertos.sh
 ├── project.build
 ├── CMakeLists.txt
 ├── Kconfig
-├── VERSION.txt
-└── PREBUILT-ARCHIVES-STRIPPED.txt</code></pre>
+└── VERSION.txt</code></pre>
             <p>This is an overview of the documented application paths. Use <code>./build_freertos.sh -l</code> for the complete project list.</p>
         </section>
 
@@ -758,8 +752,8 @@ int main(void)
                 </tbody>
                 </table>
             </div>
-            <p>Choose <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code> for basic BLE or <code>"bt54_iso2"</code> for BLE 5.4 with two ISO streams (CIS/BIS). The latter requires <code>CONFIG_EM_SIZE</code> of at least 32 KB. Set <code>CONFIG_BT_CONN</code> to the selected ACL connection count.</p>
-            <p>Host sources are included; the controller implementation is provided as 16 prebuilt archives. See the BLE development guide for configuration and initialization.</p>
+            <p>Choose <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code> for basic BLE or <code>"bt54_iso2"</code> for BLE 5.4 with two ISO streams (CIS/BIS). The latter requires <code>CONFIG_EM_SIZE</code> of at least 32 KB. Keep the host connection limit within controller capacity; preserve the shipped PDM <code>link2</code> / <code>CONFIG_BT_CONN=1</code> configuration.</p>
+            <p>Host sources are included. The shared controller package contains 16 IPRO7 archives and 6 IPRO6S BR/EDR archives; configuration selects the platform and variant.</p>
         </section>
 
         <!-- Section 10: BSP & Drivers -->
