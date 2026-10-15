@@ -33,11 +33,14 @@ title: API 參考
 
     <article class="doc-content">
         <h1>API 參考</h1>
-        <p>本頁提供 IPRO SDK 主要 API 的參考文件。BLE API 使用 Zephyr 風格的 <code>bt_*</code> 回調式 API，HAL API 提供底層硬體存取。完整的 API 文件請參考原始碼中的標頭檔註解。</p>
+        <p>本頁提供 IPRO SDK 主要 API 的參考文件。BLE API 使用 Zephyr 風格的 <code>bt_*</code> 回呼式 API，HAL API 提供底層硬體存取。完整的 API 文件請參考原始碼中的標頭檔註解。</p>
+        <div class="alert alert-info">
+            <p>本頁的 HAL 與 RTOS API 適用於 FreeRTOS 應用。V2.1.0 起以 Zephyr RTOS 建構時，周邊請改用 Zephyr 的 device driver API（底層為相同的 HAL 與 SoC 驅動），請見 <a href="{{ '/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>。</p>
+        </div>
 
         <!-- ==================== BLE Core ==================== -->
 
-        <section id="ble-core"><p>以下初始化流程適用於 IPRO7；IPRO6S 請以 <code>apps/platform/ipro6_demo/</code> 的 BTDM 初始化為準。</p>
+        <section id="ble-core"><p>以下初始化流程適用於 IPRO7 的 FreeRTOS 應用（V2.1.0 僅支援 IPRO7）；Zephyr 的 BLE 範例請見 <a href="{{ '/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>。IPRO6S 的 BTDM 初始化請參考 V2.0.1 的 <code>apps/platform/ipro6_demo/</code>。</p>
             <h2>BLE 核心初始化</h2>
             <p>BLE 子系統使用 Zephyr 風格的 <code>bt_*</code> API。呼叫 <code>bt_enable()</code> 之前，必須先依序完成 <code>ipro_ble_ctlr_controller_init()</code> 與 <code>hci_driver_ipro_ble_ctlr_init()</code>，否則 <code>bt_enable()</code> 會失敗。</p>
 
@@ -64,12 +67,12 @@ int hci_driver_ipro_ble_ctlr_init(void);</code></pre>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">/** 啟用藍牙子系統
- *  @param cb  完成回調函式，NULL 表示同步啟用
+ *  @param cb  完成回呼函式，NULL 表示同步啟用
  *  @return 0 成功，負值錯誤碼
  */
 int bt_enable(bt_ready_cb_t cb);
 
-/** 設置藍牙裝置名稱
+/** 設定藍牙裝置名稱
  *  @param name  新名稱字串
  *  @return 0 成功，負值錯誤碼
  */
@@ -183,7 +186,7 @@ int bt_le_adv_start(const struct bt_le_adv_param *param,
 int bt_le_adv_stop(void);</code></pre>
             </div>
 
-            <h3>廣播參數常用宏</h3>
+            <h3>廣播參數常用巨集</h3>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">常用廣播配置</span>
@@ -230,7 +233,7 @@ int err = bt_le_adv_start(BT_LE_ADV_CONN_FAST_1, ad, ARRAY_SIZE(ad), sd, ARRAY_S
                     <span class="code-block-title">bluetooth/bluetooth.h</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">/** 掃描結果回調
+                <pre><code class="language-c">/** 掃描結果回呼
  *  @param addr     廣播端 LE 地址與類型
  *  @param rssi     訊號強度 (dBm)
  *  @param adv_type 廣播類型
@@ -241,7 +244,7 @@ typedef void bt_le_scan_cb_t(const bt_addr_le_t *addr, int8_t rssi,
 
 /** 開始 LE 掃描
  *  @param param  掃描參數（類型、重複過濾、間隔、視窗）
- *  @param cb     掃描結果回調，每個被發現的裝置呼叫一次
+ *  @param cb     掃描結果回呼，每個被發現的裝置呼叫一次
  *  @return 0 成功，負值錯誤碼
  */
 int bt_le_scan_start(const struct bt_le_scan_param *param, bt_le_scan_cb_t cb);
@@ -252,7 +255,7 @@ int bt_le_scan_start(const struct bt_le_scan_param *param, bt_le_scan_cb_t cb);
 int bt_le_scan_stop(void);</code></pre>
             </div>
 
-            <h3>掃描參數常用宏</h3>
+            <h3>掃描參數常用巨集</h3>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">常用掃描配置</span>
@@ -332,10 +335,10 @@ int bt_conn_le_param_update(struct bt_conn *conn,
                             const struct bt_le_conn_param *param);</code></pre>
             </div>
 
-            <h3>連線回調</h3>
+            <h3>連線回呼</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">連線事件回調</span>
+                    <span class="code-block-title">連線事件回呼</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-c">static void connected(struct bt_conn *conn, uint8_t err)
@@ -357,7 +360,7 @@ static struct bt_conn_cb conn_callbacks = {
     .disconnected = disconnected,
 };
 
-// 註冊回調
+// 註冊回呼
 bt_conn_cb_register(&conn_callbacks);</code></pre>
             </div>
         </section>
@@ -380,13 +383,13 @@ int bt_gatt_service_register(struct bt_gatt_service *svc);
 
 /** 發送 GATT Notification
  *  @param conn   連線物件 (NULL = 所有已訂閱的連線)
- *  @param params 通知參數（屬性、資料、長度、回調）
+ *  @param params 通知參數（屬性、資料、長度、回呼）
  *  @return 0 成功，負值錯誤碼
  */
 int bt_gatt_notify_cb(struct bt_conn *conn,
                       struct bt_gatt_notify_params *params);
 
-/** 簡化版 Notify（無回調）
+/** 簡化版 Notify（無回呼）
  *  @param conn  連線物件
  *  @param attr  屬性指標
  *  @param data  資料指標
@@ -419,7 +422,7 @@ static struct bt_uuid_128 my_svc_uuid = BT_UUID_INIT_128(
     0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef,
     0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef);
 
-// 讀取回調
+// 讀取回呼
 static ssize_t read_value(struct bt_conn *conn,
                           const struct bt_gatt_attr *attr,
                           void *buf, uint16_t len, uint16_t offset)
@@ -452,7 +455,7 @@ BT_GATT_SERVICE_DEFINE(my_svc,
                 </div>
                 <pre><code class="language-c">/** 服務/特徵探索
  *  @param conn   連線物件
- *  @param params 探索參數（UUID、回調、範圍）
+ *  @param params 探索參數（UUID、回呼、範圍）
  *  @return 0 成功，負值錯誤碼
  */
 int bt_gatt_discover(struct bt_conn *conn,
@@ -460,7 +463,7 @@ int bt_gatt_discover(struct bt_conn *conn,
 
 /** 讀取遠端屬性
  *  @param conn   連線物件
- *  @param params 讀取參數（handle、回調）
+ *  @param params 讀取參數（handle、回呼）
  *  @return 0 成功，負值錯誤碼
  */
 int bt_gatt_read(struct bt_conn *conn,
@@ -468,7 +471,7 @@ int bt_gatt_read(struct bt_conn *conn,
 
 /** 寫入遠端屬性（需回應）
  *  @param conn   連線物件
- *  @param params 寫入參數（handle、資料、回調）
+ *  @param params 寫入參數（handle、資料、回呼）
  *  @return 0 成功，負值錯誤碼
  */
 int bt_gatt_write(struct bt_conn *conn,
@@ -507,7 +510,7 @@ int bt_gatt_write_without_response_cb(struct bt_conn *conn,
                     <span class="code-block-title">GPIO 函式</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-c">/** 設置 GPIO 模式
+                <pre><code class="language-c">/** 設定 GPIO 模式
  *  @param pin   腳位編號（IPRO7 支援 GPIO 0 ~ 41；
  *               GPIO_PIN_x enum 僅為便利常數，可直接傳數值）
  *  @param mode  模式 (GPIO_OUTPUT_MODE, GPIO_INPUT_PP_MODE, ...)
@@ -528,9 +531,9 @@ void gpio_toggle(uint32_t pin);
  */
 int gpio_read(uint32_t pin);
 
-/** 附加中斷回調
+/** 附加中斷回呼
  *  @param pin    腳位編號
- *  @param cbfun  中斷回調函式
+ *  @param cbfun  中斷回呼函式
  */
 void gpio_attach_irq(uint32_t pin, void (*cbfun)(uint32_t pin));
 
@@ -612,10 +615,10 @@ int uart_read(int uart_id, void *buffer, uint32_t size);
 /** 非阻塞讀取可用資料 */
 int uart_read_available(int uart_id, void *buffer, uint32_t max_size);
 
-/** 設置鮑率 */
+/** 設定鮑率 */
 void uart_set_baudrate(int uart_id, int baudrate);
 
-/** 設置回調函式 */
+/** 設定回呼函式 */
 void uart_set_callback(int uart_id, void *args);
 
 /** UART IO 控制 */
@@ -640,7 +643,7 @@ int spi_init(int spi_id);
 /** 反初始化 SPI */
 int spi_deinit(int spi_id);
 
-/** 設置 SPI 配置 */
+/** 設定 SPI 配置 */
 void spi_setConfig(spi_device_t *dev);
 
 /** 啟用/停用 SPI */
@@ -812,7 +815,7 @@ int main(void)
             <h2>FreeRTOS API</h2>
             <p>SDK 主要使用 FreeRTOS 作為即時作業系統。</p>
             <div class="alert alert-info">
-                <p>BLE Host 的 Zephyr 相容層由 FreeRTOS port 支援。應用任務、延遲與同步請使用 FreeRTOS API；相容層只提供 Host 移植所需功能，不是完整 Zephyr kernel。</p>
+                <p>BLE Host 的 Zephyr 相容層由 FreeRTOS port 支援。應用任務、延遲與同步請使用 FreeRTOS API；相容層只提供 Host 移植所需功能，不是完整 Zephyr kernel。需要完整 Zephyr kernel 時，請改用 V2.1.0 起提供的 <a href="{{ '/zephyr-rtos' | relative_url }}">Zephyr RTOS</a> 路徑。</p>
             </div>
 
             <div class="code-block">
@@ -834,7 +837,7 @@ void vTaskDelay(const TickType_t xTicksToDelay);
 // 毫秒轉 Ticks
 #define pdMS_TO_TICKS(xTimeInMs)
 
-// 信號量
+// 號誌
 SemaphoreHandle_t xSemaphoreCreateBinary(void);
 SemaphoreHandle_t xSemaphoreCreateMutex(void);
 BaseType_t xSemaphoreTake(SemaphoreHandle_t sem, TickType_t timeout);
@@ -861,7 +864,7 @@ BaseType_t xQueueReceive(QueueHandle_t queue, void *buffer, TickType_t timeout);
                 </div>
                 <pre><code class="language-c">#include "ipro_log.h"
 
-// 日誌輸出宏
+// 日誌輸出巨集
 IPRO_LOGE(tag, format, ...)   // 錯誤等級
 IPRO_LOGW(tag, format, ...)   // 警告等級
 IPRO_LOGI(tag, format, ...)   // 資訊等級

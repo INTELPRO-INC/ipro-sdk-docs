@@ -8,16 +8,16 @@ title: 網路開發
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">本頁目錄</h4>
             <ul class="sidebar-links">
-                <li><a href="#ipro6s-wifi6" class="sidebar-link">IPRO6S Wi-Fi 6</a></li>
-
                 <li><a href="#overview" class="sidebar-link">概覽</a></li>
                 <li><a href="#architecture" class="sidebar-link">網路架構</a></li>
                 <li><a href="#network-config" class="sidebar-link">網路配置</a></li>
                 <li><a href="#lwip" class="sidebar-link">lwIP 整合</a></li>
-                <li><a href="#emac" class="sidebar-link">乙太網路 (EMAC)</a></li>
+                <li><a href="#emac" class="sidebar-link">乙太網路</a></li>
                 <li><a href="#mbedtls" class="sidebar-link">安全加密 (mbedTLS)</a></li>
                 <li><a href="#http-client" class="sidebar-link">HTTP Client</a></li>
-                <li><a href="#wifi-ipro6" class="sidebar-link">Wi-Fi（IPRO6 Companion）</a></li>
+                <li><a href="#wifi-ipro6" class="sidebar-link">Wi-Fi（IPRO6S SDIO 無線端）</a></li>
+                <li><a href="#wifi-atbm6162" class="sidebar-link">ATBM6162 SDIO 模組</a></li>
+                <li><a href="#ipro6s-wifi6" class="sidebar-link">IPRO6S Wi-Fi 6（V2.0.1）</a></li>
                 <li><a href="#reference-apps" class="sidebar-link">參考應用</a></li>
             </ul>
         </nav>
@@ -25,12 +25,13 @@ title: 網路開發
 
     <article class="doc-content">
         <h1>網路開發</h1>
-        <p>IPRO7 是系統的主控 SoC，負責應用邏輯、NPU 推論與 BLE 連線，<strong>本身不內建 Wi-Fi 射頻</strong>。IPRO SDK 透過 lwIP TCP/IP 協定堆疊與 mbedTLS 加密程式庫，提供兩條對外連網路徑：</p>
+        <p>IPRO7 是系統的主控 SoC，負責應用邏輯、NPU 推論與 BLE 連線，<strong>本身不內建 Wi-Fi</strong>。IPRO SDK V2.1.0 透過 lwIP TCP/IP 協定堆疊與 mbedTLS 加密程式庫，在 IPRO7 上提供下列對外連網路徑：</p>
         <ul>
-            <li><strong>乙太網路 (EMAC)</strong> — IPRO7 內建 Ethernet MAC 控制器，搭配 lwIP 即可有線上網。Release SDK v2.0.1 內含完整原始碼與參考應用。</li>
-            <li><strong>Wi-Fi（經 IPRO6 companion 晶片）</strong> — Wi-Fi 6 (802.11ax) 由 IPRO6 系列 connectivity companion 晶片提供，經 SDIO 介面橋接至 IPRO7 的 lwIP 堆疊。V2.0.1 已包含 IPRO7 Host 與 IPRO6S 無線端應用原始碼。</li>
+            <li><strong>乙太網路</strong> — IPRO7 內建 Ethernet MAC 控制器 (EMAC，RMII)，搭配 lwIP 即可有線上網，參考應用為 <code>ipro7_demo</code>；另附 <code>ipro_enc28j60_test</code>（ENC28J60 經 SPI）。</li>
+            <li><strong>Wi-Fi（IPRO6S 作為 SDIO 無線端）</strong> — IPRO7 經 SDIO 驅動執行 Wi-Fi 韌體的 IPRO6S，連線呈現為 lwIP netif <code>iproeth0</code>。IPRO7 端隨 SDK 提供：<code>ipro7_sdio_wifi</code>（<code>ipronet_host</code> 的 SDIO host 範例：傳輸、netif、DHCP、iperf），以及 IPRO7AI Reef EVK 搭配 IPRO6S FIN 卡的 <code>ipro7ai_reef_demo</code>（<code>defconfig_wifi_ipro6s</code>，含 RTSP 相機串流）。IPRO6S 端韌體不在 V2.1.0 內：<code>ipro6_if_wifi</code> 隨 V2.0.1 提供，FIN 卡韌體請洽 INTELPRO。</li>
+            <li><strong>ATBM6162 SDIO 模組</strong> — V2.1.0 只附模組探測程式 <code>ipro_atbm_probe</code>。</li>
         </ul>
-        <p>V2.0.1 未包含 LTE modem 元件 <code>components/network/lte_modem/</code>。</p>
+        <p>V2.1.0 未包含 LTE modem 元件 <code>components/network/lte_modem/</code>。V2.1.0 不支援 IPRO6S 建置；IPRO6S 晶片內建 Wi-Fi 6 的開發請使用 V2.0.1。本頁內容適用於 FreeRTOS 應用；Zephyr RTOS 目前沒有 Ethernet 驅動，Thread 請見 <a href="{{ '/matter-thread' | relative_url }}">Matter &amp; Thread</a>。</p>
 
         <!-- Overview -->
         <section id="overview">
@@ -47,12 +48,12 @@ title: 網路開發
                     </ul>
                 </div>
                 <div class="feature-card">
-                    <h3 class="feature-title">乙太網路 (EMAC)</h3>
+                    <h3 class="feature-title">乙太網路</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
-                        <li>IPRO7 內建 Ethernet MAC 控制器</li>
+                        <li>IPRO7 內建 Ethernet MAC 控制器 (RMII)</li>
                         <li>外接 PHY 即可有線上網</li>
                         <li>DHCP 自動取得 IP</li>
-                        <li>Release SDK 內含參考應用</li>
+                        <li>另附 ENC28J60（SPI）範例</li>
                     </ul>
                 </div>
                 <div class="feature-card">
@@ -65,12 +66,12 @@ title: 網路開發
                     </ul>
                 </div>
                 <div class="feature-card">
-                    <h3 class="feature-title">Wi-Fi（IPRO6 Companion）</h3>
+                    <h3 class="feature-title">Wi-Fi（外接 SDIO）</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
-                        <li>Wi-Fi 6 (802.11ax) 由 IPRO6 晶片提供</li>
-                        <li>SDIO 介面連接 IPRO7 主控</li>
-                        <li>數據面橋接至 IPRO7 lwIP</li>
-                        <li>已附 IPRO7 Host 與 IPRO6S Device 範例</li>
+                        <li>IPRO7 不內建 Wi-Fi</li>
+                        <li>IPRO6S 作為 SDIO 無線端（含 Reef 的 FIN 卡）</li>
+                        <li>ATBM6162 模組探測程式</li>
+                        <li>資料面接到 IPRO7 的 lwIP</li>
                     </ul>
                 </div>
             </div>
@@ -79,7 +80,7 @@ title: 網路開發
         <!-- Architecture -->
         <section id="architecture">
             <h2>網路架構</h2>
-            <p>IPRO SDK 的網路子系統採用分層架構。EMAC 與 SDIO Wi-Fi 橋接共用同一個 lwIP 堆疊，應用層程式碼不需因實體介面不同而改寫：</p>
+            <p>IPRO SDK 的網路子系統採用分層架構。EMAC 與 SDIO Wi-Fi 共用同一個 lwIP 堆疊，應用層程式碼不需因實體介面不同而改寫：</p>
 
             <div class="dg" role="img" aria-label="網路協定堆疊架構圖">
                 <div class="dg-title">網路協定堆疊架構</div>
@@ -105,14 +106,14 @@ title: 網路開發
                         <div class="layer-label">驅動層</div>
                         <div class="layer-items">
                             <span class="pill">EMAC 驅動（乙太網路）— bsp/.../drv_emac.c</span>
-                            <span class="pill">SDIO 網路橋接 — IPRO7 SDH ↔ IPRO6S（ipro6_if_wifi）</span>
+                            <span class="pill">SDIO Wi-Fi Host（ipronet_host）— IPRO7 SDH ↔ IPRO6S</span>
                         </div>
                     </div>
                     <div class="layer layer-red">
                         <div class="layer-label">實體層</div>
                         <div class="layer-items">
                             <span class="pill">Ethernet PHY</span>
-                            <span class="pill">IPRO6 Wi-Fi 6 Companion</span>
+                            <span class="pill">IPRO6S SDIO 無線端／Reef FIN 卡</span>
                         </div>
                     </div>
                 </div>
@@ -129,9 +130,11 @@ title: 網路開發
                     <tr><td>lwIP 工具</td><td><code>components/network/lwip/lwip_apps/</code></td><td>Ping 等網路診斷工具</td></tr>
                     <tr><td>mbedTLS</td><td><code>components/crypto/mbedtls/</code></td><td>TLS 1.2 / DTLS 1.2 加密通訊程式庫（2.28.2）</td></tr>
                     <tr><td>EMAC 驅動</td><td><code>bsp/drivers/ipro7_soc/std_drv/src/drv_emac.c</code></td><td>乙太網路 MAC 控制器驅動</td></tr>
-                    <tr><td>HTTP Client</td><td><code>components/http_client/</code></td><td>HTTP/HTTPS 用戶端（連線池 + TLS + multipart）；未包含於 Release SDK v2.0.1，請聯絡原廠取得</td></tr>
+                    <tr><td>HTTP Client</td><td><code>components/http_client/</code></td><td>HTTP/HTTPS 用戶端（連線池 + TLS + multipart）；未包含於 V2.1.0，請洽 INTELPRO</td></tr>
 
-                    <tr><td>SDIO Wi-Fi Host</td><td><code>components/network/ipronet_host/</code><br><code>components/network/sdiowifi/</code></td><td>已隨附；亦提供 IPRO6S 無線端原始碼</td></tr>
+                    <tr><td>SDIO Wi-Fi Host</td><td><code>components/network/ipronet_host/</code></td><td>IPRO7 端 SDIO host，驅動 IPRO6S 並提供 lwIP netif <code>iproeth0</code>（<code>ipro7_sdio_wifi</code>、Reef 的 <code>defconfig_wifi_ipro6s</code>）；IPRO6S 端韌體不在 V2.1.0 內</td></tr>
+                    <tr><td>ATBM6162 驅動</td><td><code>components/wireless/wifi_atbm6162/</code></td><td>ATBM6162 SDIO Wi-Fi 模組驅動（<code>ipro_atbm_probe</code> 使用）</td></tr>
+                    <tr><td>RTSP Server</td><td><code>components/network/rtsp_server/</code></td><td>RTSP 相機串流（<code>ipro7ai_reef_demo</code> 的 <code>defconfig_wifi_ipro6s</code>）</td></tr>
                 </tbody>
             </table>
             </div>
@@ -277,8 +280,8 @@ int udp_send_example(const char *dest_ip, uint16_t port)
 
         <!-- EMAC -->
         <section id="emac">
-            <h2>乙太網路 (EMAC)</h2>
-            <p>IPRO7 內建 EMAC (Ethernet MAC) 控制器，外接 Ethernet PHY 即可支援有線網路連線，適用於閘道器、工業控制等需要有線網路的應用場景。這是 Release SDK v2.0.1 內建議的主要連網路徑。</p>
+            <h2>乙太網路</h2>
+            <p>IPRO7 內建 EMAC (Ethernet MAC) 控制器，以 RMII 外接 Ethernet PHY 即可支援有線網路連線，適用於閘道器、工業控制等需要有線網路的應用場景。這是 V2.1.0 中不需外接 Wi-Fi 模組的連網路徑。</p>
 
             <div class="code-block">
                 <div class="code-block-header">
@@ -319,6 +322,7 @@ void emac_init(void)
             </div>
 
             <p>啟用乙太網路需在 <code>.config</code> 中設定 <code>CONFIG_ETHERNET=y</code>，驅動位於 <code>bsp/drivers/ipro7_soc/std_drv/src/drv_emac.c</code>。參考應用 <code>apps/platform/ipro7_demo</code> 在開機時自動執行 <code>emac_lwip</code> 指令完成上述流程。</p>
+            <p>沒有 RMII PHY 的板子可參考 <code>apps/test/ipro_enc28j60_test/</code>（ENC28J60 乙太網路控制器經 SPI）。此範例確認晶片、設定 MAC／PHY 並以 shell 收發原始乙太網路封包，未整合 lwIP；接線請見該範例的 README。</p>
         </section>
 
         <!-- mbedTLS -->
@@ -330,20 +334,32 @@ void emac_init(void)
         <!-- HTTP Client -->
         <section id="http-client">
 <h2>HTTP Client</h2>
-<p>V2.0.1 未附 <code>components/http_client/</code> 高階用戶端。開發 HTTP／HTTPS 時，以已附的 lwIP 與 mbedTLS 建立傳輸，或另行整合相容的 HTTP 函式庫；請處理 HTTP 狀態碼、分塊傳輸、長度限制與逾時。</p>
+<p>V2.1.0 未附 <code>components/http_client/</code> 高階用戶端。開發 HTTP／HTTPS 時，以已附的 lwIP 與 mbedTLS 建立傳輸，或另行整合相容的 HTTP 函式庫；請處理 HTTP 狀態碼、分塊傳輸、長度限制與逾時。</p>
         </section>
 
-        <!-- Wi-Fi via IPRO6 -->
-        <section id="ipro6s-wifi6">
-            <h2>IPRO6S Wi-Fi 6</h2>
-            <p>IPRO6S 獨立連網請使用 <code>apps/platform/ipro6_demo/</code>，配置啟用 <code>CONFIG_WIFI6=y</code> 與 <code>CONFIG_USE_MACSW=y</code>。Wi-Fi MAC 以 <code>components/wireless/macsw/lib/libmacsw.a</code> 交付；<code>components/wireless/wifi6/</code> 提供 fhost、wpa_supplicant 及 lwIP adapter 原始碼。</p><pre><code class="language-bash">./build_freertos.sh ipro6_demo build</code></pre>            <p>本版僅附一般 MAC 函式庫；未取得相容 <code>libmacsw_lpfw.a</code> 前，請勿啟用 <code>CONFIG_PHY_LPFW</code>。</p>
-        </section>
-
+        <!-- Wi-Fi: IPRO6S as the SDIO radio (ipronet_host) -->
         <section id="wifi-ipro6">
-            <h2>IPRO7 + IPRO6S SDIO Wi-Fi</h2>
-            <p>IPRO7 不內建 Wi-Fi。V2.0.1 已包含 <code>apps/platform/ipro7_sdio_wifi/</code>（IPRO7 Host）及 <code>apps/platform/ipro6_if_wifi/</code>（IPRO6S 無線端）。IPRO6S 需選用 <code>defconfig_ipro6_sdio</code>；兩顆晶片需各自建置與燒錄。</p><pre><code class="language-bash">./build_freertos.sh -d defconfig_ipro6_sdio build ipro6_if_wifi
-./build_freertos.sh build ipro7_sdio_wifi</code></pre>            <p>輸出為 <code>apps/platform/ipro6_if_wifi/build_ipro6_sdio/build_out/ipro6_if_wifi_IPRO6.bin</code> 與 <code>apps/platform/ipro7_sdio_wifi/build/build_out/ipro7_sdio_wifi_IPRO7.bin</code>。燒錄前確認板子接線、電源控制及各晶片的燒錄設定。</p><pre><code class="language-text">ipronet_up &lt;SSID&gt; &lt;PASSWORD&gt;
-ipronet_down</code></pre>            <p>上述指令於 IPRO7 串口執行。<code>components/network/ipronet_host/ipronet_host.h</code> 提供 <code>ipronet_config_default()</code>、<code>ipronet_start()</code> 與 <code>ipronet_connect()</code>；收到 <code>on_got_ip</code> 後才使用 socket。RX task 回呼應將工作交給應用 task，不可阻塞或直接呼叫連線控制 API。</p>
+            <h2>Wi-Fi（IPRO6S 作為 SDIO 無線端）</h2>
+            <p>IPRO7 不內建 Wi-Fi。<code>components/network/ipronet_host/</code> 是 IPRO7 端的 SDIO host：IPRO7 經 SDH 控制器驅動執行 Wi-Fi 韌體的 IPRO6S，並把連線呈現為 lwIP netif <code>iproeth0</code>，由 IPRO7 負責 IP 堆疊。V2.1.0 附兩個 IPRO7 端應用：</p>
+            <ul>
+                <li><code>apps/platform/ipro7_sdio_wifi/</code>：<code>ipronet_host</code> 的 SDIO host 範例（傳輸、netif、DHCP、iperf）。IPRO6S 端韌體 <code>ipro6_if_wifi</code> 不在 V2.1.0 內，請使用 V2.0.1 建置，或洽 INTELPRO。</li>
+                <li><code>apps/platform/ipro7ai_reef_demo/</code> 的 <code>defconfig_wifi_ipro6s</code>：在 IPRO7AI Reef EVK 的卡槽插入 IPRO6S FIN 卡，加入 Wi-Fi 與 RTSP 相機串流（<code>components/network/rtsp_server/</code>）。<strong>FIN 卡上的韌體不在 V2.1.0 內，請洽 INTELPRO。</strong></li>
+            </ul><pre><code class="language-bash">./build_freertos.sh ipro7_sdio_wifi build
+make -C apps/platform/ipro7ai_reef_demo DEFCONFIG=defconfig_wifi_ipro6s</code></pre>            <p>輸出分別位於 <code>apps/platform/ipro7_sdio_wifi/build/build_out/ipro7_sdio_wifi_IPRO7.bin</code> 與 <code>apps/platform/ipro7ai_reef_demo/build_wifi_ipro6s/build_out/</code>。Reef 燒錄時選用 <code>--chip-variant IPRO7AI</code> 與 <code>partition_cfg_2M.toml</code>，板子設定見<a href="{{ '/hardware' | relative_url }}#reef-evk">硬體參考</a>。燒錄前確認板子接線與 IPRO6S 的電源控制。</p><pre><code class="language-text">ipronet_up &lt;SSID&gt; &lt;PASSWORD&gt;
+ipronet_down
+rtsp_cam on</code></pre>            <p>上述指令於 IPRO7 序列埠（115200 baud）執行；<code>rtsp_cam on</code> 只在 Reef 的 <code>defconfig_wifi_ipro6s</code> 中提供，開始相機串流，位址為 <code>rtsp://&lt;ip&gt;:8554/av0_0</code>。<code>components/network/ipronet_host/ipronet_host.h</code> 提供 <code>ipronet_config_default()</code>、<code>ipronet_start()</code> 與 <code>ipronet_connect()</code>；收到 <code>on_got_ip</code> 後才使用 socket。RX task 回呼應將工作交給應用 task，不可阻塞或直接呼叫連線控制 API。</p>
+        </section>
+
+        <!-- ATBM6162 SDIO module (probe only) -->
+        <section id="wifi-atbm6162">
+            <h2>ATBM6162 SDIO 模組</h2>
+            <p>外接 ATBM6162 Wi-Fi 模組時，IPRO7 以 SDH 控制器作為 SDIO host，模組驅動位於 <code>components/wireless/wifi_atbm6162/</code>。V2.1.0 只附模組探測程式 <code>apps/test/ipro_atbm_probe/</code>，用於模組上電、SDIO 列舉、韌體下載與握手的確認。</p><pre><code class="language-bash">./build_freertos.sh ipro_atbm_probe build</code></pre>            <p>模組的供電、致能與 SDIO 接線依載板而定；燒錄前請對照探測程式原始碼中的板級設定確認接線。</p>
+        </section>
+
+        <!-- IPRO6S on-chip Wi-Fi 6 (V2.0.1) -->
+        <section id="ipro6s-wifi6">
+            <h2>IPRO6S Wi-Fi 6（V2.0.1）</h2>
+            <p>V2.1.0 不含 IPRO6S 應用，也不支援 IPRO6S 建置；IPRO6S 晶片內建 Wi-Fi 6 的獨立連網開發請使用 <strong>V2.0.1</strong>。在 V2.0.1 中以 <code>apps/platform/ipro6_demo/</code> 為起點，配置啟用 <code>CONFIG_WIFI6=y</code> 與 <code>CONFIG_USE_MACSW=y</code>。</p>
         </section>
 
         <!-- Reference Apps -->
@@ -353,13 +369,19 @@ ipronet_down</code></pre>            <p>上述指令於 IPRO7 串口執行。<co
                 <table>
                 <thead><tr><th>App</th><th>Path</th></tr></thead>
                 <tbody>
-                    <tr><td>IPRO7 Demo</td><td><code>apps/platform/ipro7_demo/</code></td></tr>
-                    <tr><td>SDIO Wi-Fi Host</td><td><code>apps/platform/ipro7_sdio_wifi/</code></td></tr>
+                    <tr><td>IPRO7 Demo（EMAC 乙太網路）</td><td><code>apps/platform/ipro7_demo/</code></td></tr>
+                    <tr><td>SDIO Wi-Fi Host（IPRO6S 無線端，<code>ipronet_host</code>）</td><td><code>apps/platform/ipro7_sdio_wifi/</code></td></tr>
+                    <tr><td>Reef EVK Demo（<code>defconfig_wifi_ipro6s</code>：IPRO6S FIN 卡 Wi-Fi + RTSP）</td><td><code>apps/platform/ipro7ai_reef_demo/</code></td></tr>
+                    <tr><td>ATBM6162 模組探測</td><td><code>apps/test/ipro_atbm_probe/</code></td></tr>
+                    <tr><td>ENC28J60 SPI 乙太網路</td><td><code>apps/test/ipro_enc28j60_test/</code></td></tr>
                 </tbody>
                 </table>
             </div>
             <pre><code class="language-bash">./build_freertos.sh ipro7_demo build
-./build_freertos.sh ipro7_sdio_wifi build</code></pre>
+./build_freertos.sh ipro7_sdio_wifi build
+make -C apps/platform/ipro7ai_reef_demo DEFCONFIG=defconfig_wifi_ipro6s
+./build_freertos.sh ipro_atbm_probe build
+./build_freertos.sh ipro_enc28j60_test build</code></pre>
         </section>
 
     </article>

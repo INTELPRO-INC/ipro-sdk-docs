@@ -8,11 +8,10 @@ title: BLE 開發指南
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">本頁目錄</h4>
             <ul class="sidebar-links">
-                <li><a href="#ipro6s-btdm" class="sidebar-link">IPRO6S BLE + BR/EDR</a></li>
-
                 <li><a href="#zephyr-host" class="sidebar-link">Zephyr BLE Host 架構</a></li>
                 <li><a href="#stack-architecture" class="sidebar-link">協定棧架構</a></li>
                 <li><a href="#controller-variants" class="sidebar-link">控制器變體</a></li>
+                <li><a href="#ipro6s-btdm" class="sidebar-link">IPRO6S BLE + BR/EDR（V2.0.1）</a></li>
                 <li><a href="#api-patterns" class="sidebar-link">API 模式</a></li>
                 <li><a href="#le-audio" class="sidebar-link">LE Audio</a></li>
                 <li><a href="#pawr-esl" class="sidebar-link">PAwR 與 ESL</a></li>
@@ -33,14 +32,14 @@ title: BLE 開發指南
         <!-- ============================================================ -->
         <section id="zephyr-host">
             <h2>Zephyr BLE Host 架構</h2>
-            <p>IPRO SDK 的作業系統是 <strong>FreeRTOS</strong>——Zephyr 在 SDK 中的角色是 BLE Host 協定堆疊的來源，而非 RTOS kernel。<code>components/wireless/bluetooth/ipro_bt_host/</code> 移植自 Zephyr BLE Host（GAP、GATT、L2CAP、SMP、ISO、LE Audio），透過 <code>port/</code> 移植層執行於 FreeRTOS 之上，應用程式一律使用 Zephyr 風格的 <code>bt_*</code> API 開發。</p>
+            <p>IPRO SDK 的 FreeRTOS 應用以 Zephyr BLE Host 作為 BLE Host 協定堆疊：<code>components/wireless/bluetooth/ipro_bt_host/</code> 移植自 Zephyr BLE Host（GAP、GATT、L2CAP、SMP、ISO、LE Audio），透過 <code>port/</code> 移植層執行於 FreeRTOS 之上，應用程式一律使用 Zephyr 風格的 <code>bt_*</code> API 開發。V2.1.0 另支援完整的 Zephyr RTOS（v4.4.0）：Zephyr 應用使用 Zephyr 的 Bluetooth host，搭配同一組 IPRO BLE 預編譯控制器，請見 <a href="{{ '/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>。本頁以下內容以 FreeRTOS 應用為主。</p>
             <ul>
                 <li><strong>Host — Zephyr 4.4 原始碼</strong>：<code>ipro_bt_host/</code> 自 Zephyr 移植，完整原始碼隨 SDK 提供，可直接閱讀與除錯</li>
-                <li><strong>Controller</strong>: <code>ipro_ble_controller/lib/</code> — 16 個 IPRO7 與 6 個 IPRO6S 預編譯函式庫，配置矩陣見下方。</li>
-                <li><strong>RTOS — FreeRTOS</strong>：排程、佇列、計時器皆由 FreeRTOS 提供；Zephyr kernel 不存在於系統中</li>
+                <li><strong>Controller</strong>: <code>ipro_ble_controller/lib/</code> — 16 個 IPRO7 預編譯函式庫，配置矩陣見下方；V2.1.0 不含 IPRO6S 控制器函式庫。</li>
+                <li><strong>RTOS</strong>：FreeRTOS 應用的排程、佇列、計時器由 FreeRTOS 提供，Host 經 <code>port/</code> 層使用 FreeRTOS；Zephyr RTOS 應用則直接使用 Zephyr kernel</li>
             </ul>
             <div class="alert alert-info">
-                <strong>延伸閱讀：</strong>完整的 Host 架構指南（BLE Host Architecture Guide）未隨附於 release 套件，如需取得請聯絡原廠。
+                <strong>延伸閱讀：</strong>完整的 Host 架構指南（BLE Host Architecture Guide）未隨附於 release 套件，如需取得請洽 INTELPRO。
             </div>
         </section>
 
@@ -49,7 +48,7 @@ title: BLE 開發指南
         <!-- ============================================================ -->
         <section id="stack-architecture">
             <h2>協定棧架構</h2>
-            <p>BLE 協定棧採用 Host + Controller 雙層架構，透過片上 HCI 介面通訊（無 UART HCI 傳輸）：</p>
+            <p>BLE 協定棧採用 Host + Controller 雙層架構，透過晶片內 HCI 介面通訊（無 UART HCI 傳輸）：</p>
 
             <div class="protocol-stack">
                 <div class="stack-layer stack-green">
@@ -74,8 +73,8 @@ title: BLE 開發指南
             <ul>
                 <li><strong>Zephyr BLE Host</strong>：即使在 FreeRTOS 上也使用 Zephyr BLE Host Stack，應用程式透過標準 <code>bt_*</code> API 操作</li>
                 <li><strong>RivieraWaves 控制器</strong>：以預建構靜態庫形式提供，負責 Link Layer 與 PHY 管理</li>
-                <li><strong>片上 HCI</strong>：Host 與 Controller 之間使用片上 HCI 通訊，無需 UART HCI 傳輸層</li>
-                <li><strong>回調驅動</strong>：所有非同步事件（連線、斷線、通知）透過回調函式處理</li>
+                <li><strong>晶片內 HCI</strong>：Host 與 Controller 之間使用晶片內 HCI 通訊，無需 UART HCI 傳輸層</li>
+                <li><strong>回呼驅動</strong>：所有非同步事件（連線、斷線、通知）透過回呼函式處理</li>
             </ul>
 
             <h3>原始碼結構</h3>
@@ -143,15 +142,15 @@ CONFIG_COMPONENTS_LC3_ENABLE=y</code></pre>
         <!-- API Patterns -->
         <!-- ============================================================ -->
         <section id="ipro6s-btdm">
-            <h2>IPRO6S BLE + BR/EDR</h2>
-            <p>IPRO6S 共用 Zephyr 4.4 Host，另選雙模控制器。本版含六個 <code>libipro_ble_controller_ipro6s_link{1,2,4}_br[_release].a</code>（RivieraWaves v13.0.18），與 IPRO7 v14.0.2 分開。未附 <code>_pawr</code> 函式庫，單獨啟用 Kconfig 選項不會提供該變體。</p>
-            <p>以 <code>apps/platform/ipro6_btdm_phyrf/.config</code> 為起點：<code>CONFIG_IPRO6=y</code>、<code>CONFIG_BTDM_ENABLE=y</code>、<code>CONFIG_BTDM_BT_ENABLE=y</code>、<code>CONFIG_BTDM_MAX_ACL_CONNECTIONS=4</code>。範例示範 A2DP sink（SBC）、AVRCP、HFP-HF 與 SCO 至 I2S 音訊。</p><pre><code class="language-bash">./build_freertos.sh ipro6_btdm_phyrf build</code></pre>
+            <h2>IPRO6S BLE + BR/EDR（V2.0.1）</h2>
+            <p>V2.1.0 不含 IPRO6S 應用與 IPRO6S 控制器函式庫，也不支援 IPRO6S 建置；<strong>IPRO6S 的 BR/EDR（A2DP、AVRCP、HFP-HF、SCO）開發請使用 V2.0.1</strong>。以下說明適用於 V2.0.1。</p>
+            <p>在 V2.0.1 中，IPRO6S 共用 Zephyr 4.4 Host，另選六個雙模控制器 <code>libipro_ble_controller_ipro6s_link{1,2,4}_br[_release].a</code>。以 V2.0.1 的 <code>apps/platform/ipro6_btdm_phyrf/.config</code> 為起點：<code>CONFIG_IPRO6=y</code>、<code>CONFIG_BTDM_ENABLE=y</code>、<code>CONFIG_BTDM_BT_ENABLE=y</code>、<code>CONFIG_BTDM_MAX_ACL_CONNECTIONS=4</code>。範例示範 A2DP sink（SBC）、AVRCP、HFP-HF 與 SCO 至 I2S 音訊，在 V2.0.1 中以下列命令建置：</p><pre><code class="language-bash">./build_freertos.sh ipro6_btdm_phyrf build</code></pre>
         </section>
 
         <section id="api-patterns">
             <div class="alert alert-info">呼叫 <code>bt_enable()</code> 前須先初始化 Controller 與 HCI driver。完整初始化範例請見<a href="{{ '/tutorials' | relative_url }}">教學</a>。</div>
             <h2>API 模式</h2>
-            <p>應用程式使用 Zephyr 風格的回調驅動 BLE API。舊版 RivieraWaves <code>ke_msg</code> 訊息傳遞機制僅限控制器內部使用，不對應用程式暴露。</p>
+            <p>應用程式使用 Zephyr 風格的回呼驅動 BLE API。舊版 RivieraWaves <code>ke_msg</code> 訊息傳遞機制僅限控制器內部使用，不對應用程式暴露。</p>
 
             <h3>GAP：廣播與掃描</h3>
             <div class="code-block">
@@ -185,7 +184,7 @@ bt_le_adv_stop();
 bt_le_scan_start(BT_LE_SCAN_ACTIVE, scan_cb);</code></pre>
             </div>
 
-            <h3>連線回調</h3>
+            <h3>連線回呼</h3>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">連線管理</span>
@@ -237,7 +236,7 @@ static struct bt_uuid_128 my_char_uuid = BT_UUID_INIT_128(
 
 static uint8_t my_value[256];
 
-/* 讀取回調 */
+/* 讀取回呼 */
 static ssize_t read_my_char(struct bt_conn *conn,
                             const struct bt_gatt_attr *attr,
                             void *buf, uint16_t len, uint16_t offset)
@@ -355,7 +354,7 @@ CONFIG_BT_CSIP_SET_MEMBER=y</code></pre>
         <!-- ============================================================ -->
         <section id="pawr-esl">
 <h2>PAwR 與 ESL 的交付範圍</h2>
-<p>V2.0.1 的 Host 標頭包含週期性廣播相關介面，但 Release 未附 PAwR／ESL 完整應用，也沒有獨立的 <code>_pawr</code> Controller 函式庫。不能只因標頭或設定選項存在，就認定選用的 Controller 已支援完整功能。</p><p>若需評估此功能，先向 INTELPRO 確認對應 Controller、Host 設定與測試韌體，再依本版 <code>zephyr/bluetooth/bluetooth.h</code> 的 API 整合。使用一般 BLE 範例時，沿用其已附的 Controller 組合。</p>
+<p>V2.1.0 的 Host 標頭包含週期性廣播相關介面，但 Release 未附 PAwR／ESL 完整應用，也沒有獨立的 <code>_pawr</code> Controller 函式庫。不能只因標頭或設定選項存在，就認定選用的 Controller 已支援完整功能。</p><p>若需評估此功能，先向 INTELPRO 確認對應 Controller、Host 設定與測試韌體，再依本版 <code>zephyr/bluetooth/bluetooth.h</code> 的 API 整合。使用一般 BLE 範例時，沿用其已附的 Controller 組合。</p>
         </section>
 
         <!-- ============================================================ -->
@@ -363,7 +362,7 @@ CONFIG_BT_CSIP_SET_MEMBER=y</code></pre>
         <!-- ============================================================ -->
         <section id="low-power">
 <h2>BLE 低功耗驗證</h2>
-<p>從已交付的設定開始：<code>ipro_ble_remote</code> 使用 <code>link1_periph / bt52</code>；<code>ipro_pdm_mic_demo</code> 使用 <code>link2 / bt52</code>，Host 設為單一連線。兩者使用 16 KB EM；<code>bt54_iso2</code> 至少需要 32 KB EM，不能直接套用相同的 16 KB 保留記憶體配置。</p><p>一般低功耗測試可從 <code>apps/test/ipro_lp_test/</code> 開始，依該範例的 <code>pds</code> 命令與板級設定測試。記錄板型、電源量測位置、喚醒來源、廣播／連線狀態與外設工作狀態；電流及喚醒時間須以實測為準。</p><p>進入睡眠前處理 DMA、音訊、計時器與 Flash 寫入；依所選模式確認 OCRAM／PSRAM 保留及喚醒後外設恢復。BLE 配對資料需另由 Settings 後端保存，不能以 RAM 保留取代持久儲存。</p>
+<p>從已交付的設定開始：<code>ipro_ble_remote</code> 使用 <code>link1_periph / bt52</code>；<code>ipro_pdm_mic_demo</code> 使用 <code>link2 / bt52</code>，Host 設為單一連線。兩者使用 16 KB EM；<code>bt54_iso2</code> 至少需要 32 KB EM，不能直接套用相同的 16 KB 保留記憶體配置。</p><p>一般低功耗測試可從 <code>apps/test/ipro_lp_test/</code> 開始，依該範例的 <code>pds</code> 命令與板級設定測試。記錄板型、電源量測位置、喚醒來源、廣播／連線狀態與外設工作狀態；電流及喚醒時間須以實測為準。</p><p>進入睡眠前處理 DMA、音訊、計時器與 Flash 寫入；依所選模式確認 OCRAM／PSRAM 保留及喚醒後外設恢復。BLE 配對資料需另由 Settings 後端保存，不能以 RAM 保留取代持久儲存。</p><p>Zephyr RTOS 下目前沒有低功耗模式（無法經 <code>pm_state</code> 進入 PDS／HBN，BLE 控制器也不會睡眠）；需要低功耗的產品請使用 FreeRTOS。</p>
         </section>
 
         <!-- ============================================================ -->
@@ -395,8 +394,8 @@ CONFIG_BT_CSIP_SET_MEMBER=y</code></pre>
                         </tr>
                         <tr>
                             <td><strong>Intermediaries</strong></td>
-                            <td>協議橋接</td>
-                            <td>在不同協議層之間轉換資料格式，例如將應用層命令轉為 BLE GAP/GATT 操作</td>
+                            <td>協定橋接</td>
+                            <td>在不同協定層之間轉換資料格式，例如將應用層命令轉為 BLE GAP/GATT 操作</td>
                         </tr>
                     </tbody>
                 </table>
@@ -415,7 +414,7 @@ CONFIG_BT_CSIP_SET_MEMBER=y</code></pre>
                 <thead><tr><th>App</th><th>說明</th><th>LIB / FEATURE</th></tr></thead>
                 <tbody>
                     <tr><td><code>ipro_ble_remote</code></td><td>GATT 服務、影像傳輸與 OTA</td><td><code>link1_periph</code> / <code>bt52</code></td></tr>
-                    <tr><td><code>ipro_ble_transparent</code></td><td>UART / BLE 透傳</td><td><code>link1</code> / <code>bt52</code></td></tr>
+                    <tr><td><code>ipro_ble_transparent</code></td><td>UART / BLE 透明傳輸</td><td><code>link1</code> / <code>bt52</code></td></tr>
                     <tr><td><code>ipro_throughput_test</code></td><td>BLE 雙向吞吐量測試</td><td><code>link2</code> / <code>bt52</code></td></tr>
                     <tr><td><code>ipro_ble_hid_keyboard</code></td><td>HID over GATT 鍵盤</td><td><code>link1</code> / <code>bt52</code></td></tr>
                     <tr><td><code>ipro_le_audio_headset</code></td><td>LE Audio 耳機，DAC / USB 音訊輸出配置</td><td><code>link1_periph</code> / <code>bt54_iso2</code></td></tr>
@@ -423,7 +422,7 @@ CONFIG_BT_CSIP_SET_MEMBER=y</code></pre>
                 </tbody>
                 </table>
             </div>
-            <p>V2.0.1 未隨附獨立 BIS source/sink 與 ESL 應用；如需取得請聯絡原廠。</p>
+            <p>V2.1.0 的 FreeRTOS 應用未包含獨立 BIS source/sink 與 ESL 應用；ESL 應用如需取得請洽 INTELPRO。Zephyr RTOS 的 SDK 範例（<code>zephyr/samples/</code>）提供 <code>bap_broadcast_source</code>、<code>bap_broadcast_sink</code>、<code>le_audio_headset</code> 與 <code>ble_ota</code>（MCUmgr SMP 經 BLE 上傳映像），另有給 Zephyr <code>samples/bluetooth/peripheral_hr</code> 使用的 <code>zephyr/samples/bt_peripheral_hr/ipro7.conf</code> 與 <code>ipro7.overlay</code>；請見 <a href="{{ '/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>。</p>
         </section>
 
         <!-- ============================================================ -->
@@ -432,11 +431,12 @@ CONFIG_BT_CSIP_SET_MEMBER=y</code></pre>
         <section id="prebuilt-libs">
             <h2>預編譯函式庫</h2>
             <p><code>components/wireless/bluetooth/ipro_ble_controller/lib/</code></p>
+            <p>V2.1.0 只附 IPRO7 控制器函式庫，共 16 個：<code>link1_periph</code>／<code>link1</code>／<code>link2</code>／<code>link4</code> × <code>bt52</code>／<code>bt54_iso2</code> × debug／release。IPRO6S 雙模控制器只在 V2.0.1 提供。</p>
             <p>建構系統依 LIB、FEATURE 與 <code>CONFIG_IPRO_BLE_CTLR_CFG_DBG</code> 選擇函式庫。後者預設為 <code>n</code>，選用 <code>_release.a</code>；設為 <code>y</code> 則選用無此後綴的函式庫。</p>
             <pre><code class="language-text">libipro_ble_controller_ipro7_link1_periph_release.a
 libipro_ble_controller_ipro7_link1_periph_bt54_iso2_release.a
 libipro_ble_controller_ipro7_link1_periph_bt54_iso2.a</code></pre>
-            <div class="alert alert-info">本交付包省略 Controller 實作原始碼，請勿啟用 <code>CONFIG_IPRO_BLE_CTLR_FORCE_SOURCE_BUILD</code>；如需客製配置請聯絡原廠。</div>
+            <div class="alert alert-info">本交付包省略 Controller 實作原始碼，請勿啟用 <code>CONFIG_IPRO_BLE_CTLR_FORCE_SOURCE_BUILD</code>；如需客製配置請洽 INTELPRO。</div>
         </section>
     </article>
 </div>

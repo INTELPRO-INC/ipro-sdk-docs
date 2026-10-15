@@ -9,6 +9,7 @@ title: 架構概覽
             <h4 class="sidebar-title">本頁目錄</h4>
             <ul class="sidebar-links">
                 <li><a href="#overview" class="sidebar-link">系統總覽</a></li>
+                <li><a href="#rtos-paths" class="sidebar-link">FreeRTOS 與 Zephyr</a></li>
                 <li><a href="#soc-variants" class="sidebar-link">晶片變體</a></li>
                 <li><a href="#dual-chip" class="sidebar-link">雙晶片架構</a></li>
                 <li><a href="#memory-layout" class="sidebar-link">記憶體配置</a></li>
@@ -61,11 +62,12 @@ title: 架構概覽
                     </div>
                 </div>
                 <div class="layer layer-purple">
-                    <div class="layer-label">RTOS (FreeRTOS)</div>
+                    <div class="layer-label">RTOS (FreeRTOS / Zephyr)</div>
                     <div class="layer-items">
                         <span class="pill">FreeRTOS</span>
                         <span class="pill">FreeRTOS POSIX</span>
                         <span class="pill">OSAL</span>
+                        <span class="pill">Zephyr v4.4 (module)</span>
                     </div>
                 </div>
                 <div class="layer layer-amber">
@@ -91,17 +93,58 @@ title: 架構概覽
             <p>每一層都有明確的職責邊界：</p>
             <ul>
                 <li><strong>應用層</strong>：自包含的專案，每個專案擁有獨立的 <code>.config</code> 和 <code>CMakeLists.txt</code></li>
-                <li><strong>元件層</strong>：可重用的中間件，透過 Kconfig 選項啟用或停用</li>
-                <li><strong>RTOS 層</strong>：提供任務排程、同步原語與計時器服務</li>
+                <li><strong>元件層</strong>：可重用的中介軟體，透過 Kconfig 選項啟用或停用</li>
+                <li><strong>RTOS 層</strong>：提供任務排程、同步原語與計時器服務；V2.1.0 起除 FreeRTOS 外，SDK 亦可作為 Zephyr v4.4.0 module 使用（見下節）</li>
                 <li><strong>BSP 層</strong>：硬體抽象層與驅動程式，屏蔽不同晶片的差異</li>
                 <li><strong>硬體層</strong>：IPRO 系列 SoC 平台</li>
             </ul>
         </section>
 
+        <!-- Section 1b: RTOS Paths -->
+        <section id="rtos-paths">
+            <h2>FreeRTOS 與 Zephyr</h2>
+            <p>V2.1.0 起，SDK 除了 FreeRTOS 建構流程外，也是一個 Zephyr v4.4.0 module（<code>zephyr/module.yml</code>）；SDK 根目錄的 <code>west.yml</code> 使 SDK 成為 west manifest repository。兩條路徑使用相同的 HAL 與 SoC 驅動，Zephyr 端透過 Zephyr 的 device driver API 提供。</p>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>項目</th>
+                            <th>FreeRTOS</th>
+                            <th>Zephyr</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>應用／範例</td><td><code>apps/</code> 下 34 個應用</td><td><code>zephyr/samples/</code> 範例與 Zephyr 上游範例；驅動測試位於 <code>zephyr/tests/</code></td></tr>
+                        <tr><td>建構</td><td><code>make -C apps/&lt;category&gt;/&lt;project&gt;</code> 或 <code>./build_freertos.sh</code></td><td><code>tools/zephyr/bootstrap.sh</code> 建立 workspace 後以 <code>west build</code> 建構</td></tr>
+                        <tr><td>板卡</td><td>IPRO7 EVB、IPRO7AI EVK、IPRO7AI Reef EVK</td><td><code>ipro7_evb</code>、<code>ipro7ai_evk</code></td></tr>
+                        <tr><td>Bluetooth LE</td><td>Zephyr v4.4 Host 經移植層執行於 FreeRTOS，搭配 IPRO BLE 預編譯控制器</td><td>Zephyr Host 搭配同一組 IPRO BLE 預編譯控制器</td></tr>
+                        <tr><td>IEEE 802.15.4／Thread</td><td>V2.1.0 未提供</td><td>Zephyr IEEE 802.15.4 驅動與 OpenThread</td></tr>
+                        <tr><td>低功耗、顯示、攝影機、音訊 codec、USB、SD Host、Ethernet、NPU</td><td>提供</td><td>尚未提供，請使用 FreeRTOS（EVK LCD 可透過 Zephyr 的 ST7789V 驅動使用）</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Zephyr 快速開始</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">tools/zephyr/bootstrap.sh          # 在 zephyr-workspace/ 建立 west workspace
+source zephyr-workspace/env.sh     # ZEPHYR_BASE、CROSS_COMPILE、west
+cd zephyr-workspace
+west build -b ipro7_evb zephyr/samples/hello_world</code></pre>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>提示：</strong>支援板卡、燒錄方式、範例與尚未支援的功能，請見 <a href="{{ '/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>。
+            </div>
+        </section>
+
         <!-- Section 2: SoC Variants -->
         <section id="soc-variants">
             <h2>晶片變體</h2>
-            <p>IPRO SDK 支援多款晶片，涵蓋高效能物聯網到超低功耗場景：</p>
+            <p>IPRO SDK V2.1.0 支援 IPRO7（含 IPRO7AI）。IPRO6S 規格列於下表供參考，其軟體支援請使用 V2.0.1：</p>
 
             <div class="table-wrapper">
                 <table>
@@ -120,24 +163,24 @@ title: 架構概覽
                             <td><strong>IPRO7</strong></td>
                             <td>RISC-V RV32IMAFC</td>
                             <td>192 MHz</td>
-                            <td>1 MB（on-chip，可選外掛 SPI flash 擴充至 2/4/8 MB）</td>
+                            <td>依板型而定（例：IPRO7AI Reef EVK 為 2 MB）</td>
                             <td>8 MB PSRAM + 256 KB OCRAM</td>
                             <td>BLE 5.4, LE Audio, ISP, 0.1 TOPS NPU</td>
                         </tr>
-                        <tr><td><strong>IPRO6S</strong></td><td>RISC-V RV32IMAFC</td><td>依應用配置</td><td>2 MB</td><td>320 KB TCM + 160 KB Wi-Fi RAM</td><td>Wi-Fi 6, BLE 5.4 + BR/EDR (A2DP / AVRCP / HFP-HF / SCO)</td></tr>
+                        <tr><td><strong>IPRO6S</strong>（V2.0.1）</td><td>RISC-V RV32IMAFC</td><td>依應用配置</td><td>2 MB</td><td>320 KB TCM + 160 KB Wi-Fi RAM</td><td>Wi-Fi 6, BLE 5.4 + BR/EDR (A2DP / AVRCP / HFP-HF / SCO)</td></tr>
                     </tbody>
                 </table>
             </div>
 
             <div class="alert alert-info">
-                <strong>提示：</strong>IPRO7 為目前主力開發平台，SDK 中大部分範例與文件皆以 IPRO7 為主。透過 Kconfig 中的 <code>CONFIG_IPRO7=y</code> 或 <code>CONFIG_IPRO6=y</code> 選擇目標晶片。外掛 flash 容量以 <code>CONFIG_IPRO7_FLASH_2M/4M/8M</code> 選擇。
+                <strong>提示：</strong>V2.1.0 的應用全部以 IPRO7 為目標（<code>CONFIG_IPRO7=y</code>）。V2.1.0 不含 IPRO6S 應用、IPRO6S BLE 控制器函式庫與 <code>ipro6_rf</code>，不支援 IPRO6S 建構；IPRO6S 開發（<code>CONFIG_IPRO6=y</code>）請使用 V2.0.1。外掛 flash 容量以 <code>CONFIG_IPRO7_FLASH_2M/4M/8M</code> 選擇。
             </div>
         </section>
 
         <!-- Section 2b: Dual-Chip Architecture -->
         <section id="dual-chip">
             <h2>雙晶片架構</h2>
-            <p>IPRO7 不內建 Wi-Fi。需要 Wi-Fi 連網的產品採用雙晶片架構：IPRO7 作為主控 SoC，負責應用邏輯、AI/NPU 推論、BLE、音訊與周邊控制；Wi-Fi 連網由 IPRO6 companion 晶片透過 SDIO 介面提供。</p>
+            <p>IPRO7 不內建 Wi-Fi。需要 Wi-Fi 連網的產品採用雙晶片架構：IPRO7 作為主控 SoC，負責應用邏輯、AI/NPU 推論、BLE、音訊與周邊控制；Wi-Fi 連網由外接的 SDIO Wi-Fi companion 提供。V2.1.0 提供 ATBM6162 SDIO 模組探測（<code>ipro_atbm_probe</code>）、SDIO Host Wi-Fi 參考應用 <code>ipro7_sdio_wifi</code>，以及 IPRO7AI Reef EVK 搭配 IPRO6S FIN 卡的 Host 端（<code>ipro7ai_reef_demo</code> 的 <code>defconfig_wifi_ipro6s</code>）。</p>
 
             <div class="dg" role="img" aria-label="雙晶片連網架構圖">
                 <div class="dg-title">雙晶片連網架構</div>
@@ -150,16 +193,16 @@ title: 架構概覽
                     </div>
                     <div class="dg-arrow dg-arrow--bi"><span class="dg-arrow-label">SDIO</span></div>
                     <div class="dg-group">
-                        <div class="dg-group-title"><i class="fas fa-wifi"></i> IPRO6（連網 companion）</div>
+                        <div class="dg-group-title"><i class="fas fa-wifi"></i> SDIO Wi-Fi（連網 companion）</div>
                         <div class="dg-node dg-node--accent">
-                            <div class="dg-node-desc">Wi-Fi</div>
+                            <div class="dg-node-desc">Wi-Fi<br>ATBM6162 模組 / IPRO6S FIN 卡</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="alert alert-info">
-                <strong>提示：</strong>IPRO7 本身內建 EMAC 乙太網路 MAC，不需 companion 晶片即可透過有線乙太網路搭配 lwIP 連網（如 <code>ipro7_demo</code> 參考應用）。V2.0.1 已包含 SDIO 雙端範例 <code>ipro7_sdio_wifi</code> 與 <code>ipro6_if_wifi</code>。
+                <strong>提示：</strong>IPRO7 本身內建 EMAC 乙太網路 MAC，不需 companion 晶片即可透過有線乙太網路搭配 lwIP 連網（如 <code>ipro7_demo</code> 參考應用；SPI 介面的 ENC28J60 見 <code>ipro_enc28j60_test</code>）。IPRO6S FIN 卡的 IPRO6S 端韌體未包含於 V2.1.0，請聯絡 INTELPRO；IPRO6S 無線端應用 <code>ipro6_if_wifi</code> 僅收錄於 V2.0.1。
             </div>
         </section>
 
@@ -182,7 +225,7 @@ title: 架構概覽
                     <tbody>
                         <tr>
                             <td><strong>Flash</strong></td>
-                            <td>1 MB</td>
+                            <td>依板型而定（例：IPRO7AI Reef EVK 為 2 MB）</td>
                             <td><code>0x13000000</code></td>
                             <td>XIP 可執行</td>
                             <td>程式碼與唯讀資料儲存</td>
@@ -214,7 +257,7 @@ title: 架構概覽
 
             <div class="architecture-layers">
                 <div class="layer layer-blue">
-                    <div class="layer-label">Flash (1 MB) — 0x13000000 ~ 0x130FFFFF</div>
+                    <div class="layer-label">Flash（容量依板型）— 自 0x13000000 起</div>
                     <div class="layer-desc">程式碼 + 唯讀資料 (XIP 執行)</div>
                 </div>
                 <div class="layer layer-cyan">
@@ -235,7 +278,7 @@ title: 架構概覽
         <!-- Section 4: Build Pipeline -->
         <section id="build-pipeline">
             <h2>建構流程</h2>
-            <p>SDK 使用 <strong>Kconfig + CMake + Ninja</strong> 建構管線，從配置到最終二進位的流程如下：</p>
+            <p>FreeRTOS 應用使用 <strong>Kconfig + CMake + Ninja</strong> 建構管線，從配置到最終二進位的流程如下（Zephyr 以 west 建構，見 <a href="#rtos-paths">FreeRTOS 與 Zephyr</a>）：</p>
 
             <div class="flow-diagram">
                 <div class="flow-step">
@@ -318,6 +361,10 @@ make -C apps/platform/ipro7_demo clean</code></pre>
                             <td>建構輸出</td>
                             <td><code>apps/&lt;project&gt;/build/build_out/&lt;project&gt;_IPRO7.bin</code></td>
                         </tr>
+                        <tr>
+                            <td>Zephyr</td>
+                            <td><code>tools/zephyr/bootstrap.sh</code> 使用同一工具鏈（<code>/opt/toolchain/riscv_ipro7</code>），可用 <code>IPRO_TOOLCHAIN</code> 覆寫</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -327,7 +374,7 @@ make -C apps/platform/ipro7_demo clean</code></pre>
         <!-- Section 5: Component Architecture -->
         <section id="components">
             <h2>元件架構</h2>
-            <p><code>components/</code> 目錄包含所有可重用的中間件與函式庫，依功能分類如下：</p>
+            <p><code>components/</code> 目錄包含所有可重用的中介軟體與函式庫，依功能分類如下：</p>
 
             <h3>無線通訊</h3>
             <div class="table-wrapper">
@@ -348,7 +395,12 @@ make -C apps/platform/ipro7_demo clean</code></pre>
                         <tr>
                             <td><strong>RF</strong></td>
                             <td><code>wireless/rf/</code></td>
-                            <td>射頻底層驅動（預建函式庫）</td>
+                            <td>IPRO7 射頻底層驅動（預建函式庫；Zephyr 用版本位於 <code>ipro7_rf/lib/zephyr/</code>）</td>
+                        </tr>
+                        <tr>
+                            <td><strong>IEEE 802.15.4</strong></td>
+                            <td><code>wireless/ieee802154/</code></td>
+                            <td>802.15.4 MAC 標頭與 Zephyr 用預建函式庫（<code>lib/zephyr/</code>）；Thread 僅於 Zephyr 提供</td>
                         </tr>
                     </tbody>
                 </table>
@@ -369,6 +421,16 @@ make -C apps/platform/ipro7_demo clean</code></pre>
                             <td><strong>lwIP</strong></td>
                             <td><code>network/lwip/</code></td>
                             <td>輕量級 TCP/IP 協定棧（IPv4/IPv6）</td>
+                        </tr>
+                        <tr>
+                            <td><strong>SDIO Wi-Fi Host</strong></td>
+                            <td><code>network/ipronet_host/</code></td>
+                            <td>IPRO7 端 SDIO Wi-Fi Host 流程（傳輸、控制、lwIP netif）</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RTSP Server</strong></td>
+                            <td><code>network/rtsp_server/</code></td>
+                            <td>RTSP 攝影機串流（<code>ipro7ai_reef_demo</code> 的 <code>defconfig_wifi_ipro6s</code>）</td>
                         </tr>
                         <tr>
                             <td><strong>Mbed TLS</strong></td>
@@ -398,7 +460,7 @@ make -C apps/platform/ipro7_demo clean</code></pre>
                         <tr>
                             <td><strong>FreeRTOS</strong></td>
                             <td><code>os/freertos/</code></td>
-                            <td>即時作業系統（任務、佇列、信號量、定時器）</td>
+                            <td>即時作業系統（任務、佇列、號誌、計時器）</td>
                         </tr>
                         <tr>
                             <td><strong>FreeRTOS POSIX</strong></td>
@@ -433,7 +495,7 @@ make -C apps/platform/ipro7_demo clean</code></pre>
                         <tr>
                             <td><strong>AI / NPU</strong></td>
                             <td><code>ai/</code></td>
-                            <td>AI 推理引擎與 NPU 加速；V2.0.1 連結 <code>components/ai/lib/libai.a</code> 並提供標頭。</td>
+                            <td>AI 推理引擎與 NPU 加速；V2.1.0 連結 <code>components/ai/lib/libai.a</code> 並提供標頭，可由 SD 卡載入模型（<code>ipro_ai_link</code>、<code>ipro_ai_bench</code> 與 EVK launcher 偵測頁使用）。</td>
                         </tr>
                         <tr>
                             <td><strong>ISP</strong></td>
@@ -443,7 +505,7 @@ make -C apps/platform/ipro7_demo clean</code></pre>
                         <tr>
                             <td><strong>Sensor</strong></td>
                             <td><code>sensor/</code></td>
-                            <td>攝影機感測器驅動（GC6133、SC101IOT 等）</td>
+                            <td>攝影機感測器驅動（GC6133、SC101IOT、OV5640、OV2640 等）</td>
                         </tr>
                     </tbody>
                 </table>
@@ -668,17 +730,20 @@ int main(void)
                 <thead><tr><th>應用</th><th>路徑</th><th>說明</th></tr></thead>
                 <tbody>
                     <tr><td><code>ipro_ble_remote</code></td><td><code>apps/bluetooth/ble/ipro_ble_remote/</code></td><td>GATT 服務、影像傳輸與 OTA</td></tr>
-                    <tr><td><code>ipro_ble_transparent</code></td><td><code>apps/bluetooth/ble/ipro_ble_transparent/</code></td><td>UART / BLE 透傳</td></tr>
+                    <tr><td><code>ipro_ble_transparent</code></td><td><code>apps/bluetooth/ble/ipro_ble_transparent/</code></td><td>UART / BLE 透明傳輸</td></tr>
                     <tr><td><code>ipro_throughput_test</code></td><td><code>apps/bluetooth/ble/ipro_throughput_test/</code></td><td>BLE 雙向吞吐量測試</td></tr>
                     <tr><td><code>ipro_ble_hid_keyboard</code></td><td><code>apps/bluetooth/ble/ipro_ble_hid_keyboard/</code></td><td>HID over GATT 鍵盤</td></tr>
                     <tr><td><code>ipro_le_audio_headset</code></td><td><code>apps/bluetooth/le_audio/ipro_le_audio_headset/</code></td><td>LE Audio 耳機，DAC / USB 音訊輸出配置</td></tr>
                     <tr><td><code>ipro_pdm_mic_demo</code></td><td><code>apps/multimedia/ipro_pdm_mic_demo/</code></td><td>PDM 麥克風擷取、BLE 傳輸與 LC3 壓縮</td></tr>
                     <tr><td><code>ipro7_demo</code></td><td><code>apps/platform/ipro7_demo/</code></td><td>周邊、影像、音訊與 Ethernet 示範</td></tr>
-                    <tr><td><code>ipro7_sdio_wifi</code></td><td><code>apps/platform/ipro7_sdio_wifi/</code></td><td>IPRO7 SDIO Host 搭配 IPRO6S Wi-Fi</td></tr>
+                    <tr><td><code>ipro7_sdio_wifi</code></td><td><code>apps/platform/ipro7_sdio_wifi/</code></td><td>IPRO7 SDIO Host Wi-Fi：傳輸、netif、DHCP、iperf</td></tr>
                     <tr><td><code>ipro7ai_evk_demo</code></td><td><code>apps/platform/ipro7ai_evk_demo/</code></td><td>IPRO7AI EVK 顯示、攝影機、音訊與 AI / BLE 配置</td></tr>
+                    <tr><td><code>ipro7ai_reef_demo</code></td><td><code>apps/platform/ipro7ai_reef_demo/</code></td><td>IPRO7AI Reef EVK 各功能區塊的 shell 指令，可選 Wi-Fi 與 RTSP 串流</td></tr>
+                    <tr><td><code>ipro7ai_evk_launcher</code></td><td><code>apps/platform/ipro7ai_evk_launcher/</code></td><td>IPRO7AI EVK 攝影機、LCD、麥克風與喇叭單一映像，NPU 手勢切換頁面</td></tr>
                 </tbody>
                 </table>
             </div>
+            <p>V2.1.0 共 34 個應用，完整清單見<a href="{{ '/applications' | relative_url }}#sdk-2-apps">應用範例</a>。</p>
 
             <div class="alert alert-info"><p>組建系統由 <code>PROJECT_PATH</code> 自動推導 <code>CONFIG_APP_CATEGORY</code>。建立新應用時，確認 Makefile 的 SDK 相對路徑與 CMake 專案名稱。</p></div>
         </section>
@@ -686,7 +751,7 @@ int main(void)
         <!-- Section 8: Directory Structure -->
         <section id="directory">
             <h2>目錄結構</h2>
-            <pre><code class="language-text">IPRO-SDK-V2.0.1/
+            <pre><code class="language-text">IPRO-SDK-V2.1.0/
 ├── apps/
 │   ├── bluetooth/ble/
 │   │   ├── ipro_ble_remote/
@@ -694,31 +759,45 @@ int main(void)
 │   │   ├── ipro_ble_hid_keyboard/
 │   │   └── ipro_throughput_test/
 │   ├── bluetooth/le_audio/ipro_le_audio_headset/
-│   ├── multimedia/ipro_pdm_mic_demo/
-│   ├── ai/ipro_meeting_poc/
+│   ├── multimedia/
+│   │   ├── ipro_pdm_mic_demo/
+│   │   └── ipro7_uvc_cam/
+│   ├── ai/
+│   │   ├── ipro_meeting_poc/
+│   │   ├── ipro7ai_evk_person_detect/
+│   │   └── ipro7ai_evk_rps/
 │   ├── platform/
 │   │   ├── ipro7_demo/
 │   │   ├── ipro7_sdio_wifi/
 │   │   ├── ipro7ai_evk_demo/
-│   │   ├── ipro6_demo/
-│   │   ├── ipro6_if_wifi/
-│   │   └── ipro6_btdm_phyrf/
+│   │   ├── ipro7ai_evk_launcher/
+│   │   └── ipro7ai_reef_demo/
 │   └── test/
 ├── bsp/
 ├── components/
 │   ├── wireless/bluetooth/
+│   ├── wireless/ieee802154/
 │   ├── network/
 │   ├── ai/lib/libai.a
 │   ├── audio/
 │   ├── os/
 │   └── ...
+├── zephyr/
+│   ├── module.yml
+│   ├── samples/
+│   ├── tests/
+│   └── ...
 ├── cmake/
 ├── tools/
 │   ├── android/
 │   ├── script/
-│   └── cmake/
+│   ├── cmake/
+│   ├── zephyr/
+│   ├── serial_monitor.py
+│   └── create_ota.py
 ├── build_freertos.sh
 ├── project.build
+├── west.yml
 ├── CMakeLists.txt
 ├── Kconfig
 └── VERSION.txt</code></pre>
@@ -752,7 +831,7 @@ int main(void)
                 </table>
             </div>
             <p>基本 BLE 選擇 <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code>；BLE 5.4 與兩路 ISO 串流（CIS/BIS）選擇 <code>"bt54_iso2"</code>，後者要求 <code>CONFIG_EM_SIZE</code> 至少 32 KB。Host 連線上限不可超過控制器容量；PDM 請保留 <code>link2</code>／<code>CONFIG_BT_CONN=1</code> 配置。</p>
-            <p>Host 提供原始碼。共用控制器套件含 16 個 IPRO7 與 6 個 IPRO6S BR/EDR 預編譯函式庫，依平台及配置選用。</p>
+            <p>Host 提供原始碼。V2.1.0 的控制器套件含 16 個 IPRO7 預編譯函式庫（<code>link1_periph</code> / <code>link1</code> / <code>link2</code> / <code>link4</code> × <code>bt52</code> / <code>bt54_iso2</code> × debug / release），依配置選用；6 個 IPRO6S BR/EDR 函式庫僅收錄於 V2.0.1。以 Zephyr RTOS 建構時，Zephyr Host 使用同一組 IPRO7 預編譯控制器函式庫。</p>
         </section>
 
         <!-- Section 10: BSP & Drivers -->

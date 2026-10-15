@@ -9,16 +9,16 @@ lang: en
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">Table of Contents</h4>
             <ul class="sidebar-links">
-                <li><a href="#ipro6s-wifi6" class="sidebar-link">IPRO6S Wi-Fi 6</a></li>
-
                 <li><a href="#overview" class="sidebar-link">Overview</a></li>
                 <li><a href="#architecture" class="sidebar-link">Network Architecture</a></li>
                 <li><a href="#network-config" class="sidebar-link">Network Configuration</a></li>
                 <li><a href="#lwip" class="sidebar-link">lwIP Integration</a></li>
-                <li><a href="#emac" class="sidebar-link">Ethernet (EMAC)</a></li>
+                <li><a href="#emac" class="sidebar-link">Ethernet</a></li>
                 <li><a href="#mbedtls" class="sidebar-link">Security (mbedTLS)</a></li>
                 <li><a href="#http-client" class="sidebar-link">HTTP Client</a></li>
-                <li><a href="#wifi-ipro6" class="sidebar-link">Wi-Fi (IPRO6 Companion)</a></li>
+                <li><a href="#wifi-ipro6" class="sidebar-link">Wi-Fi (IPRO6S SDIO Radio)</a></li>
+                <li><a href="#wifi-atbm6162" class="sidebar-link">ATBM6162 SDIO Module</a></li>
+                <li><a href="#ipro6s-wifi6" class="sidebar-link">IPRO6S Wi-Fi 6 (V2.0.1)</a></li>
                 <li><a href="#reference-apps" class="sidebar-link">Reference Applications</a></li>
             </ul>
         </nav>
@@ -26,12 +26,13 @@ lang: en
 
     <article class="doc-content">
         <h1>Networking</h1>
-        <p>IPRO7 is the main application SoC in the system, handling application logic, NPU inference, and BLE connectivity. <strong>It does not include a Wi-Fi radio.</strong> The IPRO SDK integrates the lwIP TCP/IP stack and the mbedTLS cryptographic library, providing two paths to network connectivity:</p>
+        <p>IPRO7 is the main application SoC in the system, handling application logic, NPU inference, and BLE connectivity. <strong>It has no built-in Wi-Fi.</strong> IPRO SDK V2.1.0 integrates the lwIP TCP/IP stack and the mbedTLS cryptographic library and provides these network paths on IPRO7:</p>
         <ul>
-            <li><strong>Ethernet (EMAC)</strong> — IPRO7 features a built-in Ethernet MAC controller that pairs with lwIP for wired networking. Release SDK v2.0.1 includes full source code and reference applications.</li>
-            <li><strong>Wi-Fi (via IPRO6 companion chip)</strong> — Wi-Fi 6 (802.11ax) is provided by an IPRO6-series connectivity companion chip, bridged to IPRO7's lwIP stack over an SDIO interface. V2.0.1 includes the IPRO7 host and IPRO6S device application sources.</li>
+            <li><strong>Ethernet</strong> — IPRO7 has a built-in Ethernet MAC controller (EMAC, RMII) that pairs with lwIP for wired networking; the reference application is <code>ipro7_demo</code>. <code>ipro_enc28j60_test</code> (ENC28J60 over SPI) is also included.</li>
+            <li><strong>Wi-Fi (IPRO6S as the SDIO radio)</strong> — IPRO7 drives an IPRO6S running Wi-Fi firmware over SDIO and presents the link as the lwIP netif <code>iproeth0</code>. The IPRO7 side ships with the SDK: <code>ipro7_sdio_wifi</code> (the SDIO host example for <code>ipronet_host</code>: transport, netif, DHCP, iperf) and, on the IPRO7AI Reef EVK with the IPRO6S FIN card, <code>ipro7ai_reef_demo</code> (<code>defconfig_wifi_ipro6s</code>, with an RTSP camera stream). The IPRO6S-side firmware is not in V2.1.0: <code>ipro6_if_wifi</code> ships with V2.0.1, and the FIN-card firmware is available from INTELPRO.</li>
+            <li><strong>ATBM6162 SDIO module</strong> — V2.1.0 includes only the module probe <code>ipro_atbm_probe</code>.</li>
         </ul>
-        <p>The LTE modem component <code>components/network/lte_modem/</code> is not included in V2.0.1.</p>
+        <p>The LTE modem component <code>components/network/lte_modem/</code> is not included in V2.1.0. IPRO6S builds are not supported in V2.1.0; for development with the IPRO6S on-chip Wi-Fi 6, use V2.0.1. This page covers FreeRTOS applications; Zephyr RTOS has no Ethernet driver yet, and Thread is covered in <a href="{{ '/en/matter-thread' | relative_url }}">Matter &amp; Thread</a>.</p>
 
         <!-- Overview -->
         <section id="overview">
@@ -48,12 +49,12 @@ lang: en
                     </ul>
                 </div>
                 <div class="feature-card">
-                    <h3 class="feature-title">Ethernet (EMAC)</h3>
+                    <h3 class="feature-title">Ethernet</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
-                        <li>Built-in Ethernet MAC controller on IPRO7</li>
+                        <li>Built-in Ethernet MAC controller on IPRO7 (RMII)</li>
                         <li>Wired networking with an external PHY</li>
                         <li>Automatic IP via DHCP</li>
-                        <li>Reference app included in the Release SDK</li>
+                        <li>ENC28J60 (SPI) example also included</li>
                     </ul>
                 </div>
                 <div class="feature-card">
@@ -66,12 +67,12 @@ lang: en
                     </ul>
                 </div>
                 <div class="feature-card">
-                    <h3 class="feature-title">Wi-Fi (IPRO6 Companion)</h3>
+                    <h3 class="feature-title">Wi-Fi (External SDIO)</h3>
                     <ul style="margin-top: 1rem; color: var(--text-secondary);">
-                        <li>Wi-Fi 6 (802.11ax) provided by the IPRO6 chip</li>
-                        <li>SDIO interface to the IPRO7 host</li>
-                        <li>Data plane bridged into IPRO7's lwIP</li>
-                        <li>IPRO7 host and IPRO6S device examples included</li>
+                        <li>No built-in Wi-Fi on IPRO7</li>
+                        <li>IPRO6S as the SDIO radio (incl. the Reef FIN card)</li>
+                        <li>ATBM6162 module probe</li>
+                        <li>Data plane into IPRO7's lwIP</li>
                     </ul>
                 </div>
             </div>
@@ -80,7 +81,7 @@ lang: en
         <!-- Architecture -->
         <section id="architecture">
             <h2>Network Architecture</h2>
-            <p>The IPRO SDK networking subsystem uses a layered architecture. EMAC and the SDIO Wi-Fi bridge share the same lwIP stack, so application code does not need to change when the physical interface differs:</p>
+            <p>The IPRO SDK networking subsystem uses a layered architecture. EMAC and SDIO Wi-Fi share the same lwIP stack, so application code does not need to change when the physical interface differs:</p>
 
             <div class="dg" role="img" aria-label="Network protocol stack architecture diagram">
                 <div class="dg-title">Network Protocol Stack Architecture</div>
@@ -106,14 +107,14 @@ lang: en
                         <div class="layer-label">Driver Layer</div>
                         <div class="layer-items">
                             <span class="pill">EMAC Driver (Ethernet) — bsp/.../drv_emac.c</span>
-                            <span class="pill">SDIO Network Bridge — IPRO7 SDH ↔ IPRO6S (ipro6_if_wifi)</span>
+                            <span class="pill">SDIO Wi-Fi Host (ipronet_host) — IPRO7 SDH ↔ IPRO6S</span>
                         </div>
                     </div>
                     <div class="layer layer-red">
                         <div class="layer-label">Physical Layer</div>
                         <div class="layer-items">
                             <span class="pill">Ethernet PHY</span>
-                            <span class="pill">IPRO6 Wi-Fi 6 Companion</span>
+                            <span class="pill">IPRO6S SDIO radio / Reef FIN card</span>
                         </div>
                     </div>
                 </div>
@@ -130,9 +131,11 @@ lang: en
                     <tr><td>lwIP Utilities</td><td><code>components/network/lwip/lwip_apps/</code></td><td>Network diagnostics tools (ping, etc.)</td></tr>
                     <tr><td>mbedTLS</td><td><code>components/crypto/mbedtls/</code></td><td>TLS 1.2 / DTLS 1.2 cryptographic library (2.28.2)</td></tr>
                     <tr><td>EMAC Driver</td><td><code>bsp/drivers/ipro7_soc/std_drv/src/drv_emac.c</code></td><td>Ethernet MAC controller driver</td></tr>
-                    <tr><td>HTTP Client</td><td><code>components/http_client/</code></td><td>HTTP/HTTPS client (connection pool + TLS + multipart); not included in Release SDK v2.0.1 — contact the vendor</td></tr>
+                    <tr><td>HTTP Client</td><td><code>components/http_client/</code></td><td>HTTP/HTTPS client (connection pool + TLS + multipart); not included in V2.1.0 — contact INTELPRO</td></tr>
 
-                    <tr><td>SDIO Wi-Fi Host</td><td><code>components/network/ipronet_host/</code><br><code>components/network/sdiowifi/</code></td><td>Included; IPRO6S device source also included</td></tr>
+                    <tr><td>SDIO Wi-Fi Host</td><td><code>components/network/ipronet_host/</code></td><td>IPRO7-side SDIO host that drives the IPRO6S and provides the lwIP netif <code>iproeth0</code> (<code>ipro7_sdio_wifi</code>, the Reef's <code>defconfig_wifi_ipro6s</code>); the IPRO6S-side firmware is not in V2.1.0</td></tr>
+                    <tr><td>ATBM6162 Driver</td><td><code>components/wireless/wifi_atbm6162/</code></td><td>Driver for the ATBM6162 SDIO Wi-Fi module (used by <code>ipro_atbm_probe</code>)</td></tr>
+                    <tr><td>RTSP Server</td><td><code>components/network/rtsp_server/</code></td><td>RTSP camera stream (<code>defconfig_wifi_ipro6s</code> of <code>ipro7ai_reef_demo</code>)</td></tr>
                 </tbody>
             </table>
             </div>
@@ -278,8 +281,8 @@ int udp_send_example(const char *dest_ip, uint16_t port)
 
         <!-- EMAC -->
         <section id="emac">
-            <h2>Ethernet (EMAC)</h2>
-            <p>The IPRO7 features a built-in EMAC (Ethernet MAC) controller. Paired with an external Ethernet PHY, it provides wired networking suitable for gateways, industrial controllers, and other applications requiring a wired connection. Use this path on boards with an attached Ethernet PHY; the SDIO companion path is also included.</p>
+            <h2>Ethernet</h2>
+            <p>The IPRO7 features a built-in EMAC (Ethernet MAC) controller. Paired with an external Ethernet PHY over RMII, it provides wired networking suitable for gateways, industrial controllers, and other applications requiring a wired connection. In V2.1.0 this is the network path that needs no external Wi-Fi module.</p>
 
             <div class="code-block">
                 <div class="code-block-header">
@@ -320,6 +323,7 @@ void emac_init(void)
             </div>
 
             <p>To enable Ethernet, set <code>CONFIG_ETHERNET=y</code> in your <code>.config</code>. The driver is located at <code>bsp/drivers/ipro7_soc/std_drv/src/drv_emac.c</code>. The reference application <code>apps/platform/ipro7_demo</code> runs the <code>emac_lwip</code> command automatically at boot to perform the flow above.</p>
+            <p>For boards without an RMII PHY, see <code>apps/test/ipro_enc28j60_test/</code> (ENC28J60 Ethernet controller over SPI). The example identifies the chip, configures the MAC/PHY and sends and receives raw Ethernet frames from the shell; it does not integrate lwIP. Wiring is in the example's README.</p>
         </section>
 
         <!-- mbedTLS -->
@@ -331,20 +335,32 @@ void emac_init(void)
         <!-- HTTP Client -->
         <section id="http-client">
 <h2>HTTP Client</h2>
-<p>V2.0.1 does not include the high-level <code>components/http_client/</code> client. Build transport on bundled lwIP and mbedTLS or integrate a compatible HTTP library. Handle HTTP status codes, chunked transfer, size limits and timeouts.</p>
+<p>V2.1.0 does not include the high-level <code>components/http_client/</code> client. Build transport on bundled lwIP and mbedTLS or integrate a compatible HTTP library. Handle HTTP status codes, chunked transfer, size limits and timeouts.</p>
         </section>
 
-        <!-- Wi-Fi via IPRO6 -->
-        <section id="ipro6s-wifi6">
-            <h2>IPRO6S Wi-Fi 6</h2>
-            <p>For standalone IPRO6S networking, use <code>apps/platform/ipro6_demo/</code>. Its configuration enables <code>CONFIG_WIFI6=y</code> and <code>CONFIG_USE_MACSW=y</code>. The Wi-Fi MAC is the prebuilt <code>components/wireless/macsw/lib/libmacsw.a</code>; upper layers under <code>components/wireless/wifi6/</code> include fhost, wpa_supplicant and the lwIP adapter.</p><pre><code class="language-bash">./build_freertos.sh ipro6_demo build</code></pre>            <p>Only the standard MAC archive is bundled; do not enable <code>CONFIG_PHY_LPFW</code> without a matching <code>libmacsw_lpfw.a</code>.</p>
-        </section>
-
+        <!-- Wi-Fi: IPRO6S as the SDIO radio (ipronet_host) -->
         <section id="wifi-ipro6">
-            <h2>IPRO7 + IPRO6S SDIO Wi-Fi</h2>
-            <p>IPRO7 has no built-in Wi-Fi. V2.0.1 includes both <code>apps/platform/ipro7_sdio_wifi/</code> (IPRO7 host) and <code>apps/platform/ipro6_if_wifi/</code> (IPRO6S radio). Build the latter with <code>defconfig_ipro6_sdio</code>; two chips require two firmware images.</p><pre><code class="language-bash">./build_freertos.sh -d defconfig_ipro6_sdio build ipro6_if_wifi
-./build_freertos.sh build ipro7_sdio_wifi</code></pre>            <p>Outputs: <code>apps/platform/ipro6_if_wifi/build_ipro6_sdio/build_out/ipro6_if_wifi_IPRO6.bin</code> and <code>apps/platform/ipro7_sdio_wifi/build/build_out/ipro7_sdio_wifi_IPRO7.bin</code>. Verify board wiring, power control and the flash configuration for each chip.</p><pre><code class="language-text">ipronet_up &lt;SSID&gt; &lt;PASSWORD&gt;
-ipronet_down</code></pre>            <p>Run those commands on IPRO7. The API in <code>components/network/ipronet_host/ipronet_host.h</code> provides <code>ipronet_config_default()</code>, <code>ipronet_start()</code> and <code>ipronet_connect()</code>. Wait for <code>on_got_ip</code> before using sockets. Hand work from RX-task callbacks to an application task; do not block or call connection-control APIs there.</p>
+            <h2>Wi-Fi (IPRO6S as the SDIO Radio)</h2>
+            <p>IPRO7 has no built-in Wi-Fi. <code>components/network/ipronet_host/</code> is the IPRO7-side SDIO host: through its SDH controller, IPRO7 drives an IPRO6S running Wi-Fi firmware and presents the link as the lwIP netif <code>iproeth0</code>, while IPRO7 owns the IP stack. V2.1.0 includes two IPRO7-side applications:</p>
+            <ul>
+                <li><code>apps/platform/ipro7_sdio_wifi/</code>: the SDIO host example for <code>ipronet_host</code> (transport, netif, DHCP, iperf). The IPRO6S-side firmware <code>ipro6_if_wifi</code> is not in V2.1.0; build it with V2.0.1 or contact INTELPRO.</li>
+                <li><code>defconfig_wifi_ipro6s</code> of <code>apps/platform/ipro7ai_reef_demo/</code>: with the IPRO6S FIN card in the card slot of the IPRO7AI Reef EVK, adds Wi-Fi and an RTSP camera stream (<code>components/network/rtsp_server/</code>). <strong>The firmware for the FIN card is not in V2.1.0 — contact INTELPRO.</strong></li>
+            </ul><pre><code class="language-bash">./build_freertos.sh ipro7_sdio_wifi build
+make -C apps/platform/ipro7ai_reef_demo DEFCONFIG=defconfig_wifi_ipro6s</code></pre>            <p>Outputs: <code>apps/platform/ipro7_sdio_wifi/build/build_out/ipro7_sdio_wifi_IPRO7.bin</code> and <code>apps/platform/ipro7ai_reef_demo/build_wifi_ipro6s/build_out/</code>. Flash the Reef with <code>--chip-variant IPRO7AI</code> and <code>partition_cfg_2M.toml</code>; board settings are in the <a href="{{ '/en/hardware' | relative_url }}#reef-evk">Hardware Reference</a>. Verify board wiring and the IPRO6S power control before flashing.</p><pre><code class="language-text">ipronet_up &lt;SSID&gt; &lt;PASSWORD&gt;
+ipronet_down
+rtsp_cam on</code></pre>            <p>Run those commands on the IPRO7 console (115200 baud); <code>rtsp_cam on</code> exists only in the Reef's <code>defconfig_wifi_ipro6s</code> build and starts the camera stream at <code>rtsp://&lt;ip&gt;:8554/av0_0</code>. The API in <code>components/network/ipronet_host/ipronet_host.h</code> provides <code>ipronet_config_default()</code>, <code>ipronet_start()</code> and <code>ipronet_connect()</code>. Wait for <code>on_got_ip</code> before using sockets. Hand work from RX-task callbacks to an application task; do not block or call connection-control APIs there.</p>
+        </section>
+
+        <!-- ATBM6162 SDIO module (probe only) -->
+        <section id="wifi-atbm6162">
+            <h2>ATBM6162 SDIO Module</h2>
+            <p>With an external ATBM6162 Wi-Fi module, IPRO7 is the SDIO host through its SDH controller; the module driver is in <code>components/wireless/wifi_atbm6162/</code>. V2.1.0 includes only the module probe <code>apps/test/ipro_atbm_probe/</code>, which checks module power-up, SDIO enumeration, firmware download and the handshake.</p><pre><code class="language-bash">./build_freertos.sh ipro_atbm_probe build</code></pre>            <p>Module power, enable and SDIO wiring depend on the carrier board; check them against the board settings in the probe source before flashing.</p>
+        </section>
+
+        <!-- IPRO6S on-chip Wi-Fi 6 (V2.0.1) -->
+        <section id="ipro6s-wifi6">
+            <h2>IPRO6S Wi-Fi 6 (V2.0.1)</h2>
+            <p>V2.1.0 includes no IPRO6S applications and does not support IPRO6S builds; for standalone networking with the IPRO6S on-chip Wi-Fi 6, use <strong>V2.0.1</strong>. In V2.0.1, start from <code>apps/platform/ipro6_demo/</code>, whose configuration enables <code>CONFIG_WIFI6=y</code> and <code>CONFIG_USE_MACSW=y</code>.</p>
         </section>
 
         <!-- Reference Apps -->
@@ -354,13 +370,19 @@ ipronet_down</code></pre>            <p>Run those commands on IPRO7. The API in 
                 <table>
                 <thead><tr><th>App</th><th>Path</th></tr></thead>
                 <tbody>
-                    <tr><td>IPRO7 Demo</td><td><code>apps/platform/ipro7_demo/</code></td></tr>
-                    <tr><td>SDIO Wi-Fi Host</td><td><code>apps/platform/ipro7_sdio_wifi/</code></td></tr>
+                    <tr><td>IPRO7 Demo (EMAC Ethernet)</td><td><code>apps/platform/ipro7_demo/</code></td></tr>
+                    <tr><td>SDIO Wi-Fi Host (IPRO6S radio, <code>ipronet_host</code>)</td><td><code>apps/platform/ipro7_sdio_wifi/</code></td></tr>
+                    <tr><td>Reef EVK Demo (<code>defconfig_wifi_ipro6s</code>: IPRO6S FIN card Wi-Fi + RTSP)</td><td><code>apps/platform/ipro7ai_reef_demo/</code></td></tr>
+                    <tr><td>ATBM6162 Module Probe</td><td><code>apps/test/ipro_atbm_probe/</code></td></tr>
+                    <tr><td>ENC28J60 SPI Ethernet</td><td><code>apps/test/ipro_enc28j60_test/</code></td></tr>
                 </tbody>
                 </table>
             </div>
             <pre><code class="language-bash">./build_freertos.sh ipro7_demo build
-./build_freertos.sh ipro7_sdio_wifi build</code></pre>
+./build_freertos.sh ipro7_sdio_wifi build
+make -C apps/platform/ipro7ai_reef_demo DEFCONFIG=defconfig_wifi_ipro6s
+./build_freertos.sh ipro_atbm_probe build
+./build_freertos.sh ipro_enc28j60_test build</code></pre>
         </section>
 
     </article>

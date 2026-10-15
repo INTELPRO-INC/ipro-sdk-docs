@@ -9,11 +9,10 @@ lang: en
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">Table of Contents</h4>
             <ul class="sidebar-links">
-                <li><a href="#ipro6s-btdm" class="sidebar-link">IPRO6S BLE + BR/EDR</a></li>
-
                 <li><a href="#zephyr-host" class="sidebar-link">Zephyr BLE Host Architecture</a></li>
                 <li><a href="#stack-architecture" class="sidebar-link">Stack Architecture</a></li>
                 <li><a href="#controller-variants" class="sidebar-link">Controller Variants</a></li>
+                <li><a href="#ipro6s-btdm" class="sidebar-link">IPRO6S BLE + BR/EDR (V2.0.1)</a></li>
                 <li><a href="#api-patterns" class="sidebar-link">API Patterns</a></li>
                 <li><a href="#le-audio" class="sidebar-link">LE Audio</a></li>
                 <li><a href="#pawr-esl" class="sidebar-link">PAwR &amp; ESL</a></li>
@@ -34,14 +33,14 @@ lang: en
         <!-- ============================================================ -->
         <section id="zephyr-host">
             <h2>Zephyr BLE Host Architecture</h2>
-            <p>The IPRO SDK's operating system is <strong>FreeRTOS</strong> — Zephyr's role in the SDK is as the source of the BLE Host protocol stack, not as the RTOS kernel. <code>components/wireless/bluetooth/ipro_bt_host/</code> is ported from the Zephyr BLE Host (GAP, GATT, L2CAP, SMP, ISO, LE Audio) and runs on top of FreeRTOS via the <code>port/</code> layer. Applications always develop against the Zephyr-style <code>bt_*</code> APIs.</p>
+            <p>IPRO SDK FreeRTOS applications use the Zephyr BLE Host as their BLE host stack: <code>components/wireless/bluetooth/ipro_bt_host/</code> is ported from the Zephyr BLE Host (GAP, GATT, L2CAP, SMP, ISO, LE Audio) and runs on top of FreeRTOS via the <code>port/</code> layer. Applications always develop against the Zephyr-style <code>bt_*</code> APIs. V2.1.0 also supports the full Zephyr RTOS (v4.4.0): Zephyr applications use Zephyr's Bluetooth host on the same IPRO BLE prebuilt controllers; see <a href="{{ '/en/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>. The rest of this page focuses on FreeRTOS applications.</p>
             <ul>
                 <li><strong>Host — Zephyr 4.4 source</strong>: <code>ipro_bt_host/</code> is ported from Zephyr; full source ships with the SDK and can be read and debugged directly</li>
-                <li><strong>Controller</strong>: <code>ipro_ble_controller/lib/</code> — 16 IPRO7 and 6 IPRO6S prebuilt archives; see the configuration matrix below.</li>
-                <li><strong>RTOS — FreeRTOS</strong>: scheduling, queues, and timers are all provided by FreeRTOS; the Zephyr kernel is not present in the system</li>
+                <li><strong>Controller</strong>: <code>ipro_ble_controller/lib/</code> — 16 IPRO7 prebuilt archives; see the configuration matrix below. V2.1.0 includes no IPRO6S controller archives.</li>
+                <li><strong>RTOS</strong>: in FreeRTOS applications, scheduling, queues and timers come from FreeRTOS and the host uses FreeRTOS through the <code>port/</code> layer; Zephyr RTOS applications use the Zephyr kernel directly</li>
             </ul>
             <div class="alert alert-info">
-                <strong>Further reading:</strong> the complete BLE Host Architecture Guide is not included in the release package — contact the vendor to obtain it.
+                <strong>Further reading:</strong> the complete BLE Host Architecture Guide is not included in the release package — contact INTELPRO to obtain it.
             </div>
         </section>
 
@@ -144,9 +143,9 @@ CONFIG_COMPONENTS_LC3_ENABLE=y</code></pre>
         <!-- API Patterns -->
         <!-- ============================================================ -->
         <section id="ipro6s-btdm">
-            <h2>IPRO6S BLE + BR/EDR</h2>
-            <p>IPRO6S shares the Zephyr 4.4 host but selects its own dual-mode controller. The package includes six <code>libipro_ble_controller_ipro6s_link{1,2,4}_br[_release].a</code> archives (RivieraWaves v13.0.18), separate from IPRO7 v14.0.2. No <code>_pawr</code> archive is shipped; a Kconfig option alone does not supply that variant.</p>
-            <p>Start from <code>apps/platform/ipro6_btdm_phyrf/.config</code>: <code>CONFIG_IPRO6=y</code>, <code>CONFIG_BTDM_ENABLE=y</code>, <code>CONFIG_BTDM_BT_ENABLE=y</code> and <code>CONFIG_BTDM_MAX_ACL_CONNECTIONS=4</code>. It demonstrates A2DP sink (SBC), AVRCP, HFP-HF and SCO audio over I2S.</p><pre><code class="language-bash">./build_freertos.sh ipro6_btdm_phyrf build</code></pre>
+            <h2>IPRO6S BLE + BR/EDR (V2.0.1)</h2>
+            <p>V2.1.0 includes no IPRO6S applications or IPRO6S controller archives and does not support IPRO6S builds; <strong>for IPRO6S BR/EDR development (A2DP, AVRCP, HFP-HF, SCO), use V2.0.1</strong>. The following applies to V2.0.1.</p>
+            <p>In V2.0.1, IPRO6S shares the Zephyr 4.4 host and selects one of six dual-mode controllers, <code>libipro_ble_controller_ipro6s_link{1,2,4}_br[_release].a</code>. Start from V2.0.1's <code>apps/platform/ipro6_btdm_phyrf/.config</code>: <code>CONFIG_IPRO6=y</code>, <code>CONFIG_BTDM_ENABLE=y</code>, <code>CONFIG_BTDM_BT_ENABLE=y</code> and <code>CONFIG_BTDM_MAX_ACL_CONNECTIONS=4</code>. It demonstrates A2DP sink (SBC), AVRCP, HFP-HF and SCO audio over I2S and builds in V2.0.1 with:</p><pre><code class="language-bash">./build_freertos.sh ipro6_btdm_phyrf build</code></pre>
         </section>
 
         <section id="api-patterns">
@@ -356,7 +355,7 @@ CONFIG_BT_CSIP_SET_MEMBER=y</code></pre>
         <!-- ============================================================ -->
         <section id="pawr-esl">
 <h2>PAwR and ESL Availability</h2>
-<p>V2.0.1 host headers expose periodic advertising interfaces, but the release includes neither complete PAwR/ESL applications nor a dedicated <code>_pawr</code> controller archive. Header declarations and configuration options alone do not establish controller support.</p><p>For evaluation, obtain the matching controller, host configuration and test firmware from INTELPRO, then integrate against this release’s <code>zephyr/bluetooth/bluetooth.h</code>. For ordinary BLE applications, retain the controller combination supplied with the example.</p>
+<p>V2.1.0 host headers expose periodic advertising interfaces, but the release includes neither complete PAwR/ESL applications nor a dedicated <code>_pawr</code> controller archive. Header declarations and configuration options alone do not establish controller support.</p><p>For evaluation, obtain the matching controller, host configuration and test firmware from INTELPRO, then integrate against this release’s <code>zephyr/bluetooth/bluetooth.h</code>. For ordinary BLE applications, retain the controller combination supplied with the example.</p>
         </section>
 
         <!-- ============================================================ -->
@@ -364,7 +363,7 @@ CONFIG_BT_CSIP_SET_MEMBER=y</code></pre>
         <!-- ============================================================ -->
         <section id="low-power">
 <h2>BLE Low-Power Validation</h2>
-<p>Start with shipped configurations: <code>ipro_ble_remote</code> uses <code>link1_periph / bt52</code>; <code>ipro_pdm_mic_demo</code> uses <code>link2 / bt52</code> with a one-connection host. Both use 16 KB EM. <code>bt54_iso2</code> needs at least 32 KB EM and cannot reuse the same 16 KB retention configuration.</p><p>For general sleep testing, start with <code>apps/test/ipro_lp_test/</code> and its <code>pds</code> command and board configuration. Record the board, measurement point, wake source, advertising/connection state and active peripherals. Measure current and wake latency for that setup.</p><p>Before sleeping, coordinate DMA, audio, timers and pending flash writes. Verify OCRAM/PSRAM retention and peripheral restoration for the selected mode. Persist bonding data through the Settings backend; RAM retention does not replace persistent storage.</p>
+<p>Start with shipped configurations: <code>ipro_ble_remote</code> uses <code>link1_periph / bt52</code>; <code>ipro_pdm_mic_demo</code> uses <code>link2 / bt52</code> with a one-connection host. Both use 16 KB EM. <code>bt54_iso2</code> needs at least 32 KB EM and cannot reuse the same 16 KB retention configuration.</p><p>For general sleep testing, start with <code>apps/test/ipro_lp_test/</code> and its <code>pds</code> command and board configuration. Record the board, measurement point, wake source, advertising/connection state and active peripherals. Measure current and wake latency for that setup.</p><p>Before sleeping, coordinate DMA, audio, timers and pending flash writes. Verify OCRAM/PSRAM retention and peripheral restoration for the selected mode. Persist bonding data through the Settings backend; RAM retention does not replace persistent storage.</p><p>Zephyr RTOS has no low-power modes yet (no PDS/HBN through <code>pm_state</code>, and the BLE controller does not sleep); use FreeRTOS for products that need low power.</p>
         </section>
 
         <!-- ============================================================ -->
@@ -424,7 +423,7 @@ CONFIG_BT_CSIP_SET_MEMBER=y</code></pre>
                 </tbody>
                 </table>
             </div>
-            <p>Standalone BIS source/sink and ESL applications are not included in V2.0.1; contact INTELPRO for availability.</p>
+            <p>The V2.1.0 FreeRTOS applications include no standalone BIS source/sink or ESL application; contact INTELPRO for ESL availability. The Zephyr RTOS SDK samples (<code>zephyr/samples/</code>) provide <code>bap_broadcast_source</code>, <code>bap_broadcast_sink</code>, <code>le_audio_headset</code> and <code>ble_ota</code> (image upload over BLE with MCUmgr SMP), plus <code>zephyr/samples/bt_peripheral_hr/ipro7.conf</code> and <code>ipro7.overlay</code> for Zephyr's <code>samples/bluetooth/peripheral_hr</code>; see <a href="{{ '/en/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>.</p>
         </section>
 
         <!-- ============================================================ -->
@@ -433,6 +432,7 @@ CONFIG_BT_CSIP_SET_MEMBER=y</code></pre>
         <section id="prebuilt-libs">
             <h2>Prebuilt Libraries</h2>
             <p><code>components/wireless/bluetooth/ipro_ble_controller/lib/</code></p>
+            <p>V2.1.0 ships IPRO7 controller archives only, 16 in total: <code>link1_periph</code>/<code>link1</code>/<code>link2</code>/<code>link4</code> × <code>bt52</code>/<code>bt54_iso2</code> × debug/release. The IPRO6S dual-mode controllers are available in V2.0.1 only.</p>
             <p>The build selects an archive using LIB, FEATURE and <code>CONFIG_IPRO_BLE_CTLR_CFG_DBG</code>. The default is <code>n</code>, selecting a <code>_release.a</code> archive; <code>y</code> selects the archive without that suffix.</p>
             <pre><code class="language-text">libipro_ble_controller_ipro7_link1_periph_release.a
 libipro_ble_controller_ipro7_link1_periph_bt54_iso2_release.a

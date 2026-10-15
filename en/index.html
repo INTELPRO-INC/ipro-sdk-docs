@@ -10,8 +10,8 @@ lang: en
         <div class="hero-content">
             <h1 class="hero-title">IPRO SDK</h1>
             <p class="hero-protocols">BLE 5.4 · LE Audio</p>
-            <p class="hero-subtitle">SDK V2.0.1 for IPRO7 and IPRO6S: FreeRTOS, BLE / LE Audio, IPRO6S Wi-Fi 6 and BR/EDR, plus IPRO7 AI and imaging examples.</p>
-            <p><a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">Download SDK V2.0.1</a></p>
+            <p class="hero-subtitle">SDK V2.1.0 for IPRO7 (IPRO7 EVB, IPRO7AI EVK, IPRO7AI Reef EVK): FreeRTOS and Zephyr RTOS, BLE / LE Audio, plus AI and imaging examples.</p>
+            <p><a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.1.0">Download SDK V2.1.0</a> · For IPRO6S development use <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1</a></p>
             <div class="hero-buttons">
                 <a href="{{ '/en/getting-started' | relative_url }}" class="btn btn-primary">
                     <i class="fas fa-rocket"></i>
@@ -56,7 +56,7 @@ make -C apps/bluetooth/ble/ipro_ble_remote
             <span class="stat-label">IPRO7 Wireless Connectivity</span>
         </div>
         <div class="stat-item">
-            <span class="stat-value">8MB PSRAM · 1MB Flash</span>
+            <span class="stat-value">8MB PSRAM · board-dependent Flash</span>
             <span class="stat-label">IPRO7 Memory</span>
         </div>
         <div class="stat-item">
@@ -101,14 +101,21 @@ make -C apps/bluetooth/ble/ipro_ble_remote
                 <div class="feature-icon"><i class="fas fa-wrench"></i></div>
                 <h3 class="feature-title">Modular Architecture</h3>
                 <p class="feature-description">
-                    Clean layered architecture: Application, Middleware, RTOS, BSP. Components configured independently via Kconfig system.
+                    Clean layered architecture: Application, Middleware, RTOS, BSP. Components are configured independently through the Kconfig system.
                 </p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-screwdriver-wrench"></i></div>
                 <h3 class="feature-title">Development Toolchain</h3>
                 <p class="feature-description">
-                    <code>make -C apps/&lt;project&gt;</code> quick build, build_freertos.sh build script, and CMake toolchain integration.
+                    <code>make -C apps/&lt;project&gt;</code> quick build, build_freertos.sh build script, CMake toolchain integration, and the <code>tools/serial_monitor.py</code> serial console reader.
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-cubes"></i></div>
+                <h3 class="feature-title">Zephyr RTOS</h3>
+                <p class="feature-description">
+                    The SDK is also a Zephyr v4.4.0 module for the IPRO7 EVB and IPRO7AI EVK: peripheral drivers, BLE, IEEE 802.15.4 / OpenThread (Thread) and MCUboot.
                 </p>
             </div>
         </div>
@@ -123,7 +130,7 @@ make -C apps/bluetooth/ble/ipro_ble_remote
         <div class="section-header">
             <h2 class="section-title">Reference Applications</h2>
             <p class="section-subtitle">
-                Multiple complete reference applications demonstrating SDK capabilities and best practices
+                V2.1.0 ships 34 IPRO7 applications; these representative examples demonstrate SDK capabilities and best practices
             </p>
         </div>
         <div class="app-grid">
@@ -188,7 +195,7 @@ make -C apps/bluetooth/ble/ipro_ble_remote
                     <span class="app-icon"><i class="fas fa-wifi"></i></span>
                     <span class="app-name">ipro7_sdio_wifi</span>
                 </div>
-                <p class="app-description">IPRO7 SDIO host with IPRO6S Wi-Fi</p>
+                <p class="app-description">IPRO7 SDIO host for an IPRO6S Wi-Fi radio: transport, netif, DHCP and iperf (IPRO6S-side firmware not included)</p>
                 <a href="{{ '/en/applications' | relative_url }}#ipro7-sdio-wifi">View example</a>
             </div>
             <div class="app-card">
@@ -198,6 +205,54 @@ make -C apps/bluetooth/ble/ipro_ble_remote
                 </div>
                 <p class="app-description">IPRO7AI EVK display, camera, audio and AI / BLE configurations</p>
                 <a href="{{ '/en/applications' | relative_url }}#ipro7ai-evk-demo">View example</a>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-microchip"></i></span>
+                    <span class="app-name">ipro7ai_reef_demo</span>
+                </div>
+                <p class="app-description">New in V2.1.0: IPRO7AI Reef EVK board demo - LED, keys, audio, SD card and OV5640 / OV2640 camera</p>
+                <a href="{{ '/en/applications' | relative_url }}#ipro7ai-reef-demo">View example</a>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-hand"></i></span>
+                    <span class="app-name">ipro7ai_evk_launcher</span>
+                </div>
+                <p class="app-description">New in V2.1.0: IPRO7AI EVK camera, LCD, microphone and speaker in one image; pages switched by hand gestures recognised on the NPU</p>
+                <a href="{{ '/en/applications' | relative_url }}#ipro7ai-evk-launcher">View example</a>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-user"></i></span>
+                    <span class="app-name">ipro7ai_evk_person_detect</span>
+                </div>
+                <p class="app-description">New in V2.1.0: EVK camera preview with YOLOv8 person / pet boxes</p>
+                <a href="{{ '/en/applications' | relative_url }}#sdk-2-apps">View example</a>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-hand-scissors"></i></span>
+                    <span class="app-name">ipro7ai_evk_rps</span>
+                </div>
+                <p class="app-description">New in V2.1.0: rock-paper-scissors against a 4-class int8 CNN on the NPU; model and training scripts included</p>
+                <a href="{{ '/en/applications' | relative_url }}#sdk-2-apps">View example</a>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-link"></i></span>
+                    <span class="app-name">ipro_ai_link</span>
+                </div>
+                <p class="app-description">New in V2.1.0: board firmware for IPRO AI Studio "Run on board" - models and inputs from the SD card, outputs back over USB</p>
+                <a href="{{ '/en/applications' | relative_url }}#sdk-2-apps">View example</a>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-video"></i></span>
+                    <span class="app-name">ipro7_uvc_cam</span>
+                </div>
+                <p class="app-description">New in V2.1.0: USB webcam (DVP, ISP, hardware MJPEG, UVC) for the IPRO7 EVB and the Reef (OV5640)</p>
+                <a href="{{ '/en/applications' | relative_url }}#sdk-2-apps">View example</a>
             </div>
         </div>
     </div>
@@ -215,7 +270,7 @@ make -C apps/bluetooth/ble/ipro_ble_remote
 
         <div class="code-block">
             <div class="code-block-header">
-                <span class="code-block-title">Build Commands</span>
+                <span class="code-block-title">FreeRTOS Build Commands</span>
                 <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
             </div>
             <pre><code class="language-bash"># Use Make build (recommended)
@@ -226,6 +281,21 @@ make -C apps/bluetooth/ble/ipro_ble_remote
         </div>
         <div class="alert alert-info">
             <strong>Tip:</strong> Build output is located in <code>apps/&lt;category&gt;/&lt;name&gt;/build/build_out/</code> directory.
+        </div>
+
+        <div class="code-block">
+            <div class="code-block-header">
+                <span class="code-block-title">Zephyr RTOS (IPRO7 EVB / IPRO7AI EVK)</span>
+                <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+            </div>
+            <pre><code class="language-bash">tools/zephyr/bootstrap.sh
+source zephyr-workspace/env.sh
+cd zephyr-workspace
+west build -b ipro7_evb zephyr/samples/hello_world
+west flash</code></pre>
+        </div>
+        <div class="alert alert-info">
+            FreeRTOS is the main development path; all 34 applications build with FreeRTOS. For Zephyr host requirements, flashing and supported scope, see <a href="{{ '/en/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>.
         </div>
     </div>
 </section>
@@ -256,6 +326,10 @@ make -C apps/bluetooth/ble/ipro_ble_remote
             <a href="{{ '/en/applications' | relative_url }}" class="doc-link-item">
                 <i class="fas fa-th-large"></i>
                 <span>Applications</span>
+            </a>
+            <a href="{{ '/en/zephyr-rtos' | relative_url }}" class="doc-link-item">
+                <i class="fas fa-cubes"></i>
+                <span>Zephyr RTOS</span>
             </a>
         </div>
     </div>

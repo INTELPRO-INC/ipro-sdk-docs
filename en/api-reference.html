@@ -35,10 +35,13 @@ title: API Reference - IPRO SDK
     <article class="doc-content">
         <h1>API Reference</h1>
         <p>This page provides a reference for the main IPRO SDK APIs. The BLE API uses Zephyr-style <code>bt_*</code> callback-based APIs, and the HAL API provides low-level hardware access. For complete API documentation, please refer to the header file comments in the source code.</p>
+        <div class="alert alert-info">
+            <p>The HAL and RTOS APIs on this page apply to FreeRTOS applications. When building with Zephyr RTOS (from V2.1.0), use Zephyr's device driver API for peripherals (backed by the same HAL and SoC drivers); see <a href="{{ '/en/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>.</p>
+        </div>
 
         <!-- ==================== BLE Core ==================== -->
 
-        <section id="ble-core"><p>The initialization sequence below targets IPRO7. For IPRO6S, follow BTDM initialization in <code>apps/platform/ipro6_demo/</code>.</p>
+        <section id="ble-core"><p>The initialization sequence below targets IPRO7 FreeRTOS applications (V2.1.0 supports IPRO7 only); for Bluetooth LE under Zephyr see <a href="{{ '/en/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>. For IPRO6S BTDM initialization, refer to <code>apps/platform/ipro6_demo/</code> in V2.0.1.</p>
             <h2>BLE Core Initialization</h2>
             <p>The BLE subsystem uses Zephyr-style <code>bt_*</code> APIs. Before calling <code>bt_enable()</code>, you must first call <code>ipro_ble_ctlr_controller_init()</code> and then <code>hci_driver_ipro_ble_ctlr_init()</code> in that order — otherwise <code>bt_enable()</code> will fail.</p>
 
@@ -816,7 +819,7 @@ int main(void)
             <h2>FreeRTOS API</h2>
             <p>The SDK primarily uses FreeRTOS as the real-time operating system.</p>
             <div class="alert alert-info">
-                <p>The BLE Host uses a Zephyr compatibility layer backed by the FreeRTOS port. Use FreeRTOS APIs for application tasks, delays and synchronization. The shim implements host-port requirements, not a complete Zephyr kernel.</p>
+                <p>The BLE Host uses a Zephyr compatibility layer backed by the FreeRTOS port. Use FreeRTOS APIs for application tasks, delays and synchronization. The shim implements host-port requirements, not a complete Zephyr kernel. For the complete Zephyr kernel, use the <a href="{{ '/en/zephyr-rtos' | relative_url }}">Zephyr RTOS</a> path available from V2.1.0.</p>
             </div>
 
             <div class="code-block">

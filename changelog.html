@@ -8,6 +8,7 @@ title: 更新日誌
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">版本</h4>
             <ul class="sidebar-links">
+                <li><a href="#v2-1-0" class="sidebar-link">IPRO-SDK-V2.1.0</a></li>
                 <li><a href="#v2-0-1" class="sidebar-link">IPRO-SDK-V2.0.1</a></li>
                 <li><a href="#tools-3-4-0" class="sidebar-link">Online Installer 3.4.0</a></li>
                 <li><a href="#tools-3-3-0" class="sidebar-link">安裝包 / Extension 3.3.0</a></li>
@@ -22,6 +23,23 @@ title: 更新日誌
     <article class="doc-content">
         <h1>更新日誌</h1>
         <p>IPRO SDK 的正式釋出版本紀錄。SDK 交付包的整體說明請參考包內的 <code>README.md</code> 檔案。</p>
+
+        <section id="v2-1-0">
+            <h2>IPRO-SDK-V2.1.0</h2>
+            <p><strong>發行日期：</strong>2026-10-15</p>
+            <p>新增 Zephyr RTOS 支援，FreeRTOS 應用聚焦 IPRO7，共 34 個應用專案。</p>
+            <ul>
+                <li>SDK 同時是 Zephyr v4.4.0 模組，支援 <code>ipro7_evb</code> 與 <code>ipro7ai_evk</code>：驅動程式、Bluetooth LE（Zephyr Host + IPRO BLE Controller）、IEEE 802.15.4 與 OpenThread、MCUboot 及經 BLE 的映像檔上傳。詳見 <a href="{{ '/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>。</li>
+                <li>Thread 於 Zephyr 提供；RF 驅動程式與 IEEE 802.15.4 MAC 以 Zephyr 預編譯函式庫交付（<code>lib/zephyr/</code>）。</li>
+                <li>新增應用：<code>ipro7ai_reef_demo</code>（IPRO7AI Reef EVK）、<code>ipro7ai_evk_launcher</code>、<code>ipro7ai_evk_person_detect</code>、<code>ipro7ai_evk_rps</code>、<code>ipro7_uvc_cam</code>、<code>ipro_ai_link</code>。</li>
+                <li>AI 執行庫可從 SD 卡載入模型；預編譯函式庫不再包含建構環境的檔案路徑。</li>
+                <li>隨附 <code>tools/serial_monitor.py</code>、<code>tools/zephyr/</code> 與 <code>tools/create_ota.py</code>。</li>
+                <li>不含 IPRO6S 應用、IPRO6S BLE Controller 函式庫與 <code>ipro6_rf</code>，IPRO6S 開發請使用 V2.0.1；Matter 與 FreeRTOS 應用的 Thread 未包含。</li>
+                <li>V2.0.9（2026-10-15）為 V2.1.0 之前的 IPRO7 封裝版本，不含 Zephyr。</li>
+                <li>打包驗證：34 個 FreeRTOS 應用全數建置成功；Zephyr 範例矩陣與 twister（<code>zephyr/samples</code>、<code>zephyr/tests</code>）以發行包於 <code>ipro7_evb</code>、<code>ipro7ai_evk</code> 建置通過。以上為建置驗證，不代表板上測試結果。</li>
+            </ul>
+            <p><a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.1.0">發行說明與 SDK 下載</a></p>
+        </section>
 
         <section id="v2-0-1">
             <h2>IPRO-SDK-V2.0.1</h2>
@@ -42,8 +60,8 @@ title: 更新日誌
 
         <section id="tools-3-3-0">
             <h2>開發工具：Windows 安裝包 / Extension 3.3.0</h2>
-            <p>安裝包與 Extension 獨立計版，本次文件對應 SDK V1.2.1。Windows 安裝精靈提供 Full、Extension only 與 SDK only；Extension 新增 VSIX、SDK ZIP／資料夾／Git 快照的元件更新入口，並延續控制中心與 Windows 內建串口監看。</p>
-            <p>完整操作請見<a href="{{ '/windows-installation' | relative_url }}">Windows 安裝與更新</a>及<a href="{{ '/vscode-extension' | relative_url }}">Extension 介紹</a>。套件與支援平台以原廠正式交付通知為準。</p>
+            <p>安裝包與 Extension 獨立計版，本次文件對應 SDK V1.2.1。Windows 安裝精靈提供 Full、Extension only 與 SDK only；Extension 新增 VSIX、SDK ZIP／資料夾／Git 快照的元件更新入口，並延續控制中心與 Windows 內建序列埠監看。</p>
+            <p>完整操作請見<a href="{{ '/windows-installation' | relative_url }}">Windows 安裝與更新</a>及<a href="{{ '/vscode-extension' | relative_url }}">Extension 介紹</a>。套件與支援平台以 INTELPRO 正式交付通知為準。</p>
         </section>
 
         <section id="v1-2-1">
@@ -63,7 +81,7 @@ title: 更新日誌
                 <thead><tr><th>應用</th><th>路徑</th><th>說明</th></tr></thead>
                 <tbody>
                     <tr><td><code>ipro_ble_remote</code></td><td><code>apps/bluetooth/ble/ipro_ble_remote/</code></td><td>GATT 服務、影像傳輸與 OTA</td></tr>
-                    <tr><td><code>ipro_ble_transparent</code></td><td><code>apps/bluetooth/ble/ipro_ble_transparent/</code></td><td>UART / BLE 透傳</td></tr>
+                    <tr><td><code>ipro_ble_transparent</code></td><td><code>apps/bluetooth/ble/ipro_ble_transparent/</code></td><td>UART / BLE 透明傳輸</td></tr>
                     <tr><td><code>ipro_throughput_test</code></td><td><code>apps/bluetooth/ble/ipro_throughput_test/</code></td><td>BLE 雙向吞吐量測試</td></tr>
                     <tr><td><code>ipro_ble_hid_keyboard</code></td><td><code>apps/bluetooth/ble/ipro_ble_hid_keyboard/</code></td><td>HID over GATT 鍵盤</td></tr>
                     <tr><td><code>ipro_le_audio_headset</code></td><td><code>apps/bluetooth/le_audio/ipro_le_audio_headset/</code></td><td>LE Audio 耳機，DAC / USB 音訊輸出配置</td></tr>
@@ -81,9 +99,9 @@ title: 更新日誌
             <h2>IPROREL-IPRO7-V1.0.1</h2>
             <p><strong>釋出日期：</strong>2026 年 3 月 13 日<br>
                <strong>平台：</strong>IPRO7（RISC-V RV32IMAFC）</p>
-            <p>IPRO7 完整 SDK 交付包，整合 platform、BLE、ISP 與 LE Audio，包含 10 個可直接編譯的參考應用、Zephyr-based BLE Host、prebuilt linkN controller 函式庫變體與統一建置系統。</p>
+            <p>IPRO7 完整 SDK 交付包，整合 platform、BLE、ISP 與 LE Audio，包含 9 個可直接編譯的參考應用、Zephyr-based BLE Host、prebuilt linkN controller 函式庫變體與統一建置系統。</p>
 
-            <h3>參考應用（10 個）</h3>
+            <h3>參考應用（9 個）</h3>
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -135,11 +153,6 @@ title: 更新日誌
                             <td>Agora RTC 雲端音訊串流閘道（經 Ethernet / USB NCM 連網）</td>
                         </tr>
                         <tr>
-                            <td>network</td>
-                            <td><code>ipro_voice_assistant</code></td>
-                            <td>AI 語音助理（語音辨識、AI 對話、語音合成、LCD 狀態顯示，經 Ethernet（RMII）或 4G LTE modem（PPPoS）連網）</td>
-                        </tr>
-                        <tr>
                             <td>platform</td>
                             <td><code>ipro7_demo</code></td>
                             <td>IPRO7 平台周邊功能示範</td>
@@ -182,7 +195,7 @@ title: 更新日誌
 ./build_freertos.sh ipro_ble_remote build flash monitor</code></pre>
 
             <div class="alert alert-warning">
-                <strong>已知限制：</strong>BLE Controller 原始碼不隨包提供，僅提供 prebuilt linkN 函式庫變體；<code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> 在本版本不支援。如需進階功能，請聯絡原廠取得。
+                <strong>已知限制：</strong>BLE Controller 原始碼不隨包提供，僅提供 prebuilt linkN 函式庫變體；<code>CONFIG_BLE_FORCE_SOURCE_BUILD</code> 在本版本不支援。如需進階功能，請聯絡 INTELPRO取得。
             </div>
         </section>
 
@@ -255,8 +268,8 @@ title: 更新日誌
 
             <h3>2026 年 2 月</h3>
             <ul>
-                <li><strong>feat:</strong> BLE 吞吐量優化至 999 Kbps（從約 600 Kbps 提升；連線參數調整與 TX descriptor 優化）</li>
-                <li><strong>fix:</strong> 全部 prebuilt BLE Controller 函式庫已更新（含 TX descriptor 優化）</li>
+                <li><strong>feat:</strong> BLE 吞吐量最佳化至 999 Kbps（從約 600 Kbps 提升；連線參數調整與 TX descriptor 最佳化）</li>
+                <li><strong>fix:</strong> 全部 prebuilt BLE Controller 函式庫已更新（含 TX descriptor 最佳化）</li>
                 <li><strong>refactor:</strong> <code>ipro_throughput_test</code> 從自訂封裝遷移至原生 Zephyr <code>bt_*</code> API</li>
                 <li><strong>feat:</strong> BIS sink 新增 BASE 解析、共用 FIR resampler 音訊元件、修復 UAC DMA stall</li>
                 <li><strong>test:</strong> 單元測試套件自 11 套擴充至 28 套（147 項測試），新增板測自動化工具</li>
@@ -266,9 +279,9 @@ title: 更新日誌
 
             <h3>2025 年 12 月</h3>
             <ul>
-                <li><strong>feat:</strong> Image Service MTU 優化與傳輸速度統計
+                <li><strong>feat:</strong> Image Service MTU 最佳化與傳輸速度統計
                     <ul>
-                        <li>MTU 計算優化：從 MTU-8 調整為 MTU-11（增加 4-byte 安全邊界）</li>
+                        <li>MTU 計算最佳化：從 MTU-8 調整為 MTU-11（增加 4-byte 安全邊界）</li>
                         <li>支援動態 chunk size（236-506 bytes，基於 MTU 517）</li>
                         <li>效能提升：56KB 影像傳輸達 ~40 KB/s（320 Kbps）</li>
                     </ul>
@@ -281,7 +294,7 @@ title: 更新日誌
 
             <h3>2025 年 9-12 月</h3>
             <ul>
-                <li><strong>BLE：</strong>timing 優化、PA sync 修復、EM 初始化整併至 board 層、靜態 CLI 指令註冊修復</li>
+                <li><strong>BLE：</strong>timing 最佳化、PA sync 修復、EM 初始化整併至 board 層、靜態 CLI 指令註冊修復</li>
                 <li><strong>USB 與音訊：</strong>UAC demo 整合 AUADC、CDC 記憶體傳輸指令、AUADC demo、DAC 喇叭支援</li>
                 <li><strong>多媒體：</strong>ISP sw pingpong 控制、DVP sensor + MJPEG demo、UVC 與 LCD 串流控制、ILI9488 SPI LCD demo</li>
                 <li><strong>網路與周邊：</strong>EMAC 乙太網支援、SD 卡（SDH）、SPI slave demo 與 SPI1 支援</li>

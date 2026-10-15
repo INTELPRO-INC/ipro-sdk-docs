@@ -11,11 +11,13 @@ title: 工具與除錯
                 <li><a href="#overview" class="sidebar-link">概述</a></li>
                 <li><a href="#build-cli" class="sidebar-link">統一建構 CLI</a></li>
                 <li><a href="#flash-tool" class="sidebar-link">燒錄工具</a></li>
-                <li><a href="#serial-monitor" class="sidebar-link">串口監控</a></li>
+                <li><a href="#serial-monitor" class="sidebar-link">序列埠監控</a></li>
+                <li><a href="#zephyr-tools" class="sidebar-link">Zephyr 工具</a></li>
                 <li><a href="#automated-testing" class="sidebar-link">自動化測試</a></li>
                 <li><a href="#gdb-debugging" class="sidebar-link">GDB 除錯</a></li>
                 <li><a href="#crash-analysis" class="sidebar-link">當機分析</a></li>
                 <li><a href="#size-analysis" class="sidebar-link">建構分析</a></li>
+                <li><a href="#ota-package" class="sidebar-link">OTA 封裝</a></li>
                 <li><a href="#macos-notes" class="sidebar-link">macOS 注意事項</a></li>
                 <li><a href="#dev-workflow" class="sidebar-link">開發者工作流程</a></li>
             </ul>
@@ -23,13 +25,13 @@ title: 工具與除錯
     </aside>
 
     <article class="doc-content">
-            <div class="alert alert-info">CLI 的 <code>flash／monitor／test</code> 範例需額外取得燒錄與監看工具。V2.0.1 未附 <code>tools/serial_monitor.py</code>，未取得腳本時請改用下方外部終端指令。</div>
+            <div class="alert alert-info">CLI 的 <code>flash</code> 與 <code>test</code> 需另行取得 IntelProCube 命令列燒錄工具。V2.1.0 已隨附 <code>tools/serial_monitor.py</code>（macOS／Linux），供 <code>monitor</code>、<code>test</code> 及進入下載模式使用。</div>
         <h1>工具與除錯</h1>
-        <div class="alert alert-info" style="margin-bottom: 2rem;">V2.0.1 隨附建置 CLI、Kconfig 輔助腳本、Linux x86-64 CMake 及 Android 示範原始碼；燒錄工具、串口監看腳本、板測腳本、當機解析工具與 OpenOCD 配置需另行取得。</div>
+        <div class="alert alert-info" style="margin-bottom: 2rem;">V2.1.0 隨附建置 CLI、Kconfig 輔助腳本、Linux x86-64 CMake、序列埠監看腳本 <code>tools/serial_monitor.py</code>、OTA 封裝腳本 <code>tools/create_ota.py</code>、Zephyr 工具 <code>tools/zephyr/</code> 及 Android 示範原始碼；燒錄工具、板測腳本、當機解析工具與 OpenOCD 配置需另行取得。</div>
         <p>IPRO SDK 提供了完整的開發工具鏈，涵蓋從建構、燒錄、監控到除錯的完整開發週期。</p>
 
         <!-- ============================================================ -->
-        <div class="alert alert-info"><p>Online Installer 3.4.0 依元件清單下載；固定版 3.3.0 安裝包內含 SDK 1.2.1。截至 2026-09-10，元件清單亦仍選用 SDK 1.2.1。V2.0.1 請由正式 Release 下載，並明確切換至解壓後的新目錄。<a href="{{ '/windows-installation' | relative_url }}">安裝與版本選擇</a></p></div>
+        <div class="alert alert-info"><p>Online Installer 3.4.0 依元件清單下載；固定版 3.3.0 安裝包內含 SDK 1.2.1。截至 V2.1.0 發佈（2026-10-15），元件清單仍以 SDK 1.2.1 為 stable。V2.1.0 請由 GitHub Release 下載，並明確切換至解壓後的新目錄。<a href="{{ '/windows-installation' | relative_url }}">安裝與版本選擇</a></p></div>
 
         <section id="overview">
             <h2>概述</h2>
@@ -52,7 +54,7 @@ title: 工具與除錯
                         <th>工具</th>
                         <th>路徑</th>
                         <th>用途</th>
-                        <th>Release SDK v2.0.1</th>
+                        <th>IPRO SDK V2.1.0</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -71,28 +73,30 @@ title: 工具與除錯
                     </tr>
                     <tr>
                         <td>燒錄工具</td>
-                        <td><code>tools/ipro_iot_tool_lite/</code></td>
-                        <td>將韌體燒錄到開發板 Flash</td>
-                        <td>未內含（請聯絡原廠）</td>
+                        <td><code>ipro_iot_tool_macos</code>／<code>ipro_iot_tool_linux</code>／<code>ipro_iot_tool.exe</code>（<code>$IPRO_FLASH_TOOL</code> 或 PATH）</td>
+                        <td>IntelProCube v0.6.3 命令列工具，將韌體燒錄到開發板 Flash</td>
+                        <td>未內含（請洽 INTELPRO）</td>
                     </tr>
-                    <tr><td>串口監控</td><td><code>tools/serial_monitor.py</code></td><td>串口終端</td><td>未附；使用 Extension 或外部終端工具</td></tr>
+                    <tr><td>序列埠監控</td><td><code>tools/serial_monitor.py</code></td><td>序列埠監看、送出指令並等待輸出 pattern（macOS／Linux）</td><td>內含</td></tr>
+                    <tr><td>Zephyr 工具</td><td><code>tools/zephyr/</code></td><td>建立 west 工作區、建構、燒錄、主控台與範例矩陣建構</td><td>內含</td></tr>
+                    <tr><td>OTA 封裝</td><td><code>tools/create_ota.py</code></td><td>將合併韌體映像封裝為 boot2 的 <code>.xz.ota</code> 格式</td><td>內含</td></tr>
                     <tr>
                         <td>板級測試</td>
                         <td><code>tools/board_test.sh</code></td>
                         <td>自動化建構、燒錄與測試</td>
-                        <td>未內含（請聯絡原廠）</td>
+                        <td>未內含（請聯絡 INTELPRO）</td>
                     </tr>
                     <tr>
                         <td>當機分析</td>
                         <td><code>tools/parse_backtrace.py</code></td>
                         <td>將當機位址轉為原始碼位置</td>
-                        <td>未內含（請聯絡原廠）</td>
+                        <td>未內含（請聯絡 INTELPRO）</td>
                     </tr>
                     <tr>
                         <td>OpenOCD 配置</td>
                         <td><code>tools/openocd/</code></td>
                         <td>JTAG 除錯介面配置</td>
-                        <td>未內含（請聯絡原廠）</td>
+                        <td>未內含（請聯絡 INTELPRO）</td>
                     </tr>
                 </tbody>
             </table>
@@ -134,7 +138,7 @@ title: 工具與除錯
                     </tr>
                     <tr>
                         <td><code>monitor</code></td>
-                        <td>開啟串口監控</td>
+                        <td>開啟序列埠監控</td>
                     </tr>
                     <tr>
                         <td><code>size</code></td>
@@ -159,7 +163,7 @@ title: 工具與除錯
                 <tbody>
                     <tr>
                         <td><code>-p, --port PORT</code></td>
-                        <td>串口裝置路徑（flash / monitor / test 使用）</td>
+                        <td>序列埠裝置路徑（flash / monitor / test 使用）</td>
                         <td>請依實際裝置指定（如 <code>/dev/cu.usbserial-XXXX</code>）</td>
                     </tr>
                     <tr>
@@ -222,16 +226,16 @@ title: 工具與除錯
 ./build_freertos.sh size platform/ipro7_demo</code></pre>
             </div>
 
-            <div class="alert alert-warning"><code>flash</code>、<code>monitor</code> 與 <code>test</code> 動作需額外安裝工具，V2.0.1 未附脚本所引用的串口監看工具。</div>
+            <div class="alert alert-warning"><code>flash</code> 與 <code>test</code> 需要另行取得的 IntelProCube 命令列工具（設定 <code>IPRO_FLASH_TOOL</code> 或將工具目錄加入 PATH）。<code>monitor</code> 與 <code>test</code> 使用隨附的 <code>tools/serial_monitor.py</code>，以 115200 鮑開啟 <code>-p</code> 指定的序列埠並先送出 <code>reboot</code>，於 <code>-t</code> 秒後結束；主控台為其他鮑率時，請直接執行 <code>serial_monitor.py</code> 並指定 <code>--baud</code>。</div>
         </section>
 
         <!-- ============================================================ -->
         <section id="flash-tool">
             <h2>燒錄工具</h2>
             <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> <code>ipro_iot_tool_lite</code> 未包含於 Release SDK v2.0.1，請聯絡原廠取得。取得後放置於 <code>tools/ipro_iot_tool_lite/</code>，<code>./build_freertos.sh flash &lt;project&gt;</code> 即會自動呼叫。
+                <strong>&#9888;&#65039;</strong> IntelProCube v0.6.3 命令列工具（<code>ipro_iot_tool.exe</code>、<code>ipro_iot_tool_macos</code>、<code>ipro_iot_tool_linux</code>）未包含於 IPRO SDK V2.1.0，請向 INTELPRO 取得。<code>./build_freertos.sh flash &lt;project&gt;</code> 會使用 <code>IPRO_FLASH_TOOL</code> 指定的工具，或 PATH 上對應主機的工具。
             </div>
-            <p>IPRO SDK 使用 <code>ipro_iot_tool_lite</code> 將編譯好的韌體燒錄到開發板的 Flash 記憶體中。</p>
+            <p>IPRO SDK 使用 IntelProCube 命令列工具將編譯好的韌體燒錄到開發板的 Flash 記憶體中。</p>
 
             <h3>基本用法</h3>
             <div class="code-block">
@@ -239,13 +243,19 @@ title: 工具與除錯
                     <span class="code-block-title">燒錄韌體</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 串口路徑請依實際接上的裝置調整
-tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
-    --chipname ipro7 \
+                <pre><code class="language-bash"># 於 IntelProCube 目錄執行（Linux 為 ipro_iot_tool_linux，Windows 為 ipro_iot_tool.exe）
+# 序列埠路徑請依實際接上的裝置調整
+./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7 \
     --port /dev/cu.usbserial-XXXX \
-    --firmware apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
     --baudrate 921600 \
-    --flash-pin 0x02</code></pre>
+    --firmware &lt;SDK&gt;/apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin
+
+# IPRO7AI Reef EVK（2 MB Flash）
+./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+    --port /dev/cu.usbserial-XXXX \
+    --baudrate 921600 \
+    --pt chips/ipro7/partition/partition_cfg_2M.toml \
+    --firmware &lt;SDK&gt;/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin</code></pre>
             </div>
 
             <h3>參數說明</h3>
@@ -264,8 +274,13 @@ tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
                         <td><code>ipro7</code></td>
                     </tr>
                     <tr>
+                        <td><code>--chip-variant</code></td>
+                        <td>板型的 Flash 腳位配置：<code>IPRO7</code>（flash pin 0x2）或 <code>IPRO7AI</code>（0x9，IPRO7AI EVK／Reef EVK）</td>
+                        <td><code>IPRO7</code></td>
+                    </tr>
+                    <tr>
                         <td><code>--port</code></td>
-                        <td>串口裝置路徑</td>
+                        <td>序列埠裝置路徑</td>
                         <td><code>/dev/cu.usbserial-XXXX</code>（macOS，依實際裝置而定）<br><code>/dev/ttyUSB0</code>（Linux）</td>
                     </tr>
                     <tr>
@@ -279,23 +294,29 @@ tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
                         <td><code>921600</code></td>
                     </tr>
                     <tr>
-                        <td><code>--flash-pin</code></td>
-                        <td>Flash 控制腳位</td>
-                        <td><code>0x02</code></td>
+                        <td><code>--pt</code></td>
+                        <td>分割表；IPRO7AI Reef EVK 使用 2 MB 分割表</td>
+                        <td><code>chips/ipro7/partition/partition_cfg_2M.toml</code></td>
                     </tr>
                 </tbody>
             </table>
 
+            <div class="alert alert-warning">
+                <strong>&#9888;&#65039;</strong> 工具沒有 <code>--flash-pin</code> 選項，且燒錄失敗時也會以 0 結束；請以輸出中的 <code>[All Success]</code> 判斷結果（<code>./build_freertos.sh flash</code> 已自動檢查）。<code>build_freertos.sh</code> 呼叫工具時不帶 <code>--chip-variant</code> 與 <code>--pt</code>；IPRO7AI EVK 與 Reef EVK 請直接執行工具並指定 <code>--chip-variant IPRO7AI</code>，或依應用 README 調整工具設定檔中的 flash pin。
+            </div>
+
             <h3>進入下載模式</h3>
-            <p>燒錄前需要讓開發板進入下載模式。可以透過串口發送 <code>reboot_dl</code> 指令：</p>
+            <p>燒錄前需要讓開發板進入下載模式。<code>./build_freertos.sh flash</code> 會先以 <code>tools/serial_monitor.py</code>（115200 鮑）送出 <code>reboot_dl</code>；主控台為其他鮑率或韌體沒有 shell 時，請手動送出指令，或依開發板手冊以 BOOT 腳位進入下載模式：</p>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">進入下載模式</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># 另行安裝；埠名與鮑率請依韌體設定調整
-python3 -m pip install pyserial
-python3 -m serial.tools.miniterm /dev/cu.usbserial-XXXX 115200</code></pre>
+                <pre><code class="language-bash"># 主控台 115200 鮑的韌體
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --send reboot_dl --timeout 2
+
+# 主控台 921600 鮑的韌體（macOS）
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 921600 --send reboot_dl --timeout 2</code></pre>
             </div>
 
             <div class="alert alert-warning">
@@ -305,23 +326,93 @@ python3 -m serial.tools.miniterm /dev/cu.usbserial-XXXX 115200</code></pre>
 
         <!-- ============================================================ -->
         <section id="serial-monitor">
-            <h2>串口監控</h2>
-            <p>V2.0.1 未隨附 <code>tools/serial_monitor.py</code>。建置腳本仍引用該路徑，因此 <code>monitor</code>／<code>test</code> 動作需額外取得腳本。可使用 Extension 的 <code>IPRO: Serial Monitor</code> 或串口終端工具。</p>
-            <p>鮑率以所選應用及板型配置為準；macOS 使用 <code>/dev/cu.*</code>。燒錄前停止監看以釋放串口。</p>
+            <h2>序列埠監控</h2>
+            <p>V2.1.0 隨附 <code>tools/serial_monitor.py</code>：以 Python 標準函式庫的 termios 開啟序列埠（不需 pyserial），可送出一行指令、等待正規表達式 pattern，並將輸出存檔。適用 macOS 與 Linux；Windows 請使用 Extension 的 <code>IPRO: Serial Monitor</code> 或其他序列埠終端。</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">序列埠監控範例</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 監看 60 秒（預設 115200 鮑）
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --timeout 60
+
+# 送出 reboot 並等待測試結果
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --send reboot \
+    --wait-for "ALL TESTS PASSED|SOME TESTS FAILED" --timeout 30
+
+# 921600 鮑並存檔（macOS）
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 921600 --timeout 60 --log console.log</code></pre>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>選項</th>
+                        <th>說明</th>
+                        <th>預設值</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>--baud</code></td><td>鮑率</td><td><code>115200</code></td></tr>
+                    <tr><td><code>--timeout</code></td><td>監看秒數</td><td><code>30</code></td></tr>
+                    <tr><td><code>--send</code></td><td>開始監看前送出的指令（例如 <code>reboot</code>、<code>reboot_dl</code>）</td><td>-</td></tr>
+                    <tr><td><code>--wait-for</code></td><td>等待的正規表達式 pattern，符合即結束</td><td>-</td></tr>
+                    <tr><td><code>--log</code></td><td>將原始輸出存檔</td><td>-</td></tr>
+                </tbody>
+            </table>
+            <p>結束碼：符合含 <code>PASSED</code> 的 pattern 為 0，符合其他 pattern 為 1，逾時為 2，無法開啟序列埠為 3。</p>
+
+            <h3>主控台鮑率</h3>
+            <p>FreeRTOS 應用的主控台鮑率由各應用的 <code>CONFIG_PLATFORM_UART_BAUDRATE</code> 決定，預設 115200；IPRO7AI Reef EVK 的主控台位於 U6 連接器。下列應用使用 921600：<code>ipro7ai_evk_demo</code>、<code>ipro7ai_evk_launcher</code>、<code>ipro7ai_evk_rps</code>、<code>ipro_meeting_poc</code>、<code>ipro7_uvc_cam</code>、<code>ipro_epd_el036</code>。Zephyr 映像（<code>ipro7_evb</code>、<code>ipro7ai_evk</code>）的主控台為 UART0 2,000,000 鮑。</p>
+            <p>macOS 以外的主機上，<code>serial_monitor.py</code> 只支援至 230400 鮑；921600 或 2,000,000 鮑請改用其他序列埠終端。macOS 使用 <code>/dev/cu.*</code>；燒錄前停止監看以釋放序列埠。</p>
+        </section>
+
+        <!-- ============================================================ -->
+        <section id="zephyr-tools">
+            <h2>Zephyr 工具（tools/zephyr）</h2>
+            <p>自 V2.1.0 起，SDK 同時是 Zephyr v4.4.0 模組，支援 <code>ipro7_evb</code>（IPRO7 EVB）與 <code>ipro7ai_evk</code>（IPRO7AI EVK）。<code>tools/zephyr/</code> 提供下列腳本；完整說明見 <a href="{{ '/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>。</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>腳本</th>
+                        <th>用途</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>bootstrap.sh</code></td><td>在 <code>zephyr-workspace/</code> 建立 west 工作區：下載 Zephyr v4.4.0 及 <code>west.yml</code> 列出的模組，並套用 <code>zephyr/patches.yml</code>；<code>-w DIR</code> 指定位置，<code>IPRO_TOOLCHAIN</code> 指定工具鏈路徑</td></tr>
+                    <tr><td><code>build.sh</code></td><td>建構 Zephyr 應用：<code>-b ipro7_evb</code>（預設）或 <code>ipro7ai_evk</code>，<code>-p</code> 全新建構，<code>-d</code> 建構目錄；應用可為路徑或 <code>zephyr/samples/</code> 下的範例名稱</td></tr>
+                    <tr><td><code>flash.sh</code></td><td>以 IntelProCube 命令列工具燒錄 <code>zephyr.bin</code>（<code>--build-dir</code> 或 <code>.bin</code> 路徑、<code>--port</code>），燒錄前經 <code>serial_monitor.py</code> 送出 <code>reboot_dl</code></td></tr>
+                    <tr><td><code>monitor.sh</code></td><td>以 2,000,000 鮑開啟 UART0 主控台（<code>--port</code>、<code>--baud</code>、<code>--timeout</code>）</td></tr>
+                    <tr><td><code>ci_build.sh</code></td><td>建構範例矩陣（全新建構、警告視為錯誤）並列出映像大小；以 <code>-b</code> 指定 <code>ipro7_evb</code> 或 <code>ipro7ai_evk</code>，<code>-q</code> 只建構 hello_world 與 blinky</td></tr>
+                </tbody>
+            </table>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Zephyr 快速開始</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">tools/zephyr/bootstrap.sh          # west 工作區建於 zephyr-workspace/
+source zephyr-workspace/env.sh     # ZEPHYR_BASE、CROSS_COMPILE、west
+cd zephyr-workspace
+west build -b ipro7_evb zephyr/samples/hello_world
+west build -b ipro7_evb ../zephyr/samples/periph_smoke -d build/smoke
+west flash                         # IntelProCube 命令列工具：$IPRO_FLASH_TOOL 或 PATH</code></pre>
+            </div>
+            <p>首次執行 <code>bootstrap.sh</code> 會從 GitHub 下載 Zephyr 與模組，需要 Python 3.10+、CMake 3.20 以上、Ninja、git、dtc 及 IPRO RISC-V 工具鏈（<code>/opt/toolchain/riscv_ipro7</code>）。</p>
+            <p><code>west flash</code> 預設透過 IPRO7 CMSIS-DAP probe 進入下載模式；沒有 probe 時使用 <code>west flash -- --boot shell</code>（由執行中映像的 <code>reboot_dl</code> 進入）或 <code>--boot manual</code>。序列埠以 <code>--port</code> 或 <code>$IPRO_SERIAL_PORT</code> 指定，未指定時使用唯一存在的 USB 序列埠。Zephyr 主控台為 UART0 2,000,000 鮑，與 FreeRTOS 應用不同；以 <code>tools/zephyr/monitor.sh --port /dev/cu.usbserial-XXXX --timeout 60</code> 指定監看秒數開啟。</p>
         </section>
 
         <!-- ============================================================ -->
         <section id="automated-testing">
             <h2>板上測試</h2>
-            <p>SDK 已包含 <code>apps/test/ipro_unit_test/</code>，測試 HAL 與共用元件。建置後以另行取得的燒錄工具寫入對應板子，再由串口確認 <code>ALL TESTS PASSED</code> 或 <code>SOME TESTS FAILED</code>。</p><pre><code class="language-bash">make -C apps/test/ipro_unit_test</code></pre>            <p><code>tools/board_test.sh</code> 與 <code>tools/serial_monitor.py</code> 未隨附。建置 CLI 的 <code>test</code> 動作仍依賴外部燒錄／監看工具，單靠原始碼包無法完成自動上板測試。</p>
+            <p>SDK 已包含 <code>apps/test/ipro_unit_test/</code>，測試 HAL 與共用元件。建置後以另行取得的燒錄工具寫入對應板子，再由序列埠確認 <code>ALL TESTS PASSED</code> 或 <code>SOME TESTS FAILED</code>。</p><pre><code class="language-bash">make -C apps/test/ipro_unit_test</code></pre>            <p><code>tools/board_test.sh</code> 未隨附。<code>./build_freertos.sh test ipro_unit_test</code> 會建構、燒錄（需另行取得的 IntelProCube 命令列工具）、送出 <code>reboot</code> 並等待上述結果；結束碼 0 為通過、1 為失敗、2 為逾時（<code>-t</code> 調整秒數，預設 30）。</p>
         </section>
 
         <!-- ============================================================ -->
         <section id="gdb-debugging">
-            <div class="alert alert-info">依 <code>PREBUILT-ARCHIVES-STRIPPED.txt</code>，交付包中的 AI、ISP、RF、LC3 與低功耗框架函式庫已移除除錯資訊；可正常連結，但無法於庫內進行原始碼層級單步除錯。</div>
+            <div class="alert alert-info">交付包中的 AI、ISP、RF、LC3 與低功耗框架函式庫以預編譯 <code>.a</code> 提供、不含原始碼；可正常連結，但無法於庫內進行原始碼層級單步除錯。</div>
             <h2>GDB 除錯</h2>
             <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> OpenOCD 配置檔（<code>tools/openocd/</code>）未包含於 Release SDK v2.0.1，請聯絡原廠取得。
+                <strong>&#9888;&#65039;</strong> OpenOCD 配置檔（<code>tools/openocd/</code>）未包含於 IPRO SDK V2.1.0，請洽 INTELPRO 取得。
             </div>
             <p>IPRO SDK 支援透過 OpenOCD + GDB 進行 JTAG 除錯。IPRO7 的 JTAG 腳位為 GPIO0（TMS）、GPIO1（TDI）、GPIO2（TCK）、GPIO9（TDO）。</p>
 
@@ -407,7 +498,7 @@ openocd -f tools/openocd/openocd_ipro6.cfg
         <section id="crash-analysis">
             <h2>當機分析</h2>
             <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> <code>parse_backtrace.py</code> 未包含於 Release SDK v2.0.1，請聯絡原廠取得。即使沒有此工具，也可以使用工具鏈內建的 <code>addr2line</code> 手動解析（見下方）。
+                <strong>&#9888;&#65039;</strong> <code>parse_backtrace.py</code> 未包含於 IPRO SDK V2.1.0，請洽 INTELPRO 取得。即使沒有此工具，也可以使用工具鏈內建的 <code>addr2line</code> 手動解析（見下方）。
             </div>
             <p>當韌體發生異常（exception）時，異常處理程式會輸出異常 PC、SP（含所屬堆疊範圍）、saved s0(fp) / ra 與堆疊內容傾印。<code>parse_backtrace.py</code> 可以將這些位址轉換為對應的原始碼檔案與行號。</p>
 
@@ -480,7 +571,7 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
         <!-- ============================================================ -->
         <section id="size-analysis">
             <h2>建構分析</h2>
-            <p>使用 <code>./build_freertos.sh size &lt;project&gt;</code>（Release SDK v2.0.1 內建）可以檢視韌體的記憶體使用情況，幫助您了解韌體佔用了多少 Flash 與 RAM。</p>
+            <p>使用 <code>./build_freertos.sh size &lt;project&gt;</code>（IPRO SDK V2.1.0 內建）可以檢視韌體的記憶體使用情況，幫助您了解韌體佔用了多少 Flash 與 RAM。</p>
 
             <h3>使用方式</h3>
             <div class="code-block">
@@ -512,7 +603,7 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
                 <tbody>
                     <tr>
                         <td>Flash</td>
-                        <td>1 MB</td>
+                        <td>依板型而定（例：IPRO7AI Reef EVK 為 2 MB）</td>
                         <td><code>0x13000000</code></td>
                     </tr>
                     <tr>
@@ -535,11 +626,29 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
         </section>
 
         <!-- ============================================================ -->
+        <section id="ota-package">
+            <h2>OTA 封裝（create_ota.py）</h2>
+            <p><code>tools/create_ota.py</code> 將合併韌體映像封裝為 boot2 OTA 格式。輸入必須是含 boot header 的合併映像，例如 IntelProCube 命令列工具產生的 <code>chips/ipro7/img_create_iot/whole_img.bin</code>，不是 SDK 建構輸出的 <code>.bin</code>；輸入格式不符時腳本會停止。</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">建立 OTA 套件</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># 預設以 XZ 壓縮，輸出 whole_img.xz.ota
+python3 tools/create_ota.py &lt;IntelProCube&gt;/chips/ipro7/img_create_iot/whole_img.bin
+
+# 不壓縮並指定輸出檔
+python3 tools/create_ota.py whole_img.bin --raw -o firmware.ota</code></pre>
+            </div>
+            <p><code>--fw-ver</code> 可設定寫入 OTA 標頭的韌體版本字串。</p>
+        </section>
+
+        <!-- ============================================================ -->
         <section id="macos-notes">
             <h2>macOS 開發注意事項</h2>
             <p>在 macOS 上進行開發時，有一些平台特定的注意事項需要留意。</p>
 
-            <h3>串口裝置</h3>
+            <h3>序列埠裝置</h3>
             <div class="alert alert-warning">
                 <strong>&#9888;&#65039;</strong> macOS 上<strong>務必使用 <code>/dev/cu.*</code></strong> 而非 <code>/dev/tty.*</code>。<code>tty.*</code> 裝置會等待 DCD（Data Carrier Detect）訊號，導致程式無限阻塞。
             </div>
@@ -548,7 +657,7 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
                 <thead>
                     <tr>
                         <th>作業系統</th>
-                        <th>串口裝置路徑</th>
+                        <th>序列埠裝置路徑</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -564,7 +673,7 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
             </table>
 
             <h3>綁定 CMake</h3>
-            <p>V2.0.1 的 <code>tools/cmake/</code> 隨附 Linux x86-64 CMake，無法在 macOS 原生執行。請安裝 macOS CMake 3.19+（例如 <code>brew install cmake</code>）並加入 PATH；POSIX 主機的 <code>project.build</code> 優先選用系統 CMake。</p>
+            <p>V2.1.0 的 <code>tools/cmake/</code> 隨附 Linux x86-64 CMake，無法在 macOS 原生執行。請安裝 macOS CMake 3.19+（例如 <code>brew install cmake</code>）並加入 PATH；POSIX 主機的 <code>project.build</code> 優先選用系統 CMake。</p>
 
             <h3>常見問題與解決方案</h3>
             <table>
@@ -577,19 +686,19 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
                 </thead>
                 <tbody>
                     <tr>
-                        <td>串口程式阻塞不動</td>
+                        <td>序列埠程式阻塞不動</td>
                         <td>使用了 <code>/dev/tty.*</code></td>
                         <td>改用 <code>/dev/cu.*</code></td>
                     </tr>
                     <tr>
-                        <td><code>cat</code> 串口輸出不完整</td>
+                        <td><code>cat</code> 序列埠輸出不完整</td>
                         <td>macOS 緩衝問題</td>
-                        <td>使用外部串口終端或 Extension Monitor</td>
+                        <td>使用 <code>tools/serial_monitor.py</code>、外部序列埠終端或 Extension Monitor</td>
                     </tr>
                     <tr>
                         <td>"Resource busy" 錯誤</td>
-                        <td><code>stty -f</code> 佔用串口</td>
-                        <td>關閉佔用程序，使用 Python 方案</td>
+                        <td><code>stty -f</code> 佔用序列埠</td>
+                        <td>關閉佔用序列埠的程式，使用 Python 方案</td>
                     </tr>
                     <tr>
                         <td>CMake 無法執行</td>
@@ -599,15 +708,15 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
                 </tbody>
             </table>
 
-            <h3>串口開啟建議旗標</h3>
+            <h3>序列埠開啟建議旗標</h3>
             <div class="code-block">
                 <div class="code-block-header">
-                    <span class="code-block-title">Python 串口開啟範例</span>
+                    <span class="code-block-title">Python 序列埠開啟範例</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-python">import os
 
-# 正確的串口開啟方式（macOS，路徑依實際裝置而定）
+# 正確的序列埠開啟方式（macOS，路徑依實際裝置而定）
 fd = os.open("/dev/cu.usbserial-XXXX", os.O_RDWR | os.O_NOCTTY | os.O_NONBLOCK)</code></pre>
             </div>
         </section>
@@ -616,7 +725,7 @@ fd = os.open("/dev/cu.usbserial-XXXX", os.O_RDWR | os.O_NOCTTY | os.O_NONBLOCK)<
         <section id="dev-workflow">
             <h2>開發流程</h2><pre><code class="language-bash">./build_freertos.sh -l
 ./build_freertos.sh clean build ipro_ble_remote
-./build_freertos.sh size ipro_ble_remote</code></pre>            <p>建置完成後，以另行安裝的 IntelPro 工具燒錄，再用串口終端確認輸出。VS Code 可在確認實際 SDK 與工具路徑後，依序使用 <code>IPRO: Build</code>、<code>IPRO: Flash</code> 與 <code>IPRO: Serial Monitor</code>。</p>
+./build_freertos.sh size ipro_ble_remote</code></pre>            <p>建置完成後，以另行取得的 IntelProCube 命令列工具燒錄（或執行 <code>./build_freertos.sh flash</code>），再用 <code>tools/serial_monitor.py</code> 或序列埠終端確認輸出。Zephyr 應用請改用 <code>west</code> 與 <code>tools/zephyr/</code>。VS Code 可在確認實際 SDK 與工具路徑後，依序使用 <code>IPRO: Build</code>、<code>IPRO: Flash</code> 與 <code>IPRO: Serial Monitor</code>。</p>
             <p>HAL 回歸驗證請建置 <code>ipro_unit_test</code> 並依上述板上測試流程執行，記錄 SDK 版本、板型配置與實際硬體結果。</p>
         </section>
 

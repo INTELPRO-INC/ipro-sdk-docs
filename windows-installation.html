@@ -8,7 +8,7 @@ title: Windows 安裝與更新
         <nav class="sidebar-nav">
             <ul class="sidebar-links">
                 <li><a href="#online-3-4-0" class="sidebar-link">Online Installer 3.4.0</a></li>
-                <li><a href="#sdk-2-0-1" class="sidebar-link">SDK V2.0.1 手動更新</a></li>
+                <li><a href="#sdk-2-1-0" class="sidebar-link">SDK V2.1.0 手動更新</a></li>
                 <li><a href="#overview" class="sidebar-link">安裝包與版本</a></li>
                 <li><a href="#package-contents" class="sidebar-link">檔案與安裝目錄</a></li>
                 <li><a href="#requirements" class="sidebar-link">安裝前準備</a></li>
@@ -30,15 +30,15 @@ title: Windows 安裝與更新
             <h2>Online Installer 3.4.0</h2>
             <p>使用 <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/online-installer-v3.4.0">IPRO-SDK-Online-Setup-3.4.0.exe</a>從公開元件清單安裝，不需 GitHub 登入。提供 Full、SDK、toolchain、build tools、IntelProCube、OpenOCD 與 Extension 七種模式。</p>
             <p>選擇全新目的目錄、元件及版本，安裝前核對實際選取結果。<code>latest</code> 指向各套件維護的 stable／相容版本，並非倉庫最新 Release。Full 模式檢查宣告的依賴；單一元件模式不會驗證既有環境是否相容。</p>
-            <div class="alert alert-warning">2026-09-10 核對結果：<a href="https://github.com/INTELPRO-INC/IPRO-SDK/blob/main/packages/index.json">套件清單</a>仍以 SDK 1.2.1 為 stable，未登錄 2.0.1，因此選 <code>latest</code> 不會安裝 V2.0.1。最新版請依下方手動更新流程取得。</div>
+            <div class="alert alert-warning">2026-10-15 核對結果：<a href="https://github.com/INTELPRO-INC/IPRO-SDK/blob/main/packages/index.json">套件清單</a>仍以 SDK 1.2.1 為 stable，未登錄 V2.x，因此選 <code>latest</code> 不會安裝 V2.1.0。最新版請依下方手動更新流程取得。</div>
             <p>設定與 PATH 更新預設不勾選。SDK 模式可只切換 <code>ipro.sdkRoot</code>；toolchain／build tools／IntelProCube 模式可只切換對應工具路徑。OpenOCD 僅安裝檔案；Extension 可選安裝 VSIX。保留舊版目錄以便回復。</p><pre><code class="language-powershell">Start-Process .\IPRO-SDK-Online-Setup-3.4.0.exe -Wait -ArgumentList '/MODE=sdk', '/SDKVERSION=1.2.1', '/DIR="C:\IPRO\versions\sdk-1.2.1-new"', '/TASKS=""'</code></pre>            <p>此例明確固定安裝已登錄的 SDK 1.2.1，目的目錄必須尚不存在。<code>/OFFLINE=1</code> 使用快取清單／ZIP（或內附初始清單），離線時無法得知新版本。ZIP 會依清單檢查 SHA-256，後續設定失敗時請查看安裝紀錄。</p>
         </section>
 
-        <section id="sdk-2-0-1">
-            <h2>SDK V2.0.1 手動更新</h2>
-            <p>由 <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1 Release</a> 下載 <code>IPRO-SDK-V2.0.1.tar.gz</code> 及其 checksum，解壓至新的 SDK 目錄。確認 <code>VERSION.txt</code> 的 IPRO7／IPRO6 皆為 V2.0.1，選取的根目錄包含 <code>CMakeLists.txt</code>、<code>apps/</code> 與 <code>bsp/</code>。</p><pre><code class="language-powershell">Get-FileHash .\IPRO-SDK-V2.0.1.tar.gz -Algorithm SHA256
-Get-Content .\IPRO-SDK-V2.0.1.tar.gz.sha256</code></pre>            <p>比對下載的 checksum 與計算結果。Extension 3.3.0 可由 <code>IPRO Setup: Update Components</code> 匯入解壓後資料夾，或直接選擇該 SDK 根目錄；壓縮檔匯入入口接受 ZIP，<code>.tar.gz</code> 請先解壓。重新開啟新 SDK 並執行 <code>IPRO Setup: Run Diagnostics</code>。</p>
-            <p>SDK README 指定 GCC 14；目前 Windows 清單僅對 SDK 1.2.1 宣告 GCC 13.1.1 的相容組合，V2.0.1 請另行取得並驗證相容工具鏈。原生 Windows Make 請明確傳入 <code>CMAKE=</code>，因 <code>project.build</code> 預設引用未隨附的 <code>tools/cmake_win-x86_64/</code>。在完成新版本建置及板端驗證前，保留可用的 1.2.1 環境。</p>
+        <section id="sdk-2-1-0">
+            <h2>SDK V2.1.0 手動更新</h2>
+            <p>由 <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.1.0">V2.1.0 Release</a> 下載 <code>IPRO-SDK-V2.1.0.tar.gz</code> 及其 <code>.sha256</code>，解壓至新的 SDK 目錄。確認 <code>VERSION.txt</code> 顯示 V2.1.0，選取的根目錄包含 <code>CMakeLists.txt</code>、<code>apps/</code> 與 <code>bsp/</code>。V2.1.0 的 FreeRTOS 應用僅支援 IPRO7；IPRO6S 開發請保留 V2.0.1。</p><pre><code class="language-powershell">Get-FileHash .\IPRO-SDK-V2.1.0.tar.gz -Algorithm SHA256
+Get-Content .\IPRO-SDK-V2.1.0.tar.gz.sha256</code></pre>            <p>比對下載的 checksum 與計算結果。Extension 3.3.0 可由 <code>IPRO Setup: Update Components</code> 匯入解壓後資料夾，或直接選擇該 SDK 根目錄；壓縮檔匯入入口接受 ZIP，<code>.tar.gz</code> 請先解壓。重新開啟新 SDK 並執行 <code>IPRO Setup: Run Diagnostics</code>。</p>
+            <p>SDK README 指定 GCC 14；目前 Windows 清單僅對 SDK 1.2.1 宣告 GCC 13.1.1 的相容組合，V2.1.0 請另行取得並驗證相容工具鏈。原生 Windows Make 時，<code>project.build</code> 在找不到未隨附的 <code>tools/cmake_win-x86_64/</code> 時改用 PATH 上的 <code>cmake</code>；請確認 PATH 上的 CMake 版本，或明確傳入 <code>CMAKE=</code>。在完成新版本建置及板端驗證前，保留可用的 1.2.1 環境。</p>
         </section>
 
         <section id="overview"><h2>固定版 Installer 3.3.0（SDK 1.2.1）</h2>
@@ -91,7 +91,7 @@ Get-Content .\IPRO-SDK-V2.0.1.tar.gz.sha256</code></pre>            <p>比對下
     <li>VS Code 需 1.102 或以上。完整安裝時若未偵測到一般版 VS Code，可選擇從 Microsoft 下載，該步需要網路；Extension-only 需先安裝 VS Code。</li>
     <li>選擇可寫入的安裝根目錄，預設為 C:\IPRO。完整環境約 2 GB，另預留解壓暫存與建構空間；單獨 SDK 約 333 MB。</li>
     <li>停止 Build、Flash、Debug 與 Monitor。若目的地已有個人程式，先備份 SDK、專案與設定；版本升級建議使用新的 SDK 目錄。</li>
-    <li>安裝與首次建構不需要連接開發板；燒錄與串口驗證時才需要板子及相容 Probe／UART。</li>
+    <li>安裝與首次建構不需要連接開發板；燒錄與序列埠驗證時才需要板子及相容 Probe／UART。</li>
 </ul>
         </section>
 
@@ -121,7 +121,7 @@ Get-Content .\IPRO-SDK-V2.0.1.tar.gz.sha256</code></pre>            <p>比對下
     <li>依需求勾選安裝 VS Code、安裝 IPRO Extension、設定 ipro.* 工具路徑與加入 user PATH。工具路徑依選定的安裝目錄產生。</li>
     <li>在 Ready to Install 核對目的地及工作，再按 Install；現有 SDK 的同名檔案可能被覆寫。</li>
     <li>等待複製與後處理完成。如出現 Some steps did not complete，查看 installer\updates\3.3.0\install.log。</li>
-    <li>完全關閉並重開原本的 VS Code／Terminal，讓程序取得新的 PATH。開啟 C:\IPRO\sdk\IPRO-IPRO7-SDK-V1.2.1。</li>
+    <li>完全關閉並重開原本的 VS Code／Terminal，讓程式取得新的 PATH。開啟 C:\IPRO\sdk\IPRO-IPRO7-SDK-V1.2.1。</li>
     <li>確認可信工作區後，執行 IPRO: Open Control Center，再執行 IPRO Setup: Run Diagnostics。</li>
 </ol>
         </section>

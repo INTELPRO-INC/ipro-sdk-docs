@@ -9,13 +9,14 @@ lang: en
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">Table of Contents</h4>
             <ul class="sidebar-links">
-                <li><a href="#sdk-2-0-1" class="sidebar-link">SDK V2.0.1</a></li>
+                <li><a href="#sdk-2-1-0" class="sidebar-link">SDK V2.1.0</a></li>
 
                 <li><a href="#prerequisites" class="sidebar-link">Prerequisites</a></li>
                 <li><a href="#installation" class="sidebar-link">Installation</a></li>
                 <li><a href="#directory-structure" class="sidebar-link">SDK Directory Structure</a></li>
                 <li><a href="#freertos-quickstart" class="sidebar-link">Quick Start Build</a></li>
                 <li><a href="#first-build" class="sidebar-link">First Build</a></li>
+                <li><a href="#zephyr-quickstart" class="sidebar-link">Zephyr RTOS Quick Start</a></li>
                 <li><a href="#kconfig" class="sidebar-link">Configuration System</a></li>
                 <li><a href="#flashing" class="sidebar-link">Flashing Firmware (Release Notice)</a></li>
                 <li><a href="#serial-monitor" class="sidebar-link">Serial Monitor</a></li>
@@ -32,15 +33,19 @@ lang: en
         <p>This guide will walk you through setting up the IPRO SDK Release package and building your first application.</p>
 
         <div class="alert alert-info">
-            <strong><i class="fas fa-info-circle"></i> Release SDK Notice:</strong> The source archive omits the flash tool, board-test scripts and VS Code extension. For separately versioned Windows tools, see <a href="{{ '/en/windows-installation' | relative_url }}">Installation &amp; Updates</a>.
+            <strong><i class="fas fa-info-circle"></i> Release SDK Notice:</strong> The source archive omits the flash tool (the IntelProCube v0.6.3 command-line tool is obtained separately), the <code>board_test.sh</code> board-test script and the VS Code extension; the <code>tools/serial_monitor.py</code> serial console reader is included from V2.1.0. For separately versioned Windows tools, see <a href="{{ '/en/windows-installation' | relative_url }}">Installation &amp; Updates</a>.
         </div>
 
-        <div class="alert alert-info"><p>Online Installer 3.4.0 reads the component catalog; the fixed 3.3.0 installer bundles SDK 1.2.1. As of 2026-09-10, the catalog also selects SDK 1.2.1. Obtain V2.0.1 from its release page and select its extracted directory explicitly. <a href="{{ '/en/windows-installation' | relative_url }}">Installation and version selection</a></p></div>
+        <div class="alert alert-info"><p>Online Installer 3.4.0 reads the component catalog; the fixed 3.3.0 installer bundles SDK 1.2.1. The catalog still selects SDK 1.2.1 and does not install V2.1.0. Download V2.1.0 from its GitHub Release and select its extracted directory explicitly. <a href="{{ '/en/windows-installation' | relative_url }}">Installation and version selection</a></p></div>
 
-        <section id="sdk-2-0-1">
-            <h2>SDK V2.0.1</h2>
-            <p>Download <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">IPRO-SDK-V2.0.1</a> (2026-09-09) for source, the Android microphone demo APK and the matching test firmware. The source package contains 31 application configurations; use the shipped configuration for your board.</p>
-            <p>Extract <code>IPRO-SDK-V2.0.1.tar.gz</code> into a new directory and verify <code>VERSION.txt</code>. Obtain the matching RISC-V toolchain separately; the release README specifies GCC 14. The catalog's Windows GCC 13.1.1 package is declared for SDK 1.2.1, so do not assume that declaration covers 2.0.1.</p>
+        <section id="sdk-2-1-0">
+            <h2>SDK V2.1.0</h2>
+            <p>Download <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.1.0">IPRO-SDK-V2.1.0</a> (2026-10-15): the release provides <code>IPRO-SDK-V2.1.0.tar.gz</code> and its <code>.sha256</code> checksum; the source is also on the <code>main</code> branch of the GitHub repository. The package contains 34 IPRO7 applications (IPRO7 EVB, IPRO7AI EVK, IPRO7AI Reef EVK); use the shipped configuration for your board.</p>
+            <p>New in this release: Zephyr RTOS support (see <a href="{{ '/en/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>); six applications <code>ipro7ai_reef_demo</code>, <code>ipro7ai_evk_launcher</code>, <code>ipro7ai_evk_person_detect</code>, <code>ipro7ai_evk_rps</code>, <code>ipro_ai_link</code> and <code>ipro7_uvc_cam</code>; and <code>tools/serial_monitor.py</code>, <code>tools/zephyr/</code> and <code>tools/create_ota.py</code>. Not included in this release: Matter, Thread for FreeRTOS applications (Thread is available under Zephyr only) and model conversion tools.</p>
+            <div class="alert alert-warning">
+                <strong>IPRO6S:</strong> V2.1.0 does not support IPRO6S and ships no IPRO6S applications or IPRO6S BLE controller libraries. For IPRO6S development (BR/EDR, on-chip Wi-Fi 6, IPRO6S EVB) use <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1</a>.
+            </div>
+            <p>Extract <code>IPRO-SDK-V2.1.0.tar.gz</code> into a new directory and verify <code>VERSION.txt</code>. Obtain the matching RISC-V toolchain separately; the release README specifies GCC 14. The catalog's Windows GCC 13.1.1 package is declared for SDK 1.2.1, so do not assume that declaration covers 2.1.0.</p>
         </section>
 
         <section id="prerequisites">
@@ -49,9 +54,12 @@ lang: en
 
             <h3>Hardware Requirements</h3>
             <ul>
-                <li>IPRO7 Development Board (EVB)</li>
+                <li>IPRO7 development board: IPRO7 EVB, IPRO7AI EVK or IPRO7AI Reef EVK</li>
                 <li>USB Cable (for flashing and serial communication)</li>
             </ul>
+            <div class="alert alert-info">
+                <strong>IPRO7AI Reef EVK:</strong> The board has 2 MB of flash; flash it with a 2 MB partition table (e.g. <code>partition_cfg_2M.toml</code>; use the one the application README names). Fit jumper JP1 before power-up. Most applications select the Reef with <code>DEFCONFIG=defconfig_reef*</code> or carry a Reef <code>.config</code> (e.g. <code>ipro7ai_reef_demo</code>).
+            </div>
 
             <h3>Software Requirements</h3>
             <ul>
@@ -60,6 +68,7 @@ lang: en
                 <li><strong>Build Tools:</strong> CMake 3.19+, Ninja, Make</li>
                 <li><strong>Python:</strong> Python 3.8+ (for development tools and scripts)</li>
                 <li><strong>tar:</strong> For extracting the SDK release package</li>
+                <li><strong>Zephyr (optional):</strong> Python 3.10+, CMake 3.20+, Ninja, git, dtc; see <a href="{{ '/en/zephyr-rtos' | relative_url }}">Zephyr RTOS</a></li>
             </ul>
 
             <div class="code-block">
@@ -97,16 +106,19 @@ python3 --version</code></pre>
 
             <h3>1. Extract the Release SDK Package</h3>
             <div class="alert alert-info">
-                <strong><i class="fas fa-clipboard-list"></i> Note:</strong> This is the Release version of the SDK package; you do not need Git to obtain the source code. Simply extract the release package you received.
+                <strong><i class="fas fa-clipboard-list"></i> Note:</strong> This is the Release version of the SDK package; you do not need Git to obtain the source code. Download the package and its <code>.sha256</code> checksum from the GitHub Release, verify it, then extract it.
             </div>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">Extract Release SDK</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># Extract the SDK release package
+                <pre><code class="language-bash"># Verify and extract the SDK release package (on Linux: sha256sum -c)
+shasum -a 256 -c IPRO-SDK-V2.1.0.tar.gz.sha256
+tar xzf IPRO-SDK-V2.1.0.tar.gz
+
 # Enter the extracted release directory
-cd IPRO-SDK-V2.0.1
+cd IPRO-SDK-V2.1.0
 cat VERSION.txt</code></pre>
             </div>
 
@@ -138,24 +150,28 @@ ls /opt/toolchain/riscv_ipro7/bin/
 
         <section id="directory-structure">
             <h2>SDK Directory Structure</h2>
-            <pre><code class="language-text">IPRO-SDK-V2.0.1/
+            <pre><code class="language-text">IPRO-SDK-V2.1.0/
 ├── apps/
+│   ├── ai/
+│   │   ├── ipro_meeting_poc/
+│   │   ├── ipro7ai_evk_person_detect/
+│   │   └── ipro7ai_evk_rps/
 │   ├── bluetooth/ble/
 │   │   ├── ipro_ble_remote/
 │   │   ├── ipro_ble_transparent/
 │   │   ├── ipro_ble_hid_keyboard/
 │   │   └── ipro_throughput_test/
 │   ├── bluetooth/le_audio/ipro_le_audio_headset/
-│   ├── multimedia/ipro_pdm_mic_demo/
-│   ├── ai/ipro_meeting_poc/
+│   ├── multimedia/
+│   │   ├── ipro_pdm_mic_demo/
+│   │   └── ipro7_uvc_cam/
 │   ├── platform/
 │   │   ├── ipro7_demo/
 │   │   ├── ipro7_sdio_wifi/
 │   │   ├── ipro7ai_evk_demo/
-│   │   ├── ipro6_demo/
-│   │   ├── ipro6_if_wifi/
-│   │   └── ipro6_btdm_phyrf/
-│   └── test/
+│   │   ├── ipro7ai_evk_launcher/
+│   │   └── ipro7ai_reef_demo/
+│   └── test/                  # ipro_unit_test, ipro_ai_link, driver examples and probes
 ├── bsp/
 ├── components/
 │   ├── wireless/bluetooth/
@@ -165,11 +181,16 @@ ls /opt/toolchain/riscv_ipro7/bin/
 │   ├── os/
 │   └── ...
 ├── cmake/
+├── zephyr/                    # Zephyr module: boards, drivers, samples, tests
 ├── tools/
 │   ├── android/
+│   ├── cmake/
 │   ├── script/
-│   └── cmake/
+│   ├── zephyr/
+│   ├── create_ota.py
+│   └── serial_monitor.py
 ├── build_freertos.sh
+├── west.yml
 ├── project.build
 ├── CMakeLists.txt
 ├── Kconfig
@@ -178,7 +199,7 @@ ls /opt/toolchain/riscv_ipro7/bin/
 
         <section id="freertos-quickstart">
             <h2>Quick Start Build</h2>
-            <p>Traditional FreeRTOS development approach, suitable for developers familiar with FreeRTOS.</p>
+            <p>FreeRTOS is the SDK's main development path; all 34 applications in V2.1.0 build with FreeRTOS.</p>
 
             <h3>Use Make Build (Recommended)</h3>
             <div class="code-block">
@@ -195,6 +216,12 @@ make -C apps/bluetooth/le_audio/ipro_le_audio_headset
 # Build IPRO7 Demo application
 make -C apps/platform/ipro7_demo
 
+# Build the IPRO7AI Reef EVK demo
+make -C apps/platform/ipro7ai_reef_demo
+
+# Select an alternate configuration with DEFCONFIG (output in build_&lt;name&gt;/)
+make -C apps/multimedia/ipro7_uvc_cam DEFCONFIG=defconfig_reef_ov5640
+
 # Clean build
 make -C apps/bluetooth/ble/ipro_ble_remote clean</code></pre>
             </div>
@@ -205,10 +232,13 @@ make -C apps/bluetooth/ble/ipro_ble_remote clean</code></pre>
                     <span class="code-block-title">FreeRTOS Build Script</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># Build BLE Remote application
+                <pre><code class="language-bash"># List all buildable projects
+./build_freertos.sh -l
+
+# Build BLE Remote application
 ./build_freertos.sh ipro_ble_remote build
 
-# Build platform demo application
+# Build IPRO7 Demo application
 ./build_freertos.sh ipro7_demo build</code></pre>
             </div>
 
@@ -268,6 +298,24 @@ ls -la apps/bluetooth/ble/ipro_ble_remote/build/build_out/
             </div>
         </section>
 
+        <section id="zephyr-quickstart">
+            <h2>Zephyr RTOS Quick Start</h2>
+            <p>From V2.1.0 the SDK is also a Zephyr v4.4.0 module (<code>zephyr/module.yml</code>); <code>west.yml</code> at the SDK root makes it the west manifest repository. Supported boards are <code>ipro7_evb</code> (IPRO7 EVB) and <code>ipro7ai_evk</code> (IPRO7AI EVK); there is no Zephyr board definition for the IPRO7AI Reef EVK in this release.</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Zephyr Build and Flash</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">tools/zephyr/bootstrap.sh          # west workspace in zephyr-workspace/
+source zephyr-workspace/env.sh     # ZEPHYR_BASE, CROSS_COMPILE, west
+cd zephyr-workspace
+west build -b ipro7_evb zephyr/samples/hello_world
+west build -b ipro7_evb ../zephyr/samples/periph_smoke -d build/smoke
+west flash                         # IntelProCube CLI: $IPRO_FLASH_TOOL or on PATH</code></pre>
+            </div>
+            <p>The first bootstrap downloads Zephyr v4.4.0 and the modules <code>west.yml</code> lists from GitHub. It needs Python 3.10+, CMake 3.20+, Ninja, git, dtc and the IPRO RISC-V toolchain (<code>/opt/toolchain/riscv_ipro7</code>; override with <code>IPRO_TOOLCHAIN</code>). The Zephyr console runs at 2,000,000 baud on UART0. Zephyr in this release provides no low-power modes and no display, camera, audio codec, USB, SD host, Ethernet or NPU drivers; use FreeRTOS for those. See <a href="{{ '/en/zephyr-rtos' | relative_url }}">Zephyr RTOS</a> for the full guide.</p>
+        </section>
+
         <section id="kconfig">
             <h2>Kconfig Configuration System</h2>
             <p>The SDK uses a Linux kernel-style Kconfig system to manage project configuration. Each application has its own <code>.config</code> file, and the build system automatically generates a <code>generated/autoconf.h</code> header file.</p>
@@ -277,6 +325,7 @@ ls -la apps/bluetooth/ble/ipro_ble_remote/build/build_out/
                 <li><strong>Root config:</strong> <code>Kconfig</code> - aggregates all option definitions (pulls in lower-level Kconfig files via <code>source</code>)</li>
                 <li><strong>Per-layer option definitions:</strong> <code>bsp/Kconfig</code> and <code>components/Kconfig</code> - option definitions for the BSP and middleware components</li>
                 <li><strong>App config:</strong> <code>apps/&lt;category&gt;/&lt;project&gt;/.config</code> - the complete build configuration for each application, from which <code>generated/autoconf.h</code> is generated at build time</li>
+                <li><strong>Alternate configurations:</strong> some applications also carry <code>defconfig_&lt;name&gt;</code> or <code>config_&lt;board&gt;</code> files, selected with <code>make DEFCONFIG=defconfig_&lt;name&gt;</code> (output in <code>build_&lt;name&gt;/</code>) or <code>make BOARD=&lt;board&gt;</code>; most applications select the IPRO7AI Reef EVK with <code>defconfig_reef*</code></li>
             </ul>
 
             <h3>Common Configuration Options</h3>
@@ -305,8 +354,8 @@ CONFIG_BT_CONN=2
 CONFIG_EM_SIZE=32
 
 # Component enables
-CONFIG_LWIP=y
-CONFIG_MBEDTLS=y</code></pre>
+CONFIG_COMPONENTS_LWIP_ENABLE=y
+CONFIG_COMPONENTS_MBEDTLS_ENABLE=y</code></pre>
             </div>
 
             <div class="alert alert-info">
@@ -318,8 +367,29 @@ CONFIG_MBEDTLS=y</code></pre>
             <h2>Flashing Firmware</h2>
 
             <div class="alert alert-warning">
-                <strong><i class="fas fa-exclamation-triangle"></i> Release SDK Notice:</strong> The flash tool <code>ipro_iot_tool_lite</code> and the automated test script <code>board_test.sh</code> are not included in this Release SDK package. To obtain the flash tool, please contact IntelPro for the full development tool suite.
+                <strong><i class="fas fa-exclamation-triangle"></i> Release SDK Notice:</strong> The flash tool and the automated test script <code>board_test.sh</code> are not included in this Release SDK package. Flashing uses the command-line tool of IntelProCube v0.6.3 (<code>ipro_iot_tool.exe</code>, <code>ipro_iot_tool_macos</code> or <code>ipro_iot_tool_linux</code>); contact INTELPRO to obtain it.
             </div>
+
+            <h3>Flashing with the IntelProCube CLI</h3>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Flash Commands</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># IPRO7 EVB (--chip-variant IPRO7)
+ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7 --port /dev/cu.usbserial-XXXX \
+    --baudrate 2000000 --firmware apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin
+
+# IPRO7AI Reef EVK (--chip-variant IPRO7AI; run from the IntelProCube directory, 2 MB partition table)
+ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI --port /dev/cu.usbserial-XXXX \
+    --baudrate 921600 --pt chips/ipro7/partition/partition_cfg_2M.toml \
+    --firmware &lt;SDK&gt;/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin</code></pre>
+            </div>
+            <ul>
+                <li>The tool has no <code>--flash-pin</code> option: <code>--chip-variant IPRO7</code> selects flash_pin <code>0x2</code> and <code>IPRO7AI</code> selects <code>0x9</code> (IPRO7AI EVK and Reef), written to <code>chips/ipro7/eflash_loader/eflash_loader_cfg.ini</code> in the IntelProCube directory.</li>
+                <li>The tool exits 0 even when flashing fails; look for <code>[All Success]</code> in its output.</li>
+                <li><code>./build_freertos.sh &lt;project&gt; flash</code> calls this tool: set <code>IPRO_FLASH_TOOL</code> to it, or put its directory on PATH.</li>
+            </ul>
 
             <h3>Serial Port Tips (General Knowledge)</h3>
             <div class="alert alert-info">
@@ -329,13 +399,27 @@ CONFIG_MBEDTLS=y</code></pre>
 
         <section id="serial-monitor">
             <h2>Serial Monitoring</h2>
-            <p>V2.0.1 does not include <code>tools/serial_monitor.py</code>. The CLI still references that path, so its <code>monitor</code> and <code>test</code> actions need the separate helper. Use the extension's <code>IPRO: Serial Monitor</code> or a serial terminal instead.</p>
-            <p>Choose the console baud rate from the selected application and board configuration. On macOS use <code>/dev/cu.*</code>. Stop monitoring before flashing to release the port.</p>
+            <p>V2.1.0 includes <code>tools/serial_monitor.py</code> (built on the Python standard-library termios module; no pyserial needed), which the <code>monitor</code> and <code>test</code> actions of <code>build_freertos.sh</code> use. You can also run it directly:</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">serial_monitor.py</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Monitor the console (--baud defaults to 115200; match the app's CONFIG_PLATFORM_UART_BAUDRATE)
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 115200 --timeout 60
+
+# Send a command, then monitor and wait for a pattern (regex)
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --send reboot --wait-for "ALL TESTS PASSED|SOME TESTS FAILED"</code></pre>
+            </div>
+            <p>Console baud rate: each app's <code>.config</code> sets <code>CONFIG_PLATFORM_UART_BAUDRATE</code> (115200 when unset). Most apps use 115200; <code>ipro7ai_evk_demo</code>, <code>ipro7ai_evk_launcher</code>, <code>ipro7ai_evk_rps</code>, <code>ipro_meeting_poc</code>, <code>ipro7_uvc_cam</code> and <code>ipro_epd_el036</code> use 921600. The Reef console is on the U6 connector; Zephyr images use 2,000,000 on UART0. On macOS use <code>/dev/cu.*</code>. Stop monitoring before flashing to release the port. The extension's <code>IPRO: Serial Monitor</code> or any serial terminal also works.</p>
         </section>
 
         <section id="board-testing">
             <h2>Board Testing</h2>
-            <p>The SDK includes <code>apps/test/ipro_unit_test/</code> for HAL and shared-component tests. Build it, flash the matching board with the separate flash tool, then inspect the console for <code>ALL TESTS PASSED</code> or <code>SOME TESTS FAILED</code>.</p><pre><code class="language-bash">make -C apps/test/ipro_unit_test</code></pre>            <p>Neither <code>tools/board_test.sh</code> nor <code>tools/serial_monitor.py</code> is bundled. The build CLI's <code>test</code> command also requires those external flash / monitor tools; it is not a complete test environment by itself.</p>
+            <p>The SDK includes <code>apps/test/ipro_unit_test/</code> for HAL and shared-component tests; it prints <code>ALL TESTS PASSED</code> or <code>SOME TESTS FAILED</code> on the console.</p><pre><code class="language-bash">make -C apps/test/ipro_unit_test
+
+# Build + flash + monitor and evaluate the result (needs the IntelProCube CLI)
+./build_freertos.sh test ipro_unit_test -p /dev/cu.usbserial-XXXX</code></pre>            <p>The <code>test</code> action builds, flashes, then waits for the result with the bundled <code>tools/serial_monitor.py</code>; exit code 0 means pass, 1 fail, 2 timeout. The flash tool is obtained separately, and <code>tools/board_test.sh</code> is not bundled.</p>
         </section>
 
         <section id="debugging">
@@ -369,7 +453,7 @@ CONFIG_MBEDTLS=y</code></pre>
 
             <h3>macOS Serial Port Issues (General Knowledge)</h3>
             <div class="alert alert-info">
-                <strong>Note:</strong> Use an external serial terminal; the monitor helper is absent from V2.0.1.</div>
+                <strong>Note:</strong> V2.1.0 includes <code>tools/serial_monitor.py</code>; an external serial terminal also works.</div>
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -385,7 +469,7 @@ CONFIG_MBEDTLS=y</code></pre>
                         </tr>
                         <tr>
                             <td><code>cat</code> command shows no output</td>
-                            <td><code>cat</code> has buffering issues with serial ports on macOS. Use a dedicated serial terminal tool (e.g., <code>minicom</code>, <code>screen</code>, or <code>picocom</code>) instead.</td>
+                            <td><code>cat</code> has buffering issues with serial ports on macOS. Use <code>tools/serial_monitor.py</code> or a dedicated serial terminal tool (e.g., <code>minicom</code>, <code>screen</code>, or <code>picocom</code>) instead.</td>
                         </tr>
                         <tr>
                             <td>Serial port shows "Resource busy"</td>
@@ -436,8 +520,8 @@ CONFIG_MBEDTLS=y</code></pre>
                             <td>Try cleaning the build directory: <code>make -C apps/&lt;project&gt; clean</code>, then rebuild.</td>
                         </tr>
                         <tr>
-                            <td>CI CMake does not work on macOS</td>
-                            <td>V2.0.1 requires a separately installed CMake 3.19+ on PATH; use a build for your host OS.</td>
+                            <td>The bundled <code>tools/cmake/</code> does not run on macOS</td>
+                            <td>The bundled CMake is a Linux x86-64 build. Install CMake 3.19+ for your host OS (3.20+ for Zephyr) and put it on PATH.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -468,6 +552,11 @@ CONFIG_MBEDTLS=y</code></pre>
                     <div class="feature-icon"><i class="fas fa-screwdriver-wrench"></i></div>
                     <h3 class="feature-title">Tools & Debugging</h3>
                     <p class="feature-description">Learn about debugging tools and development workflows.</p>
+                </a>
+                <a href="{{ '/en/zephyr-rtos' | relative_url }}" class="feature-card" style="text-decoration: none;">
+                    <div class="feature-icon"><i class="fas fa-cubes"></i></div>
+                    <h3 class="feature-title">Zephyr RTOS</h3>
+                    <p class="feature-description">Build Zephyr samples with west on the IPRO7 EVB and IPRO7AI EVK.</p>
                 </a>
             </div>
         </section>

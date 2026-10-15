@@ -1,13 +1,14 @@
 ---
 layout: default
 title: IPRO SDK VS Code Extension
+lang: en
 ---
 
             <div class="doc-layout">
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
             <ul class="sidebar-links">
-                <li><a href="#sdk-2-0-1" class="sidebar-link">SDK V2.0.1</a></li>
+                <li><a href="#sdk-2-1-0" class="sidebar-link">SDK V2.1.0</a></li>
 
                 <li><a href="#overview" class="sidebar-link">Extension overview</a></li>
                 <li><a href="#features" class="sidebar-link">Features</a></li>
@@ -31,7 +32,7 @@ title: IPRO SDK VS Code Extension
         <section id="overview">
             <h2>Extension overview</h2>
             <p>IPRO SDK Extension 3.3.0 (identifier ipro.ipro-sdk-extension) brings FreeRTOS project discovery, CMake builds, IntelProCube flashing, serial monitoring and memory analysis into VS Code. Windows users can start with the complete installer.</p>
-            <p>This page describes Extension 3.3.0 (VS Code 1.102+). SDK V2.0.1 and Online Installer 3.4.0 are versioned separately; the current catalog still selects SDK 1.2.1. For V2.0.1, import its extracted folder and verify toolchain compatibility.</p><a href="{{ '/en/windows-installation' | relative_url }}">Windows installation and update guide</a>
+            <p>This page describes Extension 3.3.0 (VS Code 1.102+). SDK V2.1.0 and Online Installer 3.4.0 are versioned separately; the current catalog still selects SDK 1.2.1. For V2.1.0, download it from the GitHub Release, import its extracted folder and verify toolchain compatibility.</p><a href="{{ '/en/windows-installation' | relative_url }}">Windows installation and update guide</a>
         </section>
 
         <section id="features">
@@ -206,11 +207,11 @@ title: IPRO SDK VS Code Extension
             <p>3.3.0 adds independent component updates; 3.2.4 introduced Control Center; 3.2.3 improved monitor / flash port handover and UART / CCI selection; 3.2.2 added a separate monitor baud setting; 3.2.1 pinned Windows tool paths; 3.2.0 introduced the built-in serialport monitor.</p>
             <div class="alert alert-info">The SDK source package, extension VSIX and full Windows installer are versioned separately. A standalone SDK without a VSIX does not mean the full Windows installer omits the extension; check the delivered manifest and the installed version in Extensions.</div>
         </section>
-        <section id="sdk-2-0-1">
-            <h2>SDK V2.0.1</h2>
-            <p>Download <code>IPRO-SDK-V2.0.1.tar.gz</code> and its checksum from the <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1 Release</a> and extract them into a new SDK directory. Verify <code>VERSION.txt</code> reports V2.0.1 for both IPRO7 and IPRO6, then confirm <code>CMakeLists.txt</code>, <code>apps/</code> and <code>bsp/</code> are at the selected root.</p><pre><code class="language-powershell">Get-FileHash .\IPRO-SDK-V2.0.1.tar.gz -Algorithm SHA256
-Get-Content .\IPRO-SDK-V2.0.1.tar.gz.sha256</code></pre>            <p>Compare the hash with the downloaded checksum. In Extension 3.3.0, import the extracted folder using <code>IPRO Setup: Update Components</code>, or select the extracted SDK root. The archive importer accepts ZIP; extract <code>.tar.gz</code> first. Reopen the new SDK and run <code>IPRO Setup: Run Diagnostics</code>.</p>
-            <p>The SDK README specifies GCC 14. The current Windows catalog only declares its GCC 13.1.1 combination for SDK 1.2.1; obtain and validate a toolchain for V2.0.1. When using native Windows Make, pass <code>CMAKE=</code> explicitly because <code>project.build</code> otherwise expects an unbundled <code>tools/cmake_win-x86_64/</code> path. Keep your working 1.2.1 installation until the new build and board workflow are verified.</p>
+        <section id="sdk-2-1-0">
+            <h2>SDK V2.1.0</h2>
+            <p>Download <code>IPRO-SDK-V2.1.0.tar.gz</code> and its <code>.sha256</code> from the <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.1.0">V2.1.0 Release</a> and extract the archive into a new SDK directory. Verify that <code>VERSION.txt</code> reports V2.1.0, then confirm <code>CMakeLists.txt</code>, <code>apps/</code> and <code>bsp/</code> are at the selected root. FreeRTOS applications in V2.1.0 target IPRO7 only; keep V2.0.1 for IPRO6S development.</p><pre><code class="language-powershell">Get-FileHash .\IPRO-SDK-V2.1.0.tar.gz -Algorithm SHA256
+Get-Content .\IPRO-SDK-V2.1.0.tar.gz.sha256</code></pre>            <p>Compare the hash with the downloaded checksum. In Extension 3.3.0, import the extracted folder using <code>IPRO Setup: Update Components</code>, or select the extracted SDK root. The archive importer accepts ZIP; extract <code>.tar.gz</code> first. Reopen the new SDK and run <code>IPRO Setup: Run Diagnostics</code>.</p>
+            <p>The SDK README specifies GCC 14. The current Windows catalog only declares its GCC 13.1.1 combination for SDK 1.2.1; obtain and validate a toolchain for V2.1.0. With native Windows Make, <code>project.build</code> falls back to the <code>cmake</code> on PATH when the unbundled <code>tools/cmake_win-x86_64/</code> is absent; check the CMake version on PATH or pass <code>CMAKE=</code> explicitly. Keep your working 1.2.1 installation until the new build and board workflow are verified.</p>
         </section>
 
     </article>

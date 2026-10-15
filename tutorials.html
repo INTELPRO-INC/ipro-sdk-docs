@@ -14,7 +14,7 @@ lang: zh-TW
 
 <section class="tutorials-section">
     <div class="container">
-        <div class="alert alert-info">CLI 的 <code>flash／monitor／test</code> 範例需額外取得燒錄與監看工具。V2.0.1 未附 <code>tools/serial_monitor.py</code>，未取得腳本時請改用下方外部終端指令。</div>
+        <div class="alert alert-info">CLI 的 <code>flash／test</code> 範例需另行取得 IntelProCube v0.6.3 命令列燒錄工具（設定 <code>IPRO_FLASH_TOOL</code> 或加入 PATH）；<code>monitor／test</code> 使用 V2.1.0 隨附的 <code>tools/serial_monitor.py</code>。本系列教學以 FreeRTOS 為主，Zephyr RTOS 請見 <a href="{{ '/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>。</div>
 
         <!-- Tutorial 1: First BLE Application -->
         <div class="tutorial-card">
@@ -61,7 +61,6 @@ CONFIG_BT_CONN=1
 CONFIG_EM_SIZE=32
 
 # NVDS: controller configuration storage; host bonds use BT_SETTINGS
-# 缺少時會在連結階段出現 __nvds_start 未定義錯誤）
 CONFIG_ENABLE_NVDS=y
 CONFIG_CFG_NVDS=y
 
@@ -182,12 +181,11 @@ static struct bt_conn_cb conn_callbacks = {
 make -C apps/bluetooth/ble/my_ble_app
 # → apps/bluetooth/ble/my_ble_app/build/build_out/my_ble_app_IPRO7.bin
 
-# 燒錄（序列埠名稱依實際裝置而定）
-/path/to/ipro_iot_tool_lite \
-    --chipname ipro7 \
+# 燒錄（IntelProCube 命令列工具；序列埠名稱依實際裝置而定）
+ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7 \
     --port /dev/cu.usbserial-XXXX \
     --firmware apps/bluetooth/ble/my_ble_app/build/build_out/my_ble_app_IPRO7.bin \
-    --baudrate 921600 --flash-pin 0x02
+    --baudrate 2000000
 
 # 或用 build_freertos.sh 一次完成建構＋燒錄＋監看
 ./build_freertos.sh my_ble_app build flash monitor</code></pre>
@@ -223,6 +221,9 @@ make -C apps/bluetooth/ble/my_ble_app
 ./build_freertos.sh clean build bluetooth/ble/ipro_ble_remote
 ./build_freertos.sh size bluetooth/ble/ipro_ble_remote
 
+# 以 -d 選用替代設定，例如 IPRO7AI Reef EVK（輸出至 build_reef/）
+./build_freertos.sh -d defconfig_reef ipro_ble_remote build
+
 # 列出所有可建構的專案
 ./build_freertos.sh -l
 
@@ -231,7 +232,7 @@ make -C apps/bluetooth/ble/ipro_ble_remote
 
 # 清除編譯
 make -C apps/bluetooth/ble/ipro_ble_remote clean</code></pre>
-                <p><code>build_freertos.sh</code> 常用選項：<code>-p</code> 指定序列埠、<code>-t</code> 設定逾時秒數、<code>-w</code> 設定 monitor 等待的輸出樣式（regex）。建構產出位於 <code>apps/&lt;category&gt;/&lt;name&gt;/build/build_out/</code>，二進位檔名包含晶片後綴，例如 <code>ipro_ble_remote_IPRO7.bin</code>。</p>
+                <p><code>build_freertos.sh</code> 常用選項：<code>-p</code> 指定序列埠、<code>-t</code> 設定逾時秒數、<code>-w</code> 設定 monitor 等待的輸出樣式（regex）、<code>-d</code> 選用替代 defconfig。建構產出位於 <code>apps/&lt;category&gt;/&lt;name&gt;/build/build_out/</code>，二進位檔名包含晶片後綴，例如 <code>ipro_ble_remote_IPRO7.bin</code>。</p>
 
                 <h3>.config 設定說明</h3>
                 <p>每個應用程式都有自己的 <code>.config</code> 檔案，使用 Linux Kernel Kconfig 格式。以 BLE 應用為例：</p>
@@ -261,27 +262,29 @@ CONFIG_CFG_NVDS=y
 CONFIG_SHELL=y</code></pre>
 
                 <h3>燒錄韌體</h3>
-                <p>使用 另行安裝的燒錄工具 <code>ipro_iot_tool_lite</code>（序列埠名稱依實際裝置而定，macOS 可用 <code>ls /dev/cu.usbserial-*</code> 查詢）：</p>
-                <pre><code class="language-bash"># 基本燒錄指令
-/path/to/ipro_iot_tool_lite \
-    --chipname ipro7 \
+                <p>使用另行取得的 IntelProCube v0.6.3 命令列工具（Windows 為 <code>ipro_iot_tool.exe</code>、macOS 為 <code>ipro_iot_tool_macos</code>、Linux 為 <code>ipro_iot_tool_linux</code>；序列埠名稱依實際裝置而定，macOS 可用 <code>ls /dev/cu.usbserial-*</code> 查詢）：</p>
+                <pre><code class="language-bash"># 基本燒錄指令（IPRO7 EVB）
+ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7 \
     --port /dev/cu.usbserial-XXXX \
     --firmware apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
-    --baudrate 921600 \
-    --flash-pin 0x02</code></pre>
+    --baudrate 2000000</code></pre>
+                <p>IPRO7AI EVK 與 IPRO7AI Reef EVK 改用 <code>--chip-variant IPRO7AI</code>；Reef 另以 <code>--pt</code> 指定 2 MB 分割表（以應用 README 為準）。工具沒有 <code>--flash-pin</code> 選項，且燒錄失敗時仍回傳 0，請以輸出中的 <code>[All Success]</code> 判斷結果。</p>
 
                 <div class="warning-box">
                     <h4>macOS 序列埠注意事項</h4>
-                    <p>在 macOS 上必須使用 <code>/dev/cu.*</code> 而非 <code>/dev/tty.*</code>。<code>tty.*</code> 裝置會等待 DCD 信號而無法正常使用。</p>
+                    <p>在 macOS 上必須使用 <code>/dev/cu.*</code> 而非 <code>/dev/tty.*</code>。<code>tty.*</code> 裝置會等待 DCD 訊號而無法正常使用。</p>
                 </div>
 
                 <h3>序列埠監控</h3>
-                <p>V2.0.1 未附舊版監看腳本，可另行安裝 pyserial 並開啟終端：</p>
-                <pre><code class="language-bash"># 另行安裝；埠名與鮑率請依韌體設定調整
+                <p>V2.1.0 隨附 <code>tools/serial_monitor.py</code>，不需另裝套件；也可改用 pyserial 的 miniterm：</p>
+                <pre><code class="language-bash"># 隨附工具；鮑率依應用的 CONFIG_PLATFORM_UART_BAUDRATE（未設定為 115200）
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 115200 --timeout 60
+
+# 或另行安裝 pyserial
 python3 -m pip install pyserial
 python3 -m serial.tools.miniterm /dev/cu.usbserial-XXXX 115200</code></pre>
 
-                <h3>自動化流程</h3>
+                <h3>自動化流程（需燒錄工具）</h3>
                 <p><code>build_freertos.sh</code> 可將建構、燒錄、監看串成一條指令，搭配 <code>-w</code>/<code>-t</code> 等待預期輸出，適合整合進自動化指令稿：</p>
                 <pre><code class="language-bash"># 一行完成：建構 + 燒錄 + 監看
 ./build_freertos.sh ipro_ble_remote build flash monitor
@@ -312,11 +315,11 @@ python3 -m serial.tools.miniterm /dev/cu.usbserial-XXXX 115200</code></pre>
                 <pre><code class="language-bash"># 建構吞吐量測試應用
 make -C apps/bluetooth/ble/ipro_throughput_test
 
-# 燒錄到兩塊板子
-/path/to/ipro_iot_tool_lite \
-    --chipname ipro7 --port /dev/cu.usbserial-XXXX \
+# 燒錄到兩塊板子（各自指定序列埠）
+ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7 \
+    --port /dev/cu.usbserial-XXXX \
     --firmware apps/bluetooth/ble/ipro_throughput_test/build/build_out/ipro_throughput_test_IPRO7.bin \
-    --baudrate 921600 --flash-pin 0x02</code></pre>
+    --baudrate 2000000</code></pre>
 
                 <h3>步驟 2：啟動測試</h3>
                 <pre><code class="language-bash"># 在 Slave 板上執行：
@@ -345,16 +348,16 @@ tp stats
 tp stop</code></pre>
                 <p>其他調校指令：<code>tp phy &lt;1|2|3&gt;</code> 切換 PHY（1=1M, 2=2M, 3=Coded）、<code>tp conn &lt;min&gt; &lt;max&gt;</code> 調整連線間隔（單位 1.25ms）、<code>tp interval &lt;ms&gt;</code> 調整 TX 間隔。</p>
 
-                <h3>效能優化要點</h3>
-                <p>IPRO SDK 通過以下優化達到 999 Kbps 吞吐量：</p>
+                <h3>效能最佳化要點</h3>
+                <p>IPRO SDK 透過以下最佳化達到 999 Kbps 吞吐量：</p>
                 <ul>
                     <li><strong>連線參數調整</strong>：最小連線間隔、零 Slave Latency</li>
                     <li><strong>MTU 協商</strong>：最大 MTU 以減少封包開銷</li>
-                    <li><strong>TX Descriptor 優化</strong>：<code>BLE_NB_TX_DESC_PER_CON</code> 參數調整</li>
+                    <li><strong>TX Descriptor 最佳化</strong>：<code>BLE_NB_TX_DESC_PER_CON</code> 參數調整</li>
                     <li><strong>DLE（Data Length Extension）</strong>：啟用最大傳輸長度</li>
                     <li><strong>2M PHY</strong>：使用 BLE 2M PHY 提升傳輸速率</li>
                 </ul>
-                <p>實測參考數據（244 bytes/packet）：</p>
+                <p>實測參考數值（244 bytes/packet）：</p>
                 <div class="table-wrapper">
                     <table>
                         <thead>
@@ -418,12 +421,15 @@ RX: 0 packets, 0 bytes, 0.00 Kbps (0.00 KBps)</code></pre>
             <p>基本 BLE 選擇 <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code>；BLE 5.4 與兩路 ISO 串流（CIS/BIS）選擇 <code>"bt54_iso2"</code>，後者要求 <code>CONFIG_EM_SIZE</code> 至少 32 KB。Host 連線上限不可超過控制器容量；請保留各應用隨附配置。</p>
 
                 <h3>BIS 廣播範例</h3>
-            <div class="alert alert-info">V2.0.1 未隨附獨立 <code>ipro_le_audio_bis_source</code> 與 <code>ipro_le_audio_bis_sink</code> 應用。Host 包含廣播 API；完整廣播參考應用請聯絡原廠取得。</div>
+            <div class="alert alert-info">V2.1.0 的 FreeRTOS 應用未包含獨立的 <code>ipro_le_audio_bis_source</code> 與 <code>ipro_le_audio_bis_sink</code>；Host 包含廣播 API，FreeRTOS 的完整廣播參考應用請聯絡 INTELPRO。Zephyr RTOS 下另附 <code>zephyr/samples/bap_broadcast_source</code> 與 <code>zephyr/samples/bap_broadcast_sink</code> 範例（IPRO7 EVB／IPRO7AI EVK），請見 <a href="{{ '/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>。</div>
 
                 <h3>CIS Unicast 範例 (Headset)</h3>
                 <p>使用 <code>ipro_le_audio_headset</code> 作為 LE Audio 耳機：</p>
                 <pre><code class="language-bash"># 建構 LE Audio Headset 範例
-make -C apps/bluetooth/le_audio/ipro_le_audio_headset</code></pre>
+make -C apps/bluetooth/le_audio/ipro_le_audio_headset
+
+# IPRO7AI Reef EVK 設定
+make -C apps/bluetooth/le_audio/ipro_le_audio_headset DEFCONFIG=defconfig_reef</code></pre>
 
                 <h3>.config 設定重點</h3>
                 <pre><code class="language-ini">CONFIG_BLUETOOTH_LE_ENABLE=y
@@ -443,9 +449,9 @@ CONFIG_COMPONENTS_LC3_ENABLE=y</code></pre>
                 <div class="info-box">
                     <h4>參考應用</h4>
                     <ul>
-                        <li><code>apps/bluetooth/le_audio/ipro_le_audio_headset/</code> - GAF/BAP Unicast 耳機</li>
-
-
+                        <li><code>apps/bluetooth/le_audio/ipro_le_audio_headset/</code> - GAF/BAP Unicast 耳機（FreeRTOS）</li>
+                        <li><code>zephyr/samples/le_audio_headset/</code> - LE Audio 耳機（Zephyr RTOS）</li>
+                        <li><code>zephyr/samples/bap_broadcast_source/</code>、<code>zephyr/samples/bap_broadcast_sink/</code> - BIS 廣播來源與接收（Zephyr RTOS）</li>
                     </ul>
                 </div>
             </div>
@@ -499,6 +505,11 @@ CONFIG_COMPONENTS_LC3_ENABLE=y</code></pre>
                     <div class="feature-icon"><i class="fas fa-satellite-dish"></i></div>
                     <h3 class="feature-title">BLE 開發指南</h3>
                     <p class="feature-description">深入了解 BLE 5.4 Host/Controller 架構與 API。</p>
+                </a>
+                <a href="{{ '/zephyr-rtos' | relative_url }}" class="feature-card" style="text-decoration:none;">
+                    <div class="feature-icon"><i class="fas fa-cubes"></i></div>
+                    <h3 class="feature-title">Zephyr RTOS</h3>
+                    <p class="feature-description">在 IPRO7 EVB 與 IPRO7AI EVK 上以 west 建構 Zephyr 範例。</p>
                 </a>
             </div>
         </section>

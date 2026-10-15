@@ -8,7 +8,7 @@ title: 音訊與多媒體
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">本頁目錄</h4>
             <ul class="sidebar-links">
-                <li><a href="#pdm-recording" class="sidebar-link">PDM 錄音（V2.0.1）</a></li>
+                <li><a href="#pdm-recording" class="sidebar-link">PDM 錄音</a></li>
 
                 <li><a href="#overview" class="sidebar-link">概述</a></li>
                 <li><a href="#le-audio-pipeline" class="sidebar-link">LE Audio 音訊管線</a></li>
@@ -18,6 +18,7 @@ title: 音訊與多媒體
                 <li><a href="#usb-audio" class="sidebar-link">USB 音訊 (UAC)</a></li>
                 <li><a href="#camera-video" class="sidebar-link">攝影機與視訊</a></li>
                 <li><a href="#audio-hardware" class="sidebar-link">音訊硬體</a></li>
+                <li><a href="#reef-demo" class="sidebar-link">IPRO7AI Reef EVK</a></li>
                 <li><a href="#reference-apps" class="sidebar-link">參考應用</a></li>
             </ul>
         </nav>
@@ -319,7 +320,7 @@ bsp/hal/inc/
         <section id="broadcast-audio">
             <h2>廣播音訊（BIS）</h2>
             <p>Zephyr 4.4 Host 在 <code>zephyr/bluetooth/audio/bap.h</code> 提供 <code>bt_bap_broadcast_source_*</code> 與 <code>bt_bap_broadcast_sink_*</code> API。控制器需選用 <code>bt54_iso2</code>，並於應用配置啟用對應 BAP 角色。</p>
-            <div class="alert alert-info">V2.0.1 未隨附獨立 BIS source/sink 參考應用，完整範例請聯絡原廠取得。已隨附的耳機應用供單播開發參考。</div>
+            <div class="alert alert-info">V2.1.0 的 FreeRTOS 應用未包含獨立 BIS source/sink 參考應用；已隨附的耳機應用供單播開發參考。Zephyr 範例 <code>zephyr/samples/bap_broadcast_source</code>（IPRO7 EVB 廣播 LC3 串流）與 <code>zephyr/samples/bap_broadcast_sink</code>（IPRO7AI EVK 接收並由喇叭播放）提供廣播參考，見 <a href="{{ '/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>。</div>
         </section>
 
         <section id="audio-profiles">
@@ -399,7 +400,7 @@ bsp/hal/inc/
             </ul>
 
             <div class="alert alert-info">
-                <strong>Opus:</strong> 交付包包含 <code>components/3rdparty/opus</code>，供應用音訊編解碼使用。LE Audio ISO 串流使用 LC3；先前的語音助理範例未隨附於 V2.0.1。
+                <strong>Opus:</strong> 交付包包含 <code>components/3rdparty/opus</code>，供應用音訊編解碼使用。LE Audio ISO 串流使用 LC3。
             </div>
         </section>
 
@@ -548,6 +549,7 @@ int app_uac_init(const app_uac_config_t *config)
 │   └── src/                # ISP 驅動實作
 ├── isp_iq_param/           # 感測器 IQ 調校參數
 │   └── sc101iot/           # SC101IoT 感測器參數
+├── sensor/                 # 攝影機感測器驅動（SC101IOT、OV5640、OV2640 等）
 └── cherryusb/class/video/  # USB Video Class (UVC)
     ├── usbd_video.c        # UVC 裝置端驅動
     └── usbh_video.c        # UVC 主機端驅動
@@ -576,7 +578,24 @@ bsp/hal/inc/
 └── stream_control.c        # 串流控制</code></pre>
             </div>
 
-            <p>BLE 影像傳輸可參考 <code>apps/bluetooth/ble/ipro_ble_remote/</code>；V2.0.1 未隨附獨立影像擷取應用。</p>
+            <p>BLE 影像傳輸可參考 <code>apps/bluetooth/ble/ipro_ble_remote/</code>。</p>
+
+            <h3>USB 攝影機（ipro7_uvc_cam）</h3>
+            <p><code>apps/multimedia/ipro7_uvc_cam</code> 將開發板作為 USB 攝影機：DVP 感測器 → ISP → 硬體 MJPEG 編碼 → USB UVC 串流。裝置列舉為一般 UVC 攝影機，主機開啟串流後即持續輸出。</p>
+            <div class="table-wrapper">
+                <table>
+                <thead><tr><th>配置</th><th>開發板與感測器</th><th>說明</th></tr></thead>
+                <tbody>
+                    <tr><td><code>.config</code>（預設）</td><td>IPRO7 EVB＋SC101IOT</td><td>USB 攝影機</td></tr>
+                    <tr><td><code>defconfig_reef_ov5640</code></td><td>IPRO7AI Reef EVK＋OV5640</td><td>USB 攝影機</td></tr>
+                    <tr><td><code>defconfig_reef_rps</code></td><td>IPRO7AI Reef EVK＋OV5640</td><td>另與 NPU 對玩剪刀石頭布，遊戲畫面疊加在主機收到的影像上</td></tr>
+                </tbody>
+                </table>
+            </div>
+            <pre><code class="language-bash">make -C apps/multimedia/ipro7_uvc_cam
+make -C apps/multimedia/ipro7_uvc_cam DEFCONFIG=defconfig_reef_ov5640   # 輸出於 build_reef_ov5640/build_out/
+make -C apps/multimedia/ipro7_uvc_cam DEFCONFIG=defconfig_reef_rps</code></pre>
+            <p>IPRO7AI Reef EVK 的攝影機 shell 指令與經 Wi-Fi 的 RTSP 串流，見下方 <a href="#reef-demo">IPRO7AI Reef EVK</a> 一節。</p>
         </section>
 
         <section id="audio-hardware">
@@ -667,6 +686,35 @@ audio_output_destroy(out);</code></pre>
             </div>
         </section>
 
+        <section id="reef-demo">
+            <h2>IPRO7AI Reef EVK 音訊與攝影機</h2>
+            <p><code>apps/platform/ipro7ai_reef_demo</code> 是 IPRO7AI Reef EVK 的開箱韌體，板上每個功能區塊各有一組 shell 指令。Reef 沒有 LCD，攝影機串流以 shell 指令檢查。主控台位於 U6 連接器，115200 鮑。</p>
+            <div class="table-wrapper">
+                <table>
+                <thead><tr><th>區塊</th><th>Shell 指令</th><th>說明</th></tr></thead>
+                <tbody>
+                    <tr><td>RGB LED（WS2812）</td><td><code>led</code></td><td>設定顏色或彩虹效果</td></tr>
+                    <tr><td>按鍵</td><td><code>btn</code></td><td>讀取按鍵狀態與按下／放開事件</td></tr>
+                    <tr><td>喇叭與耳機</td><td><code>spk</code>、<code>hp</code></td><td>由 DAC 輸出測試音至喇叭或耳機孔；<code>hp</code> 讀取耳機插入偵測</td></tr>
+                    <tr><td>音訊輸入</td><td><code>mic</code></td><td>PDM 麥克風、耳機麥克風或 AUX-IN，以 16 kHz 錄音至 PSRAM（最長 10 秒）後播放，或即時監聽</td></tr>
+                    <tr><td>SD 卡</td><td><code>sd</code></td><td>FatFS 掛載、列出目錄與讀寫測試</td></tr>
+                    <tr><td>攝影機</td><td><code>cam</code></td><td>OV5640／OV2640 模組，YUV422 720p 經 ISP；顯示影格數與錯誤計數、ASCII 縮圖與彩條測試</td></tr>
+                </tbody>
+                </table>
+            </div>
+            <pre><code class="language-bash">make -C apps/platform/ipro7ai_reef_demo
+make -C apps/platform/ipro7ai_reef_demo DEFCONFIG=defconfig_wifi_ipro6s   # 加入 Wi-Fi 與 RTSP，輸出於 build_wifi_ipro6s/build_out/</code></pre>
+            <p>開機後執行 <code>reef selftest</code>，可依序檢查 LED、喇叭測試音、SD 卡偵測與攝影機。Reef 為 2 MB Flash，燒錄時使用 <code>partition_cfg_2M.toml</code> 及 <code>--chip-variant IPRO7AI</code>；上電前必須裝上 JP1。腳位、電源與跳線設定見 IPRO7AI Reef EVK 使用手冊。</p>
+
+            <h3>Wi-Fi 與 RTSP 攝影機串流</h3>
+            <p>IPRO7 未內建 Wi-Fi。<code>defconfig_wifi_ipro6s</code> 建置透過插在卡槽上的 IPRO6S FIN 卡（SDIO）連網，並以 RTSP 提供攝影機 MJPEG 串流。SDK 隨附主機端元件 <code>components/network/ipronet_host</code>（SDIO 網路介面）與 <code>components/network/rtsp_server</code>。JP3 設為 2-3 時，可用 <code>fin cycle</code> 重新為 FIN 卡上電。</p>
+            <pre><code class="language-text">ipronet_up &lt;ssid&gt; &lt;psk&gt;     啟動 FIN 卡並連線至 AP
+rtsp_cam on                  開始串流：rtsp://&lt;ip&gt;:8554/av0_0
+rtsp_cam stats               串流統計
+rtsp_cam off                 停止串流</code></pre>
+            <div class="alert alert-info">V2.1.0 未包含 IPRO6S FIN 卡端的韌體，請洽 INTELPRO 取得。</div>
+        </section>
+
         <section id="reference-apps">
             <h2>參考應用</h2>
             <div class="table-wrapper">
@@ -677,13 +725,20 @@ audio_output_destroy(out);</code></pre>
                     <tr><td><code>ipro_pdm_mic_demo</code></td><td>PDM 麥克風擷取、BLE 傳輸與 LC3 壓縮</td></tr>
                     <tr><td><code>ipro7_demo</code></td><td>周邊、影像、音訊與 Ethernet 示範</td></tr>
                     <tr><td><code>ipro7ai_evk_demo</code></td><td>IPRO7AI EVK 顯示、攝影機、音訊與 AI / BLE 配置</td></tr>
+                    <tr><td><code>ipro7ai_evk_launcher</code></td><td>IPRO7AI EVK 攝影機、LCD、麥克風與喇叭整合於同一映像，以 NPU 辨識的手勢切換頁面</td></tr>
+                    <tr><td><code>ipro7ai_reef_demo</code></td><td>IPRO7AI Reef EVK 各功能區塊的 shell 指令；<code>defconfig_wifi_ipro6s</code> 加入 Wi-Fi 與 RTSP 攝影機串流</td></tr>
+                    <tr><td><code>ipro7_uvc_cam</code></td><td>USB UVC 攝影機（ISP + 硬體 MJPEG），IPRO7 EVB 與 IPRO7AI Reef EVK 配置</td></tr>
                 </tbody>
                 </table>
             </div>
             <pre><code class="language-bash">./build_freertos.sh ipro_le_audio_headset build
 ./build_freertos.sh ipro_pdm_mic_demo build
 ./build_freertos.sh ipro7_demo build
-./build_freertos.sh ipro7ai_evk_demo build</code></pre>
+./build_freertos.sh ipro7ai_evk_demo build
+./build_freertos.sh ipro7ai_evk_launcher build
+./build_freertos.sh ipro7ai_reef_demo build
+./build_freertos.sh ipro7_uvc_cam build
+./build_freertos.sh -d defconfig_reef_ov5640 ipro7_uvc_cam build</code></pre>
             <div class="table-wrapper">
                 <table>
                 <thead><tr><th>LIB</th><th>ACL</th><th>角色</th></tr></thead>
@@ -696,11 +751,11 @@ audio_output_destroy(out);</code></pre>
                 </table>
             </div>
             <p>基本 BLE 選擇 <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code>；BLE 5.4 與兩路 ISO 串流（CIS/BIS）選擇 <code>"bt54_iso2"</code>，後者要求 <code>CONFIG_EM_SIZE</code> 至少 32 KB。Host 連線上限不可超過控制器容量；請保留各應用隨附配置。</p>
-            <div class="alert alert-info">V2.0.1 未包含舊版的獨立 BIS source/sink、雲端音訊閘道與語音助理應用。</div>
+            <div class="alert alert-info">V2.1.0 的 FreeRTOS 應用未包含獨立 BIS source/sink 應用；Zephyr 廣播範例見上方<a href="#broadcast-audio">廣播音訊</a>一節。</div>
         </section>
         <section id="pdm-recording">
-            <h2>PDM 錄音（V2.0.1）</h2>
-            <p>支援 16 kHz／16-bit 單聲道 PDM 擷取、LC3 串流、SMP 配對儲存與 PDS31 喚醒重連。V2.0.1 邏輯錄音最長 4 小時；實體 PSRAM ring 僅保留 240 秒，需透過 <code>CHUNK_READY</code>／<code>GET_CHUNK</code> 每 30 秒取回一段。覆寫後 <code>GET_AUDIO</code> 只能取得最後 240 秒。</p>
+            <h2>PDM 錄音</h2>
+            <p>支援 16 kHz／16-bit 單聲道 PDM 擷取、LC3 串流、SMP 配對儲存與 PDS31 喚醒重連。自 V2.0.1 起邏輯錄音最長 4 小時；實體 PSRAM ring 僅保留 240 秒，需透過 <code>CHUNK_READY</code>／<code>GET_CHUNK</code> 每 30 秒取回一段。覆寫後 <code>GET_AUDIO</code> 只能取得最後 240 秒。</p>
             <p>使用隨附的 <code>link2 / bt52</code>、16 KB EM 配置；Host 的 <code>CONFIG_BT_CONN=1</code> 與控制器的兩連線容量不同，請保留完整板型配置，不要強制將兩個數值改成一致。</p><pre><code class="language-bash">make -C apps/multimedia/ipro_pdm_mic_demo
 make -C apps/multimedia/ipro_pdm_mic_demo BOARD=evk</code></pre>            <p>EVB 輸出位於 <code>build/build_out/</code>；EVK 位於 <code>build_config_evk/build_out/</code>，檔名皆為 <code>ipro_pdm_mic_demo_IPRO7.bin</code>。Android 原始碼位於 <code>tools/android/IproMicDemo/</code>；配套 APK 與測試韌體見 <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1 Release</a>。</p>
         </section>

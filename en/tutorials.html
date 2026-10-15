@@ -14,7 +14,7 @@ lang: en
 
 <section class="tutorials-section">
     <div class="container">
-        <div class="alert alert-info">CLI <code>flash / monitor / test</code> examples require separate flash and monitor tools. V2.0.1 does not bundle <code>tools/serial_monitor.py</code>; use the external terminal commands below if the helper is unavailable.</div>
+        <div class="alert alert-info">CLI <code>flash / test</code> examples need the IntelProCube v0.6.3 command-line flash tool, obtained separately (set <code>IPRO_FLASH_TOOL</code> or put it on PATH); <code>monitor / test</code> use the <code>tools/serial_monitor.py</code> bundled with V2.1.0. These tutorials use FreeRTOS; for Zephyr RTOS see <a href="{{ '/en/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>.</div>
 
         <!-- Tutorial 1: First BLE Application -->
         <div class="tutorial-card">
@@ -181,12 +181,11 @@ static struct bt_conn_cb conn_callbacks = {
 make -C apps/bluetooth/ble/my_ble_app
 # → apps/bluetooth/ble/my_ble_app/build/build_out/my_ble_app_IPRO7.bin
 
-# Flash (serial port name depends on your device)
-/path/to/ipro_iot_tool_lite \
-    --chipname ipro7 \
+# Flash (IntelProCube CLI; serial port name depends on your device)
+ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7 \
     --port /dev/cu.usbserial-XXXX \
     --firmware apps/bluetooth/ble/my_ble_app/build/build_out/my_ble_app_IPRO7.bin \
-    --baudrate 921600 --flash-pin 0x02
+    --baudrate 2000000
 
 # Or use build_freertos.sh to build + flash + monitor in one step
 ./build_freertos.sh my_ble_app build flash monitor</code></pre>
@@ -222,6 +221,9 @@ make -C apps/bluetooth/ble/my_ble_app
 ./build_freertos.sh clean build bluetooth/ble/ipro_ble_remote
 ./build_freertos.sh size bluetooth/ble/ipro_ble_remote
 
+# Select an alternate configuration with -d, e.g. the IPRO7AI Reef EVK (output in build_reef/)
+./build_freertos.sh -d defconfig_reef ipro_ble_remote build
+
 # List all buildable projects
 ./build_freertos.sh -l
 
@@ -230,7 +232,7 @@ make -C apps/bluetooth/ble/ipro_ble_remote
 
 # Clean build
 make -C apps/bluetooth/ble/ipro_ble_remote clean</code></pre>
-                <p>Common <code>build_freertos.sh</code> options: <code>-p</code> to specify the serial port, <code>-t</code> to set the timeout in seconds, and <code>-w</code> to set the output pattern (regex) the monitor waits for. Build output is located at <code>apps/&lt;category&gt;/&lt;name&gt;/build/build_out/</code>. Binary names include a chip suffix, e.g., <code>ipro_ble_remote_IPRO7.bin</code>.</p>
+                <p>Common <code>build_freertos.sh</code> options: <code>-p</code> to specify the serial port, <code>-t</code> to set the timeout in seconds, <code>-w</code> to set the output pattern (regex) the monitor waits for, and <code>-d</code> to select an alternate defconfig. Build output is located at <code>apps/&lt;category&gt;/&lt;name&gt;/build/build_out/</code>. Binary names include a chip suffix, e.g., <code>ipro_ble_remote_IPRO7.bin</code>.</p>
 
                 <h3>.config Settings</h3>
                 <p>Each application has its own <code>.config</code> file using Linux Kernel Kconfig format. Taking a BLE application as an example:</p>
@@ -260,14 +262,13 @@ CONFIG_CFG_NVDS=y
 CONFIG_SHELL=y</code></pre>
 
                 <h3>Flash Firmware</h3>
-                <p>Use the separately installed flash tool <code>ipro_iot_tool_lite</code> (the serial port name depends on your device; on macOS, find it with <code>ls /dev/cu.usbserial-*</code>):</p>
-                <pre><code class="language-bash"># Basic flash command
-/path/to/ipro_iot_tool_lite \
-    --chipname ipro7 \
+                <p>Use the separately obtained IntelProCube v0.6.3 command-line tool (<code>ipro_iot_tool.exe</code> on Windows, <code>ipro_iot_tool_macos</code> on macOS, <code>ipro_iot_tool_linux</code> on Linux; the serial port name depends on your device; on macOS, find it with <code>ls /dev/cu.usbserial-*</code>):</p>
+                <pre><code class="language-bash"># Basic flash command (IPRO7 EVB)
+ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7 \
     --port /dev/cu.usbserial-XXXX \
     --firmware apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
-    --baudrate 921600 \
-    --flash-pin 0x02</code></pre>
+    --baudrate 2000000</code></pre>
+                <p>The IPRO7AI EVK and IPRO7AI Reef EVK use <code>--chip-variant IPRO7AI</code>; on the Reef also pass a 2 MB partition table with <code>--pt</code> (the one the application README names). The tool has no <code>--flash-pin</code> option and exits 0 even when flashing fails; look for <code>[All Success]</code> in its output.</p>
 
                 <div class="warning-box">
                     <h4>macOS Serial Port Notes</h4>
@@ -275,12 +276,15 @@ CONFIG_SHELL=y</code></pre>
                 </div>
 
                 <h3>Serial Monitor</h3>
-                <p>V2.0.1 omits the old monitor helper. Install pyserial and open its terminal:</p>
-                <pre><code class="language-bash"># Install separately; select the port and baud rate for your firmware
+                <p>V2.1.0 bundles <code>tools/serial_monitor.py</code>, with no extra packages to install; pyserial's miniterm also works:</p>
+                <pre><code class="language-bash"># Bundled tool; the baud rate is the app's CONFIG_PLATFORM_UART_BAUDRATE (115200 when unset)
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 115200 --timeout 60
+
+# Or install pyserial separately
 python3 -m pip install pyserial
 python3 -m serial.tools.miniterm /dev/cu.usbserial-XXXX 115200</code></pre>
 
-                <h3>Automated Workflow (Separate Helpers Required)</h3>
+                <h3>Automated Workflow (Flash Tool Required)</h3>
                 <p><code>build_freertos.sh</code> can chain build, flash, and monitor into a single command. Combine it with <code>-w</code>/<code>-t</code> to wait for expected output, which makes it easy to integrate into automation scripts:</p>
                 <pre><code class="language-bash"># One line: build + flash + monitor
 ./build_freertos.sh ipro_ble_remote build flash monitor
@@ -311,11 +315,11 @@ python3 -m serial.tools.miniterm /dev/cu.usbserial-XXXX 115200</code></pre>
                 <pre><code class="language-bash"># Build throughput test application
 make -C apps/bluetooth/ble/ipro_throughput_test
 
-# Flash to both boards
-/path/to/ipro_iot_tool_lite \
-    --chipname ipro7 --port /dev/cu.usbserial-XXXX \
+# Flash to both boards (one serial port each)
+ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7 \
+    --port /dev/cu.usbserial-XXXX \
     --firmware apps/bluetooth/ble/ipro_throughput_test/build/build_out/ipro_throughput_test_IPRO7.bin \
-    --baudrate 921600 --flash-pin 0x02</code></pre>
+    --baudrate 2000000</code></pre>
 
                 <h3>Step 2: Start Test</h3>
                 <pre><code class="language-bash"># On the Slave board:
@@ -417,12 +421,15 @@ RX: 0 packets, 0 bytes, 0.00 Kbps (0.00 KBps)</code></pre>
             <p>Choose <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code> for basic BLE or <code>"bt54_iso2"</code> for BLE 5.4 with two ISO streams (CIS/BIS). The latter requires <code>CONFIG_EM_SIZE</code> of at least 32 KB. Keep the host connection limit within controller capacity; preserve each shipped application configuration.</p>
 
                 <h3>BIS Broadcast Examples</h3>
-            <div class="alert alert-info">Standalone <code>ipro_le_audio_bis_source</code> and <code>ipro_le_audio_bis_sink</code> applications are not included in V2.0.1. The host includes broadcast APIs; contact INTELPRO for complete broadcast reference applications.</div>
+            <div class="alert alert-info">The FreeRTOS applications in V2.1.0 do not include standalone <code>ipro_le_audio_bis_source</code> and <code>ipro_le_audio_bis_sink</code>. The host includes broadcast APIs; contact INTELPRO for complete FreeRTOS broadcast reference applications. Under Zephyr RTOS the SDK also provides the <code>zephyr/samples/bap_broadcast_source</code> and <code>zephyr/samples/bap_broadcast_sink</code> samples (IPRO7 EVB / IPRO7AI EVK); see <a href="{{ '/en/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>.</div>
 
                 <h3>CIS Unicast Example (Headset)</h3>
                 <p>Use <code>ipro_le_audio_headset</code> as an LE Audio headset:</p>
                 <pre><code class="language-bash"># Build LE Audio Headset example
-make -C apps/bluetooth/le_audio/ipro_le_audio_headset</code></pre>
+make -C apps/bluetooth/le_audio/ipro_le_audio_headset
+
+# IPRO7AI Reef EVK configuration
+make -C apps/bluetooth/le_audio/ipro_le_audio_headset DEFCONFIG=defconfig_reef</code></pre>
 
                 <h3>.config Key Settings</h3>
                 <pre><code class="language-ini">CONFIG_BLUETOOTH_LE_ENABLE=y
@@ -442,9 +449,9 @@ CONFIG_COMPONENTS_LC3_ENABLE=y</code></pre>
                 <div class="info-box">
                     <h4>Reference Applications</h4>
                     <ul>
-                        <li><code>apps/bluetooth/le_audio/ipro_le_audio_headset/</code> - GAF/BAP Unicast headset</li>
-
-
+                        <li><code>apps/bluetooth/le_audio/ipro_le_audio_headset/</code> - GAF/BAP Unicast headset (FreeRTOS)</li>
+                        <li><code>zephyr/samples/le_audio_headset/</code> - LE Audio headset (Zephyr RTOS)</li>
+                        <li><code>zephyr/samples/bap_broadcast_source/</code>, <code>zephyr/samples/bap_broadcast_sink/</code> - BIS broadcast source and sink (Zephyr RTOS)</li>
                     </ul>
                 </div>
             </div>
@@ -498,6 +505,11 @@ CONFIG_COMPONENTS_LC3_ENABLE=y</code></pre>
                     <div class="feature-icon"><i class="fas fa-satellite-dish"></i></div>
                     <h3 class="feature-title">BLE Development Guide</h3>
                     <p class="feature-description">Dive deeper into the BLE 5.4 Host/Controller architecture and APIs.</p>
+                </a>
+                <a href="{{ '/en/zephyr-rtos' | relative_url }}" class="feature-card" style="text-decoration:none;">
+                    <div class="feature-icon"><i class="fas fa-cubes"></i></div>
+                    <h3 class="feature-title">Zephyr RTOS</h3>
+                    <p class="feature-description">Build Zephyr samples with west on the IPRO7 EVB and IPRO7AI EVK.</p>
                 </a>
             </div>
         </section>

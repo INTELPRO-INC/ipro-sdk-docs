@@ -7,7 +7,7 @@ lang: zh-TW
 <section class="page-header-section">
     <div class="container">
         <h1 class="page-title"><i class="fas fa-wrench"></i> 硬體參考 Hardware Reference</h1>
-        <p class="page-subtitle">IPRO7 晶片規格、腳位與評估板，以及 IPRO6S 交付支援</p>
+        <p class="page-subtitle">IPRO7 晶片規格、腳位與評估板（含 IPRO7AI Reef EVK），以及 IPRO6S 硬體資料（IPRO6S 開發請使用 V2.0.1）</p>
     </div>
 </section>
 
@@ -16,14 +16,16 @@ lang: zh-TW
 
         <section id="ipro6s">
             <h2>IPRO6S</h2>
-            <p>V2.0.1 支援 IPRO6S 作為獨立 Wi-Fi 6／藍牙雙模 SoC，亦可作為 IPRO7 的 SDIO 無線端。使用 <code>CONFIG_IPRO6=y</code>，並共用 RISC-V 工具鏈目標 <code>CONFIG_CPU_ID="intelpro_ipro7"</code>；不具備 IPRO7 的 NPU／ISP。</p>
+            <div class="alert alert-info"><strong>V2.1.0 不支援 IPRO6S 建置：</strong>本版不含 IPRO6S 應用、IPRO6S BLE 控制器函式庫與 <code>ipro6_rf</code>。<strong>IPRO6S 開發請使用 V2.0.1</strong>；本節的 IPRO6S 說明適用於 V2.0.1。</div>
+            <p>在 V2.0.1 中，IPRO6S 可作為獨立 Wi-Fi 6／藍牙雙模 SoC，亦可作為 IPRO7 的 SDIO 無線端。使用 <code>CONFIG_IPRO6=y</code>，並共用 RISC-V 工具鏈目標 <code>CONFIG_CPU_ID="intelpro_ipro7"</code>；不具備 IPRO7 的 NPU／ISP。</p>
             <div class="table-wrapper"><table><thead><tr><th>資源</th><th>容量</th></tr></thead><tbody>
 <tr><td>Flash</td><td>2 MB</td></tr>
 <tr><td>TCM RAM</td><td>320 KB (縮減配置為 280 KB)</td></tr>
 <tr><td>Wi-Fi RAM</td><td>160 KB (需扣除藍牙 EM 保留區)</td></tr>
 <tr><td>HBNRAM</td><td>4 KB</td></tr>
 </tbody></table></div>
-            <p>應用可用記憶體取決於 linker 配置與控制器設定，請參考 <code>apps/platform/ipro6_demo/</code>、<code>ipro6_if_wifi/</code> 與 <code>ipro6_btdm_phyrf/</code> 的配套配置。</p>
+            <p>應用可用記憶體取決於 linker 配置與控制器設定，請參考 V2.0.1 中 <code>apps/platform/ipro6_demo/</code>、<code>ipro6_if_wifi/</code> 與 <code>ipro6_btdm_phyrf/</code> 的配套配置。</p>
+            <p>在 V2.1.0 中，IPRO6S 以 IPRO7AI Reef EVK 的 IPRO6S FIN 卡經 SDIO 為 IPRO7 提供 Wi-Fi：IPRO7 端隨 SDK 提供（<code>ipro7ai_reef_demo</code> 的 <code>defconfig_wifi_ipro6s</code>），FIN 卡上的韌體不在 V2.1.0 內，請洽 INTELPRO。見 <a href="#reef-evk">IPRO7AI Reef EVK</a>。</p>
         </section>
 
         <!-- Quick Navigation -->
@@ -63,6 +65,10 @@ lang: zh-TW
             <a href="#evb" class="hw-nav-item">
                 <i class="fas fa-tachograph-digital"></i>
                 <span>評估板</span>
+            </a>
+            <a href="#reef-evk" class="hw-nav-item">
+                <i class="fas fa-tachograph-digital"></i>
+                <span>Reef EVK</span>
             </a>
             <a href="#peripherals" class="hw-nav-item">
                 <i class="fas fa-plug"></i>
@@ -107,7 +113,7 @@ lang: zh-TW
                     <div class="spec-icon"><i class="fas fa-memory"></i></div>
                     <h3>記憶體配置</h3>
                     <ul>
-                        <li>內建 8Mb (1MB) Flash</li>
+                        <li>Flash 容量依板型而定（例：IPRO7AI Reef EVK 為 2 MB）</li>
                         <li>內建 64Mb (8MB) pSRAM</li>
                         <li>XIP QSPI 支援</li>
                         <li>On-The-Fly AES 解密 (OTFAD)</li>
@@ -121,7 +127,7 @@ lang: zh-TW
                     <ul>
                         <li>Bluetooth 5.4 / BLE</li>
                         <li>LE Audio (LC3 Codec)</li>
-                        <li>V2.0.1 預編譯控制器支援最多 4 個 ACL 連線（link1_periph / link1 / link2 / link4）。</li>
+                        <li>V2.1.0 預編譯控制器支援最多 4 個 ACL 連線（link1_periph / link1 / link2 / link4）。</li>
                         <li>2.4 GHz RF</li>
                     </ul>
                 </div>
@@ -191,7 +197,7 @@ lang: zh-TW
                         <div class="dg-row">
                             <div class="dg-node dg-node--accent">
                                 <div class="dg-node-title">Memory</div>
-                                <div class="dg-node-desc">8Mb Flash<br>64Mb pSRAM<br>256KB OCRAM</div>
+                                <div class="dg-node-desc">Flash（依板型）<br>64Mb pSRAM<br>256KB OCRAM</div>
                             </div>
                             <div class="dg-node dg-node--accent">
                                 <div class="dg-node-title">Crypto</div>
@@ -240,7 +246,7 @@ lang: zh-TW
                             <li>多協定橋接器</li>
                             <li>Thread/Zigbee 轉換器</li>
                         </ul>
-                        <p style="margin-bottom: 0; font-size: 0.85rem; color: #f59e0b;">⚠ 能力展示 — Matter/Thread/Zigbee 未包含於本版 SDK，如需取得請聯絡原廠。</p>
+                        <p style="margin-bottom: 0; font-size: 0.85rem; color: #f59e0b;">⚠ 能力展示 — V2.1.0 未包含 Matter 與 Zigbee，如需取得請洽 INTELPRO；Thread 只在 Zephyr RTOS 下提供，見 <a href="{{ '/matter-thread' | relative_url }}">Matter &amp; Thread</a>。</p>
                     </div>
                 </div>
             </div>
@@ -259,7 +265,7 @@ lang: zh-TW
                         <li>Bluetooth® 規範 v5.4</li>
                         <li>BLE 1Mbps 和 2Mbps</li>
                         <li>Long Range 500/125Kbps</li>
-                        <li>V2.0.1 預編譯控制器支援最多 4 個 ACL 連線（link1_periph / link1 / link2 / link4）。</li>
+                        <li>V2.1.0 預編譯控制器支援最多 4 個 ACL 連線（link1_periph / link1 / link2 / link4）。</li>
                         <li>整合 RF balun, PA/LNA</li>
                         <li>支援外部 PA/LNA</li>
                     </ul>
@@ -291,7 +297,7 @@ lang: zh-TW
                         <li>NPU 運算能力: 0.1 TOPS</li>
                         <li>AI 偵測應用</li>
                         <li>AI 辨識應用</li>
-                        <li>邊緣運算優化</li>
+                        <li>邊緣運算最佳化</li>
                         <li>低功耗 AI 推理</li>
                     </ul>
                 </div>
@@ -516,7 +522,7 @@ lang: zh-TW
                 <h3><i class="fas fa-exchange-alt"></i> UART Pin Assignment (Function = 7)</h3>
 
                 <div class="alert-warning" style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
-                    GPIO20/GPIO21 是 Boot ROM UART 下載使用的腳位。應用 Console 的 baud rate 由 <code>CONFIG_PLATFORM_UART_BAUDRATE</code> 決定：<code>ipro7_demo</code> 與 PDM EVB 為 115200；PDM EVK 與 <code>ipro7ai_evk_demo</code> 為 921600。
+                    GPIO20/GPIO21 是 Boot ROM UART 下載使用的腳位。應用 Console 的 baud rate 由各應用的 <code>CONFIG_PLATFORM_UART_BAUDRATE</code> 決定，預設 115200，開發板本身沒有固定值。<code>ipro7ai_evk_demo</code>、<code>ipro7ai_evk_launcher</code>、<code>ipro7ai_evk_rps</code>、<code>ipro_meeting_poc</code>、<code>ipro7_uvc_cam</code>、<code>ipro_epd_el036</code> 的預設設定與 <code>ipro_pdm_mic_demo</code> 的 EVK 設定（<code>config_evk</code>）為 921600；其他應用及 IPRO7AI Reef EVK 的設定（Console 在 U6 連接器）為 115200。
                 </div>
 
                 <p style="color: var(--text-secondary); margin-bottom: 1rem;">
@@ -528,7 +534,7 @@ lang: zh-TW
                     <thead>
                         <tr>
                             <th>介面</th>
-                            <th>信號</th>
+                            <th>訊號</th>
                             <th>GPIO</th>
                             <th>UART Signal</th>
                             <th>Baudrate</th>
@@ -688,7 +694,7 @@ GLB_UART_Fun_Sel(GLB_UART_SIG_3, GLB_UART_SIG_FUN_UART1_RXD);</code></pre>
 
                 <h4>SPI0 (Function = 4) — Pin Group 對照表</h4>
                 <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">
-                    SPI0 以 <strong>4 個 GPIO 為一組</strong>，信號固定依位置分配。<code>pin_swap_enable</code> 可交換 MOSI/MISO。EVB 預設 <code>pin_swap_enable = 1</code>。
+                    SPI0 以 <strong>4 個 GPIO 為一組</strong>，訊號固定依位置分配。<code>pin_swap_enable</code> 可交換 MOSI/MISO。EVB 預設 <code>pin_swap_enable = 1</code>。
                 </p>
                 <table class="pinout-table">
                     <thead>
@@ -872,7 +878,7 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                 <h3><i class="fas fa-volume-up"></i> I2S Pin Assignment (Function = 3)</h3>
 
                 <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                    I2S0 以 <strong>4 個 GPIO 為一組</strong>，信號依位置固定分配。Pin N+2 為雙功能 DIO/DO，Pin N+3 為雙功能 RCLK_O/DI。全雙工時 DO=output、DI=input；半雙工時 DIO 雙向傳輸。
+                    I2S0 以 <strong>4 個 GPIO 為一組</strong>，訊號依位置固定分配。Pin N+2 為雙功能 DIO/DO，Pin N+3 為雙功能 RCLK_O/DI。全雙工時 DO=output、DI=input；半雙工時 DIO 雙向傳輸。
                 </p>
 
                 <table class="pinout-table">
@@ -1375,6 +1381,97 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                                         <div class="dg-node-desc">(J56-J63)</div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="reef-evk" class="evb-card full-width">
+                    <div class="evb-header">
+                        <h3>IPRO7AI Reef EVK</h3>
+                        <span class="evb-badge">V2.1.0 新增</span>
+                    </div>
+                    <div class="evb-image">
+                        <div class="evb-placeholder">
+                            <i class="fas fa-microchip"></i>
+                            <span>IPRO7AI Reef EVK</span>
+                        </div>
+                    </div>
+
+                    <div class="evb-features-grid">
+                        <div class="evb-features">
+                            <h4><i class="fas fa-microchip"></i> 核心與燒錄</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> IPRO7AI SoC（QFN56）直接焊在載板上</li>
+                                <li><i class="fas fa-check"></i> 2 MB Flash，燒錄時使用 <code>partition_cfg_2M.toml</code></li>
+                                <li><i class="fas fa-check"></i> 燒錄工具選用 <code>--chip-variant IPRO7AI</code></li>
+                                <li><i class="fas fa-check"></i> 跳線 JP1 必須插上</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4><i class="fas fa-wrench"></i> Debug 介面</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> UART Console：U6 連接器（Reef 設定皆為 115200 baud）</li>
+                                <li><i class="fas fa-check"></i> USB-C 供電</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4><i class="fas fa-camera"></i> 影像介面</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> OV5640／OV2640 相機模組</li>
+                                <li><i class="fas fa-check"></i> DVP 相機介面</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4><i class="fas fa-volume-high"></i> 音訊介面</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> DAC 喇叭輸出與耳機輸出</li>
+                                <li><i class="fas fa-check"></i> PDM 麥克風、耳機麥克風與 AUX-IN 收音</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4><i class="fas fa-lightbulb"></i> LED 與按鍵</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> WS2812 RGB LED</li>
+                                <li><i class="fas fa-check"></i> 使用者按鍵</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4><i class="fas fa-sd-card"></i> 儲存與 Wi-Fi</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> SD 卡槽（FatFS）</li>
+                                <li><i class="fas fa-check"></i> 同一卡槽可插 IPRO6S FIN 卡，經 SDIO 提供 Wi-Fi</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="evb-connectors">
+                        <h4><i class="fas fa-thumbtack"></i> SDK 支援</h4>
+                        <div class="connector-grid">
+                            <div class="connector-item">
+                                <span class="connector-name">ipro7ai_reef_demo</span>
+                                <span class="connector-desc">每個板上功能區塊各有一個 shell 命令；<code>defconfig_wifi_ipro6s</code> 加入 Wi-Fi 與 RTSP 相機串流</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">defconfig_reef*</span>
+                                <span class="connector-desc">多數應用以 <code>DEFCONFIG=</code> 選擇 Reef 設定（例如 <code>ipro7_uvc_cam</code> 的 <code>defconfig_reef_ov5640</code>），或附 Reef 專用 <code>.config</code></span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">CONFIG_IPRO7AI_REEF</span>
+                                <span class="connector-desc">板級設定檔 <code>ipro7ai_reef_<wbr>board_config.h</code>，位於 <code>bsp/board/ipro7/</code></span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">IPRO6S FIN 卡</span>
+                                <span class="connector-desc">IPRO7 端隨 SDK 提供；FIN 卡韌體不在 V2.1.0 內，請洽 INTELPRO</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">Zephyr RTOS</span>
+                                <span class="connector-desc">本版沒有 Reef 的 Zephyr 板級定義，請使用 FreeRTOS 應用</span>
                             </div>
                         </div>
                     </div>

@@ -7,7 +7,7 @@ lang: en
 <section class="page-header-section">
     <div class="container">
         <h1 class="page-title"><i class="fas fa-wrench"></i> Hardware Reference</h1>
-        <p class="page-subtitle">IPRO7 specifications, pin assignments and evaluation boards; IPRO6S release support</p>
+        <p class="page-subtitle">IPRO7 specifications, pin assignments and evaluation boards (including the IPRO7AI Reef EVK); IPRO6S hardware data (use V2.0.1 for IPRO6S development)</p>
     </div>
 </section>
 
@@ -16,14 +16,16 @@ lang: en
 
         <section id="ipro6s">
             <h2>IPRO6S</h2>
-            <p>V2.0.1 supports IPRO6S as a standalone Wi-Fi 6 / Bluetooth dual-mode SoC and as the SDIO radio for IPRO7. It uses <code>CONFIG_IPRO6=y</code> and the same RISC-V toolchain target, <code>CONFIG_CPU_ID="intelpro_ipro7"</code>. It does not provide the IPRO7 NPU / ISP.</p>
+            <div class="alert alert-info"><strong>IPRO6S builds are not supported in V2.1.0:</strong> this release includes no IPRO6S applications, no IPRO6S BLE controller archives and no <code>ipro6_rf</code>. <strong>For IPRO6S development, use V2.0.1</strong>; the IPRO6S information in this section applies to V2.0.1.</div>
+            <p>In V2.0.1, IPRO6S works as a standalone Wi-Fi 6 / Bluetooth dual-mode SoC and as the SDIO radio for IPRO7. It uses <code>CONFIG_IPRO6=y</code> and the same RISC-V toolchain target, <code>CONFIG_CPU_ID="intelpro_ipro7"</code>. It does not provide the IPRO7 NPU / ISP.</p>
             <div class="table-wrapper"><table><thead><tr><th>Resource</th><th>Capacity</th></tr></thead><tbody>
 <tr><td>Flash</td><td>2 MB</td></tr>
 <tr><td>TCM RAM</td><td>320 KB (280 KB in reduced layouts)</td></tr>
 <tr><td>Wi-Fi RAM</td><td>160 KB (Bluetooth EM is reserved from this region)</td></tr>
 <tr><td>HBNRAM</td><td>4 KB</td></tr>
 </tbody></table></div>
-            <p>Memory available to the application depends on the selected linker layout and controller configuration. See <code>apps/platform/ipro6_demo/</code>, <code>ipro6_if_wifi/</code> and <code>ipro6_btdm_phyrf/</code> for matching configurations.</p>
+            <p>Memory available to the application depends on the selected linker layout and controller configuration. See <code>apps/platform/ipro6_demo/</code>, <code>ipro6_if_wifi/</code> and <code>ipro6_btdm_phyrf/</code> in V2.0.1 for matching configurations.</p>
+            <p>In V2.1.0, IPRO6S provides Wi-Fi to IPRO7 over SDIO as the IPRO6S FIN card on the IPRO7AI Reef EVK: the IPRO7 side ships with the SDK (<code>defconfig_wifi_ipro6s</code> of <code>ipro7ai_reef_demo</code>); the firmware for the FIN card is not in V2.1.0 — contact INTELPRO. See <a href="#reef-evk">IPRO7AI Reef EVK</a>.</p>
         </section>
 
         <!-- Quick Navigation -->
@@ -63,6 +65,10 @@ lang: en
             <a href="#evb" class="hw-nav-item">
                 <i class="fas fa-tachograph-digital"></i>
                 <span>EVB</span>
+            </a>
+            <a href="#reef-evk" class="hw-nav-item">
+                <i class="fas fa-tachograph-digital"></i>
+                <span>Reef EVK</span>
             </a>
             <a href="#peripherals" class="hw-nav-item">
                 <i class="fas fa-plug"></i>
@@ -107,7 +113,7 @@ lang: en
                     <div class="spec-icon"><i class="fas fa-memory"></i></div>
                     <h3>Memory Configuration</h3>
                     <ul>
-                        <li>Built-in 8Mb (1MB) Flash</li>
+                        <li>Flash size depends on the board (e.g. 2 MB on the IPRO7AI Reef EVK)</li>
                         <li>Built-in 64Mb (8MB) pSRAM</li>
                         <li>XIP QSPI Support</li>
                         <li>On-The-Fly AES Decryption (OTFAD)</li>
@@ -121,7 +127,7 @@ lang: en
                     <ul>
                         <li>Bluetooth 5.4 / BLE</li>
                         <li>LE Audio (LC3 Codec)</li>
-                        <li>V2.0.1 prebuilt controllers support up to 4 ACL connections (link1_periph / link1 / link2 / link4).</li>
+                        <li>V2.1.0 prebuilt controllers support up to 4 ACL connections (link1_periph / link1 / link2 / link4).</li>
                         <li>2.4 GHz RF</li>
                     </ul>
                 </div>
@@ -191,7 +197,7 @@ lang: en
                         <div class="dg-row">
                             <div class="dg-node dg-node--accent">
                                 <div class="dg-node-title">Memory</div>
-                                <div class="dg-node-desc">8Mb Flash<br>64Mb pSRAM<br>256KB OCRAM</div>
+                                <div class="dg-node-desc">Flash (board-dependent)<br>64Mb pSRAM<br>256KB OCRAM</div>
                             </div>
                             <div class="dg-node dg-node--accent">
                                 <div class="dg-node-title">Crypto</div>
@@ -240,7 +246,7 @@ lang: en
                             <li>Multi-protocol bridge</li>
                             <li>Thread/Zigbee converter</li>
                         </ul>
-                        <p style="margin-bottom: 0; font-size: 0.85rem; color: #f59e0b;">⚠ Capability showcase — Matter/Thread/Zigbee are not included in this SDK release; contact INTELPRO for availability.</p>
+                        <p style="margin-bottom: 0; font-size: 0.85rem; color: #f59e0b;">⚠ Capability showcase — Matter and Zigbee are not included in V2.1.0 (contact INTELPRO for availability); Thread is available under Zephyr RTOS only, see <a href="{{ '/en/matter-thread' | relative_url }}">Matter &amp; Thread</a>.</p>
                     </div>
                 </div>
             </div>
@@ -259,7 +265,7 @@ lang: en
                         <li>Bluetooth® v5.4 Specification</li>
                         <li>BLE 1Mbps and 2Mbps</li>
                         <li>Long Range 500/125Kbps</li>
-                        <li>V2.0.1 prebuilt controllers support up to 4 ACL connections (link1_periph / link1 / link2 / link4).</li>
+                        <li>V2.1.0 prebuilt controllers support up to 4 ACL connections (link1_periph / link1 / link2 / link4).</li>
                         <li>Integrated RF balun, PA/LNA</li>
                         <li>External PA/LNA Support</li>
                     </ul>
@@ -464,7 +470,7 @@ lang: en
                 <h3><i class="fas fa-exchange-alt"></i> UART Pin Assignment (Function = 7)</h3>
 
                 <div class="alert-warning" style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
-                    GPIO20/GPIO21 are used by Boot ROM UART download. Application console baud rate comes from <code>CONFIG_PLATFORM_UART_BAUDRATE</code>: <code>ipro7_demo</code> and PDM EVB use 115200; PDM EVK and <code>ipro7ai_evk_demo</code> use 921600.
+                    GPIO20/GPIO21 are used by Boot ROM UART download. Application console baud rate comes from each application's <code>CONFIG_PLATFORM_UART_BAUDRATE</code> (default 115200); a board has no fixed console baud. The default configurations of <code>ipro7ai_evk_demo</code>, <code>ipro7ai_evk_launcher</code>, <code>ipro7ai_evk_rps</code>, <code>ipro_meeting_poc</code>, <code>ipro7_uvc_cam</code> and <code>ipro_epd_el036</code>, and the EVK configuration of <code>ipro_pdm_mic_demo</code> (<code>config_evk</code>), use 921600; other applications and the IPRO7AI Reef EVK configurations (console on the U6 connector) use 115200.
                 </div>
 
                 <p style="color: var(--text-secondary); margin-bottom: 1rem;">
@@ -1323,6 +1329,97 @@ for (int i = 0; i &lt; 4; i++) GLB_GPIO_Init(&spi_pins[i]);</code></pre>
                                         <div class="dg-node-desc">(J56-J63)</div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="reef-evk" class="evb-card full-width">
+                    <div class="evb-header">
+                        <h3>IPRO7AI Reef EVK</h3>
+                        <span class="evb-badge">New in V2.1.0</span>
+                    </div>
+                    <div class="evb-image">
+                        <div class="evb-placeholder">
+                            <i class="fas fa-microchip"></i>
+                            <span>IPRO7AI Reef EVK</span>
+                        </div>
+                    </div>
+
+                    <div class="evb-features-grid">
+                        <div class="evb-features">
+                            <h4><i class="fas fa-microchip"></i> Core and Flashing</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> IPRO7AI SoC (QFN56) soldered directly on the carrier</li>
+                                <li><i class="fas fa-check"></i> 2 MB flash; flash with <code>partition_cfg_2M.toml</code></li>
+                                <li><i class="fas fa-check"></i> Flash tool option <code>--chip-variant IPRO7AI</code></li>
+                                <li><i class="fas fa-check"></i> Jumper JP1 must be fitted</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4><i class="fas fa-wrench"></i> Debug Interfaces</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> UART console: U6 connector (115200 baud in the Reef configurations)</li>
+                                <li><i class="fas fa-check"></i> USB-C power</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4><i class="fas fa-camera"></i> Camera Interface</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> OV5640 / OV2640 camera modules</li>
+                                <li><i class="fas fa-check"></i> DVP camera interface</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4><i class="fas fa-volume-high"></i> Audio Interface</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> DAC speaker and headphone outputs</li>
+                                <li><i class="fas fa-check"></i> PDM microphone, headset microphone and AUX-IN capture</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4><i class="fas fa-lightbulb"></i> LED and Keys</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> WS2812 RGB LED</li>
+                                <li><i class="fas fa-check"></i> User keys</li>
+                            </ul>
+                        </div>
+
+                        <div class="evb-features">
+                            <h4><i class="fas fa-sd-card"></i> Storage and Wi-Fi</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> SD card slot (FatFS)</li>
+                                <li><i class="fas fa-check"></i> The same slot takes the IPRO6S FIN card for Wi-Fi over SDIO</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="evb-connectors">
+                        <h4><i class="fas fa-thumbtack"></i> SDK Support</h4>
+                        <div class="connector-grid">
+                            <div class="connector-item">
+                                <span class="connector-name">ipro7ai_reef_demo</span>
+                                <span class="connector-desc">A shell command per board block; <code>defconfig_wifi_ipro6s</code> adds Wi-Fi and an RTSP camera stream</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">defconfig_reef*</span>
+                                <span class="connector-desc">Most applications select a Reef configuration with <code>DEFCONFIG=</code> (for example <code>defconfig_reef_ov5640</code> of <code>ipro7_uvc_cam</code>) or carry a Reef <code>.config</code></span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">CONFIG_IPRO7AI_REEF</span>
+                                <span class="connector-desc">Board configuration <code>ipro7ai_reef_<wbr>board_config.h</code> in <code>bsp/board/ipro7/</code></span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">IPRO6S FIN card</span>
+                                <span class="connector-desc">IPRO7 side ships with the SDK; the FIN-card firmware is not in V2.1.0 — contact INTELPRO</span>
+                            </div>
+                            <div class="connector-item">
+                                <span class="connector-name">Zephyr RTOS</span>
+                                <span class="connector-desc">No Zephyr board definition for the Reef in this release; use FreeRTOS applications</span>
                             </div>
                         </div>
                     </div>

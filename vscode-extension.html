@@ -7,7 +7,7 @@ title: IPRO SDK VS Code Extension
     <aside class="doc-sidebar">
         <nav class="sidebar-nav">
             <ul class="sidebar-links">
-                <li><a href="#sdk-2-0-1" class="sidebar-link">SDK V2.0.1</a></li>
+                <li><a href="#sdk-2-1-0" class="sidebar-link">SDK V2.1.0</a></li>
 
                 <li><a href="#overview" class="sidebar-link">Extension 概覽</a></li>
                 <li><a href="#features" class="sidebar-link">功能介紹</a></li>
@@ -30,8 +30,8 @@ title: IPRO SDK VS Code Extension
 
         <section id="overview">
             <h2>Extension 概覽</h2>
-            <p>IPRO SDK Extension 3.3.0（識別碼 ipro.ipro-sdk-extension）將 FreeRTOS 專案探索、CMake 建構、IntelProCube 燒錄、串口主控台與記憶體分析整合至 VS Code。Windows 首次使用可透過完整安裝包取得所需工具。</p>
-            <p>本頁說明 Extension 3.3.0（需 VS Code 1.102+）。SDK V2.0.1 與 Online Installer 3.4.0 獨立管理版本；目前套件清單仍選用 SDK 1.2.1。V2.0.1 請匯入解壓後資料夾並確認工具鏈相容性。</p><a href="{{ '/windows-installation' | relative_url }}">Windows 安裝與更新指南</a>
+            <p>IPRO SDK Extension 3.3.0（識別碼 ipro.ipro-sdk-extension）將 FreeRTOS 專案探索、CMake 建構、IntelProCube 燒錄、序列埠主控台與記憶體分析整合至 VS Code。Windows 首次使用可透過完整安裝包取得所需工具。</p>
+            <p>本頁說明 Extension 3.3.0（需 VS Code 1.102+）。SDK V2.1.0 與 Online Installer 3.4.0 獨立管理版本；目前套件清單仍選用 SDK 1.2.1。V2.1.0 請由 GitHub Release 下載，匯入解壓後資料夾並確認工具鏈相容性。</p><a href="{{ '/windows-installation' | relative_url }}">Windows 安裝與更新指南</a>
         </section>
 
         <section id="features">
@@ -91,7 +91,7 @@ title: IPRO SDK VS Code Extension
     <li>以 IPRO Setup: Select Flash Tool 選擇 IntelProCube，或設定 ipro.flashToolPath 為 C:\IPRO\IntelProCube。</li>
     <li>接上開發板，執行 IPRO: Select Serial Port，選擇 Probe 的 UART 埠；CCI 埠供暫存器存取，不用於主控台／燒錄。</li>
     <li>IPRO Config: Configure Flash… 核對晶片配置、Flash target、分割表與鮑率。晶片配置必須符合實際板子，不要直接套用截圖中的值。</li>
-    <li>執行 IPRO: Flash，確認燒錄工具的驗證與成功訊息。Extension 會先釋放自己的 Monitor 連線；其他程式占用串口時仍需先關閉。</li>
+    <li>執行 IPRO: Flash，確認燒錄工具的驗證與成功訊息。Extension 會先釋放自己的 Monitor 連線；其他程式占用序列埠時仍需先關閉。</li>
     <li>用 IPRO Config: Set Monitor Baud Rate 設定符合韌體的主控台速率，再執行 IPRO: Serial Monitor。修改速率後關閉並重開 Monitor，或使用提供的重新連線操作。</li>
 </ol>
             <div class="table-wrapper">
@@ -125,7 +125,7 @@ title: IPRO SDK VS Code Extension
 <thead><tr><th>來源</th><th>行為</th></tr></thead>
 <tbody>
 <tr><td>Extension VSIX</td><td>選取對應 VSIX，安裝後 Reload Window；不更新 SDK 或工具。</td></tr>
-<tr><td>SDK ZIP</td><td>選取 ZIP，可輸入原廠 SHA-256；解壓並驗證 SDK 結構。</td></tr>
+<tr><td>SDK ZIP</td><td>選取 ZIP，可輸入 INTELPRO 提供的 SHA-256；解壓並驗證 SDK 結構。</td></tr>
 <tr><td>SDK Folder</td><td>選取已解壓且含 CMakeLists.txt、apps、bsp 的根目錄；.tar.gz／.7z 先自行解壓。</td></tr>
 <tr><td>SDK Git</td><td>使用有權限存取的 HTTPS／SSH 倉庫及 branch／tag 建立快照，記錄 commit；SSH 信任與認證需事先完成。</td></tr>
 </tbody>
@@ -189,7 +189,7 @@ title: IPRO SDK VS Code Extension
 <tr><td><code>IPRO Config: Set Monitor Baud Rate</code></td><td>設定主控台鮑率</td></tr>
 <tr><td><code>IPRO: Flash</code></td><td>燒錄韌體</td></tr>
 <tr><td><code>IPRO: Serial Monitor</code></td><td>開啟主控台</td></tr>
-<tr><td><code>IPRO: Close Serial Monitor</code></td><td>關閉主控台並釋放串口</td></tr>
+<tr><td><code>IPRO: Close Serial Monitor</code></td><td>關閉主控台並釋放序列埠</td></tr>
 <tr><td><code>IPRO: Build, Flash & Monitor</code></td><td>依序建構、燒錄並監看</td></tr>
 <tr><td><code>IPRO: Reset Board</code></td><td>透過相容 Probe 重設開發板</td></tr>
 <tr><td><code>IPRO Analyse: Memory Map</code></td><td>分析記憶體使用</td></tr>
@@ -203,14 +203,14 @@ title: IPRO SDK VS Code Extension
 
         <section id="version">
             <h2>版本與交付範圍</h2>
-            <p>3.3.0 新增元件獨立更新；3.2.4 引入控制中心；3.2.3 改善 Monitor／Flash 串口交接與 UART／CCI 選擇；3.2.2 提供獨立 Monitor 鮑率；3.2.1 加入 Windows 工具路徑固定設定；3.2.0 提供內建 serialport Monitor。</p>
+            <p>3.3.0 新增元件獨立更新；3.2.4 引入控制中心；3.2.3 改善 Monitor／Flash 序列埠交接與 UART／CCI 選擇；3.2.2 提供獨立 Monitor 鮑率；3.2.1 加入 Windows 工具路徑固定設定；3.2.0 提供內建 serialport Monitor。</p>
             <div class="alert alert-info">SDK 原始碼交付包、Extension VSIX 與完整 Windows 安裝包分開計版。SDK 包內沒有 VSIX，不代表 Windows 完整包沒有 Extension；請以取得的安裝包 manifest 與 Extensions 面板實際版本為準。</div>
         </section>
-        <section id="sdk-2-0-1">
-            <h2>SDK V2.0.1</h2>
-            <p>由 <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1 Release</a> 下載 <code>IPRO-SDK-V2.0.1.tar.gz</code> 及其 checksum，解壓至新的 SDK 目錄。確認 <code>VERSION.txt</code> 的 IPRO7／IPRO6 皆為 V2.0.1，選取的根目錄包含 <code>CMakeLists.txt</code>、<code>apps/</code> 與 <code>bsp/</code>。</p><pre><code class="language-powershell">Get-FileHash .\IPRO-SDK-V2.0.1.tar.gz -Algorithm SHA256
-Get-Content .\IPRO-SDK-V2.0.1.tar.gz.sha256</code></pre>            <p>比對下載的 checksum 與計算結果。Extension 3.3.0 可由 <code>IPRO Setup: Update Components</code> 匯入解壓後資料夾，或直接選擇該 SDK 根目錄；壓縮檔匯入入口接受 ZIP，<code>.tar.gz</code> 請先解壓。重新開啟新 SDK 並執行 <code>IPRO Setup: Run Diagnostics</code>。</p>
-            <p>SDK README 指定 GCC 14；目前 Windows 清單僅對 SDK 1.2.1 宣告 GCC 13.1.1 的相容組合，V2.0.1 請另行取得並驗證相容工具鏈。原生 Windows Make 請明確傳入 <code>CMAKE=</code>，因 <code>project.build</code> 預設引用未隨附的 <code>tools/cmake_win-x86_64/</code>。在完成新版本建置及板端驗證前，保留可用的 1.2.1 環境。</p>
+        <section id="sdk-2-1-0">
+            <h2>SDK V2.1.0</h2>
+            <p>由 <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.1.0">V2.1.0 Release</a> 下載 <code>IPRO-SDK-V2.1.0.tar.gz</code> 及其 <code>.sha256</code>，解壓至新的 SDK 目錄。確認 <code>VERSION.txt</code> 顯示 V2.1.0，選取的根目錄包含 <code>CMakeLists.txt</code>、<code>apps/</code> 與 <code>bsp/</code>。V2.1.0 的 FreeRTOS 應用僅支援 IPRO7；IPRO6S 開發請保留 V2.0.1。</p><pre><code class="language-powershell">Get-FileHash .\IPRO-SDK-V2.1.0.tar.gz -Algorithm SHA256
+Get-Content .\IPRO-SDK-V2.1.0.tar.gz.sha256</code></pre>            <p>比對下載的 checksum 與計算結果。Extension 3.3.0 可由 <code>IPRO Setup: Update Components</code> 匯入解壓後資料夾，或直接選擇該 SDK 根目錄；壓縮檔匯入入口接受 ZIP，<code>.tar.gz</code> 請先解壓。重新開啟新 SDK 並執行 <code>IPRO Setup: Run Diagnostics</code>。</p>
+            <p>SDK README 指定 GCC 14；目前 Windows 清單僅對 SDK 1.2.1 宣告 GCC 13.1.1 的相容組合，V2.1.0 請另行取得並驗證相容工具鏈。原生 Windows Make 時，<code>project.build</code> 在找不到未隨附的 <code>tools/cmake_win-x86_64/</code> 時改用 PATH 上的 <code>cmake</code>；請確認 PATH 上的 CMake 版本，或明確傳入 <code>CMAKE=</code>。在完成新版本建置及板端驗證前，保留可用的 1.2.1 環境。</p>
         </section>
 
     </article>

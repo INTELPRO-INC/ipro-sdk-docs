@@ -13,10 +13,12 @@ lang: en
                 <li><a href="#build-cli" class="sidebar-link">Unified Build CLI</a></li>
                 <li><a href="#flash-tool" class="sidebar-link">Flash Tool</a></li>
                 <li><a href="#serial-monitor" class="sidebar-link">Serial Monitor</a></li>
+                <li><a href="#zephyr-tools" class="sidebar-link">Zephyr Tools</a></li>
                 <li><a href="#automated-testing" class="sidebar-link">Automated Testing</a></li>
                 <li><a href="#gdb-debugging" class="sidebar-link">GDB Debugging</a></li>
                 <li><a href="#crash-analysis" class="sidebar-link">Crash Analysis</a></li>
                 <li><a href="#size-analysis" class="sidebar-link">Build Size Analysis</a></li>
+                <li><a href="#ota-package" class="sidebar-link">OTA Packaging</a></li>
                 <li><a href="#macos-notes" class="sidebar-link">macOS Notes</a></li>
                 <li><a href="#dev-workflow" class="sidebar-link">Developer Workflow</a></li>
             </ul>
@@ -24,13 +26,13 @@ lang: en
     </aside>
 
     <article class="doc-content">
-            <div class="alert alert-info">CLI <code>flash / monitor / test</code> examples require separate flash and monitor tools. V2.0.1 does not bundle <code>tools/serial_monitor.py</code>; use the external terminal commands below if the helper is unavailable.</div>
+            <div class="alert alert-info">The CLI <code>flash</code> and <code>test</code> actions require the separately obtained IntelProCube command-line flasher. V2.1.0 bundles <code>tools/serial_monitor.py</code> (macOS / Linux) for <code>monitor</code>, <code>test</code> and entering download mode.</div>
         <h1>Tools & Debugging</h1>
-        <div class="alert alert-info" style="margin-bottom: 2rem;">V2.0.1 includes the build CLI, Kconfig helper scripts, Linux x86-64 CMake and Android demo source. The flash tool, serial monitor helper, board-test script, crash parser and OpenOCD configurations are separate.</div>
+        <div class="alert alert-info" style="margin-bottom: 2rem;">V2.1.0 includes the build CLI, Kconfig helper scripts, Linux x86-64 CMake, the serial monitor <code>tools/serial_monitor.py</code>, the OTA packer <code>tools/create_ota.py</code>, the Zephyr tools <code>tools/zephyr/</code> and Android demo source. The flash tool, board-test script, crash parser and OpenOCD configurations are separate.</div>
         <p>The IPRO SDK provides an integrated toolchain covering the complete development cycle: build, flash, monitor, and debug.</p>
 
         <!-- ============================================================ -->
-        <div class="alert alert-info"><p>Online Installer 3.4.0 reads the component catalog; the fixed 3.3.0 installer bundles SDK 1.2.1. As of 2026-09-10, the catalog also selects SDK 1.2.1. Obtain V2.0.1 from its release page and select its extracted directory explicitly. <a href="{{ '/en/windows-installation' | relative_url }}">Installation and version selection</a></p></div>
+        <div class="alert alert-info"><p>Online Installer 3.4.0 reads the component catalog; the fixed 3.3.0 installer bundles SDK 1.2.1. As of the V2.1.0 release (2026-10-15), the catalog still lists SDK 1.2.1 as stable. Obtain V2.1.0 from its GitHub Release and select its extracted directory explicitly. <a href="{{ '/en/windows-installation' | relative_url }}">Installation and version selection</a></p></div>
 
         <section id="overview">
             <h2>Overview</h2>
@@ -52,7 +54,7 @@ lang: en
                         <th>Tool</th>
                         <th>Path</th>
                         <th>Purpose</th>
-                        <th>Release SDK v2.0.1</th>
+                        <th>IPRO SDK V2.1.0</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -71,11 +73,13 @@ lang: en
                     </tr>
                     <tr>
                         <td>Flash Tool</td>
-                        <td><code>tools/ipro_iot_tool_lite/</code></td>
-                        <td>Flash firmware to the development board</td>
-                        <td>Not included (contact vendor)</td>
+                        <td><code>ipro_iot_tool_macos</code> / <code>ipro_iot_tool_linux</code> / <code>ipro_iot_tool.exe</code> (<code>$IPRO_FLASH_TOOL</code> or PATH)</td>
+                        <td>IntelProCube v0.6.3 command-line tool; flashes firmware to the development board</td>
+                        <td>Not included (contact INTELPRO)</td>
                     </tr>
-                    <tr><td>Serial Monitor</td><td><code>tools/serial_monitor.py</code></td><td>Serial terminal</td><td>Not included; use extension or external terminal</td></tr>
+                    <tr><td>Serial Monitor</td><td><code>tools/serial_monitor.py</code></td><td>Serial monitor that can send a command and wait for an output pattern (macOS / Linux)</td><td>Included</td></tr>
+                    <tr><td>Zephyr Tools</td><td><code>tools/zephyr/</code></td><td>West workspace setup, build, flash, console and sample-matrix builds</td><td>Included</td></tr>
+                    <tr><td>OTA Packer</td><td><code>tools/create_ota.py</code></td><td>Packs a combined firmware image into the boot2 <code>.xz.ota</code> format</td><td>Included</td></tr>
                     <tr>
                         <td>Board Test</td>
                         <td><code>tools/board_test.sh</code></td>
@@ -222,16 +226,16 @@ lang: en
 ./build_freertos.sh size platform/ipro7_demo</code></pre>
             </div>
 
-            <div class="alert alert-warning">The CLI actions <code>flash</code>, <code>monitor</code> and <code>test</code> require separately installed tools. The referenced monitor helper is absent from V2.0.1.</div>
+            <div class="alert alert-warning"><code>flash</code> and <code>test</code> need the separately obtained IntelProCube command-line tool (set <code>IPRO_FLASH_TOOL</code> or put the tool directory on PATH). <code>monitor</code> and <code>test</code> use the bundled <code>tools/serial_monitor.py</code>: they open the <code>-p</code> port at 115200 baud, send <code>reboot</code> first and stop after <code>-t</code> seconds. For a console at another baud rate, run <code>serial_monitor.py</code> directly with <code>--baud</code>.</div>
         </section>
 
         <!-- ============================================================ -->
         <section id="flash-tool">
             <h2>Flash Tool</h2>
             <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> <code>ipro_iot_tool_lite</code> is not included in Release SDK v2.0.1 — contact the vendor to obtain it. Once placed at <code>tools/ipro_iot_tool_lite/</code>, <code>./build_freertos.sh flash &lt;project&gt;</code> will invoke it automatically.
+                <strong>&#9888;&#65039;</strong> The IntelProCube v0.6.3 command-line tool (<code>ipro_iot_tool.exe</code>, <code>ipro_iot_tool_macos</code>, <code>ipro_iot_tool_linux</code>) is not included in IPRO SDK V2.1.0; obtain it from INTELPRO. <code>./build_freertos.sh flash &lt;project&gt;</code> uses the tool named by <code>IPRO_FLASH_TOOL</code>, or the tool for your host on PATH.
             </div>
-            <p>The IPRO SDK uses <code>ipro_iot_tool_lite</code> to flash compiled firmware to the development board's Flash memory.</p>
+            <p>The IPRO SDK uses the IntelProCube command-line tool to flash compiled firmware to the development board's Flash memory.</p>
 
             <h3>Basic Usage</h3>
             <div class="code-block">
@@ -239,13 +243,19 @@ lang: en
                     <span class="code-block-title">Flash Firmware</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># Adjust the serial port path to match your actual device
-tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
-    --chipname ipro7 \
+                <pre><code class="language-bash"># Run from the IntelProCube directory (ipro_iot_tool_linux on Linux, ipro_iot_tool.exe on Windows)
+# Adjust the serial port path to match your actual device
+./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7 \
     --port /dev/cu.usbserial-XXXX \
-    --firmware apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin \
     --baudrate 921600 \
-    --flash-pin 0x02</code></pre>
+    --firmware &lt;SDK&gt;/apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.bin
+
+# IPRO7AI Reef EVK (2 MB flash)
+./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+    --port /dev/cu.usbserial-XXXX \
+    --baudrate 921600 \
+    --pt chips/ipro7/partition/partition_cfg_2M.toml \
+    --firmware &lt;SDK&gt;/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin</code></pre>
             </div>
 
             <h3>Parameters</h3>
@@ -264,6 +274,11 @@ tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
                         <td><code>ipro7</code></td>
                     </tr>
                     <tr>
+                        <td><code>--chip-variant</code></td>
+                        <td>Flash pin configuration of the board: <code>IPRO7</code> (flash pin 0x2) or <code>IPRO7AI</code> (0x9, IPRO7AI EVK / Reef EVK)</td>
+                        <td><code>IPRO7</code></td>
+                    </tr>
+                    <tr>
                         <td><code>--port</code></td>
                         <td>Serial device path</td>
                         <td><code>/dev/cu.usbserial-XXXX</code> (macOS, depends on your device)<br><code>/dev/ttyUSB0</code> (Linux)</td>
@@ -279,23 +294,29 @@ tools/ipro_iot_tool_lite/ipro_iot_tool_lite \
                         <td><code>921600</code></td>
                     </tr>
                     <tr>
-                        <td><code>--flash-pin</code></td>
-                        <td>Flash control pin</td>
-                        <td><code>0x02</code></td>
+                        <td><code>--pt</code></td>
+                        <td>Partition table; the IPRO7AI Reef EVK uses the 2 MB table</td>
+                        <td><code>chips/ipro7/partition/partition_cfg_2M.toml</code></td>
                     </tr>
                 </tbody>
             </table>
 
+            <div class="alert alert-warning">
+                <strong>&#9888;&#65039;</strong> The tool has no <code>--flash-pin</code> option and exits 0 even when flashing fails; check its output for <code>[All Success]</code> (<code>./build_freertos.sh flash</code> does this for you). <code>build_freertos.sh</code> calls the tool without <code>--chip-variant</code> and <code>--pt</code>; for the IPRO7AI EVK and Reef EVK run the tool directly with <code>--chip-variant IPRO7AI</code>, or adjust the flash pin in the tool's configuration file as the application README describes.
+            </div>
+
             <h3>Entering Download Mode</h3>
-            <p>The board must be in download mode before flashing. Send the <code>reboot_dl</code> command via serial:</p>
+            <p>The board must be in download mode before flashing. <code>./build_freertos.sh flash</code> first sends <code>reboot_dl</code> through <code>tools/serial_monitor.py</code> at 115200 baud. If the console runs at another baud rate or the firmware has no shell, send the command yourself or use the BOOT pin as the board guide describes:</p>
             <div class="code-block">
                 <div class="code-block-header">
                     <span class="code-block-title">Enter Download Mode</span>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
-                <pre><code class="language-bash"># Install separately; select the port and baud rate for your firmware
-python3 -m pip install pyserial
-python3 -m serial.tools.miniterm /dev/cu.usbserial-XXXX 115200</code></pre>
+                <pre><code class="language-bash"># Firmware with a 115200-baud console
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --send reboot_dl --timeout 2
+
+# Firmware with a 921600-baud console (macOS)
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 921600 --send reboot_dl --timeout 2</code></pre>
             </div>
 
             <div class="alert alert-warning">
@@ -306,22 +327,92 @@ python3 -m serial.tools.miniterm /dev/cu.usbserial-XXXX 115200</code></pre>
         <!-- ============================================================ -->
         <section id="serial-monitor">
             <h2>Serial Monitoring</h2>
-            <p>V2.0.1 does not include <code>tools/serial_monitor.py</code>. The CLI still references that path, so its <code>monitor</code> and <code>test</code> actions need the separate helper. Use the extension's <code>IPRO: Serial Monitor</code> or a serial terminal instead.</p>
-            <p>Choose the console baud rate from the selected application and board configuration. On macOS use <code>/dev/cu.*</code>. Stop monitoring before flashing to release the port.</p>
+            <p>V2.1.0 includes <code>tools/serial_monitor.py</code>. It opens the port with the Python standard-library termios module (no pyserial needed), can send one command, wait for a regular-expression pattern and save the output to a file. It runs on macOS and Linux; on Windows use the extension's <code>IPRO: Serial Monitor</code> or another serial terminal.</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Serial Monitor Examples</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># Monitor for 60 seconds (115200 baud by default)
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --timeout 60
+
+# Send reboot and wait for the test result
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --send reboot \
+    --wait-for "ALL TESTS PASSED|SOME TESTS FAILED" --timeout 30
+
+# 921600 baud with a log file (macOS)
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 921600 --timeout 60 --log console.log</code></pre>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Option</th>
+                        <th>Description</th>
+                        <th>Default</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>--baud</code></td><td>Baud rate</td><td><code>115200</code></td></tr>
+                    <tr><td><code>--timeout</code></td><td>Seconds to monitor</td><td><code>30</code></td></tr>
+                    <tr><td><code>--send</code></td><td>Command sent before monitoring (for example <code>reboot</code>, <code>reboot_dl</code>)</td><td>-</td></tr>
+                    <tr><td><code>--wait-for</code></td><td>Regular-expression pattern; stop when it matches</td><td>-</td></tr>
+                    <tr><td><code>--log</code></td><td>Save the raw output to a file</td><td>-</td></tr>
+                </tbody>
+            </table>
+            <p>Exit codes: 0 when a pattern containing <code>PASSED</code> matches, 1 for any other match, 2 on timeout, 3 if the port cannot be opened.</p>
+
+            <h3>Console Baud Rates</h3>
+            <p>The console baud rate of a FreeRTOS application is set per application by <code>CONFIG_PLATFORM_UART_BAUDRATE</code>, default 115200; the IPRO7AI Reef EVK console is on connector U6. These applications use 921600: <code>ipro7ai_evk_demo</code>, <code>ipro7ai_evk_launcher</code>, <code>ipro7ai_evk_rps</code>, <code>ipro_meeting_poc</code>, <code>ipro7_uvc_cam</code>, <code>ipro_epd_el036</code>. Zephyr images (<code>ipro7_evb</code>, <code>ipro7ai_evk</code>) use UART0 at 2,000,000 baud.</p>
+            <p>On hosts other than macOS, <code>serial_monitor.py</code> supports rates up to 230400 only; use another serial terminal for 921600 or 2,000,000 baud. On macOS use <code>/dev/cu.*</code>. Stop monitoring before flashing to release the port.</p>
+        </section>
+
+        <!-- ============================================================ -->
+        <section id="zephyr-tools">
+            <h2>Zephyr Tools (tools/zephyr)</h2>
+            <p>Since V2.1.0 the SDK is also a Zephyr v4.4.0 module, supporting <code>ipro7_evb</code> (IPRO7 EVB) and <code>ipro7ai_evk</code> (IPRO7AI EVK). <code>tools/zephyr/</code> provides the scripts below; see <a href="{{ '/en/zephyr-rtos' | relative_url }}">Zephyr RTOS</a> for the full guide.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Script</th>
+                        <th>Purpose</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>bootstrap.sh</code></td><td>Creates the west workspace in <code>zephyr-workspace/</code>: downloads Zephyr v4.4.0 and the modules listed in <code>west.yml</code> and applies <code>zephyr/patches.yml</code>; <code>-w DIR</code> sets the location, <code>IPRO_TOOLCHAIN</code> the toolchain path</td></tr>
+                    <tr><td><code>build.sh</code></td><td>Builds a Zephyr application: <code>-b ipro7_evb</code> (default) or <code>ipro7ai_evk</code>, <code>-p</code> pristine, <code>-d</code> build directory; the application is a path or a sample name under <code>zephyr/samples/</code></td></tr>
+                    <tr><td><code>flash.sh</code></td><td>Flashes <code>zephyr.bin</code> (<code>--build-dir</code> or a <code>.bin</code> path, <code>--port</code>) with the IntelProCube command-line tool, sending <code>reboot_dl</code> through <code>serial_monitor.py</code> first</td></tr>
+                    <tr><td><code>monitor.sh</code></td><td>Opens the UART0 console at 2,000,000 baud (<code>--port</code>, <code>--baud</code>, <code>--timeout</code>)</td></tr>
+                    <tr><td><code>ci_build.sh</code></td><td>Builds the sample matrix (pristine, warnings as errors) and prints image sizes; select <code>ipro7_evb</code> or <code>ipro7ai_evk</code> with <code>-b</code>, <code>-q</code> builds only hello_world and blinky</td></tr>
+                </tbody>
+            </table>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Zephyr Quick Start</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash">tools/zephyr/bootstrap.sh          # west workspace in zephyr-workspace/
+source zephyr-workspace/env.sh     # ZEPHYR_BASE, CROSS_COMPILE, west
+cd zephyr-workspace
+west build -b ipro7_evb zephyr/samples/hello_world
+west build -b ipro7_evb ../zephyr/samples/periph_smoke -d build/smoke
+west flash                         # IntelProCube command-line tool: $IPRO_FLASH_TOOL or on PATH</code></pre>
+            </div>
+            <p>The first <code>bootstrap.sh</code> run downloads Zephyr and its modules from GitHub and needs Python 3.10+, CMake 3.20 or later, Ninja, git, dtc and the IPRO RISC-V toolchain (<code>/opt/toolchain/riscv_ipro7</code>).</p>
+            <p><code>west flash</code> enters download mode through the IPRO7 CMSIS-DAP probe by default; without one, use <code>west flash -- --boot shell</code> (the running image's <code>reboot_dl</code>) or <code>--boot manual</code>. Select the port with <code>--port</code> or <code>$IPRO_SERIAL_PORT</code>; otherwise the only USB serial port present is used. The Zephyr console is UART0 at 2,000,000 baud, unlike the FreeRTOS applications; open it for a given number of seconds with <code>tools/zephyr/monitor.sh --port /dev/cu.usbserial-XXXX --timeout 60</code>.</p>
         </section>
 
         <!-- ============================================================ -->
         <section id="automated-testing">
             <h2>On-board Tests</h2>
-            <p>The SDK includes <code>apps/test/ipro_unit_test/</code> for HAL and shared-component tests. Build it, flash the matching board with the separate flash tool, then inspect the console for <code>ALL TESTS PASSED</code> or <code>SOME TESTS FAILED</code>.</p><pre><code class="language-bash">make -C apps/test/ipro_unit_test</code></pre>            <p>Neither <code>tools/board_test.sh</code> nor <code>tools/serial_monitor.py</code> is bundled. The build CLI's <code>test</code> command also requires those external flash / monitor tools; it is not a complete test environment by itself.</p>
+            <p>The SDK includes <code>apps/test/ipro_unit_test/</code> for HAL and shared-component tests. Build it, flash the matching board with the separate flash tool, then inspect the console for <code>ALL TESTS PASSED</code> or <code>SOME TESTS FAILED</code>.</p><pre><code class="language-bash">make -C apps/test/ipro_unit_test</code></pre>            <p><code>tools/board_test.sh</code> is not bundled. <code>./build_freertos.sh test ipro_unit_test</code> builds, flashes (with the separately obtained IntelProCube command-line tool), sends <code>reboot</code> and waits for the result above; it exits 0 on pass, 1 on failure and 2 on timeout (<code>-t</code> sets the seconds, default 30).</p>
         </section>
 
         <!-- ============================================================ -->
         <section id="gdb-debugging">
-            <div class="alert alert-info">See <code>PREBUILT-ARCHIVES-STRIPPED.txt</code>: AI, ISP, RF, LC3 and low-power framework archives in this package have no debug information. They can be linked, but source-level stepping inside them is unavailable.</div>
+            <div class="alert alert-info">The AI, ISP, RF, LC3 and low-power framework libraries in this package are prebuilt <code>.a</code> archives without source code. They can be linked, but source-level stepping inside them is unavailable.</div>
             <h2>GDB Debugging</h2>
             <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> The OpenOCD configurations (<code>tools/openocd/</code>) are not included in Release SDK v2.0.1 — contact the vendor to obtain them.
+                <strong>&#9888;&#65039;</strong> The OpenOCD configurations (<code>tools/openocd/</code>) are not included in IPRO SDK V2.1.0 — contact INTELPRO to obtain them.
             </div>
             <p>The IPRO SDK supports JTAG debugging through OpenOCD + GDB. The IPRO7 JTAG pins are GPIO0 (TMS), GPIO1 (TDI), GPIO2 (TCK), and GPIO9 (TDO).</p>
 
@@ -408,7 +499,7 @@ openocd -f tools/openocd/openocd_ipro6.cfg
         <section id="crash-analysis">
             <h2>Crash Analysis</h2>
             <div class="alert alert-warning">
-                <strong>&#9888;&#65039;</strong> <code>parse_backtrace.py</code> is not included in Release SDK v2.0.1 — contact the vendor to obtain it. Even without this tool, you can resolve addresses manually with the toolchain's built-in <code>addr2line</code> (see below).
+                <strong>&#9888;&#65039;</strong> <code>parse_backtrace.py</code> is not included in IPRO SDK V2.1.0 — contact INTELPRO to obtain it. Even without this tool, you can resolve addresses manually with the toolchain's built-in <code>addr2line</code> (see below).
             </div>
             <p>When the firmware encounters an exception, the exception handler outputs the exception PC, SP (with its owning stack range), saved s0(fp) / ra, and a stack dump. <code>parse_backtrace.py</code> converts these addresses into source file names and line numbers.</p>
 
@@ -481,7 +572,7 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
         <!-- ============================================================ -->
         <section id="size-analysis">
             <h2>Build Size Analysis</h2>
-            <p>Use <code>./build_freertos.sh size &lt;project&gt;</code> (bundled with Release SDK v2.0.1) to inspect firmware memory usage and understand how much Flash and RAM the firmware consumes.</p>
+            <p>Use <code>./build_freertos.sh size &lt;project&gt;</code> (bundled with IPRO SDK V2.1.0) to inspect firmware memory usage and understand how much Flash and RAM the firmware consumes.</p>
 
             <h3>Usage</h3>
             <div class="code-block">
@@ -513,7 +604,7 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
                 <tbody>
                     <tr>
                         <td>Flash</td>
-                        <td>1 MB</td>
+                        <td>Board-dependent (e.g. 2 MB on the IPRO7AI Reef EVK)</td>
                         <td><code>0x13000000</code></td>
                     </tr>
                     <tr>
@@ -533,6 +624,24 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
                     </tr>
                 </tbody>
             </table>
+        </section>
+
+        <!-- ============================================================ -->
+        <section id="ota-package">
+            <h2>OTA Packaging (create_ota.py)</h2>
+            <p><code>tools/create_ota.py</code> packs a combined firmware image into the boot2 OTA format. The input must be the combined image with its boot header, such as <code>chips/ipro7/img_create_iot/whole_img.bin</code> produced by the IntelProCube command-line tool, not the <code>.bin</code> from the SDK build; the script stops if the input has the wrong format.</p>
+            <div class="code-block">
+                <div class="code-block-header">
+                    <span class="code-block-title">Create an OTA Package</span>
+                    <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+                </div>
+                <pre><code class="language-bash"># XZ-compressed by default, writes whole_img.xz.ota
+python3 tools/create_ota.py &lt;IntelProCube&gt;/chips/ipro7/img_create_iot/whole_img.bin
+
+# Uncompressed, with an explicit output file
+python3 tools/create_ota.py whole_img.bin --raw -o firmware.ota</code></pre>
+            </div>
+            <p><code>--fw-ver</code> sets the firmware version string written to the OTA header.</p>
         </section>
 
         <!-- ============================================================ -->
@@ -565,7 +674,7 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
             </table>
 
             <h3>Bundled CMake</h3>
-            <p>V2.0.1 includes a Linux x86-64 CMake under <code>tools/cmake/</code>; it is not a macOS executable. Install CMake 3.19+ for macOS (for example, <code>brew install cmake</code>) and put it on PATH. <code>project.build</code> prefers system CMake on POSIX hosts.</p>
+            <p>V2.1.0 includes a Linux x86-64 CMake under <code>tools/cmake/</code>; it is not a macOS executable. Install CMake 3.19+ for macOS (for example, <code>brew install cmake</code>) and put it on PATH. <code>project.build</code> prefers system CMake on POSIX hosts.</p>
 
             <h3>Common Issues and Solutions</h3>
             <table>
@@ -585,7 +694,7 @@ cat backtrace.txt | python3 tools/parse_backtrace.py \
                     <tr>
                         <td>Incomplete <code>cat</code> output</td>
                         <td>macOS buffering issues</td>
-                        <td>Use an external serial terminal or the extension monitor</td>
+                        <td>Use <code>tools/serial_monitor.py</code>, an external serial terminal or the extension monitor</td>
                     </tr>
                     <tr>
                         <td>"Resource busy" error</td>
@@ -617,7 +726,7 @@ fd = os.open("/dev/cu.usbserial-XXXX", os.O_RDWR | os.O_NOCTTY | os.O_NONBLOCK)<
         <section id="dev-workflow">
             <h2>Development Workflow</h2><pre><code class="language-bash">./build_freertos.sh -l
 ./build_freertos.sh clean build ipro_ble_remote
-./build_freertos.sh size ipro_ble_remote</code></pre>            <p>After building, flash with the separately installed IntelPro tool and inspect the serial output with a terminal. In VS Code use <code>IPRO: Build</code>, <code>IPRO: Flash</code> and <code>IPRO: Serial Monitor</code> after verifying the active SDK and tool paths.</p>
+./build_freertos.sh size ipro_ble_remote</code></pre>            <p>After building, flash with the separately obtained IntelProCube command-line tool (or <code>./build_freertos.sh flash</code>) and inspect the serial output with <code>tools/serial_monitor.py</code> or a terminal. For Zephyr applications use <code>west</code> and <code>tools/zephyr/</code> instead. In VS Code use <code>IPRO: Build</code>, <code>IPRO: Flash</code> and <code>IPRO: Serial Monitor</code> after verifying the active SDK and tool paths.</p>
             <p>For HAL regression checks, build <code>ipro_unit_test</code> and follow the on-board test instructions above. Record the SDK version, board configuration and actual hardware result.</p>
         </section>
 

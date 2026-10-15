@@ -9,7 +9,7 @@ lang: en
         <nav class="sidebar-nav">
             <h4 class="sidebar-title">Table of Contents</h4>
             <ul class="sidebar-links">
-                <li><a href="#pdm-recording" class="sidebar-link">PDM Recording in V2.0.1</a></li>
+                <li><a href="#pdm-recording" class="sidebar-link">PDM Recording</a></li>
 
                 <li><a href="#overview" class="sidebar-link">Overview</a></li>
                 <li><a href="#le-audio-pipeline" class="sidebar-link">LE Audio Pipeline</a></li>
@@ -19,6 +19,7 @@ lang: en
                 <li><a href="#usb-audio" class="sidebar-link">USB Audio (UAC)</a></li>
                 <li><a href="#camera-video" class="sidebar-link">Camera & Video</a></li>
                 <li><a href="#audio-hardware" class="sidebar-link">Audio Hardware</a></li>
+                <li><a href="#reef-demo" class="sidebar-link">IPRO7AI Reef EVK</a></li>
                 <li><a href="#reference-apps" class="sidebar-link">Reference Applications</a></li>
             </ul>
         </nav>
@@ -320,7 +321,7 @@ bsp/hal/inc/
         <section id="broadcast-audio">
             <h2>Broadcast Audio (BIS)</h2>
             <p>The Zephyr 4.4 host provides <code>bt_bap_broadcast_source_*</code> and <code>bt_bap_broadcast_sink_*</code> APIs in <code>zephyr/bluetooth/audio/bap.h</code>. Use the <code>bt54_iso2</code> controller profile and enable the required BAP role in your application configuration.</p>
-            <div class="alert alert-info">Standalone BIS source/sink reference applications are not bundled with V2.0.1; contact INTELPRO for complete examples. The bundled headset is the unicast reference.</div>
+            <div class="alert alert-info">The V2.1.0 FreeRTOS applications do not include standalone BIS source/sink references; the bundled headset is the unicast reference. The Zephyr samples <code>zephyr/samples/bap_broadcast_source</code> (an LC3 broadcast from the IPRO7 EVB) and <code>zephyr/samples/bap_broadcast_sink</code> (received and played on the IPRO7AI EVK speaker) are the broadcast references; see <a href="{{ '/en/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>.</div>
         </section>
 
         <section id="audio-profiles">
@@ -396,11 +397,10 @@ bsp/hal/inc/
                 <li><strong>Bitrate</strong>: 16 - 320 kbps (common LE Audio presets are 16 - 124 kbps per channel)</li>
                 <li><strong>Frame Duration</strong>: 7.5ms or 10ms per the LE Audio standard; the bundled liblc3 additionally supports 2.5ms and 5ms</li>
                 <li><strong>Channels</strong>: Mono, Stereo</li>
-                <li><strong>Advantage</strong>: Matches SBC 328 kbps quality at just 160 kbps</li>
             </ul>
 
             <div class="alert alert-info">
-                <strong>Opus:</strong> The package includes <code>components/3rdparty/opus</code> for application audio codecs. LE Audio ISO streams use LC3; the earlier voice-assistant example is not included in V2.0.1.
+                <strong>Opus:</strong> The package includes <code>components/3rdparty/opus</code> for application audio codecs. LE Audio ISO streams use LC3.
             </div>
         </section>
 
@@ -550,6 +550,7 @@ int app_uac_init(const app_uac_config_t *config)
 │   └── src/                # ISP driver implementation
 ├── isp_iq_param/           # Sensor IQ tuning parameters
 │   └── sc101iot/           # SC101IoT sensor parameters
+├── sensor/                 # Camera sensor drivers (SC101IOT, OV5640, OV2640, ...)
 └── cherryusb/class/video/  # USB Video Class (UVC)
     ├── usbd_video.c        # UVC device-side driver
     └── usbh_video.c        # UVC host-side driver
@@ -578,7 +579,24 @@ bsp/hal/inc/
 └── stream_control.c        # Stream control</code></pre>
             </div>
 
-            <p>For BLE image transfer, refer to <code>apps/bluetooth/ble/ipro_ble_remote/</code>. The separate image-capture application is not bundled with V2.0.1.</p>
+            <p>For BLE image transfer, refer to <code>apps/bluetooth/ble/ipro_ble_remote/</code>.</p>
+
+            <h3>USB Webcam (ipro7_uvc_cam)</h3>
+            <p><code>apps/multimedia/ipro7_uvc_cam</code> turns the board into a USB webcam: DVP sensor → ISP → hardware MJPEG encoder → USB UVC stream. The device enumerates as a plain UVC camera and streams continuously once the host opens the stream.</p>
+            <div class="table-wrapper">
+                <table>
+                <thead><tr><th>Configuration</th><th>Board and sensor</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td><code>.config</code> (default)</td><td>IPRO7 EVB + SC101IOT</td><td>USB webcam</td></tr>
+                    <tr><td><code>defconfig_reef_ov5640</code></td><td>IPRO7AI Reef EVK + OV5640</td><td>USB webcam</td></tr>
+                    <tr><td><code>defconfig_reef_rps</code></td><td>IPRO7AI Reef EVK + OV5640</td><td>Adds rock-paper-scissors against the NPU, drawn into the frames the host receives</td></tr>
+                </tbody>
+                </table>
+            </div>
+            <pre><code class="language-bash">make -C apps/multimedia/ipro7_uvc_cam
+make -C apps/multimedia/ipro7_uvc_cam DEFCONFIG=defconfig_reef_ov5640   # output in build_reef_ov5640/build_out/
+make -C apps/multimedia/ipro7_uvc_cam DEFCONFIG=defconfig_reef_rps</code></pre>
+            <p>For the IPRO7AI Reef EVK camera shell commands and the RTSP stream over Wi-Fi, see <a href="#reef-demo">IPRO7AI Reef EVK</a> below.</p>
         </section>
 
         <section id="audio-hardware">
@@ -669,6 +687,35 @@ audio_output_destroy(out);</code></pre>
             </div>
         </section>
 
+        <section id="reef-demo">
+            <h2>IPRO7AI Reef EVK Audio and Camera</h2>
+            <p><code>apps/platform/ipro7ai_reef_demo</code> is the out-of-box firmware for the IPRO7AI Reef EVK, with one set of shell commands per block on the board. The Reef has no LCD, so the camera stream is checked from the shell. The console is on connector U6 at 115200 baud.</p>
+            <div class="table-wrapper">
+                <table>
+                <thead><tr><th>Block</th><th>Shell command</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td>RGB LED (WS2812)</td><td><code>led</code></td><td>Set a colour or a rainbow effect</td></tr>
+                    <tr><td>Keys</td><td><code>btn</code></td><td>Read key states and press / release events</td></tr>
+                    <tr><td>Speaker and headphone</td><td><code>spk</code>, <code>hp</code></td><td>Test tone from the DAC to the speaker or the headphone jack; <code>hp</code> reads headphone detect</td></tr>
+                    <tr><td>Audio input</td><td><code>mic</code></td><td>PDM microphone, headset microphone or AUX-IN: record at 16 kHz into PSRAM (up to 10 s) and play back, or monitor live</td></tr>
+                    <tr><td>SD card</td><td><code>sd</code></td><td>FatFS mount, directory listing and read / write test</td></tr>
+                    <tr><td>Camera</td><td><code>cam</code></td><td>OV5640 / OV2640 modules, YUV422 720p through the ISP; frame and error counters, ASCII thumbnail and colour-bar test</td></tr>
+                </tbody>
+                </table>
+            </div>
+            <pre><code class="language-bash">make -C apps/platform/ipro7ai_reef_demo
+make -C apps/platform/ipro7ai_reef_demo DEFCONFIG=defconfig_wifi_ipro6s   # adds Wi-Fi and RTSP, output in build_wifi_ipro6s/build_out/</code></pre>
+            <p>After boot, <code>reef selftest</code> checks the LED, a speaker test tone, SD card detect and the camera in turn. The Reef has 2 MB flash: flash it with <code>partition_cfg_2M.toml</code> and <code>--chip-variant IPRO7AI</code>, and fit JP1 before power-up. Pins, power and jumper settings are in the IPRO7AI Reef EVK user guide.</p>
+
+            <h3>Wi-Fi and RTSP Camera Stream</h3>
+            <p>IPRO7 has no built-in Wi-Fi. The <code>defconfig_wifi_ipro6s</code> build connects through an IPRO6S FIN card in the card slot (SDIO) and serves the camera as an RTSP MJPEG stream. The SDK ships the host side: <code>components/network/ipronet_host</code> (SDIO network interface) and <code>components/network/rtsp_server</code>. With JP3 set to 2-3, <code>fin cycle</code> power-cycles the FIN card.</p>
+            <pre><code class="language-text">ipronet_up &lt;ssid&gt; &lt;psk&gt;     start the FIN card and join the AP
+rtsp_cam on                  start streaming: rtsp://&lt;ip&gt;:8554/av0_0
+rtsp_cam stats               stream statistics
+rtsp_cam off                 stop streaming</code></pre>
+            <div class="alert alert-info">The firmware for the IPRO6S FIN card itself is not included in V2.1.0; contact INTELPRO.</div>
+        </section>
+
         <section id="reference-apps">
             <h2>Reference Applications</h2>
             <div class="table-wrapper">
@@ -679,13 +726,20 @@ audio_output_destroy(out);</code></pre>
                     <tr><td><code>ipro_pdm_mic_demo</code></td><td>PDM microphone capture, BLE transfer and LC3 compression</td></tr>
                     <tr><td><code>ipro7_demo</code></td><td>Peripheral, imaging, audio and Ethernet demo</td></tr>
                     <tr><td><code>ipro7ai_evk_demo</code></td><td>IPRO7AI EVK display, camera, audio and AI / BLE configurations</td></tr>
+                    <tr><td><code>ipro7ai_evk_launcher</code></td><td>IPRO7AI EVK camera, LCD, microphone and speaker in one image; pages switched by hand gestures recognised on the NPU</td></tr>
+                    <tr><td><code>ipro7ai_reef_demo</code></td><td>Shell commands for each IPRO7AI Reef EVK block; <code>defconfig_wifi_ipro6s</code> adds Wi-Fi and an RTSP camera stream</td></tr>
+                    <tr><td><code>ipro7_uvc_cam</code></td><td>USB UVC webcam (ISP + hardware MJPEG), IPRO7 EVB and IPRO7AI Reef EVK configurations</td></tr>
                 </tbody>
                 </table>
             </div>
             <pre><code class="language-bash">./build_freertos.sh ipro_le_audio_headset build
 ./build_freertos.sh ipro_pdm_mic_demo build
 ./build_freertos.sh ipro7_demo build
-./build_freertos.sh ipro7ai_evk_demo build</code></pre>
+./build_freertos.sh ipro7ai_evk_demo build
+./build_freertos.sh ipro7ai_evk_launcher build
+./build_freertos.sh ipro7ai_reef_demo build
+./build_freertos.sh ipro7_uvc_cam build
+./build_freertos.sh -d defconfig_reef_ov5640 ipro7_uvc_cam build</code></pre>
             <div class="table-wrapper">
                 <table>
                 <thead><tr><th>LIB</th><th>ACL</th><th>Roles</th></tr></thead>
@@ -698,11 +752,11 @@ audio_output_destroy(out);</code></pre>
                 </table>
             </div>
             <p>Choose <code>CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"</code> for basic BLE or <code>"bt54_iso2"</code> for BLE 5.4 with two ISO streams (CIS/BIS). The latter requires <code>CONFIG_EM_SIZE</code> of at least 32 KB. Keep the host connection limit within controller capacity; preserve each shipped application configuration.</p>
-            <div class="alert alert-info">Standalone BIS source/sink, cloud audio gateway and voice-assistant applications from earlier releases are not included in V2.0.1.</div>
+            <div class="alert alert-info">The V2.1.0 FreeRTOS applications do not include standalone BIS source/sink applications; for the Zephyr broadcast samples see <a href="#broadcast-audio">Broadcast Audio</a> above.</div>
         </section>
         <section id="pdm-recording">
-            <h2>PDM Recording in V2.0.1</h2>
-            <p>PDM capture at 16 kHz / 16-bit mono, optional LC3 streaming, persistent SMP bonding and PDS31 reconnect. V2.0.1 adds logical recordings up to 4 hours. The physical PSRAM ring retains 240 seconds; retrieve each 30-second segment using <code>CHUNK_READY</code> / <code>GET_CHUNK</code>. <code>GET_AUDIO</code> returns only the last 240 seconds after wrap.</p>
+            <h2>PDM Recording</h2>
+            <p>PDM capture at 16 kHz / 16-bit mono, optional LC3 streaming, persistent SMP bonding and PDS31 reconnect. Since V2.0.1, logical recordings can last up to 4 hours. The physical PSRAM ring retains 240 seconds; retrieve each 30-second segment using <code>CHUNK_READY</code> / <code>GET_CHUNK</code>. <code>GET_AUDIO</code> returns only the last 240 seconds after wrap.</p>
             <p>Use the shipped <code>link2 / bt52</code>, 16 KB EM configuration. <code>CONFIG_BT_CONN=1</code> remains the host limit; the controller archive has two-link capacity. Copy the complete board configuration instead of forcing these two values to match.</p><pre><code class="language-bash">make -C apps/multimedia/ipro_pdm_mic_demo
 make -C apps/multimedia/ipro_pdm_mic_demo BOARD=evk</code></pre>            <p>EVB output uses <code>build/build_out/</code>; EVK output uses <code>build_config_evk/build_out/</code>. Both produce <code>ipro_pdm_mic_demo_IPRO7.bin</code>. Android source: <code>tools/android/IproMicDemo/</code>; matching APK and test firmware: <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1 Release</a>.</p>
         </section>

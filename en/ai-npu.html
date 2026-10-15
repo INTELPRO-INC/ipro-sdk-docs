@@ -24,12 +24,12 @@ lang: en
 
     <article class="doc-content">
         <h1>AI & NPU</h1>
-        <div class="alert alert-info" style="margin-bottom: 2rem;">V2.0.1 includes the prebuilt AI runtime <code>components/ai/lib/libai.a</code>, public headers, example sources and selected <code>.inm</code> / <code>.tflite</code> models. AI runtime implementation sources and model conversion tools are separate. Choose a model supported by the example; changing its extension does not convert it.</div>
-        <p>The IPRO7 NPU accelerates edge inference. The following sections describe model formats and integration using the IPROAI and TFLite Micro examples actually included in V2.0.1.</p>
+        <div class="alert alert-info" style="margin-bottom: 2rem;">V2.1.0 includes the prebuilt AI runtime <code>components/ai/lib/libai.a</code>, public headers, example sources, selected <code>.inm</code> / <code>.tflite</code> models and the model training scripts of <code>ipro7ai_evk_rps</code>. AI runtime implementation sources and model conversion tools are separate. Choose a model supported by the example; changing its extension does not convert it.</div>
+        <p>The IPRO7 NPU accelerates edge inference. The following sections describe model formats and integration using the IPROAI and TFLite Micro examples actually included in V2.1.0.</p>
 
         <section id="overview">
 <h2>AI in This Release</h2>
-<p>This chapter covers bundled IPRO7 models and examples for person/pet detection, speech and inference benchmarks. Reproduce an example with its matching model before changing input processing or post-processing.</p>
+<p>This chapter covers bundled IPRO7 models and examples for person/pet detection, gesture classification (rock-paper-scissors), speech and inference benchmarks, plus the IPRO7AI EVK camera + LCD examples and the board firmware for IPRO AI Studio. Reproduce an example with its matching model before changing input processing or post-processing.</p>
         </section>
 
         <section id="architecture">
@@ -39,8 +39,10 @@ lang: en
 
         <section id="model-pipeline">
             <h2>Model Deployment</h2>
-            <p>Start with a bundled model and its matching application. NPU examples use IPROAI <code>.inm</code> binaries; TensorFlow Lite Micro examples execute <code>.tflite</code> models on the CPU. Training and model conversion tools are not bundled.</p>
+            <p>Start with a bundled model and its matching application. NPU examples use IPROAI <code>.inm</code> binaries; TensorFlow Lite Micro examples execute <code>.tflite</code> models on the CPU. Model conversion tools are not bundled; <code>ipro7ai_evk_rps</code> includes the training scripts for its classifier (<code>train/</code>).</p>
             <p><code>ipro_npu_yolo</code> embeds <code>src/person_pet_detect.inm</code> through <code>model_inm.S</code>. <code>ipro_meeting_poc</code> defaults to loading a model from the <code>mfg</code> flash partition. Provision that model separately using the application README and the matching flash tool / partition layout; copying it onto an arbitrary filesystem is insufficient.</p>
+            <p><code>ipro7ai_evk_rps</code> links <code>model/rps_v3.inm</code> into the firmware through <code>src/model_blob.S</code> by default (<code>CONFIG_RPS_EMBED_MODEL=y</code>). <code>ipro7ai_evk_person_detect</code> and <code>ipro7ai_evk_launcher</code> keep their models in the <code>mfg</code> partition, written by the <code>flash.sh</code> in the application directory: <code>--full</code> writes the partition table, firmware and model; <code>--model</code> replaces only the model.</p>
+            <p><code>libai.a</code> can also load models from the SD card: <code>iproai_load_model_from_file()</code> reads a whole <code>.inm</code> into PSRAM through FatFS, using <code>sd:/</code> paths (for example <code>sd:/models/person.inm</code>). The application sets <code>CONFIG_AI_MODEL_FROM_FILE=y</code> and mounts the card first; <code>ipro_ai_link</code>, <code>ipro_ai_bench</code> and the detection page of <code>ipro7ai_evk_launcher</code> use this path.</p>
             <p>For custom models, obtain a compatible converter from INTELPRO and verify operators, tensor dimensions, quantization and memory requirements before deployment.</p>
         </section>
 
@@ -78,6 +80,9 @@ iproai_model_hdl_t iproai_create(void);
 /* Load the matching .inm model from a memory buffer */
 IPROAI_Status_e iproai_load_model_from_buffer(iproai_model_hdl_t hdl, const uint8_t *buffer);
 
+/* Load an .inm model from a file through FatFS (e.g. "sd:/model.inm") */
+IPROAI_Status_e iproai_load_model_from_file(iproai_model_hdl_t hdl, const char *name);
+
 /* Get model input resolution */
 IPROAI_Status_e iproai_getInputResolution(iproai_model_hdl_t hdl, uint32_t *width, uint32_t *height);
 
@@ -102,7 +107,7 @@ IPROAI_Status_e iproai_setResultCB(iproai_model_hdl_t hdl, iproai_inference_cb c
 /* Free model resources */
 IPROAI_Status_e iproai_free(iproai_model_hdl_t hdl);</code></pre>
             </div>
-            <p>The examples load the model using filesystem APIs, then pass its buffer to <code>iproai_load_model_from_buffer()</code>. Use the matching bundled model and verify the application's loading path.</p>
+            <p>The examples load the model using filesystem APIs, then pass its buffer to <code>iproai_load_model_from_buffer()</code>; a model on the SD card can also be loaded directly with <code>iproai_load_model_from_file()</code>. Use the matching bundled model and verify the application's loading path.</p>
 
             <h3>Kconfig Options</h3>
 
@@ -112,20 +117,25 @@ IPROAI_Status_e iproai_free(iproai_model_hdl_t hdl);</code></pre>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-ini">CONFIG_AI_SUPPORT=y
-CONFIG_USE_PSRAM=y</code></pre>            <p>The release component CMake file links <code>components/ai/lib/libai.a</code> directly. No separate PREBUILT path setting is required. Library-internal options cannot be changed by application configuration; use a compatible library supplied by INTELPRO.</p>
+CONFIG_USE_PSRAM=y
+# Additionally, for applications that load models from the SD card
+# (with FatFS and the SD card driver enabled)
+CONFIG_AI_MODEL_FROM_FILE=y</code></pre>            <p>The release component CMake file links <code>components/ai/lib/libai.a</code> directly. No separate PREBUILT path setting is required. Library-internal options cannot be changed by application configuration; use a compatible library supplied by INTELPRO.</p>
             </div>
         </section>
 
         <section id="supported-models">
             <h2>Bundled Models</h2>
-            <p>V2.0.1 includes the models below: NPU examples use <code>.inm</code>, while TensorFlow Lite Micro uses <code>.tflite</code>. Select the model and loading method expected by the matching example.</p>
+            <p>V2.1.0 includes the models below: NPU examples use <code>.inm</code>, while TensorFlow Lite Micro uses <code>.tflite</code>. Select the model and loading method expected by the matching example.</p>
             <div class="table-wrapper"><table><thead><tr><th>Directory</th><th>Files</th></tr></thead><tbody>
 <tr><td><code>apps/platform/ipro7_demo/demo/ai/ai_model/</code></td><td><code>person_detect.inm</code>, <code>person_pet_detect.inm</code>, <code>res2dnet.inm</code>, <code>mbv2.inm</code></td></tr>
 <tr><td><code>apps/test/ipro_npu_yolo/src/</code></td><td><code>person_pet_detect.inm</code></td></tr>
 <tr><td><code>apps/test/ipro_tflm_test/src/</code></td><td><code>hello_world.tflite</code>, <code>person_detect.tflite</code>, <code>micro_speech.tflite</code>, <code>keyword_scrambled.tflite</code></td></tr>
 <tr><td><code>apps/test/ipro_tflm_yolo/src/</code></td><td><code>yolov8_person_pet.tflite</code></td></tr>
+<tr><td><code>apps/ai/ipro7ai_evk_rps/model/</code></td><td><code>rps_v3.inm</code>, <code>rps_v1.inm</code>, <code>rps_v3_int8.tflite</code>, <code>rps_v1_int8.tflite</code></td></tr>
 </tbody></table></div>
             <p>Speaker recognition source is in <code>apps/ai/ipro_meeting_poc/</code>; its model is <code>mbv2.inm</code> in the platform model directory above. Check the selected configuration's model-loading mode before flashing.</p>
+            <p><code>ipro7ai_evk_person_detect</code> and the detection page of <code>ipro7ai_evk_launcher</code> use <code>person_pet_detect.inm</code> from the platform model directory. <code>rps_v3.inm</code> is a 4-class int8 classifier (rock, paper, scissors, no hand) used by <code>ipro7ai_evk_rps</code>, the gesture control of <code>ipro7ai_evk_launcher</code> and <code>defconfig_reef_rps</code> of <code>ipro7_uvc_cam</code>; the <code>.tflite</code> files in the same directory are the int8 models before conversion.</p>
         </section>
 
         <section id="reference-apps">
@@ -140,24 +150,44 @@ CONFIG_USE_PSRAM=y</code></pre>            <p>The release component CMake file l
 <tr><td><code>apps/test/ipro_tinymaix_demo/</code></td><td>TinyMaix</td></tr>
 <tr><td><code>apps/platform/ipro7_demo/</code></td><td>AI / ISP / peripherals</td></tr>
 <tr><td><code>apps/platform/ipro7ai_evk_demo/</code></td><td>IPRO7AI EVK: <code>config_ai</code> / <code>config_bt</code> / <code>config_video</code></td></tr>
+<tr><td><code>apps/ai/ipro7ai_evk_person_detect/</code></td><td>IPRO7AI EVK: camera preview on the LCD with YOLOv8 person / pet boxes</td></tr>
+<tr><td><code>apps/ai/ipro7ai_evk_rps/</code></td><td>IPRO7AI EVK: rock-paper-scissors against a 4-class int8 CNN on the NPU; model and training scripts included</td></tr>
+<tr><td><code>apps/platform/ipro7ai_evk_launcher/</code></td><td>IPRO7AI EVK: camera, LCD, microphone and speaker in one image; pages switched by hand gestures recognised on the NPU</td></tr>
+<tr><td><code>apps/test/ipro_ai_link/</code></td><td>Board firmware for IPRO AI Studio "Run on board": models and inputs from the SD card <code>sd:/</code>, outputs back over USB</td></tr>
+<tr><td><code>apps/multimedia/ipro7_uvc_cam/</code></td><td><code>defconfig_reef_rps</code>: USB webcam with rock-paper-scissors on the IPRO7AI Reef EVK</td></tr>
 </tbody></table></div><pre><code class="language-bash">make -C apps/test/ipro_npu_yolo
 make -C apps/test/ipro_tflm_test
-make -C apps/ai/ipro_meeting_poc</code></pre>            <p>Use <code>DEFCONFIG=config_ai</code> to select the EVK AI configuration without overwriting <code>.config</code>. Verify its expected model path, board peripherals and PSRAM configuration.</p>
+make -C apps/ai/ipro_meeting_poc
+make -C apps/ai/ipro7ai_evk_person_detect
+make -C apps/ai/ipro7ai_evk_rps
+make -C apps/platform/ipro7ai_evk_launcher
+make -C apps/test/ipro_ai_link</code></pre>            <p>Use <code>DEFCONFIG=config_ai</code> to select the EVK AI configuration without overwriting <code>.config</code>. Verify its expected model path, board peripherals and PSRAM configuration.</p>
+            <p><code>ipro7ai_evk_person_detect</code>, <code>ipro7ai_evk_rps</code> and <code>ipro7ai_evk_launcher</code> include a <code>flash.sh</code> that calls the separately obtained IntelProCube v0.6.3 command-line tool (<code>IPRO_FLASH_TOOL</code> or PATH). Flashing the IPRO7AI EVK requires flash pin 0x9; wiring, console baud rate and flashing steps are in each application's README.</p>
+
+            <h3>IPRO AI Studio Run on Board (ipro_ai_link)</h3>
+            <p><code>apps/test/ipro_ai_link</code> is the board firmware behind IPRO AI Studio "Run on board". Flash it once; changing models and test data, running inference and collecting results are then driven from the host without reflashing. Models and inputs are read from the SD card (FatFS path <code>sd:/</code>) and the raw inference output is sent back to the host over USB. The default configuration targets the IPRO7 EVB; <code>DEFCONFIG=defconfig_reef</code> targets the IPRO7AI Reef EVK. IPRO AI Studio itself is not part of the SDK package.</p>
+            <pre><code class="language-text">ai_mount                  mount the SD card
+ai_ls [dir]               list files
+ai_load  sd:/model.inm    load a model
+ai_input sd:/input.bin    load input data
+ai_run   [reps]           run inference
+ai_out   [max_bytes]      print the inference output
+ai_info                   show model information</code></pre>
         </section>
 
         <section id="dev-guide">
 <h2>Integration and Memory Planning</h2>
-<p>For native model integration, start with <code>person_pet_detect.inm</code> and <code>model_inm.S</code> in <code>apps/test/ipro_npu_yolo/</code>. For file-based loading, see <code>apps/platform/ipro7_demo/demo/ai/</code>. Preserve the example’s clock, PSRAM, image format and post-processing configuration.</p><p>Check results from <code>iproai_create()</code>, <code>iproai_load_model_from_buffer()</code> and <code>iproai_startCompute()</code>. Release allocated models and application buffers on failure. Keep external image buffers valid until inference completes and follow the example’s format and cache synchronization requirements.</p><p>Budget for weights, intermediate tensors, input images, post-processing and other tasks. Measure free heap before/after loading and during repeated inference; a fixed bytes-per-pixel formula is not valid for all models. Reusing a model after sleep also requires verifying PSRAM retention and NPU restoration for that mode.</p>
+<p>For native model integration, start with <code>person_pet_detect.inm</code> and <code>model_inm.S</code> in <code>apps/test/ipro_npu_yolo/</code>. For file-based loading, see <code>apps/platform/ipro7_demo/demo/ai/</code>. Preserve the example’s clock, PSRAM, image format and post-processing configuration.</p><p>For the IPRO7AI EVK camera → ISP → NPU feed, see <code>components/board/ipro7ai_evk</code> and <code>ipro7ai_evk_person_detect</code>: only one frame is handed to the NPU at a time, so the ISP never overwrites a buffer under inference.</p><p>Check results from <code>iproai_create()</code>, <code>iproai_load_model_from_buffer()</code> and <code>iproai_startCompute()</code>. Release allocated models and application buffers on failure. Keep external image buffers valid until inference completes and follow the example’s format and cache synchronization requirements.</p><p>Budget for weights, intermediate tensors, input images, post-processing and other tasks. Measure free heap before/after loading and during repeated inference; a fixed bytes-per-pixel formula is not valid for all models. Reusing a model after sleep also requires verifying PSRAM retention and NPU restoration for that mode.</p>
         </section>
 
         <section id="performance">
 <h2>Performance Measurement and Debugging</h2>
-<p>Use <code>apps/test/ipro_ai_bench/</code>, <code>ipro_npu_yolo</code> or the TFLite test examples. Record the model file, input dimensions, CPU clock, build configuration, heap use and repeated inference timings. Measure preprocessing, inference and post-processing separately; per-layer timings do not represent end-to-end latency.</p><p>Detection thresholds, NMS limits and input format are model/example settings, not fixed NPU specifications. After changing resolution or models, recheck output correctness, peak memory use and sustained operation.</p><p>This release links prebuilt <code>libai.a</code>. Application <code>.config</code> settings cannot rebuild profiling or debug features inside that archive. Use the output available in the example and obtain a matching diagnostic library when additional detail is needed.</p>
+<p>Use <code>apps/test/ipro_ai_bench/</code>, <code>ipro_npu_yolo</code> or the TFLite test examples. Record the model file, input dimensions, CPU clock, build configuration, heap use and repeated inference timings. Measure preprocessing, inference and post-processing separately; per-layer timings do not represent end-to-end latency. With <code>CONFIG_AI_MODEL_FROM_FILE</code> enabled, <code>ipro_ai_bench</code> also provides <code>bench_file &lt;path&gt; &lt;w&gt; &lt;h&gt; &lt;c&gt;</code> to time a model on a mounted SD card.</p><p>Detection thresholds, NMS limits and input format are model/example settings, not fixed NPU specifications. After changing resolution or models, recheck output correctness, peak memory use and sustained operation.</p><p>This release links prebuilt <code>libai.a</code>. Application <code>.config</code> settings cannot rebuild profiling or debug features inside that archive. Use the output available in the example and obtain a matching diagnostic library when additional detail is needed.</p>
         </section>
 
         <section id="cloud-llm">
             <h2>Cloud AI Availability</h2>
-            <p><code>components/ai_client/</code> and cloud-agent reference applications are not included in V2.0.1. Contact INTELPRO for availability. For released on-device inference, use the NPU and TFLM examples above. Network clients can build on the bundled lwIP and mbedTLS components.</p>
+            <p><code>components/ai_client/</code> and cloud-agent reference applications are not included in V2.1.0. Contact INTELPRO for availability. For released on-device inference, use the NPU and TFLM examples above. Network clients can build on the bundled lwIP and mbedTLS components.</p>
         </section>
     </article>
 </div>

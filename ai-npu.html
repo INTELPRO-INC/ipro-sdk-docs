@@ -15,20 +15,20 @@ title: AI 與 NPU
                 <li><a href="#supported-models" class="sidebar-link">支援模型</a></li>
                 <li><a href="#reference-apps" class="sidebar-link">參考應用</a></li>
                 <li><a href="#dev-guide" class="sidebar-link">開發指南</a></li>
-                <li><a href="#performance" class="sidebar-link">效能與優化</a></li>
+                <li><a href="#performance" class="sidebar-link">效能與最佳化</a></li>
                 <li><a href="#cloud-llm" class="sidebar-link">雲端整合範圍</a></li>
             </ul>
         </nav>
     </aside>
 
     <article class="doc-content">
-        <div class="alert alert-info" style="margin-bottom: 2rem;">V2.0.1 包含預編譯 AI 執行庫 <code>components/ai/lib/libai.a</code>、公開標頭、範例原始碼及部分 <code>.inm</code>／<code>.tflite</code> 模型。AI 執行庫實作與模型轉換工具需另行取得；請選用範例支援的模型，改副檔名不等於轉換格式。</div>
+        <div class="alert alert-info" style="margin-bottom: 2rem;">V2.1.0 包含預編譯 AI 執行庫 <code>components/ai/lib/libai.a</code>、公開標頭、範例原始碼、部分 <code>.inm</code>／<code>.tflite</code> 模型，以及 <code>ipro7ai_evk_rps</code> 的模型訓練腳本。AI 執行庫實作與模型轉換工具需另行取得；請選用範例支援的模型，改副檔名不等於轉換格式。</div>
         <h1>AI 與 NPU</h1>
-        <p>IPRO7 的 NPU 提供邊緣推論加速；以下依 V2.0.1 實際附帶的 IPROAI 與 TFLite Micro 範例說明模型格式及整合方式。</p>
+        <p>IPRO7 的 NPU 提供邊緣推論加速；以下依 V2.1.0 實際附帶的 IPROAI 與 TFLite Micro 範例說明模型格式及整合方式。</p>
 
         <section id="overview">
 <h2>本版 AI 功能</h2>
-<p>本章以 IPRO7 的已附模型與範例為主，包含人物／寵物辨識、語音及推論效能測試。先使用範例所搭配的模型建立可重現結果，再調整輸入與後處理。</p>
+<p>本章以 IPRO7 的已附模型與範例為主，包含人物／寵物辨識、手勢分類（剪刀石頭布）、語音及推論效能測試，以及 IPRO7AI EVK 的攝影機＋LCD 範例與 IPRO AI Studio 的板端韌體。先使用範例所搭配的模型建立可重現結果，再調整輸入與後處理。</p>
         </section>
 
         <section id="architecture">
@@ -38,8 +38,10 @@ title: AI 與 NPU
 
         <section id="model-pipeline">
             <h2>模型部署流程</h2>
-            <p>先使用套件內模型及其配套應用。NPU 範例使用 IPROAI <code>.inm</code> 模型；TensorFlow Lite Micro 範例於 CPU 執行 <code>.tflite</code>。套件未附模型訓練及轉換工具。</p>
+            <p>先使用套件內模型及其配套應用。NPU 範例使用 IPROAI <code>.inm</code> 模型；TensorFlow Lite Micro 範例於 CPU 執行 <code>.tflite</code>。套件未附模型轉換工具；<code>ipro7ai_evk_rps</code> 另附其分類模型的訓練腳本（<code>train/</code>）。</p>
             <p><code>ipro_npu_yolo</code> 由 <code>model_inm.S</code> 將 <code>src/person_pet_detect.inm</code> 嵌入韌體。<code>ipro_meeting_poc</code> 預設從 <code>mfg</code> Flash 分割區載入模型，需依應用 README、相容燒錄工具及分割表另外配置，不能只把模型複製到任意檔案系統。</p>
+            <p><code>ipro7ai_evk_rps</code> 預設以 <code>src/model_blob.S</code> 將 <code>model/rps_v3.inm</code> 連結進韌體（<code>CONFIG_RPS_EMBED_MODEL=y</code>）。<code>ipro7ai_evk_person_detect</code> 與 <code>ipro7ai_evk_launcher</code> 的模型放在 <code>mfg</code> 分割區，由應用目錄內的 <code>flash.sh</code> 寫入：<code>--full</code> 寫入分割表、韌體與模型，<code>--model</code> 只更換模型。</p>
+            <p><code>libai.a</code> 也可從 SD 卡載入模型：<code>iproai_load_model_from_file()</code> 以 FatFS 將整個 <code>.inm</code> 讀入 PSRAM，路徑使用 <code>sd:/</code>（例如 <code>sd:/models/person.inm</code>）。應用需設定 <code>CONFIG_AI_MODEL_FROM_FILE=y</code> 並先掛載卡片；<code>ipro_ai_link</code>、<code>ipro_ai_bench</code> 與 <code>ipro7ai_evk_launcher</code> 的偵測頁使用此方式。</p>
             <p>自訂模型請向 INTELPRO 取得相容轉換工具，部署前確認算子、tensor 維度、量化及記憶體需求。</p>
         </section>
 
@@ -77,6 +79,9 @@ iproai_model_hdl_t iproai_create(void);
 /* 從記憶體緩衝區載入 .inm 模型 */
 IPROAI_Status_e iproai_load_model_from_buffer(iproai_model_hdl_t hdl, const uint8_t *buffer);
 
+/* 以 FatFS 從檔案載入 .inm 模型（例如 "sd:/model.inm"） */
+IPROAI_Status_e iproai_load_model_from_file(iproai_model_hdl_t hdl, const char *name);
+
 /* 取得模型輸入解析度 */
 IPROAI_Status_e iproai_getInputResolution(iproai_model_hdl_t hdl, uint32_t *width, uint32_t *height);
 
@@ -101,7 +106,7 @@ IPROAI_Status_e iproai_setResultCB(iproai_model_hdl_t hdl, iproai_inference_cb c
 /* 釋放模型資源 */
 IPROAI_Status_e iproai_free(iproai_model_hdl_t hdl);</code></pre>
             </div>
-            <p>使用檔案載入的範例先將模型讀入記憶體，再交由 <code>iproai_load_model_from_buffer()</code> 載入。請使用隨附的配套模型，並確認應用預期的載入路徑。</p>
+            <p>使用檔案載入的範例先將模型讀入記憶體，再交由 <code>iproai_load_model_from_buffer()</code> 載入；SD 卡上的模型也可直接以 <code>iproai_load_model_from_file()</code> 載入。請使用隨附的配套模型，並確認應用預期的載入路徑。</p>
 
             <h3>Kconfig 設定</h3>
 
@@ -111,20 +116,24 @@ IPROAI_Status_e iproai_free(iproai_model_hdl_t hdl);</code></pre>
                     <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
                 </div>
                 <pre><code class="language-ini">CONFIG_AI_SUPPORT=y
-CONFIG_USE_PSRAM=y</code></pre>            <p>Release 元件的 CMake 檔直接連結 <code>components/ai/lib/libai.a</code>，無需另設 PREBUILT 路徑。應用配置無法修改函式庫內部的編譯選項；如需不同配置，請向原廠取得相容函式庫。</p>
+CONFIG_USE_PSRAM=y
+# 由 SD 卡載入模型的應用另需設定（並啟用 FatFS 與 SD 卡驅動）
+CONFIG_AI_MODEL_FROM_FILE=y</code></pre>            <p>Release 元件的 CMake 檔直接連結 <code>components/ai/lib/libai.a</code>，無需另設 PREBUILT 路徑。應用配置無法修改函式庫內部的編譯選項；如需不同配置，請向 INTELPRO 取得相容函式庫。</p>
             </div>
         </section>
 
         <section id="supported-models">
             <h2>隨附模型</h2>
-            <p>V2.0.1 隨附下列模型：NPU 使用 <code>.inm</code>，TensorFlow Lite Micro 使用 <code>.tflite</code>。請依配套範例選取模型與載入方式。</p>
+            <p>V2.1.0 隨附下列模型：NPU 使用 <code>.inm</code>，TensorFlow Lite Micro 使用 <code>.tflite</code>。請依配套範例選取模型與載入方式。</p>
             <div class="table-wrapper"><table><thead><tr><th>目錄</th><th>檔案</th></tr></thead><tbody>
 <tr><td><code>apps/platform/ipro7_demo/demo/ai/ai_model/</code></td><td><code>person_detect.inm</code>, <code>person_pet_detect.inm</code>, <code>res2dnet.inm</code>, <code>mbv2.inm</code></td></tr>
 <tr><td><code>apps/test/ipro_npu_yolo/src/</code></td><td><code>person_pet_detect.inm</code></td></tr>
 <tr><td><code>apps/test/ipro_tflm_test/src/</code></td><td><code>hello_world.tflite</code>, <code>person_detect.tflite</code>, <code>micro_speech.tflite</code>, <code>keyword_scrambled.tflite</code></td></tr>
 <tr><td><code>apps/test/ipro_tflm_yolo/src/</code></td><td><code>yolov8_person_pet.tflite</code></td></tr>
+<tr><td><code>apps/ai/ipro7ai_evk_rps/model/</code></td><td><code>rps_v3.inm</code>, <code>rps_v1.inm</code>, <code>rps_v3_int8.tflite</code>, <code>rps_v1_int8.tflite</code></td></tr>
 </tbody></table></div>
             <p>語者辨識原始碼位於 <code>apps/ai/ipro_meeting_poc/</code>，模型為上述 platform 模型目錄內的 <code>mbv2.inm</code>。燒錄前確認所選配置的模型載入模式。</p>
+            <p><code>ipro7ai_evk_person_detect</code> 與 <code>ipro7ai_evk_launcher</code> 的偵測頁使用 platform 模型目錄內的 <code>person_pet_detect.inm</code>。<code>rps_v3.inm</code> 是石頭、布、剪刀與無手勢四類的 int8 分類模型，供 <code>ipro7ai_evk_rps</code>、<code>ipro7ai_evk_launcher</code> 的手勢操作及 <code>ipro7_uvc_cam</code> 的 <code>defconfig_reef_rps</code> 使用；同目錄的 <code>.tflite</code> 為轉換前的 int8 模型。</p>
         </section>
 
         <section id="reference-apps">
@@ -139,24 +148,44 @@ CONFIG_USE_PSRAM=y</code></pre>            <p>Release 元件的 CMake 檔直接�
 <tr><td><code>apps/test/ipro_tinymaix_demo/</code></td><td>TinyMaix</td></tr>
 <tr><td><code>apps/platform/ipro7_demo/</code></td><td>AI / ISP / 周邊</td></tr>
 <tr><td><code>apps/platform/ipro7ai_evk_demo/</code></td><td>IPRO7AI EVK: <code>config_ai</code> / <code>config_bt</code> / <code>config_video</code></td></tr>
+<tr><td><code>apps/ai/ipro7ai_evk_person_detect/</code></td><td>IPRO7AI EVK：LCD 攝影機預覽，疊加 YOLOv8 人物／寵物框</td></tr>
+<tr><td><code>apps/ai/ipro7ai_evk_rps/</code></td><td>IPRO7AI EVK：與 NPU 上的四類 int8 CNN 玩剪刀石頭布；附模型與訓練腳本</td></tr>
+<tr><td><code>apps/platform/ipro7ai_evk_launcher/</code></td><td>IPRO7AI EVK：攝影機、LCD、麥克風與喇叭整合於同一映像，以 NPU 辨識的手勢切換頁面</td></tr>
+<tr><td><code>apps/test/ipro_ai_link/</code></td><td>IPRO AI Studio「Run on board」板端韌體：模型與輸入由 SD 卡 <code>sd:/</code> 讀取，輸出經 USB 傳回</td></tr>
+<tr><td><code>apps/multimedia/ipro7_uvc_cam/</code></td><td><code>defconfig_reef_rps</code>：IPRO7AI Reef EVK 的 USB 攝影機加剪刀石頭布</td></tr>
 </tbody></table></div><pre><code class="language-bash">make -C apps/test/ipro_npu_yolo
 make -C apps/test/ipro_tflm_test
-make -C apps/ai/ipro_meeting_poc</code></pre>            <p>EVK AI 配置可用 <code>DEFCONFIG=config_ai</code> 選取，不需覆寫 <code>.config</code>；請確認該配置的模型路徑、板端周邊與 PSRAM 設定。</p>
+make -C apps/ai/ipro_meeting_poc
+make -C apps/ai/ipro7ai_evk_person_detect
+make -C apps/ai/ipro7ai_evk_rps
+make -C apps/platform/ipro7ai_evk_launcher
+make -C apps/test/ipro_ai_link</code></pre>            <p>EVK AI 配置可用 <code>DEFCONFIG=config_ai</code> 選取，不需覆寫 <code>.config</code>；請確認該配置的模型路徑、板端周邊與 PSRAM 設定。</p>
+            <p><code>ipro7ai_evk_person_detect</code>、<code>ipro7ai_evk_rps</code> 與 <code>ipro7ai_evk_launcher</code> 附有 <code>flash.sh</code>，呼叫另行取得的 IntelProCube v0.6.3 命令列工具（<code>IPRO_FLASH_TOOL</code> 或 PATH）。IPRO7AI EVK 的燒錄設定需使用 flash pin 0x9，硬體接線、主控台鮑率與燒錄步驟見各應用 README。</p>
+
+            <h3>IPRO AI Studio 板端執行（ipro_ai_link）</h3>
+            <p><code>apps/test/ipro_ai_link</code> 是 IPRO AI Studio「Run on board」使用的板端韌體。燒錄一次後，更換模型與測試資料、執行推論及取回結果都由主機端下指令，不需重新燒錄。模型與輸入從 SD 卡（FatFS 路徑 <code>sd:/</code>）讀取，推論輸出原樣經 USB 傳回主機。預設配置為 IPRO7 EVB；<code>DEFCONFIG=defconfig_reef</code> 用於 IPRO7AI Reef EVK。IPRO AI Studio 本身不在 SDK 套件內。</p>
+            <pre><code class="language-text">ai_mount                  掛載 SD 卡
+ai_ls [dir]               列出檔案
+ai_load  sd:/model.inm    載入模型
+ai_input sd:/input.bin    載入輸入資料
+ai_run   [reps]           執行推論
+ai_out   [max_bytes]      輸出推論結果
+ai_info                   顯示模型資訊</code></pre>
         </section>
 
         <section id="dev-guide">
 <h2>整合與記憶體規劃</h2>
-<p>以 <code>apps/test/ipro_npu_yolo/</code> 的 <code>person_pet_detect.inm</code> 與 <code>model_inm.S</code> 為原生模型整合起點；需要檔案載入流程時參考 <code>apps/platform/ipro7_demo/demo/ai/</code>。沿用範例的時脈、PSRAM、影像格式與後處理設定。</p><p>檢查 <code>iproai_create()</code>、<code>iproai_load_model_from_buffer()</code> 與 <code>iproai_startCompute()</code> 的結果；失敗時釋放已建立的模型與應用緩衝區。外部影像緩衝區必須在推論結束前保持有效，並符合範例的格式與快取同步要求。</p><p>記憶體預算須包含權重、中間張量、輸入影像、後處理與其他任務。量測載入前後及連續推論時的剩餘 heap；不能用固定的「每像素位元組數」推算所有模型。若要睡眠後重用模型，另驗證所選模式的 PSRAM 保留及 NPU 恢復流程。</p>
+<p>以 <code>apps/test/ipro_npu_yolo/</code> 的 <code>person_pet_detect.inm</code> 與 <code>model_inm.S</code> 為原生模型整合起點；需要檔案載入流程時參考 <code>apps/platform/ipro7_demo/demo/ai/</code>。沿用範例的時脈、PSRAM、影像格式與後處理設定。</p><p>IPRO7AI EVK 的攝影機 → ISP → NPU 餵入可參考 <code>components/board/ipro7ai_evk</code> 與 <code>ipro7ai_evk_person_detect</code>：同一時間只交一張影格給 NPU，避免 ISP 覆寫推論中的緩衝區。</p><p>檢查 <code>iproai_create()</code>、<code>iproai_load_model_from_buffer()</code> 與 <code>iproai_startCompute()</code> 的結果；失敗時釋放已建立的模型與應用緩衝區。外部影像緩衝區必須在推論結束前保持有效，並符合範例的格式與快取同步要求。</p><p>記憶體預算須包含權重、中間張量、輸入影像、後處理與其他任務。量測載入前後及連續推論時的剩餘 heap；不能用固定的「每像素位元組數」推算所有模型。若要睡眠後重用模型，另驗證所選模式的 PSRAM 保留及 NPU 恢復流程。</p>
         </section>
 
         <section id="performance">
 <h2>效能量測與除錯</h2>
-<p>使用 <code>apps/test/ipro_ai_bench/</code>、<code>ipro_npu_yolo</code> 或 TFLite 測試範例，記錄模型檔案、輸入尺寸、CPU 時脈、編譯設定、heap 用量及重複推論時間。分別量測前處理、推論與後處理，避免把單層運算時間當成端到端延遲。</p><p>偵測門檻、NMS 上限與輸入格式都是模型／範例設定，並非 NPU 的固定規格。增加解析度或更換模型後，重新確認輸出正確性、記憶體峰值與長時間穩定性。</p><p>本版連結預編譯 <code>libai.a</code>；應用的 <code>.config</code> 無法重新編譯函式庫內部的 profiling 或 debug 功能。以實際範例輸出為準，需要額外診斷資訊時取得對應的函式庫版本。</p>
+<p>使用 <code>apps/test/ipro_ai_bench/</code>、<code>ipro_npu_yolo</code> 或 TFLite 測試範例，記錄模型檔案、輸入尺寸、CPU 時脈、編譯設定、heap 用量及重複推論時間。分別量測前處理、推論與後處理，避免把單層運算時間當成端到端延遲。啟用 <code>CONFIG_AI_MODEL_FROM_FILE</code> 時，<code>ipro_ai_bench</code> 另提供 <code>bench_file &lt;path&gt; &lt;w&gt; &lt;h&gt; &lt;c&gt;</code>，量測已掛載 SD 卡上的模型。</p><p>偵測門檻、NMS 上限與輸入格式都是模型／範例設定，並非 NPU 的固定規格。增加解析度或更換模型後，重新確認輸出正確性、記憶體峰值與長時間穩定性。</p><p>本版連結預編譯 <code>libai.a</code>；應用的 <code>.config</code> 無法重新編譯函式庫內部的 profiling 或 debug 功能。以實際範例輸出為準，需要額外診斷資訊時取得對應的函式庫版本。</p>
         </section>
 
         <section id="cloud-llm">
             <h2>雲端 AI 交付範圍</h2>
-            <p>V2.0.1 未包含 <code>components/ai_client/</code> 與雲端 agent 參考應用，如有需要請向 INTELPRO 洽詢。已交付的端側推理請使用上述 NPU／TFLM 範例；網路 client 可基於隨附 lwIP 與 mbedTLS 元件開發。</p>
+            <p>V2.1.0 未包含 <code>components/ai_client/</code> 與雲端 agent 參考應用，如有需要請向 INTELPRO 洽詢。已交付的端側推理請使用上述 NPU／TFLM 範例；網路 client 可基於隨附 lwIP 與 mbedTLS 元件開發。</p>
         </section>
     </article>
 </div>

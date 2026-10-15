@@ -123,18 +123,18 @@ cmake -DCROSS_COMPILE=/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf- ...</c
                                 <tr><th>區域</th><th>大小</th><th>位址</th></tr>
                             </thead>
                             <tbody>
-                                <tr><td>Flash</td><td>1 MB</td><td><code>0x13000000</code></td></tr>
+                                <tr><td>Flash</td><td>依板型而定（例：IPRO7AI Reef EVK 為 2 MB）</td><td><code>0x13000000</code></td></tr>
                                 <tr><td>PSRAM</td><td>8 MB</td><td><code>0x1e000000</code></td></tr>
                                 <tr><td>OCRAM</td><td>256 KB</td><td><code>0x11010000</code></td></tr>
                                 <tr><td>HBNRAM</td><td>4 KB</td><td><code>0x20090000</code></td></tr>
                             </tbody>
                         </table>
                     </div>
-                    <p>可以透過以下方式優化：</p>
+                    <p>可以透過以下方式最佳化：</p>
                     <ol>
                         <li>在 <code>.config</code> 中關閉不需要的功能</li>
-                        <li>使用 <code>-Os</code> 優化等級</li>
-                        <li>檢查是否有未使用的組件被編譯進去</li>
+                        <li>使用 <code>-Os</code> 最佳化等級</li>
+                        <li>檢查是否有未使用的元件被編譯進去</li>
                     </ol>
                     <pre><code class="language-bash"># 查看 ELF 大小與各記憶體區域使用率
 ./build_freertos.sh ipro_ble_remote size
@@ -155,16 +155,31 @@ riscv64-unknown-elf-nm --size-sort apps/bluetooth/ble/ipro_ble_remote/build/buil
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>使用 <code>build_freertos.sh</code> 的 <code>flash</code> 動作即可建構並燒錄（序列埠名稱依實際裝置而定）：</p>
+                    <p>使用 <code>build_freertos.sh</code> 的 <code>flash</code> 動作即可建構並燒錄。燒錄工具為另行取得的 IntelProCube v0.6.3 命令列工具，請設定 <code>IPRO_FLASH_TOOL</code> 指向它或將其目錄加入 PATH（序列埠名稱依實際裝置而定）：</p>
                     <pre><code class="language-bash"># 建構 + 燒錄 + 監看序列輸出
 ./build_freertos.sh ipro_ble_remote build flash monitor -p /dev/cu.usbserial-XXXX</code></pre>
                     <p>燒錄失敗時請依序檢查：</p>
                     <ol>
+                        <li>確認工具輸出中有 <code>[All Success]</code>：燒錄失敗時工具仍回傳 0</li>
                         <li>macOS 上必須使用 <code>/dev/cu.*</code> 裝置節點，且序列埠名稱正確</li>
                         <li>確認沒有其他程式佔用序列埠（可用 <code>lsof</code> 檢查）</li>
+                        <li>確認晶片型號：IPRO7 EVB 使用 <code>--chip-variant IPRO7</code>，IPRO7AI EVK 與 Reef 使用 <code>IPRO7AI</code>（工具沒有 <code>--flash-pin</code> 選項）</li>
                         <li>若板子未自動進入下載模式，可在板端 shell 輸入 <code>reboot_dl</code> 重啟進入下載模式後重試</li>
+                        <li>IPRO7AI Reef EVK：確認已插上 JP1 跳線，並使用 2 MB 分割表（以應用 README 為準）</li>
                         <li>檢查 USB 線材與供電是否穩定</li>
                     </ol>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="build">
+                <div class="faq-question">
+                    <span class="faq-badge build">Build</span>
+                    <h3>V2.1.0 支援 IPRO6S 嗎？</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>不支援。V2.1.0 的應用皆以 IPRO7 為目標（IPRO7 EVB、IPRO7AI EVK、IPRO7AI Reef EVK），未附 IPRO6S 應用（<code>ipro6_demo</code>、<code>ipro6_if_wifi</code>、<code>ipro6_btdm_phyrf</code> 僅在 V2.0.1 中提供）、IPRO6S BLE Controller 函式庫與 <code>ipro6_rf</code>。樹中仍保留部分 IPRO6S 驅動與 Wi-Fi 協定堆疊原始碼，但本版不支援 IPRO6S 建構。</p>
+                    <p>IPRO6S 開發（BR/EDR A2DP／HFP、晶片內建 Wi-Fi 6、IPRO6S EVB）請使用 <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1</a>。</p>
                 </div>
             </div>
 
@@ -198,7 +213,7 @@ CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"
 CONFIG_IPRO_BLE_CTLR_CFG_DBG=n
 CONFIG_BT_CONN=1
 CONFIG_EM_SIZE=32</code></pre>
-                    <p>V2.0.1 預設值：Remote 使用 <code>link1_periph / bt52</code>；Transparent 與 HID Keyboard 使用 <code>link1 / bt52</code>；Throughput Test 使用 <code>link2 / bt52</code>；Headset 使用 <code>link1_periph / bt54_iso2</code>。只有 <code>link1</code>、<code>link2</code> 與 <code>link4</code> 支援 Central 與 Peripheral 雙角色。</p>
+                    <p>V2.1.0 預設值：Remote 使用 <code>link1_periph / bt52</code>；Transparent 與 HID Keyboard 使用 <code>link1 / bt52</code>；Throughput Test 使用 <code>link2 / bt52</code>；Headset 使用 <code>link1_periph / bt54_iso2</code>。只有 <code>link1</code>、<code>link2</code> 與 <code>link4</code> 支援 Central 與 Peripheral 雙角色。</p>
                 </div>
             </div>
 
@@ -209,7 +224,7 @@ CONFIG_EM_SIZE=32</code></pre>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>BLE Controller 僅以預編譯靜態函式庫（<code>.a</code>）形式提供，依 ACL 連線数、功能配置與 CFG_DBG 選擇，存放在 <code>components/wireless/bluetooth/ipro_ble_controller/lib/</code> 目錄。Controller 原始碼不包含在 SDK 中。</p>
+                    <p>BLE Controller 僅以預編譯靜態函式庫（<code>.a</code>）形式提供，依 ACL 連線數、功能配置與 CFG_DBG 選擇，存放在 <code>components/wireless/bluetooth/ipro_ble_controller/lib/</code> 目錄。Controller 原始碼不包含在 SDK 中。V2.1.0 僅提供 IPRO7 的 16 個函式庫（<code>link1_periph</code>／<code>link1</code>／<code>link2</code>／<code>link4</code> × <code>bt52</code>／<code>bt54_iso2</code> × debug／release）。</p>
                     <p>在應用程式的 <code>.config</code> 中設定要連結的變體即可：</p>
                     <pre><code class="language-bash"># 選擇 Controller 變體
 CONFIG_BT_CTLR_IPRO=y
@@ -221,7 +236,7 @@ CONFIG_BT_CONN=1
 CONFIG_EM_SIZE=32</code></pre>
                     <div class="warning-box">
                         <h4>注意</h4>
-                        <p>預編譯函式庫不可修改。若需要客製化的 Controller 變體（例如不同連線數或功能組合），請聯絡原廠取得支援。</p>
+                        <p>預編譯函式庫不可修改。若需要客製化的 Controller 變體（例如不同連線數或功能組合），請聯絡 INTELPRO 取得支援。</p>
                     </div>
                 </div>
             </div>
@@ -240,7 +255,7 @@ CONFIG_EM_SIZE=32</code></pre>
                         <li>2 Central + 2 Peripheral（混合）</li>
                         <li>任何其他組合，只要總數不超過連線上限</li>
                     </ul>
-                    <p>同一裝置可以同時廣播和掃描，實現 Relay、Mesh-like 拓撲等進階場景。</p>
+                    <p>同一裝置可以同時廣播和掃描，用於 Relay、類 Mesh 拓撲等進階場景。</p>
                 </div>
             </div>
 
@@ -329,6 +344,7 @@ CONFIG_EASYFLASH4=y</code></pre><p>在 <code>bt_enable()</code> 完成後、開�
                 </div>
                 <div class="faq-answer">
                     <p><code>ipro_ble_remote</code> 範例（<code>apps/bluetooth/ble/ipro_ble_remote</code>）內建 OTA GATT service，提供透過 BLE 傳輸並更新韌體的完整參考實作，可直接套用到自己的應用中。</p>
+                    <p>V2.1.0 隨附 <code>tools/create_ota.py</code>，可將合併後的韌體映像檔打包為 boot2 的 <code>.xz.ota</code> 格式。Zephyr RTOS 下則以 sysbuild 搭配 MCUboot（<code>zephyr/samples/mcuboot_app</code>），並透過 BLE 的 MCUmgr SMP 上傳映像檔（<code>zephyr/samples/ble_ota</code>），詳見 <a href="{{ '/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>。</p>
                 </div>
             </div>
 
@@ -342,10 +358,13 @@ CONFIG_EASYFLASH4=y</code></pre><p>在 <code>bt_enable()</code> 完成後、開�
                 <div class="faq-answer">
                     <p>在 macOS 上，每個序列裝置都有兩個裝置節點（以下序列埠名稱依實際裝置而定）：</p>
                     <ul>
-                        <li><code>/dev/cu.*</code> (Calling Unit) - <strong>必須使用此裝置</strong>。不等待 DCD 信號，可直接開啟。</li>
-                        <li><code>/dev/tty.*</code> (Teletype) - 會等待 DCD 信號，導致程式掛起無法使用。</li>
+                        <li><code>/dev/cu.*</code> (Calling Unit) - <strong>必須使用此裝置</strong>。不等待 DCD 訊號，可直接開啟。</li>
+                        <li><code>/dev/tty.*</code> (Teletype) - 會等待 DCD 訊號，導致程式卡住無法使用。</li>
                     </ul>
-                    <pre><code class="language-bash"># 另行安裝；埠名與鮑率請依韌體設定調整
+                    <pre><code class="language-bash"># V2.1.0 隨附；鮑率依應用的 CONFIG_PLATFORM_UART_BAUDRATE（未設定為 115200）
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 115200 --timeout 60
+
+# 或另行安裝 pyserial
 python3 -m pip install pyserial
 python3 -m serial.tools.miniterm /dev/cu.usbserial-XXXX 115200</code></pre>
                 </div>
@@ -362,9 +381,9 @@ python3 -m serial.tools.miniterm /dev/cu.usbserial-XXXX 115200</code></pre>
                     <ol>
                         <li>檢查並關閉占用埠的程式：<code>lsof /dev/cu.usbserial-XXXX</code>（序列埠名稱依實際裝置而定）</li>
                         <li>避免使用 <code>stty -f</code>，它會保持埠忙碌</li>
-                        <li>同一時間僅使用一個外部串口終端或 Extension Monitor</li>
+                        <li>同一時間僅使用一個序列埠監看工具（<code>tools/serial_monitor.py</code>、外部終端或 Extension Monitor）</li>
                     </ol>
-                    <p>V2.0.1 未附舊版監看腳本；燒錄或開啟另一個終端前，請先停止目前的串口監看。</p>
+                    <p><code>build_freertos.sh</code> 的 <code>monitor</code>／<code>test</code> 動作也會開啟序列埠；燒錄或開啟另一個終端前，請先停止目前的序列埠監看。</p>
                 </div>
             </div>
 
@@ -415,7 +434,7 @@ riscv64-unknown-elf-addr2line -e apps/bluetooth/ble/ipro_ble_remote/build/build_
                 <div class="faq-answer">
                     <p>CFO 問題通常有兩個原因：</p>
                     <ol>
-                        <li><strong>rf_kcal 未執行：</strong> 檢查 RF_CAL_STATE_CTRL 寄存器</li>
+                        <li><strong>rf_kcal 未執行：</strong> 檢查 RF_CAL_STATE_CTRL 暫存器</li>
                         <li><strong>XTAL 頻率偏差：</strong> 調整 capcode</li>
                     </ol>
                     <p>使用 AON 驅動 API（<code>bsp/drivers/ipro7_soc/std_drv/inc/drv_aon.h</code>）調整 XTAL capcode：</p>
@@ -440,7 +459,7 @@ uint8_t cap = AON_Get_Xtal_CapCode();  // 讀回目前 capcode</code></pre>
 rf_set_tx_power(10);   // +10dBm（最大）
 rf_set_tx_power(0);    // 0dBm
 rf_set_tx_power(-3);   // -3dBm（最小）</code></pre>
-                    <p>更進階的 RF 調校（例如客製功率表）請聯絡原廠取得支援。</p>
+                    <p>更進階的 RF 調校（例如客製功率表）請聯絡 INTELPRO 取得支援。</p>
                 </div>
             </div>
 
@@ -451,8 +470,14 @@ rf_set_tx_power(-3);   // -3dBm（最小）</code></pre>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>IPRO7 本身不內建 Wi-Fi。需要 Wi-Fi 連網的應用，請透過 IPRO6 companion 晶片（經 SDIO 介面）提供連線能力：IPRO7 作為主控 SoC 負責應用邏輯、BLE 與運算，IPRO6 作為 Wi-Fi 連線晶片。</p>
-                    <p>本版已附 <code>ipro7_sdio_wifi</code> 與 <code>ipro6_if_wifi</code> 雙端程式；請依網路章節建置兩份韌體並確認板級接線。</p>
+                    <p>IPRO7 本身不內建 Wi-Fi。V2.1.0 提供以下連網方式：</p>
+                    <ul>
+                        <li><strong>IPRO6S 作為 SDIO Wi-Fi：</strong><code>ipro7_sdio_wifi</code> 是 IPRO7 端的 SDIO 主機範例（<code>ipronet_host</code>，lwIP netif <code>iproeth0</code>、DHCP、iperf）；IPRO6S 端的 <code>ipro6_if_wifi</code> 不在 V2.1.0 內，請使用 V2.0.1 或聯絡 INTELPRO。</li>
+                        <li><strong>ATBM6162 SDIO 模組：</strong><code>ipro_atbm_probe</code>（模組驗證程式）。</li>
+                        <li><strong>IPRO7AI Reef EVK 搭配 IPRO6S FIN 卡（SDIO）：</strong>主控端為 <code>ipro7ai_reef_demo</code> 的 <code>defconfig_wifi_ipro6s</code>（Wi-Fi 與 RTSP 攝影機串流）。FIN 卡上的 IPRO6S 韌體不在 V2.1.0 內，請聯絡 INTELPRO。</li>
+                        <li><strong>Ethernet：</strong><code>ipro_enc28j60_test</code>（SPI 介面的 ENC28J60），以及 <code>ipro7_demo</code> 中的 IPRO7 EMAC（RMII）。</li>
+                    </ul>
+                    <p>IPRO6S 本身的開發請使用 <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1</a>。</p>
                 </div>
             </div>
 
@@ -460,16 +485,29 @@ rf_set_tx_power(-3);   // -3dBm（最小）</code></pre>
             <div class="faq-item" data-category="rtos">
                 <div class="faq-question">
                     <span class="faq-badge rtos">RTOS</span>
-                    <h3>SDK 用的是哪個 RTOS？BLE Host 是 Zephyr 嗎？</h3>
+                    <h3>SDK 支援哪些 RTOS？BLE Host 是 Zephyr 嗎？</h3>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>SDK 以 <strong>FreeRTOS</strong> 作為作業系統，所有應用程式都以 FreeRTOS 建構：</p>
+                    <p>SDK 以 <strong>FreeRTOS</strong> 作為主要作業系統，V2.1.0 的 34 個應用程式都以 FreeRTOS 建構：</p>
                     <pre><code class="language-bash"># 所有應用程式的 .config 都使用
 CONFIG_FREERTOS_SUPPORT=y</code></pre>
-                    <p>BLE Host 協定疊（GAP、GATT、L2CAP、SMP、ISO、LE Audio）源自 Zephyr 專案，應用層使用 Zephyr 風格的 <code>bt_*</code> callback API——但它運行在 FreeRTOS 之上，<strong>不需要安裝或建構 Zephyr</strong>。</p>
+                    <p>BLE Host 協定疊（GAP、GATT、L2CAP、SMP、ISO、LE Audio）源自 Zephyr 專案，應用層使用 Zephyr 風格的 <code>bt_*</code> callback API——在 FreeRTOS 應用中它執行於 FreeRTOS 之上，<strong>不需要安裝或建構 Zephyr</strong>。</p>
                     <pre><code class="language-bash"># 建構 BLE 應用（FreeRTOS + Zephyr-based BLE Host）
 ./build_freertos.sh ipro_ble_remote build</code></pre>
+                    <p>此外，V2.1.0 起 SDK 同時是 Zephyr v4.4.0 模組，可在 IPRO7 EVB（<code>ipro7_evb</code>）與 IPRO7AI EVK（<code>ipro7ai_evk</code>）上以 west 建構 Zephyr 應用。本版 Zephyr 未提供低功耗模式，以及顯示、攝影機、音訊 codec、USB、SD host、Ethernet 與 NPU 驅動，這些功能請使用 FreeRTOS。詳見 <a href="{{ '/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>。</p>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="rtos">
+                <div class="faq-question">
+                    <span class="faq-badge rtos">RTOS</span>
+                    <h3>可以使用 Thread（IEEE 802.15.4）或 Matter 嗎？</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Thread 僅於 Zephyr RTOS 下提供：使用 Zephyr 的 IEEE 802.15.4 驅動（IPRO7 radio）與 OpenThread，範例為 Zephyr 的 <code>samples/net/openthread/shell</code> 搭配 SDK 的 <code>zephyr/samples/ieee802154_shell/ot.conf</code> 與 <code>app.overlay</code>。RF 驅動與 802.15.4 MAC 以預編譯函式庫連結。</p>
+                    <p>V2.1.0 的 FreeRTOS 應用不含 Thread，本版也未包含 Matter。詳見 <a href="{{ '/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>。</p>
                 </div>
             </div>
 

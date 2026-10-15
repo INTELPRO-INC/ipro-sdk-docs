@@ -9,21 +9,24 @@ title: Matter & Thread - IPRO SDK
 <li><a class="sidebar-link" href="#matter-architecture">架構概念</a></li>
 <li><a class="sidebar-link" href="#matter-over-thread">Matter over Thread</a></li>
 <li><a class="sidebar-link" href="#matter-over-wifi">Wi-Fi／Ethernet 傳輸</a></li>
-<li><a class="sidebar-link" href="#openthread">OpenThread 整合範圍</a></li>
+<li><a class="sidebar-link" href="#openthread">OpenThread（Zephyr RTOS）</a></li>
 <li><a class="sidebar-link" href="#reference-apps">目前可用的參考範例</a></li>
 <li><a class="sidebar-link" href="#npu-embedding-stream">AI 與網路應用</a></li>
 <li><a class="sidebar-link" href="#configuration">整合前需確認的設定</a></li>
 <li><a class="sidebar-link" href="#dev-workflow">建議驗證順序</a></li>
 </ul></nav></aside>
     <article class="doc-content"><h1>Matter &amp; Thread</h1>
-<section id="overview"><h2>交付狀態</h2><p>IPRO SDK V2.0.1 <strong>未交付 Matter 或 OpenThread 協定堆疊與完整應用</strong>。本頁說明整合邊界，不代表此版本已通過 Matter／Thread 認證，也沒有可直接執行的 Matter build 命令。</p></section>
-<section id="matter-architecture"><h2>架構概念</h2><p>Matter 是以 IP 為基礎的應用層協定，可使用 Wi-Fi、Ethernet 或 Thread 作為網路傳輸，BLE 可用於配網。請參考 <a href="https://csa-iot.org/all-solutions/matter/">CSA Matter 官方說明</a>；具備 BLE 與 TCP/IP 元件不等於已整合 Matter。</p></section>
-<section id="matter-over-thread"><h2>Matter over Thread</h2><p>Thread 是低功耗 IPv6 mesh 網路。整合時需相容的 IEEE 802.15.4 無線端、Thread 堆疊及連到其他 IP 網路的 Border Router；請參考 <a href="https://threadgroup.org/What-is-Thread/Overview">Thread Group 官方說明</a>。本版沒有提供可據以驗證這條完整路徑的範例。</p></section>
-<section id="matter-over-wifi"><h2>Wi-Fi／Ethernet 傳輸</h2><p>IPRO7 無內建 Wi-Fi；本版提供 <code>ipro7_sdio_wifi</code> 與 <code>ipro6_if_wifi</code> 的雙晶片連線範例。這些範例建立網路連線，尚未包含 Matter endpoint、配網或憑證管理。</p></section>
-<section id="openthread"><h2>OpenThread 整合範圍</h2><p>需要 Thread 時，先確認目標 SoC／外接無線晶片、radio driver、平台抽象層及對應協定版本。不要將 SDK 中的 BLE Controller 函式庫視為 OpenThread 實作。</p></section>
-<section id="reference-apps"><h2>目前可用的參考範例</h2><p>先以 <code>apps/platform/ipro6_demo/</code> 驗證 IPRO6S Wi-Fi，或以 SDIO 雙晶片範例驗證 IPRO7 socket 連線。Matter／Thread 應用不在本版 31 個應用設定之內。</p></section>
-<section id="npu-embedding-stream"><h2>AI 與網路應用</h2><p>AI 範例使用 <code>.inm</code> 或 <code>.tflite</code> 模型。把推論結果送到網路服務需自行定義資料格式、緩衝與傳輸；本版沒有 Matter NPU embedding 串流範例。</p></section>
-<section id="configuration"><h2>整合前需確認的設定</h2><p>取得相容協定套件後，再確認工具鏈、RTOS 適配、Flash／RAM 預算、持久儲存、熵來源、憑證與 OTA 設計。不能只新增一個 Kconfig 選項就啟用未交付的堆疊。</p></section>
+<section id="overview"><h2>交付狀態</h2><p>IPRO SDK V2.1.0 <strong>未包含 Matter 協定堆疊與 Matter 應用</strong>。Thread 在 V2.1.0 <strong>只在 Zephyr RTOS 下提供</strong>：使用 Zephyr 的 OpenThread 與 IPRO7 的 IEEE 802.15.4 驅動；FreeRTOS 應用不含 Thread。本頁說明整合邊界，不代表此版本已通過 Matter／Thread 認證，也沒有可直接執行的 Matter build 命令。</p></section>
+<section id="matter-architecture"><h2>架構概念</h2><p>Matter 是以 IP 為基礎的應用層協定，可使用 Wi-Fi、Ethernet 或 Thread 作為網路傳輸，BLE 可用於配網。請參考 <a href="https://csa-iot.org/all-solutions/matter/">CSA Matter 官方說明</a>；具備 BLE、TCP/IP 或 Thread 元件不等於已整合 Matter。</p></section>
+<section id="matter-over-thread"><h2>Matter over Thread</h2><p>Thread 是低功耗 IPv6 mesh 網路。整合時需相容的 IEEE 802.15.4 無線端、Thread 堆疊及連到其他 IP 網路的 Border Router；請參考 <a href="https://threadgroup.org/What-is-Thread/Overview">Thread Group 官方說明</a>。V2.1.0 在 Zephyr RTOS 下提供 OpenThread CLI 範例，但沒有 Border Router 或 Matter 範例，無法據以驗證 Matter over Thread 的完整路徑。</p></section>
+<section id="matter-over-wifi"><h2>Wi-Fi／Ethernet 傳輸</h2><p>IPRO7 無內建 Wi-Fi。V2.1.0 在 FreeRTOS 下提供以 IPRO6S 作為 SDIO 無線端的 IPRO7 端範例（<code>ipro7_sdio_wifi</code>，IPRO6S 端韌體不在 V2.1.0 內；IPRO7AI Reef EVK 則為 <code>ipro7ai_reef_demo</code> 的 <code>defconfig_wifi_ipro6s</code> 搭配 IPRO6S FIN 卡，FIN 卡韌體請洽 INTELPRO）、ATBM6162 模組探測程式（<code>ipro_atbm_probe</code>）及 Ethernet（<code>ipro7_demo</code> 的 EMAC），詳見<a href="{{ '/wifi-networking' | relative_url }}">網路開發</a>。這些範例建立網路連線，尚未包含 Matter endpoint、配網或憑證管理。</p></section>
+<section id="openthread"><h2>OpenThread（Zephyr RTOS）</h2><p>V2.1.0 的 Thread 只在 Zephyr RTOS 下提供：Zephyr 的 IEEE 802.15.4 驅動使用 IPRO7 的無線電，上層為 Zephyr 的 OpenThread。RF 驅動與 802.15.4 MAC 以預編譯函式庫連結（<code>components/wireless/rf/ipro7_rf/lib/zephyr/</code>、<code>components/wireless/ieee802154/lib/zephyr/</code>）。範例使用 Zephyr 的 <code>samples/net/openthread/shell</code>，加上 SDK 的 <code>zephyr/samples/ieee802154_shell/ot.conf</code> 與 <code>app.overlay</code>：</p><pre><code class="language-bash">cd zephyr-workspace
+west build -b ipro7_evb zephyr/samples/net/openthread/shell -d build/ot -- \
+    -DEXTRA_CONF_FILE=&lt;SDK&gt;/zephyr/samples/ieee802154_shell/ot.conf \
+    -DEXTRA_DTC_OVERLAY_FILE=&lt;SDK&gt;/zephyr/samples/ieee802154_shell/app.overlay</code></pre><p><code>&lt;SDK&gt;</code> 為 SDK 根目錄的絕對路徑。Zephyr 支援的板子為 <code>ipro7_evb</code> 與 <code>ipro7ai_evk</code>；工作區建立、燒錄與 Console 設定請見 <a href="{{ '/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>。FreeRTOS 應用不含 Thread；也不要將 SDK 中的 BLE Controller 函式庫視為 OpenThread 實作。</p></section>
+<section id="reference-apps"><h2>目前可用的參考範例</h2><p>IP 連線可先以 FreeRTOS 的 <code>ipro7_demo</code>（Ethernet）、<code>ipro7_sdio_wifi</code>（IPRO6S SDIO 無線端）或 <code>ipro7ai_reef_demo</code> 的 <code>defconfig_wifi_ipro6s</code>（IPRO6S FIN 卡）驗證；Thread 以 Zephyr 的 OpenThread shell 範例驗證。V2.1.0 的 34 個 FreeRTOS 應用不含 Matter 或 Thread 應用。</p></section>
+<section id="npu-embedding-stream"><h2>AI 與網路應用</h2><p>AI 範例使用 <code>.inm</code> 或 <code>.tflite</code> 模型。把推論結果送到網路服務需自行定義資料格式、緩衝與傳輸；V2.1.0 沒有 Matter NPU embedding 串流範例。</p></section>
+<section id="configuration"><h2>整合前需確認的設定</h2><p>取得相容協定套件後，再確認工具鏈、RTOS 適配、Flash／RAM 預算、持久儲存、熵來源、憑證與 OTA 設計。不能只新增一個 Kconfig 選項就啟用未交付的堆疊；Thread 也只能在 Zephyr RTOS 下使用，無法在 FreeRTOS 應用中以設定選項開啟。</p></section>
 <section id="dev-workflow"><h2>建議驗證順序</h2><p>依序驗證板級驅動、無線／Ethernet 連線、IP 傳輸及安全儲存，再進行協定整合、配網、重啟恢復與互通性測試。產品支援版本及認證狀態須以實際整合成果確認。</p></section>
     </article>
 </div>

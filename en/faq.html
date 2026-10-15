@@ -123,7 +123,7 @@ cmake -DCROSS_COMPILE=/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf- ...</c
                                 <tr><th>Region</th><th>Size</th><th>Address</th></tr>
                             </thead>
                             <tbody>
-                                <tr><td>Flash</td><td>1 MB</td><td><code>0x13000000</code></td></tr>
+                                <tr><td>Flash</td><td>Board-dependent (e.g. 2 MB on the IPRO7AI Reef EVK)</td><td><code>0x13000000</code></td></tr>
                                 <tr><td>PSRAM</td><td>8 MB</td><td><code>0x1e000000</code></td></tr>
                                 <tr><td>OCRAM</td><td>256 KB</td><td><code>0x11010000</code></td></tr>
                                 <tr><td>HBNRAM</td><td>4 KB</td><td><code>0x20090000</code></td></tr>
@@ -155,16 +155,31 @@ riscv64-unknown-elf-nm --size-sort apps/bluetooth/ble/ipro_ble_remote/build/buil
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>Use the <code>flash</code> action of <code>build_freertos.sh</code> to build and flash in one step (the serial port name depends on your device):</p>
+                    <p>Use the <code>flash</code> action of <code>build_freertos.sh</code> to build and flash in one step. The flasher is the IntelProCube v0.6.3 command-line tool, obtained separately; set <code>IPRO_FLASH_TOOL</code> to it or put its directory on PATH (the serial port name depends on your device):</p>
                     <pre><code class="language-bash"># Build + flash + monitor serial output
 ./build_freertos.sh ipro_ble_remote build flash monitor -p /dev/cu.usbserial-XXXX</code></pre>
                     <p>If flashing fails, check the following in order:</p>
                     <ol>
+                        <li>Look for <code>[All Success]</code> in the tool output: the tool exits 0 even when flashing fails</li>
                         <li>On macOS, you must use the <code>/dev/cu.*</code> device node, and the serial port name must be correct</li>
                         <li>Make sure no other program is holding the serial port (check with <code>lsof</code>)</li>
+                        <li>Check the chip variant: <code>--chip-variant IPRO7</code> for the IPRO7 EVB, <code>IPRO7AI</code> for the IPRO7AI EVK and the Reef (the tool has no <code>--flash-pin</code> option)</li>
                         <li>If the board does not enter download mode automatically, type <code>reboot_dl</code> in the board shell to reboot into download mode and retry</li>
+                        <li>IPRO7AI Reef EVK: make sure jumper JP1 is fitted and use a 2 MB partition table (the one the application README names)</li>
                         <li>Check the USB cable and power supply stability</li>
                     </ol>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="build">
+                <div class="faq-question">
+                    <span class="faq-badge build">Build</span>
+                    <h3>Does V2.1.0 support IPRO6S?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>No. Every application in V2.1.0 targets IPRO7 (IPRO7 EVB, IPRO7AI EVK, IPRO7AI Reef EVK). The release ships no IPRO6S applications (<code>ipro6_demo</code>, <code>ipro6_if_wifi</code> and <code>ipro6_btdm_phyrf</code> are provided in V2.0.1 only), no IPRO6S BLE controller libraries and no <code>ipro6_rf</code>. Some IPRO6S driver and Wi-Fi stack sources remain in the tree, but IPRO6S builds are not supported in this release.</p>
+                    <p>For IPRO6S development (BR/EDR A2DP / HFP, on-chip Wi-Fi 6, IPRO6S EVB) use <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1</a>.</p>
                 </div>
             </div>
 
@@ -198,7 +213,7 @@ CONFIG_IPRO_BLE_CTLR_FEATURE="bt52"
 CONFIG_IPRO_BLE_CTLR_CFG_DBG=n
 CONFIG_BT_CONN=1
 CONFIG_EM_SIZE=32</code></pre>
-                    <p>V2.0.1 defaults: Remote uses <code>link1_periph / bt52</code>; Transparent and HID Keyboard use <code>link1 / bt52</code>; Throughput Test uses <code>link2 / bt52</code>; Headset uses <code>link1_periph / bt54_iso2</code>. PDM uses <code>link2 / bt52</code> with <code>CONFIG_BT_CONN=1</code>. Only <code>link1</code>, <code>link2</code> and <code>link4</code> support both Central and Peripheral roles.</p>
+                    <p>V2.1.0 defaults: Remote uses <code>link1_periph / bt52</code>; Transparent and HID Keyboard use <code>link1 / bt52</code>; Throughput Test uses <code>link2 / bt52</code>; Headset uses <code>link1_periph / bt54_iso2</code>. PDM uses <code>link2 / bt52</code> with <code>CONFIG_BT_CONN=1</code>. Only <code>link1</code>, <code>link2</code> and <code>link4</code> support both Central and Peripheral roles.</p>
                 </div>
             </div>
 
@@ -209,7 +224,7 @@ CONFIG_EM_SIZE=32</code></pre>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>The BLE Controller is provided only as prebuilt static libraries (<code>.a</code>), selected by ACL count, feature profile and CFG_DBG, under <code>components/wireless/bluetooth/ipro_ble_controller/lib/</code>. Controller source code is not included in the SDK.</p>
+                    <p>The BLE Controller is provided only as prebuilt static libraries (<code>.a</code>), selected by ACL count, feature profile and CFG_DBG, under <code>components/wireless/bluetooth/ipro_ble_controller/lib/</code>. Controller source code is not included in the SDK. V2.1.0 provides the 16 IPRO7 libraries only (<code>link1_periph</code> / <code>link1</code> / <code>link2</code> / <code>link4</code> × <code>bt52</code> / <code>bt54_iso2</code> × debug / release).</p>
                     <p>Simply select the variant to link in your application's <code>.config</code>:</p>
                     <pre><code class="language-bash"># Select Controller variant
 CONFIG_BT_CTLR_IPRO=y
@@ -221,7 +236,7 @@ CONFIG_BT_CONN=1
 CONFIG_EM_SIZE=32</code></pre>
                     <div class="warning-box">
                         <h4>Important</h4>
-                        <p>The prebuilt libraries must not be modified. If you need a customized Controller variant (e.g., a different link count or feature combination), please contact the vendor for support.</p>
+                        <p>The prebuilt libraries must not be modified. If you need a customized Controller variant (e.g., a different link count or feature combination), please contact INTELPRO for support.</p>
                     </div>
                 </div>
             </div>
@@ -240,7 +255,7 @@ CONFIG_EM_SIZE=32</code></pre>
                         <li>2 Central + 2 Peripheral (mixed)</li>
                         <li>Any other combination within the total connection limit</li>
                     </ul>
-                    <p>A device can simultaneously advertise and scan, enabling Relay, Mesh-like topologies, and other advanced scenarios.</p>
+                    <p>A device can simultaneously advertise and scan, for Relay, Mesh-like topologies, and other advanced scenarios.</p>
                 </div>
             </div>
 
@@ -329,6 +344,7 @@ CONFIG_EASYFLASH4=y</code></pre><p>After <code>bt_enable()</code> completes, cal
                 </div>
                 <div class="faq-answer">
                     <p>The <code>ipro_ble_remote</code> example (<code>apps/bluetooth/ble/ipro_ble_remote</code>) includes a built-in OTA GATT service, providing a complete reference implementation for transferring and updating firmware over BLE that you can adopt in your own application.</p>
+                    <p>V2.1.0 includes <code>tools/create_ota.py</code>, which packs a combined firmware image into the boot2 <code>.xz.ota</code> format. Under Zephyr RTOS, MCUboot is built through sysbuild (<code>zephyr/samples/mcuboot_app</code>) and images are uploaded over BLE with MCUmgr SMP (<code>zephyr/samples/ble_ota</code>); see <a href="{{ '/en/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>.</p>
                 </div>
             </div>
 
@@ -345,7 +361,10 @@ CONFIG_EASYFLASH4=y</code></pre><p>After <code>bt_enable()</code> completes, cal
                         <li><code>/dev/cu.*</code> (Calling Unit) - <strong>You must use this device</strong>. Does not wait for DCD signal, opens immediately.</li>
                         <li><code>/dev/tty.*</code> (Teletype) - Waits for DCD signal, causing the program to hang.</li>
                     </ul>
-                    <pre><code class="language-bash"># Install separately; select the port and baud rate for your firmware
+                    <pre><code class="language-bash"># Bundled with V2.1.0; the baud rate is the app's CONFIG_PLATFORM_UART_BAUDRATE (115200 when unset)
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 115200 --timeout 60
+
+# Or install pyserial separately
 python3 -m pip install pyserial
 python3 -m serial.tools.miniterm /dev/cu.usbserial-XXXX 115200</code></pre>
                 </div>
@@ -362,9 +381,9 @@ python3 -m serial.tools.miniterm /dev/cu.usbserial-XXXX 115200</code></pre>
                     <ol>
                         <li>Check and close programs using the port: <code>lsof /dev/cu.usbserial-XXXX</code> (the serial port name depends on your device)</li>
                         <li>Avoid using <code>stty -f</code>, which keeps the port busy</li>
-                        <li>Use one external serial terminal at a time, or the extension monitor</li>
+                        <li>Use one serial monitor at a time (<code>tools/serial_monitor.py</code>, an external terminal or the extension monitor)</li>
                     </ol>
-                    <p>The old monitor helper is not bundled in V2.0.1. Stop the active monitor before flashing or opening another terminal.</p>
+                    <p>The <code>monitor</code> and <code>test</code> actions of <code>build_freertos.sh</code> also open the serial port. Stop the active monitor before flashing or opening another terminal.</p>
                 </div>
             </div>
 
@@ -441,7 +460,7 @@ uint8_t cap = AON_Get_Xtal_CapCode();  // Read back current capcode</code></pre>
 rf_set_tx_power(10);   // +10dBm (maximum)
 rf_set_tx_power(0);    // 0dBm
 rf_set_tx_power(-3);   // -3dBm (minimum)</code></pre>
-                    <p>For more advanced RF tuning (e.g., custom power tables), please contact the vendor for support.</p>
+                    <p>For more advanced RF tuning (e.g., custom power tables), please contact INTELPRO for support.</p>
                 </div>
             </div>
 
@@ -452,8 +471,14 @@ rf_set_tx_power(-3);   // -3dBm (minimum)</code></pre>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>IPRO7 itself does not include Wi-Fi. For applications that need Wi-Fi connectivity, use the IPRO6 companion chip (via the SDIO interface): IPRO7 serves as the main SoC handling application logic, BLE, and compute, while IPRO6 acts as the Wi-Fi connectivity chip.</p>
-                    <p>For the two-chip reference design and related materials, please contact the vendor.</p>
+                    <p>IPRO7 itself does not include Wi-Fi. V2.1.0 provides these networking options:</p>
+                    <ul>
+                        <li><strong>IPRO6S as the SDIO Wi-Fi radio:</strong> <code>ipro7_sdio_wifi</code> is the IPRO7-side SDIO host example (<code>ipronet_host</code>, lwIP netif <code>iproeth0</code>, DHCP, iperf); the IPRO6S-side <code>ipro6_if_wifi</code> is not in V2.1.0 - use V2.0.1 or contact INTELPRO.</li>
+                        <li><strong>ATBM6162 SDIO module:</strong> <code>ipro_atbm_probe</code> (module bring-up probe).</li>
+                        <li><strong>IPRO6S FIN card on the IPRO7AI Reef EVK (SDIO):</strong> the host side is <code>ipro7ai_reef_demo</code> with <code>defconfig_wifi_ipro6s</code> (Wi-Fi and an RTSP camera stream). The IPRO6S firmware for the FIN card is not in V2.1.0; contact INTELPRO.</li>
+                        <li><strong>Ethernet:</strong> <code>ipro_enc28j60_test</code> (ENC28J60 over SPI) and the IPRO7 EMAC (RMII) in <code>ipro7_demo</code>.</li>
+                    </ul>
+                    <p>For IPRO6S development itself, use <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1</a>.</p>
                 </div>
             </div>
 
@@ -461,16 +486,29 @@ rf_set_tx_power(-3);   // -3dBm (minimum)</code></pre>
             <div class="faq-item" data-category="rtos">
                 <div class="faq-question">
                     <span class="faq-badge rtos">RTOS</span>
-                    <h3>Which RTOS does the SDK use? Is the BLE Host Zephyr?</h3>
+                    <h3>Which RTOSes does the SDK support? Is the BLE Host Zephyr?</h3>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>The SDK uses <strong>FreeRTOS</strong> as its operating system; all applications are built with FreeRTOS:</p>
+                    <p>The SDK uses <strong>FreeRTOS</strong> as its main operating system; all 34 applications in V2.1.0 are built with FreeRTOS:</p>
                     <pre><code class="language-bash"># Every application's .config uses
 CONFIG_FREERTOS_SUPPORT=y</code></pre>
-                    <p>The BLE Host protocol stack (GAP, GATT, L2CAP, SMP, ISO, LE Audio) originates from the Zephyr project, and the application layer uses Zephyr-style <code>bt_*</code> callback APIs -- but it runs on top of FreeRTOS, so <strong>no Zephyr installation or build is required</strong>.</p>
+                    <p>The BLE Host protocol stack (GAP, GATT, L2CAP, SMP, ISO, LE Audio) originates from the Zephyr project, and the application layer uses Zephyr-style <code>bt_*</code> callback APIs -- in FreeRTOS applications it runs on top of FreeRTOS, so <strong>no Zephyr installation or build is required</strong>.</p>
                     <pre><code class="language-bash"># Build a BLE application (FreeRTOS + Zephyr-based BLE Host)
 ./build_freertos.sh ipro_ble_remote build</code></pre>
+                    <p>In addition, from V2.1.0 the SDK is also a Zephyr v4.4.0 module: Zephyr applications build with west for the IPRO7 EVB (<code>ipro7_evb</code>) and IPRO7AI EVK (<code>ipro7ai_evk</code>). Zephyr in this release provides no low-power modes and no display, camera, audio codec, USB, SD host, Ethernet or NPU drivers; use FreeRTOS for those. See <a href="{{ '/en/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>.</p>
+                </div>
+            </div>
+
+            <div class="faq-item" data-category="rtos">
+                <div class="faq-question">
+                    <span class="faq-badge rtos">RTOS</span>
+                    <h3>Can I use Thread (IEEE 802.15.4) or Matter?</h3>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>Thread is available under Zephyr RTOS only: Zephyr's IEEE 802.15.4 driver for the IPRO7 radio and OpenThread, with Zephyr's <code>samples/net/openthread/shell</code> plus the SDK's <code>zephyr/samples/ieee802154_shell/ot.conf</code> and <code>app.overlay</code>. The RF driver and the 802.15.4 MAC link as prebuilt libraries.</p>
+                    <p>The FreeRTOS applications in V2.1.0 do not include Thread, and this release does not include Matter. See <a href="{{ '/en/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>.</p>
                 </div>
             </div>
 

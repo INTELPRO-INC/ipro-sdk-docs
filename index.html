@@ -9,8 +9,8 @@ title: 首頁
         <div class="hero-content">
             <h1 class="hero-title">IPRO SDK</h1>
             <p class="hero-protocols">BLE 5.4 · LE Audio</p>
-            <p class="hero-subtitle">SDK V2.0.1 支援 IPRO7 與 IPRO6S：FreeRTOS、BLE／LE Audio、IPRO6S Wi-Fi 6 與 BR/EDR，以及 IPRO7 AI 與影像處理範例。</p>
-            <p><a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">下載 SDK V2.0.1</a></p>
+            <p class="hero-subtitle">SDK V2.1.0 支援 IPRO7（IPRO7 EVB、IPRO7AI EVK、IPRO7AI Reef EVK）：FreeRTOS 與 Zephyr RTOS、BLE／LE Audio，以及 AI 與影像處理範例。</p>
+            <p><a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.1.0">下載 SDK V2.1.0</a> · IPRO6S 開發請使用 <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1</a></p>
             <div class="hero-buttons">
                 <a href="{{ '/getting-started' | relative_url }}" class="btn btn-primary">
                     <i class="fas fa-rocket"></i>
@@ -55,12 +55,12 @@ make -C apps/bluetooth/ble/ipro_ble_remote
             <span class="stat-label">IPRO7 無線通訊</span>
         </div>
         <div class="stat-item">
-            <span class="stat-value">8MB PSRAM · 1MB Flash</span>
+            <span class="stat-value">8MB PSRAM · Flash 依板型</span>
             <span class="stat-label">IPRO7 記憶體</span>
         </div>
         <div class="stat-item">
             <span class="stat-value">256KB OCRAM</span>
-            <span class="stat-label">IPRO7 片上 SRAM</span>
+            <span class="stat-label">IPRO7 晶片內 SRAM</span>
         </div>
     </div>
 </section>
@@ -100,14 +100,21 @@ make -C apps/bluetooth/ble/ipro_ble_remote
                 <div class="feature-icon"><i class="fas fa-wrench"></i></div>
                 <h3 class="feature-title">模組化架構</h3>
                 <p class="feature-description">
-                    清晰的分層架構設計：應用層、中間件、RTOS、BSP。各組件透過 Kconfig 系統靈活配置。
+                    清晰的分層架構設計：應用層、中介軟體、RTOS、BSP。各元件透過 Kconfig 系統彈性設定。
                 </p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon"><i class="fas fa-screwdriver-wrench"></i></div>
                 <h3 class="feature-title">開發工具鏈</h3>
                 <p class="feature-description">
-                    提供 <code>make -C apps/&lt;project&gt;</code> 快速建構、build_freertos.sh 建構腳本、CMake 工具鏈整合。
+                    提供 <code>make -C apps/&lt;project&gt;</code> 快速建構、build_freertos.sh 建構腳本、CMake 工具鏈整合，以及 <code>tools/serial_monitor.py</code> 序列埠監看工具。
+                </p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-cubes"></i></div>
+                <h3 class="feature-title">Zephyr RTOS</h3>
+                <p class="feature-description">
+                    SDK 同時是 Zephyr v4.4.0 模組，支援 IPRO7 EVB 與 IPRO7AI EVK：周邊驅動、BLE、IEEE 802.15.4／OpenThread（Thread）與 MCUboot。
                 </p>
             </div>
         </div>
@@ -122,7 +129,7 @@ make -C apps/bluetooth/ble/ipro_ble_remote
         <div class="section-header">
             <h2 class="section-title">參考應用</h2>
             <p class="section-subtitle">
-                多個完整的參考應用範例，展示 SDK 各項功能的最佳實踐
+                V2.1.0 提供 34 個 IPRO7 應用，以下為代表範例，展示 SDK 各項功能的最佳實踐
             </p>
         </div>
         <div class="app-grid">
@@ -139,7 +146,7 @@ make -C apps/bluetooth/ble/ipro_ble_remote
                     <span class="app-icon"><i class="fas fa-exchange-alt"></i></span>
                     <span class="app-name">ipro_ble_transparent</span>
                 </div>
-                <p class="app-description">UART / BLE 透傳</p>
+                <p class="app-description">UART／BLE 透明傳輸</p>
                 <a href="{{ '/applications' | relative_url }}#ipro-ble-transparent">查看範例</a>
             </div>
             <div class="app-card">
@@ -187,7 +194,7 @@ make -C apps/bluetooth/ble/ipro_ble_remote
                     <span class="app-icon"><i class="fas fa-wifi"></i></span>
                     <span class="app-name">ipro7_sdio_wifi</span>
                 </div>
-                <p class="app-description">IPRO7 SDIO Host 搭配 IPRO6S Wi-Fi</p>
+                <p class="app-description">IPRO7 SDIO 主機搭配 IPRO6S Wi-Fi：傳輸、netif、DHCP 與 iperf（IPRO6S 端韌體未隨附）</p>
                 <a href="{{ '/applications' | relative_url }}#ipro7-sdio-wifi">查看範例</a>
             </div>
             <div class="app-card">
@@ -197,6 +204,54 @@ make -C apps/bluetooth/ble/ipro_ble_remote
                 </div>
                 <p class="app-description">IPRO7AI EVK 顯示、攝影機、音訊與 AI / BLE 配置</p>
                 <a href="{{ '/applications' | relative_url }}#ipro7ai-evk-demo">查看範例</a>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-microchip"></i></span>
+                    <span class="app-name">ipro7ai_reef_demo</span>
+                </div>
+                <p class="app-description">V2.1.0 新增：IPRO7AI Reef EVK 板級示範，LED、按鍵、音訊、SD 卡與 OV5640／OV2640 攝影機</p>
+                <a href="{{ '/applications' | relative_url }}#ipro7ai-reef-demo">查看範例</a>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-hand"></i></span>
+                    <span class="app-name">ipro7ai_evk_launcher</span>
+                </div>
+                <p class="app-description">V2.1.0 新增：IPRO7AI EVK 攝影機、LCD、麥克風與喇叭整合於單一映像檔，以 NPU 辨識手勢切換頁面</p>
+                <a href="{{ '/applications' | relative_url }}#ipro7ai-evk-launcher">查看範例</a>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-user"></i></span>
+                    <span class="app-name">ipro7ai_evk_person_detect</span>
+                </div>
+                <p class="app-description">V2.1.0 新增：EVK 攝影機預覽，疊加 YOLOv8 人形／寵物偵測框</p>
+                <a href="{{ '/applications' | relative_url }}#sdk-2-apps">查看範例</a>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-hand-scissors"></i></span>
+                    <span class="app-name">ipro7ai_evk_rps</span>
+                </div>
+                <p class="app-description">V2.1.0 新增：與 NPU 上的 4 類 int8 CNN 玩剪刀石頭布，附模型與訓練腳本</p>
+                <a href="{{ '/applications' | relative_url }}#sdk-2-apps">查看範例</a>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-link"></i></span>
+                    <span class="app-name">ipro_ai_link</span>
+                </div>
+                <p class="app-description">V2.1.0 新增：IPRO AI Studio「Run on board」板端韌體，自 SD 卡載入模型與輸入，結果經 USB 回傳</p>
+                <a href="{{ '/applications' | relative_url }}#sdk-2-apps">查看範例</a>
+            </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-video"></i></span>
+                    <span class="app-name">ipro7_uvc_cam</span>
+                </div>
+                <p class="app-description">V2.1.0 新增：USB 網路攝影機（DVP、ISP、硬體 MJPEG、UVC），支援 IPRO7 EVB 與 Reef（OV5640）</p>
+                <a href="{{ '/applications' | relative_url }}#sdk-2-apps">查看範例</a>
             </div>
         </div>
     </div>
@@ -214,7 +269,7 @@ make -C apps/bluetooth/ble/ipro_ble_remote
 
         <div class="code-block">
             <div class="code-block-header">
-                <span class="code-block-title">建構指令</span>
+                <span class="code-block-title">FreeRTOS 建構指令</span>
                 <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
             </div>
             <pre><code class="language-bash"># 使用 Make 建構（推薦）
@@ -225,6 +280,21 @@ make -C apps/bluetooth/ble/ipro_ble_remote
         </div>
         <div class="alert alert-info">
             <strong>提示：</strong>建構產出位於 <code>apps/&lt;category&gt;/&lt;name&gt;/build/build_out/</code> 目錄。
+        </div>
+
+        <div class="code-block">
+            <div class="code-block-header">
+                <span class="code-block-title">Zephyr RTOS（IPRO7 EVB／IPRO7AI EVK）</span>
+                <button class="code-copy-btn"><i class="fas fa-copy"></i></button>
+            </div>
+            <pre><code class="language-bash">tools/zephyr/bootstrap.sh
+source zephyr-workspace/env.sh
+cd zephyr-workspace
+west build -b ipro7_evb zephyr/samples/hello_world
+west flash</code></pre>
+        </div>
+        <div class="alert alert-info">
+            FreeRTOS 為主要開發路徑，34 個應用皆以 FreeRTOS 建構。Zephyr 的環境需求、燒錄方式與支援範圍請見 <a href="{{ '/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>。
         </div>
     </div>
 </section>
@@ -255,6 +325,10 @@ make -C apps/bluetooth/ble/ipro_ble_remote
             <a href="{{ '/applications' | relative_url }}" class="doc-link-item">
                 <i class="fas fa-th-large"></i>
                 <span>應用範例</span>
+            </a>
+            <a href="{{ '/zephyr-rtos' | relative_url }}" class="doc-link-item">
+                <i class="fas fa-cubes"></i>
+                <span>Zephyr RTOS</span>
             </a>
         </div>
     </div>

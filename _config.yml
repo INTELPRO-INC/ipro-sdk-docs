@@ -2,7 +2,7 @@
 # GitHub Pages Configuration
 
 title: IPRO SDK
-sdk_version: "v2.0.1"
+sdk_version: "v2.1.0"
 installer_version: "3.4.0"
 extension_version: "3.3.0"
 description: A Comprehensive Software Development Kit for IPRO Hardware Platforms
@@ -61,14 +61,15 @@ nav:
   - title: 主題
     dropdown:
       - { title: 音訊與多媒體, desc: LE Audio、LC3、音訊管線, icon: fa-headphones, url: /audio-multimedia }
-      - { title: 網路開發, desc: lwIP 與 IPRO6S Wi-Fi 6, icon: fa-network-wired, url: /wifi-networking }
+      - { title: 網路開發, desc: lwIP、SDIO Wi-Fi 與 Ethernet, icon: fa-network-wired, url: /wifi-networking }
       - { title: 工具與除錯, desc: 建構、燒錄、GDB, icon: fa-wrench, url: /tools-debugging }
       - { title: 硬體規格, desc: IPRO7 規格與腳位, icon: fa-microchip, url: /hardware }
       - { title: 更新日誌, desc: 版本發行紀錄, icon: fa-clock-rotate-left, url: /changelog }
   - title: 進階功能
     dropdown:
       - { title: AI 與 NPU, badge: Prebuilt, desc: 端側 AI 推理, icon: fa-brain, url: /ai-npu }
-      - { title: Matter & Thread, badge: Roadmap, desc: 智慧家庭協定, icon: fa-house-signal, url: /matter-thread }
+      - { title: Zephyr RTOS, badge: New, desc: Zephyr v4.4 模組、板卡與範例, icon: fa-layer-group, url: /zephyr-rtos }
+      - { title: Matter & Thread, badge: Roadmap, desc: 智慧家庭協定；Thread 於 Zephyr 提供, icon: fa-house-signal, url: /matter-thread }
   - title: FAQ
     url: /faq
 
@@ -87,14 +88,15 @@ nav_en:
   - title: Topics
     dropdown:
       - { title: Audio & Multimedia, desc: LE Audio, LC3, audio pipeline, icon: fa-headphones, url: /en/audio-multimedia }
-      - { title: Networking, desc: lwIP & IPRO6S Wi-Fi 6, icon: fa-network-wired, url: /en/wifi-networking }
+      - { title: Networking, desc: lwIP, SDIO Wi-Fi & Ethernet, icon: fa-network-wired, url: /en/wifi-networking }
       - { title: Tools & Debugging, desc: Build, flash, GDB, icon: fa-wrench, url: /en/tools-debugging }
       - { title: Hardware, desc: IPRO7 specs & pinout, icon: fa-microchip, url: /en/hardware }
       - { title: Changelog, desc: Release history, icon: fa-clock-rotate-left, url: /en/changelog }
   - title: Advanced
     dropdown:
       - { title: AI & NPU, badge: Prebuilt, desc: On-device AI inference, icon: fa-brain, url: /en/ai-npu }
-      - { title: Matter & Thread, badge: Roadmap, desc: Smart home protocols, icon: fa-house-signal, url: /en/matter-thread }
+      - { title: Zephyr RTOS, badge: New, desc: Zephyr v4.4 module, boards & samples, icon: fa-layer-group, url: /en/zephyr-rtos }
+      - { title: Matter & Thread, badge: Roadmap, desc: Smart home protocols; Thread under Zephyr, icon: fa-house-signal, url: /en/matter-thread }
   - title: FAQ
     url: /en/faq
 
@@ -113,8 +115,8 @@ languages:
 # google_analytics: UA-XXXXXXXX-X
 
 # Site-wide release scope notice — rendered by _layouts/default.html below the navbar
-release_notice: "本文件對應 IPRO SDK V2.0.1（2026-09-09），支援 IPRO7 與 IPRO6S。IPRO7 不內建 Wi-Fi；SDIO 雙晶片範例的兩端韌體原始碼皆已提供。AI 執行庫為預編譯函式庫，附部分 .inm／.tflite 模型；模型轉換工具、Matter 與 Thread 未包含。"
-release_notice_en: "This documentation covers IPRO SDK V2.0.1 (2026-09-09) for IPRO7 and IPRO6S. IPRO7 has no built-in Wi-Fi; sources for both sides of the SDIO link are included. AI uses a prebuilt runtime with selected .inm / .tflite models. Conversion tools, Matter and Thread are not included."
+release_notice: "本文件對應 IPRO SDK V2.1.0（2026-10-15）。FreeRTOS 應用支援 IPRO7（IPRO7 EVB、IPRO7AI EVK、IPRO7AI Reef EVK），並新增 Zephyr v4.4 支援（ipro7_evb、ipro7ai_evk）；IPRO6S 開發請使用 V2.0.1。IPRO7 不內建 Wi-Fi。AI 執行庫為預編譯函式庫；模型轉換工具與 Matter 未包含，Thread 僅於 Zephyr 提供。"
+release_notice_en: "This documentation covers IPRO SDK V2.1.0 (2026-10-15). FreeRTOS applications target IPRO7 (IPRO7 EVB, IPRO7AI EVK, IPRO7AI Reef EVK), and Zephyr v4.4 is now supported on ipro7_evb and ipro7ai_evk. For IPRO6S use V2.0.1. IPRO7 has no built-in Wi-Fi. AI uses a prebuilt runtime; conversion tools and Matter are not included, and Thread is available under Zephyr only."
 
 exclude:
   - Gemfile

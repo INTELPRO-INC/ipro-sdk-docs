@@ -1,28 +1,136 @@
 ---
 layout: default
-title: Zephyr BLE Host
+title: Zephyr RTOS
 lang: en
 ---
 
-<meta http-equiv="refresh" content="3; url={{ '/en/ble-development' | relative_url }}#zephyr-host">
-
 <div class="doc-layout">
-    <article class="doc-content" style="max-width: 720px; margin: 0 auto;">
-        <h1>This page has been merged</h1>
+    <aside class="doc-sidebar">
+        <nav class="sidebar-nav">
+            <h4 class="sidebar-title">On this page</h4>
+            <ul class="sidebar-links">
+                <li><a href="#overview" class="sidebar-link">Overview</a></li>
+                <li><a href="#boards" class="sidebar-link">Supported boards</a></li>
+                <li><a href="#setup" class="sidebar-link">Set up the workspace</a></li>
+                <li><a href="#build-flash" class="sidebar-link">Build, flash and console</a></li>
+                <li><a href="#features" class="sidebar-link">Features</a></li>
+                <li><a href="#samples" class="sidebar-link">Samples</a></li>
+                <li><a href="#prebuilt" class="sidebar-link">Prebuilt components</a></li>
+                <li><a href="#limitations" class="sidebar-link">Not supported yet</a></li>
+            </ul>
+        </nav>
+    </aside>
 
-        <div class="alert alert-info">
-            <strong>The IPRO SDK runs on FreeRTOS.</strong>
-            Zephyr's role in the SDK is as the origin of the BLE Host protocol stack —
-            <code>ipro_bt_host</code> (GAP, GATT, L2CAP, SMP, ISO, LE Audio) is ported from Zephyr
-            and runs on top of FreeRTOS. Applications use the Zephyr-style <code>bt_*</code> APIs
-            for BLE development.
-        </div>
+    <article class="doc-content">
+        <h1>Zephyr RTOS</h1>
+        <p>Since IPRO SDK V2.1.0 the SDK is also a Zephyr v4.4.0 module: the same HAL and SoC drivers behind Zephyr's device driver API, so applications can be written for Zephyr directly. The FreeRTOS applications and their build flow are unchanged; see <a href="{{ '/en/getting-started' | relative_url }}">Getting Started</a>.</p>
 
-        <p>
-            The Zephyr BLE Host architecture and <code>bt_*</code> API content previously on this
-            page has been merged into the
-            <a href="{{ '/en/ble-development' | relative_url }}">BLE Development</a> page, which is
-            actively maintained. You will be redirected in 3 seconds; if not, use the link above.
-        </p>
+        <section id="overview">
+            <h2>Overview</h2>
+            <ul>
+                <li><code>west.yml</code> at the SDK root makes the SDK the west manifest repository; <code>zephyr/module.yml</code> registers it as a Zephyr module (boards, SoC, device tree and drivers live in <code>zephyr/</code>).</li>
+                <li>The Zephyr drivers sit on top of the SDK HAL, which is compiled in place from <code>bsp/</code>, not copied.</li>
+                <li>Bluetooth LE uses Zephyr's host with the IPRO BLE controller; IEEE 802.15.4 uses Zephyr's driver interface and OpenThread.</li>
+            </ul>
+        </section>
+
+        <section id="boards">
+            <h2>Supported boards</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Zephyr board</th><th>Hardware</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>ipro7_evb</code></td><td>IPRO7 EVB</td></tr>
+                        <tr><td><code>ipro7ai_evk</code></td><td>IPRO7AI EVK</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="alert alert-info">The <code>ipro6s_evb</code> board files come with the SDK, but IPRO6S is not supported under Zephyr in this release. The IPRO7AI Reef EVK has no Zephyr board definition yet; use the FreeRTOS applications for it.</div>
+        </section>
+
+        <section id="setup">
+            <h2>Set up the workspace</h2>
+            <p>You need Python 3.10 or later, CMake 3.20 or later, Ninja, git, <code>dtc</code> and the IPRO RISC-V toolchain (default <code>/opt/toolchain/riscv_ipro7</code>, override with <code>IPRO_TOOLCHAIN</code>). The first setup needs access to GitHub.</p>
+            <pre><code class="language-bash">tools/zephyr/bootstrap.sh          # west workspace in zephyr-workspace/
+source zephyr-workspace/env.sh     # ZEPHYR_BASE, CROSS_COMPILE, west</code></pre>
+            <p><code>bootstrap.sh</code> downloads Zephyr v4.4.0 and the modules <code>west.yml</code> lists (mbedTLS, tf-psa-crypto, OpenThread, MCUboot, LC3, zcbor, picolibc, SEGGER RTT) and applies the Zephyr patches listed in <code>zephyr/patches.yml</code>.</p>
+        </section>
+
+        <section id="build-flash">
+            <h2>Build, flash and console</h2>
+            <pre><code class="language-bash">cd zephyr-workspace
+west build -b ipro7_evb zephyr/samples/hello_world                       # a Zephyr sample
+west build -b ipro7_evb ../zephyr/samples/periph_smoke -d build/smoke     # an SDK sample
+west flash                                                               # IntelProCube command-line tool</code></pre>
+            <ul>
+                <li><code>west flash</code> uses the IntelProCube command-line tool, named by <code>IPRO_FLASH_TOOL</code> or found on <code>PATH</code>.</li>
+                <li>It enters download mode through the IPRO7 CMSIS-DAP probe by default; without a probe use <code>west flash -- --boot shell</code> (through the running image's <code>reboot_dl</code>) or <code>--boot manual</code>.</li>
+                <li>Name the serial port with <code>--port</code> or <code>IPRO_SERIAL_PORT</code>; with a single USB serial port connected it is picked automatically.</li>
+                <li>The Zephyr console is on UART0 at 2,000,000 baud; <code>tools/zephyr/monitor.sh</code> opens it.</li>
+            </ul>
+        </section>
+
+        <section id="features">
+            <h2>Features</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Area</th><th>Under Zephyr</th></tr></thead>
+                    <tbody>
+                        <tr><td>Drivers</td><td>GPIO, UART (incl. async), SPI, I2C, PWM, ADC, DAC, counter/RTC, watchdog, flash, DMA, entropy, hwinfo, I2S/PDM (API level)</td></tr>
+                        <tr><td>Bluetooth LE</td><td>Zephyr host with the prebuilt IPRO BLE controller</td></tr>
+                        <tr><td>IEEE 802.15.4 / Thread</td><td>Zephyr's IEEE 802.15.4 driver and OpenThread</td></tr>
+                        <tr><td>Boot and update</td><td>MCUboot through sysbuild; image upload over BLE with MCUmgr SMP</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="samples">
+            <h2>Samples</h2>
+            <p>SDK samples are in <code>zephyr/samples/</code>, driver tests in <code>zephyr/tests/</code>:</p>
+            <div class="table-wrapper">
+                <table>
+                    <thead><tr><th>Sample</th><th>Content</th></tr></thead>
+                    <tbody>
+                        <tr><td><code>periph_smoke</code></td><td>Quick peripheral check</td></tr>
+                        <tr><td><code>mcuboot_app</code></td><td>MCUboot (sysbuild)</td></tr>
+                        <tr><td><code>ble_ota</code></td><td>MCUmgr SMP image upload over BLE</td></tr>
+                        <tr><td><code>bap_broadcast_source</code>, <code>bap_broadcast_sink</code></td><td>LE Audio broadcast</td></tr>
+                        <tr><td><code>le_audio_headset</code></td><td>LE Audio headset</td></tr>
+                        <tr><td><code>evk_demo</code></td><td>IPRO7AI EVK: LCD, microphone, speaker, camera preview</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>The SDK also carries the IPRO7 configuration for two of Zephyr's own samples:</p>
+            <pre><code class="language-bash"># BLE heart-rate peripheral
+west build -b ipro7_evb zephyr/samples/bluetooth/peripheral_hr -- \
+    -DEXTRA_CONF_FILE=$PWD/../zephyr/samples/bt_peripheral_hr/ipro7.conf \
+    -DEXTRA_DTC_OVERLAY_FILE=$PWD/../zephyr/samples/bt_peripheral_hr/ipro7.overlay
+
+# OpenThread shell
+west build -b ipro7_evb zephyr/samples/net/openthread/shell -- \
+    -DEXTRA_CONF_FILE=$PWD/../zephyr/samples/ieee802154_shell/ot.conf \
+    -DEXTRA_DTC_OVERLAY_FILE=$PWD/../zephyr/samples/ieee802154_shell/app.overlay</code></pre>
+        </section>
+
+        <section id="prebuilt">
+            <h2>Prebuilt components</h2>
+            <p>Except for the components below, a Zephyr build compiles all SDK code, the HAL included, from source:</p>
+            <ul>
+                <li>BLE controller: <code>components/wireless/bluetooth/ipro_ble_controller/lib/</code></li>
+                <li>RF driver: <code>components/wireless/rf/ipro7_rf/lib/zephyr/</code></li>
+                <li>IEEE 802.15.4 MAC: <code>components/wireless/ieee802154/lib/zephyr/</code></li>
+            </ul>
+            <p>The RF and 802.15.4 archives come in two variants each: when the BLE controller is linked, the whole image is built with <code>-fshort-enums</code>, and the build picks the matching variant automatically.</p>
+        </section>
+
+        <section id="limitations">
+            <h2>Not supported yet</h2>
+            <ul>
+                <li>Low-power modes: PDS/HBN are not entered through Zephyr's <code>pm_state</code>, and the BLE controller does not sleep either.</li>
+                <li>Zephyr drivers for the display, camera, audio codec, USB, SD host, Ethernet and NPU (the IPRO7AI EVK's LCD works through Zephyr's own ST7789V driver).</li>
+            </ul>
+            <p>Use the FreeRTOS applications for these; FreeRTOS remains the production RTOS.</p>
+        </section>
     </article>
 </div>
