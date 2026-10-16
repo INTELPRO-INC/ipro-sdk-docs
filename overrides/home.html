@@ -1,0 +1,34 @@
+{% extends "main.html" %}
+
+{#- Home page: hero (text + interactive SDK architecture) from front matter and extra.release; body from Markdown. -#}
+{% block tabs %}
+  {{ super() }}
+  {% set hero = page.meta.hero %}
+  {% set release = config.extra.release %}
+  <section class="ipro-hero">
+    <div class="md-grid">
+      <div class="ipro-hero__inner">
+        <div class="ipro-hero__text">
+          <a class="ipro-hero__release" href="{{ hero.release_link | url }}">
+            <span class="ipro-hero__release-dot" aria-hidden="true"></span>
+            {{ hero.release_text | replace("{sdk}", release.sdk) | replace("{date}", release.date) }}
+          </a>
+          <h1 class="ipro-hero__title">{{ hero.title }}</h1>
+          <p class="ipro-hero__lead">{{ hero.lead }}</p>
+          <div class="ipro-hero__actions md-typeset">
+            <a href="{{ hero.primary.link | url }}" class="md-button md-button--primary">{{ hero.primary.text }}</a>
+            <a href="{{ release.download }}" class="md-button">{{ hero.download_text }} {{ release.sdk }}</a>
+          </div>
+        </div>
+        <div class="ipro-hero__visual">
+          {% include "partials/sdk-arch.html" %}
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{#- The hero carries the title, so skip the automatic page-title <h1>. -#}
+{% block content %}
+  <div class="ipro-home">{{ page.content }}</div>
+{% endblock %}

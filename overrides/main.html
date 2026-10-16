@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+  {{ super() }}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="{{ 'assets/stylesheets/theme.css' | url }}">
+  <link rel="stylesheet" href="{{ 'assets/stylesheets/components.css' | url }}">
+{% endblock %}
+
+{#- Release notice: per-language text in extra.notice, version and date from extra.release -#}
+{% block announce %}
+  {% set release = config.extra.release %}
+  <span class="ipro-notice">{{ config.extra.notice | replace("{sdk}", release.sdk) | replace("{date}", release.date) }}</span>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script src="{{ 'assets/javascripts/lang-switch.js' | url }}"></script>
+  <script src="{{ 'assets/javascripts/ipro.js' | url }}"></script>
+{% endblock %}

@@ -1,0 +1,671 @@
+/* Site components. Colors come from theme.css through the --ipro-* tokens.
+   Motion: one orchestrated load sequence (the home SDK architecture), typing in the
+   quick-start terminal when it scrolls into view, and responses to the
+   reader's actions (hover, focus, navigation). All of it stops under
+   prefers-reduced-motion (end of file). */
+
+/* ======================================================================
+   Release notice (announce bar)
+   ====================================================================== */
+.md-banner {
+  background: var(--ipro-notice-bg);
+  color: var(--ipro-notice-fg);
+  font-size: 0.66rem;
+}
+.md-banner__inner { margin: 0.4rem auto; }
+
+/* ======================================================================
+   Header: translucent, blurs the page under it
+   ====================================================================== */
+.md-header,
+.md-tabs {
+  background-color: var(--ipro-header-bg);
+  -webkit-backdrop-filter: saturate(1.6) blur(12px);
+          backdrop-filter: saturate(1.6) blur(12px);
+}
+.md-header--shadow { box-shadow: 0 1px 0 var(--ipro-line), 0 8px 24px -16px rgba(15, 23, 42, 0.35); }
+.md-tabs__link { transition: color 160ms ease, opacity 160ms ease; }
+
+/* ======================================================================
+   Home hero
+   ====================================================================== */
+.ipro-hero {
+  position: relative;
+  overflow: hidden;
+  overflow: clip;              /* hidden still lets focus/scrollIntoView shift the glow sideways */
+  background-color: var(--ipro-hero-bg);
+  background-image: radial-gradient(var(--ipro-hero-dot) 1px, transparent 1.2px);
+  background-size: 22px 22px;
+  border-bottom: 1px solid var(--ipro-line);
+}
+.ipro-hero::after {            /* soft light behind the chip */
+  content: "";
+  position: absolute;
+  right: -8%;
+  top: 50%;
+  width: 46rem;
+  height: 46rem;
+  transform: translateY(-50%);
+  background: radial-gradient(closest-side, var(--ipro-hero-glow), transparent);
+  pointer-events: none;
+}
+.ipro-hero__inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 28rem);
+  gap: 3rem;
+  align-items: center;
+  padding: 2.8rem 0.8rem 3rem;
+}
+.ipro-hero__release {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 1.1rem;
+  padding: 0.28rem 0.75rem 0.28rem 0.6rem;
+  border: 1px solid var(--ipro-line);
+  border-radius: 999px;
+  background: var(--ipro-surface);
+  color: var(--ipro-ink);
+  font-size: 0.66rem;
+  font-weight: 600;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+.ipro-hero__release:hover { border-color: var(--md-primary-fg-color); transform: translateY(-1px); }
+.ipro-hero__release-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--md-primary-fg-color);
+  box-shadow: 0 0 0 3px var(--ipro-tint);
+}
+.ipro-hero__title {
+  margin: 0 0 1rem;
+  font-size: clamp(1.9rem, 1.3rem + 1.9vw, 2.6rem);
+  line-height: 1.12;
+  text-wrap: balance;          /* no single-character last line in CJK titles */
+  word-break: keep-all;        /* CJK breaks only at spaces or a U+200B in the title text */
+  overflow-wrap: anywhere;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--ipro-ink);
+}
+.ipro-hero__lead {
+  margin: 0 0 1.6rem;
+  max-width: 32em;
+  font-size: 0.88rem;
+  line-height: 1.75;
+  color: var(--md-default-fg-color--light);
+}
+.ipro-hero__actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.ipro-hero__actions .md-button { margin: 0; font-size: 0.72rem; }
+
+@media screen and (max-width: 59.9375em) {
+  .ipro-hero__inner { grid-template-columns: 1fr; gap: 2rem; padding: 2.4rem 0.8rem 2.6rem; }
+  .ipro-hero__visual { max-width: 25rem; margin: 0 auto; width: 100%; }
+}
+
+/* ======================================================================
+   SDK architecture (home hero). Always drawn as a dark board, like the
+   silicon it describes. Layers stack top-down; the chip row sits at the
+   bottom and selects which components light up.
+   ====================================================================== */
+.ipro-arch { margin: 0; }
+.ipro-arch__panel {
+  position: relative;
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.9rem 0.9rem 0.9rem 0.8rem;
+  border: 1px solid #2c3a4f;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(153, 170, 114, 0.12) 1px, transparent 1.4px) 0 0 / 14px 14px,
+    linear-gradient(180deg, #172131, #111926);
+  box-shadow: 0 30px 60px -36px rgba(15, 23, 42, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* Signal bus on the left: carries the chip's signal up through the layers */
+.ipro-arch__bus {
+  position: absolute;
+  left: 5.35rem;
+  top: 1.2rem;
+  bottom: 1.4rem;
+  width: 2px;
+  border-radius: 2px;
+  background: #34472a;
+  overflow: hidden;
+}
+.ipro-arch__bus::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 38%;
+  bottom: -40%;
+  background: linear-gradient(to top, transparent, var(--ipro-signal), transparent);
+  opacity: 0;
+}
+.ipro-arch.is-sweep .ipro-arch__bus::after { animation: ipro-sweep 900ms cubic-bezier(.4, 0, .2, 1); }
+@keyframes ipro-sweep {
+  0%   { bottom: -40%; opacity: 1; }
+  100% { bottom: 105%; opacity: 1; }
+}
+
+.ipro-arch__layer {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4.6rem minmax(0, 1fr);
+  gap: 0.9rem;
+  align-items: center;
+  padding: 0.45rem 0;
+  border-bottom: 1px dashed rgba(148, 163, 184, 0.14);
+}
+.ipro-arch__layer:last-child { border-bottom: 0; }
+.ipro-arch__layer::before {        /* node where the bus meets the layer */
+  content: "";
+  position: absolute;
+  left: calc(5.35rem - 3px);
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin-top: -4px;
+  border-radius: 50%;
+  background: #1a2433;
+  border: 2px solid #4d6a35;
+}
+.ipro-arch__label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #8b9a78;
+  text-align: right;
+  padding-right: 0.25rem;
+}
+.ipro-arch__items { display: flex; flex-wrap: wrap; gap: 0.35rem; padding-left: 0.35rem; }
+
+.ipro-arch__item {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid #3b4f2e;
+  border-radius: 7px;
+  background: #131b28;
+  color: #e5ecd8 !important;
+  font-size: 0.64rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-decoration: none;
+  transition: opacity 280ms ease, border-color 200ms ease, background-color 200ms ease, color 200ms ease, filter 280ms ease;
+}
+.ipro-arch__item.is-wide { flex: 1 1 auto; justify-content: center; }
+.ipro-arch__item:hover,
+.ipro-arch__item:focus-visible {
+  border-color: var(--ipro-signal);
+  background: #1d2a14;
+  color: #f4fbe6 !important;
+  outline: none;
+}
+.ipro-arch__item.is-off {
+  opacity: 0.32;
+  border-style: dashed;
+  border-color: #334155;
+  color: #94a3b8 !important;
+  filter: saturate(0.2);
+}
+.ipro-arch__item.is-off:hover,
+.ipro-arch__item.is-off:focus-visible { opacity: 0.7; }
+.ipro-arch__item.is-flash { animation: ipro-flash 700ms ease-out; }
+@keyframes ipro-flash {
+  0%   { box-shadow: 0 0 0 0 rgba(190, 242, 100, 0.55); border-color: var(--ipro-signal); }
+  100% { box-shadow: 0 0 0 7px rgba(190, 242, 100, 0); }
+}
+
+/* Chip row: each chip is drawn as a small package with pins */
+.ipro-arch__layer--chips { padding-top: 0.8rem; }
+.ipro-arch__chips { display: flex; flex-wrap: wrap; gap: 0.6rem; padding: 0.3rem 0 0.3rem 0.35rem; }
+.ipro-arch__chip {
+  position: relative;
+  display: grid;
+  gap: 0.1rem;
+  min-width: 5.2rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #3a475a;
+  border-radius: 6px;
+  background: #1b2230;
+  color: #cbd5e1;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 200ms ease, background-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+}
+.ipro-arch__chip::before,
+.ipro-arch__chip::after {          /* pins on the top and bottom edges */
+  content: "";
+  position: absolute;
+  left: 0.55rem;
+  right: 0.55rem;
+  height: 4px;
+  background: repeating-linear-gradient(90deg, #8b95a3 0 3px, transparent 3px 8px);
+  opacity: 0.75;
+}
+.ipro-arch__chip::before { top: -5px; }
+.ipro-arch__chip::after  { bottom: -5px; }
+.ipro-arch__chip-name { font: 700 0.72rem/1.1 var(--md-text-font-family); color: #f1f5f9; letter-spacing: -0.01em; }
+.ipro-arch__chip-sdk  { font: 500 0.55rem/1.2 var(--md-code-font-family); color: #8b9aac; }
+.ipro-arch__chip:hover { border-color: #6b8a45; transform: translateY(-1px); }
+.ipro-arch__chip:focus-visible { outline: 2px solid var(--ipro-signal); outline-offset: 3px; }
+.ipro-arch__chip[aria-pressed="true"] {
+  border-color: var(--ipro-signal);
+  background: #24341a;
+  box-shadow: 0 0 0 3px rgba(190, 242, 100, 0.12), 0 10px 24px -14px rgba(190, 242, 100, 0.45);
+}
+.ipro-arch__chip[aria-pressed="true"] .ipro-arch__chip-sdk { color: #bfd88f; }
+
+.ipro-arch__caption {
+  display: grid;
+  gap: 0.1rem;
+  min-height: 3.4rem;
+  margin-top: 0.9rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--ipro-line);
+  border-left: 3px solid var(--md-primary-fg-color);
+  border-radius: 8px;
+  background: var(--ipro-surface);
+  font-size: 0.68rem;
+  line-height: 1.55;
+  color: var(--md-default-fg-color--light);
+}
+.ipro-arch__caption strong { color: var(--ipro-ink); font-size: 0.72rem; }
+.ipro-arch__caption a { font-weight: 600; justify-self: start; }
+.ipro-arch__caption a[hidden] { display: none; }
+
+/* Build-up on load: chip row first, then each layer above it */
+.ipro-arch--ready .ipro-arch__layer {
+  opacity: 0;
+  animation: ipro-rise 520ms cubic-bezier(.2, .8, .2, 1) forwards;
+  animation-delay: calc(150ms + var(--l) * 120ms);
+}
+.ipro-arch--ready .ipro-arch__bus { transform-origin: bottom; animation: ipro-grow 700ms ease-out 200ms both; }
+@keyframes ipro-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes ipro-grow { from { transform: scaleY(0); } to { transform: none; } }
+
+@media screen and (max-width: 44.9375em) {
+  .ipro-arch__chips { flex-wrap: nowrap; gap: 0.45rem; }
+  .ipro-arch__chip { flex: 1 1 0; min-width: 0; padding: 0.45rem 0.5rem; }
+  .ipro-arch__layer { grid-template-columns: 1fr; gap: 0.35rem; }
+  .ipro-arch__label { text-align: left; padding: 0 0 0 0.35rem; }
+  .ipro-arch__bus, .ipro-arch__layer::before { display: none; }
+}
+
+/* ======================================================================
+   Home page body
+   ====================================================================== */
+/* .ipro-home sits inside the .md-typeset article */
+.md-content__inner:has(> .ipro-home) { padding-top: 0.4rem; }
+.md-typeset .ipro-home > h2 { margin-top: 2.4rem; }
+.md-typeset .ipro-home > h2:first-child { margin-top: 0.8rem; }
+
+.ipro-quickstart {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: 1.8rem;
+  align-items: start;
+}
+@media screen and (max-width: 59.9375em) {
+  .ipro-quickstart { grid-template-columns: 1fr; }
+}
+
+.md-typeset .ipro-tag {
+  display: inline-block;
+  margin: 0 0.15rem 0.3rem 0;
+  padding: 0.05rem 0.45rem;
+  border: 1px solid var(--ipro-line);
+  border-radius: 6px;
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: var(--md-default-fg-color--light);
+  background: var(--ipro-surface-2);
+}
+
+.md-typeset .ipro-links > ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.2rem 1.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.md-typeset .ipro-links > ul > li {
+  margin: 0;
+  padding: 0.7rem 0 0.75rem;
+  border-bottom: 1px solid var(--ipro-line);
+  font-size: 0.7rem;
+  color: var(--md-default-fg-color--light);
+}
+.md-typeset .ipro-links a { color: var(--ipro-ink); font-size: 0.78rem; }
+.md-typeset .ipro-links a:hover { color: var(--md-primary-fg-color); }
+.md-typeset .ipro-links .twemoji { color: var(--md-primary-fg-color); margin-right: 0.25rem; }
+
+/* ======================================================================
+   Terminal (quick start). Static without JS; typed once when visible.
+   ====================================================================== */
+.md-typeset .ipro-term {
+  border: 1px solid var(--ipro-term-line);
+  border-radius: 12px;
+  background: var(--ipro-term-bg);
+  box-shadow: 0 24px 48px -28px rgba(15, 23, 42, 0.55);
+  overflow: hidden;
+}
+.md-typeset .ipro-term__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.8rem;
+  border-bottom: 1px solid var(--ipro-term-line);
+}
+.md-typeset .ipro-term__bar > span { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--ipro-term-dot); }
+.md-typeset .ipro-term__bar em {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 0.58rem;
+  color: #7c8798;
+}
+.md-typeset .ipro-term pre { margin: 0; }
+.md-typeset .ipro-term pre > code {
+  display: block;
+  padding: 0.85rem 1rem 1rem;
+  background: transparent;
+  color: var(--ipro-term-fg);
+  font-size: 0.62rem;
+  line-height: 1.8;
+  overflow-x: auto;
+}
+/* Lines stay inline: the newlines inside <pre> already break them, and a
+   hidden line keeps its space, so typing never shifts the layout. */
+.md-typeset .ipro-term .ln { display: inline; }
+.md-typeset .ipro-term .md-clipboard,
+.md-typeset .ipro-term .md-code__nav,
+.md-typeset .ipro-term .md-code__button { display: none; }
+.md-typeset .ipro-term .c  { color: #6f7b8c; }
+.md-typeset .ipro-term .p  { color: var(--ipro-signal); }
+.md-typeset .ipro-term .o  { color: #b9c3d0; }
+.md-typeset .ipro-term .ok { color: #a9d46f; }
+.md-typeset .ipro-term .ln.is-hidden { visibility: hidden; }
+.md-typeset .ipro-term .is-typing::after {
+  content: "";
+  display: inline-block;
+  width: 0.5em;
+  height: 1.05em;
+  margin-left: 1px;
+  vertical-align: -0.18em;
+  background: var(--ipro-signal);
+  animation: ipro-caret 0.9s steps(1) infinite;
+}
+@keyframes ipro-caret { 50% { opacity: 0; } }
+
+/* ======================================================================
+   Content pages
+   ====================================================================== */
+.md-main__inner .md-content__inner { animation: ipro-enter 300ms cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes ipro-enter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+.md-typeset h1 {
+  color: var(--ipro-ink);
+  font-weight: 700;
+  font-size: 1.9em;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  margin-bottom: 0.9em;
+}
+.md-typeset h2 {
+  color: var(--ipro-ink);
+  font-weight: 700;
+  font-size: 1.4em;
+  letter-spacing: -0.01em;
+  margin-top: 2.2em;
+}
+.md-typeset h3 { font-weight: 650; color: var(--ipro-ink); }
+.md-typeset .headerlink { color: var(--md-primary-fg-color); }
+
+.md-typeset a { text-underline-offset: 0.2em; }
+.md-typeset :not(pre) > code {
+  border-radius: 5px;
+  padding: 0.1em 0.38em;
+  background: var(--ipro-code-inline);
+}
+
+/* Focus that is visible on every interactive element */
+.md-typeset a:focus-visible,
+.md-button:focus-visible,
+.md-tabs__link:focus-visible,
+.md-nav__link:focus-visible {
+  outline: 2px solid var(--md-primary-fg-color);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Admonitions: tinted panel, colored rail, one accent per type */
+.md-typeset .admonition,
+.md-typeset details {
+  --ad: var(--md-primary-fg-color);
+  border: 1px solid var(--ipro-line);
+  border-left: 3px solid var(--ad);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--ad) 6%, var(--md-default-bg-color));
+  box-shadow: none;
+  font-size: 0.72rem;
+}
+.md-typeset .admonition-title,
+.md-typeset summary {
+  background: transparent !important;
+  border: 0;
+  font-weight: 650;
+  color: var(--ipro-ink);
+}
+.md-typeset .admonition-title::before,
+.md-typeset summary::before { background-color: var(--ad) !important; }
+.md-typeset .admonition.note,     .md-typeset details.note     { --ad: #4f6d9a; }
+.md-typeset .admonition.info,     .md-typeset details.info     { --ad: #2f7f8a; }
+.md-typeset .admonition.tip,      .md-typeset details.tip      { --ad: var(--md-primary-fg-color); }
+.md-typeset .admonition.abstract, .md-typeset details.abstract { --ad: var(--md-primary-fg-color); }
+.md-typeset .admonition.warning,  .md-typeset details.warning  { --ad: #c47a12; }
+.md-typeset .admonition.danger,   .md-typeset details.danger   { --ad: #c2410c; }
+
+/* Tables */
+.md-typeset__table { width: 100%; }
+.md-typeset table:not([class]) {
+  display: table;
+  width: 100%;
+  border: 1px solid var(--ipro-line);
+  border-radius: 10px;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  font-size: 0.7rem;
+  box-shadow: none;
+}
+.md-typeset table:not([class]) th {
+  background: var(--ipro-table-head);
+  color: var(--ipro-table-head-fg);
+  font-weight: 650;
+  border-bottom: 1px solid var(--ipro-line);
+}
+.md-typeset table:not([class]) td { border-top: 1px solid var(--ipro-line); }
+.md-typeset table:not([class]) tr:first-child td { border-top: 0; }
+
+/* Code blocks */
+.md-typeset pre > code { border-radius: 10px; }
+.md-typeset .highlight { border-radius: 10px; }
+.md-typeset .highlight > pre { border: 1px solid var(--ipro-line); border-radius: 10px; }
+.md-typeset .highlight span.filename {
+  border: 1px solid var(--ipro-line);
+  border-bottom: 0;
+  border-radius: 10px 10px 0 0;
+  background: var(--ipro-surface-2);
+  font: 600 0.62rem/1 var(--md-code-font-family);
+  color: var(--md-default-fg-color--light);
+  padding: 0.65rem 1rem;
+}
+.md-typeset .highlight span.filename + pre { border-top-left-radius: 0; border-top-right-radius: 0; }
+
+/* Content tabs: the active label carries the brand color */
+.md-typeset .tabbed-labels > label { transition: color 160ms ease; }
+.md-typeset .tabbed-set > input:checked + label,
+.md-typeset .tabbed-labels > label:hover { color: var(--md-primary-fg-color); }
+
+/* On-page table of contents: active entry gets a rail */
+.md-nav--secondary .md-nav__link { transition: color 160ms ease, box-shadow 160ms ease; }
+.md-nav--secondary .md-nav__link--active {
+  color: var(--md-primary-fg-color);
+  box-shadow: inset 2px 0 0 var(--md-primary-fg-color);
+  padding-left: 0.5rem;
+}
+
+/* ======================================================================
+   Cards (Material grid cards)
+   ====================================================================== */
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid > .card {
+  border: 1px solid var(--ipro-line);
+  border-radius: 12px;
+  background: var(--ipro-surface);
+  box-shadow: none;
+  transition: border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+}
+.md-typeset .grid.cards > ul > li:has(a:hover),
+.md-typeset .grid.cards > ul > li:focus-within {
+  border-color: var(--md-primary-fg-color);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px -20px rgba(15, 23, 42, 0.45);
+}
+.md-typeset .grid.cards > ul > li > hr { margin: 0.55rem 0; border-color: var(--ipro-line); }
+.md-typeset .grid.cards .twemoji { color: var(--md-primary-fg-color); }
+
+.ipro-badge {
+  display: inline-block;
+  margin-left: 0.3rem;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  vertical-align: middle;
+  background: var(--ipro-tint);
+  color: var(--ipro-tint-fg);
+}
+
+/* ======================================================================
+   Steps: numbered rail; the rail fills as the reader scrolls through
+   ====================================================================== */
+.md-typeset .ipro-steps > ol { counter-reset: step; list-style: none; margin-left: 0; padding-left: 0; }
+.md-typeset .ipro-steps > ol > li {
+  counter-increment: step;
+  position: relative;
+  margin: 0;
+  padding: 0 0 1.2rem 2.5rem;
+}
+.md-typeset .ipro-steps > ol > li::before {
+  content: counter(step);
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+  box-shadow: 0 0 0 4px var(--md-default-bg-color);
+}
+.md-typeset .ipro-steps > ol > li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: calc(0.8rem - 1px);
+  top: 1.8rem;
+  bottom: 0.15rem;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--ipro-tint-strong);
+  transform-origin: top;
+}
+@supports (animation-timeline: view()) {
+  .md-typeset .ipro-steps > ol > li:not(:last-child)::after {
+    background: linear-gradient(var(--md-primary-fg-color), var(--md-primary-fg-color)) no-repeat,
+                var(--ipro-tint-strong);
+    background-size: 100% 0%;
+    animation: ipro-rail linear both;
+    animation-timeline: view();
+    animation-range: entry 40% cover 55%;
+  }
+  @keyframes ipro-rail { to { background-size: 100% 100%, auto; } }
+}
+
+/* ======================================================================
+   Key facts strip (board and chip pages)
+   ====================================================================== */
+.ipro-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
+  gap: 0.6rem;
+  margin: 1rem 0 1.6rem;
+}
+.ipro-facts > div {
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--ipro-line);
+  border-top: 2px solid var(--md-primary-fg-color);
+  border-radius: 10px;
+  background: var(--ipro-surface);
+}
+.ipro-facts strong { display: block; font-size: 1rem; letter-spacing: -0.01em; color: var(--ipro-ink); }
+.ipro-facts span { font-size: 0.63rem; line-height: 1.5; color: var(--md-default-fg-color--light); }
+
+/* ======================================================================
+   Layer diagram (ipro-stack)
+   ====================================================================== */
+.ipro-stack { display: grid; gap: 0.35rem; margin: 1rem 0 1.4rem; max-width: 32rem; }
+.ipro-stack > div {
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--ipro-line);
+  border-left: 4px solid var(--layer, var(--md-primary-fg-color));
+  border-radius: 8px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--layer) 12%, transparent), var(--ipro-surface) 45%);
+}
+.ipro-stack strong { display: block; font-size: 0.74rem; color: var(--ipro-ink); }
+.ipro-stack span { font-size: 0.66rem; color: var(--md-default-fg-color--light); font-family: var(--md-code-font-family); }
+.ipro-stack .l-app  { --layer: #10b981; }
+.ipro-stack .l-host { --layer: #06b6d4; }
+.ipro-stack .l-hci  { --layer: #f59e0b; }
+.ipro-stack .l-ctlr { --layer: #ef4444; }
+
+/* ======================================================================
+   Dark header search: keep the field, placeholder and icon readable
+   ====================================================================== */
+[data-md-color-scheme="slate"] .md-search__input {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+}
+[data-md-color-scheme="slate"] .md-search__input::placeholder { color: #94a3b8; }
+[data-md-color-scheme="slate"] .md-search__input + .md-search__icon { color: #94a3b8; }
+
+/* ======================================================================
+   Reduced motion: show everything in its final state, no movement
+   ====================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .ipro-arch__layer { opacity: 1 !important; transform: none !important; }
+  .ipro-arch__bus { transform: none !important; }
+  .md-typeset .ipro-steps > ol > li:not(:last-child)::after { background: var(--md-primary-fg-color); }
+  .md-typeset .ipro-term .ln.is-hidden { visibility: visible; }
+}
+
+/* Phones: trim the hero glow and terminal text */
+@media screen and (max-width: 44.9375em) {
+  .ipro-hero::after { width: 28rem; height: 28rem; right: -40%; }
+  .md-typeset .ipro-term pre > code { font-size: 0.58rem; }
+}

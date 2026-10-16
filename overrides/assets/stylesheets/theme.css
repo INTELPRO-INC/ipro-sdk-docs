@@ -1,0 +1,114 @@
+/* INTELPRO brand theme. Tokens follow www.intelpro.tw (style.css :root) so the
+   docs read as part of the corporate site: olive #536c35, slate ink,
+   Plus Jakarta Sans + Noto Sans TC, JetBrains Mono. Fonts load in main.html.
+   components.css only uses the --ipro-* tokens defined here. */
+
+:root {
+  --md-text-font: "Plus Jakarta Sans", "Noto Sans TC", "PingFang TC";
+  --md-code-font: "JetBrains Mono", "Noto Sans Mono CJK TC";
+  /* The chip map is always a dark package, so its signal color is shared */
+  --ipro-signal: #bef264;
+}
+
+/* ---------- Light ---------- */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color: #536c35;
+  --md-primary-fg-color--light: #6b8a45;
+  --md-primary-fg-color--dark: #3f5228;
+  --md-primary-bg-color: #ffffff;
+  --md-primary-bg-color--light: rgba(255, 255, 255, 0.7);
+  --md-accent-fg-color: #3f5228;
+  --md-accent-fg-color--transparent: rgba(83, 108, 53, 0.1);
+  --md-typeset-a-color: #536c35;
+  --md-default-fg-color: rgba(15, 23, 42, 0.92);
+  --md-default-fg-color--light: #475569;
+  --md-default-fg-color--lighter: #94a3b8;
+  --md-default-fg-color--lightest: #e2e8f0;
+  --md-code-bg-color: #f8fafc;
+
+  --ipro-ink: #0f172a;
+  --ipro-line: #e2e8f0;
+  --ipro-surface: #ffffff;
+  --ipro-surface-2: #f8fafc;
+  --ipro-tint: #f1f5e9;
+  --ipro-tint-fg: #3f5228;
+  --ipro-tint-strong: #dfe7d0;
+  --ipro-code-inline: #f1f5f9;
+  --ipro-table-head: #f1f5e9;
+  --ipro-table-head-fg: #243116;
+  --ipro-notice-bg: #f1f5e9;
+  --ipro-notice-fg: #243116;
+  --ipro-header-bg: rgba(255, 255, 255, 0.82);
+
+  --ipro-hero-bg: #fafbf6;
+  --ipro-hero-dot: rgba(83, 108, 53, 0.14);
+  --ipro-hero-glow: rgba(153, 170, 114, 0.28);
+  --ipro-term-bg: #0f172a;
+  --ipro-term-line: #1e293b;
+  --ipro-term-fg: #e2e8f0;
+  --ipro-term-dot: #334155;
+}
+
+[data-md-color-scheme="default"] .md-header,
+[data-md-color-scheme="default"] .md-tabs { color: #0f172a; }
+[data-md-color-scheme="default"] .md-tabs { border-bottom: 1px solid #e2e8f0; }
+[data-md-color-scheme="default"] .md-tabs__link { opacity: 0.75; }
+[data-md-color-scheme="default"] .md-tabs__item--active .md-tabs__link {
+  color: #536c35;
+  opacity: 1;
+  font-weight: 600;
+}
+[data-md-color-scheme="default"] .md-search__input {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+[data-md-color-scheme="default"] .md-search__input::placeholder { color: #64748b; }
+[data-md-color-scheme="default"] .md-search__icon { color: #64748b; }
+[data-md-color-scheme="default"] .md-header__source { color: #475569; }
+
+/* ---------- Dark ---------- */
+[data-md-color-scheme="slate"] {
+  --md-hue: 222;
+  --md-default-bg-color: #0b1220;
+  --md-default-fg-color--light: #a0aec0;
+  --md-primary-fg-color: #8fa865;
+  --md-primary-fg-color--light: #a9c07e;
+  --md-primary-fg-color--dark: #536c35;
+  --md-primary-bg-color: #0b1220;
+  --md-primary-bg-color--light: rgba(11, 18, 32, 0.7);
+  --md-accent-fg-color: #bef264;
+  --md-accent-fg-color--transparent: rgba(190, 242, 100, 0.1);
+  --md-typeset-a-color: #a9c07e;
+  --md-code-bg-color: #111a2b;
+
+  --ipro-ink: #e2e8f0;
+  --ipro-line: #1e293b;
+  --ipro-surface: #0f172a;
+  --ipro-surface-2: #111a2b;
+  --ipro-tint: rgba(153, 170, 114, 0.16);
+  --ipro-tint-fg: #c5d6a2;
+  --ipro-tint-strong: rgba(153, 170, 114, 0.22);
+  --ipro-code-inline: #172238;
+  --ipro-table-head: rgba(153, 170, 114, 0.14);
+  --ipro-table-head-fg: #dfe9cb;
+  --ipro-notice-bg: #142012;
+  --ipro-notice-fg: #c5d6a2;
+  --ipro-header-bg: rgba(11, 18, 32, 0.8);
+
+  --ipro-hero-bg: #0b1220;
+  --ipro-hero-dot: rgba(153, 170, 114, 0.13);
+  --ipro-hero-glow: rgba(83, 108, 53, 0.42);
+  --ipro-term-bg: #060b16;
+  --ipro-term-line: #1e293b;
+  --ipro-term-fg: #e2e8f0;
+  --ipro-term-dot: #334155;
+}
+[data-md-color-scheme="slate"] .md-header,
+[data-md-color-scheme="slate"] .md-tabs { color: #e2e8f0; }
+[data-md-color-scheme="slate"] .md-tabs { border-bottom: 1px solid #1e293b; }
+[data-md-color-scheme="slate"] .md-tabs__item--active .md-tabs__link { color: #a9c07e; font-weight: 600; }
+/* The olive logo disappears on dark: render it as a light mark */
+[data-md-color-scheme="slate"] .md-header__button.md-logo img { filter: brightness(0) invert(0.92); }
+
+/* ---------- Both ---------- */
+.md-header__button.md-logo img { height: 1.7rem; width: auto; }

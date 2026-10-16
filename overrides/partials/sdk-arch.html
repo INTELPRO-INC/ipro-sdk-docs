@@ -1,0 +1,55 @@
+{#-
+  Interactive SDK architecture for the home page hero.
+
+  Everything comes from page.meta.arch, so adding a chip family, a layer or a
+  component is a front matter change only:
+    arch.chips   [{id, name, sdk, desc, link}]           bottom row, selectable
+    arch.layers  [{name, items: [{title, desc, link, chips: [ids], wide?}]}]
+    arch.default id of the chip selected on load
+  Items whose chips list does not contain the selected chip are dimmed.
+  Rendered fully usable without JS (default chip applied server-side);
+  ipro.js adds chip switching and the caption.
+-#}
+{% set arch = page.meta.arch %}
+{% set current = arch.default %}
+{% set count = arch.layers | length %}
+<figure class="ipro-arch" data-arch data-chip="{{ current }}">
+  <div class="ipro-arch__panel">
+    <span class="ipro-arch__bus" aria-hidden="true"></span>
+    {% for layer in arch.layers %}
+      <div class="ipro-arch__layer" style="--l:{{ count - loop.index0 }}">
+        <span class="ipro-arch__label">{{ layer.name }}</span>
+        <div class="ipro-arch__items">
+          {#- layer["items"]: with a dot, Jinja returns dict.items() -#}
+          {% for item in layer["items"] %}
+            <a class="ipro-arch__item{% if current not in item.chips %} is-off{% endif %}{% if item.wide %} is-wide{% endif %}"
+               href="{{ item.link | url }}" style="--i:{{ loop.index0 }}"
+               data-chips="{{ item.chips | join(' ') }}" data-title="{{ item.title }}" data-desc="{{ item.desc }}">{{ item.title }}</a>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+    <div class="ipro-arch__layer ipro-arch__layer--chips" style="--l:0">
+      <span class="ipro-arch__label">{{ arch.chips_label }}</span>
+      <div class="ipro-arch__chips" role="group" aria-label="{{ arch.chips_label }}">
+        {% for chip in arch.chips %}
+          <button type="button" class="ipro-arch__chip" data-chip="{{ chip.id }}"
+                  data-title="{{ chip.name }}" data-desc="{{ chip.desc }}" data-link="{{ chip.link | url }}"
+                  aria-pressed="{{ 'true' if chip.id == current else 'false' }}">
+            <span class="ipro-arch__chip-name">{{ chip.name }}</span>
+            <span class="ipro-arch__chip-sdk">SDK {{ chip.sdk }}</span>
+          </button>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <figcaption class="ipro-arch__caption" aria-live="polite">
+    {% for chip in arch.chips if chip.id == current %}
+      <strong data-arch-title>{{ chip.name }}</strong>
+      <span data-arch-desc>{{ chip.desc }}</span>
+      <a data-arch-link href="{{ chip.link | url }}">{{ arch.chip_link_text }}</a>
+    {% endfor %}
+  </figcaption>
+</figure>
+{#- Start the build-up sequence before first paint; without JS the diagram is shown as is. -#}
+<script>document.currentScript.previousElementSibling.classList.add("ipro-arch--ready")</script>
