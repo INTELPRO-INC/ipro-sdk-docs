@@ -1,6 +1,11 @@
 {% extends "main.html" %}
 
 {#- Home page: hero (text + interactive SDK architecture) from front matter and extra.release; body from Markdown. -#}
+
+{#- The home page's title is the site name; the theme would print "<title> - <site_name>", i.e. "IPRO SDK - IPRO SDK". -#}
+{% block htmltitle %}
+  <title>{{ config.site_name }}</title>
+{% endblock %}
 {% block tabs %}
   {{ super() }}
   {% set hero = page.meta.hero %}
