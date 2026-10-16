@@ -1,0 +1,182 @@
+# API reference groups for tools/gen_api.py.
+# Each group becomes reference/api/<id>.md; headers are paths as Doxygen reports
+# them (relative to the SDK root). Every header in the Doxygen XML must be listed
+# in exactly one group or under `exclude`, so new headers are never dropped silently.
+exclude:
+  # GPL-2.0 licensed MII register header; kept out of the public reference until decided.
+  - bsp/hal/inc/mii.h
+groups:
+  - id: platform
+    title: {zh: 平台與系統, en: Platform & System}
+    summary:
+      zh: FreeRTOS 啟動與掛鉤、HAL 共用定義、系統控制、時脈、計時器、看門狗、RTC 與記憶體配置輔助。
+      en: FreeRTOS start-up and hooks, common HAL definitions, system control, clocks, timers, watchdogs, RTC and memory helpers.
+    headers:
+      - components/os/freertos/freertos_app_hooks.h
+      - bsp/hal/inc/hal_common.h
+      - bsp/hal/inc/hal_sys.h
+      - bsp/hal/inc/hal_clock.h
+      - bsp/hal/inc/hal_mtimer.h
+      - bsp/hal/inc/hal_timer.h
+      - bsp/hal/inc/hal_rtc.h
+      - bsp/hal/inc/hal_wdt.h
+      - bsp/hal/inc/hal_aon_wdt.h
+      - bsp/hal/inc/hal_cache_alloc.h
+      - bsp/hal/inc/hal_hbnram_mgnt.h
+  - id: memory-boot
+    title: {zh: 記憶體、Flash 與開機, en: Memory, Flash & Boot}
+    summary:
+      zh: Flash 讀寫、PSRAM、boot2 與分割表管理。
+      en: Flash access, PSRAM, boot2 and the partition table manager.
+    headers:
+      - bsp/hal/inc/hal_flash.h
+      - bsp/hal/inc/hal_psram.h
+      - bsp/hal/inc/hal_sf_psram.h
+      - bsp/hal/inc/hal_boot2.h
+      - bsp/hal/inc/hal_ptmgr.h
+  - id: power
+    title: {zh: 電源管理與低功耗, en: Power Management & Low Power}
+    summary:
+      zh: 電源模式、PDS 休眠與喚醒，以及低功耗框架與低功耗 UART。
+      en: Power modes, PDS sleep and wake-up, the low-power framework and the low-power UART.
+    headers:
+      - bsp/hal/inc/hal_pm.h
+      - bsp/hal/inc/hal_pm_util.h
+      - bsp/hal/lp_framework/ipro7/hal_lp.h
+      - bsp/hal/lp_framework/ipro7/lp_uart.h
+  - id: peripherals
+    title: {zh: 周邊 I/O, en: Peripheral I/O}
+    summary:
+      zh: GPIO、UART、SPI、I2C、PWM、ADC、DAC、類比比較器、KeyScan、QDEC 與 DMA。
+      en: GPIO, UART, SPI, I2C, PWM, ADC, DAC, analog comparator, KeyScan, QDEC and DMA.
+    headers:
+      - bsp/hal/inc/hal_gpio.h
+      - bsp/hal/inc/hal_uart.h
+      - bsp/hal/default_config/uart_config.h
+      - bsp/hal/inc/hal_spi.h
+      - bsp/hal/inc/hal_i2c.h
+      - bsp/hal/inc/hal_pwm.h
+      - bsp/hal/inc/hal_adc.h
+      - bsp/hal/default_config/adc_config.h
+      - bsp/hal/inc/hal_dac.h
+      - bsp/hal/inc/hal_acomp.h
+      - bsp/hal/inc/hal_keyscan.h
+      - bsp/hal/inc/hal_qdec.h
+      - bsp/hal/inc/hal_dma.h
+  - id: audio
+    title: {zh: 音訊, en: Audio}
+    summary:
+      zh: 音訊 ADC（PDM 與類比麥克風）與 I2S。
+      en: Audio ADC (PDM and analog microphones) and I2S.
+    headers:
+      - bsp/hal/inc/hal_auadc.h
+      - bsp/hal/inc/hal_i2s.h
+      - bsp/hal/default_config/i2s_config.h
+  - id: camera
+    title: {zh: 相機與影像, en: Camera & Imaging}
+    summary:
+      zh: DVP 相機介面、ISP，以及硬體 MJPEG 編碼與解碼。
+      en: DVP camera interface, ISP, and hardware MJPEG encoding and decoding.
+    headers:
+      - bsp/hal/inc/hal_cam.h
+      - bsp/hal/inc/hal_isp.h
+      - bsp/hal/inc/hal_mjpeg.h
+      - bsp/hal/inc/hal_mjdec.h
+  - id: sd-sdio
+    title: {zh: SD 卡與 SDIO, en: SD Card & SDIO}
+    summary:
+      zh: 硬體 SD 主機、SDIO，以及以 PIO 實作的 SD 主機。
+      en: Hardware SD host, SDIO, and the PIO-based SD host.
+    headers:
+      - bsp/hal/inc/hal_sdh.h
+      - bsp/hal/inc/hal_sdio.h
+      - bsp/hal/inc/hal_pio_sdh.h
+      - bsp/hal/inc/hal_pio_sdh_crc.h
+  - id: ethernet
+    title: {zh: 乙太網路, en: Ethernet}
+    summary:
+      zh: EMAC、lwIP 網路介面與乙太網路 PHY。
+      en: EMAC, the lwIP network interface and the Ethernet PHY.
+    headers:
+      - bsp/hal/inc/hal_emac.h
+      - bsp/hal/inc/hal_ethernetif.h
+      - bsp/hal/inc/ethernet_phy.h
+  - id: pio
+    title: {zh: PIO, en: PIO}
+    summary:
+      zh: 可程式 I/O：CCI、CMSIS-DAP 與掃描介面。
+      en: Programmable I/O for CCI, CMSIS-DAP and scan interfaces.
+    headers:
+      - bsp/hal/inc/hal_pio_cci.h
+      - bsp/hal/inc/hal_pio_cmsis_dap.h
+      - bsp/hal/inc/hal_pio_scan.h
+  - id: security
+    title: {zh: 安全引擎, en: Security Engine}
+    summary:
+      zh: AES、GMAC、雜湊、DSA、ECDSA、P-256 與硬體亂數。
+      en: AES, GMAC, hashing, DSA, ECDSA, P-256 and the hardware random number generator.
+    headers:
+      - bsp/hal/inc/hal_sec_common.h
+      - bsp/hal/inc/hal_sec_hw_common.h
+      - bsp/hal/inc/hal_sec_aes.h
+      - bsp/hal/inc/hal_sec_gmac.h
+      - bsp/hal/inc/hal_sec_hash.h
+      - bsp/hal/inc/hal_sec_dsa.h
+      - bsp/hal/inc/hal_sec_ecdsa.h
+      - bsp/hal/inc/hal_sec_p256.h
+      - bsp/hal/inc/hal_sec_trng.h
+  - id: wireless-ble
+    title: {zh: 無線與 BLE 控制器, en: Wireless & BLE Controller}
+    summary:
+      zh: 無線電初始化，以及 IPRO BLE 控制器的啟動、HCI 傳輸、低功耗與 NVDS 介面。
+      en: Radio start-up and the IPRO BLE controller interfaces for bring-up, HCI transport, low power and NVDS.
+    headers:
+      - bsp/hal/inc/hal_wireless.h
+      - components/wireless/bluetooth/ipro_ble_controller/include/ipro_ble_controller.h
+      - components/wireless/bluetooth/ipro_ble_controller/plf/ipro7/arch/main/ipro_ble_ctlr_arch.h
+      - components/wireless/bluetooth/ipro_ble_controller/hcitl/ipro_ble_ctlr_hcitl.h
+      - components/wireless/bluetooth/ipro_ble_controller/plf/ipro7/lowpower/ipro_ble_ctlr_lowpower.h
+      - components/wireless/bluetooth/ipro_ble_controller/plf/ipro7/lowpower/ipro_ble_ctlr_pds_snapshot.h
+      - components/wireless/bluetooth/ipro_ble_controller/plf/ipro7/nvds/ipro_ble_ctlr_nvds.h
+  - id: ai
+    title: {zh: AI 執行庫, en: AI Runtime}
+    summary:
+      zh: NPU 驅動、推論核心、運算子與後處理，以及偵測與語音模型的介面。
+      en: The NPU driver, inference core, operators and post-processing, and the detection and speech model interfaces.
+    headers:
+      - bsp/hal/inc/hal_npu.h
+      - components/ai/iproai_def.h
+      - components/ai/src/core/include/iproai_core.h
+      - components/ai/src/inst/include/iproai_inst_npu.h
+      - components/ai/src/inst/include/iproai_inst_util.h
+      - components/ai/src/inst/include/iproai_inst_postprocess.h
+      - components/ai/src/inst/include/iproai_riscv_nnfunctions.h
+      - components/ai/src/inst/include/iproai_cycle_profile.h
+      - components/ai/src/inst/include/detect/yolov8_detect.h
+      - components/ai/src/inst/include/detect/yolov8_person_pet_detect.h
+      - components/ai/src/inst/include/detect/gesture_dfl_detect.h
+      - components/ai/src/inst/include/detect/big_a_sppf_detect.h
+      - components/ai/src/inst/include/audio/fbank.h
+      - components/ai/src/inst/include/audio/embedding_dim.h
+      - components/ai/src/inst/include/audio/speaker_embed.h
+      - components/ai/src/inst/include/audio/speaker_recog.h
+      - components/ai/src/inst/include/audio/gallery.h
+      - components/ai/src/inst/include/audio/diarize.h
+  - id: ipro7ai-evk
+    title: {zh: IPRO7AI EVK 板卡庫, en: IPRO7AI EVK Board Library}
+    summary:
+      zh: EVK 子板的面板、繪圖、相機、麥克風、喇叭、PCM 與 microSD 介面。
+      en: The EVK sub-board interfaces for the panel, graphics, camera, microphone, speaker, PCM and microSD.
+    headers:
+      - components/board/ipro7ai_evk/include/evk.h
+      - components/board/ipro7ai_evk/include/st7789p3.h
+      - components/board/ipro7ai_evk/include/st7789p3_port.h
+      - components/board/ipro7ai_evk/include/evk_gfx.h
+      - components/board/ipro7ai_evk/include/font5x7.h
+      - components/board/ipro7ai_evk/include/evk_cam.h
+      - components/board/ipro7ai_evk/include/evk_cam_port.h
+      - components/board/ipro7ai_evk/include/evk_mic.h
+      - components/board/ipro7ai_evk/include/evk_spk.h
+      - components/board/ipro7ai_evk/include/evk_audio_port.h
+      - components/board/ipro7ai_evk/include/evk_pcm.h
+      - components/board/ipro7ai_evk/include/evk_sd.h

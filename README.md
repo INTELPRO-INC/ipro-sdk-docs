@@ -53,6 +53,28 @@ customer and vendor names). It is never committed here: CI reads it from the
 repository (path in `tools/redline_check.py`). Findings from private rules
 never print the matched text.
 
+## Generated pages
+
+Some pages are generated from data and committed like the rest; their front
+matter says `generated: tools/<generator>.py`. Edit the source, not the page.
+
+| Generator | Source | Writes |
+|---|---|---|
+| `tools/gen_documents.py` | `data/documents.yml` | `documents/index.md` |
+| `tools/gen_examples.py --sdk <release>` | `data/examples.yml` + each app's README in the SDK release | `examples/<app>.md`, the catalog tables in `examples/index.md`, the examples nav |
+| `tools/gen_api.py --xml <dir>` | `data/api.yml` + Doxygen XML of the SDK's public headers | `reference/api/<group>.md`, the group table in `reference/api/index.md`, the API nav |
+
+- A document becomes downloadable by setting `access: public` and adding one
+  URL per language under `files` in `data/documents.yml`.
+- `data/examples.yml` holds the catalog text and per-app README curation:
+  `replace` rules (regex; a rule that no longer matches fails the run),
+  `redline_ignore` for reviewed matches, and `exclude`.
+- Doxygen XML: in an SDK checkout with the documented headers run
+  `(cat docs/api/Doxyfile; echo "OUTPUT_DIRECTORY = /tmp/ipro-api") | doxygen -`,
+  then `tools/gen_api.py --xml /tmp/ipro-api/xml`. Every header must be listed
+  in `data/api.yml` (a group or `exclude`).
+- The examples and API generators refuse to write pages that fail the red-line check.
+
 ## Writing pages
 
 1. Add the page under the same path in `docs/zh/` **and** `docs/en/`.

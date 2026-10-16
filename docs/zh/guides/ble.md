@@ -328,4 +328,4 @@ LE Audio 需要 `CONFIG_IPRO_BLE_CTLR_FEATURE="bt54_iso2"` 與 `CONFIG_EM_SIZE=3
 - [第一個 BLE 應用](../tutorials/first-ble-app.md)
 - [BLE 吞吐量測試](../tutorials/ble-throughput.md)
 - [音訊與 LE Audio](audio.md)
-- [API 參考](../reference/api.md)
+- [API 參考](../reference/api/index.md)

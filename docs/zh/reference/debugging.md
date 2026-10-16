@@ -31,7 +31,7 @@ IPRO7 FreeRTOS 應用主要以序列埠主控台除錯：shell 指令與日誌�
 | `reboot` | 重新開機 |
 | `reboot_dl` | 重新開機並進入下載模式，準備燒錄 |
 
-日誌使用 `IPRO_LOGx` 巨集（見 [API 參考](api.md#log-api)）。要看除錯等級的日誌，在 `.config` 設 `CONFIG_LOG_DEFAULT_LEVEL=4` 後重新建置；此值是整數，隨附應用預設為 3（資訊）。
+日誌使用 `IPRO_LOGx` 巨集（見 [API 參考](api/index.md#log-api)）。要看除錯等級的日誌，在 `.config` 設 `CONFIG_LOG_DEFAULT_LEVEL=4` 後重新建置；此值是整數，隨附應用預設為 3（資訊）。
 
 開機時值得留意的訊息：
 
@@ -79,7 +79,7 @@ CPU 例外時，預設的例外處理程式會在主控台印出下列區塊，�
 
 `.config` 是照原樣讀入的，Kconfig 的預設值不會自動套用，上述設定需要明確寫入。
 
-其他致命訊息來自 [FreeRTOS 掛鉤](api.md#rtos-platform)：
+其他致命訊息來自 [FreeRTOS 掛鉤](api/index.md#rtos-platform)：
 
 | 訊息 | 原因 | 處理 |
 |---|---|---|
@@ -147,7 +147,7 @@ CPU 例外時，預設的例外處理程式會在主控台印出下列區塊，�
 | `bt54_iso2 needs at least 32 KB EM` | LE Audio 設定搭配了 16 KB EM | 設 `CONFIG_EM_SIZE=32` |
 | `unsupported variant` 或 `unsupported feature profile` | 控制器設定值不在提供的組合內 | `CONFIG_IPRO_BLE_CTLR_LIB` 用 `link1_periph`、`link1`、`link2`、`link4`；`CONFIG_IPRO_BLE_CTLR_FEATURE` 用 `bt52`、`bt54_iso2` |
 | 使用 `ipro_ble_remote/defconfig_lowpower`，或設了 `CONFIG_IPRO_BLE_CTLR_FORCE_SOURCE_BUILD`、`CONFIG_IPRO_BLE_CTLR_SUBRATING`、`CONFIG_IPRO_BLE_CTLR_CSSA`、`CONFIG_IPRO_PM_BLE`、`CONFIG_IPRO_PM_PDS_CONNECTED` 後，在 `ipro_ble_controller` 設定階段失敗 | 這些設定會改為從原始碼建置 BLE 控制器，而套件只提供預編譯函式庫 | 移除這些設定；需要這些功能請洽 INTELPRO |
-| `CONFIG_EVK_CAMERA needs …`、`CONFIG_EVK_AUDIO needs …`、`CONFIG_EVK_SDCARD needs …` | EVK 板級函式庫缺少相依設定 | 依訊息補上設定，見 [API 參考](api.md#evk-board) |
+| `CONFIG_EVK_CAMERA needs …`、`CONFIG_EVK_AUDIO needs …`、`CONFIG_EVK_SDCARD needs …` | EVK 板級函式庫缺少相依設定 | 依訊息補上設定，見 [API 參考](api/ipro7ai-evk.md) |
 | 連結錯誤 `undefined reference to adc_ioctl` | 使用了 `adc_channel_start()` 等 ADC 便利巨集 | 改用 `hal_adc_ioctl()` |
 | 開了 `CONFIG_AI_SUPPORT` 等功能，但相依項目沒有跟著啟用 | 建置照原樣讀取 `.config`，不會套用 Kconfig 的 `select` 與 `depends on` | 明確寫入相依設定，例如 AI 需要 `CONFIG_USE_PSRAM=y`；見 [建置系統與設定](../guides/build-system.md) |
 | 連結器回報記憶體區段溢位 | 程式或資料超出 `flash`、`ocram` 等區段 | 依 [大小與記憶體分析](tools.md#size-analysis) 找出最大的占用者；AI 與影像同時啟用時 OCRAM 只剩 64 KB 或 48 KB |
@@ -186,6 +186,6 @@ CPU 例外時，預設的例外處理程式會在主控台印出下列區塊，�
 ## 下一步 { #next-steps }
 
 - [工具命令列](tools.md)：建置、燒錄與監看工具的完整選項。
-- [API 參考](api.md)：平台、BLE、HAL 與日誌 API。
+- [API 參考](api/index.md)：平台、BLE、HAL 與日誌 API。
 - [常見問題](faq.md)：建置、BLE、網路與 RTOS 的常見問答。
 - [BLE 開發](../guides/ble.md) 與 [Zephyr RTOS](../guides/zephyr.md)：依功能領域的開發指南。

@@ -31,7 +31,7 @@ Every application with `CONFIG_SHELL=y` has these built-in commands; `help` also
 | `reboot` | Reboot |
 | `reboot_dl` | Reboot into download mode, ready for flashing |
 
-Logs use the `IPRO_LOGx` macros (see [API Reference](api.md#log-api)). For debug-level logs, set `CONFIG_LOG_DEFAULT_LEVEL=4` in `.config` and rebuild; the value is an integer, and the shipped applications use 3 (info).
+Logs use the `IPRO_LOGx` macros (see [API Reference](api/index.md#log-api)). For debug-level logs, set `CONFIG_LOG_DEFAULT_LEVEL=4` in `.config` and rebuild; the value is an integer, and the shipped applications use 3 (info).
 
 Boot messages worth knowing:
 
@@ -79,7 +79,7 @@ The addresses must come from the same build as the `.elf`; after a rebuild, old 
 
 `.config` is read as written and Kconfig defaults are not applied, so write these settings out explicitly.
 
-Other fatal messages come from the [FreeRTOS hooks](api.md#rtos-platform):
+Other fatal messages come from the [FreeRTOS hooks](api/index.md#rtos-platform):
 
 | Message | Cause | Fix |
 |---|---|---|
@@ -147,7 +147,7 @@ HAL tests skip themselves when the hardware they need is not detected.
 | `bt54_iso2 needs at least 32 KB EM` | An LE Audio configuration with 16 KB EM | Set `CONFIG_EM_SIZE=32` |
 | `unsupported variant` or `unsupported feature profile` | The controller setting is not one of the provided combinations | Use `link1_periph`, `link1`, `link2` or `link4` for `CONFIG_IPRO_BLE_CTLR_LIB`, and `bt52` or `bt54_iso2` for `CONFIG_IPRO_BLE_CTLR_FEATURE` |
 | Configure fails in `ipro_ble_controller` with `ipro_ble_remote/defconfig_lowpower`, or after setting `CONFIG_IPRO_BLE_CTLR_FORCE_SOURCE_BUILD`, `CONFIG_IPRO_BLE_CTLR_SUBRATING`, `CONFIG_IPRO_BLE_CTLR_CSSA`, `CONFIG_IPRO_PM_BLE` or `CONFIG_IPRO_PM_PDS_CONNECTED` | These settings switch the BLE controller to a source build, and the package contains only the prebuilt libraries | Remove them; contact INTELPRO if you need these features |
-| `CONFIG_EVK_CAMERA needs …`, `CONFIG_EVK_AUDIO needs …`, `CONFIG_EVK_SDCARD needs …` | The EVK board library is missing a dependency | Add the options the message names; see [API Reference](api.md#evk-board) |
+| `CONFIG_EVK_CAMERA needs …`, `CONFIG_EVK_AUDIO needs …`, `CONFIG_EVK_SDCARD needs …` | The EVK board library is missing a dependency | Add the options the message names; see [API Reference](api/ipro7ai-evk.md) |
 | Link error `undefined reference to adc_ioctl` | One of the ADC convenience macros such as `adc_channel_start()` was used | Call `hal_adc_ioctl()` instead |
 | A feature such as `CONFIG_AI_SUPPORT` is on, but what it depends on is not | The build reads `.config` as written and does not apply Kconfig `select` or `depends on` | Set dependencies explicitly — AI needs `CONFIG_USE_PSRAM=y`, for example; see [Build System & Configuration](../guides/build-system.md) |
 | The linker reports a memory region overflow | Code or data does not fit in `flash`, `ocram` or another region | Find the largest users with [Size and memory analysis](tools.md#size-analysis); with AI and imaging both on, OCRAM shrinks to 64 KB or 48 KB |
@@ -186,6 +186,6 @@ HAL tests skip themselves when the hardware they need is not detected.
 ## Next steps { #next-steps }
 
 - [Tool Command Lines](tools.md): all options of the build, flash and monitor tools.
-- [API Reference](api.md): platform, BLE, HAL and logging APIs.
+- [API Reference](api/index.md): platform, BLE, HAL and logging APIs.
 - [FAQ](faq.md): common questions about building, BLE, networking and RTOS.
 - [BLE Development](../guides/ble.md) and [Zephyr RTOS](../guides/zephyr.md): guides by feature area.

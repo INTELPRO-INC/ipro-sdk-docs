@@ -1,0 +1,436 @@
+# Shipped applications for the examples pages (tools/gen_examples.py).
+# The catalog tables in examples/index.md and one page per app with a README are generated
+# from this file and the app READMEs of the SDK release given with --sdk.
+#
+# readme.replace: regex substitutions applied to the README before publishing (each must
+#   match at least once, so a rule that no longer applies fails loudly).
+# readme.redline_ignore: rule ids whose matches on prose lines are accepted as reviewed.
+# readme.exclude: true to publish catalog data only.
+categories:
+  - id: ble
+    title: {zh: "BLE", en: "BLE"}
+    apps:
+      - name: ipro_ble_remote
+        path: apps/bluetooth/ble/ipro_ble_remote
+        purpose:
+          zh: "GATT 參考應用：LED、按鍵、環境感測、UART、PIR 影像與影像上傳服務；隨附 Android 示範 App `ipro_remote_demo.apk`。教學見[第一個 BLE 應用](../tutorials/first-ble-app.md)"
+          en: "GATT reference: LED, key, environment, UART, PIR image and image upload services; ships the Android demo app `ipro_remote_demo.apk`. Tutorial: [Your First BLE Application](../tutorials/first-ble-app.md)"
+        boards:
+          zh: "EVB（`.config`）；Reef（`defconfig_reef`：WS2812、相機、SD 卡、音訊與 BLE A/B OTA，需 boot2 與 `partition_cfg_2M_remote_ab.toml`）。`defconfig_lowpower` 需要控制器原始碼，無法以 V2.1.0 建置"
+          en: "EVB (`.config`); Reef (`defconfig_reef`: WS2812, camera, SD card, audio and BLE A/B OTA; needs boot2 and `partition_cfg_2M_remote_ab.toml`). `defconfig_lowpower` needs the controller source and cannot be built from V2.1.0"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+      - name: ipro_ble_transparent
+        path: apps/bluetooth/ble/ipro_ble_transparent
+        purpose:
+          zh: "UART／BLE 透明傳輸橋接，以 AT 指令設定；隨附設定的 AT 指令走 USB CDC"
+          en: "UART-to-BLE transparent bridge configured with AT commands; in the shipped configuration the AT commands run over USB CDC"
+        boards:
+          zh: "EVB"
+          en: "EVB"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+        readme: {exclude: true}   # no README in the release
+      - name: ipro_ble_hid_keyboard
+        path: apps/bluetooth/ble/ipro_ble_hid_keyboard
+        purpose:
+          zh: "HID over GATT 鍵盤"
+          en: "HID over GATT keyboard"
+        boards:
+          zh: "EVB"
+          en: "EVB"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+        readme: {exclude: true}   # no README in the release
+      - name: ipro_throughput_test
+        path: apps/bluetooth/ble/ipro_throughput_test
+        purpose:
+          zh: "兩板 BLE 吞吐量測試：1M／2M／Coded PHY、DLE、ATT MTU 247。教學見 [BLE 吞吐量測試](../tutorials/ble-throughput.md)"
+          en: "Two-board BLE throughput test: 1M / 2M / Coded PHY, DLE, ATT MTU 247. Tutorial: [BLE Throughput Test](../tutorials/ble-throughput.md)"
+        boards:
+          zh: "EVB（`.config`）；Reef（`defconfig_reef`）"
+          en: "EVB (`.config`); Reef (`defconfig_reef`)"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+        readme:
+          # these lines say the old tool is retired, which is correct
+          redline_ignore: [retired-tool]
+      - name: ipro_le_audio_headset
+        path: apps/bluetooth/le_audio/ipro_le_audio_headset
+        purpose:
+          zh: "LE Audio unicast 耳機：BAP unicast server、PACS、ASCS、VCP、CAP，LC3 解碼。教學見 [LE Audio 入門](../tutorials/le-audio.md)"
+          en: "LE Audio unicast headset: BAP unicast server, PACS, ASCS, VCP, CAP, LC3 decoding. Tutorial: [Getting Started with LE Audio](../tutorials/le-audio.md)"
+        boards:
+          zh: "EVB（`.config`／`DAC.config`：DAC 輸出；`UAC.config`：USB Audio）；Reef（`defconfig_reef`）"
+          en: "EVB (`.config` / `DAC.config`: DAC output; `UAC.config`: USB Audio); Reef (`defconfig_reef`)"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+  - id: audio
+    title: {zh: "音訊與語音", en: "Audio and voice"}
+    apps:
+      - name: ipro_pdm_mic_demo
+        path: apps/multimedia/ipro_pdm_mic_demo
+        purpose:
+          zh: "PDM 麥克風收音、DAC 播放、經 BLE 以 LC3 串流、SMP 配對、PDS31 休眠與綁定重連、2M 大量傳輸；Android 範例 App 原始碼在 `tools/android/IproMicDemo/`"
+          en: "PDM microphone capture, DAC playback, LC3 streaming over BLE, SMP pairing, PDS31 sleep with bonded reconnect, 2M bulk transfer; the Android companion app's source is in `tools/android/IproMicDemo/`"
+        boards:
+          zh: "EVB（`.config`，`config_evb` 相同）；EVK（`make BOARD=evk`，使用 `config_evk`，另提供 16 kHz USB 麥克風）"
+          en: "EVB (`.config`, same as `config_evb`); EVK (`make BOARD=evk`, uses `config_evk` and adds a 16 kHz USB microphone)"
+        console:
+          zh: "EVB：UART 115200<br>EVK：UART 921600"
+          en: "EVB: UART 115200<br>EVK: UART 921600"
+      - name: ipro_agora_sentino
+        path: apps/multimedia/ipro_agora_sentino
+        purpose:
+          zh: "Sentino 雲端 AI 語音對話：BLE 配網、經 IPRO6S FIN 卡連 Wi-Fi、MQTT 登入、Agora RTC 即時語音。需另備 Sentino 裝置三元組與 AOSL（見 README）；FIN 卡端韌體未包含於 V2.1.0，請洽 INTELPRO"
+          en: "Sentino cloud AI voice chat: BLE provisioning, Wi-Fi through the IPRO6S FIN card, MQTT login, Agora RTC voice. Needs a Sentino device triple and AOSL (see the README); the FIN card firmware is not included in V2.1.0, contact INTELPRO"
+        boards:
+          zh: "Reef（`.config`，`make` 或 `make BOARD=reef`）；EVK（`make BOARD=evk`，使用 `config_evk`，可建置但未經板上驗證）"
+          en: "Reef (`.config`, `make` or `make BOARD=reef`); EVK (`make BOARD=evk`, uses `config_evk`; builds but is not verified on the board)"
+        console:
+          zh: "Reef：UART 115200<br>EVK：UART 921600"
+          en: "Reef: UART 115200<br>EVK: UART 921600"
+  - id: platform
+    title: {zh: "平台與板卡", en: "Platform and boards"}
+    apps:
+      - name: ipro7_demo
+        path: apps/platform/ipro7_demo
+        purpose:
+          zh: "全晶片參考：PWM、SPI、I2S、LCD、音訊 ADC／DAC、USB 裝置（CDC、HID、MSC、UAC、UVC）、檔案系統、TRNG 與 DSP 等，各有 shell 指令；BLE 示範預設關閉"
+          en: "Full-chip reference: PWM, SPI, I2S, LCD, audio ADC / DAC, USB device (CDC, HID, MSC, UAC, UVC), file systems, TRNG, DSP and more, each with shell commands; the BLE demo is off by default"
+        boards:
+          zh: "EVB；另有 `defconfig_boot2`、`defconfig_boot2_nopsram`、`defconfig_boot2_ota`、`defconfig_nist_fulltest`、`defconfig_security_cert`"
+          en: "EVB; also `defconfig_boot2`, `defconfig_boot2_nopsram`, `defconfig_boot2_ota`, `defconfig_nist_fulltest`, `defconfig_security_cert`"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+      - name: ipro7ai_evk_demo
+        path: apps/platform/ipro7ai_evk_demo
+        purpose:
+          zh: "IPRO7AI EVK bring-up：LCD、相機、麥克風、喇叭與 SD 卡"
+          en: "IPRO7AI EVK bring-up: LCD, camera, microphone, speaker and SD card"
+        boards:
+          zh: "EVK。`.config` 與 `config_video`：SD 卡影片播放，不含藍牙；`config_ai`：AI 與 NPU，不含藍牙；`config_bt`、`config_autoplay`：BLE 與 LE Audio unicast 接收，不含 AI"
+          en: "EVK. `.config` and `config_video`: SD-card video playback, no Bluetooth; `config_ai`: AI and NPU, no Bluetooth; `config_bt`, `config_autoplay`: BLE and LE Audio unicast sink, no AI"
+        console:
+          zh: "`.config`：UART 921600<br>`config_*`：UART 115200"
+          en: "`.config`: UART 921600<br>`config_*`: UART 115200"
+        readme:
+          replace:
+            # the retired flashing tool, with a flash pin that is wrong for the EVK
+            - pattern: 'tools/ipro_iot_tool_lite/ipro_iot_tool_lite --chipname ipro7 \\\n    --port (\S+) --baudrate 921600 --flash-pin 0x02 \\'
+              repl: 'ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \\\n    --port \1 --baudrate 921600 \\'
+            # drop the reference to a source file that is not in the release
+            - {pattern: ', `\w+_isp\.c:\d+`', repl: ''}
+      - name: ipro7ai_evk_launcher
+        path: apps/platform/ipro7ai_evk_launcher
+        purpose:
+          zh: "相機、LCD、麥克風與喇叭整合在單一映像，以 NPU 辨識手勢切換頁面；人形／寵物偵測模型由 SD 卡 `sd:/models/person.inm` 載入；附 `flash.sh`"
+          en: "Camera, LCD, microphone and speaker in one image, with pages switched by hand gestures recognized on the NPU; the person / pet detection model loads from the SD card as `sd:/models/person.inm`; ships `flash.sh`"
+        boards:
+          zh: "EVK"
+          en: "EVK"
+        console:
+          zh: "UART 921600"
+          en: "UART 921600"
+      - name: ipro7ai_reef_demo
+        path: apps/platform/ipro7ai_reef_demo
+        purpose:
+          zh: "Reef 開箱韌體：WS2812、按鍵、喇叭與耳機、PDM／耳機麥克風／AUX-IN、SD 卡、OV5640／OV2640 相機，各有 shell 指令"
+          en: "Reef out-of-box firmware: WS2812, keys, speaker and headphones, PDM / headset microphone / AUX-IN, SD card, OV5640 / OV2640 camera, each with shell commands"
+        boards:
+          zh: "Reef（`.config`）；`defconfig_wifi_ipro6s`：經 IPRO6S FIN 卡連 Wi-Fi，並以 RTSP 串流相機畫面"
+          en: "Reef (`.config`); `defconfig_wifi_ipro6s`: Wi-Fi through the IPRO6S FIN card plus an RTSP stream of the camera"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+  - id: ai-vision
+    title: {zh: "AI 與影像", en: "AI and vision"}
+    apps:
+      - name: ipro7ai_evk_person_detect
+        path: apps/ai/ipro7ai_evk_person_detect
+        purpose:
+          zh: "相機預覽顯示在 LCD，疊加 NPU 執行 YOLOv8 的人形／寵物框；模型燒錄到 mfg 分割區（附 `flash.sh`）"
+          en: "Camera preview on the LCD with YOLOv8 person / pet boxes from the NPU; the model goes into the mfg partition (`flash.sh` included)"
+        boards:
+          zh: "EVK"
+          en: "EVK"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+      - name: ipro7ai_evk_rps
+        path: apps/ai/ipro7ai_evk_rps
+        purpose:
+          zh: "與 NPU 上的 4 類 int8 CNN 玩剪刀石頭布；模型預設連結進韌體，附模型與訓練腳本"
+          en: "Rock-paper-scissors against a 4-class int8 CNN on the NPU; the model is linked into the firmware by default, and the model and training scripts are included"
+        boards:
+          zh: "EVK"
+          en: "EVK"
+        console:
+          zh: "UART 921600"
+          en: "UART 921600"
+      - name: ipro7_uvc_cam
+        path: apps/multimedia/ipro7_uvc_cam
+        purpose:
+          zh: "USB 網路攝影機：DVP 感測器、ISP、硬體 MJPEG、USB Video Class"
+          en: "USB webcam: DVP sensor, ISP, hardware MJPEG, USB Video Class"
+        boards:
+          zh: "EVB（`.config`，SC101IOT）；Reef（`defconfig_reef_ov5640`：OV5640；`defconfig_reef_rps`：在影像中加入 NPU 剪刀石頭布）"
+          en: "EVB (`.config`, SC101IOT); Reef (`defconfig_reef_ov5640`: OV5640; `defconfig_reef_rps`: adds rock-paper-scissors on the NPU, drawn into the stream)"
+        console:
+          zh: "`.config`：UART 921600<br>Reef：UART 115200"
+          en: "`.config`: UART 921600<br>Reef: UART 115200"
+        readme: {exclude: true}   # no README in the release
+  - id: networking
+    title: {zh: "網路", en: "Networking"}
+    apps:
+      - name: ipro7_sdio_wifi
+        path: apps/platform/ipro7_sdio_wifi
+        purpose:
+          zh: "IPRO7 作為 SDIO 主機、IPRO6S 作為 Wi-Fi 無線電（`components/network/ipronet_host`），提供 lwIP 網路介面 `iproeth0` 與 DHCP。IPRO6S 端韌體未包含於 V2.1.0，請洽 INTELPRO"
+          en: "IPRO7 as the SDIO host with an IPRO6S as the Wi-Fi radio (`components/network/ipronet_host`), providing the lwIP network interface `iproeth0` and DHCP. The IPRO6S firmware is not included in V2.1.0; contact INTELPRO"
+        boards:
+          zh: "EVB"
+          en: "EVB"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+        readme:
+          replace:
+            # never publish the lab network name or passphrase
+            - {pattern: '^(ipronet_up|ipro6s_connect)[ \t]+\S+[ \t]+\S+', repl: '\1 <ssid> <psk>'}
+            - {pattern: ' - see the ipro7-probe skill', repl: ''}
+  - id: test-apps
+    title: {zh: "測試與 bring-up 程式", en: "Test and bring-up programs"}
+    apps:
+      - name: ipro_unit_test
+        path: apps/test/ipro_unit_test
+        purpose:
+          zh: "HAL 與共用元件的單元測試，結束時印出 `ALL TESTS PASSED` 或 `SOME TESTS FAILED`（可用 `./build_freertos.sh test ipro_unit_test`）"
+          en: "Unit tests for the HAL and the shared components; ends with `ALL TESTS PASSED` or `SOME TESTS FAILED` (works with `./build_freertos.sh test ipro_unit_test`)"
+        boards:
+          zh: "EVB"
+          en: "EVB"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+        readme: {exclude: true}   # no README in the release
+      - name: ipro_ai_bench
+        path: apps/test/ipro_ai_bench
+        purpose:
+          zh: "整個模型在 NPU 與 CPU 上的推論時間比較"
+          en: "Whole-model inference time on the NPU versus the CPU"
+        boards:
+          zh: "EVB"
+          en: "EVB"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+        readme: {exclude: true}   # no README in the release
+      - name: ipro_ai_link
+        path: apps/test/ipro_ai_link
+        purpose:
+          zh: "IPRO AI Studio「Run on board」的板端韌體：由 SD 卡（`sd:/`）載入模型與輸入，結果經 USB 回傳"
+          en: "Board firmware for IPRO AI Studio \"Run on board\": loads models and inputs from the SD card (`sd:/`) and returns the results over USB"
+        boards:
+          zh: "EVB；Reef（`defconfig_reef`）"
+          en: "EVB; Reef (`defconfig_reef`)"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+        readme: {exclude: true}   # no README in the release
+      - name: ipro_npu_yolo
+        path: apps/test/ipro_npu_yolo
+        purpose:
+          zh: "NPU 上的 YOLOv8 人形／寵物偵測"
+          en: "YOLOv8 person / pet detection on the NPU"
+        boards:
+          zh: "EVB"
+          en: "EVB"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+        readme: {exclude: true}   # no README in the release
+      - name: ipro_tflm_test
+        path: apps/test/ipro_tflm_test
+        purpose:
+          zh: "TensorFlow Lite Micro 搭配 NMSIS-NN 核心的模型效能測試"
+          en: "TensorFlow Lite Micro model benchmark with NMSIS-NN kernels"
+        boards:
+          zh: "EVB"
+          en: "EVB"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+        readme: {exclude: true}   # no README in the release
+      - name: ipro_tflm_yolo
+        path: apps/test/ipro_tflm_yolo
+        purpose:
+          zh: "以 TensorFlow Lite Micro 在 CPU 上執行 YOLOv8"
+          en: "YOLOv8 on the CPU with TensorFlow Lite Micro"
+        boards:
+          zh: "EVB"
+          en: "EVB"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+        readme: {exclude: true}   # no README in the release
+      - name: ipro_nmsis_nn_test
+        path: apps/test/ipro_nmsis_nn_test
+        purpose:
+          zh: "NMSIS-NN 運算子測試"
+          en: "NMSIS-NN operator tests"
+        boards:
+          zh: "EVB"
+          en: "EVB"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+        readme: {exclude: true}   # no README in the release
+      - name: ipro_tinymaix_demo
+        path: apps/test/ipro_tinymaix_demo
+        purpose:
+          zh: "TinyMaix INT8 MNIST 推論（`nn_info`、`nn_run`、`nn_benchmark`）"
+          en: "TinyMaix INT8 MNIST inference (`nn_info`, `nn_run`, `nn_benchmark`)"
+        boards:
+          zh: "EVB"
+          en: "EVB"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+        readme: {exclude: true}   # no README in the release
+      - name: ipro_gh7007_test
+        path: apps/test/ipro_gh7007_test
+        purpose:
+          zh: "GH7007 5 吋 SPI LCD bring-up"
+          en: "GH7007 5-inch SPI LCD bring-up"
+        boards:
+          zh: "EVB"
+          en: "EVB"
+        console:
+          zh: "USB CDC"
+          en: "USB CDC"
+      - name: ipro_gh7007_video
+        path: apps/test/ipro_gh7007_video
+        purpose:
+          zh: "在 GH7007 面板播放 SD 卡上的影片"
+          en: "Plays videos from the SD card on the GH7007 panel"
+        boards:
+          zh: "EVB"
+          en: "EVB"
+        console:
+          zh: "USB CDC"
+          en: "USB CDC"
+        readme: {exclude: true}   # no README in the release
+      - name: ipro_epd_test
+        path: apps/test/ipro_epd_test
+        purpose:
+          zh: "GDEY0213F52 2.13 吋電子紙 bring-up"
+          en: "GDEY0213F52 2.13-inch e-paper bring-up"
+        boards:
+          zh: "EVB"
+          en: "EVB"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+        readme: {exclude: true}   # no README in the release
+      - name: ipro_epd_el036
+        path: apps/test/ipro_epd_el036
+        purpose:
+          zh: "EL036MF1 電子紙 bring-up"
+          en: "EL036MF1 e-paper bring-up"
+        boards:
+          zh: "EVB"
+          en: "EVB"
+        console:
+          zh: "UART 921600"
+          en: "UART 921600"
+      - name: kw307_radar_test
+        path: apps/test/kw307_radar_test
+        purpose:
+          zh: "KW307 24 GHz 雷達模組（UART）"
+          en: "KW307 24 GHz radar module over UART"
+        boards:
+          zh: "EVK"
+          en: "EVK"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+      - name: mpu6500_test
+        path: apps/test/mpu6500_test
+        purpose:
+          zh: "MPU-6500 IMU（I2C；`mpu_init`、`mpu_read`、`mpu_stream`）"
+          en: "MPU-6500 IMU over I2C (`mpu_init`, `mpu_read`, `mpu_stream`)"
+        boards:
+          zh: "EVB"
+          en: "EVB"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+        readme: {exclude: true}   # no README in the release
+      - name: ipro_enc28j60_test
+        path: apps/test/ipro_enc28j60_test
+        purpose:
+          zh: "ENC28J60 SPI 乙太網路 bring-up，收發原始封包"
+          en: "ENC28J60 SPI Ethernet bring-up, sending and receiving raw frames"
+        boards:
+          zh: "IPRO7 Arduino 板"
+          en: "IPRO7 Arduino board"
+        console:
+          zh: "USB CDC"
+          en: "USB CDC"
+      - name: ipro_pio_sdh_test
+        path: apps/test/ipro_pio_sdh_test
+        purpose:
+          zh: "軟體（PIO）SD 主機與硬體 SDH 同時掛載的檔案系統測試"
+          en: "File-system test with a software (PIO) SD host and the hardware SDH mounted at the same time"
+        boards:
+          zh: "EVB"
+          en: "EVB"
+        console:
+          zh: "USB CDC"
+          en: "USB CDC"
+        readme:
+          replace:
+            - {pattern: '`ipro_iot_tool_lite --flash-pin 0x9`', repl: 'IntelProCube 命令列工具(`--chip-variant IPRO7AI`)'}
+      - name: ipro_sdio_probe
+        path: apps/test/ipro_sdio_probe
+        purpose:
+          zh: "SDIO 主機基本測試"
+          en: "Basic SDIO host test"
+        boards:
+          zh: "EVB"
+          en: "EVB"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+        readme: {exclude: true}   # no README in the release
+      - name: ipro_atbm_probe
+        path: apps/test/ipro_atbm_probe
+        purpose:
+          zh: "ATBM6162 SDIO 模組 bring-up 探測"
+          en: "Bring-up probe for an ATBM6162 SDIO module"
+        boards:
+          zh: "EVB"
+          en: "EVB"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+        readme: {exclude: true}   # no README in the release
+      - name: ipro_lp_test
+        path: apps/test/ipro_lp_test
+        purpose:
+          zh: "PDS31 進出與 RTC 喚醒測試（`lp` 指令）"
+          en: "PDS31 entry and exit with RTC wake-up (`lp` commands)"
+        boards:
+          zh: "EVB"
+          en: "EVB"
+        console:
+          zh: "UART 115200"
+          en: "UART 115200"
+        readme: {exclude: true}   # no README in the release

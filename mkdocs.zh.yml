@@ -61,7 +61,33 @@ nav:
       - "低功耗": guides/low-power.md
       - "OTA 更新": guides/ota.md
       - "VS Code Extension": guides/vscode.md
-  - "範例": examples/index.md
+  - "範例":
+      - examples/index.md
+      # BEGIN generated: examples
+      - "BLE":
+          - "ipro_ble_remote": examples/ipro_ble_remote.md
+          - "ipro_throughput_test": examples/ipro_throughput_test.md
+          - "ipro_le_audio_headset": examples/ipro_le_audio_headset.md
+      - "音訊與語音":
+          - "ipro_pdm_mic_demo": examples/ipro_pdm_mic_demo.md
+          - "ipro_agora_sentino": examples/ipro_agora_sentino.md
+      - "平台與板卡":
+          - "ipro7_demo": examples/ipro7_demo.md
+          - "ipro7ai_evk_demo": examples/ipro7ai_evk_demo.md
+          - "ipro7ai_evk_launcher": examples/ipro7ai_evk_launcher.md
+          - "ipro7ai_reef_demo": examples/ipro7ai_reef_demo.md
+      - "AI 與影像":
+          - "ipro7ai_evk_person_detect": examples/ipro7ai_evk_person_detect.md
+          - "ipro7ai_evk_rps": examples/ipro7ai_evk_rps.md
+      - "網路":
+          - "ipro7_sdio_wifi": examples/ipro7_sdio_wifi.md
+      - "測試與 bring-up 程式":
+          - "ipro_gh7007_test": examples/ipro_gh7007_test.md
+          - "ipro_epd_el036": examples/ipro_epd_el036.md
+          - "kw307_radar_test": examples/kw307_radar_test.md
+          - "ipro_enc28j60_test": examples/ipro_enc28j60_test.md
+          - "ipro_pio_sdh_test": examples/ipro_pio_sdh_test.md
+      # END generated: examples
   - "教學":
       - tutorials/index.md
       - "第一個 BLE 應用": tutorials/first-ble-app.md
@@ -70,7 +96,23 @@ nav:
       - "LE Audio 入門": tutorials/le-audio.md
   - "參考":
       - reference/index.md
-      - "API 參考": reference/api.md
+      - "API 參考":
+          - reference/api/index.md
+          # BEGIN generated: api
+          - "平台與系統": reference/api/platform.md
+          - "記憶體、Flash 與開機": reference/api/memory-boot.md
+          - "電源管理與低功耗": reference/api/power.md
+          - "周邊 I/O": reference/api/peripherals.md
+          - "音訊": reference/api/audio.md
+          - "相機與影像": reference/api/camera.md
+          - "SD 卡與 SDIO": reference/api/sd-sdio.md
+          - "乙太網路": reference/api/ethernet.md
+          - "PIO": reference/api/pio.md
+          - "安全引擎": reference/api/security.md
+          - "無線與 BLE 控制器": reference/api/wireless-ble.md
+          - "AI 執行庫": reference/api/ai.md
+          - "IPRO7AI EVK 板卡庫": reference/api/ipro7ai-evk.md
+          # END generated: api
       - "工具命令列": reference/tools.md
       - "除錯與疑難排解": reference/debugging.md
       - "版本資訊": reference/release-notes.md

@@ -127,7 +127,7 @@ migrate_from:
 - [:material-layers-triple: **Zephyr RTOS**](guides/zephyr.md)<br>Zephyr v4.4 module, `ipro7_evb` and `ipro7ai_evk` boards, samples
 - [:material-view-grid-outline: **Examples**](examples/index.md)<br>Every shipped application, by feature and board
 - [:material-school-outline: **Tutorials**](tutorials/index.md)<br>Step-by-step BLE, throughput and LE Audio tutorials
-- [:material-code-tags: **API Reference**](reference/api.md)<br>Platform, HAL, BLE controller and AI runtime interfaces
+- [:material-code-tags: **API Reference**](reference/api/index.md)<br>Platform, HAL, BLE controller and AI runtime interfaces
 - [:material-console: **Tool Command Lines**](reference/tools.md)<br>Build script, flashing, serial console and OTA tools
 - [:material-help-circle-outline: **FAQ**](reference/faq.md)<br>Common questions about building, flashing, BLE and networking
 

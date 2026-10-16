@@ -10,7 +10,7 @@ migrate_from: []
 
 <div class="grid cards" markdown>
 
--   :material-api:{ .lg } **[API 參考](api.md)**
+-   :material-api:{ .lg } **[API 參考](api/index.md)**
 
     ---
 

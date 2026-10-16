@@ -127,7 +127,7 @@ migrate_from:
 - [:material-layers-triple: **Zephyr RTOS**](guides/zephyr.md)<br>Zephyr v4.4 模組、`ipro7_evb` 與 `ipro7ai_evk` 板卡、範例
 - [:material-view-grid-outline: **範例**](examples/index.md)<br>隨附應用總覽，依功能與板卡分類
 - [:material-school-outline: **教學**](tutorials/index.md)<br>BLE、吞吐量與 LE Audio 的逐步教學
-- [:material-code-tags: **API 參考**](reference/api.md)<br>平台、HAL、BLE 控制器與 AI 執行庫的介面
+- [:material-code-tags: **API 參考**](reference/api/index.md)<br>平台、HAL、BLE 控制器與 AI 執行庫的介面
 - [:material-console: **工具命令列**](reference/tools.md)<br>建置腳本、燒錄、序列埠與 OTA 工具
 - [:material-help-circle-outline: **常見問題**](reference/faq.md)<br>建置、燒錄、BLE 與連網的常見問題
 

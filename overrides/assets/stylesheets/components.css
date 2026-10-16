@@ -492,6 +492,8 @@
 }
 .md-typeset table:not([class]) td { border-top: 1px solid var(--ipro-line); }
 .md-typeset table:not([class]) tr:first-child td { border-top: 0; }
+/* Names in the first column (headers, apps, symbols) never break mid-word */
+.md-typeset table:not([class]) td:first-child code { white-space: nowrap; }
 
 /* Code blocks */
 .md-typeset pre > code { border-radius: 10px; }

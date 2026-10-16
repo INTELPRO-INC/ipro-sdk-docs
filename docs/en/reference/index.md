@@ -10,7 +10,7 @@ Look-up material for development: the exact names of APIs and tool options, what
 
 <div class="grid cards" markdown>
 
--   :material-api:{ .lg } **[API Reference](api.md)**
+-   :material-api:{ .lg } **[API Reference](api/index.md)**
 
     ---
 

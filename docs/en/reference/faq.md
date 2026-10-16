@@ -163,7 +163,7 @@ CONFIG_IPRO_LOG_ENABLE=y
 CONFIG_LOG_DEFAULT_LEVEL=4    # 1 error, 2 warning, 3 info, 4 debug, 5 verbose
 ```
 
-The code reads the integer `CONFIG_LOG_DEFAULT_LEVEL`; changing only an option such as `CONFIG_LOG_DEFAULT_LEVEL_DEBUG=y` has no effect, and `CONFIG_BT_DEBUG` does not turn on host logs. At run time, use `ipro_log_set_level()`; see [API Reference](api.md#log-api).
+The code reads the integer `CONFIG_LOG_DEFAULT_LEVEL`; changing only an option such as `CONFIG_LOG_DEFAULT_LEVEL_DEBUG=y` has no effect, and `CONFIG_BT_DEBUG` does not turn on host logs. At run time, use `ipro_log_set_level()`; see [API Reference](api/index.md#log-api).
 
 ### How do I analyze a crash or a stack overflow? { #crash }
 

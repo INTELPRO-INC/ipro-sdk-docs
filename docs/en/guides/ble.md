@@ -329,4 +329,4 @@ Sleep modes, wake sources and measurement are covered in [Low Power](low-power.m
 - [Your First BLE Application](../tutorials/first-ble-app.md)
 - [BLE Throughput Test](../tutorials/ble-throughput.md)
 - [Audio & LE Audio](audio.md)
-- [API Reference](../reference/api.md)
+- [API Reference](../reference/api/index.md)

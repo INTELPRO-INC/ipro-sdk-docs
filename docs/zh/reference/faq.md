@@ -163,7 +163,7 @@ CONFIG_IPRO_LOG_ENABLE=y
 CONFIG_LOG_DEFAULT_LEVEL=4    # 1 錯誤、2 警告、3 資訊、4 除錯、5 詳細
 ```
 
-程式讀取的是 `CONFIG_LOG_DEFAULT_LEVEL` 這個整數，只改 `CONFIG_LOG_DEFAULT_LEVEL_DEBUG=y` 之類的選項不會生效；`CONFIG_BT_DEBUG` 也不會開啟 Host 日誌。執行時可用 `ipro_log_set_level()` 調整，見 [API 參考](api.md#log-api)。
+程式讀取的是 `CONFIG_LOG_DEFAULT_LEVEL` 這個整數，只改 `CONFIG_LOG_DEFAULT_LEVEL_DEBUG=y` 之類的選項不會生效；`CONFIG_BT_DEBUG` 也不會開啟 Host 日誌。執行時可用 `ipro_log_set_level()` 調整，見 [API 參考](api/index.md#log-api)。
 
 ### 當機或堆疊溢位怎麼分析？ { #crash }
 
