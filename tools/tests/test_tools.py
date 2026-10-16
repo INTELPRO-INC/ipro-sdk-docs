@@ -113,6 +113,17 @@ def test_term_pattern_override_skips_compound_words():
         zh.unlink(missing_ok=True)
 
 
+def test_verbatim_region_skips_terms_only(private_rules):
+    rules = redline_check.public_rules() + private_rules
+    zh = redline_check.ROOT / "docs" / "zh" / "_redline_verbatim_test.md"
+    try:
+        zh.write_text("<!-- verbatim:start -->\n默認設定\nfoobar\n<!-- verbatim:end -->\n默認\n", encoding="utf-8")
+        found = [(f.line, f.rule.id) for f in redline_check.scan_file(zh, rules)]
+        assert found == [(3, "secret-project"), (5, "zh-term:默認")]
+    finally:
+        zh.unlink(missing_ok=True)
+
+
 def test_ignore_comment_on_same_or_previous_line(tmp_path, private_rules):
     text = "\n".join([
         "FooBar here <!-- redline-ignore: secret-project -->",
@@ -122,6 +133,13 @@ def test_ignore_comment_on_same_or_previous_line(tmp_path, private_rules):
     ])
     found = scan(tmp_path, "x.md", text, private_rules)
     assert [(f.line, f.rule.id) for f in found] == [(4, "secret-project")]
+
+
+def test_private_rule_unless_skips_the_line(monkeypatch, tmp_path):
+    monkeypatch.setenv("REDLINE_RULES", "rules:\n  - {id: p, pattern: 'foobar', ignore_case: true, unless: 'pin|signal'}\n")
+    rules = redline_check.load_private_rules(None)
+    found = scan(tmp_path, "x.md", "15 FOOBAR pin\nthe foobar plan\n", rules)
+    assert [f.line for f in found] == [2]
 
 
 def test_private_matches_are_redacted_unless_requested(tmp_path, private_rules):

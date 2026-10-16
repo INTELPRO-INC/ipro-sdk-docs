@@ -18,7 +18,9 @@ Findings from private rules never print the matched text, because CI logs of
 a public repository are public. Use --show-private locally to see it.
 
 Suppress one finding with `<!-- redline-ignore: <rule-id> -->` on the same
-line or on the line before.
+line or on the line before. Text between `<!-- verbatim:start -->` and
+`<!-- verbatim:end -->` (quoted upstream text, e.g. app READMEs) skips the
+language-scoped terminology rules; every other rule still applies.
 
 Exit status: 0 clean (warnings allowed), 1 errors found, 2 rules unavailable.
 """
@@ -38,6 +40,8 @@ TERMS_FILE = ROOT / "tools" / "zh_tw_terms.yml"
 SCAN_GLOBS = ("docs/**/*.md", "overrides/**/*.html", "overrides/**/*.css", "overrides/**/*.js",
               "mkdocs*.yml", "README.md")
 IGNORE = re.compile(r"redline-ignore:\s*([\w:-]+)")
+VERBATIM_START = "<!-- verbatim:start -->"
+VERBATIM_END = "<!-- verbatim:end -->"
 SEVERITIES = ("error", "warning")
 
 
@@ -105,8 +109,9 @@ def load_private_rules(path_arg: str | None) -> list[Rule]:
         if severity not in SEVERITIES:
             raise ValueError(f"rule {item.get('id')}: severity must be one of {SEVERITIES}")
         flags = re.I if item.get("ignore_case") else 0
+        unless = re.compile(item["unless"], flags) if item.get("unless") else None
         rules.append(Rule(item["id"], re.compile(item["pattern"], flags), severity,
-                          item.get("message", "private red-line term"), private=True))
+                          item.get("message", "private red-line term"), private=True, unless=unless))
     if not rules:
         raise ValueError("private red-line rules file has no rules")
     return rules
@@ -136,12 +141,17 @@ def scan_file(path: Path, rules: Iterable[Rule]) -> Iterator[Finding]:
         return
     lang = page_lang(path)
     shown = path.relative_to(ROOT).as_posix() if path.is_relative_to(ROOT) else str(path)
+    verbatim = False
     for number, line in enumerate(lines, start=1):
+        if VERBATIM_START in line:
+            verbatim = True
+        if VERBATIM_END in line:
+            verbatim = False
         ignored = set(IGNORE.findall(line))
         if number > 1:
             ignored |= set(IGNORE.findall(lines[number - 2]))
         for rule in rules:
-            if rule.lang and rule.lang != lang:
+            if rule.lang and (rule.lang != lang or verbatim):
                 continue
             if rule.id in ignored:
                 continue
