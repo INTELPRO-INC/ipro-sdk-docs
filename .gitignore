@@ -1,7 +1,13 @@
-# Jekyll build output
-_site/
+# Build output and local tooling
+site/
+.preview/
+.cache/
+.venv/
+__pycache__/
 
-# Ruby dependencies
+# Legacy Jekyll site (legacy/) build output
+_site/
+.jekyll-cache/
 .bundle/
 vendor/
 
@@ -15,11 +21,10 @@ vendor/
 *.swo
 *~
 
-# Internal notes guard: only README.md may live at the publish root.
-# Internal write-ups belong in the SDK repo (docs/internal-notes/), never here.
+# Internal notes guard: only README.md may live at the repository root.
+# Internal write-ups belong in the SDK repo (docs/internal/), never here.
 /*.md
 !/README.md
-/en/*.md
 
 # Local review tooling state
 .claude_review_state.json

@@ -1,0 +1,93 @@
+# Shared configuration, inherited by mkdocs.zh.yml and mkdocs.en.yml.
+#
+# The site builds with Zensical (primary) and Material for MkDocs (CI
+# fallback) from the same sources. Keep it plugin-free: only the theme's
+# built-in search and Markdown extensions, because MkDocs 2.0 drops the
+# plugin system and Zensical does not run MkDocs plugins.
+site_name: IPRO SDK
+copyright: "Copyright &copy; 2026 INTELPRO 英特博"
+repo_url: https://github.com/INTELPRO-INC/IPRO-SDK
+repo_name: INTELPRO-INC/IPRO-SDK
+edit_uri: ""
+
+theme:
+  name: material
+  custom_dir: overrides
+  logo: assets/images/intelpro-logo.png
+  favicon: assets/images/favicon.png
+  font: false            # loaded in overrides/main.html (Plus Jakarta Sans, Noto Sans TC, JetBrains Mono)
+  icon:
+    repo: fontawesome/brands/github
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - navigation.instant
+    - navigation.tracking
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.tabs.link
+    - toc.follow
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle: { icon: material/brightness-auto, name: Auto }
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle: { icon: material/brightness-7, name: Light }
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle: { icon: material/brightness-4, name: Dark }
+
+extra:
+  # Single source for the release shown in the banner and on the home page.
+  release:
+    sdk: V2.1.0
+    date: "2026-10-16"
+    installer: "3.4.0"
+    extension: "3.3.0"
+    download: https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.1.0
+  generator: false
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+validation:
+  nav:
+    omitted_files: warn
+    not_found: warn
+  links:
+    not_found: warn
+    anchors: warn

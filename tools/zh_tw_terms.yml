@@ -1,0 +1,45 @@
+# Taiwan terminology for zh-TW pages (docs/zh/), checked by tools/redline_check.py.
+# term: the wording to avoid; use: the Taiwan form. severity defaults to error;
+# use warning where the term is right in some contexts. pattern (regex) overrides
+# the literal match, e.g. to skip 「額外設定」 when checking 外設.
+terms:
+  - { term: 藍芽, use: 藍牙 }
+  - { term: 地址, use: 位址, note: 記憶體位址；郵寄地址除外, severity: warning }
+  - { term: 外設, use: 周邊, pattern: '外設(?!定)' }
+  - { term: 定時器, use: 計時器 }
+  - { term: 複位, use: 重置 }
+  - { term: 實時, use: 即時 }
+  - { term: 管腳, use: 腳位 }
+  - { term: 全局, use: 全域 }
+  - { term: 全域性, use: 全域 }
+  - { term: 許可權, use: 權限 }
+  - { term: 控件, use: 元件 }
+  - { term: 支持, use: 支援 }
+  - { term: 默認, use: 預設 }
+  - { term: 信息, use: 資訊 }
+  - { term: 軟件, use: 軟體 }
+  - { term: 硬件, use: 硬體 }
+  - { term: 固件, use: 韌體 }
+  - { term: 芯片, use: 晶片 }
+  - { term: 內存, use: 記憶體 }
+  - { term: 網絡, use: 網路 }
+  - { term: 接口, use: 介面 }
+  - { term: 調試, use: 除錯 }
+  - { term: 屏幕, use: 螢幕 }
+  - { term: 串口, use: 序列埠 }
+  - { term: 協議, use: 協定 }
+  - { term: 異步, use: 非同步 }
+  - { term: 線程, use: 執行緒 }
+  - { term: 進程, use: 行程 }
+  - { term: 緩存, use: 快取 }
+  - { term: 調用, use: 呼叫 }
+  - { term: 編程, use: 程式設計 }
+  - { term: 字節, use: 位元組 }
+  - { term: 比特, use: 位元 }
+  - { term: 文件夾, use: 資料夾 }
+  - { term: 刷寫, use: 燒錄 }
+  - { term: 視頻, use: 視訊 }
+  - { term: 數據, use: 資料, severity: warning }
+  - { term: 響應, use: 回應, severity: warning }
+  - { term: 相應, use: 對應, severity: warning }
+  - { term: 程序, use: 程式, note: 指 procedure 時可保留, severity: warning }

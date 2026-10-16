@@ -1,0 +1,12 @@
+# Docs build toolchain (pinned). Zensical is the primary builder; Material for
+# MkDocs on MkDocs 1.x is the CI fallback. MkDocs 2.0 removes plugins and theme
+# overrides, so keep it below 2.
+zensical==0.0.70
+mkdocs==1.6.1
+mkdocs-material==9.7.7
+pymdown-extensions==12.3
+jieba==0.42.1
+PyYAML>=6.0
+
+# CI tool tests
+pytest==8.4.2

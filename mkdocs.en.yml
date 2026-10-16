@@ -1,0 +1,75 @@
+# English site, served at /ipro-sdk-docs/en/.
+# Keep nav entries in the same order and files as mkdocs.zh.yml (tools/parity_check.py).
+INHERIT: mkdocs.base.yml
+site_url: https://intelpro-inc.github.io/ipro-sdk-docs/en/
+site_description: INTELPRO IPRO SDK documentation
+docs_dir: docs/en
+site_dir: site/en
+
+theme:
+  language: en
+
+plugins:
+  - search:
+      lang: en
+
+extra:
+  # Sidebar marker for pages whose front matter says status: stub
+  status:
+    stub: "To be migrated from the old site"
+  notice: "This documentation covers IPRO SDK {sdk} ({date})."
+  alternate:
+    - { name: 繁體中文, link: /ipro-sdk-docs/, lang: zh-TW }
+    - { name: English, link: /ipro-sdk-docs/en/, lang: en }
+
+nav:
+  - "Home": index.md
+  - "Get Started":
+      - get-started/index.md
+      - "Choose Your Environment": get-started/environment.md
+      - "Windows Setup & VS Code": get-started/windows.md
+      - "macOS / Linux Command Line": get-started/command-line.md
+      - "First FreeRTOS Application": get-started/first-app-freertos.md
+      - "First Zephyr Application": get-started/first-app-zephyr.md
+      - "Flashing & Serial Console": get-started/flash-and-monitor.md
+  - "Hardware":
+      - hardware/index.md
+      - "Chips":
+          - "IPRO7": hardware/chips/ipro7.md
+          - "IPRO7AI": hardware/chips/ipro7ai.md
+          - "IPRO6S (V2.0.1)": hardware/chips/ipro6s.md
+      - "Boards":
+          - "IPRO7AI Reef EVK": hardware/boards/reef-evk.md
+          - "IPRO7AI EVK": hardware/boards/ipro7ai-evk.md
+          - "IPRO7 EVB": hardware/boards/ipro7-evb.md
+      - "Pinout & Peripheral Mapping": hardware/pinmux.md
+      - "Power & Current Measurement": hardware/power.md
+  - "Guides":
+      - guides/index.md
+      - "Architecture": guides/architecture.md
+      - "Build System & Configuration": guides/build-system.md
+      - "BLE Development": guides/ble.md
+      - "Audio & LE Audio": guides/audio.md
+      - "Camera & Imaging": guides/camera.md
+      - "AI & NPU": guides/ai-npu.md
+      - "Networking": guides/networking.md
+      - "Zephyr RTOS": guides/zephyr.md
+      - "Thread & Matter": guides/thread-matter.md
+      - "Low Power": guides/low-power.md
+      - "OTA Updates": guides/ota.md
+      - "VS Code Extension": guides/vscode.md
+  - "Examples": examples/index.md
+  - "Tutorials":
+      - tutorials/index.md
+      - "Your First BLE Application": tutorials/first-ble-app.md
+      - "Build and Flash Workflow": tutorials/build-and-flash.md
+      - "BLE Throughput Test": tutorials/ble-throughput.md
+      - "Getting Started with LE Audio": tutorials/le-audio.md
+  - "Reference":
+      - reference/index.md
+      - "API Reference": reference/api.md
+      - "Tool Command Lines": reference/tools.md
+      - "Debugging & Troubleshooting": reference/debugging.md
+      - "Release Notes": reference/release-notes.md
+      - "FAQ": reference/faq.md
+  - "Documents": documents/index.md

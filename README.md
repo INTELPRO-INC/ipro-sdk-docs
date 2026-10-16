@@ -1,88 +1,84 @@
 # IPRO SDK Documentation Website
 
-Public documentation site for the IPRO SDK, hosted on GitHub Pages:
+Public documentation for the IPRO SDK, published on GitHub Pages:
 <https://intelpro-inc.github.io/ipro-sdk-docs/>
 
-The site is bilingual — Traditional Chinese pages live at the repository root,
-English pages under `en/`. Every `*.html` page at the root has a same-named
-counterpart in `en/`.
+The site is bilingual: Traditional Chinese at the site root, English under
+`/en/`. Pages are Markdown, built with [Zensical](https://zensical.org/);
+[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) builds the
+same sources in CI as a fallback.
 
-The current documentation baseline is **IPRO-SDK-V2.0.1**, released
-**2026-09-09** (`VERSION.txt`), for IPRO7 and IPRO6S. Verify availability
-against the release files and application configurations, not just its README.
+> **Redesign in progress (branch `redesign`).** The previous hand-written
+> Jekyll site lives in `legacy/` until every page has been migrated. Run
+> `tools/stub_report.py` to see what is left.
 
-Windows setup covers **Online Installer 3.4.0** and **Extension 3.3.0**,
-with retained instructions for the fixed 3.3.0 installer. As checked on
-2026-09-10, `packages/index.json` still selects SDK **1.2.1**; it does not
-yet register 2.0.1. Link directly to the V2.0.1 release for the latest SDK,
-and do not imply the installer's `latest` option installs it.
-
-## 📁 Structure
+## Structure
 
 ```
-ipro-sdk-docs/
-├── _config.yml           # Jekyll configuration + navigation (single source of truth)
-├── _layouts/
-│   └── default.html      # Main layout (navbar, release notice, footer)
-├── assets/
-│   ├── css/site.css      # Custom styles
-│   ├── js/main.js        # Navigation / UI behavior
-│   └── favicon.svg
-├── index.html            # Home (zh-TW)
-├── *.html                # Documentation pages (zh-TW)
-└── en/*.html             # English counterparts (same filenames)
+mkdocs.base.yml      shared settings: theme, Markdown extensions, release version (extra.release)
+mkdocs.zh.yml        zh-TW site: nav, language, banner text → site/
+mkdocs.en.yml        English site: same nav order and files → site/en/
+docs/zh/, docs/en/   page sources; every page exists in both languages under the same path
+overrides/           theme overrides: home page, release banner, brand CSS, language switch
+tools/               build, preview and CI checks (see below)
+legacy/              old Jekyll site, kept as migration source until cutover
 ```
 
-Navigation is defined once in `_config.yml` (`nav` / `nav_en`) and rendered by
-`_layouts/default.html`. To add or remove a page from the menus, edit
-`_config.yml` only.
+The release version and date shown in the banner and on the home page come
+from `extra.release` in `mkdocs.base.yml`. Change them there only.
 
-## 🛠️ Local Preview
+## Build and preview
 
 ```bash
-bundle install
-bundle exec jekyll serve
-# open http://localhost:4000/ipro-sdk-docs/
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+./tools/preview.sh            # build, then serve http://localhost:8000/ipro-sdk-docs/
+ENGINE=material ./tools/build.sh   # fallback builder
 ```
 
-## ✍️ Updating Documentation
+Builds run in strict mode: a broken link, a missing anchor or a page left out
+of the nav fails the build.
 
-1. Edit the Chinese page and its English counterpart in the same change.
-2. Keep section anchor `id`s identical between the zh and en versions.
-3. Preview locally, then commit the **specific files you changed** and push:
+## Checks
 
-```bash
-git add index.html en/index.html
-git commit -m "docs(index): describe the change"
-git push
-```
+| Tool | Checks |
+|---|---|
+| `tools/parity_check.py` | zh and en have the same pages, nav order, level-2 heading count and explicit heading ids |
+| `tools/redline_check.py` | public-content rules (below) and Taiwan terminology on zh-TW pages (`tools/zh_tw_terms.yml`) |
+| `tools/stub_report.py` | pages still marked `status: stub`, and legacy sections no page claims |
+| `python -m pytest tools/tests` | unit tests for the tools above |
 
-> ⚠️ Never use `git add .` in this repository. Only `README.md` and the site
-> pages belong here — working notes and internal documents must not be
-> committed. Internal write-ups belong in the SDK repository under
-> `docs/internal-notes/`.
+The red-line check also loads a **private** rule set (internal project,
+customer and vendor names). It is never committed here: CI reads it from the
+`REDLINE_RULES` repository secret, and maintainers keep a local copy in the SDK
+repository (path in `tools/redline_check.py`). Findings from private rules
+never print the matched text.
 
-## ✅ Content Rules (public site)
+## Writing pages
 
-- **IPRO7 has no built-in Wi-Fi.** Network connectivity is provided by the
-  IPRO6 companion chip over SDIO. Never describe Wi-Fi as an IPRO7 feature.
-- **No customer or internal project codenames.** Reference designs are
-  described generically ("contact INTELPRO for availability").
-- **Document the Release SDK scope** (see `release_notice` in `_config.yml`),
-  not the internal development tree. Features outside the release are marked
-  as roadmap items.
-- **No internal infrastructure details** (CI pipelines, issue trackers,
-  internal hostnames or ports).
+1. Add the page under the same path in `docs/zh/` **and** `docs/en/`.
+2. Register it in the `nav` of **both** `mkdocs.zh.yml` and `mkdocs.en.yml`, at the same position.
+3. Give section headings explicit ids so links and the language switch keep working:
+   `## 控制器配置 { #controller-variants }` ↔ `## Controller Configuration { #controller-variants }`.
+4. Record where migrated content came from in front matter (`migrate_from:`), and
+   remove `status: stub` once the page is written.
+5. Run `./tools/preview.sh` and the checks above before committing.
 
-## 🎨 Adding a New Page
+## Content rules (public site)
 
-1. Create `your-page.html` at the root (zh-TW) **and** `en/your-page.html`.
-2. Add front matter to both:
-   ```yaml
-   ---
-   layout: default
-   title: Page Title
-   ---
-   ```
-3. Register the page in `_config.yml` under `nav` and `nav_en`.
-4. Add a sidebar TOC (`doc-sidebar`) for long pages, matching existing pages.
+- **Networking on IPRO7**: describe how it connects — Ethernet (RMII), or Wi-Fi
+  through an IPRO6S companion over SDIO. Never present Wi-Fi as an IPRO7 feature,
+  but do not headline its absence either (no banners or lead sentences about it).
+- **IPRO6S (SDK V2.0.1)** is covered on its chip page, the release notes and the
+  FAQ only; other pages do not repeat the pointer.
+- **No internal or customer names.** Reference designs are described generically
+  ("contact INTELPRO for availability").
+- **Document the released SDK**, not the development tree. Anything not in the
+  release is marked as such or as a roadmap item.
+- **No internal infrastructure**: CI pipelines, issue trackers, internal hosts,
+  local paths. Serial ports on macOS are written `/dev/cu.usbserial-XXXX`.
+
+## Publishing
+
+`.github/workflows/docs.yml` runs the checks and both builds on every push and
+pull request. Pushes to `main` deploy the Zensical build to GitHub Pages, which
+requires **Settings → Pages → Source = GitHub Actions** (switched at cutover).

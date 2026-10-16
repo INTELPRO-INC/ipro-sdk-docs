@@ -1,0 +1,78 @@
+# Traditional Chinese site, served at /ipro-sdk-docs/.
+# Keep nav entries in the same order and files as mkdocs.en.yml (tools/parity_check.py).
+INHERIT: mkdocs.base.yml
+site_url: https://intelpro-inc.github.io/ipro-sdk-docs/
+site_description: INTELPRO IPRO SDK 開發文件
+docs_dir: docs/zh
+site_dir: site
+
+theme:
+  language: zh-TW
+
+plugins:
+  - search:
+      lang: en
+      # Material fallback only: jieba segments Chinese at build time and joins
+      # words with U+200B. Zensical uses its own search and ignores these.
+      separator: '[\s​\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+
+extra:
+  # Sidebar marker for pages whose front matter says status: stub
+  status:
+    stub: "待遷移：內容尚未從舊站搬過來"
+  notice: "本文件對應 IPRO SDK {sdk}（{date}）。"
+  alternate:
+    - { name: 繁體中文, link: /ipro-sdk-docs/, lang: zh-TW }
+    - { name: English, link: /ipro-sdk-docs/en/, lang: en }
+
+nav:
+  - "首頁": index.md
+  - "開始使用":
+      - get-started/index.md
+      - "選擇開發環境": get-started/environment.md
+      - "Windows 安裝與 VS Code": get-started/windows.md
+      - "macOS／Linux 命令列": get-started/command-line.md
+      - "第一個 FreeRTOS 應用": get-started/first-app-freertos.md
+      - "第一個 Zephyr 應用": get-started/first-app-zephyr.md
+      - "燒錄與序列埠": get-started/flash-and-monitor.md
+  - "硬體":
+      - hardware/index.md
+      - "晶片":
+          - "IPRO7": hardware/chips/ipro7.md
+          - "IPRO7AI": hardware/chips/ipro7ai.md
+          - "IPRO6S（V2.0.1）": hardware/chips/ipro6s.md
+      - "板卡":
+          - "IPRO7AI Reef EVK": hardware/boards/reef-evk.md
+          - "IPRO7AI EVK": hardware/boards/ipro7ai-evk.md
+          - "IPRO7 EVB": hardware/boards/ipro7-evb.md
+      - "腳位與周邊對照": hardware/pinmux.md
+      - "電源與功耗量測": hardware/power.md
+  - "開發指南":
+      - guides/index.md
+      - "系統架構": guides/architecture.md
+      - "建置系統與設定": guides/build-system.md
+      - "BLE 開發": guides/ble.md
+      - "音訊與 LE Audio": guides/audio.md
+      - "相機與影像": guides/camera.md
+      - "AI 與 NPU": guides/ai-npu.md
+      - "網路": guides/networking.md
+      - "Zephyr RTOS": guides/zephyr.md
+      - "Thread 與 Matter": guides/thread-matter.md
+      - "低功耗": guides/low-power.md
+      - "OTA 更新": guides/ota.md
+      - "VS Code Extension": guides/vscode.md
+  - "範例": examples/index.md
+  - "教學":
+      - tutorials/index.md
+      - "第一個 BLE 應用": tutorials/first-ble-app.md
+      - "建置與燒錄流程": tutorials/build-and-flash.md
+      - "BLE 吞吐量測試": tutorials/ble-throughput.md
+      - "LE Audio 入門": tutorials/le-audio.md
+  - "參考":
+      - reference/index.md
+      - "API 參考": reference/api.md
+      - "工具命令列": reference/tools.md
+      - "除錯與疑難排解": reference/debugging.md
+      - "版本資訊": reference/release-notes.md
+      - "常見問題": reference/faq.md
+  - "文件下載": documents/index.md
