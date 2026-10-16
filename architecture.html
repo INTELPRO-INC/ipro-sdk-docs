@@ -115,7 +115,7 @@ title: 架構概覽
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td>應用／範例</td><td><code>apps/</code> 下 34 個應用</td><td><code>zephyr/samples/</code> 範例與 Zephyr 上游範例；驅動測試位於 <code>zephyr/tests/</code></td></tr>
+                        <tr><td>應用／範例</td><td><code>apps/</code> 下 35 個應用</td><td><code>zephyr/samples/</code> 範例與 Zephyr 上游範例；驅動測試位於 <code>zephyr/tests/</code></td></tr>
                         <tr><td>建構</td><td><code>make -C apps/&lt;category&gt;/&lt;project&gt;</code> 或 <code>./build_freertos.sh</code></td><td><code>tools/zephyr/bootstrap.sh</code> 建立 workspace 後以 <code>west build</code> 建構</td></tr>
                         <tr><td>板卡</td><td>IPRO7 EVB、IPRO7AI EVK、IPRO7AI Reef EVK</td><td><code>ipro7_evb</code>、<code>ipro7ai_evk</code></td></tr>
                         <tr><td>Bluetooth LE</td><td>Zephyr v4.4 Host 經移植層執行於 FreeRTOS，搭配 IPRO BLE 預編譯控制器</td><td>Zephyr Host 搭配同一組 IPRO BLE 預編譯控制器</td></tr>
@@ -743,7 +743,7 @@ int main(void)
                 </tbody>
                 </table>
             </div>
-            <p>V2.1.0 共 34 個應用，完整清單見<a href="{{ '/applications' | relative_url }}#sdk-2-apps">應用範例</a>。</p>
+            <p>V2.1.0 共 35 個應用，完整清單見<a href="{{ '/applications' | relative_url }}#sdk-2-apps">應用範例</a>。</p>
 
             <div class="alert alert-info"><p>組建系統由 <code>PROJECT_PATH</code> 自動推導 <code>CONFIG_APP_CATEGORY</code>。建立新應用時，確認 Makefile 的 SDK 相對路徑與 CMake 專案名稱。</p></div>
         </section>

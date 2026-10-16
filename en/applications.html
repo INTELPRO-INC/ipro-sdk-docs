@@ -24,6 +24,7 @@ title: Applications - IPRO SDK
 <li><a href="#ipro7ai-evk-demo" class="sidebar-link">ipro7ai_evk_demo</a></li>
 <li><a href="#ipro7ai-reef-demo" class="sidebar-link">ipro7ai_reef_demo</a></li>
 <li><a href="#ipro7ai-evk-launcher" class="sidebar-link">ipro7ai_evk_launcher</a></li>
+<li><a href="#ipro-agora-sentino" class="sidebar-link">ipro_agora_sentino</a></li>
 <li class="sidebar-section-title">Not included in V2.1.0</li>
 <li><a href="#ipro-ble-img-capture" class="sidebar-link">ipro_ble_img_capture</a></li>
 <li><a href="#ipro-le-audio-bis-source" class="sidebar-link">ipro_le_audio_bis_source</a></li>
@@ -69,7 +70,7 @@ title: Applications - IPRO SDK
 
         <section id="sdk-2-apps">
             <h2>V2.1.0 Application Catalog</h2>
-            <p>Alongside the eleven references in the overview, these 23 applications bring the release to 34 projects with a <code>.config</code>, all targeting IPRO7. Some require external hardware or model provisioning; build success alone does not validate those functions.</p>
+            <p>Alongside the eleven references in the overview, these 24 applications bring the release to 35 projects with a <code>.config</code>, all targeting IPRO7. Some require external hardware or model provisioning; build success alone does not validate those functions.</p>
             <div class="alert alert-info">V2.1.0 contains no IPRO6S applications: <code>ipro6_demo</code>, <code>ipro6_if_wifi</code> and <code>ipro6_btdm_phyrf</code> are only in V2.0.1. For IPRO6S development use <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1</a>.</div>
             <div class="table-wrapper"><table><thead><tr><th>Path</th><th>Purpose</th><th>SoC</th></tr></thead><tbody>
 <tr><td><code>apps/ai/ipro_meeting_poc/</code></td><td>NPU speaker recognition (model in the <code>mfg</code> partition)</td><td>IPRO7</td></tr>
@@ -84,6 +85,7 @@ title: Applications - IPRO SDK
 <tr><td><code>apps/test/ipro_tinymaix_demo/</code></td><td>TinyMaix inference</td><td>IPRO7</td></tr>
 <tr><td><code>apps/test/ipro_unit_test/</code></td><td>HAL and shared-component tests</td><td>IPRO7</td></tr>
 <tr><td><code>apps/multimedia/ipro7_uvc_cam/</code></td><td>USB webcam: DVP sensor, ISP, hardware MJPEG, UVC; EVB with SC101IOT, <code>defconfig_reef_ov5640</code> for the Reef with OV5640, <code>defconfig_reef_rps</code> adds rock-paper-scissors on the Reef (new in V2.1.0)</td><td>IPRO7</td></tr>
+<tr><td><code>apps/multimedia/ipro_agora_sentino/</code></td><td>Sentino cloud AI voice (IPRO7AI Reef): BLE provisioning, Wi-Fi through the IPRO6S FIN card, Sentino MQTT login, Agora RTC voice; needs a Sentino device triple and the FIN-card firmware, which do not ship with the SDK, and the AOSL core, a git submodule of AgoraIO-Community/aosl on GitHub (new in V2.1.0)</td><td>IPRO7</td></tr>
 <tr><td><code>apps/test/ipro_gh7007_test/</code></td><td>SPI LCD</td><td>IPRO7</td></tr>
 <tr><td><code>apps/test/ipro_gh7007_video/</code></td><td>LCD video playback</td><td>IPRO7</td></tr>
 <tr><td><code>apps/test/ipro_epd_test/</code></td><td>E-paper</td><td>IPRO7</td></tr>
@@ -415,6 +417,21 @@ ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI --port /dev/cu.usbse
             <p>IPRO7AI EVK camera, LCD, microphone and speaker in one firmware image; pages are switched by hand gestures recognised on the NPU. The detection page can load its model from the SD card through <code>libai.a</code>.</p>
             <p><code>apps/platform/ipro7ai_evk_launcher/</code></p>
             <pre><code class="language-bash">make -C apps/platform/ipro7ai_evk_launcher</code></pre>
+        </section>
+<section id="ipro-agora-sentino">
+            <h2>ipro_agora_sentino</h2>
+            <p>Real-time AI voice conversation on the IPRO7AI Reef EVK: a phone app provisions the device over BLE, the device joins Wi-Fi through the IPRO6S FIN card in the card slot, logs in to the Sentino cloud (MQTT) with its device triple, and joins an Agora RTC channel with the access the cloud hands out.</p>
+            <p><code>apps/multimedia/ipro_agora_sentino/</code> (the default <code>.config</code> is the Reef; <code>BOARD=evk</code> targets the IPRO7AI EVK with AIC8800 Wi-Fi, which builds but has not been verified on a board)</p>
+            <div class="alert alert-info">Obtain separately: the IPRO6S firmware for the FIN card (contact INTELPRO) and the device triple issued by the Sentino platform. The SDK ships the prebuilt Agora RTC SDK (<code>components/3rdparty/agora/sdk</code>, redistributed with Agora's permission and subject to the <a href="https://www.agora.io/en/terms-of-service/">Agora Terms of Service</a>; see the <code>LICENSE</code> in that directory) and the IPRO7 port of AOSL (<code>components/3rdparty/agora/port</code>). The AOSL core is not in the SDK: <code>components/3rdparty/agora/aosl</code> is a git submodule of <a href="https://github.com/AgoraIO-Community/aosl">AgoraIO-Community/aosl</a> at commit <code>d825607</code> (the version the SDK's Agora RTC library was built against). Without AOSL the build stops and lists how to get it.</div>
+            <pre><code class="language-bash"># SDK extracted from the release archive
+git clone https://github.com/AgoraIO-Community/aosl components/3rdparty/agora/aosl
+git -C components/3rdparty/agora/aosl checkout d825607
+# SDK cloned with git: git submodule update --init components/3rdparty/agora/aosl
+
+make -C apps/multimedia/ipro_agora_sentino
+# on the console after the first boot (U6, 115200 baud): the device triple
+sentino_triple set &lt;pid&gt; &lt;uuid&gt; &lt;secret&gt;</code></pre>
+            <p>MQTT runs on plain TCP and the login signature uses a fixed timestamp; a product should move to TLS with certificate verification. The app's <code>README.md</code> has the full procedure.</p>
         </section>
 <section id="creating-apps">
             <h2>Creating New Applications</h2>

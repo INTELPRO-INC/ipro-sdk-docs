@@ -489,7 +489,7 @@ rf_set_tx_power(-3);   // -3dBm（最小）</code></pre>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>SDK 以 <strong>FreeRTOS</strong> 作為主要作業系統，V2.1.0 的 34 個應用程式都以 FreeRTOS 建構：</p>
+                    <p>SDK 以 <strong>FreeRTOS</strong> 作為主要作業系統，V2.1.0 的 35 個應用程式都以 FreeRTOS 建構：</p>
                     <pre><code class="language-bash"># 所有應用程式的 .config 都使用
 CONFIG_FREERTOS_SUPPORT=y</code></pre>
                     <p>BLE Host 協定疊（GAP、GATT、L2CAP、SMP、ISO、LE Audio）源自 Zephyr 專案，應用層使用 Zephyr 風格的 <code>bt_*</code> callback API——在 FreeRTOS 應用中它執行於 FreeRTOS 之上，<strong>不需要安裝或建構 Zephyr</strong>。</p>

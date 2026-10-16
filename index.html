@@ -129,7 +129,7 @@ make -C apps/bluetooth/ble/ipro_ble_remote
         <div class="section-header">
             <h2 class="section-title">參考應用</h2>
             <p class="section-subtitle">
-                V2.1.0 提供 34 個 IPRO7 應用，以下為代表範例，展示 SDK 各項功能的最佳實踐
+                V2.1.0 提供 35 個 IPRO7 應用，以下為代表範例，展示 SDK 各項功能的最佳實踐
             </p>
         </div>
         <div class="app-grid">
@@ -253,6 +253,14 @@ make -C apps/bluetooth/ble/ipro_ble_remote
                 <p class="app-description">V2.1.0 新增：USB 網路攝影機（DVP、ISP、硬體 MJPEG、UVC），支援 IPRO7 EVB 與 Reef（OV5640）</p>
                 <a href="{{ '/applications' | relative_url }}#sdk-2-apps">查看範例</a>
             </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-comments"></i></span>
+                    <span class="app-name">ipro_agora_sentino</span>
+                </div>
+                <p class="app-description">V2.1.0 新增：IPRO7AI Reef 上的 Sentino 雲端 AI 語音對話（BLE 配網、FIN 卡 Wi-Fi、Agora RTC）</p>
+                <a href="{{ '/applications' | relative_url }}#ipro-agora-sentino">查看範例</a>
+            </div>
         </div>
     </div>
 </section>
@@ -294,7 +302,7 @@ west build -b ipro7_evb zephyr/samples/hello_world
 west flash</code></pre>
         </div>
         <div class="alert alert-info">
-            FreeRTOS 為主要開發路徑，34 個應用皆以 FreeRTOS 建構。Zephyr 的環境需求、燒錄方式與支援範圍請見 <a href="{{ '/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>。
+            FreeRTOS 為主要開發路徑，35 個應用皆以 FreeRTOS 建構。Zephyr 的環境需求、燒錄方式與支援範圍請見 <a href="{{ '/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>。
         </div>
     </div>
 </section>

@@ -130,7 +130,7 @@ make -C apps/bluetooth/ble/ipro_ble_remote
         <div class="section-header">
             <h2 class="section-title">Reference Applications</h2>
             <p class="section-subtitle">
-                V2.1.0 ships 34 IPRO7 applications; these representative examples demonstrate SDK capabilities and best practices
+                V2.1.0 ships 35 IPRO7 applications; these representative examples demonstrate SDK capabilities and best practices
             </p>
         </div>
         <div class="app-grid">
@@ -254,6 +254,14 @@ make -C apps/bluetooth/ble/ipro_ble_remote
                 <p class="app-description">New in V2.1.0: USB webcam (DVP, ISP, hardware MJPEG, UVC) for the IPRO7 EVB and the Reef (OV5640)</p>
                 <a href="{{ '/en/applications' | relative_url }}#sdk-2-apps">View example</a>
             </div>
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon"><i class="fas fa-comments"></i></span>
+                    <span class="app-name">ipro_agora_sentino</span>
+                </div>
+                <p class="app-description">New in V2.1.0: Sentino cloud AI voice conversation on the IPRO7AI Reef (BLE provisioning, FIN-card Wi-Fi, Agora RTC)</p>
+                <a href="{{ '/en/applications' | relative_url }}#ipro-agora-sentino">View example</a>
+            </div>
         </div>
     </div>
 </section>
@@ -295,7 +303,7 @@ west build -b ipro7_evb zephyr/samples/hello_world
 west flash</code></pre>
         </div>
         <div class="alert alert-info">
-            FreeRTOS is the main development path; all 34 applications build with FreeRTOS. For Zephyr host requirements, flashing and supported scope, see <a href="{{ '/en/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>.
+            FreeRTOS is the main development path; all 35 applications build with FreeRTOS. For Zephyr host requirements, flashing and supported scope, see <a href="{{ '/en/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>.
         </div>
     </div>
 </section>

@@ -24,7 +24,7 @@ title: Matter & Thread - IPRO SDK
 west build -b ipro7_evb zephyr/samples/net/openthread/shell -d build/ot -- \
     -DEXTRA_CONF_FILE=&lt;SDK&gt;/zephyr/samples/ieee802154_shell/ot.conf \
     -DEXTRA_DTC_OVERLAY_FILE=&lt;SDK&gt;/zephyr/samples/ieee802154_shell/app.overlay</code></pre><p><code>&lt;SDK&gt;</code> 為 SDK 根目錄的絕對路徑。Zephyr 支援的板子為 <code>ipro7_evb</code> 與 <code>ipro7ai_evk</code>；工作區建立、燒錄與 Console 設定請見 <a href="{{ '/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>。FreeRTOS 應用不含 Thread；也不要將 SDK 中的 BLE Controller 函式庫視為 OpenThread 實作。</p></section>
-<section id="reference-apps"><h2>目前可用的參考範例</h2><p>IP 連線可先以 FreeRTOS 的 <code>ipro7_demo</code>（Ethernet）、<code>ipro7_sdio_wifi</code>（IPRO6S SDIO 無線端）或 <code>ipro7ai_reef_demo</code> 的 <code>defconfig_wifi_ipro6s</code>（IPRO6S FIN 卡）驗證；Thread 以 Zephyr 的 OpenThread shell 範例驗證。V2.1.0 的 34 個 FreeRTOS 應用不含 Matter 或 Thread 應用。</p></section>
+<section id="reference-apps"><h2>目前可用的參考範例</h2><p>IP 連線可先以 FreeRTOS 的 <code>ipro7_demo</code>（Ethernet）、<code>ipro7_sdio_wifi</code>（IPRO6S SDIO 無線端）或 <code>ipro7ai_reef_demo</code> 的 <code>defconfig_wifi_ipro6s</code>（IPRO6S FIN 卡）驗證；Thread 以 Zephyr 的 OpenThread shell 範例驗證。V2.1.0 的 35 個 FreeRTOS 應用不含 Matter 或 Thread 應用。</p></section>
 <section id="npu-embedding-stream"><h2>AI 與網路應用</h2><p>AI 範例使用 <code>.inm</code> 或 <code>.tflite</code> 模型。把推論結果送到網路服務需自行定義資料格式、緩衝與傳輸；V2.1.0 沒有 Matter NPU embedding 串流範例。</p></section>
 <section id="configuration"><h2>整合前需確認的設定</h2><p>取得相容協定套件後，再確認工具鏈、RTOS 適配、Flash／RAM 預算、持久儲存、熵來源、憑證與 OTA 設計。不能只新增一個 Kconfig 選項就啟用未交付的堆疊；Thread 也只能在 Zephyr RTOS 下使用，無法在 FreeRTOS 應用中以設定選項開啟。</p></section>
 <section id="dev-workflow"><h2>建議驗證順序</h2><p>依序驗證板級驅動、無線／Ethernet 連線、IP 傳輸及安全儲存，再進行協定整合、配網、重啟恢復與互通性測試。產品支援版本及認證狀態須以實際整合成果確認。</p></section>

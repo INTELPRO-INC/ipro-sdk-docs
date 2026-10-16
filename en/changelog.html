@@ -27,17 +27,19 @@ title: Changelog - IPRO SDK
 
         <section id="v2-1-0">
             <h2>IPRO-SDK-V2.1.0</h2>
-            <p><strong>Release date:</strong> 2026-10-15</p>
-            <p>Adds Zephyr RTOS support; the FreeRTOS applications focus on IPRO7, 34 application projects in all.</p>
+            <p><strong>Release date:</strong> 2026-10-16</p>
+            <p>Adds Zephyr RTOS support; the FreeRTOS applications focus on IPRO7, 35 application projects in all.</p>
             <ul>
                 <li>The SDK is also a Zephyr v4.4.0 module for <code>ipro7_evb</code> and <code>ipro7ai_evk</code>: drivers, Bluetooth LE (Zephyr host + IPRO BLE controller), IEEE 802.15.4 and OpenThread, MCUboot and image upload over BLE. See <a href="{{ '/en/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>.</li>
                 <li>Thread is available under Zephyr; the RF driver and the IEEE 802.15.4 MAC ship as Zephyr prebuilt archives (<code>lib/zephyr/</code>).</li>
-                <li>New applications: <code>ipro7ai_reef_demo</code> (IPRO7AI Reef EVK), <code>ipro7ai_evk_launcher</code>, <code>ipro7ai_evk_person_detect</code>, <code>ipro7ai_evk_rps</code>, <code>ipro7_uvc_cam</code>, <code>ipro_ai_link</code>.</li>
+                <li>New applications: <code>ipro7ai_reef_demo</code> (IPRO7AI Reef EVK), <code>ipro7ai_evk_launcher</code>, <code>ipro7ai_evk_person_detect</code>, <code>ipro7ai_evk_rps</code>, <code>ipro7_uvc_cam</code>, <code>ipro_ai_link</code>, <code>ipro_agora_sentino</code> (Sentino cloud AI voice; ships the prebuilt Agora RTC SDK and the IPRO7 port of AOSL, the AOSL core is a git submodule of AgoraIO-Community/aosl on GitHub).</li>
                 <li>The AI runtime can load models from the SD card; prebuilt archives no longer contain build-environment file paths.</li>
+                <li>IPRO7AI Reef: the RF crystal is trimmed to capcode 95 by default, at boot and at every RF init (<code>CONFIG_IPRO7_XTAL_CAPCODE</code>; an explicit value in the app config wins). Under Zephyr set <code>CONFIG_SOC_IPRO7_XTAL_CAPCODE=95</code> on the Reef. The prebuilt RF and IEEE 802.15.4 libraries take the value from the app.</li>
+                <li>BLE controller archives no longer carry bench instrumentation (Zephyr images no longer need an <code>_sp</code> symbol), and after a PDS wake the controller keeps the cold-init radio timing.</li>
                 <li>Includes <code>tools/serial_monitor.py</code>, <code>tools/zephyr/</code> and <code>tools/create_ota.py</code>.</li>
                 <li>No IPRO6S applications, IPRO6S BLE controller archives or <code>ipro6_rf</code>; use V2.0.1 for IPRO6S development. Matter and Thread for FreeRTOS applications are not included.</li>
                 <li>V2.0.9 (2026-10-15) was the IPRO7 packaging release before V2.1.0, without Zephyr.</li>
-                <li>Package verification: all 34 FreeRTOS applications build; the Zephyr sample matrix and twister (<code>zephyr/samples</code>, <code>zephyr/tests</code>) build from the release package for <code>ipro7_evb</code> and <code>ipro7ai_evk</code>. These are build checks, not on-board test results.</li>
+                <li>Package verification: all 35 FreeRTOS applications build from the package; <code>ipro_agora_sentino</code> builds once AOSL is fetched, checked both from the release archive and with <code>git clone --recursive</code>. The Zephyr sample matrix and twister (<code>zephyr/samples</code>, <code>zephyr/tests</code>) build from the package for <code>ipro7_evb</code> and <code>ipro7ai_evk</code>. On an IPRO7AI Reef: FreeRTOS <code>ipro_ble_remote</code> and Zephyr <code>peripheral_hr</code> apply capcode 95 at boot, run the crystal at +3.3 / +3.1 ppm, and held 10 of 10 BLE reconnects from a macOS central with no fault.</li>
             </ul>
             <p><a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.1.0">Release notes and SDK download</a></p>
         </section>

@@ -23,6 +23,7 @@ title: 應用範例
 <li><a href="#ipro7ai-evk-demo" class="sidebar-link">ipro7ai_evk_demo</a></li>
 <li><a href="#ipro7ai-reef-demo" class="sidebar-link">ipro7ai_reef_demo</a></li>
 <li><a href="#ipro7ai-evk-launcher" class="sidebar-link">ipro7ai_evk_launcher</a></li>
+<li><a href="#ipro-agora-sentino" class="sidebar-link">ipro_agora_sentino</a></li>
 <li class="sidebar-section-title">V2.1.0 未隨附</li>
 <li><a href="#ipro-ble-img-capture" class="sidebar-link">ipro_ble_img_capture</a></li>
 <li><a href="#ipro-le-audio-bis-source" class="sidebar-link">ipro_le_audio_bis_source</a></li>
@@ -68,7 +69,7 @@ title: 應用範例
 
         <section id="sdk-2-apps">
             <h2>V2.1.0 應用目錄</h2>
-            <p>除概覽中的十一個參考應用外，下列 23 個範例使本版具有 <code>.config</code> 的專案總數達 34 個，全部以 IPRO7 為目標。部分需要外接硬體或配置模型，建置成功不等於功能已在板上驗證。</p>
+            <p>除概覽中的十一個參考應用外，下列 24 個範例使本版具有 <code>.config</code> 的專案總數達 35 個，全部以 IPRO7 為目標。部分需要外接硬體或配置模型，建置成功不等於功能已在板上驗證。</p>
             <div class="alert alert-info">V2.1.0 不含 IPRO6S 應用：<code>ipro6_demo</code>、<code>ipro6_if_wifi</code> 與 <code>ipro6_btdm_phyrf</code> 僅收錄於 V2.0.1。IPRO6S 開發請使用 <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1</a>。</div>
             <div class="table-wrapper"><table><thead><tr><th>路徑</th><th>用途</th><th>SoC</th></tr></thead><tbody>
 <tr><td><code>apps/ai/ipro_meeting_poc/</code></td><td>NPU 語者辨識（模型位於 <code>mfg</code> 分割區）</td><td>IPRO7</td></tr>
@@ -83,6 +84,7 @@ title: 應用範例
 <tr><td><code>apps/test/ipro_tinymaix_demo/</code></td><td>TinyMaix 推理</td><td>IPRO7</td></tr>
 <tr><td><code>apps/test/ipro_unit_test/</code></td><td>HAL 與共用元件測試</td><td>IPRO7</td></tr>
 <tr><td><code>apps/multimedia/ipro7_uvc_cam/</code></td><td>USB 攝影機：DVP 感測器、ISP、硬體 MJPEG、UVC；EVB 搭配 SC101IOT，<code>defconfig_reef_ov5640</code> 用於 Reef 搭配 OV5640，<code>defconfig_reef_rps</code> 於 Reef 加入剪刀石頭布（V2.1.0 新增）</td><td>IPRO7</td></tr>
+<tr><td><code>apps/multimedia/ipro_agora_sentino/</code></td><td>Sentino 雲端 AI 語音（IPRO7AI Reef）：BLE 配網、經 IPRO6S FIN 卡連 Wi-Fi、Sentino MQTT 登入、Agora RTC 即時語音；需另備 Sentino 裝置三元組與 FIN 卡韌體，AOSL 核心為指向 GitHub AgoraIO-Community/aosl 的 git submodule（V2.1.0 新增）</td><td>IPRO7</td></tr>
 <tr><td><code>apps/test/ipro_gh7007_test/</code></td><td>SPI LCD</td><td>IPRO7</td></tr>
 <tr><td><code>apps/test/ipro_gh7007_video/</code></td><td>LCD 影片播放</td><td>IPRO7</td></tr>
 <tr><td><code>apps/test/ipro_epd_test/</code></td><td>電子紙</td><td>IPRO7</td></tr>
@@ -414,6 +416,21 @@ ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI --port /dev/cu.usbse
             <p>IPRO7AI EVK 的攝影機、LCD、麥克風與喇叭整合於單一韌體映像，以 NPU 辨識的手勢切換頁面。偵測頁可透過 <code>libai.a</code> 由 SD 卡載入模型。</p>
             <p><code>apps/platform/ipro7ai_evk_launcher/</code></p>
             <pre><code class="language-bash">make -C apps/platform/ipro7ai_evk_launcher</code></pre>
+        </section>
+<section id="ipro-agora-sentino">
+            <h2>ipro_agora_sentino</h2>
+            <p>在 IPRO7AI Reef EVK 上與 AI 即時語音對話：手機 App 經 BLE 配網，裝置經插在卡槽的 IPRO6S FIN 卡連上 Wi-Fi，以裝置三元組登入 Sentino 雲端（MQTT），再由雲端配發的 Agora RTC 存取權加入頻道。</p>
+            <p><code>apps/multimedia/ipro_agora_sentino/</code>（預設 <code>.config</code> 為 Reef；<code>BOARD=evk</code> 為 IPRO7AI EVK 搭配 AIC8800 Wi-Fi，可建置但未經板上驗證）</p>
+            <div class="alert alert-info">需另行取得：FIN 卡上的 IPRO6S 韌體（請聯絡 INTELPRO）與 Sentino 平台配發的裝置三元組。SDK 隨附 Agora RTC SDK 預編譯函式庫（<code>components/3rdparty/agora/sdk</code>，INTELPRO 經 Agora 同意再散布，使用時依 <a href="https://www.agora.io/en/terms-of-service/">Agora 服務條款</a>，詳見該目錄的 <code>LICENSE</code>）與 AOSL 的 IPRO7 平台移植（<code>components/3rdparty/agora/port</code>）。AOSL 核心不在 SDK 內：<code>components/3rdparty/agora/aosl</code> 是指向 <a href="https://github.com/AgoraIO-Community/aosl">AgoraIO-Community/aosl</a> commit <code>d825607</code> 的 git submodule（SDK 的 Agora RTC 函式庫依此版建置）。缺少 AOSL 時，建置會停下並列出取得步驟。</div>
+            <pre><code class="language-bash"># 從發行壓縮檔解開 SDK 時
+git clone https://github.com/AgoraIO-Community/aosl components/3rdparty/agora/aosl
+git -C components/3rdparty/agora/aosl checkout d825607
+# 以 git clone 取得 SDK 時，改用：git submodule update --init components/3rdparty/agora/aosl
+
+make -C apps/multimedia/ipro_agora_sentino
+# 第一次開機後於主控台（U6，115200 baud）輸入裝置三元組
+sentino_triple set &lt;pid&gt; &lt;uuid&gt; &lt;secret&gt;</code></pre>
+            <p>MQTT 以明文 TCP 連線，登入簽章使用固定時間戳；量產產品請改用 TLS 並開啟憑證驗證。完整說明見 app 內的 <code>README.md</code>。</p>
         </section>
 <section id="creating-apps">
             <h2>建立新應用</h2>

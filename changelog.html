@@ -26,17 +26,19 @@ title: 更新日誌
 
         <section id="v2-1-0">
             <h2>IPRO-SDK-V2.1.0</h2>
-            <p><strong>發行日期：</strong>2026-10-15</p>
-            <p>新增 Zephyr RTOS 支援，FreeRTOS 應用聚焦 IPRO7，共 34 個應用專案。</p>
+            <p><strong>發行日期：</strong>2026-10-16</p>
+            <p>新增 Zephyr RTOS 支援，FreeRTOS 應用聚焦 IPRO7，共 35 個應用專案。</p>
             <ul>
                 <li>SDK 同時是 Zephyr v4.4.0 模組，支援 <code>ipro7_evb</code> 與 <code>ipro7ai_evk</code>：驅動程式、Bluetooth LE（Zephyr Host + IPRO BLE Controller）、IEEE 802.15.4 與 OpenThread、MCUboot 及經 BLE 的映像檔上傳。詳見 <a href="{{ '/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>。</li>
                 <li>Thread 於 Zephyr 提供；RF 驅動程式與 IEEE 802.15.4 MAC 以 Zephyr 預編譯函式庫交付（<code>lib/zephyr/</code>）。</li>
-                <li>新增應用：<code>ipro7ai_reef_demo</code>（IPRO7AI Reef EVK）、<code>ipro7ai_evk_launcher</code>、<code>ipro7ai_evk_person_detect</code>、<code>ipro7ai_evk_rps</code>、<code>ipro7_uvc_cam</code>、<code>ipro_ai_link</code>。</li>
+                <li>新增應用：<code>ipro7ai_reef_demo</code>（IPRO7AI Reef EVK）、<code>ipro7ai_evk_launcher</code>、<code>ipro7ai_evk_person_detect</code>、<code>ipro7ai_evk_rps</code>、<code>ipro7_uvc_cam</code>、<code>ipro_ai_link</code>、<code>ipro_agora_sentino</code>（Sentino 雲端 AI 語音；隨附 Agora RTC SDK 預編譯函式庫與 AOSL 的 IPRO7 移植，AOSL 核心為指向 GitHub AgoraIO-Community/aosl 的 git submodule）。</li>
                 <li>AI 執行庫可從 SD 卡載入模型；預編譯函式庫不再包含建構環境的檔案路徑。</li>
+                <li>IPRO7AI Reef 預設在開機與每次 RF 初始化時把 RF 晶振調到 capcode 95（<code>CONFIG_IPRO7_XTAL_CAPCODE</code>，應用設定中明確指定的值優先）；Zephyr 在 Reef 上請設定 <code>CONFIG_SOC_IPRO7_XTAL_CAPCODE=95</code>。預編譯的 RF 與 IEEE 802.15.4 函式庫會採用應用的設定值。</li>
+                <li>BLE Controller 函式庫移除了測試用的量測程式碼（Zephyr 映像不再需要 <code>_sp</code> 符號），PDS 喚醒後保留冷啟動時的射頻時序。</li>
                 <li>隨附 <code>tools/serial_monitor.py</code>、<code>tools/zephyr/</code> 與 <code>tools/create_ota.py</code>。</li>
                 <li>不含 IPRO6S 應用、IPRO6S BLE Controller 函式庫與 <code>ipro6_rf</code>，IPRO6S 開發請使用 V2.0.1；Matter 與 FreeRTOS 應用的 Thread 未包含。</li>
                 <li>V2.0.9（2026-10-15）為 V2.1.0 之前的 IPRO7 封裝版本，不含 Zephyr。</li>
-                <li>打包驗證：34 個 FreeRTOS 應用全數建置成功；Zephyr 範例矩陣與 twister（<code>zephyr/samples</code>、<code>zephyr/tests</code>）以發行包於 <code>ipro7_evb</code>、<code>ipro7ai_evk</code> 建置通過。以上為建置驗證，不代表板上測試結果。</li>
+                <li>打包驗證：35 個 FreeRTOS 應用皆可由發行包建置，其中 <code>ipro_agora_sentino</code> 於取得 AOSL 後建置，發行壓縮檔與 <code>git clone --recursive</code> 兩種方式都驗證過；Zephyr 範例矩陣與 twister（<code>zephyr/samples</code>、<code>zephyr/tests</code>）以發行包於 <code>ipro7_evb</code>、<code>ipro7ai_evk</code> 建置通過。IPRO7AI Reef 上板：FreeRTOS <code>ipro_ble_remote</code> 與 Zephyr <code>peripheral_hr</code> 開機即套用 capcode 95，晶振誤差 +3.3／+3.1 ppm，macOS 主控端 BLE 重連 10/10，無異常。</li>
             </ul>
             <p><a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.1.0">發行說明與 SDK 下載</a></p>
         </section>

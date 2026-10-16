@@ -39,7 +39,7 @@ title: 快速開始
 
         <section id="sdk-2-1-0">
             <h2>SDK V2.1.0</h2>
-            <p>下載 <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.1.0">IPRO-SDK-V2.1.0</a>（2026-10-15）：Release 提供 <code>IPRO-SDK-V2.1.0.tar.gz</code> 與 <code>.sha256</code> 校驗檔，原始碼亦位於 GitHub 儲存庫的 <code>main</code> 分支。套件含 34 個 IPRO7 應用（IPRO7 EVB、IPRO7AI EVK、IPRO7AI Reef EVK）；請以各範例隨附的板型設定建置。</p>
+            <p>下載 <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.1.0">IPRO-SDK-V2.1.0</a>（2026-10-16）：Release 提供 <code>IPRO-SDK-V2.1.0.tar.gz</code> 與 <code>.sha256</code> 校驗檔，原始碼亦位於 GitHub 儲存庫的 <code>main</code> 分支。套件含 35 個 IPRO7 應用（IPRO7 EVB、IPRO7AI EVK、IPRO7AI Reef EVK）；請以各範例隨附的板型設定建置。</p>
             <p>本版新增：Zephyr RTOS 支援（見 <a href="{{ '/zephyr-rtos' | relative_url }}">Zephyr RTOS</a>）；六個應用 <code>ipro7ai_reef_demo</code>、<code>ipro7ai_evk_launcher</code>、<code>ipro7ai_evk_person_detect</code>、<code>ipro7ai_evk_rps</code>、<code>ipro_ai_link</code>、<code>ipro7_uvc_cam</code>；以及 <code>tools/serial_monitor.py</code>、<code>tools/zephyr/</code> 與 <code>tools/create_ota.py</code>。本版未包含 Matter、FreeRTOS 應用的 Thread（Thread 僅於 Zephyr 下提供）與模型轉換工具。</p>
             <div class="alert alert-warning">
                 <strong>IPRO6S：</strong>V2.1.0 不支援 IPRO6S，未附 IPRO6S 應用與 IPRO6S BLE Controller 函式庫。IPRO6S 開發（BR/EDR、晶片內建 Wi-Fi 6、IPRO6S EVB）請使用 <a href="https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1">V2.0.1</a>。
@@ -198,7 +198,7 @@ ls /opt/toolchain/riscv_ipro7/bin/
 
         <section id="freertos-quickstart">
             <h2>快速開始建構</h2>
-            <p>FreeRTOS 是 SDK 的主要開發路徑，V2.1.0 的 34 個應用皆以 FreeRTOS 建構。</p>
+            <p>FreeRTOS 是 SDK 的主要開發路徑，V2.1.0 的 35 個應用皆以 FreeRTOS 建構。</p>
 
             <h3>使用 Make 建構（推薦）</h3>
             <div class="code-block">

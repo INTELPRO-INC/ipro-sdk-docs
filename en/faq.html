@@ -490,7 +490,7 @@ rf_set_tx_power(-3);   // -3dBm (minimum)</code></pre>
                     <i class="fas fa-chevron-down"></i>
                 </div>
                 <div class="faq-answer">
-                    <p>The SDK uses <strong>FreeRTOS</strong> as its main operating system; all 34 applications in V2.1.0 are built with FreeRTOS:</p>
+                    <p>The SDK uses <strong>FreeRTOS</strong> as its main operating system; all 35 applications in V2.1.0 are built with FreeRTOS:</p>
                     <pre><code class="language-bash"># Every application's .config uses
 CONFIG_FREERTOS_SUPPORT=y</code></pre>
                     <p>The BLE Host protocol stack (GAP, GATT, L2CAP, SMP, ISO, LE Audio) originates from the Zephyr project, and the application layer uses Zephyr-style <code>bt_*</code> callback APIs -- in FreeRTOS applications it runs on top of FreeRTOS, so <strong>no Zephyr installation or build is required</strong>.</p>
