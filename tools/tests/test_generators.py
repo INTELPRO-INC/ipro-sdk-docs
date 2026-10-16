@@ -10,6 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import doxy_md  # noqa: E402
 import gen_common  # noqa: E402
 import gen_documents  # noqa: E402
+import gen_redirects  # noqa: E402
 import readme_md  # noqa: E402
 
 BASES = ("https://raw/x", "https://blob/x", "https://tree/x")
@@ -126,3 +127,55 @@ def test_documents_availability():
     assert gen_documents.availability(doc("request"), "zh") == "向 INTELPRO 索取"
     public = doc("public", {"zh-TW": "https://z.pdf", "en": "https://e.pdf"})
     assert gen_documents.availability(public, "en") == "[zh-TW](https://z.pdf) / [English](https://e.pdf)"
+
+
+# ---------- gen_redirects ----------
+
+BUILT = {
+    "get-started/": '<h2 id="intro">x</h2>',
+    "get-started/flash/": '<h2 id="flashing">x</h2><h2 id="overview">x</h2>',
+    "": "<h1>home</h1>",
+}
+
+
+def read_built(url):
+    return BUILT.get(url)
+
+
+def test_page_url():
+    assert gen_redirects.page_url("index.md") == ("", "")
+    assert gen_redirects.page_url("get-started/index.md") == ("get-started/", "")
+    assert gen_redirects.page_url("guides/ble.md#le-audio") == ("guides/ble/", "le-audio")
+    with pytest.raises(ValueError):
+        gen_redirects.page_url("guides/ble/")
+
+
+def test_resolve_keeps_ids_follows_map_and_honours_top():
+    entry = {"to": "get-started/index.md",
+             "anchors": {"flashing": "get-started/flash.md", "overview": "get-started/flash.md#", "x": "index.md"}}
+    default, anchors = gen_redirects.resolve("p", entry, ["intro", "flashing", "overview", "gone"], "/b/", read_built)
+    assert default == "/b/get-started/"
+    assert anchors == {"intro": "/b/get-started/#intro", "flashing": "/b/get-started/flash/#flashing",
+                       "overview": "/b/get-started/flash/", "x": "/b/"}
+
+
+def test_redirect_validation():
+    sections = {"p": ["flashing"], "q": []}
+    data = {"pages": {"p": {"to": "get-started/index.md",
+                            "anchors": {"flashing": "get-started/flash.md#nope", "typo": "index.md"}},
+                      "r": {"to": "missing.md"}}}
+    errors = gen_redirects.validate(data, sections, read_built)
+    assert "q: old page has no redirect entry" in errors
+    assert "r: no such page in legacy/" in errors
+    assert "p#typo: the old page has no such section" in errors
+    assert "p #flashing: get-started/flash.md#nope has no heading #nope" in errors
+    assert "r to: missing.md is not a built page" in errors
+
+
+def test_redirect_page_escapes_and_falls_back():
+    redirect = gen_redirects.Redirect("p", "/b/x/", {"a": "/b/y/#a"}, "A <b> & c")
+    page = gen_redirects.render(redirect, "en", "https://h.io")
+    assert '<link rel="canonical" href="https://h.io/b/x/">' in page
+    assert '<meta http-equiv="refresh" content="0; url=/b/x/">' in page
+    assert 'var anchors = {"a": "/b/y/#a"};' in page
+    assert "A &lt;b&gt; &amp; c" in page and "A <b>" not in page

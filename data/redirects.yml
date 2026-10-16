@@ -1,0 +1,129 @@
+# Old Jekyll URLs to new pages, for tools/gen_redirects.py.
+#
+# Each key is a page of the old site (legacy/<key>.html), served as <key>.html
+# and en/<key>.html; the same entry covers both languages. `to` is where the
+# old page now lives. `anchors` sends an old section (#id) somewhere else.
+#
+# A target without "#" keeps the old section id when the target page has a
+# heading with that id, so sections whose ids survived the rewrite need no
+# entry. A target ending in a bare "#" always lands at the top of its page.
+# Any other old section lands at the top of `to`.
+pages:
+  ai-npu:
+    to: guides/ai-npu.md
+  api-reference:
+    to: reference/api/index.md
+    anchors:
+      ble-adv: reference/api/index.md#ble-host
+      ble-scan: reference/api/index.md#ble-host
+      ble-conn: reference/api/index.md#ble-host
+      ble-gatt-server: reference/api/index.md#ble-host
+      ble-gatt-client: reference/api/index.md#ble-host
+      hal-gpio: reference/api/peripherals.md#hal_gpio-h
+      hal-uart: reference/api/peripherals.md#hal_uart-h
+      hal-spi: reference/api/peripherals.md#hal_spi-h
+      hal-i2c: reference/api/peripherals.md#hal_i2c-h
+      hal-pwm: reference/api/peripherals.md#hal_pwm-h
+      hal-adc: reference/api/peripherals.md#hal_adc-h
+      rtos-freertos: reference/api/platform.md#freertos_app_hooks-h
+  applications:
+    to: examples/index.md
+    anchors:
+      overview: examples/index.md#
+      sdk-2-apps: examples/index.md#
+      ipro-ble-remote: examples/ipro_ble_remote.md
+      ipro-throughput-test: examples/ipro_throughput_test.md
+      ipro-ble-transparent: examples/index.md#ble
+      ipro-ble-img-capture: examples/index.md#ble
+      ipro-ble-hid-keyboard: examples/index.md#ble
+      ipro-le-audio-headset: examples/ipro_le_audio_headset.md
+      ipro-le-audio-bis-source: examples/index.md#audio
+      ipro-le-audio-bis-sink: examples/index.md#audio
+      ipro-pdm-mic-demo: examples/ipro_pdm_mic_demo.md
+      ipro7-demo: examples/ipro7_demo.md
+      ipro7-sdio-wifi: examples/ipro7_sdio_wifi.md
+      ipro7ai-evk-demo: examples/ipro7ai_evk_demo.md
+      ipro7ai-reef-demo: examples/ipro7ai_reef_demo.md
+      ipro7ai-evk-launcher: examples/ipro7ai_evk_launcher.md
+      ipro-agora-sentino: examples/ipro_agora_sentino.md
+      creating-apps: guides/build-system.md
+  architecture:
+    to: guides/architecture.md
+    anchors:
+      soc-variants: hardware/index.md#chips
+      dual-chip: hardware/chips/ipro6s.md
+      memory-layout: guides/build-system.md
+      build-pipeline: guides/build-system.md
+      configuration: guides/build-system.md
+      app-structure: guides/build-system.md
+  audio-multimedia:
+    to: guides/audio.md
+    anchors:
+      camera-video: guides/camera.md
+      reef-demo: examples/ipro7ai_reef_demo.md
+  ble-development:
+    to: guides/ble.md
+    anchors:
+      zephyr-host: guides/ble.md#stack-architecture
+      prebuilt-libs: guides/ble.md#controller-variants
+      app-framework: guides/ble.md#api-patterns
+      ipro6s-btdm: hardware/chips/ipro6s.md
+  changelog:
+    to: reference/release-notes.md
+  faq:
+    to: reference/faq.md
+  getting-started:
+    to: get-started/index.md
+    anchors:
+      sdk-2-1-0: get-started/environment.md
+      prerequisites: get-started/environment.md
+      installation: get-started/command-line.md
+      directory-structure: get-started/command-line.md
+      freertos-quickstart: get-started/first-app-freertos.md
+      first-build: get-started/first-app-freertos.md
+      zephyr-quickstart: get-started/first-app-zephyr.md
+      kconfig: guides/build-system.md#configuration
+      flashing: get-started/flash-and-monitor.md
+      serial-monitor: get-started/flash-and-monitor.md
+      board-testing: reference/debugging.md
+      debugging: reference/debugging.md
+      troubleshooting: reference/debugging.md
+      next-steps: tutorials/index.md
+  hardware:
+    to: hardware/index.md
+    anchors:
+      ipro6s: hardware/chips/ipro6s.md
+  matter-thread:
+    to: guides/thread-matter.md
+    anchors:
+      matter-over-thread: guides/thread-matter.md#matter-architecture
+      matter-over-wifi: guides/thread-matter.md#matter-architecture
+  tools-debugging:
+    to: reference/tools.md
+    anchors:
+      macos-notes: get-started/command-line.md
+      gdb-debugging: reference/debugging.md
+      crash-analysis: reference/debugging.md
+  tutorials:
+    to: tutorials/index.md
+  vscode-extension:
+    to: guides/vscode.md
+    anchors:
+      installation: get-started/windows.md
+      cli-tools: reference/tools.md#flash-tool
+  wifi-networking:
+    to: guides/networking.md
+  windows-installation:
+    to: get-started/windows.md
+    anchors:
+      package-contents: get-started/windows.md#installation
+      install-modes: get-started/windows.md#installation
+      full-install: get-started/windows.md#installation
+      extension-only: get-started/windows.md#installation
+      sdk-only: get-started/windows.md#installation
+      settings: get-started/windows.md#installation
+  zephyr-rtos:
+    to: guides/zephyr.md
+    anchors:
+      setup: get-started/first-app-zephyr.md
+      build-flash: get-started/first-app-zephyr.md

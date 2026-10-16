@@ -29,10 +29,14 @@ def load_yaml(path: Path) -> Any:
     return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
+def mkdocs_config(name: str) -> dict[str, Any]:
+    """One mkdocs*.yml file as read, without following INHERIT (name: "base", "zh" or "en")."""
+    return yaml.load((ROOT / f"mkdocs.{name}.yml").read_text(encoding="utf-8"), Loader=_AnyTagLoader)
+
+
 def release() -> dict[str, str]:
     """extra.release from mkdocs.base.yml (single source of the SDK version)."""
-    data = yaml.load((ROOT / "mkdocs.base.yml").read_text(encoding="utf-8"), Loader=_AnyTagLoader)
-    return data["extra"]["release"]
+    return mkdocs_config("base")["extra"]["release"]
 
 
 def release_tag() -> str:

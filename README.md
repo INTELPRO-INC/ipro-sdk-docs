@@ -75,6 +75,21 @@ matter says `generated: tools/<generator>.py`. Edit the source, not the page.
   in `data/api.yml` (a group or `exclude`).
 - The examples and API generators refuse to write pages that fail the red-line check.
 
+### Old URLs
+
+The Jekyll site served `/<page>` and `/en/<page>` (for example `/getting-started`
+or `/en/faq`). `tools/build.sh` ends with `tools/gen_redirects.py`, which writes a
+redirect page for each of them into `site/` and `site/en/` from `data/redirects.yml`.
+GitHub Pages serves `/<page>` from `<page>.html`, so both URL forms keep working.
+
+- `to` is the page that replaced the old one; old section anchors (`#flashing`)
+  follow the `anchors` map, or keep their id when the target has a heading with it.
+- The run fails, and writes nothing, if an old page in `legacy/` has no entry, an
+  anchor names a section the old page never had, a target page or heading does not
+  exist in the build, or a redirect would replace a real page.
+- When a page moves or a heading id changes, update `data/redirects.yml` in the
+  same commit; the build tells you which entry broke.
+
 ## Writing pages
 
 1. Add the page under the same path in `docs/zh/` **and** `docs/en/`.
