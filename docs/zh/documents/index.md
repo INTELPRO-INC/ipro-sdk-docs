@@ -7,7 +7,7 @@ migrate_from: []
 
 # 文件下載
 
-INTELPRO 為 IPRO7 與 IPRO7AI 提供的正式文件，對應 SDK V2.1。每份文件都有繁體中文與英文版。
+INTELPRO 為 IPRO7 與 IPRO7AI 提供的正式文件，對應 SDK V2.1 與 IPRO AI Teach 2.0。各文件提供的語言列於表中。
 
 !!! info "取得方式"
     標示「向 INTELPRO 索取」的文件，請向 INTELPRO 索取，並註明文件名稱、版本與語言。
@@ -30,13 +30,14 @@ INTELPRO 為 IPRO7 與 IPRO7AI 提供的正式文件，對應 SDK V2.1。每份�
 | IPRO7 程式設計指南 | V1.1 | 繁中／English | 開發環境、SDK 架構、建置系統、FreeRTOS、各周邊、BLE、經 SDIO 外接的 Wi-Fi、多媒體、USB、安全引擎、電源管理、OTA、除錯與日誌 | 向 INTELPRO 索取 |
 | IPRO7 API 規格書 | V1.1 | 繁中／English | HAL、USB、安全引擎、BLE、經 SDIO 外接的 Wi-Fi、檔案系統、OS 抽象層與 AI／NPU 執行環境的 API，以及錯誤碼 | 向 INTELPRO 索取 |
 | IPRO7 軟體工具使用指南 | V1.1 | 繁中／English | RISC-V 工具鏈、建置與設定系統、燒錄與下載工具、除錯工具、序列埠監看、BLE 工具、RF 調校工具、映像檔工具、記憶體與大小分析 | 向 INTELPRO 索取 |
+| IPRO7AI Edge AI 程式設計指南 | V1.2 | 繁中 | Edge AI 平台 V2.0 的執行層、模型存放、資料來源、前處理、應用框架與事件、裝置協定、主機端 SDK 與命令列 | 向 INTELPRO 索取 |
 | IPRO7AI AI Studio 使用指南 | V1.3 | 繁中／English | 模型準備與編譯、NPU 派工檢視、數值驗證、上板執行與運算子支援表 | 向 INTELPRO 索取 |
 
 ## 開發板文件 { #board-documents }
 
 | 文件 | 版本 | 語言 | 內容 | 取得方式 |
 |---|---|---|---|---|
-| IPRO7AI Reef EVK 開發板使用手冊 | V1.2 | 繁中／English | 系統架構、板面、快速上手、跳線與按鍵、介面、電源、燒錄與除錯、SDK 範例 | 向 INTELPRO 索取 |
+| IPRO7AI Reef 開發套件使用手冊 | V1.1 | 繁中 | V4.0 開發板硬體、介面與供電；燒錄；IPRO AI Teach 2.0 的影像、聲紋、感測器工具；模型套件與命令列；效能與疑難排解 | 向 INTELPRO 索取 |
 | IPRO Debug Probe 使用手冊 | V1.1 | 繁中／English | 板面、快速上手、按鍵與 LED、UART 與 JTAG／CCI 介面、電源、主機設定、燒錄與除錯、BOM 與製造資料 | 向 INTELPRO 索取 |
 
 板卡的上手步驟見 [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)，SDK 的 API 索引見 [API 參考](../reference/api/index.md)。

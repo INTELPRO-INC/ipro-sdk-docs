@@ -7,7 +7,7 @@ migrate_from: []
 
 # Documents
 
-The formal documents INTELPRO provides for IPRO7 and IPRO7AI, matching SDK V2.1. Every document is available in Traditional Chinese and English.
+The formal documents INTELPRO provides for IPRO7 and IPRO7AI, matching SDK V2.1 and IPRO AI Teach 2.0. The languages of each document are listed in the table.
 
 !!! info "How to get them"
     For documents marked "On request", contact INTELPRO and name the document, version and language.
@@ -30,13 +30,14 @@ The formal documents INTELPRO provides for IPRO7 and IPRO7AI, matching SDK V2.1.
 | IPRO7 Programming Guide | V1.1 | zh-TW / English | Development environment, SDK architecture, build system, FreeRTOS, peripherals, BLE, Wi-Fi through an external companion chip, multimedia, USB, security engine, power management, OTA, debugging and logging | On request |
 | IPRO7 API Specification | V1.1 | zh-TW / English | APIs for the HAL, USB, security engine, BLE, Wi-Fi through an external companion chip, file system, OS abstraction layer and AI / NPU runtime, plus error codes | On request |
 | IPRO7 Software Tools User Guide | V1.1 | zh-TW / English | RISC-V toolchain, build and configuration system, flashing and download tool, debugging tools, serial monitoring, BLE tools, RF tuning tool, image tools, memory and size analysis | On request |
+| IPRO7AI Edge AI Programming Guide | V1.2 | zh-TW | The Edge AI Platform V2.0 runtime, model store, data sources, pre-processing, application framework and events, device protocol, host SDK and command line | On request |
 | IPRO7AI AI Studio User Guide | V1.3 | zh-TW / English | Model preparation and compilation, NPU dispatch inspection, numerical verification, running on board and the operator support matrix | On request |
 
 ## Board documents { #board-documents }
 
 | Document | Version | Languages | Contents | Availability |
 |---|---|---|---|---|
-| IPRO7AI Reef EVK Board User Guide | V1.2 | zh-TW / English | System architecture, board overview, quick start, jumpers and buttons, interfaces, power, programming and debug, SDK examples | On request |
+| IPRO7AI Reef Development Kit User Guide | V1.1 | zh-TW | V4.0 board hardware, interfaces and power; flashing; the image, voiceprint and sensor tools of IPRO AI Teach 2.0; model packages and the command line; performance and troubleshooting | On request |
 | IPRO Debug Probe Board User Guide | V1.1 | zh-TW / English | Board overview, quick start, button and LED, UART and JTAG / CCI interfaces, power, host setup, programming and debug, BOM and fabrication data | On request |
 
 For board bring-up steps see [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md); for the SDK's API index see [API Reference](../reference/api/index.md).

@@ -8,8 +8,8 @@ page:
     zh: IPRO7／IPRO7AI 正式晶片、軟體與開發板文件清單，含版本、語言與涵蓋內容。
     en: The formal IPRO7 / IPRO7AI chip, software and board documents, with version, languages and contents.
   intro:
-    zh: INTELPRO 為 IPRO7 與 IPRO7AI 提供的正式文件，對應 SDK V2.1。每份文件都有繁體中文與英文版。
-    en: The formal documents INTELPRO provides for IPRO7 and IPRO7AI, matching SDK V2.1. Every document is available in Traditional Chinese and English.
+    zh: INTELPRO 為 IPRO7 與 IPRO7AI 提供的正式文件，對應 SDK V2.1 與 IPRO AI Teach 2.0。各文件提供的語言列於表中。
+    en: The formal documents INTELPRO provides for IPRO7 and IPRO7AI, matching SDK V2.1 and IPRO AI Teach 2.0. The languages of each document are listed in the table.
   request_notice:
     zh: 標示「向 INTELPRO 索取」的文件，請向 INTELPRO 索取，並註明文件名稱、版本與語言。
     en: For documents marked "On request", contact INTELPRO and name the document, version and language.
@@ -104,6 +104,15 @@ categories:
           en: "RISC-V toolchain, build and configuration system, flashing and download tool, debugging tools, serial monitoring, BLE tools, RF tuning tool, image tools, memory and size analysis"
         access: request
         files: {}
+      - id: ipro7ai-edge-ai-programming-guide
+        title: {zh: "IPRO7AI Edge AI 程式設計指南", en: "IPRO7AI Edge AI Programming Guide"}
+        version: V1.2
+        languages: [zh-TW]
+        summary:
+          zh: "Edge AI 平台 V2.0 的執行層、模型存放、資料來源、前處理、應用框架與事件、裝置協定、主機端 SDK 與命令列"
+          en: "The Edge AI Platform V2.0 runtime, model store, data sources, pre-processing, application framework and events, device protocol, host SDK and command line"
+        access: request
+        files: {}
       - id: ipro7ai-ai-studio-user-guide
         title: {zh: "IPRO7AI AI Studio 使用指南", en: "IPRO7AI AI Studio User Guide"}
         version: V1.3
@@ -116,13 +125,13 @@ categories:
   - id: board-documents
     title: {zh: "開發板文件", en: "Board documents"}
     documents:
-      - id: ipro7ai-reef-evk-board-user-guide
-        title: {zh: "IPRO7AI Reef EVK 開發板使用手冊", en: "IPRO7AI Reef EVK Board User Guide"}
-        version: V1.2
-        languages: [zh-TW, en]
+      - id: ipro7ai-reef-development-kit-user-guide
+        title: {zh: "IPRO7AI Reef 開發套件使用手冊", en: "IPRO7AI Reef Development Kit User Guide"}
+        version: V1.1
+        languages: [zh-TW]
         summary:
-          zh: "系統架構、板面、快速上手、跳線與按鍵、介面、電源、燒錄與除錯、SDK 範例"
-          en: "System architecture, board overview, quick start, jumpers and buttons, interfaces, power, programming and debug, SDK examples"
+          zh: "V4.0 開發板硬體、介面與供電；燒錄；IPRO AI Teach 2.0 的影像、聲紋、感測器工具；模型套件與命令列；效能與疑難排解"
+          en: "V4.0 board hardware, interfaces and power; flashing; the image, voiceprint and sensor tools of IPRO AI Teach 2.0; model packages and the command line; performance and troubleshooting"
         access: request
         files: {}
       - id: ipro-debug-probe-board-user-guide

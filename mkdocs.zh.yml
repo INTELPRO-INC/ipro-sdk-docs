@@ -55,6 +55,7 @@ nav:
       - "音訊與 LE Audio": guides/audio.md
       - "相機與影像": guides/camera.md
       - "AI 與 NPU": guides/ai-npu.md
+      - "IPRO AI Teach 2.0": guides/edge-ai-teach.md
       - "網路": guides/networking.md
       - "Zephyr RTOS": guides/zephyr.md
       - "Thread 與 Matter": guides/thread-matter.md

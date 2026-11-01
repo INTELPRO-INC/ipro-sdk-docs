@@ -46,6 +46,12 @@ migrate_from: []
 
     預編譯推論執行庫、模型的存放與載入、NPU 範例。
 
+-   :material-school:{ .lg } **[IPRO AI Teach 2.0](edge-ai-teach.md)**
+
+    ---
+
+    Reef 上一份韌體的影像、聲紋、感測器辨識：在 IPRO AI Studio 收資料、訓練、部署。
+
 -   :material-lan:{ .lg } **[網路](networking.md)**
 
     ---

@@ -52,6 +52,7 @@ nav:
       - "Audio & LE Audio": guides/audio.md
       - "Camera & Imaging": guides/camera.md
       - "AI & NPU": guides/ai-npu.md
+      - "IPRO AI Teach 2.0": guides/edge-ai-teach.md
       - "Networking": guides/networking.md
       - "Zephyr RTOS": guides/zephyr.md
       - "Thread & Matter": guides/thread-matter.md

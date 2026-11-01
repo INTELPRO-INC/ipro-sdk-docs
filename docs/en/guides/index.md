@@ -46,6 +46,12 @@ What the SDK provides in each feature area, how to configure it, and which shipp
 
     Prebuilt inference runtime, model storage and loading, NPU examples.
 
+-   :material-school:{ .lg } **[IPRO AI Teach 2.0](edge-ai-teach.md)**
+
+    ---
+
+    Image, voiceprint and sensor recognition in one Reef firmware: collect, train and deploy from IPRO AI Studio.
+
 -   :material-lan:{ .lg } **[Networking](networking.md)**
 
     ---
