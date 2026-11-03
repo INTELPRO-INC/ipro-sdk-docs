@@ -30,7 +30,7 @@ SDK 隨附主機端工具的命令格式、選項與範例，範例以 IPRO7AI R
 | Zephyr 腳本 | `tools/zephyr/` | Zephyr 工作區、建置、燒錄與主控台（`ipro7_evb`、`ipro7ai_evk` 板型） | 隨附 |
 | IntelProCube v0.6.3 命令列燒錄工具 | `ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe` | 經序列埠燒錄韌體、分割表、boot2 與 `mfg` 內容 | 未包含於 V2.2.0，請洽 INTELPRO |
 | RISC-V 工具鏈 | `/opt/toolchain/riscv_ipro7/` | 編譯（GCC 14，`riscv64-unknown-elf-`） | 未包含於 V2.2.0，請洽 INTELPRO |
-| IPRO AI Studio 與 Edge AI 工具 | — | 模型訓練與部署 | 隨 IPRO Edge AI 套件另行提供，不在 SDK 內 |
+| IPRO AI Studio | — | IPRO AI Teach、模型轉換與部署 | 不在 SDK 內，從 [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) 下載 |
 | OpenOCD／GDB 連線設定、板級自動測試腳本 `tools/board_test.sh`、當機傾印主機工具 | — | 晶片上除錯、自動上板測試、讀取 `==DUMP_READY:` 後的記憶體 | 未包含於 V2.2.0，請洽 INTELPRO |
 | `tools/kconfig/menuconfig.py`、`configs/` 預設設定目錄、OTA 簽章用的 `ota_products.py` | — | `make menuconfig`、`make defconfig`、`create_ota.py --sign-key` | 未包含於 V2.2.0 |
 

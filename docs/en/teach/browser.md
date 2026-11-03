@@ -77,7 +77,7 @@ The runtime is stored in `tools/teach_web/vendor/`; copy that folder along to th
 
 | | Browser, `tools/teach_web` | IPRO AI Studio |
 |---|---|---|
-| Where to get it | Ships with the SDK | IPRO Edge AI package, from INTELPRO |
+| Where to get it | Ships with the SDK | [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) |
 | What to install | Python 3.8 or later and Chrome or Edge | The Studio application |
 | Operating systems | Windows, macOS, Linux | macOS, Windows |
 | Image recognition | Yes: collect, train, deploy | Yes (**Teach** page) |

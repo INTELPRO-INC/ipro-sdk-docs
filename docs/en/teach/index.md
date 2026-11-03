@@ -8,7 +8,7 @@ description: Image, voiceprint and sensor recognition on the IPRO7AI Reef EVK - 
 IPRO AI Teach teaches the IPRO7AI Reef EVK to recognize things without writing code. You collect data with the board's own camera, microphone or sensor signal, train on your computer in IPRO AI Studio, and deploy over the same USB-C cable; the IPRO7AI's NPU runs the model. The three recognition tools - image, voiceprint and sensor - live in one Edge AI firmware, `ipro_reef_teach`. It runs one tool at a time, and all three models stay on the board when you switch.
 
 !!! info "Availability"
-    IPRO AI Studio (macOS and Windows) and the ready-to-flash Edge AI firmware files come in the IPRO Edge AI package; contact INTELPRO. The SDK contains the Edge AI firmware source, `apps/ai/ipro_reef_teach`, and the browser version of image Teach, `tools/teach_web`.
+    Download IPRO AI Studio (macOS and Windows) from [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest). The ready-to-flash Edge AI firmware files come in the IPRO Edge AI package; contact INTELPRO. The SDK contains the Edge AI firmware source, `apps/ai/ipro_reef_teach`, and the browser version of image Teach, `tools/teach_web`.
 
 !!! abstract "At a glance"
     - One firmware, three modes: `image` (image recognition), `voice` (voiceprint recognition) and `sensor` (sensor recognition). The mode is stored in flash; switching restarts the board in about 2 s.
@@ -46,7 +46,7 @@ Voiceprint recognition does not train on the computer: when you enroll someone, 
 | IPRO7AI Reef EVK V4.0 | See [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md) | ● | ● | ● |
 | OV5640 camera module | FLEX-24 cable into FPC1; SW7 set to CAM | ● | | |
 | USB-C data cable | From the Reef's USB-C to the computer: power, tool connection and model transfer. A charge-only cable does not work | ● | ● | ● |
-| Computer | macOS 11 or later, or 64-bit Windows (x64) | ● | ● | ● |
+| Computer | macOS 11 or later on Apple silicon, or 64-bit Windows (x64) | ● | ● | ● |
 | IPRO AI Studio | 0.4.2; see [Install IPRO AI Studio](install.md) | ● | ● | ● |
 | IPRO Debug Probe | On the Reef's debug connector U6; needed only to flash firmware and read the console | ● | ● | ● |
 | IntelProCube v0.6.3 | Command-line flash tool; needed only to flash firmware | ● | ● | ● |

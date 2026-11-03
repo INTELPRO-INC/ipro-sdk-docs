@@ -9,8 +9,8 @@ description: 在 macOS 與 Windows 安裝 IPRO AI Studio 0.4.2、第一次開啟
 
 ## 前置需求 { #prerequisites }
 
-- 電腦：macOS 11 以上，或 Windows 64 位元（x64）。
-- 安裝檔（隨 IPRO Edge AI 套件提供，請洽 INTELPRO）：
+- 電腦：Apple 晶片的 Mac（macOS 11 以上，不支援 Intel Mac），或 Windows 64 位元（x64）。
+- 安裝檔，從 [GitHub 上的 IPRO AI Studio 發行版](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) 下載：
     - macOS：`IPRO-AI-Studio-0.4.2.dmg`
     - Windows：`IPRO-AI-Studio-0.4.2-windows-x64.zip`
 - 要確認連線時：一片已燒錄 Edge AI 韌體的 IPRO7AI Reef EVK 與一條可傳資料的 USB-C 線。板子還沒燒錄時，先完成安裝，再依[燒錄 Edge AI 韌體](firmware.md)燒錄。

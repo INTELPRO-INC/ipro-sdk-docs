@@ -56,4 +56,4 @@ This application has no README; the steps below follow its source. You need a FA
 
 </div>
 
-The SDK ships models to try, for example `apps/platform/ipro7_demo/demo/ai/ai_model/mbv2.inm`. IPRO AI Studio ships in the separate IPRO Edge AI package.
+The SDK ships models to try, for example `apps/platform/ipro7_demo/demo/ai/ai_model/mbv2.inm`. Download IPRO AI Studio from [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest).

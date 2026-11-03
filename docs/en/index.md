@@ -138,6 +138,6 @@ The SDK also carries applications for the IPRO7 EVB, the IPRO7AI EVK and the IPR
 ## What's new in V2.2.0 { #whats-new }
 
 - **IPRO6S applications are back**: `ipro6_demo` (Wi-Fi 6 station / soft-AP with DTIM power save), `ipro6_if_wifi` (Wi-Fi bridge to a host over SDIO or USB, also the Reef FIN card's firmware) and `ipro6_fmac` (FullMAC firmware and its flash loader). The IPRO6S applications are Wi-Fi only; this release has no IPRO6S Bluetooth.
-- **Edge AI platform V2.0 and `ipro_reef_teach`**: one Reef firmware with the image, voice and sensor Teach tools, driven from IPRO AI Studio. IPRO AI Studio ships in the separate IPRO Edge AI package.
+- **Edge AI platform V2.0 and `ipro_reef_teach`**: one Reef firmware with the image, voice and sensor Teach tools, driven from IPRO AI Studio. Download IPRO AI Studio from [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest).
 - **New `ipro7_jpeg_decode`**: JPEG to RGB565 / RGB888 in software. `ipro7ai_reef_demo` adds `mic usb` (USB microphone) and `mic sdrec` (WAV recording to the SD card).
 - **40 applications**. The USB device, lwIP and BSP fixes are in the [Release Notes](reference/release-notes.md).

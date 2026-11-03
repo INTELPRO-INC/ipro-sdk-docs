@@ -30,7 +30,7 @@ Command syntax, options and examples for the host tools that ship with the SDK. 
 | Zephyr scripts | `tools/zephyr/` | Zephyr workspace, build, flash and console (`ipro7_evb` and `ipro7ai_evk` boards) | Included |
 | IntelProCube v0.6.3 command-line flasher | `ipro_iot_tool_macos`, `ipro_iot_tool_linux`, `ipro_iot_tool.exe` | Flash firmware, partition tables, boot2 and `mfg` content over the serial port | Not included in V2.2.0; contact INTELPRO |
 | RISC-V toolchain | `/opt/toolchain/riscv_ipro7/` | Compiler (GCC 14, `riscv64-unknown-elf-`) | Not included in V2.2.0; contact INTELPRO |
-| IPRO AI Studio and the Edge AI tools | — | Model training and deployment | Ship in the separate IPRO Edge AI package, not in the SDK |
+| IPRO AI Studio | — | IPRO AI Teach, model conversion and deployment | Not in the SDK; download from [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) |
 | OpenOCD / GDB connection setup, the board test script `tools/board_test.sh`, a crash-dump host tool | — | On-target debugging, automated board tests, reading memory after `==DUMP_READY:` | Not included in V2.2.0; contact INTELPRO |
 | `tools/kconfig/menuconfig.py`, the `configs/` defconfig directory, `ota_products.py` for OTA signing | — | `make menuconfig`, `make defconfig`, `create_ota.py --sign-key` | Not included in V2.2.0 |
 

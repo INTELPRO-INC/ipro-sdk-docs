@@ -8,7 +8,7 @@ description: IPRO7AI Reef EVK 上的影像、聲紋、感測器三個辨識工�
 IPRO AI Teach 讓 IPRO7AI Reef EVK 不寫程式就學會辨識：用板子自己的相機、麥克風或感測訊號收資料，在電腦上以 IPRO AI Studio 訓練，再經同一條 USB-C 部署到板子，由 IPRO7AI 的 NPU 執行推論。三個辨識工具（影像、聲紋、感測器）都在同一個 Edge AI 韌體 `ipro_reef_teach` 裡，一次執行一個，切換時三個模型都保留在板上。
 
 !!! info "取得方式"
-    IPRO AI Studio（macOS、Windows）與可直接燒錄的 Edge AI 韌體檔隨 IPRO Edge AI 套件提供，請洽 INTELPRO。SDK 內含 Edge AI 韌體的原始碼 `apps/ai/ipro_reef_teach` 與瀏覽器版影像 Teach `tools/teach_web`。
+    IPRO AI Studio（macOS、Windows）可從 [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) 下載；可直接燒錄的 Edge AI 韌體檔隨 IPRO Edge AI 套件提供，請洽 INTELPRO。SDK 內含 Edge AI 韌體的原始碼 `apps/ai/ipro_reef_teach` 與瀏覽器版影像 Teach `tools/teach_web`。
 
 !!! abstract "重點"
     - 一份韌體、三種模式：`image`（影像辨識）、`voice`（聲紋辨識）、`sensor`（感測器辨識）。模式存在 Flash，切換時板子重新開機，約 2 秒。
@@ -46,7 +46,7 @@ IPRO AI Teach 讓 IPRO7AI Reef EVK 不寫程式就學會辨識：用板子自己
 | IPRO7AI Reef EVK V4.0 | 見 [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md) | ● | ● | ● |
 | OV5640 相機模組 | FLEX-24 排線，接 FPC1；SW7 撥到 CAM | ● | | |
 | USB-C 資料線 | 接 Reef 的 USB-C 與電腦：供電、工具連線與模型傳輸。只能充電的線無法使用 | ● | ● | ● |
-| 電腦 | macOS 11 以上，或 Windows 64 位元（x64） | ● | ● | ● |
+| 電腦 | Apple 晶片的 Mac（macOS 11 以上），或 Windows 64 位元（x64） | ● | ● | ● |
 | IPRO AI Studio | 0.4.2，見[安裝 IPRO AI Studio](install.md) | ● | ● | ● |
 | IPRO Debug Probe | 接 Reef 的除錯排座 U6；只在燒錄韌體、看主控台時需要 | ● | ● | ● |
 | IntelProCube v0.6.3 | 命令列燒錄工具；只在燒錄韌體時需要 | ● | ● | ● |

@@ -77,7 +77,7 @@ python3 tools/teach_web/serve.py --fetch-runtime
 
 | | 瀏覽器版 `tools/teach_web` | IPRO AI Studio |
 |---|---|---|
-| 取得方式 | SDK 隨附 | IPRO Edge AI 套件，向 INTELPRO 索取 |
+| 取得方式 | SDK 隨附 | [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) |
 | 需要安裝 | Python 3.8 以上與 Chrome 或 Edge | Studio 應用程式 |
 | 作業系統 | Windows、macOS、Linux | macOS、Windows |
 | 影像辨識 | 有：收集、訓練、部署 | 有（**Teach** 頁） |

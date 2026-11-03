@@ -18,7 +18,7 @@ IPRO7／IPRO7AI 與 IPRO6S 雙晶片版本，取代 V2.1.0。共 40 個 FreeRTOS
 **新增與變更**
 
 - **IPRO6S 應用回到套件**：`ipro6_demo`（Wi-Fi 6 station／soft-AP，DTIM 低功耗）、`ipro6_if_wifi`（經 SDIO 或 USB 給主機用的 Wi-Fi 橋接）與 `ipro6_fmac`（FullMAC 韌體與其 Flash 載入程式）。Wi-Fi MAC、共存與 RF 函式庫依每個隨附的 `defconfig_*` 各自預編譯，每個設定連結為它建置的函式庫。Reef 的 FIN Wi-Fi 卡韌體即 `ipro6_if_wifi` 的 `defconfig_ipro6_sdio`，見 [IPRO6S](../hardware/chips/ipro6s.md)。
-- **新應用 `ipro_reef_teach`**：IPRO7AI Reef EVK 上的 Edge AI 韌體，內含三個 Teach 工具：`image`（USB 相機與分類器）、`voice`（辨識誰在說話）與 `sensor`（任何感測器）。開機時選定一個模式，每個模式有自己的 USB 識別，由 IPRO AI Studio 操作；也可用 `tools/teach_web/` 在瀏覽器中做影像 Teach。IPRO AI Studio 與 Edge AI 工具隨 IPRO Edge AI 套件另行提供。
+- **新應用 `ipro_reef_teach`**：IPRO7AI Reef EVK 上的 Edge AI 韌體，內含三個 Teach 工具：`image`（USB 相機與分類器）、`voice`（辨識誰在說話）與 `sensor`（任何感測器）。開機時選定一個模式，每個模式有自己的 USB 識別，由 IPRO AI Studio 操作；也可用 `tools/teach_web/` 在瀏覽器中做影像 Teach。IPRO AI Studio 可從 [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) 下載。
 - **IPRO Edge AI 平台 V2.0**（`components/ai`）：執行環境、每個工具一個槽位的模型儲存區、輸入來源、前處理與應用框架；NPU 等待設有上限，逾時會重置該區塊並進入安全的故障狀態；Edge AI 韌體會啟用 AON 看門狗（進入下載模式時關閉）。修正 CPU 層圖讀取超出最後一筆層記錄的問題。
 - **整晶片重置**：`hal_reboot_full()` 經 AON 看門狗重置整顆晶片，包含 always-on 電源域；啟用 `CONFIG_APP_WATCHDOG` 時，`platform_init()` 從開機一開始就啟動看門狗。`ipro_reef_teach` 以它切換工具，修正 Reef 接著相機時，從 `image` 模式切出後下一次開機可能停住直到重置的問題。
 - **新應用 `ipro7_jpeg_decode`**：以軟體（TJpgDec）把 JPEG 解碼為 RGB565／RGB888，含格式檢查，並可解碼沒有 Huffman 表的相機 MJPEG 影格；IPRO7 的 MJPEG 硬體只能編碼。Reef 使用 `defconfig_reef`，主控台 921600 baud。
@@ -39,7 +39,7 @@ IPRO7／IPRO7AI 與 IPRO6S 雙晶片版本，取代 V2.1.0。共 40 個 FreeRTOS
 **未包含**
 
 - IntelProCube 燒錄工具與 RISC-V 工具鏈：請洽 INTELPRO。
-- IPRO AI Studio 與 Edge AI 工具：隨 IPRO Edge AI 套件另行提供。模型轉換工具請洽 INTELPRO。
+- IPRO AI Studio（含模型轉換）：從 [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) 下載。
 - IPRO6S 的 BLE 控制器函式庫與 BLE／BR/EDR 應用；IPRO6S 應用只有 Wi-Fi。
 - Matter；FreeRTOS 應用的 Thread（Thread 只在 Zephyr 下提供）。
 - 晶片上除錯（OpenOCD／GDB）的設定、當機傾印的主機端工具、板級自動測試腳本、`menuconfig`。

@@ -56,4 +56,4 @@ IPRO AI Studio「Run on board」的板端韌體：由 microSD（`sd:/`）載入 
 
 </div>
 
-SDK 隨附可用的模型，例如 `apps/platform/ipro7_demo/demo/ai/ai_model/mbv2.inm`。IPRO AI Studio 隨另行提供的 IPRO Edge AI 套件發行。
+SDK 隨附可用的模型，例如 `apps/platform/ipro7_demo/demo/ai/ai_model/mbv2.inm`。IPRO AI Studio 可從 [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) 下載。

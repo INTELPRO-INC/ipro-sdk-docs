@@ -18,7 +18,7 @@ Dual-chip release for IPRO7 / IPRO7AI and IPRO6S, replacing V2.1.0. 40 FreeRTOS 
 **New and changed**
 
 - **IPRO6S applications are back**: `ipro6_demo` (Wi-Fi 6 station / soft-AP, DTIM low power), `ipro6_if_wifi` (Wi-Fi bridge to a host over SDIO or USB) and `ipro6_fmac` (FullMAC firmware and its flash loader). The Wi-Fi MAC, coexistence and RF libraries are prebuilt once per shipped `defconfig_*`, so each configuration links the libraries built for it. The firmware of the Reef's FIN Wi-Fi card is `ipro6_if_wifi` with `defconfig_ipro6_sdio`; see [IPRO6S](../hardware/chips/ipro6s.md).
-- **New application `ipro_reef_teach`**: Edge AI firmware for the IPRO7AI Reef EVK with three Teach tools: `image` (USB camera and classifier), `voice` (who is speaking) and `sensor` (any sensor). One mode is picked at boot, each with its own USB identity, driven from IPRO AI Studio; `tools/teach_web/` does image Teach in the browser. IPRO AI Studio and the Edge AI tools ship in the separate IPRO Edge AI package.
+- **New application `ipro_reef_teach`**: Edge AI firmware for the IPRO7AI Reef EVK with three Teach tools: `image` (USB camera and classifier), `voice` (who is speaking) and `sensor` (any sensor). One mode is picked at boot, each with its own USB identity, driven from IPRO AI Studio; `tools/teach_web/` does image Teach in the browser. IPRO AI Studio is downloaded from [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest).
 - **IPRO Edge AI platform V2.0** in `components/ai`: runtime, a model store with one slot per tool, input sources, preprocessing and an application framework; a bounded NPU wait that resets the block and enters a fail-closed fault state; the Edge AI firmware arms the AON watchdog (download mode turns it off). The CPU layer graph no longer reads past the last layer record.
 - **Whole-chip reset**: `hal_reboot_full()` resets the whole chip through the AON watchdog, always-on domain included; with `CONFIG_APP_WATCHDOG`, `platform_init()` arms the watchdog from the start of the boot. `ipro_reef_teach` switches tools with it, which fixes a Reef with a camera hanging on the next boot after leaving `image` mode until it was reset.
 - **New application `ipro7_jpeg_decode`**: JPEG to RGB565 / RGB888 in software (TJpgDec), with a format probe and support for camera MJPEG frames without Huffman tables; IPRO7's MJPEG block only encodes. On the Reef use `defconfig_reef`; the console runs at 921600 baud.
@@ -39,7 +39,7 @@ Built and checked from the package before release: the 36 IPRO7 FreeRTOS applica
 **Not included**
 
 - The IntelProCube flash tool and the RISC-V toolchain: contact INTELPRO.
-- IPRO AI Studio and the Edge AI tools: they ship in the separate IPRO Edge AI package. The model conversion tool: contact INTELPRO.
+- IPRO AI Studio, which includes the model converter: download it from [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest).
 - An IPRO6S BLE controller library and BLE / BR/EDR applications for IPRO6S; the IPRO6S applications are Wi-Fi only.
 - Matter; Thread for FreeRTOS applications (Thread is available under Zephyr).
 - Setup for on-target debugging (OpenOCD / GDB), a crash-dump host tool, the board test script, `menuconfig`.

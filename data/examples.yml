@@ -111,14 +111,6 @@ categories:
             ```
 
             The Wi-Fi and RTSP build uses `DEFCONFIG=defconfig_wifi_ipro6s`, builds into `build_wifi_ipro6s/build_out/` and needs an IPRO6S FIN card running the `ipro6_if_wifi` firmware; see [Wi-Fi and RTSP Camera Stream](../tutorials/wifi-rtsp.md). That configuration has no USB device, so `mic usb` is not available. The full command list is under [Reef out-of-box firmware](../hardware/boards/reef-evk.md#reef-demo).
-        readme:
-          replace:
-            # the final V2.2.0 package describes the V4.0 switches (same text as shipped)
-            - pattern: '^\| Jumper \| Setting \|\n\|---\|---\|\n\| JP1 \|[^\n]*\n\| JP2 \|[^\n]*\n\| JP3 \|[^\n]*\n'
-              repl: "On the V4.0 board (silkscreen \"IPRO7AI REEF EVK V4.0\"):\n\n| Switch / jumper | Setting |\n|---|---|\n| SW7 | CAM: the camera pins go to the camera connector (GPIO routes them to the J_IO header instead). |\n| SW8 | PWR for normal use; MEAS only with a current meter or a 3.3 V supply on JP2. |\n| JP3 | ON = SD_VDD always on. GPIO = switched by GPIO14; use this with the IPRO6S_FIN so `fin cycle` works. |\n\nOn the earlier V3.0 board: JP1 must be fitted (VDDIO1 1-2 = 3.3 V, or the\ncamera, USB and BOOT bank is unpowered), JP2 on 1-2, and JP3 on 2-3 for the\nIPRO6S_FIN.\n"
-            # the final V2.2.0 package points at the IPRO6S firmware it ships
-            - pattern: 'firmware \(SDIO profile\), which is\nnot part of this package: build it with the IPRO6S SDK \(IPRO-SDK-V2\.0\.1\) or ask\nINTELPRO for the image\. With JP3 on 2-3, `fin cycle`'
-              repl: "firmware (SDIO profile):\n`make -C apps/platform/ipro6_if_wifi DEFCONFIG=defconfig_ipro6_sdio`. With JP3 on 2-3\n(GPIO on the V4.0 board), `fin cycle`"
       - name: ipro_reef_teach
         path: apps/ai/ipro_reef_teach
         purpose:
@@ -643,7 +635,7 @@ categories:
 
             </div>
 
-            SDK 隨附可用的模型，例如 `apps/platform/ipro7_demo/demo/ai/ai_model/mbv2.inm`。IPRO AI Studio 隨另行提供的 IPRO Edge AI 套件發行。
+            SDK 隨附可用的模型，例如 `apps/platform/ipro7_demo/demo/ai/ai_model/mbv2.inm`。IPRO AI Studio 可從 [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) 下載。
           en: |
             This application has no README; the steps below follow its source. You need a FAT-formatted microSD card.
 
@@ -683,7 +675,7 @@ categories:
 
             </div>
 
-            The SDK ships models to try, for example `apps/platform/ipro7_demo/demo/ai/ai_model/mbv2.inm`. IPRO AI Studio ships in the separate IPRO Edge AI package.
+            The SDK ships models to try, for example `apps/platform/ipro7_demo/demo/ai/ai_model/mbv2.inm`. Download IPRO AI Studio from [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest).
       - name: ipro_agora_sentino
         path: apps/multimedia/ipro_agora_sentino
         purpose:

@@ -9,8 +9,8 @@ At the end of this page your computer has IPRO AI Studio, which drives the three
 
 ## Prerequisites { #prerequisites }
 
-- A computer with macOS 11 or later, or 64-bit Windows (x64).
-- The installer, from the IPRO Edge AI package (contact INTELPRO):
+- A computer with macOS 11 or later on Apple silicon (Intel Macs are not supported), or 64-bit Windows (x64).
+- The installer, from the [IPRO AI Studio releases on GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest):
     - macOS: `IPRO-AI-Studio-0.4.2.dmg`
     - Windows: `IPRO-AI-Studio-0.4.2-windows-x64.zip`
 - To check the connection: an IPRO7AI Reef EVK flashed with the Edge AI firmware and a USB-C data cable. If the board is not flashed yet, install Studio first, then follow [Flash the Edge AI Firmware](firmware.md).

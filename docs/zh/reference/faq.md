@@ -24,7 +24,7 @@ migrate_from:
     `VERSION.txt` 印出 `IPRO7: IPRO-SDK-V2.2.0`、`IPRO6: IPRO-SDK-V2.2.0` 與 `Release Date: 2026-11-03`。
 - **RISC-V 工具鏈**與 **IntelProCube v0.6.3 命令列燒錄工具**（`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe`）：未包含於 V2.2.0，請洽 INTELPRO。工具鏈預設安裝於 `/opt/toolchain/riscv_ipro7/`。
 - **Windows 線上安裝程式 3.4.0 與 VS Code Extension 3.3.0**：仍是目前版本，但安裝程式的 SDK 清單中 stable 版仍是 V1.2.1；V2.2.0 請從上面的 Release 頁面下載。
-- **IPRO AI Studio 與 Edge AI 工具**：隨 IPRO Edge AI 套件另行提供，不在 SDK 內。
+- **IPRO AI Studio**：不在 SDK 內，從 [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) 下載。
 
 ### build_freertos.sh 與 make -C 有什麼不同？ { #build-cli-vs-make }
 
