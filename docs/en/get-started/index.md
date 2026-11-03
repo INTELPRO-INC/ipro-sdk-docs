@@ -15,8 +15,8 @@ Work through these pages in order to go from a fresh computer to the out-of-box 
 | IPRO7AI Reef EVK V4.0 | silkscreen "IPRO7AI REEF EVK V4.0" | INTELPRO |
 | USB-C cable | the board's only power input; use a data cable (some applications use the board's USB device port) | your own |
 | Console cable (one of) | a 3.3 V USB-to-UART adapter with an SH1.0 6-pin plug for U6, or the IPRO Debug Probe with a pin-reversed cable to U6 | adapter: your own; Debug Probe: INTELPRO |
-| Host | macOS or Linux (bash) runs every SDK command-line tool; Windows works through the installer and the VS Code Extension | — |
-| RISC-V toolchain | GCC 14, `riscv64-unknown-elf-gcc` | macOS / Linux: INTELPRO; Windows: installed by Online Setup |
+| Host | macOS or Linux (bash) runs every SDK command-line tool; Windows works through the installer, the VS Code Extension and `build_freertos.ps1` | — |
+| RISC-V toolchain | GCC 14 (GCC 13.1.1 on Windows), `riscv64-unknown-elf-gcc` | macOS / Linux: INTELPRO; Windows: installed by Online Setup |
 | IntelProCube v0.6.3 | the flash tool: `ipro_iot_tool_macos`, `ipro_iot_tool_linux`, `ipro_iot_tool.exe` | macOS / Linux: INTELPRO; Windows: installed by Online Setup |
 | SDK | `IPRO-SDK-V2.2.0.tar.gz` | [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0) |
 | Optional | OV5640 FLEX-24 camera module, microSD card, 8 Ω speaker (on J_SPK), headphones | your own; they complete the camera, slot and speaker steps of the self-test |
@@ -37,7 +37,7 @@ How to wire the console cable: [IPRO7AI Reef EVK: Debug connector U6](../hardwar
 
     ---
 
-    Windows only: install the tools and the VS Code Extension with Online Setup, add the SDK, flash with `ipro_iot_tool.exe`.
+    Windows only: install the SDK, the tools and the VS Code Extension with Online Setup in one go, then build and flash in VS Code or with `build_freertos.ps1`.
 
 -   :material-developer-board:{ .lg } **3. [First FreeRTOS Application](first-app-freertos.md)**
 

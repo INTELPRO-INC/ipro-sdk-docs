@@ -13,8 +13,8 @@ not_migrated:
 IPRO SDK Extension 3.3.0 (identifier `ipro.ipro-sdk-extension`) brings FreeRTOS project browsing, CMake builds, IntelProCube flashing, a serial console and memory analysis into VS Code 1.102 or later. It is not part of the SDK package and is versioned separately from the SDK and from IPRO SDK Online Setup, which installs it; installation is in [Windows Setup & VS Code](../get-started/windows.md).
 
 !!! abstract "At a glance"
-    - Online Setup 3.4.0 installs the Extension and the tools, but its catalog still lists SDK V1.2.1 as the stable SDK. Add SDK V2.2.0 by hand and point `IPRO Setup: Set SDK Root` at it.
-    - SDK V2.2.0 is built with GCC 14; check that the compiler the Extension uses matches.
+    - Online Setup 3.6.0 installs SDK V2.2.0, the Extension and the tools in one go; an environment installed with Full environment builds as it is.
+    - On Windows the toolchain is the GCC 13.1.1 Online Setup installs, and the SDK is prepared for it; check with Diagnostics that the Extension uses the compiler of the same installation.
     - On the IPRO7AI Reef EVK, flash with chip variant `IPRO7AI` and the partition table the application uses; boot2 images and the `mfg` payload are written with the IntelProCube command line.
     - The console baud rate (`ipro.monitorBaudRate`) is separate from the flashing baud rate (`ipro.baudRate`).
     - No source-level (F5) debugging: installing OpenOCD does not set up a GDB debug adapter.
@@ -35,9 +35,9 @@ The SDK build reads `.config` as it is and does not resolve Kconfig `select` or 
 
 <div class="ipro-steps" markdown>
 
-1. Download, verify and unpack `IPRO-SDK-V2.2.0.tar.gz` from the [IPRO-SDK-V2.2.0 release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0) into a new directory, as described in [Add SDK V2.2.0](../get-started/windows.md#get-sdk).
-2. Open that directory with **File → Open Folder…** (it contains `CMakeLists.txt`, `apps` and `bsp`) and run `IPRO Setup: Set SDK Root` on it.
-3. Run `IPRO Setup: Run Diagnostics` and check the SDK root, the compiler, CMake, Ninja, Python and the flash tool. The compiler must be a GCC 14 toolchain that matches V2.2.0; Online Setup installs the toolchain its catalog pairs with SDK V1.2.1. Ask INTELPRO for a matching toolchain, and set it with `ipro.toolchainPath` (the compiler prefix, ending in `riscv64-unknown-elf-`).
+1. Install with Online Setup: choose **Full environment** for a new environment, as in [Windows Setup & VS Code](../get-started/windows.md#online-setup); to add SDK V2.2.0 to an environment you already have, choose **SDK only**, as in [Install an SDK or a toolchain on its own](../get-started/windows.md#components).
+2. Open `<install dir>\sdk\IPRO-SDK-V2.2.0` with **File → Open Folder…** (it contains `CMakeLists.txt`, `apps` and `bsp`). If you did not tick the settings task during installation, run `IPRO Setup: Set SDK Root` on it.
+3. Run `IPRO Setup: Run Diagnostics` and check that the SDK root, the compiler, CMake, Ninja, Python and the flash tool all point into the same installation; the compiler is the GCC 13.1.1 in `<install dir>\toolchain\riscv_ipro7_win32`. To use another toolchain, set `ipro.toolchainPath` (the compiler prefix, ending in `riscv64-unknown-elf-`).
 
 </div>
 
@@ -135,17 +135,19 @@ Restore the line, or flash the out-of-box image again, when you are done. Next: 
 
 ## Component updates { #component-updates }
 
-Updates go through IPRO SDK Online Setup, which installs each component into a new directory and never overwrites the one in use:
+Updates go through IPRO SDK Online Setup, which installs components into a new directory or adds an SDK or a toolchain to an existing environment, and never overwrites the one in use:
 
 | Online Setup mode | Installs | Settings it can switch |
 |---|---|---|
 | Full environment | SDK, toolchain, build tools (CMake, Ninja, Python), IntelProCube, OpenOCD, Extension | all of them |
+| SDK only | SDK | `ipro.sdkRoot` |
 | Toolchain only | RISC-V toolchain | `ipro.toolchainPath` |
 | Build tools only | CMake, Ninja, Python | their paths |
 | IntelProCube only | IntelProCube | `ipro.flashToolPath` |
+| OpenOCD only | OpenOCD | — |
 | Extension only | the Extension VSIX | — |
 
-SDK V2.2.0 is not in the installer's catalog: add it by hand ([Using SDK V2.2.0](#sdk-2-2-0)). After an update, reopen VS Code and run Diagnostics. To go back, point the settings at the directory you kept, or install the older VSIX with **Install from VSIX…**.
+SDK only and Toolchain only can add to an existing environment; see [Install an SDK or a toolchain on its own](../get-started/windows.md#components). After an update, reopen VS Code and run Diagnostics. To go back, point the settings at the directory you kept, or install the older VSIX with **Install from VSIX…**.
 
 ## Commands { #shortcuts }
 
@@ -188,7 +190,7 @@ F1 or Ctrl+Shift+P opens the command palette. The Extension declares no default 
 
 ## Versions { #version }
 
-The SDK, the Extension and Online Setup are separate packages with their own version numbers. The current Extension is 3.3.0, installed by Online Setup 3.4.0; an installer version does not imply the same Extension version. The Extensions view shows the version installed.
+The SDK, the Extension and Online Setup are separate packages with their own version numbers. The current Extension is 3.3.0, installed by Online Setup 3.6.0; an installer version does not imply the same Extension version. The Extensions view shows the version installed.
 
 ## Related documents { #related }
 

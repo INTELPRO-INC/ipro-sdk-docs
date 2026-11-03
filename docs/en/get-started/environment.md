@@ -105,7 +105,7 @@ At the end of this page your computer has the SDK, the build tools, the RISC-V t
 
     === "Windows"
 
-        Online Setup installs CMake, Ninja and Python with **Full environment** or **Build tools only**; see [Windows Setup & VS Code](windows.md#online-3-4-0).
+        Online Setup installs CMake, Ninja and Python with **Full environment** or **Build tools only**; see [Windows Setup & VS Code](windows.md#online-setup).
 
 2. **Check the versions** (macOS / Linux):
 
@@ -133,7 +133,7 @@ At the end of this page your computer has the SDK, the build tools, the RISC-V t
 
     === "Windows"
 
-        Online Setup installs a Windows toolchain, but its catalog picks the version declared compatible with SDK V1.2.1. V2.2.0 is built with GCC 14: ask INTELPRO for a Windows toolchain that matches V2.2.0.
+        Online Setup installs the Windows toolchain GCC 13.1.1 and prepares the SDK for it, so SDK V2.2.0 builds as it is; the images differ from those GCC 14 builds on macOS and Linux. See [Windows Setup & VS Code](windows.md#online-setup).
 
 2. **Check that it runs** (macOS / Linux):
 
@@ -267,7 +267,7 @@ Project: ipro7ai_reef_demo  (platform/ipro7ai_reef_demo)
   Log: <SDK>/apps/platform/ipro7ai_reef_demo/build/build.log
 ```
 
-Build time and image size vary slightly with the host and toolchain. On Windows, check with `IPRO: Build` in the VS Code Extension; see [Windows Setup & VS Code](windows.md#verify).
+Build time and image size vary slightly with the host and toolchain. On Windows, check with `IPRO: Build` in the VS Code Extension or with `build_freertos.ps1`; see [Windows Setup & VS Code](windows.md#verify).
 
 ## How the two environments differ { #choose }
 

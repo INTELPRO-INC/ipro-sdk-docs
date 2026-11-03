@@ -49,7 +49,7 @@ migrate_from:
 
 <div class="ipro-steps" markdown>
 
-1. **建置開箱韌體**：在 SDK 根目錄執行。Windows 改用 VS Code Extension 的 `IPRO: Build`，見 [Windows 安裝與 VS Code](windows.md#installation)。
+1. **建置開箱韌體**：在 SDK 根目錄執行。Windows 改用 VS Code Extension 的 `IPRO: Build`（見[設定 VS Code Extension](windows.md#installation)），或 PowerShell 的 `build_freertos.ps1`（見[命令列建置](windows.md#command-line)）。
 
     ```bash
     make -C apps/platform/ipro7ai_reef_demo

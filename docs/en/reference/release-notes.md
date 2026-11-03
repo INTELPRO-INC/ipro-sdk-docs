@@ -7,7 +7,7 @@ migrate_from:
 
 # Release Notes
 
-Official IPRO SDK releases, newest first; the current release is V2.2.0. Downloads and the release notes of each version are on [GitHub Releases](https://github.com/INTELPRO-INC/IPRO-SDK/releases); the SDK package itself is described in the `README.md` at its root.
+Official IPRO SDK releases, newest first; the current release is V2.2.0. Downloads and the release notes of each version are on [GitHub Releases](https://github.com/INTELPRO-INC/IPRO-SDK/releases); the SDK package itself is described in the `README.md` at its root. The Windows online installer, Online Setup, is listed here too (currently 3.6.0); it is downloaded from [ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest).
 
 ## IPRO-SDK-V2.2.0 { #v2-2-0 }
 
@@ -56,6 +56,12 @@ Built and checked from the package before release: the 36 IPRO7 FreeRTOS applica
 - **`build_freertos.sh` flashes IPRO7 only**: it always passes `--chipname ipro7` and cannot pass `--boot2` or `--mfg`; flash IPRO6S images, the OTA build of `ipro_ble_remote` and `ipro_reef_teach` with IntelProCube directly.
 - **Items named in READMEs but not shipped**: some component and application READMEs refer to applications, tools or documents that are not in this release (for example the board user guide and the Edge AI programming guide). Documents are available from INTELPRO; see [Documents](../documents/index.md).
 
+## Online Setup 3.6.0 { #tools-3-6-0 }
+
+Released 2026-11-04 · [Download the installer](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/tag/v3.6.0)
+
+The Windows online installer. When it installs SDK V2.2.0 it fixes the SDK's Windows build issues: recognising the IPRO toolchain (the probe compiled `/dev/null`, so every Windows build fell back to the standard GCC flags and the non-DSP prebuilt libraries), the build message that breaks Ninja under CMake 4, and the serial console; it also adds `build_freertos.ps1` for PowerShell. SDK only and Full now install the same SDK, prepared for the toolchain it is built with. An SDK or a toolchain can be added to an existing environment without overwriting anything. The toolchain is still GCC 13.1.1 and the Extension stays at 3.3.0. See [Windows Setup & VS Code](../get-started/windows.md).
+
 ## IPRO-SDK-V2.1.0 { #v2-1-0 }
 
 Released 2026-10-16 · [GitHub release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.1.0)
@@ -103,6 +109,12 @@ The IPRO7 release before V2.1.0: 34 applications, no Zephyr.
 - The AI library `libai.a` can load models from the SD card; prebuilt libraries contain no build-machine paths.
 - IPRO7 applications only; for IPRO6S development use V2.0.1.
 
+## Online Setup 3.5.0 { #tools-3-5-0 }
+
+Released 2026-09-10 · [Download the installer](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/tag/v3.5.0)
+
+Discovers the official IPRO-SDK releases on every run, accepts `.tar.gz` SDK archives, and prepares the prebuilt libraries for the older Windows linker in full installs.
+
 ## IPRO-SDK-V2.0.1 { #v2-0-1 }
 
 Released 2026-09-09 · [GitHub release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1)
@@ -119,9 +131,9 @@ The published release reports 31/31 application builds and a five-minute recordi
 
 ## Online Installer 3.4.0 { #tools-3-4-0 }
 
-[Download the installer](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/online-installer-v3.4.0)
+[Download the installer](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/tag/v3.4.0)
 
-Adds a dynamic public catalog, independent package versions, compatibility selection for full installs, and cached offline installation. The Extension stays at 3.3.0. The installer's SDK catalog still lists 1.2.1 as stable and has no V2.x entry; download SDK V2.2.0 from its [release page](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0), see [Windows Setup & VS Code](../get-started/windows.md).
+Adds a dynamic public catalog, independent package versions, compatibility selection for full installs, and cached offline installation. The Extension stays at 3.3.0. This version installs only the SDKs registered in its catalog (1.2.1 is stable); to install SDK V2.2.0, use 3.6.0, see [Windows Setup & VS Code](../get-started/windows.md).
 
 ## Development tools: Windows installer / Extension 3.3.0 { #tools-3-3-0 }
 

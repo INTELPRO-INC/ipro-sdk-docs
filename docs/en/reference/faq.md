@@ -23,7 +23,7 @@ Each answer starts with the conclusion; where you need to act, it gives the comm
 
     `VERSION.txt` prints `IPRO7: IPRO-SDK-V2.2.0`, `IPRO6: IPRO-SDK-V2.2.0` and `Release Date: 2026-11-03`.
 - **The RISC-V toolchain** and **the IntelProCube v0.6.3 command-line flash tool** (`ipro_iot_tool_macos`, `ipro_iot_tool_linux`, `ipro_iot_tool.exe`): not included in V2.2.0; contact INTELPRO. The toolchain installs to `/opt/toolchain/riscv_ipro7/` by default.
-- **Windows online installer 3.4.0 and VS Code extension 3.3.0**: still current, but the installer's SDK catalog still lists V1.2.1 as stable; download V2.2.0 from the release page above.
+- **Windows online installer 3.6.0 and VS Code extension 3.3.0**: current; download the installer from [ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest). It installs SDK V2.2.0 and the Windows toolchain directly; see [Windows Setup & VS Code](../get-started/windows.md).
 - **IPRO AI Studio**: not in the SDK; download it from [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest).
 
 ### What is the difference between build_freertos.sh and make -C? { #build-cli-vs-make }

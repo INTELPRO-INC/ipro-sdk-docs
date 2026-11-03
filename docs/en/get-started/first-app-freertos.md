@@ -49,7 +49,7 @@ Build the out-of-box firmware `ipro7ai_reef_demo`, flash it to an IPRO7AI Reef E
 
 <div class="ipro-steps" markdown>
 
-1. **Build the out-of-box firmware** from the SDK root. On Windows, use `IPRO: Build` in the VS Code Extension instead; see [Windows Setup & VS Code](windows.md#installation).
+1. **Build the out-of-box firmware** from the SDK root. On Windows, use `IPRO: Build` in the VS Code Extension (see [Set up the VS Code Extension](windows.md#installation)) or `build_freertos.ps1` in PowerShell (see [Command-line build](windows.md#command-line)) instead.
 
     ```bash
     make -C apps/platform/ipro7ai_reef_demo

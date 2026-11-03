@@ -13,8 +13,8 @@ not_migrated:
 IPRO SDK Extension 3.3.0（識別碼 `ipro.ipro-sdk-extension`）把 FreeRTOS 專案瀏覽、CMake 建置、IntelProCube 燒錄、序列埠主控台與記憶體分析整合到 VS Code，需要 VS Code 1.102 以上。Extension 不包含在 SDK 套件內，與 SDK、負責安裝它的 IPRO SDK Online Setup 分開計版；安裝步驟見 [Windows 安裝與 VS Code](../get-started/windows.md)。
 
 !!! abstract "重點"
-    - Online Setup 3.4.0 會安裝 Extension 與各項工具，但它的套件清單仍以 SDK V1.2.1 為穩定版。SDK V2.2.0 請自行加入，再以 `IPRO Setup: Set SDK Root` 指向它。
-    - SDK V2.2.0 以 GCC 14 建置，請確認 Extension 使用的編譯器相符。
+    - Online Setup 3.6.0 一次安裝 SDK V2.2.0、Extension 與各項工具；以 Full environment 安裝的環境可以直接建置。
+    - Windows 上的工具鏈是 Online Setup 安裝的 GCC 13.1.1，SDK 已依它準備；以 Diagnostics 確認 Extension 用的是同一個安裝目錄的編譯器。
     - 燒錄 IPRO7AI Reef EVK 時，晶片配置用 `IPRO7AI`，分割表用應用所用的那一份；boot2 映像與 `mfg` 資料以 IntelProCube 命令列寫入。
     - 主控台鮑率（`ipro.monitorBaudRate`）與燒錄鮑率（`ipro.baudRate`）分開設定。
     - 沒有原始碼層級（F5）除錯：安裝 OpenOCD 並不會設定好 GDB debug adapter。
@@ -35,9 +35,9 @@ SDK 建置原樣讀取 `.config`，不解析 Kconfig 的 `select` 與 `depends o
 
 <div class="ipro-steps" markdown>
 
-1. 依[加入 SDK V2.2.0](../get-started/windows.md#get-sdk)，從 [IPRO-SDK-V2.2.0 發行頁](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0)下載、校驗 `IPRO-SDK-V2.2.0.tar.gz`，解壓到新的目錄。
-2. 以 **File → Open Folder…** 開啟該目錄（內含 `CMakeLists.txt`、`apps` 與 `bsp`），並對它執行 `IPRO Setup: Set SDK Root`。
-3. 執行 `IPRO Setup: Run Diagnostics`，核對 SDK 根目錄、編譯器、CMake、Ninja、Python 與燒錄工具。編譯器必須是與 V2.2.0 相符的 GCC 14 工具鏈；Online Setup 安裝的是清單中與 SDK V1.2.1 搭配的工具鏈。請向 INTELPRO 取得相符的工具鏈，再以 `ipro.toolchainPath` 設定（編譯器前綴，以 `riscv64-unknown-elf-` 結尾）。
+1. 以 Online Setup 安裝：新環境選 **Full environment**，見 [Windows 安裝與 VS Code](../get-started/windows.md#online-setup)；已有環境時，可選 **SDK only** 把 SDK V2.2.0 加到該環境，見[單獨安裝 SDK 或工具鏈](../get-started/windows.md#components)。
+2. 以 **File → Open Folder…** 開啟 `<安裝目錄>\sdk\IPRO-SDK-V2.2.0`（內含 `CMakeLists.txt`、`apps` 與 `bsp`）。安裝時沒有勾選設定切換工作時，對它執行 `IPRO Setup: Set SDK Root`。
+3. 執行 `IPRO Setup: Run Diagnostics`，核對 SDK 根目錄、編譯器、CMake、Ninja、Python 與燒錄工具都指向同一個安裝目錄；編譯器是 `<安裝目錄>\toolchain\riscv_ipro7_win32` 的 GCC 13.1.1。改用其他工具鏈時以 `ipro.toolchainPath` 設定（編譯器前綴，以 `riscv64-unknown-elf-` 結尾）。
 
 </div>
 
@@ -135,17 +135,19 @@ SDK 建置原樣讀取 `.config`，不解析 Kconfig 的 `select` 與 `depends o
 
 ## 元件更新 { #component-updates }
 
-更新透過 IPRO SDK Online Setup 進行；它把每個元件安裝到新的目錄，不會覆蓋正在使用的版本：
+更新透過 IPRO SDK Online Setup 進行；它把元件安裝到新的目錄，或把 SDK、工具鏈加到既有環境，不會覆蓋正在使用的版本：
 
 | Online Setup 模式 | 安裝內容 | 可切換的設定 |
 |---|---|---|
 | Full environment | SDK、工具鏈、建置工具（CMake、Ninja、Python）、IntelProCube、OpenOCD、Extension | 全部 |
+| SDK only | SDK | `ipro.sdkRoot` |
 | Toolchain only | RISC-V 工具鏈 | `ipro.toolchainPath` |
 | Build tools only | CMake、Ninja、Python | 各自的路徑 |
 | IntelProCube only | IntelProCube | `ipro.flashToolPath` |
+| OpenOCD only | OpenOCD | — |
 | Extension only | Extension VSIX | — |
 
-SDK V2.2.0 不在安裝程式的清單中，請自行加入（見[使用 SDK V2.2.0](#sdk-2-2-0)）。更新後重開 VS Code 並執行 Diagnostics。要回到舊版時，把設定指回保留的目錄，或以 **Install from VSIX…** 安裝舊版 VSIX。
+SDK only 與 Toolchain only 可以加到既有環境，見[單獨安裝 SDK 或工具鏈](../get-started/windows.md#components)。更新後重開 VS Code 並執行 Diagnostics。要回到舊版時，把設定指回保留的目錄，或以 **Install from VSIX…** 安裝舊版 VSIX。
 
 ## 命令 { #shortcuts }
 
@@ -188,7 +190,7 @@ F1 或 Ctrl+Shift+P 開啟命令面板。Extension 沒有預設快捷鍵，可�
 
 ## 版本 { #version }
 
-SDK、Extension 與 Online Setup 是各自計版的套件。目前的 Extension 是 3.3.0，由 Online Setup 3.4.0 安裝；安裝程式的版本號不代表 Extension 也是同一版。實際安裝的版本以 Extensions 面板顯示為準。
+SDK、Extension 與 Online Setup 是各自計版的套件。目前的 Extension 是 3.3.0，由 Online Setup 3.6.0 安裝；安裝程式的版本號不代表 Extension 也是同一版。實際安裝的版本以 Extensions 面板顯示為準。
 
 ## 相關文件 { #related }
 

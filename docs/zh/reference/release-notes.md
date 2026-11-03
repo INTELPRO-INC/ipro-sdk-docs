@@ -7,7 +7,7 @@ migrate_from:
 
 # 版本資訊
 
-IPRO SDK 的正式發行紀錄，新版在前；目前版本為 V2.2.0。各版本的下載檔與發行說明在 [GitHub Releases](https://github.com/INTELPRO-INC/IPRO-SDK/releases)；SDK 套件的整體說明見套件根目錄的 `README.md`。
+IPRO SDK 的正式發行紀錄，新版在前；目前版本為 V2.2.0。各版本的下載檔與發行說明在 [GitHub Releases](https://github.com/INTELPRO-INC/IPRO-SDK/releases)；SDK 套件的整體說明見套件根目錄的 `README.md`。Windows 線上安裝程式 Online Setup 的版本也列在此頁（目前為 3.6.0），下載位置是 [ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest)。
 
 ## IPRO-SDK-V2.2.0 { #v2-2-0 }
 
@@ -56,6 +56,12 @@ IPRO7／IPRO7AI 與 IPRO6S 雙晶片版本，取代 V2.1.0。共 40 個 FreeRTOS
 - **`build_freertos.sh` 只燒錄 IPRO7**：它固定傳 `--chipname ipro7`，也無法傳 `--boot2`、`--mfg`；IPRO6S 映像、`ipro_ble_remote` 的 OTA 版本與 `ipro_reef_teach` 請直接使用 IntelProCube。
 - **README 中提到但未隨附的項目**：部分元件與應用的 README 提到不在本版中的應用、工具或文件（例如板子使用手冊與 Edge AI 程式設計指南）。文件可向 INTELPRO 索取，見[文件下載](../documents/index.md)。
 
+## Online Setup 3.6.0 { #tools-3-6-0 }
+
+發行日期：2026-11-04 ・ [下載安裝程式](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/tag/v3.6.0)
+
+Windows 線上安裝程式。安裝 SDK V2.2.0 時修正它在 Windows 上的建置問題：辨識 IPRO 工具鏈（原本以 `/dev/null` 試編，Windows 上一律改用標準 GCC 旗標與非 DSP 版預編譯庫）、CMake 4 搭配 Ninja 時的建置訊息，以及序列埠主控台；並加入 PowerShell 版的 `build_freertos.ps1`。SDK only 與 Full 安裝出相同的 SDK：SDK 一律依搭配的工具鏈準備。SDK 與工具鏈可以加到既有環境，已安裝的檔案不覆蓋。工具鏈仍為 GCC 13.1.1、Extension 維持 3.3.0。操作見 [Windows 安裝與 VS Code](../get-started/windows.md)。
+
 ## IPRO-SDK-V2.1.0 { #v2-1-0 }
 
 發行日期：2026-10-16 ・ [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.1.0)
@@ -103,6 +109,12 @@ V2.1.0 之前的 IPRO7 版本，共 34 個應用，不含 Zephyr。
 - AI 函式庫 `libai.a` 可從 SD 卡載入模型；預編譯函式庫不含建置機器的路徑。
 - 只含 IPRO7 應用；IPRO6S 開發請使用 V2.0.1。
 
+## Online Setup 3.5.0 { #tools-3-5-0 }
+
+發行日期：2026-09-10 ・ [下載安裝程式](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/tag/v3.5.0)
+
+每次執行時自動辨識 IPRO-SDK 的正式 SDK Release，支援 `.tar.gz` SDK 壓縮檔，並在完整安裝時為舊版 Windows linker 準備預編譯庫。
+
 ## IPRO-SDK-V2.0.1 { #v2-0-1 }
 
 發行日期：2026-09-09 ・ [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.0.1)
@@ -119,9 +131,9 @@ V2.1.0 之前的 IPRO7 版本，共 34 個應用，不含 Zephyr。
 
 ## Online Installer 3.4.0 { #tools-3-4-0 }
 
-[下載安裝程式](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/online-installer-v3.4.0)
+[下載安裝程式](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/tag/v3.4.0)
 
-新增動態公開清單、獨立套件版本、完整安裝的相容性選擇，以及快取離線安裝。Extension 維持 3.3.0。安裝程式的 SDK 清單中 stable 版仍為 1.2.1，尚未登錄 V2.x；SDK V2.2.0 請由 [Release 頁面](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0)下載，見 [Windows 安裝與 VS Code](../get-started/windows.md)。
+新增動態公開清單、獨立套件版本、完整安裝的相容性選擇，以及快取離線安裝。Extension 維持 3.3.0。此版只會安裝清單中登錄的 SDK（stable 為 1.2.1）；要安裝 SDK V2.2.0 請使用 3.6.0，見 [Windows 安裝與 VS Code](../get-started/windows.md)。
 
 ## 開發工具：Windows 安裝包／Extension 3.3.0 { #tools-3-3-0 }
 

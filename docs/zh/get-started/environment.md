@@ -105,7 +105,7 @@ migrate_from:
 
     === "Windows"
 
-        由 Online Setup 的 **Full environment** 或 **Build tools only** 安裝 CMake、Ninja 與 Python，見 [Windows 安裝與 VS Code](windows.md#online-3-4-0)。
+        由 Online Setup 的 **Full environment** 或 **Build tools only** 安裝 CMake、Ninja 與 Python，見 [Windows 安裝與 VS Code](windows.md#online-setup)。
 
 2. **確認版本**（macOS／Linux）
 
@@ -133,7 +133,7 @@ migrate_from:
 
     === "Windows"
 
-        Online Setup 會安裝 Windows 版工具鏈，但它的套件清單是依 SDK 1.2.1 選擇相容版本。V2.2.0 以 GCC 14 建置，請向 INTELPRO 取得相容 V2.2.0 的 Windows 工具鏈。
+        Online Setup 安裝 Windows 版工具鏈 GCC 13.1.1，並依它準備 SDK，SDK V2.2.0 可以直接建置；它建出的映像與 macOS／Linux 上以 GCC 14 建出的不同。見 [Windows 安裝與 VS Code](windows.md#online-setup)。
 
 2. **確認可以執行**（macOS／Linux）
 
@@ -267,7 +267,7 @@ Project: ipro7ai_reef_demo  (platform/ipro7ai_reef_demo)
   Log: <SDK>/apps/platform/ipro7ai_reef_demo/build/build.log
 ```
 
-建置時間與檔案大小會因主機與工具鏈而略有不同。Windows 上以 VS Code Extension 的 `IPRO: Build` 確認，見 [Windows 安裝與 VS Code](windows.md#verify)。
+建置時間與檔案大小會因主機與工具鏈而略有不同。Windows 上以 VS Code Extension 的 `IPRO: Build` 或 `build_freertos.ps1` 確認，見 [Windows 安裝與 VS Code](windows.md#verify)。
 
 ## 兩種環境的差異 { #choose }
 

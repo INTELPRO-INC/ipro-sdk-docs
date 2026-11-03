@@ -12,7 +12,7 @@ Day-to-day development is a loop: edit, build, flash, watch the console. In this
 ## Prerequisites { #prerequisites }
 
 - [First FreeRTOS Application](../get-started/first-app-freertos.md) is done: the board runs `ipro7ai_reef_demo` and its console answers `reef selftest`.
-- macOS or Linux. `build_freertos.sh` needs bash; on Windows, build with the VS Code Extension and flash as in [Windows Setup & VS Code](../get-started/windows.md#flash) — the loop is the same.
+- macOS or Linux. `build_freertos.sh` needs bash; on Windows, use `build_freertos.ps1` in PowerShell (same actions and options) or build and flash with the VS Code Extension, as in [Windows Setup & VS Code](../get-started/windows.md#command-line) — the loop is the same.
 - Run every command from the SDK root; examples use macOS.
 
 ## Steps { #steps }

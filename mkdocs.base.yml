@@ -51,7 +51,7 @@ extra:
   release:
     sdk: V2.2.0
     date: "2026-11-03"
-    installer: "3.4.0"
+    installer: "3.6.0"
     extension: "3.3.0"
     download: https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0
   generator: false

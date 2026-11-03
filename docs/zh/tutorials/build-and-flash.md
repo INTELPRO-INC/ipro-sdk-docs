@@ -12,7 +12,7 @@ migrate_from:
 ## 前置需求 { #prerequisites }
 
 - 已完成[第一個 FreeRTOS 應用](../get-started/first-app-freertos.md)：板上正在執行 `ipro7ai_reef_demo`，主控台能回應 `reef selftest`。
-- macOS 或 Linux。`build_freertos.sh` 需要 bash；Windows 以 VS Code Extension 建置，再依 [Windows 安裝與 VS Code](../get-started/windows.md#flash) 燒錄，迴圈相同。
+- macOS 或 Linux。`build_freertos.sh` 需要 bash；Windows 改用 PowerShell 的 `build_freertos.ps1`（動作與選項相同），或以 VS Code Extension 建置與燒錄，見 [Windows 安裝與 VS Code](../get-started/windows.md#command-line)，迴圈相同。
 - 以下命令都在 SDK 根目錄執行，範例以 macOS 為準。
 
 ## 步驟 { #steps }
