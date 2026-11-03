@@ -1,6 +1,6 @@
 ---
 title: "Tutorials"
-description: Hands-on tutorials you run end to end on the IPRO7AI Reef EVK, from building and flashing and writing and testing your own app to BLE, LE Audio, a USB webcam and a Wi-Fi RTSP stream.
+description: Hands-on tutorials you run end to end on the IPRO7AI Reef EVK, from building and flashing and writing and testing your own app to BLE, LE Audio, a USB webcam and an RTSP stream over Wi-Fi through the IPRO6S FIN card.
 migrate_from:
   - "tutorials.html#next-steps"
 ---

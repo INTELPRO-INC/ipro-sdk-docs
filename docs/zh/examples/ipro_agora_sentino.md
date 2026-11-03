@@ -50,7 +50,7 @@ Sentino 雲端 AI 語音對話：BLE 配網、經 IPRO6S FIN 卡連 Wi-Fi、MQTT
 
     確認 `[All Success]` 後按一下 SW2。
 
-4. **設定與執行**：以 115200 baud 開啟主控台，開機印出 `IPRO7 Agora Sentino AI Gateway`。輸入 `sentino_triple set <pid> <uuid> <secret>` 後 `reboot`。板子以 BLE 名稱 `RY` 廣播，以 Sentino 手機 App 送出 Wi-Fi 與伺服器設定（或在主控台輸入 `wifi_set <ssid> <psk>`）；登入後即可對著麥克風與 AI 對話。
+4. **設定與執行**：以 115200 baud 開啟主控台，開機印出 `IPRO7 Agora Sentino AI Gateway`。輸入 `sentino_triple set <pid> <uuid> <secret>` 後 `reboot`。板子以 BLE 名稱 `RY` 廣播，以 Sentino 手機 App 送出 IPRO6S FIN 卡的 Wi-Fi 設定與伺服器設定（或在主控台輸入 `wifi_set <ssid> <psk>`）；登入後即可對著麥克風與 AI 對話。
 
 </div>
 

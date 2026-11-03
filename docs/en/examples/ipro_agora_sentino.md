@@ -50,7 +50,7 @@ You need: an IPRO6S FIN card in the microSD slot running the `ipro6_if_wifi` fir
 
     Check for `[All Success]`, then press SW2.
 
-4. **Set up and run**: open the console at 115200 baud; the board prints `IPRO7 Agora Sentino AI Gateway`. Type `sentino_triple set <pid> <uuid> <secret>`, then `reboot`. The board advertises over BLE as `RY`; send the Wi-Fi and server settings from the Sentino phone app (or type `wifi_set <ssid> <psk>` at the console). Once logged in, talk to the AI through the microphone.
+4. **Set up and run**: open the console at 115200 baud; the board prints `IPRO7 Agora Sentino AI Gateway`. Type `sentino_triple set <pid> <uuid> <secret>`, then `reboot`. The board advertises over BLE as `RY`; send the Wi-Fi settings for the IPRO6S FIN card and the server settings from the Sentino phone app (or type `wifi_set <ssid> <psk>` at the console). Once logged in, talk to the AI through the microphone.
 
 </div>
 

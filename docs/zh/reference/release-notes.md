@@ -54,7 +54,6 @@ IPRO7／IPRO7AI 與 IPRO6S 雙晶片版本，取代 V2.1.0。共 40 個 FreeRTOS
 - **`ipro_throughput_test` 的文件**：README 與 `OPERATION_MANUAL.md` 提到的示範應用、Android App 與控制器建置選項（例如 `CONFIG_BTBLECONTROLLER_LIB`、`link8`）不在本版中；建置與燒錄請依 README 的 Build／Flash 段落與 [BLE 吞吐量測試](../tutorials/ble-throughput.md)。
 - **當機後的等待**：`ipro7ai_reef_demo` 與 `ipro_reef_teach` 設了 `CONFIG_EXCEPTION_DUMP=y`，當機後會重複印出 `==DUMP_READY:2000000==` 等待未隨附的主機端工具；存下診斷後按 SW2 重置，或把它設為 `n`。見[當機分析](debugging.md#crash-analysis)。
 - **`build_freertos.sh` 只燒錄 IPRO7**：它固定傳 `--chipname ipro7`，也無法傳 `--boot2`、`--mfg`；IPRO6S 映像、`ipro_ble_remote` 的 OTA 版本與 `ipro_reef_teach` 請直接使用 IntelProCube。
-- **Zephyr 燒錄的 Flash 腳位說明**：`west flash` runner 的 `--flash-pin` 說明文字寫 `0x9` 給 EVB；FreeRTOS 燒錄以 `--chip-variant` 選擇（`IPRO7`＝`0x2`、`IPRO7AI`＝`0x9`，Reef 用 `IPRO7AI`）。
 - **README 中提到但未隨附的項目**：部分元件與應用的 README 提到不在本版中的應用、工具或文件（例如板子使用手冊與 Edge AI 程式設計指南）。文件可向 INTELPRO 索取，見[文件下載](../documents/index.md)。
 
 ## IPRO-SDK-V2.1.0 { #v2-1-0 }

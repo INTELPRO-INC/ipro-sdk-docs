@@ -180,7 +180,7 @@ The output is `apps/platform/ipro6_if_wifi/build_ipro6_sdio/build_out/ipro6_if_w
 
 ### How does IPRO7 connect to a network? { #wifi }
 
-IPRO7 has no on-chip Wi-Fi; it connects through an external radio:
+IPRO7 connects to Wi-Fi through an external radio, on the Reef the IPRO6S FIN card over SDIO:
 
 - **IPRO6S (SDIO)**: the IPRO7 component `components/network/ipronet_host`, with the lwIP network interface `iproeth0`. On the Reef this is the FIN card: `defconfig_wifi_ipro6s` of `ipro7ai_reef_demo` (with an RTSP camera stream) and `ipro_agora_sentino`. Steps are in [Wi-Fi and RTSP streaming](../tutorials/wifi-rtsp.md).
 - **Others**: components for ATBM6162 (SDIO), AIC8800 (SDIO) and ESP32 (UART AT commands) are also in the package.

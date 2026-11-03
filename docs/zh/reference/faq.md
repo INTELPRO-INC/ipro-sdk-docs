@@ -180,7 +180,7 @@ make -C apps/platform/ipro6_if_wifi DEFCONFIG=defconfig_ipro6_sdio
 
 ### IPRO7 要怎麼連網？ { #wifi }
 
-IPRO7 沒有內建 Wi-Fi，以外接無線電連網：
+IPRO7 以外接無線電連上 Wi-Fi，Reef 上是經 SDIO 連接的 IPRO6S FIN 卡：
 
 - **IPRO6S（SDIO）**：IPRO7 端元件 `components/network/ipronet_host`，lwIP 網路介面 `iproeth0`。Reef 上就是 FIN 卡：`ipro7ai_reef_demo` 的 `defconfig_wifi_ipro6s`（含 RTSP 相機串流）與 `ipro_agora_sentino`。步驟見 [Wi-Fi 與 RTSP 串流](../tutorials/wifi-rtsp.md)。
 - **其他**：ATBM6162（SDIO）、AIC8800（SDIO）與 ESP32（UART AT 指令）的元件也在套件中。

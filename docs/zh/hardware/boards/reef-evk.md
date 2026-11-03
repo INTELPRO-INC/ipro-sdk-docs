@@ -1,6 +1,6 @@
 ---
 title: IPRO7AI Reef EVK V4.0
-description: IPRO7AI Reef EVK V4.0 的板上功能、開關與跳線、上手與下載模式、開箱韌體、Wi-Fi、可執行的範例、USB 識別碼與腳位對照
+description: IPRO7AI Reef EVK V4.0 的板上功能、開關與跳線、上手與下載模式、開箱韌體、經 IPRO6S FIN 卡的 Wi-Fi、可執行的範例、USB 識別碼與腳位對照
 migrate_from:
   - "hardware.html — IPRO7AI Reef EVK"
   - "audio-multimedia.html#reef-demo"

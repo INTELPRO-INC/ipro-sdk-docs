@@ -315,7 +315,7 @@ AIINFO path=sd:/rps_v3.inm layers=… npu=… in=…x…x… out=…x…x… pat
 | `ipro_ai_link` | `ai_run [reps]`、`ai_prof` | 每次執行的總週期、NPU 週期與 NPU 分派次數；自己模型的逐層週期數 |
 | `ipro7_uvc_cam` `defconfig_reef_rps` | `rps` | 遊戲執行中的 NPU 影格數、錯誤數、影格率與最近一次推論時間 |
 
-請記錄模型檔、輸入尺寸、建置設定、heap 用量與多次推論時間，並把前處理、推論、後處理分開量測。第一次執行包含 PSRAM 與快取的冷啟動成本，請取之後的結果。參考數據：`ipro7ai_evk_rps` README 記載 `rps_v3.inm`（11 層，全部在 NPU）每次推論 7 ms，是在 IPRO7AI EVK 上以同一顆 IPRO7AI 量測。
+請記錄模型檔、輸入尺寸、建置設定、heap 用量與多次推論時間，並把前處理、推論、後處理分開量測。第一次執行包含 PSRAM 與快取的冷啟動成本，請取之後的結果。參考資料：`ipro7ai_evk_rps` README 記載 `rps_v3.inm`（11 層，全部在 NPU）每次推論 7 ms，是在 IPRO7AI EVK 上以同一顆 IPRO7AI 量測。
 
 ## 雲端 AI { #cloud-llm }
 

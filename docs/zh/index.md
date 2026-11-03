@@ -1,7 +1,7 @@
 ---
 template: home.html
 title: IPRO SDK
-description: INTELPRO IPRO SDK 開發文件：以 IPRO7AI Reef EVK V4.0 一步步建置、燒錄與測試 BLE、LE Audio、AI、影像與 Wi-Fi 應用。
+description: INTELPRO IPRO SDK 開發文件：以 IPRO7AI Reef EVK V4.0 一步步建置、燒錄與測試 BLE、LE Audio、AI、影像與 Wi-Fi（經 IPRO6S FIN 卡）應用。
 hide:
   - navigation
   - toc
@@ -140,4 +140,4 @@ SDK 也包含 IPRO7 EVB、IPRO7AI EVK 與 IPRO6S EVB 的應用，列在[範例](
 - **IPRO6S 應用回歸**：`ipro6_demo`（Wi-Fi 6 station／soft-AP 與 DTIM 省電）、`ipro6_if_wifi`（經 SDIO 或 USB 橋接到主機，也是 Reef FIN 卡的韌體）與 `ipro6_fmac`（FullMAC 韌體與 Flash 載入程式）。IPRO6S 應用只含 Wi-Fi，本版沒有 IPRO6S 藍牙。
 - **Edge AI 平台 V2.0 與 `ipro_reef_teach`**：一個 Reef 韌體包含影像、聲紋與感測器三個 Teach 工具，由 IPRO AI Studio 操作；IPRO AI Studio 隨另行提供的 IPRO Edge AI 套件發行。
 - **新應用 `ipro7_jpeg_decode`**：以軟體把 JPEG 解碼成 RGB565／RGB888。`ipro7ai_reef_demo` 新增 `mic usb`（USB 麥克風）與 `mic sdrec`（錄 WAV 到 SD 卡）。
-- **共 40 個應用**；`ipro_meeting_poc` 改名為 `ipro_speaker_recog`。USB 裝置、lwIP 與 BSP 的修正見[版本資訊](reference/release-notes.md)。
+- **共 40 個應用**。USB 裝置、lwIP 與 BSP 的修正見[版本資訊](reference/release-notes.md)。

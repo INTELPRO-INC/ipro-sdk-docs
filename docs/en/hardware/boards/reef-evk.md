@@ -1,6 +1,6 @@
 ---
 title: IPRO7AI Reef EVK V4.0
-description: IPRO7AI Reef EVK V4.0 on-board features, switches and jumpers, quick start and download mode, out-of-box firmware, Wi-Fi, supported examples, USB identities and pin map
+description: IPRO7AI Reef EVK V4.0 on-board features, switches and jumpers, quick start and download mode, out-of-box firmware, Wi-Fi through the IPRO6S FIN card, supported examples, USB identities and pin map
 migrate_from:
   - "hardware.html — IPRO7AI Reef EVK"
   - "audio-multimedia.html#reef-demo"

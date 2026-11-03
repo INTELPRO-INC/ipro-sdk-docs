@@ -349,7 +349,7 @@ Reef 只透過 IPRO6S FIN 卡連 Wi-Fi。套件中其他 SDIO Wi-Fi 模組的驅
 
 - 只有 FreeRTOS 應用能連網。Zephyr 下沒有乙太網路驅動，也沒有 `ipronet_host`；`zephyr/drivers/wifi` 是 IPRO6S 晶片本身的驅動，而本版 Zephyr 不支援 IPRO6S。見 [Zephyr RTOS](zephyr.md)。
 - `ipronet_host` 只支援 station 模式與單一 netif，也不會偵測傳輸中斷：卡片斷電後以 `ipronet_stop()`、`ipronet_start()` 重新建立。
-- 沒有高階 HTTP 用戶端元件，也沒有行動網路數據機元件。
+- 沒有高階 HTTP 用戶端元件，也沒有 4G／LTE 行動網路模組的元件。
 - `ipro7_sdio_wifi` 的 README 提到 `iperf`，但它依賴的元件不在套件中。
 - `ipro_agora_sentino` 的 MQTT 以明文 TCP 連線；量產產品請改用 MQTT over TLS 並驗證憑證。
 

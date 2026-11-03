@@ -54,7 +54,6 @@ Built and checked from the package before release: the 36 IPRO7 FreeRTOS applica
 - **`ipro_throughput_test` documents**: the README and `OPERATION_MANUAL.md` mention a demo application, an Android app and controller build options (such as `CONFIG_BTBLECONTROLLER_LIB` and `link8`) that are not in this release; build and flash as in the README's Build / Flash sections and [BLE Throughput Test](../tutorials/ble-throughput.md).
 - **Waiting after a crash**: `ipro7ai_reef_demo` and `ipro_reef_teach` set `CONFIG_EXCEPTION_DUMP=y`, so after a crash they keep printing `==DUMP_READY:2000000==` while waiting for a host tool that does not ship; save the diagnostics and press SW2, or set it to `n`. See [Crash analysis](debugging.md#crash-analysis).
 - **`build_freertos.sh` flashes IPRO7 only**: it always passes `--chipname ipro7` and cannot pass `--boot2` or `--mfg`; flash IPRO6S images, the OTA build of `ipro_ble_remote` and `ipro_reef_teach` with IntelProCube directly.
-- **Flash pin wording for Zephyr flashing**: the help text of the `west flash` runner's `--flash-pin` option gives `0x9` for the EVB; FreeRTOS flashing selects the pins with `--chip-variant` (`IPRO7` = `0x2`, `IPRO7AI` = `0x9`; the Reef uses `IPRO7AI`).
 - **Items named in READMEs but not shipped**: some component and application READMEs refer to applications, tools or documents that are not in this release (for example the board user guide and the Edge AI programming guide). Documents are available from INTELPRO; see [Documents](../documents/index.md).
 
 ## IPRO-SDK-V2.1.0 { #v2-1-0 }

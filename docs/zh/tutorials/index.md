@@ -1,6 +1,6 @@
 ---
 title: "教學"
-description: 在 IPRO7AI Reef EVK 上從頭到尾動手做的教學：建置與燒錄、寫自己的應用並測試、BLE、LE Audio、USB 網路攝影機與 Wi-Fi RTSP 串流。
+description: 在 IPRO7AI Reef EVK 上從頭到尾動手做的教學：建置與燒錄、寫自己的應用並測試、BLE、LE Audio、USB 網路攝影機，以及經 IPRO6S FIN 卡以 Wi-Fi 傳送的 RTSP 串流。
 migrate_from:
   - "tutorials.html#next-steps"
 ---
