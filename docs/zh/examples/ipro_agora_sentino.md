@@ -1,25 +1,63 @@
 ---
 title: ipro_agora_sentino
-description: Sentino 雲端 AI 語音對話：BLE 配網、經 IPRO6S FIN 卡連 Wi-Fi、MQTT 登入、Agora RTC 即時語音。需另備 Sentino 裝置三元組與 AOSL（見 README）；FIN 卡端韌體未包含於 V2.1.0，請洽 INTELPRO
+description: Sentino 雲端 AI 語音對話：BLE 配網、經 IPRO6S FIN 卡連 Wi-Fi、MQTT 登入、Agora RTC 即時語音；需另備 Sentino 裝置三元組與 AOSL 核心
 generated: tools/gen_examples.py
 migrate_from: []
 ---
 
 # ipro_agora_sentino
 
-Sentino 雲端 AI 語音對話：BLE 配網、經 IPRO6S FIN 卡連 Wi-Fi、MQTT 登入、Agora RTC 即時語音。需另備 Sentino 裝置三元組與 AOSL（見 README）；FIN 卡端韌體未包含於 V2.1.0，請洽 INTELPRO
+Sentino 雲端 AI 語音對話：BLE 配網、經 IPRO6S FIN 卡連 Wi-Fi、MQTT 登入、Agora RTC 即時語音；需另備 Sentino 裝置三元組與 AOSL 核心
 
 | 項目 | 內容 |
 |---|---|
-| 原始碼 | [`apps/multimedia/ipro_agora_sentino`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.1.0/apps/multimedia/ipro_agora_sentino) |
-| 板卡與設定 | Reef（`.config`，`make` 或 `make BOARD=reef`）；EVK（`make BOARD=evk`，使用 `config_evk`，可建置但未經板上驗證） |
-| 主控台 | Reef：UART 115200<br>EVK：UART 921600 |
+| 原始碼 | [`apps/multimedia/ipro_agora_sentino`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/multimedia/ipro_agora_sentino) |
+| 板卡與設定 | Reef＋IPRO6S FIN 卡（`.config`，`make` 或 `make BOARD=reef`）；`BOARD=evk` 為 IPRO7AI EVK（可建置，未經板上驗證） |
+| 主控台 | Reef：UART 115200 |
 | 建置 | `make -C apps/multimedia/ipro_agora_sentino` |
+
+## 在 Reef 上執行 { #on-the-reef }
+
+需要：插在 microSD 卡座、執行 `ipro6_if_wifi`（`defconfig_ipro6_sdio`）韌體的 IPRO6S FIN 卡，JP3 在 GPIO；接在喇叭座的喇叭；每塊板一組 Sentino 裝置三元組與 Sentino 手機 App（向 Sentino 取得，不隨 SDK 提供）；可連網際網路的 2.4 GHz 基地台。
+
+<div class="ipro-steps" markdown>
+
+1. **取得 AOSL 核心**（只需一次，SDK 不含）：在 SDK 根目錄執行
+
+    ```bash
+    git clone https://github.com/AgoraIO-Community/aosl components/3rdparty/agora/aosl
+    git -C components/3rdparty/agora/aosl checkout d825607
+    ```
+
+    缺少這個目錄時，建置會停下並印出這兩行指令。
+
+2. **建置**
+
+    ```bash
+    make -C apps/multimedia/ipro_agora_sentino
+    ```
+
+    映像在 `apps/multimedia/ipro_agora_sentino/build/build_out/ipro_agora_sentino_IPRO7.bin`。
+
+3. **燒錄**：進入[下載模式](../hardware/boards/reef-evk.md#download-mode)，在 IntelProCube 目錄執行
+
+    ```bash
+    ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+        --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+        --pt chips/ipro7/partition/partition_cfg_2M.toml \
+        --firmware <SDK>/apps/multimedia/ipro_agora_sentino/build/build_out/ipro_agora_sentino_IPRO7.bin
+    ```
+
+    確認 `[All Success]` 後按一下 SW2。
+
+4. **設定與執行**：以 115200 baud 開啟主控台，開機印出 `IPRO7 Agora Sentino AI Gateway`。輸入 `sentino_triple set <pid> <uuid> <secret>` 後 `reboot`。板子以 BLE 名稱 `RY` 廣播，以 Sentino 手機 App 送出 Wi-Fi 與伺服器設定（或在主控台輸入 `wifi_set <ssid> <psk>`）；登入後即可對著麥克風與 AI 對話。
+
+</div>
 
 ## README { #readme }
 
 !!! note "README 原文"
-    以下是應用隨附的 README（SDK V2.1.0），保留原文、未翻譯；只替換了不適合公開的內容。
+    以下是應用隨附的 README（SDK V2.2.0），保留原文、未翻譯；只替換了不適合公開的內容。
 
 <!-- verbatim:start -->
 
@@ -29,7 +67,7 @@ Sentino 雲端 AI 語音對話：BLE 配網、經 IPRO6S FIN 卡連 Wi-Fi、MQTT
 2. 裝置經插在卡槽的 IPRO6S FIN 連上 Wi-Fi，登入 Sentino 雲端（MQTT）。
 3. 雲端配發 Agora RTC 存取權，裝置加入頻道；PDM 麥克風收音、DAC 喇叭播放，與 AI 即時語音對話。
 
-程式模組與資料流見 [ARCHITECTURE.md](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.1.0/apps/multimedia/ipro_agora_sentino/ARCHITECTURE.md)。
+程式模組與資料流見 [ARCHITECTURE.md](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.0/apps/multimedia/ipro_agora_sentino/ARCHITECTURE.md)。
 
 ### 需要準備
 

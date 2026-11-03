@@ -7,11 +7,59 @@ migrate_from:
 
 # 版本資訊
 
-IPRO SDK 的正式發行紀錄，新版在前。各版本的下載檔與發行說明在 [GitHub Releases](https://github.com/INTELPRO-INC/IPRO-SDK/releases)；SDK 套件的整體說明見套件根目錄的 `README.md`。
+IPRO SDK 的正式發行紀錄，新版在前；目前版本為 V2.2.0。各版本的下載檔與發行說明在 [GitHub Releases](https://github.com/INTELPRO-INC/IPRO-SDK/releases)；SDK 套件的整體說明見套件根目錄的 `README.md`。
+
+## IPRO-SDK-V2.2.0 { #v2-2-0 }
+
+<span class="ipro-badge">最新版本</span> 發行日期：2026-11-03 ・ [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0)
+
+IPRO7／IPRO7AI 與 IPRO6S 雙晶片版本，取代 V2.1.0。共 40 個 FreeRTOS 應用：37 個 IPRO7、3 個 IPRO6S。下載檔為 `IPRO-SDK-V2.2.0.tar.gz`，SHA-256 見 Release 頁面。
+
+**新增與變更**
+
+- **IPRO6S 應用回到套件**：`ipro6_demo`（Wi-Fi 6 station／soft-AP，DTIM 低功耗）、`ipro6_if_wifi`（經 SDIO 或 USB 給主機用的 Wi-Fi 橋接）與 `ipro6_fmac`（FullMAC 韌體與其 Flash 載入程式）。Wi-Fi MAC、共存與 RF 函式庫依每個隨附的 `defconfig_*` 各自預編譯，每個設定連結為它建置的函式庫。Reef 的 FIN Wi-Fi 卡韌體即 `ipro6_if_wifi` 的 `defconfig_ipro6_sdio`，見 [IPRO6S](../hardware/chips/ipro6s.md)。
+- **新應用 `ipro_reef_teach`**：IPRO7AI Reef EVK 上的 Edge AI 韌體，內含三個 Teach 工具：`image`（USB 相機與分類器）、`voice`（辨識誰在說話）與 `sensor`（任何感測器）。開機時選定一個模式，每個模式有自己的 USB 識別，由 IPRO AI Studio 操作；也可用 `tools/teach_web/` 在瀏覽器中做影像 Teach。IPRO AI Studio 與 Edge AI 工具隨 IPRO Edge AI 套件另行提供。
+- **IPRO Edge AI 平台 V2.0**（`components/ai`）：執行環境、每個工具一個槽位的模型儲存區、輸入來源、前處理與應用框架；NPU 等待設有上限，逾時會重置該區塊並進入安全的故障狀態；Edge AI 韌體會啟用 AON 看門狗（進入下載模式時關閉）。修正 CPU 層圖讀取超出最後一筆層記錄的問題。
+- **整晶片重置**：`hal_reboot_full()` 經 AON 看門狗重置整顆晶片，包含 always-on 電源域；啟用 `CONFIG_APP_WATCHDOG` 時，`platform_init()` 從開機一開始就啟動看門狗。`ipro_reef_teach` 以它切換工具，修正 Reef 接著相機時，從 `image` 模式切出後下一次開機可能停住直到重置的問題。
+- **新應用 `ipro7_jpeg_decode`**：以軟體（TJpgDec）把 JPEG 解碼為 RGB565／RGB888，含格式檢查，並可解碼沒有 Huffman 表的相機 MJPEG 影格；IPRO7 的 MJPEG 硬體只能編碼。Reef 使用 `defconfig_reef`，主控台 921600 baud。
+- **`ipro7ai_reef_demo`**：`mic usb` 讓 Reef 成為 USB 麥克風（16 kHz，由 PDM 時脈轉換取樣率）；`mic sdrec` 把錄音存成 SD 卡上的 WAV 檔。
+- **`build_freertos.sh`**：`flash` 依設定檔自動選 `--chip-variant`（Reef 與 IPRO7AI EVK 為 `IPRO7AI`），可用 `-c` 或 `IPRO_CHIP_VARIANT` 覆寫；`-P` 或 `IPRO_FLASH_PT` 指定分割表；`flash` 送出的 `reboot_dl`、`monitor` 與 `test` 都使用應用自己的主控台鮑率。見[工具命令列](tools.md#build-cli)。
+- **BLE 控制器**：IPRO7 的 16 個預編譯函式庫以本版原始碼重新建置；標頭檔宣告的 `ipro_ble_ctlr_heap_watermarks()` 與 `ipro_ble_ctlr_link_diag_start()` 現在可以連結使用。
+- **USB 裝置**：修正 RX FIFO 溢位、反初始化時中斷連線、CDC-ECM 封包框架，USB 主控台可穩定連上。**lwIP**：在中斷中呼叫 `sys_mbox_trypost` 時改走 FromISR 路徑。Opus 改以自己的 `arch.h` 建置。
+- **BSP**：只用 BLE 的應用可使用關閉 PLL 的系統時脈；`CONFIG_OCRAM_NORET_SCRATCH_ONLY` 讓 RAM 狀態留在 PDS 保留的 64 KB 內；`hal_lp_enter_fastboot()` 進入 HBN；安全引擎 HAL v2，含 PSA 加速器驅動。
+- 範例應用不再內建任何網路帳號或密碼。
+
+**應用**
+
+- 共 40 個：37 個 IPRO7、3 個 IPRO6S。相較 V2.1.0，新增 `ipro_reef_teach`、`ipro7_jpeg_decode`、`ipro6_demo`、`ipro6_if_wifi`、`ipro6_fmac`；V2.1.0 的語者辨識應用改名為 `ipro_speaker_recog`。
+- 9 個應用附 IPRO7AI Reef EVK 的設定，清單與建置命令見[常見問題](faq.md#reef-apps)與 [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md#examples)。
+
+發行前以套件內容重新建置並檢查：36 個 IPRO7 FreeRTOS 應用（`ipro_agora_sentino` 需先取得 AOSL 核心）、IPRO6S 的 7 個設定，以及 `ipro7_evb`、`ipro7ai_evk` 的 Zephyr 範例。
+
+**未包含**
+
+- IntelProCube 燒錄工具與 RISC-V 工具鏈：請洽 INTELPRO。
+- IPRO AI Studio 與 Edge AI 工具：隨 IPRO Edge AI 套件另行提供。模型轉換工具請洽 INTELPRO。
+- IPRO6S 的 BLE 控制器函式庫與 BLE／BR/EDR 應用；IPRO6S 應用只有 Wi-Fi。
+- Matter；FreeRTOS 應用的 Thread（Thread 只在 Zephyr 下提供）。
+- 晶片上除錯（OpenOCD／GDB）的設定、當機傾印的主機端工具、板級自動測試腳本、`menuconfig`。
+- Zephyr：沒有 Reef 的板型；不支援 IPRO6S；沒有低功耗模式，也沒有顯示、相機、音訊編解碼、USB、SD 主機、乙太網路與 NPU 驅動。
+- `ipro_agora_sentino` 需要的 AOSL 核心與 Sentino 裝置三元組：AOSL 從 GitHub 取得，步驟見該應用的 README。
+
+### 已知問題與注意事項 { #v2-2-0-known-issues }
+
+- **Reef 板級設定檔的註解**：`bsp/board/ipro7/ipro7ai_reef_board_config.h` 的註解描述的是前一版（V3.0）載板的擴充排針與跳線；腳位定義與 V4.0 相同。V4.0 的排針、開關與跳線以本站的 [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md) 為準。
+- **兩個 IPRO6S 設定檔沒有對應的預編譯函式庫**：`ipro6_demo/defconfig_ipro6_lpwifi_ping` 與 `ipro6_fmac/defconfig_ipro6_fmac_ap` 隨附在套件中，但沒有設定 `CONFIG_WIRELESS_LIB_VARIANT`，不在發行前檢查的設定之列。請使用 [IPRO6S](../hardware/chips/ipro6s.md) 頁列出的設定檔。
+- **`ipro_le_audio_headset`**：應用 README 的狀態欄標示音訊輸出（render）目前停用、媒體串流尚未驗證；依賴音訊輸出前請先看 README 的狀態說明。
+- **`ipro_throughput_test` 的文件**：README 與 `OPERATION_MANUAL.md` 提到的示範應用、Android App 與控制器建置選項（例如 `CONFIG_BTBLECONTROLLER_LIB`、`link8`）不在本版中；建置與燒錄請依 README 的 Build／Flash 段落與 [BLE 吞吐量測試](../tutorials/ble-throughput.md)。
+- **當機後的等待**：`ipro7ai_reef_demo` 與 `ipro_reef_teach` 設了 `CONFIG_EXCEPTION_DUMP=y`，當機後會重複印出 `==DUMP_READY:2000000==` 等待未隨附的主機端工具；存下診斷後按 SW2 重置，或把它設為 `n`。見[當機分析](debugging.md#crash-analysis)。
+- **`build_freertos.sh` 只燒錄 IPRO7**：它固定傳 `--chipname ipro7`，也無法傳 `--boot2`、`--mfg`；IPRO6S 映像、`ipro_ble_remote` 的 OTA 版本與 `ipro_reef_teach` 請直接使用 IntelProCube。
+- **Zephyr 燒錄的 Flash 腳位說明**：`west flash` runner 的 `--flash-pin` 說明文字寫 `0x9` 給 EVB；FreeRTOS 燒錄以 `--chip-variant` 選擇（`IPRO7`＝`0x2`、`IPRO7AI`＝`0x9`，Reef 用 `IPRO7AI`）。
+- **README 中提到但未隨附的項目**：部分元件與應用的 README 提到不在本版中的應用、工具或文件（例如板子使用手冊與 Edge AI 程式設計指南）。文件可向 INTELPRO 索取，見[文件下載](../documents/index.md)。
 
 ## IPRO-SDK-V2.1.0 { #v2-1-0 }
 
-<span class="ipro-badge">最新版本</span> 發行日期：2026-10-16 ・ [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.1.0)
+發行日期：2026-10-16 ・ [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.1.0)
 
 新增 Zephyr RTOS 支援；FreeRTOS 應用以 IPRO7 為目標，共 35 個。
 
@@ -31,7 +79,7 @@ IPRO SDK 的正式發行紀錄，新版在前。各版本的下載檔與發行�
 
 **未包含**
 
-- IPRO6S 的應用、BLE 控制器函式庫與 `ipro6_rf`：套件 README 仍提到 IPRO6S，但本版沒有對應內容；IPRO6S 開發請使用 V2.0.1，見 [IPRO6S（V2.0.1）](../hardware/chips/ipro6s.md)。
+- IPRO6S 的應用、BLE 控制器函式庫與 `ipro6_rf`：套件 README 仍提到 IPRO6S，但本版沒有對應內容；當時 IPRO6S 開發請使用 V2.0.1；V2.2.0 起 IPRO6S 應用回到套件，見 [IPRO6S](../hardware/chips/ipro6s.md)。
 - IPRO6S 端的 Wi-Fi 韌體（含 Reef 的 FIN 卡），請洽 INTELPRO。
 - Matter；FreeRTOS 應用的 Thread（Thread 只在 Zephyr 下提供）；模型轉換工具。
 - IntelProCube 燒錄工具與 RISC-V 工具鏈，需另行取得。
@@ -39,7 +87,7 @@ IPRO SDK 的正式發行紀錄，新版在前。各版本的下載檔與發行�
 **已知限制**
 
 - `ipro_ble_remote/defconfig_lowpower` 會改為從原始碼建置 BLE 控制器，無法以本套件建置。
-- `build_freertos.sh flash` 不傳 `--chip-variant` 與 `--pt`，`monitor` 固定 115200 baud；IPRO7AI 板子與 921600 baud 的應用請直接使用工具，見[燒錄與序列埠](../get-started/flash-and-monitor.md#build-script)。
+- `build_freertos.sh flash` 不傳 `--chip-variant` 與 `--pt`，`monitor` 固定 115200 baud；IPRO7AI 板子與 921600 baud 的應用請直接使用工具。V2.2.0 已改善，見 [IPRO-SDK-V2.2.0](#v2-2-0)。
 - Zephyr 尚無低功耗模式，也沒有顯示、相機、音訊編解碼、USB、SD 主機、乙太網路與 NPU 驅動；沒有 IPRO7AI Reef EVK 的板級定義。
 
 發行時的建置與上板驗證紀錄見 GitHub Release 頁面。
@@ -65,7 +113,7 @@ V2.1.0 之前的 IPRO7 版本，共 34 個應用，不含 Zephyr。
 - 修正連續傳輸時 Bluetooth Host queue 發布的原子性問題。
 - PDM 邏輯錄音最長 4 小時，PSRAM ring 保留 240 秒，每 30 秒自動分段傳輸；Android 在分段間維持高連線優先權。
 - PDM 改用 `link2` 控制器、單連線 Host 與 2M PHY，提供 EVB／EVK 配置與 Android 配套原始碼。
-- 包含 IPRO6S Wi-Fi／BR/EDR 範例（見 [IPRO6S（V2.0.1）](../hardware/chips/ipro6s.md)）、SDIO 雙端韌體、NPU／TFLM 範例及 `.inm`／`.tflite` 模型。
+- 包含 IPRO6S Wi-Fi／BR/EDR 範例、SDIO 雙端韌體、NPU／TFLM 範例及 `.inm`／`.tflite` 模型。
 - 包含 `ipro_unit_test` 與 Linux x86-64 CMake；1.2.1 的 `serial_monitor.py` 與 `PREBUILT-ARCHIVES-STRIPPED.txt` 不在此包。
 
 正式發行紀錄記載 31/31 應用建置成功，並以 Pixel 7a 與 IPRO7AI 完成五分鐘錄音：十個 960,000 位元組的區塊、無掉包或序號缺口、ring 覆寫成功，穩態傳輸為 84.2–91.2 KB/s。數值對應該測試組合，不代表所有板子與手機皆有相同結果。
@@ -74,7 +122,7 @@ V2.1.0 之前的 IPRO7 版本，共 34 個應用，不含 Zephyr。
 
 [下載安裝程式](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/online-installer-v3.4.0)
 
-新增動態公開清單、獨立套件版本、完整安裝的相容性選擇，以及快取離線安裝。Extension 維持 3.3.0。2026-10-16 核對時，清單中的 SDK stable 仍為 1.2.1，尚未登錄 V2.x；SDK V2.x 需另由正式 Release 下載，見 [Windows 安裝與 VS Code](../get-started/windows.md#sdk-2-1-0)。
+新增動態公開清單、獨立套件版本、完整安裝的相容性選擇，以及快取離線安裝。Extension 維持 3.3.0。安裝程式的 SDK 清單中 stable 版仍為 1.2.1，尚未登錄 V2.x；SDK V2.2.0 請由 [Release 頁面](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0)下載，見 [Windows 安裝與 VS Code](../get-started/windows.md)。
 
 ## 開發工具：Windows 安裝包／Extension 3.3.0 { #tools-3-3-0 }
 

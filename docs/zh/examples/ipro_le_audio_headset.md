@@ -1,25 +1,54 @@
 ---
 title: ipro_le_audio_headset
-description: LE Audio unicast 耳機：BAP unicast server、PACS、ASCS、VCP、CAP，LC3 解碼。教學見 LE Audio 入門
+description: LE Audio unicast 耳機：BAP unicast server、PACS、ASCS、CAP、CSIP、VCP，LC3 解碼後由 DAC 輸出。教學見 LE Audio 入門
 generated: tools/gen_examples.py
 migrate_from: []
 ---
 
 # ipro_le_audio_headset
 
-LE Audio unicast 耳機：BAP unicast server、PACS、ASCS、VCP、CAP，LC3 解碼。教學見 [LE Audio 入門](../tutorials/le-audio.md)
+LE Audio unicast 耳機：BAP unicast server、PACS、ASCS、CAP、CSIP、VCP，LC3 解碼後由 DAC 輸出。教學見 [LE Audio 入門](../tutorials/le-audio.md)
 
 | 項目 | 內容 |
 |---|---|
-| 原始碼 | [`apps/bluetooth/le_audio/ipro_le_audio_headset`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.1.0/apps/bluetooth/le_audio/ipro_le_audio_headset) |
-| 板卡與設定 | EVB（`.config`／`DAC.config`：DAC 輸出；`UAC.config`：USB Audio）；Reef（`defconfig_reef`） |
+| 原始碼 | [`apps/bluetooth/le_audio/ipro_le_audio_headset`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/bluetooth/le_audio/ipro_le_audio_headset) |
+| 板卡與設定 | Reef（`defconfig_reef`：DAC 輸出到耳麥孔與喇叭）；`.config`、`DAC.config`、`UAC.config` 為 IPRO7 EVB |
 | 主控台 | UART 115200 |
-| 建置 | `make -C apps/bluetooth/le_audio/ipro_le_audio_headset` |
+| 建置 | Reef：`make -C apps/bluetooth/le_audio/ipro_le_audio_headset DEFCONFIG=defconfig_reef` |
+
+## 在 Reef 上執行 { #on-the-reef }
+
+<div class="ipro-steps" markdown>
+
+1. **建置**
+
+    ```bash
+    make -C apps/bluetooth/le_audio/ipro_le_audio_headset DEFCONFIG=defconfig_reef
+    ```
+
+    映像在 `apps/bluetooth/le_audio/ipro_le_audio_headset/build_reef/build_out/ipro_le_audio_headset_IPRO7.bin`。
+
+2. **燒錄**：進入[下載模式](../hardware/boards/reef-evk.md#download-mode)，在 IntelProCube 目錄執行
+
+    ```bash
+    ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+        --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+        --firmware <SDK>/apps/bluetooth/le_audio/ipro_le_audio_headset/build_reef/build_out/ipro_le_audio_headset_IPRO7.bin
+    ```
+
+    確認 `[All Success]` 後按一下 SW2。
+
+3. **執行**：以 115200 baud 開啟主控台。板子以 `IPRO-LE-Audio` 廣播；以支援 LE Audio 的手機配對，數字比對在板上自動確認。主控台輸入 `leaudio_status` 查看連線與串流狀態。SW3、SW4、SW5 經 VCP 分別調低音量、調高音量與靜音。
+
+</div>
+
+!!! info "本版狀態"
+    應用 README 記載：手機可連線、探索服務並以安全等級 4 綁定；由手機串流媒體尚未驗證。
 
 ## README { #readme }
 
 !!! note "README 原文"
-    以下是應用隨附的 README（SDK V2.1.0），保留原文、未翻譯；只替換了不適合公開的內容。
+    以下是應用隨附的 README（SDK V2.2.0），保留原文、未翻譯；只替換了不適合公開的內容。
 
 <!-- verbatim:start -->
 
@@ -40,8 +69,9 @@ customer audio product:
 - audio output/render is currently disabled; LC3 decode/render and acoustic
     validation remain open
 
-Use `apps/bluetooth/ble/ipro_ble_controller_central_test` as the current
-automated peer for basic validation.
+The two-board automated peer used for this validation
+(`ipro_ble_controller_central_test`) is an internal test app and is not part of
+the SDK package; any LE Audio unicast client can act as the peer.
 
 Android phone basic status:
 
@@ -123,8 +153,8 @@ Android phone basic status:
 
 - **BAP (Basic Audio Profile)**: Unicast audio streaming with CIS (Connected Isochronous Stream)
 - **VCP (Volume Control Profile)**: Remote volume control from source device
-- **MCP (Media Control Profile)**: Playback control (play/pause/next/prev)
-- **CCP (Call Control Profile)**: Phone call handling (ready for future development)
+- MCP (media control) and CCP (call control) are not enabled in the shipped
+    `.config` (no `CONFIG_BT_MCC` / `CONFIG_BT_MCS`)
 
 #### Audio Capabilities
 
@@ -312,8 +342,8 @@ python3 apps/bluetooth/le_audio/ipro_le_audio_headset/tools/verify_le_audio.py \
   --duration 45 \
   --device IPRO-LE-Audio \
   --expect-ascs \
-  --log /private/tmp/ipro_android_leaudio_smoke_board.log \
-  --json /private/tmp/ipro_android_leaudio_smoke.json
+  --log /tmp/ipro_android_leaudio_smoke_board.log \
+  --json /tmp/ipro_android_leaudio_smoke.json
 ```
 
 Latest recorded r48 result:
@@ -326,29 +356,22 @@ Latest recorded r48 result:
 ### Configuration
 
 #### Kconfig Options
-Key configuration options in `defconfig`:
+Key configuration options in `.config` (`DAC.config` and `UAC.config` switch
+the audio output between the on-chip DAC and a USB Audio Class device):
 
 ```ini
-# BLE Configuration
-CONFIG_BLE_PERIPHERAL=y
-CONFIG_BLE_CENTRAL=n
+# LE Audio roles (Zephyr host)
+CONFIG_BT_AUDIO=y
+CONFIG_BT_AUDIO_RX=y
+CONFIG_BT_BAP_UNICAST_SERVER=y
+CONFIG_BT_PACS=y
+CONFIG_BT_ASCS=y
+CONFIG_BT_CAP_ACCEPTOR=y
+CONFIG_BT_CSIP_SET_MEMBER=y
+CONFIG_BT_VCP_VOL_REND=y
 
-# GAF Audio Profiles
-CONFIG_GAF_BAP=y
-CONFIG_GAF_BAP_CAPA_SRV=y
-CONFIG_GAF_VCP=y
-CONFIG_GAF_VCP_SRV=y
-CONFIG_GAF_MCP=y
-CONFIG_GAF_MCP_SRV=y
-
-# Audio Configuration
-CONFIG_LC3_CODEC=y
-CONFIG_ISOOHCI=y
-
-# USB Audio
-CONFIG_CHERRYUSB=y
-CONFIG_CHERRYUSB_DEVICE=y
-CONFIG_CHERRYUSB_DEVICE_AUDIO=y
+# LC3 decoder
+CONFIG_COMPONENTS_LC3_ENABLE=y
 ```
 
 #### Audio Parameters
@@ -369,7 +392,6 @@ Configurable in `src/app_audio.h`:
 - [x] LC3 codec integration
 - [x] USB audio bridge
 - [x] VCP volume control
-- [x] MCP media control
 - [x] Auto-reconnection support
 
 #### Phase 2: Enhanced User Experience (Q1 2026)
@@ -454,8 +476,8 @@ Configurable in `src/app_audio.h`:
 
 - [Bluetooth LE Audio Specification](https://www.bluetooth.com/specifications/le-audio/)
 - [LC3 Codec Documentation](https://www.bluetooth.com/specifications/lc3/)
-- [IPRO SDK Documentation](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.1.0/apps/bluetooth/README.md)
-- [BLE development overview](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.1.0/docs/ble/README.md)
+- [IPRO SDK Documentation](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.0/apps/bluetooth/README.md)
+- [BLE development overview](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.0/docs/ble/README.md)
 
 ### License
 

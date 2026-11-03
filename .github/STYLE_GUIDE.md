@@ -13,14 +13,19 @@ content rules in `README.md` first; this guide covers structure and wording.
    `CONFIG_*` keys, app names, counts and versions must exist in the current
    release package. If something cannot be confirmed, leave it out.
    Things the release does not ship are stated as such:
-   「未包含於 V2.1.0，請洽 INTELPRO。」 / "Not included in V2.1.0; contact INTELPRO."
-3. **One fact, one place.** Version-specific notes about older releases (for
-   example IPRO6S on V2.0.1) live on their own page; other pages link to it.
+   「未包含於 V2.2.0，請洽 INTELPRO。」 / "Not included in V2.2.0; contact INTELPRO."
+3. **One fact, one place.** Chip- or version-specific details (for example
+   the IPRO6S applications and the FIN card firmware) live on their own page;
+   other pages link to it.
    Release version and date come from `extra.release`; in prose, write the
    version only where the sentence depends on it.
-4. **Runnable over descriptive.** Prefer a command, its expected output and
-   how to tell it worked, over a paragraph describing what the command does.
-5. **Short.** No preambles ("本節將介紹…", "In this section we will…"), no
+4. **Hands-on, step by step.** Task pages are hands-on: every step is
+   action → exact command or code → what the user sees; every task page ends
+   with Verify and Troubleshooting. Prefer a command and its expected output
+   over a paragraph describing what the command does.
+5. **One board.** Step-by-step instructions target the IPRO7AI Reef EVK V4.0
+   only; other boards get a one-line mention ("needs the IPRO7 EVB").
+6. **Short.** No preambles ("本節將介紹…", "In this section we will…"), no
    marketing adjectives, no repeating the heading in the first sentence.
 
 ## Page types
@@ -29,10 +34,10 @@ content rules in `README.md` first; this guide covers structure and wording.
 
 ```
 # <Goal as a title>
-One-paragraph goal: what you will have at the end, on which board.
+One-paragraph goal: what you will have at the end on the Reef EVK V4.0.
 ## 前置需求 / Prerequisites { #prerequisites }
 ## Steps, wrapped in <div class="ipro-steps" markdown> … </div>
-   each step: action → command → expected result
+   each step: action → exact command or code → what the user sees
 ## 確認結果 / Verify { #verify }
 ## 疑難排解 / Troubleshooting { #troubleshooting }   (symptom → cause → fix)
 ## 下一步 / Next steps { #next-steps }
@@ -53,10 +58,11 @@ Two or three sentences: what it is, when to use it, what the SDK provides.
 
 ### Board page (Hardware → Boards)
 
-Follow `hardware/boards/reef-evk.md`: intro, `ipro-facts` strip, on-board
-features table, warning admonition for power-on requirements, quick start
-steps (per-OS tabs for flashing), out-of-box firmware, supported examples,
-SDK board support, related documents.
+There is one board page, `hardware/boards/reef-evk.md`: intro, `ipro-facts`
+strip, on-board features table, warning admonition for power-on requirements,
+quick start steps with expected output, download mode, out-of-box firmware,
+Wi-Fi, supported examples (build command, console, flashing notes), USB
+identities, pin map, SDK board support, related documents.
 
 ### Chip page (Hardware → Chips)
 
@@ -95,8 +101,9 @@ linking every page in the section with a one-line description.
   `ipro-steps`, `ipro-facts`, `ipro-stack`, `ipro-badge`, grid cards.
 - **Placeholders**: serial ports `/dev/cu.usbserial-XXXX` (macOS),
   `/dev/ttyUSB0` (Linux), `COM5` (Windows); SDK root `<SDK>`.
-- **Examples default to the IPRO7AI Reef EVK** where a board must be chosen;
-  state facts about other boards as they are.
+- **Board**: commands, configurations and expected output are for the
+  IPRO7AI Reef EVK V4.0 (`DEFCONFIG=defconfig_reef…` where the default
+  `.config` targets another board). Other boards get one line.
 
 ## zh-TW wording
 

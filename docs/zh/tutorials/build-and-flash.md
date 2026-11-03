@@ -1,185 +1,190 @@
 ---
 title: "建置與燒錄流程"
-description: 日常開發的建置、燒錄與監看迴圈：build_freertos.sh 串接動作、DEFCONFIG 替代設定、乾淨建置、讀取記憶體用量，以及腳本預設值的修正方式。
+description: 在 IPRO7AI Reef EVK 上反覆執行的修改、建置、燒錄、監看迴圈：以 build_freertos.sh 一行完成、切換替代設定、乾淨建置、讀取記憶體用量。
 migrate_from:
   - "tutorials.html — 教學 2"
 ---
 
 # 建置與燒錄流程
 
-每天反覆執行的「修改 → 建置 → 燒錄 → 看主控台」迴圈，以 IPRO7AI Reef EVK 的開箱韌體 `ipro7ai_reef_demo` 為例。第一次安裝工具並燒錄，請先完成[第一個 FreeRTOS 應用](../get-started/first-app-freertos.md)與[燒錄與序列埠](../get-started/flash-and-monitor.md)。
+日常開發的迴圈是「修改程式 → 建置 → 燒錄 → 看主控台」。本教學在 IPRO7AI Reef EVK 上修改開箱韌體 `ipro7ai_reef_demo` 的開機標題，用 `build_freertos.sh` 一行完成建置、燒錄與監看，並在主控台看到修改後的文字；之後說明替代設定、乾淨建置與記憶體用量。第一次安裝與燒錄請先完成[第一個 FreeRTOS 應用](../get-started/first-app-freertos.md)。
 
 ## 前置需求 { #prerequisites }
 
-- 已完成第一個 FreeRTOS 應用：工具鏈位於 `/opt/toolchain/riscv_ipro7/`，`make` 能建置 SDK 應用。
-- IntelProCube v0.6.3 的命令列燒錄工具，需另行取得。把 `IPRO_FLASH_TOOL` 設為工具路徑，或把工具目錄加入 `PATH`。
-- IPRO7AI Reef EVK 已上電，USB 轉 UART 線接 U6。
-- 以下命令都在 SDK 根目錄執行。
+- 已完成[第一個 FreeRTOS 應用](../get-started/first-app-freertos.md)：板上正在執行 `ipro7ai_reef_demo`，主控台能回應 `reef selftest`。
+- macOS 或 Linux。`build_freertos.sh` 需要 bash；Windows 以 VS Code Extension 建置，再依 [Windows 安裝與 VS Code](../get-started/windows.md#flash) 燒錄，迴圈相同。
+- 以下命令都在 SDK 根目錄執行，範例以 macOS 為準。
 
 ## 步驟 { #steps }
 
 <div class="ipro-steps" markdown>
 
-1. **設定序列埠**：`build_freertos.sh` 依序使用 `-p` 參數、環境變數 `IPRO_SERIAL_PORT`，或系統上唯一的 USB 序列埠。接了多塊板子時請明確指定：
-
-    === "macOS"
-
-        ```bash
-        export IPRO_SERIAL_PORT=/dev/cu.usbserial-XXXX
-        ```
-
-    === "Linux"
-
-        ```bash
-        export IPRO_SERIAL_PORT=/dev/ttyUSB0
-        ```
-
-2. **找出專案名稱**：
+1. **設定環境變數**：在這個終端機視窗設定一次，之後的命令都會用到。
 
     ```bash
-    ./build_freertos.sh -l
+    export IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos
+    export IPRO_SERIAL_PORT=/dev/cu.usbserial-XXXX
+    export IPRO_FLASH_PT=<IntelProCube>/chips/ipro7/partition/partition_cfg_2M.toml
     ```
 
-    輸出依分類列出專案（節錄）：
+    Linux 改用 `ipro_iot_tool_linux` 與 `/dev/ttyUSB0`。`IPRO_FLASH_PT` 會套用到這個視窗中的每一次 `flash`；改燒有自己分割表的應用時，以 `unset IPRO_FLASH_PT` 清掉或用 `-P` 覆寫。
+
+2. **修改程式**：用編輯器打開 `apps/platform/ipro7ai_reef_demo/main.c`，在 `main()` 的開機標題後面加上自己的文字：
+
+    ```c title="apps/platform/ipro7ai_reef_demo/main.c"
+    IPRO_LOGI(LOG_TAG, "  IPRO7AI Reef carrier demo - my build");
+    ```
+
+3. **建置、燒錄並監看**：關閉開著這個序列埠的終端程式，然後執行：
+
+    ```bash
+    ./build_freertos.sh -t 15 build flash monitor ipro7ai_reef_demo
+    ```
+
+    板上的韌體收到 `reboot_dl` 後自行進入下載模式，不必按鍵。輸出依序如下（節錄）：
 
     ```text
-    bluetooth/ble
-      ipro_ble_hid_keyboard
-      ipro_ble_remote
-      ipro_ble_transparent
-      ipro_throughput_test
+    Project: ipro7ai_reef_demo  (platform/ipro7ai_reef_demo)
 
-    platform
-      ...
-      ipro7ai_reef_demo                   IPRO7AI Reef carrier board demo.
+    → Building ipro7ai_reef_demo...
+    ✓ Build succeeded (14s)
+      Binary: <SDK>/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin (244 KB)
+      Log: <SDK>/apps/platform/ipro7ai_reef_demo/build/build.log
+    → Entering download mode...
+    reboot to download mode
+    → Flashing ipro7ai_reef_demo_IPRO7.bin (--chip-variant IPRO7AI, --pt <IntelProCube>/chips/ipro7/partition/partition_cfg_2M.toml)...
+    [...] - Chip name is ipro7
+    ...
+    [...] - [All Success]
+    ✓ Flash succeeded (…)
+    → Opening serial monitor on /dev/cu.usbserial-XXXX at 115200...
+    [serial_monitor] Sent: reboot
+    ...
+    I (…) REEF:   IPRO7AI Reef carrier demo - my build
+    ...
+    [serial_monitor] TIMEOUT after 15s
+    ✗ Action 'monitor' failed — stopping.
+
+    Summary:
+      ✓ build
+      ✓ flash
+      ✗ monitor (exit 2)
     ```
 
-    名稱右側的說明取自 `.config` 第一行註解，多數專案沒有。腳本接受專案名稱（`ipro7ai_reef_demo`）或分類路徑（`platform/ipro7ai_reef_demo`）；`make -C` 則需要完整路徑 `apps/platform/ipro7ai_reef_demo`。
+    `monitor` 讀滿 `-t` 指定的秒數後以結束碼 2 結束，腳本把它列為失敗，這是正常的：只要 `build` 與 `flash` 都是 ✓，新韌體就已經在板上執行。
 
-3. **建置並檢查記憶體用量**：
+4. **互動確認**：以終端程式開啟主控台（例如 `screen /dev/cu.usbserial-XXXX 115200`），輸入 `reef status` 或 `led 0 40 0`，確認新韌體正常回應。再次燒錄前先關閉終端程式。
+
+5. **重複**：之後每次修改，重複步驟 3 即可。只想確認能否編譯時，只執行 `build`：
 
     ```bash
     ./build_freertos.sh build ipro7ai_reef_demo
-    ```
-
-    ```text
-    ✓ Build succeeded (12s)
-      Binary: <SDK>/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin (219 KB)
-      Log: <SDK>/apps/platform/ipro7ai_reef_demo/build/build.log
-    ```
-
-    完整建置輸出寫在 `build.log`。查看連結器的記憶體用量表（說明見[讀取記憶體用量](#memory-usage)）：
-
-    ```bash
-    grep -A5 "Memory region" apps/platform/ipro7ai_reef_demo/build/build.log
-    ```
-
-4. **燒錄**：讓 Reef 進入下載模式（在主控台輸入 `reboot_dl`，或按住 SW1、按一下 SW2 再放開 SW1），再於 IntelProCube 目錄下執行（macOS 為例，Linux 與 Windows 的命令見[燒錄與序列埠](../get-started/flash-and-monitor.md#flashing)）：
-
-    ```bash
-    ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
-        --port /dev/cu.usbserial-XXXX --baudrate 921600 \
-        --pt chips/ipro7/partition/partition_cfg_2M.toml \
-        --firmware <SDK>/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin
-    ```
-
-    確認輸出中有 `[All Success]`；工具失敗時也會以 0 結束。Reef 不使用腳本的 `flash` 動作，原因見[腳本預設值](#script-defaults)。
-
-5. **看主控台**：
-
-    ```bash
-    ./build_freertos.sh monitor -t 0 ipro7ai_reef_demo
-    ```
-
-    `monitor` 會先送出 `reboot`，所以板子會重新開機，從頭顯示開機訊息；`-t 0` 表示一直顯示到按 Ctrl+C。這個視窗只顯示輸出，要輸入 shell 指令請用序列埠終端程式（見[燒錄與序列埠](../get-started/flash-and-monitor.md)）。
-
-6. **修改後重來**：改完程式只需重複步驟 3 到 5。串接的動作依序執行，任一動作失敗就停止：
-
-    ```bash
-    ./build_freertos.sh build size ipro7ai_reef_demo
     ```
 
 </div>
 
 ## 確認結果 { #verify }
 
-- `build` 印出 `✓ Build succeeded` 與 `Binary:` 路徑；`build.log` 中有記憶體用量表。
-- 燒錄工具的輸出有 `[All Success]`。
-- `monitor` 顯示新韌體的開機訊息。
+- `Summary` 中 `build` 與 `flash` 都是 ✓。
+- 主控台的開機訊息中出現 `IPRO7AI Reef carrier demo - my build`。
+- 按 SW3、SW4、SW5 時 LED 仍然亮紅、綠、藍，`reef selftest` 的輸出與修改前相同。
 
 ## build_freertos.sh 動作與選項 { #actions }
 
-用法：`./build_freertos.sh [動作...] [選項] <專案>`，未指定動作時執行 `build`。本教學用到 `build`、`monitor`、`size` 與 `clean` 四個動作，以及 `-d`（替代設定）、`-t 0`（`monitor` 持續到按 Ctrl+C）與 `-p`（序列埠）。動作依序執行，任一動作失敗就停止；指定多個動作時，最後會列出每個動作的結果。所有動作與選項見[工具命令列](../reference/tools.md#build-cli)。
+本教學用到 `build`、`flash`、`monitor`，以及 `-t`（監看秒數）、`-d`（替代設定）、`-P`（分割表）。動作依序執行，任一動作失敗就停止。其他動作（`clean`、`size`、`test`）與全部選項、環境變數見 [macOS／Linux 命令列](../get-started/command-line.md#build-script)。
 
 ## 替代設定與建置目錄 { #variants }
 
-每個應用以自己目錄下的 `.config` 建置。替代設定以 `DEFCONFIG=` 或 `build_freertos.sh -d` 選用，建置在 `build_<名稱>/`，`.config` 不受影響：
+同一個應用可以有多個設定檔。替代設定以 `-d` 選用，建置在 `build_<名稱>/`，應用目錄的 `.config` 不受影響：
 
 ```bash
-make -C apps/platform/ipro7ai_reef_demo DEFCONFIG=defconfig_wifi_ipro6s   # 建置於 build_wifi_ipro6s/
-./build_freertos.sh build -d defconfig_wifi_ipro6s ipro7ai_reef_demo       # 同上
+./build_freertos.sh -d defconfig_wifi_ipro6s build ipro7ai_reef_demo        # 建置於 build_wifi_ipro6s/
+./build_freertos.sh -d defconfig_reef_ov5640 build flash ipro7_uvc_cam       # USB 網路攝影機
 ```
 
-- 每次建置都會把替代設定複製成 `build_<名稱>/.config`，要改設定時請改應用目錄中的原檔，不要改建置目錄中的複本。
-- 目錄命名規則、`BOARD=`，以及以複製覆蓋 `.config` 的設定檔（`ipro_le_audio_headset` 的 `DAC.config`、`UAC.config`）見[建置系統與設定](../guides/build-system.md#variants)；各應用附有哪些替代設定見[範例](../examples/index.md)。
+- `flash`、`size` 依 `-d` 找映像檔：分開執行時每次都要加相同的 `-d`。
+- 建置時設定檔會被複製成 `build_<名稱>/.config`；要改設定，請改應用目錄中的原檔。
+- 燒錄 `ipro7_uvc_cam` 的 `defconfig_reef_ov5640` 並接上 OV5640 後，Reef 的 USB-C 上出現 USB 攝影機（`3896:0701`），用電腦的相機應用程式即可看到畫面。
+- Reef 可用的全部設定與建置命令見 [Reef 的建置設定](../get-started/command-line.md#reef-configs)；需要 boot2 或 `mfg` 資料的應用，首次燒錄見[燒錄與序列埠](../get-started/flash-and-monitor.md#partition-tables)。
 
 ## 乾淨建置 { #clean-build }
 
-修改 `.config` 或替代設定之後，尤其是 Flash 大小、PSRAM、`CONFIG_EM_SIZE`、控制器函式庫或 AI 相關選項，請做一次乾淨建置；用複製的方式切換 `.config` 之後也一樣。`clean` 只刪除對應的建置目錄：
+修改 `.config` 或替代設定之後，尤其是 Flash 大小、PSRAM、AI 或 BLE 控制器相關的選項，先清除再建置。`clean` 只刪除對應的建置目錄：
 
 ```bash
-# 預設設定：刪除 build/
-make -C apps/platform/ipro7ai_reef_demo clean
-# 替代設定：刪除 build_wifi_ipro6s/
-make -C apps/platform/ipro7ai_reef_demo DEFCONFIG=defconfig_wifi_ipro6s clean
-# 用腳本一次完成清除與重建
-./build_freertos.sh clean build -d defconfig_wifi_ipro6s ipro7ai_reef_demo
+./build_freertos.sh clean build ipro7ai_reef_demo                            # 刪除並重建 build/
+./build_freertos.sh -d defconfig_wifi_ipro6s clean build ipro7ai_reef_demo   # 刪除並重建 build_wifi_ipro6s/
 ```
 
-每次建置都會把 `compile_commands.json` 複製到 SDK 根目錄，供編輯器的程式碼索引使用。
+`clean` 完成時印出 `✓ Clean complete`。
 
 ## 讀取記憶體用量 { #memory-usage }
 
-連結時會印出各記憶體區域的用量。下面是 `ipro7ai_reef_demo` 預設設定的結果：
+連結時會印出各記憶體區域的用量。用 `make` 建置時直接顯示在終端機；用 `build_freertos.sh` 時寫在 `build.log`：
+
+```bash
+grep -A5 "Memory region" apps/platform/ipro7ai_reef_demo/build/build.log
+```
+
+`ipro7ai_reef_demo` 預設設定的結果：
 
 ```text
 Memory region         Used Size  Region Size  %age Used
-           flash:      224792 B         1 MB     21.44%
-           psram:       36064 B         8 MB      0.43%
-           ocram:       31248 B       256 KB     11.92%
+           flash:      249944 B         1 MB     23.84%
+           psram:       45376 B         8 MB      0.54%
+           ocram:       32144 B       256 KB     12.26%
           hbnram:        2460 B         4 KB     60.06%
 ```
 
-- `flash` 是整顆 Flash 的連結上限（預設 1 MB），不是分割表中韌體分割區的大小；`flash` 百分比沒有超過，不代表放得進韌體分割區。請把 `Binary:` 顯示的 `.bin` 大小與燒錄時所用分割表的韌體分割區比較。
-- `ocram` 是 256 KB 減去 `CONFIG_EM_SIZE`。例如 `ipro_throughput_test` 的 Reef 設定使用 `CONFIG_EM_SIZE=32`，`ocram` 區域是 224 KB，用掉其中 205 KB。各區域的大小由哪些設定決定，見[建置系統與設定](../guides/build-system.md#memory-layout)。
-- 建置設定階段也會印出採用的配置，例如 `-- IPRO7 flash: 1M (default, on-chip)` 與 `-- AI disabled: OCRAM=256KB`。
-- 用 `make` 建置時，表格直接顯示在終端機；用 `build_freertos.sh` 時寫在 `build.log`，加 `-v` 才會顯示在畫面上。`size` 動作另外列出各區段的大小。
+- `flash` 是連結時的 Flash 上限。`ipro7ai_reef_demo` 預設連結 1 MB 版面（建置設定階段印出 `-- IPRO7 flash: 1M (default, on-chip)`）；Reef 的封裝內 Flash 回報 JEDEC `0xEF4015`（2 MB）時，可在 `.config` 加入 `CONFIG_IPRO7_FLASH_2M=y` 使用整顆 Flash。
+- `flash` 百分比沒有超過，不代表放得進韌體分割區：請把 `Binary:` 顯示的 `.bin` 大小與分割表的韌體分割區比較。`partition_cfg_2M.toml` 的韌體分割區為 1180 KB。
+- `ocram` 是晶片內的 OCRAM。AI 關閉時，這個區域是 256 KB 扣掉 BLE 使用的 `CONFIG_EM_SIZE`，建置設定階段印出 `-- AI disabled: OCRAM=256KB` 之類的訊息；AI 開啟時配置不同。各區域由哪些設定決定，見[建置系統與設定](../guides/build-system.md)。
 
-## 腳本預設值 { #script-defaults }
+`size` 動作列出 `.elf` 的總大小與各區段：
 
-`build_freertos.sh` 的 `flash` 與 `monitor` 使用固定參數：`flash` 以 115200 baud 送出 `reboot_dl`，燒錄時只傳 `--chipname ipro7 --port --firmware --baudrate 921600`，不帶 `--chip-variant`、`--pt` 與 `--boot2`；`monitor` 固定以 115200 baud 開啟，並先送出 `reboot`。因此：
+```bash
+./build_freertos.sh size ipro7ai_reef_demo
+```
 
-- 在 Reef 上依[步驟 4](#steps) 直接執行燒錄工具；板上韌體收不到 `reboot_dl` 時，按住 SW1、按一下 SW2、放開 SW1 進入下載模式。
-- 主控台為 921600 baud 的應用（見[範例](../examples/index.md)的「主控台」欄）改用 `python3 tools/serial_monitor.py <序列埠> --baud 921600 --timeout 0`。
-- 把 `monitor` 放在最後一個動作：逾時或按 Ctrl+C 結束時，腳本會把它記為失敗並停止後面的動作。
+```text
+→ Size report for ipro7ai_reef_demo_IPRO7.elf
 
-完整說明見[燒錄與序列埠](../get-started/flash-and-monitor.md#build-script)。
+   text    data     bss     dec     hex filename
+ 235928   14008   49588  299524   49204 <SDK>/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.elf
+...
+```
+
+上面的數字取自 V2.2.0 的建置，依工具鏈版本與修改內容會有所不同。
+
+## 腳本自動帶入的參數 { #script-defaults }
+
+`build_freertos.sh` 從應用的設定檔讀出參數，Reef 不需另外指定：
+
+| 項目 | 來源 |
+|---|---|
+| `--chip-variant` | 設定檔有 `CONFIG_IPRO7AI_REEF=y` 時為 `IPRO7AI`；`-c` 或 `IPRO_CHIP_VARIANT` 可覆寫 |
+| `--pt` | `-P` 或 `IPRO_FLASH_PT`；兩者都沒有時不帶 `--pt`，由工具使用自己的預設分割表 |
+| `reboot_dl` 與 `monitor` 的鮑率 | 設定檔的 `CONFIG_PLATFORM_UART_BAUDRATE`，未設定時 115200（`ipro7_jpeg_decode` 的 Reef 設定為 921600） |
+| 燒錄鮑率 | 固定 921600 |
+
+腳本不能傳 boot2 與 `mfg` 資料，`--chipname` 固定為 `ipro7`；這些情況請直接執行 IntelProCube，見[燒錄與序列埠](../get-started/flash-and-monitor.md#build-script)。
 
 ## 疑難排解 { #troubleshooting }
 
-| 症狀 | 原因 | 處理 |
+| 現象 | 原因 | 處理 |
 |---|---|---|
-| `Project '…' not found. Did you mean:` | 名稱不完整 | 使用 `-l` 列出的完整名稱 |
-| `Multiple projects match` | 多個分類有同名專案 | 改用分類路徑，例如 `platform/ipro7ai_reef_demo` |
-| `Several serial ports, pass -p PORT or set IPRO_SERIAL_PORT` | 接了多個 USB 序列埠 | 加 `-p`，或設定 `IPRO_SERIAL_PORT` |
-| `Flash tool not found` | 找不到 IntelProCube 命令列工具 | 設定 `IPRO_FLASH_TOOL`，或把工具目錄加入 `PATH` |
-| 以 `-d` 建置後，另一次執行的 `flash` 或 `size` 回報 `Binary not found` 或 `ELF not found` | 沒有帶 `-d` 時，腳本找的是 `build/` | 再次執行時加上相同的 `-d` |
-| `No cmake found` | 系統沒有 CMake；SDK 隨附的 `tools/cmake/` 是 Linux x86-64 版 | 安裝 3.19 以上版本的 CMake |
-| 燒錄工具輸出沒有 `[All Success]` | 未進入下載模式，或 `--chip-variant` 不符 | 重新進入下載模式；Reef 與 IPRO7AI EVK 用 `IPRO7AI` |
-| 主控台亂碼 | 鮑率不符 | 依應用的 `CONFIG_PLATFORM_UART_BAUDRATE`（未設定時為 115200） |
+| `✗ Build failed`，最後 30 行有編譯錯誤 | 程式有錯 | 依錯誤訊息修正；完整記錄在 `build.log` |
+| `✗ Flash failed`，工具輸出停在握手階段 | 板上韌體沒有回應 `reboot_dl`（沒有 shell、當掉或鮑率不同），或序列埠被終端程式占用 | 關閉終端程式；按住 SW1、按一下 SW2、放開 SW1 後只執行 `flash` |
+| `✗ Flash tool not found: …` | 新開的終端機視窗沒有 `IPRO_FLASH_TOOL` | 重新執行步驟 1，或把 `export` 加進 shell 的啟動檔 |
+| `✗ Binary not found: …` | `flash` 前沒有建置，或少了 `-d` | 加上 `build`，或加上建置時用的 `-d` |
+| `Several serial ports, pass -p PORT or set IPRO_SERIAL_PORT` | 未設定 `IPRO_SERIAL_PORT`，且接了多個序列埠 | 設定 `IPRO_SERIAL_PORT` 或加 `-p` |
+| 主控台看不到修改後的文字 | 燒錄沒有成功，或看的是舊的輸出 | 確認 `Summary` 中 `flash` 為 ✓；重新執行步驟 3 |
+| 改了 `.config` 但行為沒變 | 舊的建置結果仍在 | 執行 `clean build` |
+| 改用其他應用後燒錄失敗或無法開機 | `IPRO_FLASH_PT` 仍指向前一個應用的分割表 | `unset IPRO_FLASH_PT`，依[分割表](../get-started/flash-and-monitor.md#partition-tables)以 `-P` 指定 |
 
 ## 下一步 { #next-steps }
 
-- [建置系統與設定](../guides/build-system.md)：`.config` 鍵值、建立新應用與連結腳本。
-- [第一個 BLE 應用](first-ble-app.md)：用同一套迴圈修改 BLE 應用。
-- [工具命令列](../reference/tools.md)：燒錄工具與序列埠工具的完整選項。
+- [建立第一個應用](first-own-app.md)：從零建立自己的應用。
+- [測試應用](testing.md)：自動檢查應用的輸出。
+- [macOS／Linux 命令列](../get-started/command-line.md)：`build_freertos.sh` 的全部動作、選項與限制。
+- [建置系統與設定](../guides/build-system.md)：`.config` 鍵值、連結腳本與記憶體配置。

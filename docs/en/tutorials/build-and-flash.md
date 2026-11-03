@@ -1,185 +1,190 @@
 ---
 title: "Build and Flash Workflow"
-description: The day-to-day build, flash and monitor loop, covering build_freertos.sh action chains, DEFCONFIG variants, clean builds, reading memory usage and working around the script's defaults.
+description: The edit, build, flash and monitor loop on the IPRO7AI Reef EVK — one build_freertos.sh line per iteration, alternate configurations, clean builds and reading memory usage.
 migrate_from:
-  - "tutorials.html — 教學 2"
+  - "tutorials.html — Tutorial 2"
 ---
 
 # Build and Flash Workflow
 
-Run the loop you repeat all day — edit, build, flash, watch the console — using `ipro7ai_reef_demo`, the out-of-box firmware of the IPRO7AI Reef EVK, as the example. For the first-time setup and first flash, see [First FreeRTOS Application](../get-started/first-app-freertos.md) and [Flashing & Serial Console](../get-started/flash-and-monitor.md).
+Day-to-day development is a loop: edit, build, flash, watch the console. In this tutorial you change the boot banner of the out-of-box firmware `ipro7ai_reef_demo` on the IPRO7AI Reef EVK, build, flash and monitor with one `build_freertos.sh` line, and see your text on the console; then you switch configurations, clean-build and read memory usage. For first-time installation and flashing, complete [First FreeRTOS Application](../get-started/first-app-freertos.md) first.
 
 ## Prerequisites { #prerequisites }
 
-- First FreeRTOS application done: the toolchain is in `/opt/toolchain/riscv_ipro7/` and `make` builds SDK applications.
-- The IntelProCube v0.6.3 command-line flash tool, obtained separately. Set `IPRO_FLASH_TOOL` to the tool's path, or add the tool's directory to `PATH`.
-- An IPRO7AI Reef EVK, powered, with a USB-to-UART cable on U6.
-- Run every command below from the SDK root.
+- [First FreeRTOS Application](../get-started/first-app-freertos.md) is done: the board runs `ipro7ai_reef_demo` and its console answers `reef selftest`.
+- macOS or Linux. `build_freertos.sh` needs bash; on Windows, build with the VS Code Extension and flash as in [Windows Setup & VS Code](../get-started/windows.md#flash) — the loop is the same.
+- Run every command from the SDK root; examples use macOS.
 
 ## Steps { #steps }
 
 <div class="ipro-steps" markdown>
 
-1. **Set the serial port**: `build_freertos.sh` takes the `-p` option, then the `IPRO_SERIAL_PORT` environment variable, then the only USB serial port on the system. With several boards attached, name the port:
-
-    === "macOS"
-
-        ```bash
-        export IPRO_SERIAL_PORT=/dev/cu.usbserial-XXXX
-        ```
-
-    === "Linux"
-
-        ```bash
-        export IPRO_SERIAL_PORT=/dev/ttyUSB0
-        ```
-
-2. **Find the project name**:
+1. **Set the environment** once in this terminal window; every later command uses it.
 
     ```bash
-    ./build_freertos.sh -l
+    export IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos
+    export IPRO_SERIAL_PORT=/dev/cu.usbserial-XXXX
+    export IPRO_FLASH_PT=<IntelProCube>/chips/ipro7/partition/partition_cfg_2M.toml
     ```
 
-    Projects are listed by category (excerpt):
+    On Linux use `ipro_iot_tool_linux` and `/dev/ttyUSB0`. `IPRO_FLASH_PT` applies to every `flash` in this window; when you move to an application with its own partition table, clear it with `unset IPRO_FLASH_PT` or override it with `-P`.
+
+2. **Edit the code:** open `apps/platform/ipro7ai_reef_demo/main.c` and append your own text to the boot banner in `main()`:
+
+    ```c title="apps/platform/ipro7ai_reef_demo/main.c"
+    IPRO_LOGI(LOG_TAG, "  IPRO7AI Reef carrier demo - my build");
+    ```
+
+3. **Build, flash and monitor:** close any terminal program that holds the port, then run:
+
+    ```bash
+    ./build_freertos.sh -t 15 build flash monitor ipro7ai_reef_demo
+    ```
+
+    The running firmware receives `reboot_dl` and enters download mode by itself, so no buttons are needed. The output, in order (excerpt):
 
     ```text
-    bluetooth/ble
-      ipro_ble_hid_keyboard
-      ipro_ble_remote
-      ipro_ble_transparent
-      ipro_throughput_test
+    Project: ipro7ai_reef_demo  (platform/ipro7ai_reef_demo)
 
-    platform
-      ...
-      ipro7ai_reef_demo                   IPRO7AI Reef carrier board demo.
+    → Building ipro7ai_reef_demo...
+    ✓ Build succeeded (14s)
+      Binary: <SDK>/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin (244 KB)
+      Log: <SDK>/apps/platform/ipro7ai_reef_demo/build/build.log
+    → Entering download mode...
+    reboot to download mode
+    → Flashing ipro7ai_reef_demo_IPRO7.bin (--chip-variant IPRO7AI, --pt <IntelProCube>/chips/ipro7/partition/partition_cfg_2M.toml)...
+    [...] - Chip name is ipro7
+    ...
+    [...] - [All Success]
+    ✓ Flash succeeded (…)
+    → Opening serial monitor on /dev/cu.usbserial-XXXX at 115200...
+    [serial_monitor] Sent: reboot
+    ...
+    I (…) REEF:   IPRO7AI Reef carrier demo - my build
+    ...
+    [serial_monitor] TIMEOUT after 15s
+    ✗ Action 'monitor' failed — stopping.
+
+    Summary:
+      ✓ build
+      ✓ flash
+      ✗ monitor (exit 2)
     ```
 
-    The text next to a name is the first comment line of its `.config`; most projects have none. The script accepts the project name (`ipro7ai_reef_demo`) or the category path (`platform/ipro7ai_reef_demo`); `make -C` needs the full path `apps/platform/ipro7ai_reef_demo`.
+    `monitor` reads for the `-t` seconds and ends with exit code 2, which the script lists as a failure. That is expected: once `build` and `flash` show ✓, the new firmware runs on the board.
 
-3. **Build and check memory usage**:
+4. **Try it interactively:** open the console in a terminal program (for example `screen /dev/cu.usbserial-XXXX 115200`) and type `reef status` or `led 0 40 0` to check that the new firmware answers. Close the terminal before the next flash.
+
+5. **Repeat:** after each change, run step 3 again. To check only that the code compiles, run `build` alone:
 
     ```bash
     ./build_freertos.sh build ipro7ai_reef_demo
-    ```
-
-    ```text
-    ✓ Build succeeded (12s)
-      Binary: <SDK>/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin (219 KB)
-      Log: <SDK>/apps/platform/ipro7ai_reef_demo/build/build.log
-    ```
-
-    The full build output goes to `build.log`. Show the linker's memory usage table (explained under [Reading memory usage](#memory-usage)):
-
-    ```bash
-    grep -A5 "Memory region" apps/platform/ipro7ai_reef_demo/build/build.log
-    ```
-
-4. **Flash**: put the Reef in download mode (type `reboot_dl` at the console, or hold SW1, tap SW2 and release SW1), then run from the IntelProCube directory (macOS shown; the Linux and Windows commands are in [Flashing & Serial Console](../get-started/flash-and-monitor.md#flashing)):
-
-    ```bash
-    ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
-        --port /dev/cu.usbserial-XXXX --baudrate 921600 \
-        --pt chips/ipro7/partition/partition_cfg_2M.toml \
-        --firmware <SDK>/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin
-    ```
-
-    Check the output for `[All Success]`; the tool exits with 0 even when it fails. On the Reef, do not use the script's `flash` action — see [Script defaults](#script-defaults).
-
-5. **Watch the console**:
-
-    ```bash
-    ./build_freertos.sh monitor -t 0 ipro7ai_reef_demo
-    ```
-
-    `monitor` sends `reboot` first, so the board restarts and you see the whole boot log; `-t 0` keeps the output coming until you press Ctrl+C. This view is output only; to type shell commands, use a terminal program (see [Flashing & Serial Console](../get-started/flash-and-monitor.md)).
-
-6. **Iterate**: after each code change, repeat steps 3 to 5. Chained actions run in order and stop at the first failure:
-
-    ```bash
-    ./build_freertos.sh build size ipro7ai_reef_demo
     ```
 
 </div>
 
 ## Verify { #verify }
 
-- `build` prints `✓ Build succeeded` and the `Binary:` path; `build.log` contains the memory usage table.
-- The flash tool's output contains `[All Success]`.
-- `monitor` shows the boot messages of the new firmware.
+- `Summary` shows ✓ for `build` and `flash`.
+- The boot messages on the console include `IPRO7AI Reef carrier demo - my build`.
+- SW3, SW4 and SW5 still light the LED red, green and blue, and `reef selftest` prints the same as before the change.
 
 ## build_freertos.sh actions and options { #actions }
 
-Usage: `./build_freertos.sh [actions...] [options] <project>`; without an action it runs `build`. This tutorial uses the `build`, `monitor`, `size` and `clean` actions, plus `-d` (alternate configuration), `-t 0` (keep `monitor` running until Ctrl+C) and `-p` (serial port). Actions run in order and stop at the first failure; with several actions the script ends with a per-action summary. Every action and option is listed in [Tool Command Lines](../reference/tools.md#build-cli).
+This tutorial uses `build`, `flash` and `monitor`, with `-t` (monitor time), `-d` (alternate configuration) and `-P` (partition table). Actions run in order and stop at the first failure. The other actions (`clean`, `size`, `test`) and every option and environment variable: [macOS / Linux Command Line](../get-started/command-line.md#build-script).
 
-## Variants and build directories { #variants }
+## Alternate configurations and build directories { #variants }
 
-Every application builds from the `.config` in its directory. Select an alternate configuration with `DEFCONFIG=` or `build_freertos.sh -d`; it builds in `build_<name>/` and leaves `.config` untouched:
-
-```bash
-make -C apps/platform/ipro7ai_reef_demo DEFCONFIG=defconfig_wifi_ipro6s   # builds in build_wifi_ipro6s/
-./build_freertos.sh build -d defconfig_wifi_ipro6s ipro7ai_reef_demo       # same
-```
-
-- Each build copies the alternate configuration to `build_<name>/.config`, so edit the original file in the application directory, not the copy in the build directory.
-- The directory naming rule, `BOARD=`, and the configuration files you copy over `.config` (`DAC.config` and `UAC.config` of `ipro_le_audio_headset`) are covered in [Build System & Configuration](../guides/build-system.md#variants); which applications ship which alternate configurations is listed under [Examples](../examples/index.md).
-
-## Clean builds { #clean-build }
-
-Do a clean build after changing `.config` or an alternate configuration, especially flash size, PSRAM, `CONFIG_EM_SIZE`, the controller library or AI options, and after switching `.config` by copying a file over it. `clean` deletes only the matching build directory:
+One application can have several configuration files. Choose an alternate one with `-d`; it builds in `build_<name>/` and leaves the application's `.config` untouched:
 
 ```bash
-# Default configuration: deletes build/
-make -C apps/platform/ipro7ai_reef_demo clean
-# Alternate configuration: deletes build_wifi_ipro6s/
-make -C apps/platform/ipro7ai_reef_demo DEFCONFIG=defconfig_wifi_ipro6s clean
-# Clean and rebuild in one go with the script
-./build_freertos.sh clean build -d defconfig_wifi_ipro6s ipro7ai_reef_demo
+./build_freertos.sh -d defconfig_wifi_ipro6s build ipro7ai_reef_demo        # builds in build_wifi_ipro6s/
+./build_freertos.sh -d defconfig_reef_ov5640 build flash ipro7_uvc_cam       # USB webcam
 ```
 
-Each build also copies `compile_commands.json` to the SDK root for your editor's code index.
+- `flash` and `size` use `-d` to find the image: when you run them separately, give each the same `-d`.
+- The build copies the configuration to `build_<name>/.config`; edit the original in the application directory.
+- After flashing `ipro7_uvc_cam` with `defconfig_reef_ov5640` and fitting an OV5640, a USB camera (`3896:0701`) appears on the Reef's USB-C; any camera application on the computer shows the picture.
+- Every Reef configuration and its build command: [Reef build configurations](../get-started/command-line.md#reef-configs). For applications that need boot2 or `mfg` data on the first flash, see [Flashing & Serial Console](../get-started/flash-and-monitor.md#partition-tables).
+
+## Clean build { #clean-build }
+
+After changing `.config` or an alternate configuration — particularly flash size, PSRAM, AI or BLE controller options — clean before building. `clean` removes only the matching build directory:
+
+```bash
+./build_freertos.sh clean build ipro7ai_reef_demo                            # remove and rebuild build/
+./build_freertos.sh -d defconfig_wifi_ipro6s clean build ipro7ai_reef_demo   # remove and rebuild build_wifi_ipro6s/
+```
+
+`clean` prints `✓ Clean complete` when done.
 
 ## Reading memory usage { #memory-usage }
 
-The link step prints how much of each memory region the image uses. This is the default configuration of `ipro7ai_reef_demo`:
+The link step prints how much of each memory region is used. With `make` it appears in the terminal; with `build_freertos.sh` it goes to `build.log`:
+
+```bash
+grep -A5 "Memory region" apps/platform/ipro7ai_reef_demo/build/build.log
+```
+
+For `ipro7ai_reef_demo` with its default configuration:
 
 ```text
 Memory region         Used Size  Region Size  %age Used
-           flash:      224792 B         1 MB     21.44%
-           psram:       36064 B         8 MB      0.43%
-           ocram:       31248 B       256 KB     11.92%
+           flash:      249944 B         1 MB     23.84%
+           psram:       45376 B         8 MB      0.54%
+           ocram:       32144 B       256 KB     12.26%
           hbnram:        2460 B         4 KB     60.06%
 ```
 
-- `flash` is the link limit for the whole flash (1 MB by default), not the size of the firmware partition in your partition table, so a `flash` percentage below 100 % does not mean the image fits that partition. Compare the `.bin` size shown by `Binary:` with the firmware partition of the partition table you flash with.
-- `ocram` is 256 KB minus `CONFIG_EM_SIZE`. For example, the Reef configuration of `ipro_throughput_test` sets `CONFIG_EM_SIZE=32`, so its `ocram` region is 224 KB, of which it uses 205 KB. Which settings size each region is described in [Build System & Configuration](../guides/build-system.md#memory-layout).
-- The configure step also prints the layout it chose, for example `-- IPRO7 flash: 1M (default, on-chip)` and `-- AI disabled: OCRAM=256KB`.
-- With `make`, the table appears in your terminal; with `build_freertos.sh` it goes to `build.log` and shows on screen only with `-v`. The `size` action lists section sizes as well.
+- `flash` is the flash limit used for linking. `ipro7ai_reef_demo` links a 1 MB layout by default (the configure stage prints `-- IPRO7 flash: 1M (default, on-chip)`); if the Reef's in-package flash reports JEDEC `0xEF4015` (2 MB), add `CONFIG_IPRO7_FLASH_2M=y` to `.config` to use all of it.
+- A `flash` percentage under 100 does not mean the image fits the firmware partition: compare the `.bin` size shown after `Binary:` with the firmware partition of the table you flash with. In `partition_cfg_2M.toml` it is 1180 KB.
+- `ocram` is the on-chip OCRAM. With AI off, the region is 256 KB minus the `CONFIG_EM_SIZE` used by BLE, and the configure stage prints a line such as `-- AI disabled: OCRAM=256KB`; with AI on the layout differs. Which settings size each region: [Build System & Configuration](../guides/build-system.md).
 
-## Script defaults { #script-defaults }
+The `size` action lists the total and per-section sizes of the `.elf`:
 
-The `flash` and `monitor` actions of `build_freertos.sh` use fixed parameters: `flash` sends `reboot_dl` at 115200 baud and passes only `--chipname ipro7 --port --firmware --baudrate 921600`, with no `--chip-variant`, `--pt` or `--boot2`; `monitor` always opens at 115200 baud and sends `reboot` first. So:
+```bash
+./build_freertos.sh size ipro7ai_reef_demo
+```
 
-- On the Reef, run the flash tool directly as in [step 4](#steps); if the running firmware does not take `reboot_dl`, hold SW1, tap SW2 and release SW1 to enter download mode.
-- For applications with a 921600-baud console (see the Console column under [Examples](../examples/index.md)), use `python3 tools/serial_monitor.py <port> --baud 921600 --timeout 0`.
-- Make `monitor` the last action: when it ends on a timeout or Ctrl+C, the script records it as failed and skips the actions after it.
+```text
+→ Size report for ipro7ai_reef_demo_IPRO7.elf
 
-The full explanation is in [Flashing & Serial Console](../get-started/flash-and-monitor.md#build-script).
+   text    data     bss     dec     hex filename
+ 235928   14008   49588  299524   49204 <SDK>/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.elf
+...
+```
+
+The numbers come from a V2.2.0 build and change with the toolchain version and your edits.
+
+## What the script fills in { #script-defaults }
+
+`build_freertos.sh` reads its flashing parameters from the application's configuration, so the Reef needs nothing extra:
+
+| Parameter | Source |
+|---|---|
+| `--chip-variant` | `IPRO7AI` when the configuration has `CONFIG_IPRO7AI_REEF=y`; override with `-c` or `IPRO_CHIP_VARIANT` |
+| `--pt` | `-P` or `IPRO_FLASH_PT`; with neither, no `--pt` and the tool uses its own default table |
+| Baud rate of `reboot_dl` and `monitor` | `CONFIG_PLATFORM_UART_BAUDRATE` from the configuration, 115200 when unset (921600 for the Reef configuration of `ipro7_jpeg_decode`) |
+| Flashing baud rate | always 921600 |
+
+The script cannot pass boot2 or `mfg` data, and `--chipname` is fixed to `ipro7`; in those cases run IntelProCube directly, see [Flashing & Serial Console](../get-started/flash-and-monitor.md#build-script).
 
 ## Troubleshooting { #troubleshooting }
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `Project '…' not found. Did you mean:` | Incomplete name | Use the full name shown by `-l` |
-| `Multiple projects match` | The same name exists in several categories | Use the category path, for example `platform/ipro7ai_reef_demo` |
-| `Several serial ports, pass -p PORT or set IPRO_SERIAL_PORT` | More than one USB serial port is attached | Add `-p` or set `IPRO_SERIAL_PORT` |
-| `Flash tool not found` | The IntelProCube command-line tool is not found | Set `IPRO_FLASH_TOOL` or add the tool's directory to `PATH` |
-| After a build with `-d`, a later `flash` or `size` reports `Binary not found` or `ELF not found` | Without `-d` the script looks in `build/` | Pass the same `-d` again |
-| `No cmake found` | No CMake on the system; the bundled `tools/cmake/` is a Linux x86-64 build | Install CMake 3.19 or later |
-| No `[All Success]` in the flash tool's output | The board is not in download mode, or `--chip-variant` is wrong | Enter download mode again; use `IPRO7AI` for the Reef and the IPRO7AI EVK |
-| Garbage on the console | Baud rate mismatch | Use the application's `CONFIG_PLATFORM_UART_BAUDRATE` (115200 when unset) |
+| `✗ Build failed` with compiler errors in the last 30 lines | an error in the code | fix it from the messages; the full log is `build.log` |
+| `✗ Flash failed`; the tool stops at the handshake | the firmware did not act on `reboot_dl` (no shell, hung, or another baud rate), or a terminal program holds the port | close the terminal; hold SW1, press SW2, release SW1, then run `flash` alone |
+| `✗ Flash tool not found: …` | a new terminal window without `IPRO_FLASH_TOOL` | redo step 1, or add the `export` lines to your shell start-up file |
+| `✗ Binary not found: …` | no build before `flash`, or `-d` missing | add `build`, or the `-d` used for the build |
+| `Several serial ports, pass -p PORT or set IPRO_SERIAL_PORT` | `IPRO_SERIAL_PORT` not set and several ports present | set `IPRO_SERIAL_PORT` or add `-p` |
+| The console does not show your text | flashing failed, or you are reading old output | check that `flash` shows ✓ in `Summary`; run step 3 again |
+| A `.config` change has no effect | old build results remain | run `clean build` |
+| Another application fails to flash or boot | `IPRO_FLASH_PT` still points at the previous application's table | `unset IPRO_FLASH_PT` and give the right table with `-P`, see [Partition tables](../get-started/flash-and-monitor.md#partition-tables) |
 
 ## Next steps { #next-steps }
 
-- [Build System & Configuration](../guides/build-system.md): `.config` keys, creating a new application and linker scripts.
-- [Your First BLE Application](first-ble-app.md): use the same loop on a BLE application.
-- [Tool Command Lines](../reference/tools.md): all options of the flash tool and the serial tools.
+- [Create Your First Application](first-own-app.md): start an application of your own.
+- [Test Your Application](testing.md): check your application's output automatically.
+- [macOS / Linux Command Line](../get-started/command-line.md): every action, option and limit of `build_freertos.sh`.
+- [Build System & Configuration](../guides/build-system.md): `.config` keys, linker scripts and memory layout.

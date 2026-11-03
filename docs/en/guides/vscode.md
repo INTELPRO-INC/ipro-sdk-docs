@@ -1,6 +1,6 @@
 ---
 title: "VS Code Extension"
-description: IPRO SDK Extension 3.3.0 features, the build and flash workflow, settings, commands, and using it with SDK V2.1.0
+description: IPRO SDK Extension 3.3.0 with SDK V2.2.0 — setting the SDK root, building, flashing the IPRO7AI Reef EVK, the serial monitor, memory analysis and the commands
 migrate_from:
   - "vscode-extension.html"
 not_migrated:
@@ -10,30 +10,43 @@ not_migrated:
 
 # VS Code Extension
 
-IPRO SDK Extension 3.3.0 (identifier `ipro.ipro-sdk-extension`) brings FreeRTOS project browsing, CMake builds, IntelProCube flashing, a serial console and memory analysis into VS Code. It requires VS Code 1.102 or later. The extension is not part of the SDK package and is versioned separately from the SDK and the Windows installer; installation is covered in [Windows Setup & VS Code](../get-started/windows.md).
+IPRO SDK Extension 3.3.0 (identifier `ipro.ipro-sdk-extension`) brings FreeRTOS project browsing, CMake builds, IntelProCube flashing, a serial console and memory analysis into VS Code 1.102 or later. It is not part of the SDK package and is versioned separately from the SDK and from IPRO SDK Online Setup, which installs it; installation is in [Windows Setup & VS Code](../get-started/windows.md).
 
 !!! abstract "At a glance"
-    - Version 3.3.0; settings use the `ipro.*` namespace. The `devtool.*` settings and `IPRO SDK:` command names in older documents no longer apply.
-    - SDK V2.1.0 is imported as a folder; extract the `.tar.gz` first.
-    - Flashing uses IntelProCube; the console uses the extension's built-in serialport, with separate flash and console baud rates.
-    - 3.3.0 has no general-purpose GDB debug adapter.
+    - Online Setup 3.4.0 installs the Extension and the tools, but its catalog still lists SDK V1.2.1 as the stable SDK. Add SDK V2.2.0 by hand and point `IPRO Setup: Set SDK Root` at it.
+    - SDK V2.2.0 is built with GCC 14; check that the compiler the Extension uses matches.
+    - On the IPRO7AI Reef EVK, flash with chip variant `IPRO7AI` and the partition table the application uses; boot2 images and the `mfg` payload are written with the IntelProCube command line.
+    - The console baud rate (`ipro.monitorBaudRate`) is separate from the flashing baud rate (`ipro.baudRate`).
+    - No source-level (F5) debugging: installing OpenOCD does not set up a GDB debug adapter.
 
 ## Features { #features }
 
 | Feature | What it does |
 |---|---|
-| Projects / Target | Browse projects by category, with pins and recents; shows the active project, profile, UART, probe and tool status |
-| Control Center | Connection, console baud rate and operation status in one place, with build, flash, monitor and component update actions |
-| Build / Batch Build | CMake configuration with Make or Ninja builds, debug / release / size profiles, jump from Problems to source, `compile_commands.json` integration |
-| Menuconfig | Graphical `.config` editor that can load a defconfig |
-| Flash / Monitor | Flash with IntelProCube; the built-in serialport console works on Windows |
+| Projects | Browse the applications by category, pin them and switch the active project (`IPRO: Go to Project…`, `IPRO: Select Project`) |
+| Build / Batch Build | CMake configuration with Make or Ninja (`ipro.generator`), debug / release / size profiles, jump from Problems to source |
+| Configuration | `IPRO Config: Menuconfig`, `IPRO Config: Open .config`, `IPRO Config: Load Defconfig` |
+| Flash / Monitor | Flash with IntelProCube; built-in serial console with its own baud rate |
 | Analysis / Debug | Memory Map, Decode Crash Report, Pin Function Lookup; Register Explorer needs a compatible CCI connection |
 
-The SDK build reads only `.config` and does not resolve Kconfig `select` or `depends on`. After editing in Menuconfig, check that dependent options are written into `.config`; see [Build System & Configuration](build-system.md#configuration).
+The SDK build reads `.config` as it is and does not resolve Kconfig `select` or `depends on`. After editing in Menuconfig, check that dependent options are written into `.config`; see [Build System & Configuration](build-system.md#configuration).
+
+## Using SDK V2.2.0 { #sdk-2-2-0 }
+
+<div class="ipro-steps" markdown>
+
+1. Download, verify and unpack `IPRO-SDK-V2.2.0.tar.gz` from the [IPRO-SDK-V2.2.0 release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0) into a new directory, as described in [Add SDK V2.2.0](../get-started/windows.md#get-sdk).
+2. Open that directory with **File → Open Folder…** (it contains `CMakeLists.txt`, `apps` and `bsp`) and run `IPRO Setup: Set SDK Root` on it.
+3. Run `IPRO Setup: Run Diagnostics` and check the SDK root, the compiler, CMake, Ninja, Python and the flash tool. The compiler must be a GCC 14 toolchain that matches V2.2.0; Online Setup installs the toolchain its catalog pairs with SDK V1.2.1. Ask INTELPRO for a matching toolchain, and set it with `ipro.toolchainPath` (the compiler prefix, ending in `riscv64-unknown-elf-`).
+
+</div>
+
+- Keep the previous SDK directory until V2.2.0 has been built and run on the board. Do not copy an old `build/` directory, CMake cache or `.vscode` folder into the new SDK.
+- Workspace settings (`.vscode/settings.json`) can override user settings; the path Diagnostics reports is the one in use.
 
 ## Control Center { #control-center }
 
-Press F1 and run `IPRO: Open Control Center`. It shows the current SDK and project, the UART, the settings and the actual console baud rate, and enables actions according to what is going on. Opening the panel never flashes or resets the board. The Control Center arrived in 3.2.4; 3.3.0 added the component update entry.
+Press F1 and run `IPRO: Open Control Center` for the current SDK, project and connection with the common actions in one panel, then `IPRO Setup: Run Diagnostics` to check the tool paths. Settings can also be searched for `ipro` in VS Code's Settings.
 
 ## First build { #workflow }
 
@@ -41,23 +54,24 @@ Press F1 and run `IPRO: Open Control Center`. It shows the current SDK and proje
 
 1. Run `IPRO: Go to Project…` and pick `ipro7ai_reef_demo` in the platform category.
 2. Run `IPRO Config: Select Build Profile` and choose debug, release or size.
-3. Run `IPRO Setup: Run Diagnostics` to check the actual paths of the SDK, compiler, CMake, Ninja and Python.
-4. Run `IPRO: Build` and watch the Terminal; errors in Problems jump to the source.
-5. Check that `apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin` and the `.elf` were produced.
+3. Run `IPRO: Build` and watch the Terminal; errors in Problems jump to the source. A build has succeeded when it exits with code 0 and the image exists, not when CMake prints `Configuring done`.
+4. Check that `apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin` was produced.
 
 </div>
 
-The Windows installer defaults to Ninja; set `ipro.generator` to `auto`, `make` or `ninja`. `IPRO: Batch Build` builds several selected projects in one go. After changing the SDK or tool paths, Clean and rebuild so no stale cache is reused.
+`IPRO: Batch Build` builds several selected projects in one go. After changing the SDK or tool paths, run `IPRO: Clean` and build again so no stale cache is reused.
+
+Most Reef applications ship their Reef configuration as a separate file (`defconfig_reef`, `defconfig_reef_ov5640` and so on); only `ipro7ai_reef_demo`, `ipro_reef_teach` and `ipro_agora_sentino` are Reef builds as they stand. The command-line form, `make -C <app> DEFCONFIG=<file>`, and the list of Reef configurations are in [Build System & Configuration](build-system.md#variants).
 
 ## Flashing and the console { #flash }
 
 <div class="ipro-steps" markdown>
 
-1. Choose IntelProCube with `IPRO Setup: Select Flash Tool`, or set `ipro.flashToolPath`.
-2. Connect the board, run `IPRO: Select Serial Port` and pick the probe's UART port. The CCI port is for register access and cannot be used for the console or flashing.
-3. In `IPRO Config: Configure Flash…`, check the chip variant, flash target, partition table and baud rate. The chip variant must match the actual board: the IPRO7AI Reef EVK uses `IPRO7AI`, for example.
-4. Run `IPRO: Flash` and check the tool's verification and success messages. The extension releases its own console connection first; close any other program holding the port.
-5. Set the console baud rate to match the firmware with `IPRO Config: Set Monitor Baud Rate`, then run `IPRO: Serial Monitor`. Close and reopen the console after changing the rate.
+1. Choose IntelProCube with `IPRO Setup: Select Flash Tool`, or set `ipro.flashToolPath` to its folder.
+2. Connect the board (SW7 on CAM, SW8 on PWR, console cable on U6, USB-C), run `IPRO: Select Serial Port` and pick the console port. With the IPRO Debug Probe, pick its UART port; the CCI port is for register access and cannot be used for the console or flashing.
+3. In `IPRO Config: Configure Flash…` set the chip variant to `IPRO7AI` and the partition table to the one the application uses: `partition_cfg_2M.toml` for `ipro7ai_reef_demo` and the `ipro7_uvc_cam` webcam. Applications with their own table are listed in [Flashing & Serial Console](../get-started/flash-and-monitor.md#partition-tables).
+4. Put the Reef in download mode: hold SW1 (BOOT), press and release SW2 (RESET), release SW1. Then run `IPRO: Flash` and check the tool's result. Close any other program that holds the port first.
+5. Press SW2 to start the firmware. Check that `ipro.monitorBaudRate` matches the firmware (`IPRO Config: Set Monitor Baud Rate`), then run `IPRO: Serial Monitor`. To change the rate, run `IPRO: Close Serial Monitor` first, set the rate, and open the monitor again.
 
 </div>
 
@@ -65,61 +79,96 @@ The Windows installer defaults to Ninja; set `ipro.generator` to `auto`, `make` 
 |---|---|
 | `ipro.baudRate` | Flashing baud rate, default 921600 |
 | `ipro.monitorBaudRate` | Console baud rate, default 115200; must match the firmware |
-| `ipro.chipVariant` | The board's flashing variant, not a build profile |
+| `ipro.chipVariant` | `--chip-variant` for the flash tool: `IPRO7AI` on the Reef |
+| `ipro.partitionTable` | `--pt` for the flash tool; set it per application on the Reef |
+| `ipro.flashTargets`, `ipro.activeFlashTarget` | Named flash configurations, to switch between settings without editing them each time |
 
-Most applications use a 115200-baud console; `ipro7ai_evk_demo`, `ipro7ai_evk_launcher`, `ipro7ai_evk_rps`, `ipro7_uvc_cam`, `ipro_epd_el036` and a few others use 921600. The application's `CONFIG_PLATFORM_UART_BAUDRATE` is authoritative.
-
-Since 3.2.0 the console uses the built-in serialport, so on Windows it does not depend on the SDK's `serial_monitor.py`, and opening it does not reboot the board. To reboot, run `IPRO: Reset Board` or type `reboot` in the firmware console. Flashing from the command line is covered in [Flashing & Serial Console](../get-started/flash-and-monitor.md).
+Every Reef configuration has a 115200-baud console except `ipro7_jpeg_decode` (`defconfig_reef`), which uses 921600; the application's `CONFIG_PLATFORM_UART_BAUDRATE` is authoritative. The first flash of `ipro_ble_remote` (boot2 and the A/B table) and of `ipro_reef_teach` (the `mfg` payload) use the IntelProCube command line; see [Flashing & Serial Console](../get-started/flash-and-monitor.md#boot2-ab) and [Flash the Edge AI Firmware](../teach/firmware.md).
 
 ## Memory and debug tools { #memory-map }
 
-- `IPRO Analyse: Memory Map`: after a build, shows each memory region, per-component usage and the difference from the previous build; exports CSV or Markdown. Whether an image fits is still decided by the linker output and the actual partition table.
+- `IPRO Analyse: Memory Map`: after a build, shows each memory region and the usage per component. Whether an image fits is still decided by the linker output and the partition table you flash with.
 - `IPRO Analyse: Decode Crash Report`: turns an exception backtrace into source locations.
 - `IPRO Debug: Pin Function Lookup`: looks up pin functions.
-- `IPRO Debug: Register Explorer`: needs a compatible probe, a CCI connection and the right board settings.
+- `IPRO Debug: Register Explorer`: needs a compatible probe, a working CCI connection and the right board settings. A probe that enumerates over USB does not prove that the CCI link to the board works.
 
-Extension 3.3.0 has no general-purpose GDB debug adapter, and installing OpenOCD does not by itself give you F5 source-level debugging.
+Installing OpenOCD does not give you F5 source-level debugging: the Extension sets up no GDB debug adapter or launch configuration. Console logs and crash decoding are covered in [Debugging & Troubleshooting](../reference/debugging.md).
+
+## Hands-on on the Reef { #hands-on }
+
+The edit–build–flash loop in VS Code, on the out-of-box firmware.
+
+<div class="ipro-steps" markdown>
+
+1. **Check the console setting.** The firmware's console rate is set in its `.config`; `ipro.monitorBaudRate` must be the same:
+
+    ```ini title="apps/platform/ipro7ai_reef_demo/.config (excerpt)"
+    CONFIG_PLATFORM_UART_BAUDRATE=115200
+    ```
+
+2. **Change the code.** Open `apps/platform/ipro7ai_reef_demo/main.c` and change the banner line in `main()`:
+
+    ```c title="apps/platform/ipro7ai_reef_demo/main.c (excerpt, edited)"
+    ipro_platform_init();   /* heap + boot2 + log + shell */
+
+    IPRO_LOGI(LOG_TAG, "==========================================");
+    IPRO_LOGI(LOG_TAG, "  IPRO7AI Reef carrier demo - my build");
+    ```
+
+3. **Build** with `IPRO: Build`. The image is `apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin`.
+
+4. **Flash** as in [Flashing and the console](#flash): download mode with SW1 + SW2, `IPRO: Flash` with chip variant `IPRO7AI` and `partition_cfg_2M.toml`, then SW2.
+
+5. **Check the console** with `IPRO: Serial Monitor` at 115200. Among the first lines (log prefixes left out):
+
+    ```text
+    Build:<time>,<date>
+    ...
+      IPRO7AI Reef carrier demo - my build
+    ```
+
+    The `Build:` line shows the time of your build, and the banner shows your change. `reef selftest` checks the board blocks.
+
+</div>
+
+Restore the line, or flash the out-of-box image again, when you are done. Next: [Create Your First Application](../tutorials/first-own-app.md) and [Test Your Application](../tutorials/testing.md).
 
 ## Component updates { #component-updates }
 
-Run `IPRO Setup: Update Components` from F1 or from the Control Center.
+Updates go through IPRO SDK Online Setup, which installs each component into a new directory and never overwrites the one in use:
 
-| Source | Behavior |
-|---|---|
-| Extension VSIX | Installs the selected VSIX and reloads the window; does not update the SDK or tools |
-| SDK ZIP | Extracts and checks the SDK structure; you can enter a SHA-256 supplied by INTELPRO |
-| SDK Folder | Select an extracted root containing `CMakeLists.txt`, `apps` and `bsp`; extract `.tar.gz` and `.7z` archives yourself first |
-| SDK Git | Takes a snapshot of an HTTPS or SSH repository you can access, at a branch or tag, and records the commit; SSH trust and credentials must be set up beforehand |
+| Online Setup mode | Installs | Settings it can switch |
+|---|---|---|
+| Full environment | SDK, toolchain, build tools (CMake, Ninja, Python), IntelProCube, OpenOCD, Extension | all of them |
+| Toolchain only | RISC-V toolchain | `ipro.toolchainPath` |
+| Build tools only | CMake, Ninja, Python | their paths |
+| IntelProCube only | IntelProCube | `ipro.flashToolPath` |
+| Extension only | the Extension VSIX | — |
 
-- After choosing the source, pick the parent directory for versions and a new version name that does not exist yet; Output → IPRO SDK shows progress and the log.
-- When the import finishes you can open it in a new window; the SDK Root, toolchain and current window do not switch automatically. Run Diagnostics and build an official example first, then move your own changes over one at a time, and keep the old SDK so you can go back.
-- Each version directory contains `sdk\` (the SDK root), `update.json` (source, time, checksum or Git commit) and `update.log`. A failed or cancelled import keeps the unfinished directory and its log; retry under a new name.
-- A Git import is a snapshot, not a working tree you can pull into. Submodules, unresolved LFS pointers and symbolic links are not supported, and the toolchain is not updated.
+SDK V2.2.0 is not in the installer's catalog: add it by hand ([Using SDK V2.2.0](#sdk-2-2-0)). After an update, reopen VS Code and run Diagnostics. To go back, point the settings at the directory you kept, or install the older VSIX with **Install from VSIX…**.
 
 ## Commands { #shortcuts }
 
-F1 or Ctrl+Shift+P opens the command palette. 3.3.0 declares no default shortcuts for flashing or the console; bind your own if you like. Ctrl+Shift+B uses VS Code's build task configuration.
+F1 or Ctrl+Shift+P opens the command palette. The Extension declares no default key bindings; bind your own if you like.
 
 | Command | Purpose |
 |---|---|
 | `IPRO: Open Control Center` | Open the Control Center |
-| `IPRO Setup: Update Components` | Update from a VSIX, SDK ZIP, folder or Git snapshot |
 | `IPRO Setup: Set SDK Root` | Set the SDK root |
 | `IPRO Setup: Run Diagnostics` | Check SDK and tool paths |
-| `IPRO: Go to Project…` | Find and switch projects |
+| `IPRO Setup: Select Flash Tool` | Choose the IntelProCube folder |
+| `IPRO: Go to Project…`, `IPRO: Select Project` | Find and switch projects |
 | `IPRO Config: Select Build Profile` | Choose debug, release or size |
 | `IPRO: Build` | Build the current project |
 | `IPRO: Clean` | Remove the current project's build output |
 | `IPRO: Batch Build` | Build several projects |
-| `IPRO Config: Menuconfig` | Edit the configuration |
-| `IPRO Config: Configure Flash…` | Set the chip variant and flashing parameters |
-| `IPRO: Select Serial Port` | Choose the UART |
+| `IPRO Config: Menuconfig`, `IPRO Config: Open .config` | Edit or open the configuration |
+| `IPRO Config: Select Flash Target`, `IPRO Config: Configure Flash…` | Choose the flash target; set the chip variant, partition table and baud rate |
+| `IPRO: Select Serial Port` | Choose the console / flashing port |
 | `IPRO Config: Set Monitor Baud Rate` | Set the console baud rate |
 | `IPRO: Flash` | Flash the firmware |
-| `IPRO: Serial Monitor` | Open the console |
-| `IPRO: Close Serial Monitor` | Close the console and release the port |
+| `IPRO: Serial Monitor`, `IPRO: Close Serial Monitor` | Open the console; close it and release the port |
 | `IPRO: Build, Flash & Monitor` | Build, flash and open the console in sequence |
-| `IPRO: Reset Board` | Reset the board through a compatible probe |
 | `IPRO Analyse: Memory Map` | Analyze memory usage |
 | `IPRO Analyse: Decode Crash Report` | Decode exceptions and backtraces |
 | `IPRO Debug: Pin Function Lookup` | Look up pin functions |
@@ -129,41 +178,21 @@ F1 or Ctrl+Shift+P opens the command palette. 3.3.0 declares no default shortcut
 
 | Symptom | What to do |
 |---|---|
-| IPRO commands are missing | Check the VSIX version, profile, Workspace Trust and SDK root, then reload the window |
-| Switching the SDK Root has no effect | Workspace and folder settings can override User settings; the path Diagnostics reports is what counts |
-| Garbled console or the old baud rate | Check the firmware's console rate and `ipro.monitorBaudRate`, then close and reopen the console |
+| IPRO commands are missing | Check the Extension version, the VS Code profile, Workspace Trust and the SDK root, then reload the window |
+| Diagnostics still shows the old SDK | Workspace and folder settings can override user settings; run `IPRO Setup: Set SDK Root` again on the V2.2.0 directory |
+| Build fails to compile or link | Check that the compiler is a toolchain that matches V2.2.0 (GCC 14) |
+| Garbled console or the old baud rate | Check the firmware's console rate and `ipro.monitorBaudRate`, then close and reopen the monitor |
+| `flash jedec id: 00000000` while flashing the Reef | Set the chip variant to `IPRO7AI` |
+| No `[All Success]` from the flash tool | The board is not in download mode, or another program holds the port |
 | The probe is detected but CCI does not respond | USB enumeration does not mean the board-side CCI link works; check the wiring and board settings |
-| The flash tool is not found | Pick it with `IPRO Setup: Select Flash Tool` and make sure the IntelProCube directory contains `ipro_iot_tool.exe` |
 
-## Version history { #version }
+## Versions { #version }
 
-| Version | Changes |
-|---|---|
-| 3.3.0 | Independent component updates |
-| 3.2.4 | Control Center |
-| 3.2.3 | Better serial port hand-over between console and flashing; separate UART and CCI port selection |
-| 3.2.2 | Separate console baud rate |
-| 3.2.1 | Fixed Windows tool path settings |
-| 3.2.0 | Built-in serialport console |
-
-The SDK source package, the extension VSIX and the full Windows installer are versioned separately. The SDK package contains no VSIX; the installer you receive and the Extensions panel show the actual version.
-
-## Using SDK V2.1.0 { #sdk-2-1-0 }
-
-<div class="ipro-steps" markdown>
-
-1. Download, verify and extract SDK V2.1.0 to a new directory as described in [Windows Setup & VS Code](../get-started/windows.md#sdk-2-1-0).
-2. Import the extracted folder with `IPRO Setup: Update Components`, or select it directly with `IPRO Setup: Set SDK Root`.
-3. Reopen the SDK and run `IPRO Setup: Run Diagnostics`.
-
-</div>
-
-- FreeRTOS applications in V2.1.0 support IPRO7 only; keep SDK V2.0.1 for IPRO6S development, see [IPRO6S](../hardware/chips/ipro6s.md).
-- The SDK README specifies a GCC 14 toolchain. The toolchain version in the Windows installer is listed in [Windows Setup & VS Code](../get-started/windows.md); confirm it is compatible before using V2.1.0, and keep a working older environment until the new version has been built and verified on a board.
-- For Make builds on Windows, `project.build` uses the `cmake` on your PATH; check its version.
+The SDK, the Extension and Online Setup are separate packages with their own version numbers. The current Extension is 3.3.0, installed by Online Setup 3.4.0; an installer version does not imply the same Extension version. The Extensions view shows the version installed.
 
 ## Related documents { #related }
 
-- [Windows Setup & VS Code](../get-started/windows.md): install the Extension and point it at SDK V2.1.0.
-- [Flashing & Serial Console](../get-started/flash-and-monitor.md): the IntelProCube command-line tool and per-board flash settings.
-- [Build System & Configuration](build-system.md): `.config` and alternate configurations.
+- [Windows Setup & VS Code](../get-started/windows.md): install the tools and the Extension, add SDK V2.2.0.
+- [Flashing & Serial Console](../get-started/flash-and-monitor.md): the IntelProCube command line, partition tables, boot2 and `mfg`.
+- [Build System & Configuration](build-system.md): `.config`, alternate configurations and the Reef build list.
+- [Create Your First Application](../tutorials/first-own-app.md): your own Reef application.

@@ -1,6 +1,6 @@
 ---
 title: "Audio & LE Audio"
-description: Audio capture and output on IPRO7, the components/audio framework, LE Audio unicast and broadcast, LC3, USB audio and the PDM recording example
+description: Audio capture and output on the IPRO7AI Reef EVK — the components/audio framework, PDM and headset microphones, speaker and headphones, USB microphone, SD-card recording, LE Audio and LC3
 migrate_from:
   - "audio-multimedia.html#overview"
   - "audio-multimedia.html#le-audio-pipeline"
@@ -15,129 +15,245 @@ migrate_from:
 
 # Audio & LE Audio
 
-IPRO7 has an on-chip audio ADC (for analog or PDM microphones), a DAC and I2S. On top of them the SDK provides capture and output components in `components/audio`, LC3 and other codecs, USB audio through CherryUSB, and the LE Audio profiles of the BLE host. The speaker, headphone and microphones on the IPRO7AI Reef EVK are described on the [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md) page.
+IPRO7 has an audio ADC (AUADC) for analog and PDM microphones, a 10-bit DAC (GPDAC) and I2S. The SDK puts a capture and an output framework on top of them in `components/audio`, adds LC3 and other codecs, USB audio through CherryUSB, and the LE Audio profiles of the BLE host. On the IPRO7AI Reef EVK the out-of-box firmware `ipro7ai_reef_demo` drives every audio block from the shell, and its `src/audio.c` is the reference code for this page.
 
 !!! abstract "At a glance"
-    - LE Audio: the FreeRTOS examples are unicast receivers (the headset role): `ipro_le_audio_headset`, and `ipro7ai_evk_demo` with `config_bt`. Broadcast source and sink exist only as Zephyr samples.
-    - LE Audio needs the `bt54_iso2` controller and `CONFIG_EM_SIZE=32`. LC3 is a prebuilt library, added with `CONFIG_COMPONENTS_LC3_ENABLE=y`.
-    - USB audio: the headset's `UAC.config` sends the decoded audio to the host as a 48 kHz mono USB microphone; `ipro_pdm_mic_demo` exposes its PDM capture as a 16 kHz mono USB microphone.
-    - Not included in V2.1.0: a USB-to-BLE audio bridge example and a FreeRTOS LE Audio broadcast example.
+    - Reef audio: PDM microphone, headset microphone on jack J2, speaker amplifier and headphone output from the GPDAC. `ipro7ai_reef_demo` records, plays, monitors, records WAV files to the SD card (`mic sdrec`) and turns the board into a USB microphone (`mic usb`).
+    - Configuration: `CONFIG_AUDIO_CAPTURE=y`, `CONFIG_AUDIO_OUTPUT=y`, `CONFIG_DMA_CHANNEL_ALLOCATOR=y`; add `CONFIG_CHERRYUSB_DEVICE_AUDIO=y` for USB audio.
+    - LE Audio: unicast headset `ipro_le_audio_headset` (`defconfig_reef`), controller `bt54_iso2` with `CONFIG_EM_SIZE=32`, LC3 as a prebuilt library. Its README lists audio playback from a phone as not yet validated.
+    - Not included in V2.2.0: a FreeRTOS LE Audio broadcast example and a USB-to-BLE audio bridge.
 
 ## Architecture { #overview }
 
 ```mermaid
 flowchart LR
-  MIC["Analog / PDM mic"] --> AUADC["AUADC"] --> CAP["audio_capture"]
-  I2SIN["I2S in"] --> CAP
-  CAP --> ENC["LC3 encode"] --> NUS["BLE data transfer"]
-  ISO["LE Audio ISO (CIS / BIS)"] --> DEC["LC3 decode"] --> OUT["audio_output"]
-  OUT --> DAC["DAC → speaker / headphone"]
-  OUT --> I2SOUT["I2S → external codec"]
+  PDM["PDM mic"] --> AUADC["AUADC"]
+  HS["Headset mic (J2)"] --> AUADC
+  AUADC --> CAP["audio_capture"]
+  CAP --> APP["Application<br/>(record, monitor, ASRC)"]
+  APP --> OUT["audio_output"]
+  OUT --> DAC["GPDAC → speaker amp / headphones"]
   OUT --> UAC["USB UAC → host"]
+  ISO["LE Audio ISO (CIS)"] --> DEC["LC3 decode"] --> HDAC["Headset DAC path"]
 ```
 
 | Part | Location | Description |
 |---|---|---|
 | Audio HAL | `bsp/hal/inc/hal_auadc.h`, `hal_dac.h`, `hal_i2s.h` | Audio ADC, DAC, I2S |
-| Capture | `components/audio/include/audio_capture.h` | Analog mic, PDM mic or I2S input to 16-bit mono PCM, read independently by up to 4 consumers |
-| Output | `components/audio/include/audio_output.h` | One API for DAC, I2S, UAC or dump output |
-| Processing | `audio_resampler.h`, `audio_asrc.h`, `audio_speaker_eq.h`, `audio_bass_boost.h`, `mp3_decoder.h` | Resampling, clock-drift compensation, speaker EQ, bass boost, MP3 decoding |
-| Codecs | `components/3rdparty/liblc3` (prebuilt), `libsbc`, `opus`, `minimp3` | LC3 serves LE Audio and BLE voice streaming |
+| Capture | `components/audio/include/audio_capture.h` | Analog microphone (`AUDIO_SRC_AMIC`), PDM microphone (`AUDIO_SRC_DMIC`) or I2S (`AUDIO_SRC_I2S`) to 16-bit mono PCM frames; several consumers each read their own copy |
+| Output | `components/audio/include/audio_output.h` | One API for `AUDIO_OUTPUT_DAC`, `AUDIO_OUTPUT_UAC`, `AUDIO_OUTPUT_I2S` and `AUDIO_OUTPUT_DUMP` |
+| Processing | `audio_resampler.h`, `audio_asrc.h`, `audio_speaker_eq.h`, `audio_bass_boost.h`, `mp3_decoder.h` | Resampling, clock-drift resampler with level controller, speaker EQ, bass boost, MP3 decoding |
+| Codecs | `components/3rdparty/liblc3` (prebuilt), `libsbc`, `opus`, `minimp3` | LC3 serves LE Audio |
 | LE Audio | `components/wireless/bluetooth/ipro_bt_host/upstream/zephyr/subsys/bluetooth/audio/` | Zephyr v4.4.0 LE Audio profile sources |
 | USB audio | `components/cherryusb/class/audio/` | USB Audio Class device |
 
 ## Audio hardware { #audio-hardware }
 
-| Block | HAL | Description |
+The audio blocks of the IPRO7AI Reef EVK V4.0 and the board-header names that code uses for them (`bsp/board/ipro7/ipro7ai_reef_board_config.h`):
+
+| Block | Pins | Board header |
 |---|---|---|
-| AUADC | `hal_auadc.h` | Audio ADC for an analog microphone or a PDM digital microphone; the driver offers 16- or 20-bit resolution |
-| GPDAC | `hal_dac.h` | Two 10-bit DAC channels, driving an external amplifier or headphone buffer |
-| I2S | `hal_i2s.h` | External audio codec |
-| DMA | `hal_dma.h` | Data movement for capture and playback |
+| PDM microphone MK1 | CLK GPIO16, DATA GPIO17, left slot | `BOARD_MIC_CLK_PIN`, `BOARD_MIC_DAT_PIN`, `BOARD_MIC_PDM_CHANNEL` |
+| Headset microphone (jack J2) | AIN7 (GPIO13) +, AIN6 (GPIO12) −, differential | `BOARD_HSMIC_POS_CH`, `BOARD_HSMIC_NEG_CH` |
+| GPDAC output | DAC channel A, GPIO23; feeds the headphone stage (J2) and the speaker amplifier at the same time | `BOARD_SPK_DAC_PIN` |
+| Speaker amplifier PAM8302A (J_SPK) | Enable GPIO25, high = on | `BOARD_SPK_EN_PIN`, `BOARD_SPK_EN_ACTIVE` (1) |
+| Headset plug detect | GPIO26, low = plug inserted | `BOARD_HP_DET_PIN`, `BOARD_HP_DET_ACTIVE` (0) |
 
-- The DAC backend of `audio_output` runs at a fixed 32 kHz; other sample rates are resampled first.
-- The speaker amplifier's enable pin and polarity come from the board header: `BOARD_SPK_EN_PIN` and `BOARD_SPK_EN_ACTIVE` (the level that turns the amplifier on). Without `BOARD_SPK_EN_ACTIVE` the enable is treated as active low. Set both for your amplifier when porting to a new board.
-- To capture and play at the same time (a microphone monitor, for example), set `CONFIG_DMA_CHANNEL_ALLOCATOR=y` so DMA channels are assigned at run time.
+- The headphone jack always gets the DAC signal. "Headphones only" means keeping the speaker amplifier off; there is no other routing switch.
+- The PDM path runs at about 15,872 Hz, not exactly 16,000 Hz. `mic sdrec` writes the measured rate into the WAV header, and `mic usb` converts to the host's 16,000 Hz with `audio_asrc`.
+- The DAC backend of `audio_output` runs at a fixed 32 kHz (`DAC_RATE` in `audio_capture.h`); other sample rates are resampled.
+- The amplifier gain is high (30 V/V in the demo README); the demo plays tones at 20 % amplitude by default.
+- Set `CONFIG_DMA_CHANNEL_ALLOCATOR=y` so capture, playback and the USB isochronous endpoint get DMA channels at run time without clashing.
 
-Microphones and speakers on each board:
-
-| Board | Microphone | Speaker output |
-|---|---|---|
-| IPRO7AI Reef EVK | PDM mic, headset mic, AUX-IN | DAC → speaker amplifier and headphone jack; see [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md) |
-| IPRO7AI EVK | IM69D129 PDM mic (GPIO18/19) | DAC (GPIO23) → TPA2037D1, enable on GPIO22, active high; see [IPRO7AI EVK](../hardware/boards/ipro7ai-evk.md) |
-| IPRO7 EVB | External PDM mic module (`ipro_pdm_mic_demo` uses GPIO0 CLK, GPIO1 DATA) | DAC → on-board amplifier; see [IPRO7 EVB](../hardware/boards/ipro7-evb.md) |
+Jack type, connector and the full pin map are on the [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md) page. The IPRO7 EVB and the IPRO7AI EVK have their own audio examples (`ipro_pdm_mic_demo`, `ipro7ai_evk_demo`); see their board pages.
 
 ## Audio framework { #audio-framework }
 
-Add to `.config`:
-
-```ini
-CONFIG_AUDIO_CAPTURE=y
+```ini title=".config (audio, from apps/platform/ipro7ai_reef_demo/.config)"
 CONFIG_AUDIO_OUTPUT=y
+CONFIG_AUDIO_CAPTURE=y
 CONFIG_DMA_CHANNEL_ALLOCATOR=y
+# USB microphone through the audio_output UAC backend
+CONFIG_COMPONENTS_CHERRYUSB_ENABLE=y
+CONFIG_CHERRYUSB_DEVICE=y
+CONFIG_CHERRYUSB_DEVICE_AUDIO=y
 ```
 
-`audio_capture` produces 16-bit mono PCM frames, and `audio_capture_read()` reads them from each consumer's own StreamBuffer. In streaming mode (`AUDIO_OUTPUT_MODE_STREAMING`) `audio_output` plays continuously from a cyclic DMA ring, and `audio_output_write()` blocks only briefly when the ring is full; one-shot mode (`AUDIO_OUTPUT_MODE_ONESHOT`) blocks until the whole buffer has played.
+| Key | Effect |
+|---|---|
+| `CONFIG_AUDIO_CAPTURE` | Builds `audio_capture.c` and the PDM microphone chain `audio_pdm_mic.c` |
+| `CONFIG_AUDIO_OUTPUT` | Builds `audio_output.c` with the DAC and dump backends |
+| `CONFIG_CHERRYUSB_DEVICE_AUDIO` | With `CONFIG_AUDIO_OUTPUT`, also builds the UAC backend `audio_output_uac.c` |
+| `CONFIG_AUDIO_OUTPUT_UAC_EXCLUDE` | Leaves the UAC backend out, for an application that implements its own USB audio device (both would define the `usbd_audio_*` callbacks) |
+| `CONFIG_BSP_USING_I2S0` | With `CONFIG_AUDIO_OUTPUT`, builds the I2S backend |
 
-The example below sends the PDM microphone straight to the speaker on the Reef. `BOARD_MIC_*` and `BOARD_SPK_*` are defined by the Reef board header:
+The resampler, the clock-drift resampler (`audio_asrc`), the speaker EQ and bass boost are always built.
 
-```c title="PDM microphone monitor (after apps/platform/ipro7ai_reef_demo/src/audio.c)"
-#include <FreeRTOS.h>
-#include <task.h>
+How the pieces are used:
 
-#include "board_config.h"
-#include "audio_capture.h"
-#include "audio_output.h"
+- `audio_capture_init()` takes an `audio_capture_cfg_t` (source type, sample rate, frame size, and the PDM or analog settings), `audio_capture_add_consumer()` returns a consumer id with its own buffer, `audio_capture_start()` starts the DMA, and `audio_capture_read(id, buf, bytes, timeout_ms)` returns PCM.
+- `audio_output_create()` takes an `audio_output_cfg_t`. In `AUDIO_OUTPUT_MODE_STREAMING` the output plays continuously from a cyclic DMA ring and `audio_output_write(out, pcm, samples)` blocks only briefly when the ring is full; `AUDIO_OUTPUT_MODE_ONESHOT` blocks until the whole buffer has played. The third argument of `audio_output_write()` counts samples per channel, not bytes.
+- For the DAC backend, pass the amplifier enable pin and its active level (`dac_spk_gpio`, `dac_spk_en_active`); `audio_output_start()` switches the amplifier on.
 
-#define RATE_HZ        16000u
-#define FRAME_SAMPLES  320u    /* 20 ms */
+## Hands-on on the Reef { #hands-on }
 
-static void mic_monitor_task(void *arg)
-{
-    static int16_t frame[FRAME_SAMPLES];
-    audio_capture_cfg_t in_cfg = {
-        .type          = AUDIO_SRC_DMIC,
-        .sample_rate   = RATE_HZ,
-        .frame_samples = FRAME_SAMPLES,
-        .dmic = {
-            .clk_pin         = BOARD_MIC_CLK_PIN,
-            .data_pin        = BOARD_MIC_DAT_PIN,
-            .channel         = 0,       /* left */
-            .digital_gain_db = 18.0f,
-        },
-    };
-    audio_output_cfg_t out_cfg = {
-        .type              = AUDIO_OUTPUT_DAC,
-        .mode              = AUDIO_OUTPUT_MODE_STREAMING,
-        .sample_rate       = RATE_HZ,
-        .channels          = 1,
-        .dac_spk_gpio      = BOARD_SPK_EN_PIN,
-        .dac_spk_en_active = BOARD_SPK_EN_ACTIVE ? 1 : -1,
-    };
-    audio_output_t *out;
-    int id;
+Record three seconds from the PDM microphone, play them back on the headphones, then record a WAV file to the SD card and use the board as a USB microphone. Everything runs in `ipro7ai_reef_demo`; the excerpts show the code you reuse in your own application.
 
-    (void)arg;
-    if (audio_capture_init(&in_cfg) != 0) {
-        vTaskDelete(NULL);
-    }
-    id = audio_capture_add_consumer(sizeof(frame) * 8);
-    out = audio_output_create(&out_cfg);
-    if (id < 0 || out == NULL ||
-        audio_capture_start() != 0 || audio_output_start(out) != 0) {
-        vTaskDelete(NULL);
-    }
-    for (;;) {
-        size_t n = audio_capture_read(id, frame, sizeof(frame), 100);
-        if (n > 0) {
-            /* the third argument counts samples per channel */
-            audio_output_write(out, frame, n / sizeof(int16_t));
+<div class="ipro-steps" markdown>
+
+1. **Configuration**
+
+    The audio lines of the demo's `.config` (shown under [Audio framework](#audio-framework)) are all an application needs, together with the Reef board lines:
+
+    ```ini title="apps/platform/ipro7ai_reef_demo/.config (excerpt)"
+    CONFIG_IPRO7AI_REEF=y
+    CONFIG_BOARD="IPRO7AI_REEF"
+    CONFIG_USE_PSRAM=y
+    CONFIG_AUDIO_OUTPUT=y
+    CONFIG_AUDIO_CAPTURE=y
+    CONFIG_DMA_CHANNEL_ALLOCATOR=y
+    ```
+
+2. **Code**
+
+    Opening the PDM microphone and the DAC output. The pin and level macros come from the Reef board header:
+
+    ```c title="apps/platform/ipro7ai_reef_demo/src/audio.c (excerpt)"
+    static audio_output_t *sink_open(uint32_t rate, audio_route_t route)
+    {
+        audio_output_cfg_t cfg = {
+            .type             = AUDIO_OUTPUT_DAC,
+            .mode             = AUDIO_OUTPUT_MODE_STREAMING,
+            .sample_rate      = rate,
+            .channels         = 1,
+            .dac_spk_gpio     = BOARD_SPK_EN_PIN,
+            .dac_spk_en_active = BOARD_SPK_EN_ACTIVE ? 1 : -1,
+        };
+        audio_output_t *out = audio_output_create(&cfg);
+
+        if (!out) {
+            IPRO_LOGE(LOG_TAG, "audio_output_create failed");
+            return NULL;
         }
+        if (audio_output_start(out) != 0) {
+            IPRO_LOGE(LOG_TAG, "audio_output_start failed");
+            audio_output_destroy(out);
+            return NULL;
+        }
+        /* start() switched the amplifier on; the route decides whether it stays. */
+        route_apply(route);
+        return out;
     }
-}
-```
 
-An application that implements its own USB audio device instead of using the `audio_output` UAC backend must set `CONFIG_AUDIO_OUTPUT_UAC_EXCLUDE=y`; otherwise both define the same `usbd_audio_*` callbacks.
+    static int capture_open(audio_in_t src, uint32_t consumer_bytes, int *consumer)
+    {
+        audio_capture_cfg_t cfg = {
+            .sample_rate   = AUDIO_RATE_HZ,          /* 16000 */
+            .frame_samples = AUDIO_FRAME_SAMPLES,    /* 320 = 20 ms */
+        };
+
+        switch (src) {
+        case AUDIO_IN_PDM:
+            cfg.type = AUDIO_SRC_DMIC;
+            cfg.dmic.clk_pin         = BOARD_MIC_CLK_PIN;
+            cfg.dmic.data_pin        = BOARD_MIC_DAT_PIN;
+            cfg.dmic.channel         = (uint8_t)s_pdm_ch;
+            cfg.dmic.digital_gain_db = MIC_DIGITAL_GAIN_DB;   /* 18.0f */
+            break;
+        case AUDIO_IN_HSMIC:
+            cfg.type = AUDIO_SRC_AMIC;
+            cfg.amic.single_ended = 0;
+            cfg.amic.pos_ch       = BOARD_HSMIC_POS_CH;
+            cfg.amic.neg_ch       = BOARD_HSMIC_NEG_CH;
+            cfg.amic.gain_db      = HSMIC_ANALOG_GAIN_DB; /* 24 */
+            break;
+        /* ... */
+        }
+
+        if (audio_capture_init(&cfg) != 0) {
+            return -1;
+        }
+        *consumer = audio_capture_add_consumer(consumer_bytes);
+        if (*consumer < 0) {
+            audio_capture_deinit();
+            return -1;
+        }
+        if (audio_capture_start() != 0) {
+            audio_capture_deinit();
+            return -1;
+        }
+        return 0;
+    }
+    ```
+
+    The live monitor (`mic loop`) then moves frames from one to the other:
+
+    ```c title="apps/platform/ipro7ai_reef_demo/src/audio.c (excerpt from do_loop)"
+    while (!s_stop_req && (frames == 0 || done < frames)) {
+        size_t got = audio_capture_read(consumer, chunk, sizeof(chunk), 200);
+        if (got == 0) {
+            IPRO_LOGW(LOG_TAG, "capture stalled");
+            break;
+        }
+        gain_apply(chunk, got / sizeof(int16_t));
+        audio_output_write(out, chunk, got / sizeof(int16_t));
+        done++;
+    }
+    ```
+
+    To use the same code in your own application, add `src/audio.c` of the demo to your `CMakeLists.txt` the way `ipro_ble_remote` does for its Reef build (it also lists `rgb_led.c`, `keys.c` and `sdcard.c`, which `audio.c` calls). Creating an application is covered in [Create your first application](../tutorials/first-own-app.md).
+
+3. **Build**
+
+    ```bash
+    make -C apps/platform/ipro7ai_reef_demo
+    ```
+
+    Output: `apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin`
+
+4. **Flash**
+
+    Put the Reef in download mode (hold SW1, tap SW2, release SW1) and run the flash tool from the IntelProCube directory:
+
+    ```bash
+    cd <ICUBE>
+    ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+        --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+        --pt chips/ipro7/partition/partition_cfg_2M.toml \
+        --firmware <SDK>/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin
+    ```
+
+    Check for `[All Success]`, then press SW2. Other hosts and `build_freertos.sh` are covered in [Flashing & Serial Console](../get-started/flash-and-monitor.md).
+
+5. **Run and check**
+
+    Plug headphones into J2 and open the console on U6 at 115200 baud. The boot banner ends with a `REEF: shell ready` line that lists the command groups. Then:
+
+    ```text
+    ipro /> spk tone 1000 500
+    1000 Hz for 500 ms at 20% -> speaker+headphone
+    ipro /> mic rec pdm 3
+    recording 3 s from pdm...
+    I (…) AUDIO: recorded 48000 samples from pdm: peak … dBFS, rms … dBFS, dc …, voice band (300-3400 Hz) rms … dBFS; first 100 ms left out (peak there … dBFS)
+    ipro /> mic play hp
+    playing 48000 samples, +20 dB
+    ```
+
+    You hear the tone on the speaker and in the headphones, then your recording in the headphones only (`hp` keeps the amplifier off). With a FAT-formatted microSD card in the slot:
+
+    ```text
+    ipro /> mic sdrec pdm take1 10
+    recording 10 s from pdm to sd:/rec/take1.wav (LED red; `mic stop` ends it)
+    I (…) AUDIO: sdrec: sd:/rec/take1.wav … samples (10 s) at … Hz, measured … Hz, peak … dBFS, stalls 0
+    ipro /> mic usb pdm
+    USB microphone from pdm: 16 kHz mono UAC on the board's USB-C (LED red; `mic stop` ends it)
+    ```
+
+    While `mic usb` runs, a computer connected to the Reef's USB-C sees a USB microphone (VID 0x3896, PID 0x0003) and can record from it; `mic status` shows the USB queue level and `mic stop` ends it.
+
+</div>
+
+To turn these checks into repeatable tests, see [Test your application](../tutorials/testing.md).
 
 ## LE Audio { #le-audio-pipeline }
 
@@ -149,71 +265,47 @@ flowchart LR
   C --> H["Host: ASCS / BAP"]
   H --> Q["Application queue"]
   Q --> D["LC3 decode task"]
-  D --> O["DAC or UAC"]
+  D --> O["DAC"]
 ```
 
-Settings needed in `.config` (excerpt from `ipro_le_audio_headset`):
+Settings needed in `.config` (excerpt from `ipro_le_audio_headset/defconfig_reef`):
 
-```ini title=".config (excerpt)"
-CONFIG_BLUETOOTH_LE_ENABLE=y
+```ini title="apps/bluetooth/le_audio/ipro_le_audio_headset/defconfig_reef (excerpt)"
 CONFIG_BT_CTLR_IPRO=y
-CONFIG_BT_HOST_IPRO_V44=y
 CONFIG_IPRO_BLE_CTLR_LIB="link1_periph"
 CONFIG_IPRO_BLE_CTLR_FEATURE="bt54_iso2"
+CONFIG_IPRO_BLE_CTLR_CFG_DBG=y
 CONFIG_EM_SIZE=32
 CONFIG_BT_CONN=1
-CONFIG_BT_PERIPHERAL=y
-CONFIG_BT_EXT_ADV=y
-CONFIG_BT_SMP=y
+CONFIG_BT_SETTINGS=y
 CONFIG_BT_AUDIO=y
 CONFIG_BT_AUDIO_RX=y
-CONFIG_BT_BAP_UNICAST_SERVER=y
-CONFIG_BT_PACS=y
-CONFIG_BT_PAC_SNK=y
-CONFIG_BT_ASCS=y
-CONFIG_BT_ASCS_MAX_ASE_SNK_COUNT=2
-CONFIG_BT_ASCS_MAX_ASE_SRC_COUNT=0
-CONFIG_BT_ISO=y
-CONFIG_BT_ISO_RX=y
-CONFIG_BT_ISO_PERIPHERAL=y
-CONFIG_BT_VCP_VOL_REND=y
-CONFIG_BT_CAP_ACCEPTOR=y
-CONFIG_BT_CSIP_SET_MEMBER=y
 CONFIG_COMPONENTS_LC3_ENABLE=y
 ```
 
-The build does not resolve Kconfig dependencies, so start from the whole `apps/bluetooth/le_audio/ipro_le_audio_headset/.config` rather than the excerpt. The controller archive rules are in [BLE Development](ble.md#controller-variants).
+The build does not resolve Kconfig dependencies, so start from the whole `defconfig_reef` rather than this excerpt; it also enables BAP, PACS, ASCS, ISO, CAP, CSIP and VCP. The controller archive rules are in [BLE Development](ble.md#controller-variants).
 
 ### Unicast headset { #unicast-audio }
 
-`apps/bluetooth/le_audio/ipro_le_audio_headset` advertises as `IPRO-LE-Audio`; a phone connects with LE Audio unicast and streams LC3 to the board.
+`apps/bluetooth/le_audio/ipro_le_audio_headset` advertises as `IPRO-LE-Audio`; an LE Audio unicast client connects and sets up a CIS to the board.
 
-!!! info "What this example is"
-    This application is a reference for the LE Audio profiles and the ISO data path, not a finished headset product.
+!!! info "Status in this release"
+    The application README describes it as a bring-up of the LE Audio profiles and the ISO receive path, not a finished headset: CIS setup and the ISO receive path are validated with a two-board test, while audio playback from a phone is listed as not yet validated.
 
 | Item | Details |
 |---|---|
-| Roles | BAP unicast server, PACS, ASCS (2 sink ASEs, no source ASE), CAP acceptor with CSIP set member, VCP volume renderer |
-| PACS capability | LC3 at 16/32/48 kHz, 7.5/10 ms frames, mono, 26–155 octets per frame, 1 frame per SDU, front-left location |
-| Security | SMP pairing; bonds are stored in flash with `CONFIG_BT_SETTINGS` |
-| Controller | `link1_periph` / `bt54_iso2`, 32 KB EM; every configuration uses the debug archive (`CONFIG_IPRO_BLE_CTLR_CFG_DBG=y`) |
-
-The configuration file decides where the audio goes:
-
-| Configuration | Board | Decoded audio goes to |
-|---|---|---|
-| `.config` | IPRO7 EVB | On-chip DAC and speaker |
-| `UAC.config` | IPRO7 EVB | The host, as a USB microphone (48 kHz mono) |
-| `defconfig_reef` | IPRO7AI Reef EVK | DAC, speaker and headphone jack |
+| Roles | BAP unicast server, PACS, ASCS (sink ASEs only), CAP acceptor with CSIP set member, VCP volume renderer |
+| PACS capability | LC3 at 16/32/48 kHz, 7.5/10 ms frames, mono, 26–155 octets per frame |
+| Security | SMP pairing; bonds stored in flash with `CONFIG_BT_SETTINGS` |
+| Controller | `link1_periph` / `bt54_iso2`, 32 KB EM, debug archive (`CONFIG_IPRO_BLE_CTLR_CFG_DBG=y`) |
 
 ```bash
-make -C apps/bluetooth/le_audio/ipro_le_audio_headset                           # IPRO7 EVB, DAC output
-make -C apps/bluetooth/le_audio/ipro_le_audio_headset DEFCONFIG=defconfig_reef  # Reef, builds in build_reef/
+make -C apps/bluetooth/le_audio/ipro_le_audio_headset DEFCONFIG=defconfig_reef   # output in build_reef/build_out/
 ```
 
-Select `UAC.config` by copying it over `.config`: `cp UAC.config .config && make clean && make`.
+On the Reef, `defconfig_reef` is the DAC variant: the output goes to the GPDAC (headphones on J2, speaker amplifier while no plug is in J2), SW3 and SW4 turn the volume down and up and SW5 mutes, through the VCP volume renderer. The other configurations of this application (`.config`, `DAC.config`, `UAC.config`) build for the IPRO7 EVB. Building, pairing and what to check are in [Getting Started with LE Audio](../tutorials/le-audio.md).
 
-How `src/bap_server.c` registers PACS and ASCS (excerpt, simplified: logging and conditional compilation removed; the `unicast_server_cb` callback structure is defined in the same file):
+How `src/bap_server.c` registers PACS and ASCS (excerpt, simplified: logging and conditional compilation removed; `unicast_server_cb` is defined in the same file):
 
 ```c title="apps/bluetooth/le_audio/ipro_le_audio_headset/src/bap_server.c (excerpt)"
 static const struct bt_audio_codec_cap lc3_sink_codec_cap =
@@ -273,30 +365,13 @@ int bap_server_init(void)
 }
 ```
 
-`config_bt` of `apps/platform/ipro7ai_evk_demo` is a second unicast receiver: it runs on the IPRO7AI EVK with `link1` / `bt54_iso2` and plays through the on-board speaker via `audio_output`. Build it with `make -C apps/platform/ipro7ai_evk_demo DEFCONFIG=config_bt`.
-
 ### Broadcast { #broadcast-audio }
 
-No FreeRTOS application in V2.1.0 does BIS broadcast. The host sources include the `bt_bap_broadcast_source_*` and `bt_bap_broadcast_sink_*` APIs, and the reference implementations are the Zephyr samples:
-
-| Zephyr sample | Board | What it does |
-|---|---|---|
-| `zephyr/samples/bap_broadcast_source` | `ipro7_evb`, `ipro7ai_evk` | Broadcasts a 16 kHz LC3 sine on 2 BIS as `IPRO7 Broadcast Source` |
-| `zephyr/samples/bap_broadcast_sink` | `ipro7ai_evk` | Syncs to that broadcast, decodes it and plays it on the EVK speaker |
-| `zephyr/samples/le_audio_headset` | `ipro7ai_evk` | Unicast headset using the same controller archive and PACS capability as the FreeRTOS version |
-
-Build them from the Zephyr workspace:
-
-```bash
-west build -p always -b ipro7_evb ../zephyr/samples/bap_broadcast_source
-west build -p always -b ipro7ai_evk ../zephyr/samples/bap_broadcast_sink
-```
-
-Setting up the workspace and flashing are covered in [Zephyr RTOS](zephyr.md).
+No FreeRTOS application in this release does BIS broadcast. The host includes the `bt_bap_broadcast_source_*` and `bt_bap_broadcast_sink_*` APIs, and `zephyr/samples/bap_broadcast_source` and `bap_broadcast_sink` show them under Zephyr on the IPRO7 EVB and the IPRO7AI EVK; there is no Zephyr board for the Reef (see [Zephyr RTOS](zephyr.md)).
 
 ### Profiles { #audio-profiles }
 
-The host's `subsys/bluetooth/audio/` holds the Zephyr v4.4.0 LE Audio profile sources (BAP, CAP, PACS, ASCS, VCP, CSIP, MICP, MCP, TMAP and more). The shipped FreeRTOS headset enables:
+The host's `subsys/bluetooth/audio/` holds the Zephyr v4.4.0 LE Audio profile sources (BAP, CAP, PACS, ASCS, VCP, CSIP, MICP, MCP, TMAP and more). The headset enables:
 
 | Profile | `.config` | Role |
 |---|---|---|
@@ -307,18 +382,15 @@ The host's `subsys/bluetooth/audio/` holds the Zephyr v4.4.0 LE Audio profile so
 | CSIP | `CONFIG_BT_CSIP_SET_MEMBER=y` | Set member |
 | VCP | `CONFIG_BT_VCP_VOL_REND=y` | Volume renderer |
 
-No shipped example enables MCP (media control).
-
 ### LC3 { #lc3 }
 
 - Prebuilt library `components/3rdparty/liblc3/lib/libliblc3.a` with header `lc3.h`; add it with `CONFIG_COMPONENTS_LC3_ENABLE=y`.
 - Bit rates from 16 to 320 kbps (`LC3_MIN_BITRATE`, `LC3_MAX_BITRATE`).
-- Users: `ipro_le_audio_headset` and `ipro7ai_evk_demo` (`config_bt`) decode LE Audio streams; `ipro_pdm_mic_demo` encodes 16 kHz audio in 10 ms frames of 40 bytes (32 kbps) and sends it over BLE.
-- Other codecs: SBC (`3rdparty/libsbc`), Opus (`3rdparty/opus`, used by `ipro_agora_sentino`), minimp3 (used by `ipro7_demo`).
+- Other codecs in `components/3rdparty`: SBC (`libsbc`), Opus (`opus`, used by `ipro_agora_sentino`), minimp3.
 
 ## USB audio { #usb-audio }
 
-USB audio uses CherryUSB's UAC device class:
+USB audio uses CherryUSB's UAC device class on the Reef's USB-C (Full Speed):
 
 ```ini
 CONFIG_COMPONENTS_CHERRYUSB_ENABLE=y
@@ -326,60 +398,50 @@ CONFIG_CHERRYUSB_DEVICE=y
 CONFIG_CHERRYUSB_DEVICE_AUDIO=y
 ```
 
-| Example | USB device | Audio source |
-|---|---|---|
-| `ipro_le_audio_headset` (`UAC.config`) | 48 kHz mono microphone | The decoded LE Audio stream |
-| `ipro_pdm_mic_demo` | 16 kHz mono microphone (`src/uac_mic.c`) | The PDM microphone, so the host can record it directly |
-| `ipro7_demo` | USB audio device demo | `demo/soc/usb_demo/uac_v1_template.c` |
+With `CONFIG_AUDIO_OUTPUT=y` as well, `audio_output` gets its UAC backend: create the output with `.type = AUDIO_OUTPUT_UAC` and write PCM to it as to the DAC. `ipro7ai_reef_demo` uses it in two commands:
 
-The `audio_output` UAC backend is built whenever `CONFIG_CHERRYUSB_DEVICE_AUDIO=y`. An application with its own UAC device, such as `ipro_pdm_mic_demo`, sets `CONFIG_AUDIO_OUTPUT_UAC_EXCLUDE=y`.
+| Command | USB device | What it does |
+|---|---|---|
+| `mic usb <pdm\|headset>` | 16 kHz mono microphone | Streams the chosen microphone to the host. The capture runs through `audio_asrc` with a level controller that holds the UAC queue near 1,800 samples, so the slower PDM clock does not underrun the host |
+| `mic usb host` | 16 kHz mono speaker and microphone | Loopback for digital injection: what the host plays into the board comes back as the microphone, through the weak hook `audio_usbhost_process()` |
+
+Both enumerate as VID 0x3896, PID 0x0003. An application that implements its own USB audio device sets `CONFIG_AUDIO_OUTPUT_UAC_EXCLUDE=y`. The IPRO7 EVB examples `ipro_pdm_mic_demo` and the `UAC.config` of `ipro_le_audio_headset` have their own UAC devices.
 
 ## PDM recording { #pdm-recording }
 
-`apps/multimedia/ipro_pdm_mic_demo` shows PDM microphone capture, DAC playback and transfer over BLE:
+`ipro7ai_reef_demo` records from the PDM microphone (`pdm`) or the headset microphone (`headset`):
 
-- Capture: 16 kHz, 16-bit mono, DMA ping-pong buffers.
-- Recording: up to 4 hours logically; a PSRAM ring keeps the latest 240 seconds (about 7.68 MB), and every 30 seconds a `CHUNK_READY` notification tells the phone to fetch that slice.
-- BLE: commands and data over the Nordic UART Service, device name `IPRO-MIC`; live streaming can be LC3-compressed. Controller `link2` / `bt52`, 16 KB EM, `CONFIG_BT_CONN=1`.
-- Bonds are stored in flash with `CONFIG_BT_SETTINGS` and `CONFIG_EASYFLASH4`, so after waking from PDS31 sleep the phone reconnects with the existing bond.
-- USB: the board also enumerates as a 16 kHz mono USB microphone.
-- Android example app source: `tools/android/IproMicDemo/`.
+| Command | Where it records | Limit |
+|---|---|---|
+| `mic rec <src> <s>` | PSRAM, 16 kHz mono; `mic play [hp]` plays it back with make-up gain | 10 s |
+| `mic sdrec <src> <name> <s>` | `sd:/rec/<name>.wav`, 16-bit mono; the header carries the measured rate | 2 h |
+| `mic loop <src> [s] [hp]` | Live monitor to the output; omit the time to run until `mic stop` | — |
 
-| Board | Build | Output | Console |
-|---|---|---|---|
-| IPRO7 EVB | `make -C apps/multimedia/ipro_pdm_mic_demo` | `build/build_out/` | 115200 baud |
-| IPRO7AI EVK | `make -C apps/multimedia/ipro_pdm_mic_demo BOARD=evk` | `build_config_evk/build_out/` | 921600 baud |
+- `mic gain <dB>` sets the playback make-up gain (0–40 dB, default 20 dB); `mic ch <0|1>` selects the PDM slot.
+- `mic status` reports the last recording's peak, RMS and voice-band (300–3,400 Hz) level in dBFS. The first 100 ms after start are left out of those numbers because the decimator starts with a step.
+- `mic sdrec` flushes the file every 30 s, so pulling the power loses at most the last 30 s. A measured rate far from 15,875 Hz is reported as lost samples.
+- A microphone monitored on the speaker howls; use headphones and `hp`.
 
-Common shell commands:
-
-| Command | Description |
-|---|---|
-| `pdm_rec [seconds]` | Record (1–14400 s, default 5 s) |
-| `pdm_stats` | Duration, peak, RMS, dBFS |
-| `pdm_dump [offset] [count]` | Print PCM sample values |
-| `pdm_gain <dB>` | PDM digital gain |
-| `pdm_ch left\|right` | Select the PDM channel |
-| `pdm_stream on\|off` | Start or stop live BLE streaming |
-| `pdm_lc3 on\|off` | Use LC3 compression for streaming |
+The PDM recording example for the IPRO7 EVB and the IPRO7AI EVK is `ipro_pdm_mic_demo` (BLE transfer with LC3, Android companion source in `tools/android/IproMicDemo/`).
 
 ## Limitations in this release { #limitations }
 
-- FreeRTOS has no LE Audio broadcast example; use the Zephyr samples above for broadcast.
-- The shipped LE Audio examples only receive: the headset has no source ASE and does not send microphone audio back to the phone.
+- `ipro_le_audio_headset`: audio playback from a phone is not yet validated (see its README); the headset has no source ASE and sends no microphone audio back.
+- No FreeRTOS LE Audio broadcast example; broadcast exists only as Zephyr samples for the IPRO7 EVB and the IPRO7AI EVK.
 - `bt54_iso2` needs at least 32 KB of EM, while controller PDS sleep supports only the 16 KB EM profile, so the controller does not enter PDS in an LE Audio configuration.
+- The Reef V4.0 has no line input; the `aux` source and the AUX-IN notes in the demo README describe the previous board.
 - A USB-to-BLE audio bridge example is not included.
 
 ## Related examples and documents { #reference-apps }
 
-| Example | Contents |
-|---|---|
-| `ipro_le_audio_headset` | LE Audio unicast headset with DAC or USB output |
-| `ipro7ai_evk_demo` (`config_bt`) | LE Audio unicast receiver with speaker playback on the IPRO7AI EVK |
-| `ipro_pdm_mic_demo` | PDM recording, BLE transfer with LC3, USB microphone |
-| `ipro7ai_reef_demo` | Shell commands for the Reef speaker, headphone, PDM / headset mic and AUX-IN; see [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md) |
-| `ipro7ai_evk_launcher` | Microphone and speaker pages on the IPRO7AI EVK |
-| `ipro7_demo` | I2S, DAC, audio ADC and USB audio demos |
+| Example | Reef configuration | Contents |
+|---|---|---|
+| `ipro7ai_reef_demo` | `.config` | Speaker, headphones, PDM and headset microphones, SD-card recording, USB microphone; see [ipro7ai_reef_demo](../examples/ipro7ai_reef_demo.md) |
+| `ipro_le_audio_headset` | `defconfig_reef` | LE Audio unicast headset, DAC variant; see [ipro_le_audio_headset](../examples/ipro_le_audio_headset.md) |
+| `ipro_ble_remote` | `defconfig_reef` | Reuses the demo's `audio.c` for its Reef hardware service |
+| `ipro_reef_teach` | `.config` | `voice` mode: speaker recognition from the PDM microphone; see [Voiceprint Recognition](../teach/voice.md) |
 
-- [Getting Started with LE Audio](../tutorials/le-audio.md): run the headset example on a board
+- [Getting Started with LE Audio](../tutorials/le-audio.md)
 - [BLE Development](ble.md): controller selection, bring-up order and GATT
-- [Zephyr RTOS](zephyr.md): the Zephyr LE Audio samples
+- [Audio API](../reference/api/audio.md)
+- [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md): jack, speaker connector and pins

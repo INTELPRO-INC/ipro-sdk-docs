@@ -11,9 +11,12 @@ Two IPRO7AI Reef EVK boards run the same `ipro_throughput_test` firmware: one is
 
 ## Prerequisites { #prerequisites }
 
-- Two IPRO7AI Reef EVK boards, each powered over USB-C and each with a USB-to-UART cable on U6 (115200 8N1).
-- [First FreeRTOS Application](../get-started/first-app-freertos.md) done, and the IntelProCube v0.6.3 command-line flash tool at hand.
-- One serial terminal per board in which you can type commands (see [Flashing & Serial Console](../get-started/flash-and-monitor.md)).
+- Two IPRO7AI Reef EVK boards, each powered from USB-C with SW8 on PWR, and each with an IPRO Debug Probe (or a 3.3 V USB-UART cable) on U6; wiring in [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md).
+- [First FreeRTOS Application](../get-started/first-app-freertos.md) done, and the IntelProCube v0.6.3 command-line flasher at hand (obtained separately).
+- One serial terminal per board in which you can type commands (115200 8N1; see [Flashing & Serial Console](../get-started/flash-and-monitor.md)).
+
+!!! tip "Tell the two serial ports apart"
+    An IPRO Debug Probe shows up as `IPRO7 CMSIS_DAP` with two serial ports: the one whose name ends in `02` is the board's console (the Reef's UART0), `04` is the CCI bridge. Plug in the first board's probe alone and note the ports that appear (`ls /dev/cu.*` on macOS, `ls /dev/ttyACM* /dev/ttyUSB*` on Linux, the COM ports in Device Manager on Windows), then plug in the second. Below, the boards are called the slave board and the master board; a label on each helps.
 
 ## Steps { #steps }
 
@@ -27,14 +30,13 @@ Two IPRO7AI Reef EVK boards run the same `ipro_throughput_test` firmware: one is
 
     Output: `apps/bluetooth/ble/ipro_throughput_test/build_reef/build_out/ipro_throughput_test_IPRO7.bin`. The linker's memory usage table shows about 360 KB of flash and about 205 KB of the 224 KB OCRAM region.
 
-2. **Flash both boards**: put each board in download mode (hold SW1, tap SW2, release SW1), then flash the same file through each board's port from the IntelProCube directory:
+2. **Flash both boards**: flash the same file into each board through its own port, one board at a time. First put the board in download mode: hold SW1 (BOOT), tap SW2 (RESET), release SW1; if the board already runs firmware with a shell, typing `reboot_dl` at its console does the same. Then, from the IntelProCube directory:
 
     === "macOS"
 
         ```bash
         ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
             --port /dev/cu.usbserial-XXXX --baudrate 921600 \
-            --pt chips/ipro7/partition/partition_cfg_2M.toml \
             --firmware <SDK>/apps/bluetooth/ble/ipro_throughput_test/build_reef/build_out/ipro_throughput_test_IPRO7.bin
         ```
 
@@ -43,7 +45,6 @@ Two IPRO7AI Reef EVK boards run the same `ipro_throughput_test` firmware: one is
         ```bash
         ./ipro_iot_tool_linux --chipname ipro7 --chip-variant IPRO7AI \
             --port /dev/ttyUSB0 --baudrate 921600 \
-            --pt chips/ipro7/partition/partition_cfg_2M.toml \
             --firmware <SDK>/apps/bluetooth/ble/ipro_throughput_test/build_reef/build_out/ipro_throughput_test_IPRO7.bin
         ```
 
@@ -52,13 +53,12 @@ Two IPRO7AI Reef EVK boards run the same `ipro_throughput_test` firmware: one is
         ```powershell
         .\ipro_iot_tool.exe --chipname ipro7 --chip-variant IPRO7AI `
             --port COM5 --baudrate 921600 `
-            --pt chips/ipro7/partition/partition_cfg_2M.toml `
             --firmware <SDK>\apps\bluetooth\ble\ipro_throughput_test\build_reef\build_out\ipro_throughput_test_IPRO7.bin
         ```
 
-    Both runs must end with `[All Success]`.
+    Both runs must print `[All Success]` (the tool exits with 0 even on failure). Close any terminal that holds the port before you flash.
 
-3. **Open both consoles and reset**: open both terminals at 115200 baud and tap SW2 on each board. About 7 seconds after reset the console prints `BLE initialized`; the controller first qualifies its 32 kHz clock source, which takes a moment. The messages below omit the level, time and thread fields at the start of each line.
+3. **Open both consoles and reset**: open both terminals at 115200 baud and tap SW2 on each board. About 7 seconds after reset the console prints `BLE initialized`: the Reef has no 32.768 kHz crystal, so the controller first qualifies its 32 kHz clock source, prints `XTAL32K rejected` and falls back to RC32K, which takes a moment. The messages below omit the level, time and thread fields at the start of each line.
 
 4. **Connect the boards**: on the slave, type:
 
@@ -196,7 +196,8 @@ CONFIG_FREERTOS_TIMER_TASK_STACK_WORDS=1024
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| `flash jedec id: 00000000` or `IPRO FLASH MATCH TYPE FAIL` while flashing | Wrong flash pin setting | Make sure the command has `--chip-variant IPRO7AI` |
+| `flash jedec id: 00000000` or `IPRO FLASH MATCH TYPE FAIL` while flashing | Wrong flash pin setting, or the board is not in download mode | Make sure the command has `--chip-variant IPRO7AI` and enter download mode first |
+| The flasher cannot open the port | A terminal still holds the same port | Close the terminal before flashing |
 | `IPRO FLASH WRITE CHECK FAIL` on every retry | Seen with some images | Set `decompress_write = false` in the IntelProCube ini, flash, then restore it |
 | The master connects to another board | More than one `IPRO-TP-TEST` is advertising nearby | Switch the other test boards off, or give the slave's address: `tp master XX:XX:XX:XX:XX:XX` |
 | `Cannot start test - notifications not enabled by client` | Service discovery after connecting has not finished | Wait until the master prints `Notifications enabled - ready for test` |
@@ -208,3 +209,4 @@ CONFIG_FREERTOS_TIMER_TASK_STACK_WORDS=1024
 - [BLE Development](../guides/ble.md): controller libraries (`link1_periph`, `link1`, `link2`, `link4`) and host settings.
 - [Getting Started with LE Audio](le-audio.md): run the LE Audio headset example on the Reef.
 - [Examples](../examples/index.md): the other BLE applications and their Reef configurations.
+- [Test Your Application](testing.md): send commands to each board with `serial_monitor.py` and wait for the result, to script the measurement.

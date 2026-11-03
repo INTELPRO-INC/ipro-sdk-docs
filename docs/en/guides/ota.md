@@ -1,19 +1,20 @@
 ---
 title: "OTA Updates"
-description: FreeRTOS boot2 OTA packages and the A/B partition table, BLE updates of the IPRO7AI Reef EVK with ipro_ble_remote, and MCUboot with MCUmgr under Zephyr
+description: FreeRTOS boot2 OTA packages and the A/B partition table, updating the IPRO7AI Reef EVK over BLE with ipro_ble_remote, updating the IPRO6S FIN card over Wi-Fi, and where MCUboot fits under Zephyr
 migrate_from:
   - "tools-debugging.html#ota-package"
 ---
 
 # OTA Updates
 
-For FreeRTOS applications, boot2 performs the update: the application writes an OTA package into the idle FW slot of the partition table and switches the active index; after a reboot, boot2 checks the package, unpacks it into the execution slot and boots it. The SDK ships the packaging tool `tools/create_ota.py` and a complete reference for updating the IPRO7AI Reef EVK over BLE, `ipro_ble_remote` (`defconfig_reef`). Zephyr applications use MCUboot and MCUmgr instead.
+For FreeRTOS applications, boot2 performs the update: the running application writes an OTA package into the idle FW slot of the partition table and switches the active index; after a reboot, boot2 checks the package, unpacks it into the execution slot and boots it. The SDK ships the packaging tool `tools/create_ota.py` and a complete reference for updating the IPRO7AI Reef EVK over BLE: `ipro_ble_remote` with `defconfig_reef`, its A/B partition table, a packaging script, a Python sender and an Android app.
 
 !!! abstract "At a glance"
-    - Package: `tools/create_ota.py` wraps the `whole_img.bin` produced by IntelProCube into an `.xz.ota` (512-byte header + XZ-compressed payload).
-    - Reference: `ipro_ble_remote` with `defconfig_reef` + `partition_cfg_2M_remote_ab.toml` + boot2 v0.5.2; the default `.config` has no OTA.
-    - Zephyr: `zephyr/samples/ble_ota`, MCUboot (swap-move) + MCUmgr SMP over BLE.
-    - Not included: the product file that signed packages need, and the IPRO6S FIN card firmware package. boot2 and the standard partition tables come with IntelProCube.
+    - Reference: `ipro_ble_remote` `defconfig_reef` + `partition_cfg_2M_remote_ab.toml` + boot2 v0.5.2 (from IntelProCube); the default `.config` has no OTA.
+    - Package: `tools/create_ota.py` wraps IntelProCube's combined `whole_img.bin` into an `.xz.ota` (512-byte header + XZ payload); `make_reef_ota.sh` runs both steps for the Reef.
+    - Senders: `tools/reef_ota.py` (Python, bleak) or `ipro_remote_demo.apk` (Android), over the BLE OTA service 0xFF60.
+    - The IPRO6S FIN card updates over Wi-Fi with `ipro6s_ota <http url>` from `ipro7ai_reef_demo` `defconfig_wifi_ipro6s`.
+    - Never run OTA with the standard `partition_cfg_2M.toml` on the Reef. Not included: signed-package product settings (`tools/ota_products.py`).
 
 ## Architecture { #architecture }
 
@@ -30,7 +31,7 @@ sequenceDiagram
   B->>A: Reset activeIndex, boot FW A[0]
 ```
 
-According to the `ipro_ble_remote` README, if the package fails verification, boot2 enters its USB rescue mode instead of erasing the existing execution slot.
+According to the `ipro_ble_remote` README, boot2 erases the execution slot only after the package passes its SHA-256 check. A package that fails the check leaves boot2 in its USB rescue mode, with the existing execution slot untouched.
 
 ## Partition table and A/B layout { #partitions }
 
@@ -49,17 +50,19 @@ According to the `ipro_ble_remote` README, if the package fails verification, bo
 
 - This layout needs 2 MB of flash; `defconfig_reef` sets `CONFIG_IPRO7_FLASH_2M=y`.
 - The boot2 image is `chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin` in the IntelProCube directory; it is not part of the SDK package.
+- The table has no boot2 entry on purpose: with one, the flash tool writes a boot2 header that the boot ROM does not load. Pass boot2 with `--boot2` instead.
 
 !!! danger "Do not run OTA with the standard partition table"
-    On the IPRO7AI Reef EVK, do not run OTA with the standard `partition_cfg_2M.toml`: after an image is written to its second FW slot and made active, the board shows no output at all and has to be reflashed in download mode. Use `partition_cfg_2M_remote_ab.toml`.
+    On the IPRO7AI Reef EVK, never run OTA with the standard `partition_cfg_2M.toml`: an image written to its second FW slot (0x12A000) and made active never boots, the console stays silent, and the board has to be reflashed in download mode. Use `partition_cfg_2M_remote_ab.toml`.
 
 ## OTA packaging (create_ota.py) { #ota-package }
 
-The input of `tools/create_ota.py` must be a combined image with a boot header, such as the `chips/ipro7/img_create_iot/whole_img.bin` that the IntelProCube command-line tool produces with `--build` — not the `.bin` from the SDK build. The script stops if the input has the wrong format.
+The input of `tools/create_ota.py` must be a combined image that starts with the `IPNP` boot header, such as the `chips/ipro7/img_create_iot/whole_img.bin` that the IntelProCube command-line tool produces with `--build` — not the `.bin` from the SDK build. The script stops if the input has the wrong format.
 
 ```bash
-# 1. Produce whole_img.bin with IntelProCube (run in the IntelProCube directory; the tool
+# 1. Produce whole_img.bin with IntelProCube (in the IntelProCube directory; the tool
 #    exits 0 even on failure, so look for "PT Check: whole_img.bin" in its output)
+cd <ICUBE>
 ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI --build \
     --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
     --pt <SDK>/apps/bluetooth/ble/ipro_ble_remote/partition_cfg_2M_remote_ab.toml \
@@ -67,7 +70,7 @@ The input of `tools/create_ota.py` must be a combined image with a boot header, 
 
 # 2. Package it (XZ-compressed by default)
 python3 <SDK>/tools/create_ota.py chips/ipro7/img_create_iot/whole_img.bin \
-    --hw-ver <hw-version> --fw-ver <fw-version> -o firmware.xz.ota
+    --fw-ver <fw-version> -o firmware.xz.ota
 ```
 
 | Argument | Meaning |
@@ -75,8 +78,8 @@ python3 <SDK>/tools/create_ota.py chips/ipro7/img_create_iot/whole_img.bin \
 | `<input>` | Combined image (starts with the `IPNP` boot header) |
 | `--raw` | No compression. Without `-o`, the output is the input name with its extension replaced by `.ota` (`--raw`) or `.xz.ota` |
 | `-o FILE` | Output file |
-| `--hw-ver`, `--fw-ver` | Hardware and firmware version strings written into the header (up to 15 characters each); always set them explicitly rather than relying on the defaults |
-| `--sign-key`, `--product`, `--hw-id`, `--fw-version`, `--force-version`, `--key-id` | For signed packages; they need `tools/ota_products.py`, which V2.1.0 does not include, so they cannot be used |
+| `--hw-ver`, `--fw-ver` | Hardware and firmware version strings written into the header (up to 15 characters each). boot2 does not check the hardware version |
+| `--sign-key`, `--product`, `--hw-id`, `--fw-version`, `--force-version`, `--key-id` | Signed packages. They need `tools/ota_products.py`, which is not included in V2.2.0, so they cannot be used |
 
 | Header offset | Contents |
 |---|---|
@@ -88,25 +91,100 @@ python3 <SDK>/tools/create_ota.py chips/ipro7/img_create_iot/whole_img.bin \
 | 96–511 | Reserved (0xFF); holds the signature block in signed packages |
 | 512 onward | Payload (XZ with a 32 KB dictionary, matching the boot2 decoder) |
 
-`tools/make_reef_ota.sh` in `ipro_ble_remote` wraps both steps into one command; see the next section.
+For the Reef, `apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh` runs both steps in one command and stamps the build time as the firmware version; see [Hands-on on the Reef](#hands-on).
 
 ## BLE OTA (ipro_ble_remote) { #ble-ota }
 
-The default `.config` of `ipro_ble_remote` (IPRO7 EVB) has no OTA (`# CONFIG_IPRO_BLE_REMOTE_OTA is not set`). Only `defconfig_reef` sets `CONFIG_IPRO_BLE_REMOTE_OTA=y`, together with boot2 and the A/B partition table, and the package documents only this IPRO7AI Reef EVK flow. Other boards need boot2 and a similar A/B partition table to use the OTA service.
+Only `defconfig_reef` enables the OTA service. The default `.config` of `ipro_ble_remote` builds an IPRO7 EVB image without it (`# CONFIG_IPRO_BLE_REMOTE_OTA is not set`).
+
+```ini title="apps/bluetooth/ble/ipro_ble_remote/defconfig_reef (excerpt)"
+CONFIG_IPRO7AI_REEF=y
+CONFIG_IPRO7_FLASH_2M=y
+CONFIG_LINK_FLASH=y
+CONFIG_PARTITION=y
+CONFIG_IPRO_BLE_REMOTE_OTA=y
+```
+
+The service and its characteristics (full description for app developers in `apps/bluetooth/ble/ipro_ble_remote/OTA_IMPLEMENTATION_GUIDE.md`):
+
+| Characteristic | UUID | Properties | Format |
+|---|---|---|---|
+| OTA Control | `0xFF61` | Write | `01` + size (u32 LE) START; `02` + CRC32 (u32 LE) END; `03` ABORT; `04` VERIFY; `05` REBOOT |
+| OTA Data | `0xFF62` | Write Without Response | Sequence u16, length u16, reserved u16, then the data; at most MTU − 9 bytes of data per packet |
+| OTA Status | `0xFF63` | Read, Notify | Status, error code, progress %, reserved u16; status 0 idle, 1 receiving, 2 verifying, 3 ready, 4 complete (send REBOOT), 0xFF error |
+
+- Send the `.xz.ota` package, not the `.bin`. The CRC32 is the standard CRC-32 (the same as `zlib.crc32`) over the whole file sent.
+- After START the device erases the staging slot; wait for status 1 (receiving) before sending data.
+- The device queues up to 20 packets and writes flash as they arrive. Pace the sender — `reef_ota.py` reads OTA Status after every 8 packets — or packets are dropped and END reports an error.
+- Negotiate a large MTU first; the README recommends requesting MTU 513 or more after connecting.
+
+## Hands-on on the Reef { #hands-on }
+
+Flash `ipro_ble_remote` once over UART, change the code, then install the new build over BLE and see the build time change. You need a Reef with a console cable on U6, the IntelProCube command-line tool (`<ICUBE>`), and a macOS or Linux computer with Bluetooth and Python 3 (or an Android phone with `ipro_remote_demo.apk`).
 
 <div class="ipro-steps" markdown>
 
-1. **Build**
+1. **Check the configuration**
+
+    Use `DEFCONFIG=defconfig_reef` as shipped; the keys that make OTA work are in the excerpt in [BLE OTA](#ble-ota). For OTA in your own Reef application, keep `CONFIG_IPRO7_FLASH_2M=y` and `CONFIG_PARTITION=y`, flash with boot2 and an A/B table like `partition_cfg_2M_remote_ab.toml`, and write the package into the inactive FW slot as below.
+
+2. **Read how the application stages the package**
+
+    The OTA service asks boot2's partition API for the inactive FW slot, writes the package there, and after the CRC32 check marks that slot active:
+
+    ```c title="apps/bluetooth/ble/ipro_ble_remote/src/services/ota_service.c (excerpt)"
+    static int ota_get_backup_partition(uint32_t *addr, uint32_t *size)
+    {
+        int ret = hal_boot2_partition_addr_inactive("FW", addr, size);
+        if (ret != 0) {
+            IPRO_LOGE(LOG_TAG, "Failed to get backup partition: %d", ret);
+            return -1;
+        }
+        return 0;
+    }
+
+    static int ota_switch_partition(void)
+    {
+        int ret;
+        PtTable_Entry_Config pt_entry;
+
+        ret = hal_boot2_get_active_entries(PT_ENTRY_FW_CPU0, &pt_entry);
+        if (ret != 0) {
+            IPRO_LOGE(LOG_TAG, "Failed to get partition entry: %d", ret);
+            return -1;
+        }
+        /* size check against pt_entry.maxLen[] left out */
+
+    #if defined(CONFIG_IPRO7AI_REEF)
+        /* The Reef image runs under boot2 (partition_cfg_2M_remote_ab.toml): the
+         * slot holds an OTA package that boot2 checks and unpacks by its own
+         * header, so the entry length is not used. */
+        pt_entry.len = 0;
+    #else
+        pt_entry.len = g_ota_ctx.firmware_size;
+    #endif
+
+        ret = hal_boot2_update_ptable(&pt_entry);
+        if (ret != 0) {
+            IPRO_LOGE(LOG_TAG, "Failed to update partition table: %d", ret);
+            return -1;
+        }
+        return 0;
+    }
+    ```
+
+    The REBOOT command then resets the chip, and boot2 installs the package on the way up.
+
+3. **Build and flash the first image**
 
     ```bash
     make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef
     ```
 
-    Output: `apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin`
-
-2. **First flash: boot2, the A/B partition table and the firmware**: run in the IntelProCube directory (macOS shown; the Linux and Windows commands are in step 3 of [Your First BLE Application](../tutorials/first-ble-app.md#steps)):
+    Put the Reef in download mode (hold SW1 BOOT, tap SW2 RESET, release SW1), then:
 
     ```bash
+    cd <ICUBE>
     ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
         --port /dev/cu.usbserial-XXXX --baudrate 921600 \
         --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
@@ -114,18 +192,20 @@ The default `.config` of `ipro_ble_remote` (IPRO7 EVB) has no OTA (`# CONFIG_IPR
         --firmware <SDK>/apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin
     ```
 
-    The tool exits 0 even when flashing fails, so look for `[All Success]` in its output. At boot, `[BOOT2] IPRO7 Boot2 v0.5.2` appears first, then the application starts from FW A (0x12000).
+    Look for `[All Success]` (the tool exits 0 even on failure), then press SW2 (RESET). At 115200 baud the console shows `[BOOT2] IPRO7 Boot2 v0.5.2`, then the application starts from FW A (0x12000) and prints `[OTA] Service ready`. Flashing details are in [Flashing & Serial Console](../get-started/flash-and-monitor.md).
 
-3. **Create the OTA package** after changing and rebuilding your code (on Linux use `ipro_iot_tool_linux`):
+4. **Change the code and build the OTA package**
+
+    Make any change, rebuild with the same `make` command, then package the new build (Linux: `ipro_iot_tool_linux`):
 
     ```bash
-    IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos \
+    IPRO_FLASH_TOOL=<ICUBE>/ipro_iot_tool_macos \
         sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
     ```
 
-    Output: `apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_reef.xz.ota`
+    Output: `apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_reef.xz.ota`, about 345 KB.
 
-4. **Push it over BLE**: `tools/reef_ota.py` uses bleak to connect to the device named `IPRO-Remote` (override with the `REMOTE_NAME` environment variable) and sends the package.
+5. **Send it over BLE**
 
     ```bash
     python3 -m venv .venv && .venv/bin/pip install bleak
@@ -133,60 +213,52 @@ The default `.config` of `ipro_ble_remote` (IPRO7 EVB) has no OTA (`# CONFIG_IPR
         apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_reef.xz.ota
     ```
 
-    When the transfer finishes the device reboots, and boot2 installs the new firmware and starts it from FW A. Measured in the README (2026-10-06, macOS, MTU 247): a 345 KB package transfers in 13–17 seconds.
+    The script finds `IPRO-Remote` (set `REMOTE_NAME` for another name), prints the running image's board information, sends the package and waits for the board to come back. The README measured 13–17 s for a 345 KB package on macOS with MTU 247.
+
+6. **Check the result**
+
+    On the Reef console, among other lines (log prefixes left out):
+
+    ```text
+    [OTA] START: … bytes, … packets (… bytes/pkt, MTU=…)
+    [OTA] Progress: 5% (…)
+    [OTA] Transfer complete: … bytes in … ms (… bytes/s)
+    [OTA] END: CRC32=0x…, …/… bytes
+    [OTA] CRC32 OK! Switching partition...
+    [OTA] Ready to reboot
+    [OTA] Rebooting...
+    [BOOT2] IPRO7 Boot2 v0.5.2
+    ```
+
+    On the computer, `reef_ota.py` prints `verified, slot switched; rebooting`, then after the board reconnects `running: IPRO7AI Reef; camera …; SD …; build <date> <time>`. A build time later than the one printed before the update means the new image is running.
 
 </div>
 
-A phone app must also send the `.xz.ota` package, not the `.bin`. The OTA service (full description in `apps/bluetooth/ble/ipro_ble_remote/OTA_IMPLEMENTATION_GUIDE.md`):
-
-| Characteristic | UUID | Properties | Format |
-|---|---|---|---|
-| OTA Control | `0xFF61` | Write | `01` + size (u32 LE) START; `02` + CRC32 (u32 LE) END; `03` ABORT; `04` VERIFY; `05` REBOOT |
-| OTA Data | `0xFF62` | Write Without Response | Sequence u16, length u16, reserved u16, then the data; at most MTU − 9 bytes of data per packet (512 maximum) |
-| OTA Status | `0xFF63` | Read, Notify | Status, error code, progress %, reserved u16; status 0 idle, 1 receiving, 2 verifying, 3 ready, 4 complete (send REBOOT), 0xFF error |
-
-- The CRC32 is the standard CRC-32 (the same as `zlib.crc32`) over the whole file sent.
-- The device queues up to 20 packets and writes flash as they arrive. Pace the sender — for example, read OTA Status after every 8 packets, as `reef_ota.py` does — or packets are dropped and END reports an error.
+Next: [Create your first application](../tutorials/first-own-app.md) starts a new application from a Reef configuration; [Test your application](../tutorials/testing.md) covers console and host-script checks like the ones above.
 
 ## Other update paths { #other-paths }
 
 | Path | Details |
 |---|---|
-| IPRO6S FIN card firmware | `ipro6s_ota <http url>` (in `ipro7ai_reef_demo`'s `defconfig_wifi_ipro6s` and in `ipro7_sdio_wifi`) downloads a package over HTTP and hands it to the IPRO6S with `ipronet_ota_update()` (`components/network/ipronet_host/ipronet_ota.h`). The package is an IntelProCube-built `.xz.ota` with an IPRO6 hardware version; the FIN card firmware package is not included in V2.1.0 (contact INTELPRO) |
-| Shared OTA code | `apps/platform/common/ota/`: a core that writes a package into the second FW slot, checks its SHA-256 and switches the active index, plus UART (zmodem) and USB CDC receivers and the `ota_sig` signature check. No V2.1.0 application builds these files; use them as a reference for your own implementation |
+| IPRO6S FIN card firmware | `ipro7ai_reef_demo` built with `DEFCONFIG=defconfig_wifi_ipro6s` has the console command `ipro6s_ota <http url>`. It downloads a package over Wi-Fi and hands it to the FIN card with `ipronet_ota_update()` (`components/network/ipronet_host/ipronet_ota.h`), which takes about 30–60 s and ends with `[ota] RESULT OK` on the console. The package is IntelProCube's `FW_OTA.bin.xz.ota` with an IPRO6 hardware version; the host refuses other chips before it starts. The FIN card's firmware is `ipro6_if_wifi` built with `defconfig_ipro6_sdio`, whose `CONFIG_RNM_OTA=y` provides the device side. See [Networking](networking.md) |
+| Shared OTA code | `apps/platform/common/ota/`: a core that writes a package into the inactive FW slot, checks its SHA-256 and switches the active index, receivers over UART (zmodem) and USB CDC, and the `ota_sig` signature check. No shipped configuration builds these files; use them as a reference for your own receiver |
 
 ## Zephyr: MCUboot and MCUmgr { #zephyr-mcuboot }
 
-A Zephyr application boots through boot2 → MCUboot (`boot_partition`) → image-0 (`slot0_partition`); a new image is uploaded to `slot1_partition` and MCUboot swaps it in with swap-move. `zephyr/samples/ble_ota` uploads images over BLE with MCUmgr SMP and advertises as `IPRO7 OTA`.
-
-```bash
-cd zephyr-workspace
-# v1: MCUboot + the signed application; west flash merges them before flashing
-west build -p always -b ipro7ai_evk --sysbuild ../zephyr/samples/ble_ota -d build/ota
-west flash -d build/ota
-
-# v2: the image to upload is build/ota_v2/ble_ota/zephyr/zephyr.signed.bin
-west build -p always -b ipro7ai_evk --sysbuild ../zephyr/samples/ble_ota -d build/ota_v2 \
-    -- -Dble_ota_CONFIG_MCUBOOT_IMGTOOL_SIGN_VERSION=\"2.0.0\"
-```
-
-- Upload `zephyr.signed.bin` with a phone app that supports MCUmgr, or with the `mcumgr` / `smpmgr` command-line tools, in "Test and confirm" or "Test only" mode. The new image confirms itself on its first boot (`boot_write_img_confirmed()`), so later resets keep it.
-- Images are signed with MCUboot's development key (`bootloader/mcuboot/root-rsa-2048.pem`); a product must use its own key.
-- The sample also enables MCUmgr over the shell, but uploading an image over the 2000000 baud console is unreliable; use BLE.
-- `zephyr/samples/mcuboot_app` is the minimal sample that checks the boot chain. `tools/zephyr/merge_mcuboot.py` merges MCUboot with the application, and `west flash` calls it for you.
+Zephyr images update through MCUboot instead of the boot2 package: boot2 starts MCUboot, which swaps a new image in from `slot1_partition` (swap-move). The sample `zephyr/samples/ble_ota` uploads images over BLE with MCUmgr SMP. Zephyr in V2.2.0 has board definitions for the IPRO7 EVB and the IPRO7AI EVK only, not for the Reef; building and flashing are in [Zephyr RTOS](zephyr.md).
 
 ## Limitations in this release { #limitations }
 
-- `tools/ota_products.py`, which signed OTA packages (`create_ota.py --sign-key`) need, is not included in V2.1.0.
-- BLE OTA has a reference flow only for the IPRO7AI Reef EVK (`defconfig_reef`); the default `ipro_ble_remote` build has no OTA.
-- There is no example that updates IPRO7 firmware over Wi-Fi or Ethernet; `ipro6s_ota` updates the IPRO6S only.
+- `tools/ota_products.py`, which signed OTA packages (`create_ota.py --sign-key`) need, is not included in V2.2.0.
+- The BLE OTA reference flow is `ipro_ble_remote` `defconfig_reef`; the default `ipro_ble_remote` build has no OTA.
+- There is no example that updates IPRO7 firmware over Wi-Fi or Ethernet; `ipro6s_ota` updates the IPRO6S FIN card only.
+- `build_freertos.sh flash` cannot pass a boot2 image; do the first flash of an OTA-capable image with the IntelProCube command line as above.
 - The boot2 image and the standard partition tables come with IntelProCube, not with the SDK package.
-- Zephyr's `ble_ota` uses the MCUboot development key.
 
 ## Related documents { #related }
 
-- [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md): flashing settings and jumpers.
+- [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md): download mode, switches and the U6 console connector.
 - [Flashing & Serial Console](../get-started/flash-and-monitor.md): the IntelProCube command-line tool.
 - [BLE Development](ble.md): the GATT services of `ipro_ble_remote`.
-- [Zephyr RTOS](zephyr.md): sysbuild and `west flash`.
 - [Networking](networking.md): `ipronet_host` and the FIN card.
+- [Zephyr RTOS](zephyr.md): sysbuild, MCUboot and `west flash`.

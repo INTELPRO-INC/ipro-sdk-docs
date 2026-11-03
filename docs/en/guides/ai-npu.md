@@ -1,185 +1,186 @@
 ---
 title: "AI & NPU"
-description: Run .inm models on the IPRO7AI NPU with the prebuilt IPROAI runtime — bundled models, configuration, examples, memory planning and benchmarking
+description: Run .inm models on the IPRO7AI NPU of the IPRO7AI Reef EVK — the prebuilt runtime and its APIs, configuration, deploying models, the Reef AI applications and a hands-on walk-through
 migrate_from:
   - "ai-npu.html"
 ---
 
 # AI & NPU
 
-The IPRO7AI NPU runs `.inm` models through the IPROAI runtime (for how the chip differs from IPRO7, see [IPRO7AI](../hardware/chips/ipro7ai.md)). The SDK ships the runtime as a prebuilt library with public headers, together with example models and applications you can flash as they are; TensorFlow Lite Micro examples run `.tflite` models on the CPU. Get a reproducible result with a bundled model and its matching example before you swap in your own model.
+The IPRO7AI NPU runs `.inm` models through a prebuilt runtime, `components/ai/lib/libai.a`, with public headers (how the chip differs from IPRO7 is on the [IPRO7AI](../hardware/chips/ipro7ai.md) page). On the IPRO7AI Reef EVK three applications use it: `ipro7_uvc_cam` with `defconfig_reef_rps` (a webcam game against the NPU), `ipro_ai_link` (runs any model from the SD card on command) and `ipro_reef_teach` (the Edge AI firmware behind [IPRO AI Teach](../teach/index.md)). Start from one of them with its own model before you bring your own.
 
 !!! abstract "At a glance"
-    - Included: the prebuilt runtime `components/ai/lib/libai.a` and its headers, example `.inm` and `.tflite` models, and the training scripts of `ipro7ai_evk_rps`.
-    - Enable with `CONFIG_AI_SUPPORT=y`, and add `CONFIG_USE_PSRAM=y` yourself (it is not turned on for you).
-    - Quickest try: `ipro7_uvc_cam` (`defconfig_reef_rps`) on the IPRO7AI Reef EVK; the IPRO7AI EVK has three NPU applications.
-    - Not included: runtime source code, model conversion tools, IPRO AI Studio. Contact INTELPRO.
+    - Included: the prebuilt runtime and its headers (`iproai_core.h` for one model, `ipro_ai.h` and the other Edge AI layers for several), example `.inm` models, and the Reef applications above.
+    - Enable with `CONFIG_AI_SUPPORT=y`, and write `CONFIG_USE_PSRAM=y` into `.config` yourself: models and tensors live in PSRAM.
+    - A model is linked into the firmware, stored in the `mfg` flash partition, or read from the SD card.
+    - Not part of the SDK package: runtime source code and model conversion tools (contact INTELPRO); IPRO AI Studio ships separately (see [Install IPRO AI Studio](../teach/install.md)).
 
 ## Architecture { #architecture }
 
 ```mermaid
 flowchart LR
-  M[".inm model<br/>in firmware / mfg partition / SD card"] --> R["IPROAI runtime<br/>libai.a"]
-  C["Camera → ISP"] -->|"frame (external input)"| R
+  M[".inm model<br/>firmware / mfg partition / SD card"] --> R["Runtime libai.a"]
+  C["OV5640 → ISP channel 1"] -->|"frame address (external input)"| R
   R --> N["NPU"]
   R --> P["CPU layer ops<br/>NMSIS-NN / NMSIS-DSP"]
   R --> O["Output tensors<br/>and post-processing"]
 ```
 
-Each layer of a model runs on either the NPU or the CPU, as the model itself specifies; `iproai_getNetInfo()` reports the total and NPU layer counts. Do not assume that any model will run entirely on the NPU.
+Each layer of a model runs on either the NPU or the CPU, as the model itself specifies; `iproai_getNetInfo()` reports the total and NPU layer counts. Do not assume that any model runs entirely on the NPU.
 
-The SDK's inference paths are listed below. Their model formats are not interchangeable — renaming a file does not convert it:
-
-| Path | Model format | How it runs | Examples |
+| Path | Model format | How it runs | Reef example |
 |---|---|---|---|
-| NPU (IPROAI) | `.inm` | `libai.a` loads the model and dispatches each layer to the NPU or the CPU | `ipro_npu_yolo`, the IPRO7AI EVK apps, `ipro_ai_link` |
-| CPU | `.tflite` | TensorFlow Lite Micro with NMSIS-NN kernels | `ipro_tflm_test`, `ipro_tflm_yolo` |
-| CPU | TinyMaix | TinyMaix INT8 | `ipro_tinymaix_demo` |
+| NPU | `.inm` | `libai.a` loads the model and dispatches each layer to the NPU or the CPU | `ipro7_uvc_cam` (`defconfig_reef_rps`), `ipro_ai_link`, `ipro_reef_teach` |
+| CPU | `.tflite` | TensorFlow Lite Micro with NMSIS-NN kernels (`components/3rdparty`) | — (IPRO7 EVB examples `ipro_tflm_test`, `ipro_tflm_yolo`) |
+
+The two formats are not interchangeable; renaming a file does not convert it.
 
 ## Runtime and API { #iproai-framework }
 
 ```text title="components/ai/"
 components/ai/
-├── CMakeLists.txt        # links lib/libai.a directly
+├── CMakeLists.txt        # links lib/libai.a and adds the include paths below
 ├── iproai_def.h
 ├── lib/libai.a           # prebuilt runtime
-└── src/
-    ├── core/include/iproai_core.h
-    └── inst/include/     # NPU, CPU ops, post-processing; detect/, audio/
+├── src/core/include/     # iproai_core.h: one model, direct
+├── src/inst/include/     # NPU, CPU ops, post-processing; detect/, audio/
+├── runtime/include/      # ipro_ai.h: several models, shared NPU
+├── store/include/        # ipro_ai_store.h: model slots in flash
+├── source/include/       # ipro_ai_source.h: data sources
+├── preproc/include/      # ipro_ai_preproc.h, sensor_front.h
+└── app/include/          # ipro_ai_app.h: source → model → results
 ```
 
-The package contains no runtime source, so an application's `.config` cannot change how `libai.a` was compiled. For a differently configured library, contact INTELPRO.
+The package has no runtime source, so `.config` cannot change how `libai.a` was compiled.
 
-| Function (`iproai_core.h`) | Purpose |
+**Direct API (`iproai_core.h`)**, used by `ipro_ai_link` and the rock-paper-scissors build:
+
+| Function | Purpose |
 |---|---|
 | `iproai_create()` | Create a model instance |
-| `iproai_load_model_from_buffer(hdl, buf)` | Load from memory (a model linked into the firmware, or the mfg partition read through XIP) |
+| `iproai_load_model_from_buffer(hdl, buf)` | Load from memory: a model linked into the firmware, or the `mfg` partition read through XIP |
 | `iproai_load_model_from_file(hdl, "sd:/…")` | Read the whole `.inm` into PSRAM through FatFS, then load it |
 | `iproai_getNetInfo(hdl)` | Input size, layer count, NPU layer count |
 | `iproai_getInputBuffer(hdl)`, `iproai_getOutputBuffer(hdl, &size)` | Input and output buffers |
-| `iproai_getInputResolution()`, `iproai_setSourceResolution()` | Model input size; source image size (for coordinate mapping) |
-| `iproai_startCompute(hdl)` | Run inference (synchronous; returns when done) |
-| `iproai_setResultCB()`, `iproai_setCustom_Postproc_CB()` | Result callback, custom post-processing callback |
+| `iproai_startCompute(hdl)` | Run inference (synchronous) |
+| `iproai_setResultCB()`, `iproai_setCustom_Postproc_CB()` | Result callback, custom post-processing |
 | `iproai_free(hdl)` | Release the model |
 
-Calls return `IPROAI_STATUS_NO_ERROR` on success. Call `iproai_npu_init()` (`iproai_inst_npu.h`) before first use. Post-processing headers are in `src/inst/include/detect/` (YOLOv8, YOLOv8 person/pet, gestures and more) and `src/inst/include/audio/` (speaker embedding, speaker recognition, fbank).
+Calls return `IPROAI_STATUS_NO_ERROR` on success. Ungate the multimedia clock (`GLB_PER_Clock_UnGate(GLB_AHB_CLOCK_MM)`) and call `iproai_npu_init()` (`iproai_inst_npu.h`) before the first load, as `ipro_ai_link` does.
 
-This flow follows `apps/test/ipro_ai_link/main.c`:
+- **Input**: models that take camera frames read an external input. The runtime reads from `imgBuffer + 4` (the first 4 bytes are a size header); `NPU_Img_Ext_Addr_Cfg()` (`hal_npu.h`) sets the frame address before each run. The Reef camera path delivers 4 bytes per pixel (ARGB).
+- **Output**: the size returned by `iproai_getOutputBuffer()` is the patch size, not the whole tensor. The NPU pads the channel count to a multiple of 4 (`BALI_CHN_ALIGN`, `iproai_inst_util.h`); read the output with the padded stride.
+- The NPU's base-address and external-input registers are written only when a model is loaded. With one model per image this does not matter; with several, use the runtime below.
 
-```c title="Load a model from the SD card and run it once"
-#include <stdio.h>
-#include "iproai_core.h"
-#include "iproai_def.h"
-#include "iproai_inst_npu.h"
-#include "drv_glb.h"
+**Edge AI layers**, used by `ipro_reef_teach` (all in `libai.a`):
 
-static iproai_model_hdl_t s_hdl;
-
-int model_run_once(void)
-{
-    /* Mount sd: with FatFS first (see ai_mount in ipro_ai_link) */
-    GLB_PER_Clock_UnGate(GLB_AHB_CLOCK_MM);
-    iproai_npu_init();
-
-    s_hdl = iproai_create();
-    if (s_hdl == NULL) {
-        return -1;
-    }
-    if (iproai_load_model_from_file(s_hdl, "sd:/model.inm") != IPROAI_STATUS_NO_ERROR) {
-        iproai_free(s_hdl);
-        return -1;
-    }
-
-    struct iproai_net_info_t *net = iproai_getNetInfo(s_hdl);
-    printf("layers %d, on NPU %d\r\n", net->layer_cnt, net->npu_layer_cnt);
-
-    /* Prepare the input for this model (see below), then run */
-    if (iproai_startCompute(s_hdl) != IPROAI_STATUS_NO_ERROR) {
-        iproai_free(s_hdl);
-        return -1;
-    }
-
-    uint32_t patch = 0;
-    const uint8_t *out = iproai_getOutputBuffer(s_hdl, &patch);
-    (void)out;
-    return 0;
-}
-```
-
-- **Input**: the bundled models that take camera frames (`person_pet_detect`, `rps_v3`) use the external input. The runtime reads from `imgBuffer + 4` (the first 4 bytes are a size header), and `NPU_Img_Ext_Addr_Cfg()` (`hal_npu.h`) sets the frame address. See `apps/test/ipro_npu_yolo/main.c`.
-- **Output**: the size returned by `iproai_getOutputBuffer()` is the patch size, not the whole tensor. The NPU pads the channel count to a multiple of 4 (`BALI_CHN_ALIGN`, `iproai_inst_util.h`), so read the output with the padded stride.
+| Header | Purpose |
+|---|---|
+| `ipro_ai.h` | `ipro_ai_init()`, `ipro_ai_model_open()`, `ipro_ai_invoke()`, `ipro_ai_model_close()`: any number of models open at once; one NPU lock, and before every run the NPU is pointed back at the model being run. Code that still calls `iproai_*` directly in the same image holds `ipro_ai_npu_lock()` around it |
+| `ipro_ai_store.h` | Model slots in a flash partition: install with a record sector and a commit word, so a power cut leaves the previous model, the new one or an empty slot, never half a model |
+| `ipro_ai_source.h` | Data sources (sample streams such as the PDM microphone or a sensor, or camera frames) with one lifecycle |
+| `ipro_ai_preproc.h`, `sensor_front.h` | Shared preprocessing: quantisation, voice log-mel features, sensor windows to the 64×64×8 input, image crop and resize |
+| `ipro_ai_app.h` | Source → preprocessing → model → task adapter (classification, embeddings, anomaly score) → callbacks |
 
 ## Configuration { #configuration }
 
-```ini title=".config (AI application)"
+```ini title=".config (AI on the Reef)"
+CONFIG_IPRO7AI_REEF=y
+CONFIG_BOARD="IPRO7AI_REEF"
+CONFIG_USE_PSRAM=y           # required: models and tensors live in PSRAM
 CONFIG_AI_SUPPORT=y          # adds components/ai and links libai.a
-CONFIG_USE_PSRAM=y           # required: models and intermediate tensors live in PSRAM
-CONFIG_MM_SUPPORT=y          # applications that use the camera / ISP
-CONFIG_AI_MODEL_FROM_FILE=y  # applications that load models from the SD card (also needs FatFS and the SD driver)
+CONFIG_MM_SUPPORT=y          # applications that feed the camera to the NPU
 ```
 
 | Key | Notes |
 |---|---|
-| `CONFIG_AI_SUPPORT` | Adds the AI component. It also changes the linker's OCRAM layout; see [memory planning](#dev-guide) |
-| `CONFIG_USE_PSRAM` | Set by every AI example. The build does not resolve dependencies, so it must be written in `.config` |
-| `CONFIG_MM_SUPPORT` | Multimedia (camera, ISP). Together with `CONFIG_AI_SUPPORT` it shrinks the OCRAM region |
-| `CONFIG_AI_MODEL_FROM_FILE` | Set by `ipro_ai_link`, `ipro_ai_bench` and `ipro7ai_evk_launcher`, which load models from the SD card |
-| `CONFIG_RPS_EMBED_MODEL` | Application-specific: `ipro7ai_evk_rps` and `ipro7_uvc_cam`'s `defconfig_reef_rps` link `rps_v3.inm` into the firmware |
+| `CONFIG_AI_SUPPORT` | Adds the AI component. Together with `CONFIG_MM_SUPPORT` it also shrinks the OCRAM region; see [memory planning](#dev-guide) |
+| `CONFIG_USE_PSRAM` | Set by every AI application. The build does not apply Kconfig `select`, so it must be written in `.config` |
+| `CONFIG_AI_MODEL_FROM_FILE` | Set by `ipro_ai_link`, which loads models from the SD card (with FatFS: `CONFIG_EVFS=y`, `CONFIG_EVFS_USE_FATFS=y`, `CONFIG_COMPONENTS_FATFS_ENABLE=y`) |
+| `CONFIG_AI_CPU_NN_OPS` | Set by `ipro_ai_link` and `ipro_reef_teach` for models with CPU layers; `ipro_ai_link` also sets `CONFIG_COMPONENTS_NMSIS_NN_ENABLE` |
+| `CONFIG_AI_CYCLE_PROFILE` | Set by `ipro_ai_link`: per-layer cycle counts for `ai_prof` |
+| `CONFIG_UVC_RPS`, `CONFIG_RPS_EMBED_MODEL` | Application keys of `ipro7_uvc_cam`'s `defconfig_reef_rps`: build the game and link `rps_v3.inm` into the firmware |
 
-V2.1.0 always links the prebuilt `libai.a`; there is no option to build the runtime from source. Lines such as `CONFIG_AI_PREBUILT` left in some `.config` files have no effect on the library.
+## Hands-on on the Reef { #hands-on }
 
-## Bundled models { #supported-models }
-
-| Directory | Files | Used by |
-|---|---|---|
-| `apps/platform/ipro7_demo/demo/ai/ai_model/` | `person_detect.inm`, `person_pet_detect.inm`, `res2dnet.inm`, `mbv2.inm` | The AI demo in `ipro7_demo` (`defconfig_boot2`); `person_pet_detect.inm` is also the model of `ipro7ai_evk_person_detect` and the launcher's detection page |
-| `apps/test/ipro_npu_yolo/src/` | `person_pet_detect.inm` | NPU timing with the model linked in |
-| `apps/ai/ipro7ai_evk_rps/model/` | `rps_v3.inm` (default), `rps_v1.inm`, plus the pre-conversion `*_int8.tflite` and `*_numbers.json` | 4-class int8 rock-paper-scissors classifier; the launcher's gestures; `ipro7_uvc_cam`'s `defconfig_reef_rps` |
-| `apps/test/ipro_tflm_test/src/` | `hello_world.tflite`, `person_detect.tflite`, `micro_speech.tflite`, `keyword_scrambled.tflite` | TensorFlow Lite Micro (CPU) |
-| `apps/test/ipro_tflm_yolo/src/` | `yolov8_person_pet.tflite` | The same YOLOv8 as `ipro_npu_yolo`, run on the CPU |
-| `apps/test/ipro_ai_bench/src/bench_models.S` | 8 built-in models (for example `movenet_192`, `nanodet_320`, `retinaface_320`) | Whole-model timing |
-
-## Deploying a model { #model-pipeline }
-
-| Where the model lives | How | Examples |
-|---|---|---|
-| Linked into the firmware | An assembly file pulls the `.inm` into the image with `.incbin`; load it with `iproai_load_model_from_buffer()` | `ipro_npu_yolo` (`src/model_inm.S`), `ipro7ai_evk_rps` (`src/model_blob.S`) |
-| mfg partition | The model sits in the `mfg` partition (at partition start + 0x1000) and is read through XIP at boot; flash it with IntelProCube's `--mfg` | `ipro7ai_evk_person_detect`, `ipro7ai_evk_launcher` (gesture model) |
-| SD card | `iproai_load_model_from_file()` reads it through FatFS; use `sd:/` paths, not `/sdcard/` | `ipro_ai_link`, `ipro_ai_bench`, `ipro7ai_evk_launcher` (its detection page needs `sd:/models/person.inm`) |
-
-The IPRO7AI EVK has only 1 MB of flash, so a model cannot share the firmware partition. The EVK applications therefore bring their own partition table (for example `partition_cfg_1M_person_lcd.toml`: FW at 0x3000, 320 KB; `mfg` at 0x53000, 688 KB) and a `flash.sh`:
-
-```bash
-cd apps/ai/ipro7ai_evk_person_detect
-PORT=/dev/cu.usbserial-XXXX ./flash.sh --full    # first time: partition table + firmware + model
-PORT=/dev/cu.usbserial-XXXX ./flash.sh --model   # swap the model only
-```
-
-`flash.sh` drives the IntelProCube command-line tool (`IPRO_FLASH_TOOL`, or found on `PATH`) and always passes the partition table; without it the tool writes its default table, which has no `mfg` entry. For EVK flashing settings see [IPRO7AI EVK](../hardware/boards/ipro7ai-evk.md) and [Flashing & Serial Console](../get-started/flash-and-monitor.md).
-
-**Your own models**: model conversion tools are not included in V2.1.0; contact INTELPRO. The only training scripts in the package are in `ipro7ai_evk_rps/train/` (Keras, int8 `.tflite` export). Before deploying, check operator support, tensor shapes, quantization parameters and memory needs.
-
-## Example applications { #reference-apps }
-
-| Application | Board | What it does |
-|---|---|---|
-| `apps/multimedia/ipro7_uvc_cam` (`defconfig_reef_rps`) | IPRO7AI Reef EVK | USB webcam with an NPU rock-paper-scissors game drawn into the stream |
-| `apps/test/ipro_ai_link` (`defconfig_reef`) | Reef; the default `.config` is the IPRO7 EVB | Board firmware for IPRO AI Studio "Run on board" |
-| `apps/ai/ipro7ai_evk_person_detect` | IPRO7AI EVK | Camera preview on the LCD with YOLOv8 person/pet boxes |
-| `apps/ai/ipro7ai_evk_rps` | IPRO7AI EVK | Rock-paper-scissors against a 4-class CNN on the NPU; model and training scripts included |
-| `apps/platform/ipro7ai_evk_launcher` | IPRO7AI EVK | Camera, LCD, microphone and speaker in one image; hand gestures switch pages, and a second model detects people and pets |
-| `apps/test/ipro_npu_yolo` | IPRO7 EVB | YOLOv8 NPU timing (`npu_run [iters]`) |
-| `apps/test/ipro_ai_bench` | IPRO7 EVB | Whole-model timing of the built-in models |
-| `apps/test/ipro_tflm_test`, `ipro_tflm_yolo` | IPRO7 EVB | TensorFlow Lite Micro (CPU) |
-| `apps/test/ipro_nmsis_nn_test` | IPRO7 EVB | NMSIS-NN operator tests |
-| `apps/test/ipro_tinymaix_demo` | IPRO7 EVB | TinyMaix INT8 MNIST |
-| `apps/platform/ipro7_demo` (`defconfig_boot2`) | IPRO7 EVB | The AI demo is enabled only in this configuration |
-
-### Try it on the IPRO7AI Reef EVK
+Build the webcam that plays rock-paper-scissors against you: ISP channel 1 crops the centre of the OV5640 picture to 128×128 and feeds it to a 4-class CNN on the NPU, and the result is drawn into the USB video.
 
 <div class="ipro-steps" markdown>
 
-1. **Build**
+1. **Configuration**
+
+    `defconfig_reef_rps` is the plain Reef webcam configuration (`defconfig_reef_ov5640`) plus three lines:
+
+    ```ini title="apps/multimedia/ipro7_uvc_cam/defconfig_reef_rps (excerpt)"
+    #
+    # Rock-paper-scissors on the stream (uvc_rps.c): the EVK app's classifier and
+    # game, model linked into the image.
+    #
+    CONFIG_AI_SUPPORT=y
+    CONFIG_UVC_RPS=y
+    CONFIG_RPS_EMBED_MODEL=y
+    ```
+
+    The webcam configuration already sets `CONFIG_USE_PSRAM=y`, `CONFIG_MM_SUPPORT=y` and `CONFIG_SENSOR_OV5640=y`.
+
+2. **Code**
+
+    The model is pulled into the image by an assembly file:
+
+    ```text title="apps/ai/ipro7ai_evk_rps/src/model_blob.S (excerpt)"
+        .section .rodata.rps_model, "a", @progbits
+        .balign 16
+
+        .global g_rps_model
+        .type   g_rps_model, @object
+    g_rps_model:
+        .incbin "rps_v3.inm"
+        .global g_rps_model_end
+    g_rps_model_end:
+        .size   g_rps_model, g_rps_model_end - g_rps_model
+    ```
+
+    and loaded from that buffer at start-up. The Reef build compiles the classifier source of the IPRO7AI EVK application unchanged:
+
+    ```c title="apps/ai/ipro7ai_evk_rps/src/rps_model.c (excerpt from load_model)"
+    s_hdl = iproai_create();
+    if (!s_hdl) {
+        s_fail = "NPU CREATE FAILED";
+        return -1;
+    }
+    t0 = xTaskGetTickCount();
+    st = iproai_load_model_from_buffer(s_hdl, xip);
+    s_stats.load_ms = (uint32_t)((xTaskGetTickCount() - t0) * portTICK_PERIOD_MS);
+    if (st != IPROAI_STATUS_NO_ERROR) {
+        IPRO_LOGE(LOG_TAG, "NPU load failed (status %d)", (int)st);
+        s_fail = "NPU LOAD FAILED";
+        return -1;
+    }
+    s_net = iproai_getNetInfo(s_hdl);
+    ```
+
+    Each frame then goes to the NPU in the model task:
+
+    ```c title="apps/ai/ipro7ai_evk_rps/src/rps_model.c (excerpt from the model task)"
+    feed(addr);
+    IPROAI_Status_e st = iproai_startCompute(s_hdl);
+    TickType_t t1 = xTaskGetTickCount();
+
+    if (st != IPROAI_STATUS_NO_ERROR) {
+        s_stats.errors++;
+        IPRO_LOGE(LOG_TAG, "NPU compute failed (status %d)", (int)st);
+    } else {
+        uint32_t osz = 0;
+        const uint8_t *out = iproai_getOutputBuffer(s_hdl, &osz);
+        /* ... */
+    }
+    ```
+
+    For this model `feed()` only calls `NPU_Img_Ext_Addr_Cfg(addr)`: the NPU reads the 128×128 ARGB frame that ISP channel 1 wrote. The four outputs are turned into probabilities on the CPU.
+
+    `apps/multimedia/ipro7_uvc_cam/CMakeLists.txt` adds `rps_model.c`, `rps_game.c` and `model_blob.S` when `CONFIG_UVC_RPS` is set. The same pattern works for your own model in your own application; see [Create your first application](../tutorials/first-own-app.md).
+
+3. **Build**
 
     ```bash
     make -C apps/multimedia/ipro7_uvc_cam DEFCONFIG=defconfig_reef_rps
@@ -187,18 +188,99 @@ PORT=/dev/cu.usbserial-XXXX ./flash.sh --model   # swap the model only
 
     Output: `apps/multimedia/ipro7_uvc_cam/build_reef_rps/build_out/ipro7_uvc_cam_IPRO7.bin`
 
-2. **Flash** the file as described in [Flashing & Serial Console](../get-started/flash-and-monitor.md#flashing), using the Reef settings (`--chip-variant IPRO7AI`).
+4. **Flash**
 
-3. **Run**: connect the Reef's USB-C port (USB1) to a computer and open it in any UVC camera app. Put your hand in the box in the middle of the picture and throw after the countdown. The console is on U6 at 115200 baud.
+    SW7 on **CAM**, download mode (hold SW1, tap SW2, release SW1), then from the IntelProCube directory:
+
+    ```bash
+    cd <ICUBE>
+    ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+        --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+        --pt chips/ipro7/partition/partition_cfg_2M.toml \
+        --firmware <SDK>/apps/multimedia/ipro7_uvc_cam/build_reef_rps/build_out/ipro7_uvc_cam_IPRO7.bin
+    ```
+
+    The model is inside the firmware, so there is nothing else to flash. Check for `[All Success]`, press SW2; see [Flashing & Serial Console](../get-started/flash-and-monitor.md) for the other hosts.
+
+5. **Run and check**
+
+    On the U6 console (115200 baud) the boot log includes:
+
+    ```text
+    [UVC] Bringing up USB UVC webcam (720p MJPEG)...
+    I (…) RPS_MODEL: model: … B linked into the firmware at 0x…
+    I (…) RPS_MODEL: loaded in … ms: input 128x128x…, 1 outputs, ext_input …, unsigned …, … layers (… NPU), out scale … zp …
+    I (…) RPS_MODEL: PSRAM heap left after the model: … KB
+    [UVC] Streaming pipeline started
+    ```
+
+    Connect the Reef's USB-C to a computer and open it in any camera application. Hold your hand in the box in the middle of the picture; after the countdown each round is logged, and `rps` shows the model and NPU state:
+
+    ```text
+    [GAME] round 1: you ROCK, me PAPER -> I WIN  (you 0 me 1 draw 0)
+    ipro /> rps
+    model   : ready, … B from firmware, loaded in … ms, … KB heap left
+    npu     : … frames, 0 errors, … fps, last … ms
+    now     : … …%  (r … p … s … n …)
+    game    : round 1, you 0 me 1 draw 0, conf >= …%, mirror on
+    ```
+
+    If the model does not load, the console prints `[RPS] model not loaded: … - streaming without the game` and the stream says why.
 
 </div>
 
+Turning such checks into a test you can repeat is covered in [Test your application](../tutorials/testing.md).
+
+## Bundled models { #supported-models }
+
+| File | Used by |
+|---|---|
+| `apps/ai/ipro7ai_evk_rps/model/rps_v3.inm` (default), `rps_v1.inm` | 4-class int8 rock-paper-scissors classifier, 128×128 input; linked into `ipro7_uvc_cam` `defconfig_reef_rps` |
+| `apps/ai/ipro_reef_teach/model/model_b.spkb` | Voiceprint model of `ipro_reef_teach` `voice` mode, flashed into the `mfg` partition with `mfg_payload.py` |
+| `tools/teach_web/assets/mnv1_025.inm`, `mnv2_035.inm` | Image feature models used by the browser version of image Teach (`tools/teach_web/`) |
+| `apps/platform/ipro7_demo/demo/ai/ai_model/*.inm`, `apps/test/ipro_npu_yolo/src/person_pet_detect.inm` | Person and person/pet detectors of the IPRO7 EVB and IPRO7AI EVK examples |
+| `apps/test/ipro_tflm_test/src/*.tflite`, `apps/test/ipro_tflm_yolo/src/*.tflite` | TensorFlow Lite Micro (CPU) examples for the IPRO7 EVB |
+
+## Deploying a model { #model-pipeline }
+
+| Where the model lives | How | Reef example |
+|---|---|---|
+| Linked into the firmware | An assembly file pulls the `.inm` into the image with `.incbin`; load it with `iproai_load_model_from_buffer()`. Changing the model means rebuilding | `ipro7_uvc_cam` `defconfig_reef_rps` |
+| `mfg` flash partition | Flashed with IntelProCube's `--mfg` option, read through XIP. The stock `partition_cfg_2M.toml` has `mfg` at 0x12A000 (824 KB) after a 1,180 KB firmware partition | `ipro_reef_teach`: its own `partition_reef_teach.toml` (firmware 640 KB, `mfg` 1,364 KB) with one slot per mode, managed by `ipro_ai_store.h` |
+| SD card | `iproai_load_model_from_file()` reads it through FatFS; use `sd:/` paths, not `/sdcard/` | `ipro_ai_link` |
+
+`ipro_reef_teach` writes its first `mfg` payload with `mfg_payload.py`; models taught later are deployed from IPRO AI Studio into their slots without reflashing. The full flash command and the slot map are in [Flash the Edge AI Firmware](../teach/firmware.md) and in the application README.
+
+**Your own models**: the model conversion tools are not part of the SDK package; contact INTELPRO. Before deploying, check operator support, tensor shapes, quantisation parameters and memory needs; `ipro_ai_link` (below) shows the layer split and the input and output shapes of any `.inm`.
+
+## Example applications { #reference-apps }
+
+| Application | Reef configuration | What it does |
+|---|---|---|
+| `apps/multimedia/ipro7_uvc_cam` | `defconfig_reef_rps` | USB webcam with the NPU rock-paper-scissors game drawn into the stream |
+| `apps/test/ipro_ai_link` | `defconfig_reef` | Board firmware for IPRO AI Studio "Run on board": models and inputs from the SD card |
+| `apps/ai/ipro_reef_teach` | `.config` | Edge AI firmware: `image`, `voice` and `sensor` Teach, one at a time; see [IPRO AI Teach](../teach/index.md) |
+| `apps/multimedia/ipro_agora_sentino` | `.config` | Cloud voice assistant; see [Cloud AI](#cloud-llm) |
+
+The NPU examples for the IPRO7AI EVK (`ipro7ai_evk_person_detect`, `ipro7ai_evk_rps`, `ipro7ai_evk_launcher`) and the IPRO7 EVB (`ipro_npu_yolo`, `ipro_ai_bench`, `ipro_tflm_*`, `ipro_nmsis_nn_test`, `ipro_tinymaix_demo`) are listed in [Examples](../examples/index.md).
+
 ### IPRO AI Studio board firmware (ipro_ai_link) { #ai-link }
 
-Flash `ipro_ai_link` once; after that the host swaps models and inputs, runs inference and collects results by command, with no reflashing. Models and inputs are read from the SD card (`sd:/`), and raw outputs go back to the host over USB. Output lines carry prefixes such as `AIINFO`, `AIRUN` and `AIOUT` so the host can parse them. IPRO AI Studio itself is not included in V2.1.0; contact INTELPRO.
+Flash `ipro_ai_link` once; after that the host swaps models and inputs, runs inference and collects results by command, without reflashing. Models and inputs are read from the SD card, and output lines carry machine-readable prefixes (`AIINFO`, `AIRUN`, `AIOUT`, `AIERR`). The Reef build also enumerates a USB CDC device on USB-C (VID 0x3896, PID 0x0704) for fast file transfer.
 
 ```bash
 make -C apps/test/ipro_ai_link DEFCONFIG=defconfig_reef   # output in build_reef/build_out/
+```
+
+You can drive it by hand. Copy a model to a FAT-formatted microSD card (for example `rps_v3.inm` from `apps/ai/ipro7ai_evk_rps/model/`), insert it, flash the build with `--chip-variant IPRO7AI`, and on the U6 console (115200 baud):
+
+```text
+ipro /> ai_mount
+AIMOUNT ok
+ipro /> ai_load sd:/rps_v3.inm
+AILOAD ok sd:/rps_v3.inm
+ipro /> ai_info
+AIINFO path=sd:/rps_v3.inm layers=… npu=… in=…x…x… out=…x…x… patch_size=… patch_count=… app_type=… feed=0
 ```
 
 | Command | Purpose |
@@ -206,57 +288,59 @@ make -C apps/test/ipro_ai_link DEFCONFIG=defconfig_reef   # output in build_reef
 | `ai_mount` / `ai_unmount` | Mount / release the SD card |
 | `ai_ls [dir]` | List files |
 | `ai_load sd:/model.inm` | Load a model |
-| `ai_input sd:/input.bin` | Load input data |
-| `ai_run [reps]` | Run inference |
+| `ai_input sd:/input.bin` | Load raw input bytes in the model's input layout |
+| `ai_run [reps]` | Run inference (1–100 times); prints `AIRUN rep=… total=… npu=… dispatches=…` cycle counts |
 | `ai_out [max_bytes]` | Dump the output |
-| `ai_info` | Model information (layers, NPU layers, input and output sizes) |
+| `ai_info` | Model information (layers, NPU layers, input and output shapes) |
 | `ai_prof` | Per-layer cycles of the last run |
 
 ## Integration and memory planning { #dev-guide }
 
-**OCRAM**: with both `CONFIG_AI_SUPPORT` and `CONFIG_MM_SUPPORT` enabled, the linker shrinks the OCRAM region to 64 KB (`CONFIG_EM_SIZE` 0) or 48 KB (with BLE); every combination is listed in [Build System & Configuration](build-system.md#memory-layout). The `ipro7ai_evk_demo` README notes that the BLE controller and host need about 67 KB of OCRAM, which is why the IPRO7AI EVK examples keep AI and BLE in separate configurations. If you need both, check the linker output of an actual build first.
+**OCRAM**: with both `CONFIG_AI_SUPPORT` and `CONFIG_MM_SUPPORT`, the linker shrinks the OCRAM region to 64 KB without BLE (`CONFIG_EM_SIZE` 0 or unset) or 48 KB with BLE; every combination is in [Build System & Configuration](build-system.md#memory-layout). Check the memory usage the linker prints at the end of the build.
 
-**PSRAM**: models, intermediate tensors and camera frames are allocated from PSRAM. Budget for weights, intermediate tensors, input images, post-processing and your other tasks, and measure the free heap (`xPortGetFreeHeapSize()`) before and after loading and during continuous inference. Usage varies widely between models; do not estimate it from a fixed ratio.
+**PSRAM**: models, intermediate tensors and camera frames are allocated from PSRAM. Measure the free heap (`xPortGetFreeHeapSize()`) before and after loading and during continuous inference; the rock-paper-scissors build logs it after loading.
 
-**Camera to NPU**: hand the NPU one frame at a time so the ISP cannot overwrite a buffer that is being inferred. The IPRO7AI EVK does this in `components/board/ipro7ai_evk` (`evk_cam`) and `ipro7ai_evk_person_detect`. Keep an external image buffer valid until inference finishes, and keep the caches coherent.
+**Camera to NPU**: hand the NPU one frame at a time, so the ISP cannot overwrite a buffer while it is being inferred, and keep the caches coherent (the NPU is a bus master and does not see the CPU's D-cache).
 
-**Error handling**: check the return values of `iproai_create()`, the load call and `iproai_startCompute()`, and on failure release the model with `iproai_free()` and free your own buffers.
+**Several models**: open them through `ipro_ai.h` rather than calling `iproai_startCompute()` on two handles; otherwise the second load leaves the NPU pointed at the last-loaded model.
 
-**Floating point**: in V2.1.0 the IPRO7 FreeRTOS port saves the floating-point registers on task switches and interrupts, so tasks running beside the NPU task may use floating point. Some example source comments still ask for integer-only code; that was a limit of the older port.
+**Error handling**: check the return values of `iproai_create()`, the load call and `iproai_startCompute()`; on failure release the model with `iproai_free()` and free your own buffers. `ipro_reef_teach` also arms the AON watchdog so that a stalled SoC restarts.
+
+**Floating point**: the IPRO7 FreeRTOS port saves the floating-point registers on task switches and interrupts, so tasks running beside the NPU task may use floating point.
 
 ## Benchmarking { #performance }
 
 | Tool | Commands | What it measures |
 |---|---|---|
-| `ipro_ai_bench` | `bench_list`, `bench_run <name>`, `bench_all`; `bench_file <path> <w> <h> <c>` (model on a mounted SD card) | Whole-model time of the built-in models (median of 5 runs), with NPU and CPU cycles and dispatch counts listed separately; the input comes from an on-board PRNG |
-| `ipro_npu_yolo` | `npu_run [iters]` | YOLOv8 inference cycles on the NPU |
-| `ipro_tflm_yolo` | `yolo_run [iters]` | The same YOLOv8 on the CPU (TFLM) |
-| `ipro_ai_link` | `ai_run [reps]`, `ai_prof` | Inference time and per-layer cycles of your own model |
+| `ipro_ai_link` | `ai_run [reps]`, `ai_prof` | Total and NPU cycles and NPU dispatches per run; per-layer cycles of your own model |
+| `ipro7_uvc_cam` `defconfig_reef_rps` | `rps` | NPU frames, errors, frame rate and the last inference time of the live game |
 
-Record the model file, input size, build configuration, heap usage and repeated inference times, and measure pre-processing, inference and post-processing separately. The first run includes the cold-start cost of PSRAM and the caches, so use the runs after it.
-
-Measurements stated in the package READMEs (IPRO7AI EVK, 2026-09-18):
-
-| Model | Input | NPU inference | Other | Source |
-|---|---|---|---|---|
-| `person_pet_detect.inm` (YOLOv8 person/pet, 700,088 bytes) | 640×360 ARGB | 103 ms | Box decode + NMS 16 ms; detection at 5.9 fps | `ipro7ai_evk_person_detect` README |
-| `rps_v3.inm` (4-class CNN, 11 layers, all on the NPU) | 128×128×3 int8 | 7 ms | 14.9 fps with one frame in flight | `ipro7ai_evk_rps` README |
-
-Detection thresholds, NMS limits and input formats are example settings, not NPU specifications. After changing the model or the resolution, check output correctness, peak memory and long-run stability again.
+Record the model file, input size, build configuration, heap usage and repeated inference times, and measure pre-processing, inference and post-processing separately. The first run includes the cold-start cost of PSRAM and the caches; use the runs after it. For reference, the `ipro7ai_evk_rps` README reports 7 ms per inference for `rps_v3.inm` (11 layers, all on the NPU), measured on the same IPRO7AI chip on the IPRO7AI EVK.
 
 ## Cloud AI { #cloud-llm }
 
-V2.1.0 has no general-purpose cloud AI client component. The bundled cloud voice example is `apps/multimedia/ipro_agora_sentino`: the IPRO7AI Reef EVK joins Wi-Fi through the IPRO6S FIN card, is provisioned over BLE, and holds voice conversations through the Sentino platform (MQTT) and Agora RTC. Running it needs a Sentino device triple and the FIN card firmware, neither of which is included in V2.1.0 (contact INTELPRO); building it also needs the AOSL submodule (see the application README). For network setup see [Networking](networking.md).
+There is no general-purpose cloud AI client component. `apps/multimedia/ipro_agora_sentino` is a cloud voice assistant for the Reef: it is provisioned over BLE, joins Wi-Fi through the IPRO6S FIN card ([Networking](networking.md)) and talks through the Sentino platform and Agora RTC. A plain `make` builds it for the Reef (`BOARD=reef` is the default).
+
+- It needs the AOSL core, which is not part of the SDK. Fetch it once, at the commit the Agora RTC library was built against; the build stops with these steps while the directory is empty:
+
+    ```bash
+    git clone https://github.com/AgoraIO-Community/aosl components/3rdparty/agora/aosl
+    git -C components/3rdparty/agora/aosl checkout d825607
+    ```
+
+- It also needs a Sentino device triple, which is not included in V2.2.0; contact INTELPRO.
 
 ## Limitations in this release { #limitations }
 
-- The runtime ships only as the prebuilt `libai.a`, without source, and its internal options cannot be changed from `.config`.
-- Model conversion tools and IPRO AI Studio are not included in V2.1.0; contact INTELPRO.
-- There is no NPU driver under Zephyr RTOS; all AI examples are FreeRTOS applications. See [Zephyr RTOS](zephyr.md).
-- With AI, multimedia and BLE enabled together, the OCRAM region is only 48 KB; see [memory planning](#dev-guide).
+- The runtime ships only as the prebuilt `libai.a`; its internal options cannot be changed from `.config`.
+- Model conversion tools are not part of the SDK package; contact INTELPRO.
+- No NPU driver under Zephyr; all AI applications are FreeRTOS applications.
+- With AI, the camera and BLE enabled together, the OCRAM region is 48 KB; see [memory planning](#dev-guide).
 
 ## Related documents { #related }
 
-- [Camera & Imaging](camera.md): the ISP and camera pipeline.
-- [Build System & Configuration](build-system.md): `.config` and `DEFCONFIG=`.
-- [IPRO7AI EVK](../hardware/boards/ipro7ai-evk.md), [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md): boards and flashing settings.
+- [IPRO AI Teach](../teach/index.md): teach image, voice and sensor models on the Reef from IPRO AI Studio
+- [Camera & Imaging](camera.md): the ISP and the camera pipeline
+- [Build System & Configuration](build-system.md): `.config`, `DEFCONFIG=` and the memory layout
+- [AI API](../reference/api/ai.md)
+- [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)

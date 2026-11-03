@@ -1,25 +1,54 @@
 ---
 title: ipro_le_audio_headset
-description: 'LE Audio unicast headset: BAP unicast server, PACS, ASCS, VCP, CAP, LC3 decoding. Tutorial: Getting Started with LE Audio'
+description: 'LE Audio unicast headset: BAP unicast server, PACS, ASCS, CAP, CSIP, VCP, with LC3 decoded to the DAC. Tutorial: Getting Started with LE Audio'
 generated: tools/gen_examples.py
 migrate_from: []
 ---
 
 # ipro_le_audio_headset
 
-LE Audio unicast headset: BAP unicast server, PACS, ASCS, VCP, CAP, LC3 decoding. Tutorial: [Getting Started with LE Audio](../tutorials/le-audio.md)
+LE Audio unicast headset: BAP unicast server, PACS, ASCS, CAP, CSIP, VCP, with LC3 decoded to the DAC. Tutorial: [Getting Started with LE Audio](../tutorials/le-audio.md)
 
 | Item | Details |
 |---|---|
-| Source | [`apps/bluetooth/le_audio/ipro_le_audio_headset`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.1.0/apps/bluetooth/le_audio/ipro_le_audio_headset) |
-| Boards and configs | EVB (`.config` / `DAC.config`: DAC output; `UAC.config`: USB Audio); Reef (`defconfig_reef`) |
+| Source | [`apps/bluetooth/le_audio/ipro_le_audio_headset`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/bluetooth/le_audio/ipro_le_audio_headset) |
+| Boards and configs | Reef (`defconfig_reef`: DAC output to the headset jack and speaker); `.config`, `DAC.config` and `UAC.config` target the IPRO7 EVB |
 | Console | UART 115200 |
-| Build | `make -C apps/bluetooth/le_audio/ipro_le_audio_headset` |
+| Build | Reef: `make -C apps/bluetooth/le_audio/ipro_le_audio_headset DEFCONFIG=defconfig_reef` |
+
+## Run it on the Reef { #on-the-reef }
+
+<div class="ipro-steps" markdown>
+
+1. **Build**
+
+    ```bash
+    make -C apps/bluetooth/le_audio/ipro_le_audio_headset DEFCONFIG=defconfig_reef
+    ```
+
+    The image is `apps/bluetooth/le_audio/ipro_le_audio_headset/build_reef/build_out/ipro_le_audio_headset_IPRO7.bin`.
+
+2. **Flash**: enter [download mode](../hardware/boards/reef-evk.md#download-mode), then from the IntelProCube directory run
+
+    ```bash
+    ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+        --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+        --firmware <SDK>/apps/bluetooth/le_audio/ipro_le_audio_headset/build_reef/build_out/ipro_le_audio_headset_IPRO7.bin
+    ```
+
+    Check for `[All Success]`, then press SW2.
+
+3. **Run**: open the console at 115200 baud. The board advertises as `IPRO-LE-Audio`; pair it from an LE Audio phone (numeric comparison is confirmed on the board automatically). `leaudio_status` at the console shows the connection and stream state. SW3, SW4 and SW5 are volume down, volume up and mute through VCP.
+
+</div>
+
+!!! info "Status in this release"
+    The application's README records that a phone connects, discovers the services and bonds at security level 4; media streaming from a phone is not validated yet.
 
 ## README { #readme }
 
 !!! note "The README as shipped"
-    Below is the README that ships with the application (SDK V2.1.0), as written; only content unfit for publication was replaced.
+    Below is the README that ships with the application (SDK V2.2.0), as written; only content unfit for publication was replaced.
 
 <!-- verbatim:start -->
 
@@ -40,8 +69,9 @@ customer audio product:
 - audio output/render is currently disabled; LC3 decode/render and acoustic
     validation remain open
 
-Use `apps/bluetooth/ble/ipro_ble_controller_central_test` as the current
-automated peer for basic validation.
+The two-board automated peer used for this validation
+(`ipro_ble_controller_central_test`) is an internal test app and is not part of
+the SDK package; any LE Audio unicast client can act as the peer.
 
 Android phone basic status:
 
@@ -123,8 +153,8 @@ Android phone basic status:
 
 - **BAP (Basic Audio Profile)**: Unicast audio streaming with CIS (Connected Isochronous Stream)
 - **VCP (Volume Control Profile)**: Remote volume control from source device
-- **MCP (Media Control Profile)**: Playback control (play/pause/next/prev)
-- **CCP (Call Control Profile)**: Phone call handling (ready for future development)
+- MCP (media control) and CCP (call control) are not enabled in the shipped
+    `.config` (no `CONFIG_BT_MCC` / `CONFIG_BT_MCS`)
 
 #### Audio Capabilities
 
@@ -312,8 +342,8 @@ python3 apps/bluetooth/le_audio/ipro_le_audio_headset/tools/verify_le_audio.py \
   --duration 45 \
   --device IPRO-LE-Audio \
   --expect-ascs \
-  --log /private/tmp/ipro_android_leaudio_smoke_board.log \
-  --json /private/tmp/ipro_android_leaudio_smoke.json
+  --log /tmp/ipro_android_leaudio_smoke_board.log \
+  --json /tmp/ipro_android_leaudio_smoke.json
 ```
 
 Latest recorded r48 result:
@@ -326,29 +356,22 @@ Latest recorded r48 result:
 ### Configuration
 
 #### Kconfig Options
-Key configuration options in `defconfig`:
+Key configuration options in `.config` (`DAC.config` and `UAC.config` switch
+the audio output between the on-chip DAC and a USB Audio Class device):
 
 ```ini
-# BLE Configuration
-CONFIG_BLE_PERIPHERAL=y
-CONFIG_BLE_CENTRAL=n
+# LE Audio roles (Zephyr host)
+CONFIG_BT_AUDIO=y
+CONFIG_BT_AUDIO_RX=y
+CONFIG_BT_BAP_UNICAST_SERVER=y
+CONFIG_BT_PACS=y
+CONFIG_BT_ASCS=y
+CONFIG_BT_CAP_ACCEPTOR=y
+CONFIG_BT_CSIP_SET_MEMBER=y
+CONFIG_BT_VCP_VOL_REND=y
 
-# GAF Audio Profiles
-CONFIG_GAF_BAP=y
-CONFIG_GAF_BAP_CAPA_SRV=y
-CONFIG_GAF_VCP=y
-CONFIG_GAF_VCP_SRV=y
-CONFIG_GAF_MCP=y
-CONFIG_GAF_MCP_SRV=y
-
-# Audio Configuration
-CONFIG_LC3_CODEC=y
-CONFIG_ISOOHCI=y
-
-# USB Audio
-CONFIG_CHERRYUSB=y
-CONFIG_CHERRYUSB_DEVICE=y
-CONFIG_CHERRYUSB_DEVICE_AUDIO=y
+# LC3 decoder
+CONFIG_COMPONENTS_LC3_ENABLE=y
 ```
 
 #### Audio Parameters
@@ -369,7 +392,6 @@ Configurable in `src/app_audio.h`:
 - [x] LC3 codec integration
 - [x] USB audio bridge
 - [x] VCP volume control
-- [x] MCP media control
 - [x] Auto-reconnection support
 
 #### Phase 2: Enhanced User Experience (Q1 2026)
@@ -454,8 +476,8 @@ Configurable in `src/app_audio.h`:
 
 - [Bluetooth LE Audio Specification](https://www.bluetooth.com/specifications/le-audio/)
 - [LC3 Codec Documentation](https://www.bluetooth.com/specifications/lc3/)
-- [IPRO SDK Documentation](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.1.0/apps/bluetooth/README.md)
-- [BLE development overview](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.1.0/docs/ble/README.md)
+- [IPRO SDK Documentation](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.0/apps/bluetooth/README.md)
+- [BLE development overview](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.0/docs/ble/README.md)
 
 ### License
 

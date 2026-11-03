@@ -11,9 +11,12 @@ migrate_from:
 
 ## 前置需求 { #prerequisites }
 
-- 兩塊 IPRO7AI Reef EVK，各自以 USB-C 供電，並各用一條 USB 轉 UART 線接 U6（115200 8N1）。
-- 已完成[第一個 FreeRTOS 應用](../get-started/first-app-freertos.md)，並取得 IntelProCube v0.6.3 命令列燒錄工具。
-- 每塊板子各開一個可輸入指令的序列埠終端程式（見[燒錄與序列埠](../get-started/flash-and-monitor.md)）。
+- 兩塊 IPRO7AI Reef EVK，各自以 USB-C 供電，SW8 在 PWR。每塊板子的 U6 各接一個 IPRO Debug Probe（或 3.3 V USB 轉 UART 線），接法見 [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)。
+- 已完成[第一個 FreeRTOS 應用](../get-started/first-app-freertos.md)，並取得 IntelProCube v0.6.3 命令列燒錄工具（需另行取得）。
+- 每塊板子各開一個可輸入指令的序列埠終端程式（115200 8N1，見[燒錄與序列埠](../get-started/flash-and-monitor.md)）。
+
+!!! tip "分清楚兩塊板子的序列埠"
+    IPRO Debug Probe 在電腦上出現為 `IPRO7 CMSIS_DAP`，有兩個序列埠：名稱以 `02` 結尾的是板子的主控台（Reef 的 UART0），`04` 是 CCI 橋接。先只接第一塊板子的探針，記下出現的埠（macOS 執行 `ls /dev/cu.*`，Linux 執行 `ls /dev/ttyACM* /dev/ttyUSB*`，Windows 看裝置管理員的 COM 埠），再接第二塊。下文以「Slave 板」與「Master 板」稱呼兩塊板子，可以在兩塊板子上各貼標籤。
 
 ## 步驟 { #steps }
 
@@ -27,14 +30,13 @@ migrate_from:
 
     產出：`apps/bluetooth/ble/ipro_throughput_test/build_reef/build_out/ipro_throughput_test_IPRO7.bin`。連結器的記憶體用量表顯示約 360 KB Flash，以及 224 KB OCRAM 區域中的約 205 KB。
 
-2. **燒錄兩塊板子**：每塊板子先進入下載模式（按住 SW1、按一下 SW2、放開 SW1），再於 IntelProCube 目錄下以各自的序列埠燒錄同一個檔案：
+2. **燒錄兩塊板子**：兩塊板子燒錄同一個檔案，各用自己的序列埠，一次燒一塊。先讓板子進入下載模式：按住 SW1（BOOT）、按一下 SW2（RESET）、放開 SW1；板上韌體有 shell 時，也可以在它的主控台輸入 `reboot_dl`。再於 IntelProCube 目錄下執行：
 
     === "macOS"
 
         ```bash
         ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
             --port /dev/cu.usbserial-XXXX --baudrate 921600 \
-            --pt chips/ipro7/partition/partition_cfg_2M.toml \
             --firmware <SDK>/apps/bluetooth/ble/ipro_throughput_test/build_reef/build_out/ipro_throughput_test_IPRO7.bin
         ```
 
@@ -43,7 +45,6 @@ migrate_from:
         ```bash
         ./ipro_iot_tool_linux --chipname ipro7 --chip-variant IPRO7AI \
             --port /dev/ttyUSB0 --baudrate 921600 \
-            --pt chips/ipro7/partition/partition_cfg_2M.toml \
             --firmware <SDK>/apps/bluetooth/ble/ipro_throughput_test/build_reef/build_out/ipro_throughput_test_IPRO7.bin
         ```
 
@@ -52,13 +53,12 @@ migrate_from:
         ```powershell
         .\ipro_iot_tool.exe --chipname ipro7 --chip-variant IPRO7AI `
             --port COM5 --baudrate 921600 `
-            --pt chips/ipro7/partition/partition_cfg_2M.toml `
             --firmware <SDK>\apps\bluetooth\ble\ipro_throughput_test\build_reef\build_out\ipro_throughput_test_IPRO7.bin
         ```
 
-    兩次燒錄的輸出都要有 `[All Success]`。
+    兩次燒錄的輸出都要有 `[All Success]`（工具失敗時也以 0 結束）。燒錄前先關掉占用該序列埠的終端程式。
 
-3. **開啟兩個主控台並重置**：兩個終端機都以 115200 baud 開啟，按各板的 SW2。重置後約 7 秒，主控台印出 `BLE initialized`（控制器先確認 32 kHz 時脈來源，所以需要一點時間）。以下訊息省略行首的等級、時間等欄位。
+3. **開啟兩個主控台並重置**：兩個終端機都以 115200 baud 開啟，按各板的 SW2。重置後約 7 秒，主控台印出 `BLE initialized`：Reef 沒有 32.768 kHz 晶振，控制器先檢查 32 kHz 時脈來源，印出 `XTAL32K rejected` 後改用 RC32K，所以需要一點時間。以下訊息省略行首的等級、時間等欄位。
 
 4. **建立連線**：先在 Slave 板輸入：
 
@@ -196,7 +196,8 @@ CONFIG_FREERTOS_TIMER_TASK_STACK_WORDS=1024
 
 | 症狀 | 原因 | 處理 |
 |---|---|---|
-| 燒錄出現 `flash jedec id: 00000000` 或 `IPRO FLASH MATCH TYPE FAIL` | Flash 腳位設定不符 | 確認命令有 `--chip-variant IPRO7AI` |
+| 燒錄出現 `flash jedec id: 00000000` 或 `IPRO FLASH MATCH TYPE FAIL` | Flash 腳位設定不符，或板子未進入下載模式 | 確認命令有 `--chip-variant IPRO7AI`，並先進入下載模式 |
+| 燒錄時無法開啟序列埠 | 終端程式還開著同一個埠 | 先關掉終端程式再燒錄 |
 | 每次重試都出現 `IPRO FLASH WRITE CHECK FAIL` | 某些映像檔會發生 | 在 IntelProCube 的 ini 設定 `decompress_write = false` 後燒錄，完成後改回 |
 | Master 連到別塊板子 | 附近有多個 `IPRO-TP-TEST` 在廣播 | 關閉其他測試板，或用 `tp master XX:XX:XX:XX:XX:XX` 指定 Slave 的位址 |
 | `Cannot start test - notifications not enabled by client` | 連線後的服務探索尚未完成 | 等 Master 印出 `Notifications enabled - ready for test` 再開始 |
@@ -208,3 +209,4 @@ CONFIG_FREERTOS_TIMER_TASK_STACK_WORDS=1024
 - [BLE 開發](../guides/ble.md)：控制器函式庫（`link1_periph`、`link1`、`link2`、`link4`）與 Host 設定。
 - [LE Audio 入門](le-audio.md)：在 Reef 上執行 LE Audio 耳機範例。
 - [範例](../examples/index.md)：其他 BLE 應用與其 Reef 設定。
+- [測試你的應用](testing.md)：用 `serial_monitor.py` 對每塊板子送出指令並等待結果，把量測寫成腳本。

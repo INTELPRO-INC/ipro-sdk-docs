@@ -1,6 +1,6 @@
 ---
 title: "Tool Command Lines"
-description: Commands, options and examples for the host tools that ship with the SDK — build_freertos.sh, make, the IntelProCube flash tool, serial_monitor.py, create_ota.py, tools/zephyr and size analysis.
+description: Commands, options and examples for the host tools in SDK V2.2.0 — build_freertos.sh, make, the IntelProCube flash tool, serial_monitor.py, create_ota.py, the Reef Teach and OTA tools — and what does not ship.
 migrate_from:
   - "tools-debugging.html#overview"
   - "tools-debugging.html#build-cli"
@@ -12,32 +12,40 @@ migrate_from:
 
 # Tool Command Lines
 
-Command syntax, options and examples for the host tools that ship with the SDK. For step-by-step flashing and console use, see [Flashing & Serial Console](../get-started/flash-and-monitor.md). Where an example needs a board, it uses the IPRO7AI Reef EVK.
+Command syntax, options and examples for the host tools that ship with the SDK. Examples use the IPRO7AI Reef EVK V4.0. For step-by-step flashing and console use, see [Flashing & Serial Console](../get-started/flash-and-monitor.md).
 
 ## Tools at a glance { #overview }
 
-| Tool | Path | Purpose | V2.1.0 |
+| Tool | Path | Purpose | Availability |
 |---|---|---|---|
-| `build_freertos.sh` | SDK root | Build, clean, flash, console, size report and automated test for FreeRTOS applications | Included |
+| `build_freertos.sh` | SDK root | Build, clean, flash, console, size report and automated test | Included |
 | `make` + `project.build` | each application's `Makefile` | Build one application | Included |
-| `serial_monitor.py` | `tools/` | Read the console; optionally send one command first, wait for a pattern and save a log (macOS, Linux) | Included |
-| `create_ota.py` | `tools/` | Build a boot2 OTA package | Included |
-| Zephyr scripts | `tools/zephyr/` | Zephyr workspace, build, flash, console and sample matrix | Included |
+| `serial_monitor.py` | `tools/` | Read the console; optionally send one command first, wait for a pattern and save a log (macOS, Linux; not an interactive terminal) | Included |
+| `create_ota.py` | `tools/` | Wrap IntelProCube's combined image into a boot2 OTA package | Included |
+| Browser image Teach | `tools/teach_web/` | Collect images, train a classifier and deploy it to `ipro_reef_teach`, in Chrome or Edge | Included |
+| `mfg_payload.py` | `apps/ai/ipro_reef_teach/` | Build the `--mfg` content of `ipro_reef_teach` (boot mode and voiceprint model) | Included |
+| Reef BLE OTA tools | `apps/bluetooth/ble/ipro_ble_remote/tools/` | `make_reef_ota.sh`, `reef_ota.py`, `reef_ble_test.py`, plus the Android demo app `ipro_remote_demo.apk` (in the application directory) | Included |
 | `parse_kconfig_dynamic.py` | `tools/script/` | Export a Kconfig tree as JSON (needs kconfiglib; not used by the build) | Included |
-| CMake 3.15 | `tools/cmake/` | Linux x86-64 only; does not run on macOS | Included |
-| Android sample app source | `tools/android/IproMicDemo/` | Android Studio project for `ipro_pdm_mic_demo` | Included |
-| IntelProCube v0.6.3 command-line flasher | `ipro_iot_tool_macos`, `ipro_iot_tool_linux`, `ipro_iot_tool.exe` | Flash firmware over the serial port | Not included in V2.1.0; contact INTELPRO |
-| RISC-V toolchain | `/opt/toolchain/riscv_ipro7/` | Compiler (GCC, `riscv64-unknown-elf-`) | Not included in V2.1.0; contact INTELPRO |
-| Board test script, crash address parser, OpenOCD configuration | — | — | Not included in V2.1.0; contact INTELPRO |
+| CMake 3.15 | `tools/cmake/` | Fallback when no `cmake` is on `PATH`; Linux x86-64 only | Included |
+| Zephyr scripts | `tools/zephyr/` | Zephyr workspace, build, flash and console (`ipro7_evb` and `ipro7ai_evk` boards) | Included |
+| IntelProCube v0.6.3 command-line flasher | `ipro_iot_tool_macos`, `ipro_iot_tool_linux`, `ipro_iot_tool.exe` | Flash firmware, partition tables, boot2 and `mfg` content over the serial port | Not included in V2.2.0; contact INTELPRO |
+| RISC-V toolchain | `/opt/toolchain/riscv_ipro7/` | Compiler (GCC 14, `riscv64-unknown-elf-`) | Not included in V2.2.0; contact INTELPRO |
+| IPRO AI Studio and the Edge AI tools | — | Model training and deployment | Ship in the separate IPRO Edge AI package, not in the SDK |
+| OpenOCD / GDB connection setup, the board test script `tools/board_test.sh`, a crash-dump host tool | — | On-target debugging, automated board tests, reading memory after `==DUMP_READY:` | Not included in V2.2.0; contact INTELPRO |
+| `tools/kconfig/menuconfig.py`, the `configs/` defconfig directory, `ota_products.py` for OTA signing | — | `make menuconfig`, `make defconfig`, `create_ota.py --sign-key` | Not included in V2.2.0 |
+
+This release has no setup or procedure for on-target debugging over JTAG / GDB. Debugging relies on the serial console, logs and offline `addr2line`; see [Debugging & Troubleshooting](debugging.md).
 
 ## Environment variables { #environment }
 
 | Variable | Used by | Effect |
 |---|---|---|
-| `IPRO_FLASH_TOOL` | `build_freertos.sh`, `tools/zephyr/flash.sh`, `west flash`, per-application `flash.sh` | Path to the IntelProCube command-line tool. When unset, the tool name for your OS is looked up on `PATH` |
-| `IPRO_SERIAL_PORT` | `build_freertos.sh`, `tools/zephyr/flash.sh`, `monitor.sh`, `west flash` | Default serial port. When it is unset and no `-p` / `--port` is given, the only USB serial port present is used |
-| `IPRO_PROBE_PORT` | `west flash` | The debug probe's UART bridge (it takes the download-mode keywords); defaults to `--port` |
-| `CROSS_COMPILE` | `make`, `build_freertos.sh build` | Toolchain prefix; set in the environment, it overrides `CONFIG_CROSS_COMPILE` in `.config` |
+| `IPRO_FLASH_TOOL` | `build_freertos.sh`, `make_reef_ota.sh`, `tools/zephyr/flash.sh`, `west flash` | Path to the IntelProCube command-line tool. When unset, the tool name for your OS is looked up on `PATH` |
+| `IPRO_SERIAL_PORT` | `build_freertos.sh`, the `tools/zephyr/` scripts, `west flash` | Default serial port. When it is unset and no `-p` is given, the only USB serial port present is used |
+| `IPRO_CHIP_VARIANT` | `build_freertos.sh flash` | The `--chip-variant` to flash with (`IPRO7` or `IPRO7AI`). When unset it is chosen from the application's configuration; see [build_freertos.sh](#build-cli) |
+| `IPRO_FLASH_PT` | `build_freertos.sh flash` | The `--pt` partition table to flash with. When unset, no `--pt` is passed and the tool uses its default table |
+| `IPRO_PROBE_PORT` | `west flash` | The IPRO Debug Probe's UART bridge; defaults to `--port` |
+| `CROSS_COMPILE` | `make`, `build_freertos.sh build` | Toolchain prefix; set in the environment or on the command line, it overrides `CONFIG_CROSS_COMPILE` in `.config` |
 | `IPRO_TOOLCHAIN` | `tools/zephyr/bootstrap.sh` | Toolchain directory for the Zephyr workspace; default `/opt/toolchain/riscv_ipro7` |
 | `IPRO_ZEPHYR_WS` | `tools/zephyr/build.sh`, `ci_build.sh` | Zephyr workspace location; default `<SDK>/zephyr-workspace` |
 
@@ -47,82 +55,115 @@ Command syntax, options and examples for the host tools that ship with the SDK. 
 ./build_freertos.sh [actions...] [options] <project>
 ```
 
-Actions can be chained and run in order; the first failing action stops the run. With no action, `build` runs.
+Actions can be chained and run in order; the first failure stops the run. With no action, `build` runs. It is a bash script for macOS and Linux.
 
-| Action | Description |
+| Action | What it does |
 |---|---|
-| `build` | Runs `make -C <app>` and logs to `<build dir>/build.log`; prints the `.bin` path and size on success, the last 30 log lines on failure |
+| `build` | Runs `make -C <app>`, logs to `<build dir>/build.log`, prints the `.bin` path and size on success, or the last 30 log lines on failure |
 | `clean` | Deletes the build directory |
-| `flash` | Sends `reboot_dl` through `serial_monitor.py` (115200 baud), then flashes the `.bin` with the IntelProCube tool; success means `[All Success]` in the output. It does not build first |
-| `monitor` | Opens the console with `serial_monitor.py` at 115200 baud, sends `reboot` first and stops after `-t` seconds |
-| `size` | Runs `size` and `size -A` (first 30 lines of sections) on the ELF |
-| `test` | Builds, flashes, sends `reboot` and waits for `ALL TESTS PASSED` or `SOME TESTS FAILED`; exits 0 on pass, 1 on failure, 2 on timeout |
+| `flash` | Sends `reboot_dl` at the application's console baud rate, waits 2 s, then flashes with the IntelProCube tool: `--chipname ipro7 --chip-variant <auto> --baudrate 921600`, plus `--pt` when `-P` is given. Success is the `[All Success]` line in the tool's output. Does not build first |
+| `monitor` | Opens `serial_monitor.py` at the application's console baud rate, sends `reboot` first and stops after `-t` seconds |
+| `size` | Runs `size` and `size -A` on the ELF (first 30 section lines) |
+| `test` | Builds, flashes, sends `reboot` and waits for `ALL TESTS PASSED` or `SOME TESTS FAILED`; exit code 0 pass, 1 fail, 2 time-out |
 
-| Option | Description | Default |
+The console baud rate is `CONFIG_PLATFORM_UART_BAUDRATE` in the configuration file in use, 115200 when unset.
+
+| Option | Meaning | Default |
 |---|---|---|
 | `-p, --port PORT` | Serial port | `$IPRO_SERIAL_PORT`, else the only USB serial port |
 | `-t, --timeout SEC` | Seconds for `monitor` and `test` | `30` |
 | `-w, --wait-for PAT` | Regular expression `monitor` waits for | — |
-| `-d, --defconfig FILE` | Use an alternate config file from the application directory; builds in `build_<name>/` (`defconfig_reef` → `build_reef/`) | — |
-| `-j, --jobs N` | Parallel build jobs | — |
+| `-d, --defconfig FILE` | Use an alternate configuration file from the application directory and build into `build_<name>/` (`defconfig_reef` → `build_reef/`) | — |
+| `-c, --chip-variant V` | `--chip-variant` for flashing: `IPRO7` or `IPRO7AI` | `$IPRO_CHIP_VARIANT`; else `IPRO7AI` when the configuration sets `CONFIG_IPRO7AI_REEF=y` or `CONFIG_IPRO7AI_EVK=y`, `IPRO7` otherwise |
+| `-P, --pt TABLE` | Partition table for flashing: a `.toml` path (passed to the tool as an absolute path) or a table name under the tool's `chips/ipro7/partition/` | `$IPRO_FLASH_PT`, else none |
+| `-j, --jobs N` | Parallel jobs for the outer `make`; the inner CMake build always uses `-j4` | — |
 | `-v, --verbose` | Show the full build output | — |
-| `-l, --list` | List every project under `apps/` by category | — |
+| `-l, --list` | List all 40 projects under `apps/` by category | — |
 | `-h, --help` | Help | — |
 
-`<project>` is an application name (`ipro7ai_reef_demo`) or a path below `apps/` (`platform/ipro7ai_reef_demo`). If the name is ambiguous or unknown, the script lists candidates. The description column of `-l` comes from the first comment line of `.config` and is empty for some applications.
+`<project>` is an application name (`ipro7ai_reef_demo`) or a path below `apps/` (`platform/ipro7ai_reef_demo`). An ambiguous or unknown name prints the candidates. The description column of `-l` comes from the first comment line of `.config` and is blank for some applications.
+
+Build, flash and open the console on the Reef in one go (before the very first flash there is no SDK firmware on the board to answer `reboot_dl`, so [enter download mode](debugging.md#download-mode) by hand):
 
 ```bash
-./build_freertos.sh -l                                  # list the 35 applications
-./build_freertos.sh ipro7ai_reef_demo                   # build the Reef out-of-box firmware
-./build_freertos.sh clean build platform/ipro7ai_reef_demo
-./build_freertos.sh -d defconfig_reef build ipro_ble_remote   # Reef config, output in build_reef/
+export IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos
+./build_freertos.sh -p /dev/cu.usbserial-XXXX \
+    -P <IntelProCube>/chips/ipro7/partition/partition_cfg_2M.toml \
+    build flash monitor ipro7ai_reef_demo
+```
+
+You should see, in order:
+
+```text
+→ Entering download mode...
+→ Flashing ipro7ai_reef_demo_IPRO7.bin (--chip-variant IPRO7AI, --pt <IntelProCube>/chips/ipro7/partition/partition_cfg_2M.toml)...
+...
+✓ Flash succeeded (…)
+→ Opening serial monitor on /dev/cu.usbserial-XXXX at 115200...
+```
+
+Pick another Reef configuration with `-d`, for example:
+
+```bash
+./build_freertos.sh -d defconfig_reef build ipro_ble_remote          # output in build_reef/build_out/
+./build_freertos.sh -d defconfig_reef_ov5640 build flash ipro7_uvc_cam
+./build_freertos.sh -l                                              # list the 40 projects
 ./build_freertos.sh size ipro7ai_reef_demo
 ```
 
-Output goes to `<app>/build/build_out/` (`build_<name>/build_out/` with `-d`): `<app>_IPRO7.bin`, `.elf` and `.map`.
+Output goes to `<app>/build/build_out/` (`build_<name>/build_out/` with `-d`): `<app>_<chip>.bin`, `.elf` and `.map`, where the chip comes from `CONFIG_CHIP` (`_IPRO7` for IPRO7 applications, `_IPRO6` for IPRO6S applications).
 
-!!! warning "Fixed settings in flash, monitor and size"
-    - `flash` passes neither `--chip-variant` nor `--pt`, and `reboot_dl` and `monitor` always use 115200 baud. For the IPRO7AI Reef EVK, the IPRO7AI EVK, applications that need a specific partition table, and applications with a 921600-baud console, use the IntelProCube tool and `serial_monitor.py` instead, as described in [Flashing & Serial Console](../get-started/flash-and-monitor.md#build-script).
+!!! warning "Limits of build_freertos.sh"
+    - `flash` always passes `--chipname ipro7`: flash IPRO6S applications (such as the FIN card firmware `ipro6_if_wifi`) with IntelProCube's `--chipname ipro6` directly.
+    - It cannot pass `--boot2`, `--mfg` or `--skip-ota`: flash `ipro_ble_remote` the first time (boot2 + A/B table) and `ipro_reef_teach` (its own table and `mfg` content) with the [IntelProCube tool](#flash-tool) directly.
+    - There is no `BOARD=` option; a `config_<board>` file can be named with `-d config_evk` and builds into `build_config_evk/`.
+    - The flash tool runs in your current directory; give `-P` the full path of the `.toml`.
     - `size` always uses `/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-size` and ignores `CROSS_COMPILE`.
 
 ## make targets { #make-targets }
 
-Each application's `Makefile` calls `project.build` in the SDK root, which configures CMake with the `Unix Makefiles` generator and builds with `make -j4`.
+Each application's `Makefile` calls `project.build` in the SDK root (CMake with the `Unix Makefiles` generator, then `make -j4`).
 
-| Command | Description |
+| Command | What it does |
 |---|---|
-| `make -C apps/<category>/<app>` | Build from `.config` into `build/` |
-| `make -C apps/<category>/<app> clean` | Delete the build directory |
-| `make -C apps/<category>/<app> DEFCONFIG=defconfig_<name>` | Build from an alternate config into `build_<name>/`; `.config` is untouched |
-| `make -C apps/multimedia/ipro_pdm_mic_demo BOARD=evk` | Only `ipro_pdm_mic_demo` and `ipro_agora_sentino` accept `BOARD=`: they use `config_<board>` and build into `build_config_<board>/` |
+| `make -C apps/<category>/<app>` | Build with `.config` into `build/` |
+| `make -C apps/<category>/<app> clean` | Delete the build directory (with `DEFCONFIG=`, the matching `build_<name>/`) |
+| `make -C apps/<category>/<app> DEFCONFIG=defconfig_<name>` | Build an alternate configuration into `build_<name>/`; `.config` is left alone |
+| `make -C apps/<category>/<app> CROSS_COMPILE=<dir>/bin/riscv64-unknown-elf-` | Set the toolchain prefix; overrides `CONFIG_CROSS_COMPILE` in `.config` |
+| `make -C apps/multimedia/ipro_agora_sentino BOARD=evk` | Only `ipro_agora_sentino` (default `reef` = `.config`) and `ipro_pdm_mic_demo` (default `evb`) read `BOARD=`: it selects `config_<board>` and builds into `build_config_<board>/` |
 
-- CMake: the `cmake` on `PATH` is preferred; `tools/cmake/` (Linux x86-64) is the fallback.
+- CMake: the `cmake` on `PATH` first, then `tools/cmake/` (Linux x86-64); with neither, the build stops at `No cmake found`.
 - After each build, `compile_commands.json` is copied to the SDK root for editors.
-- The `defconfig`, `list-defconfigs` and `menuconfig` targets in some Makefiles depend on files the package does not contain and do not work; edit `.config` directly.
+- `make menuconfig` needs `tools/kconfig/menuconfig.py`, which does not ship; the `defconfig` and `list-defconfigs` targets of some `Makefile`s look in a `configs/` directory that does not ship either. Edit `.config` directly, or save a copy as `defconfig_<name>` and build it with `DEFCONFIG=`.
 
 ## IntelProCube flash tool { #flash-tool }
 
-Flashing uses the command-line tool of IntelProCube v0.6.3, which is not included in V2.1.0; contact INTELPRO. The table below is collected from the READMEs and flash scripts in the SDK; the tool itself is authoritative for its options. Run it from the IntelProCube directory.
+Flashing uses the IntelProCube v0.6.3 command-line tool, which is not included in V2.2.0; contact INTELPRO. The tool reads its chip files from its own `chips/` directory, so run it from the IntelProCube directory. The table is compiled from the READMEs and scripts in the SDK; the tool itself is the reference for the full option set.
 
-| Option | Description |
+| Option | Meaning |
 |---|---|
-| `--chipname ipro7` | Chip |
-| `--chip-variant IPRO7` or `IPRO7AI` | The board's flash-pin setting, stored as `flash_pin` in the tool's configuration file: `IPRO7` (`0x2`) for the IPRO7 EVB, `IPRO7AI` (`0x9`) for the IPRO7AI EVK and the IPRO7AI Reef EVK. Later runs that omit the option reuse it |
-| `--port` | Serial port |
-| `--baudrate` | Flashing baud rate; the SDK's application READMEs and scripts use `921600` |
+| `--chipname ipro7` | IPRO7 / IPRO7AI (the Reef). IPRO6S (for example the FIN card) uses `--chipname ipro6` |
+| `--chip-variant IPRO7AI` | Flash pin setting: `IPRO7AI` (`0x9`) for the IPRO7AI (Reef, QFN56), `IPRO7` (`0x2`) for the IPRO7 EVB. The tool writes it into its own `chips/ipro7/eflash_loader/eflash_loader_cfg.ini`, so always pass it again when you switch boards |
+| `--port` | Serial port: a USB-to-UART cable, or the IPRO Debug Probe port whose name ends in `02` |
+| `--baudrate 921600` | Flashing baud rate, independent of the application's console rate |
 | `--firmware` | The `.bin` to flash |
-| `--pt` | Partition table (`.toml`), as a path relative to the tool directory (for example `chips/ipro7/partition/partition_cfg_2M.toml`) or a full path. Without it, the tool writes its default table |
-| `--mfg` | File for the `mfg` partition (an AI model); see `flash.sh` in the IPRO7AI EVK AI examples |
-| `--build`, `--boot2` | Only produce the combined image `chips/ipro7/img_create_iot/whole_img.bin` for [`create_ota.py`](#ota-package); see `apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh` |
+| `--pt` | Partition table (`.toml`): a path relative to the tool directory (for example `chips/ipro7/partition/partition_cfg_2M.toml`) or a full path. Without it, the tool's default table is used |
+| `--boot2` | Also flash a boot2 image (for example the tool's `chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin`); needed for `ipro_ble_remote` OTA on the Reef |
+| `--mfg` | File to write into the `mfg` partition (AI models; the boot mode and voiceprint model of `ipro_reef_teach`) |
+| `--skip-ota` | Used with an application's own partition table, for example `ipro_reef_teach` |
+| `--build` | Only build the combined image `chips/ipro7/img_create_iot/whole_img.bin`, without flashing; input for [`create_ota.py`](#ota-package) |
+
+Flashing the Reef's out-of-box firmware ([enter download mode](debugging.md#download-mode) first):
 
 ```bash
+cd <IntelProCube>
 ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
     --port /dev/cu.usbserial-XXXX --baudrate 921600 \
     --pt chips/ipro7/partition/partition_cfg_2M.toml \
     --firmware <SDK>/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin
 ```
 
-The tool exits with 0 even when it fails; check the output for `[All Success]`. The commands for each OS, the per-board settings and how to enter download mode are in [Flashing & Serial Console](../get-started/flash-and-monitor.md).
+A successful run ends with `[All Success]`. The tool exits 0 even when it fails, so judge by that line. On Linux use `./ipro_iot_tool_linux`; on Windows `ipro_iot_tool.exe` and a port such as `COM5`. The partition table, `--boot2` and `--mfg` each Reef application needs are listed on [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md#examples).
 
 ## serial_monitor.py { #serial-monitor }
 
@@ -131,112 +172,121 @@ python3 tools/serial_monitor.py <port> [--baud 115200] [--timeout 30]
                                 [--send CMD] [--wait-for PATTERN] [--log FILE]
 ```
 
-It opens the port with the Python standard library's termios module, so pyserial is not needed. It runs on macOS and Linux, not on Windows.
+Opens the port with the Python standard library's termios, so it needs no pyserial; it runs on macOS and Linux, not on Windows. It only reads output (optionally after sending one command); it is not an interactive terminal. To type commands line by line, use `screen`, `minicom` or another serial terminal program.
 
-| Option | Description | Default |
+| Option | Meaning | Default |
 |---|---|---|
-| `--baud` | Baud rate; high rates such as 921600 and 2000000 work on both macOS and Linux | `115200` |
-| `--timeout` | Seconds to monitor; `0` runs until Ctrl-C | `30` |
-| `--send` | One line sent before monitoring, e.g. `reboot`, `reboot_dl` | — |
-| `--wait-for` | Regular expression; stops when it matches | — |
+| `--baud` | Baud rate; high rates such as 921600 and 2000000 work on macOS and Linux | `115200` |
+| `--timeout` | Seconds to watch; `0` runs until Ctrl-C | `30` |
+| `--send` | One command to send before watching, for example `reboot`, `reboot_dl`, `reef selftest` | — |
+| `--wait-for` | Regular expression; the monitor exits on the first match | — |
 | `--log` | Also save the raw output to a file | — |
 
 | Exit code | Meaning |
 |---|---|
-| 0 | Pattern matched and the match contains `PASSED` |
-| 1 | Pattern matched but the match does not contain `PASSED` |
+| 0 | Matched, and the matched text contains `PASSED` |
+| 1 | Matched, but the matched text does not contain `PASSED` |
 | 2 | Timed out without a match |
 | 3 | Could not open the port or send the command |
 | 130 | Stopped with Ctrl-C |
 
 ```bash
-# Reef console (115200) until Ctrl-C
-python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --timeout 0
+# Reef console (115200): run the self-test, stop after 10 s
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --send "reef selftest" --timeout 10
 
-# An application with a 921600-baud console, saved to a file
-python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 921600 --timeout 60 --log console.log
+# ipro7_jpeg_decode's Reef configuration (921600): watch until Ctrl-C and save a log
+python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 921600 --timeout 0 --log console.log
 
-# Reboot the running firmware into download mode
+# Reboot the running firmware into download mode (it prints "reboot to download mode")
 python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --send reboot_dl --timeout 2
 ```
 
-On macOS use `/dev/cu.*`; `/dev/tty.*` waits for carrier detect and blocks. Stop monitoring before flashing to release the port.
+On macOS use `/dev/cu.*`; `/dev/tty.*` waits for carrier detect and hangs. Stop the monitor before flashing so the port is free.
 
 ## create_ota.py { #ota-package }
 
-Packs the combined image produced by IntelProCube into a boot2 OTA package: XZ-compressed by default, written to `<input name>.xz.ota`, or uncompressed with `--raw`, written to `<input name>.ota`. The input must be the combined image with its boot header, starting with `IPNP` (the tool's `chips/ipro7/img_create_iot/whole_img.bin`), not the `.bin` from the SDK build; the script stops on any other input.
+Wraps the combined image that IntelProCube builds into a boot2 OTA package: XZ-compressed by default, written as `<input name>.xz.ota`, or uncompressed as `<input name>.ota` with `--raw`. The input must be the combined image with a boot header that starts with `IPNP` (the tool's `chips/ipro7/img_create_iot/whole_img.bin`), not the `.bin` from an SDK build; the script stops on any other format.
 
 ```text
 python3 tools/create_ota.py <whole_img.bin> [--raw] [-o OUTPUT] [--hw-ver STR] [--fw-ver STR]
 ```
 
-| Option | Description |
+| Option | Meaning |
 |---|---|
 | `--raw` | No compression |
 | `-o, --output` | Output file |
-| `--hw-ver` | Hardware version string written to the header; always set it rather than relying on the default |
-| `--fw-ver` | Firmware version string written to the header (default `OTA_V1.0.0`) |
-| `--sign-key`, `--product` and the other signing options | Need a product configuration file the package does not contain; not usable with V2.1.0 |
+| `--hw-ver` | Hardware version string in the header; set it explicitly rather than relying on the default |
+| `--fw-ver` | Firmware version string in the header (default `OTA_V1.0.0`) |
+| `--sign-key`, `--product` and the other signing options | Need `ota_products.py`, which does not ship; not usable with V2.2.0 |
+
+On the Reef, `make_reef_ota.sh` of `ipro_ble_remote` runs the tool's `--build` and this script for you; see [Host tools for Reef applications](#reef-tools). The complete OTA flow is in [OTA Updates](../guides/ota.md).
+
+## Host tools for Reef applications { #reef-tools }
+
+### Browser image Teach: tools/teach_web { #teach-web }
+
+Collect images from the Reef's camera, train a classifier and deploy it over USB in Chrome or Edge, without installing IPRO AI Studio. The board must run `ipro_reef_teach` in `image` mode; the host needs Python 3.8 or newer.
+
+<div class="ipro-steps" markdown>
+
+1. **Start the web server**
+
+    ```bash
+    python3 tools/teach_web/serve.py
+    ```
+
+    The browser opens `http://localhost:8780` (if your default browser is not Chrome or Edge, paste the address into one of them).
+
+2. **Connect the board**: allow camera access; on **Connect…** or the first **Deploy**, pick the serial port **IPRO7 UVC Cam**.
+
+3. **Offline computers**: run `python3 tools/teach_web/serve.py --fetch-runtime` once while online; it stores the LiteRT.js runtime (about 22 MB) locally.
+
+</div>
+
+### The mfg content of ipro_reef_teach: mfg_payload.py { #mfg-payload }
+
+The first flash of `ipro_reef_teach` writes the boot mode and the voiceprint model with `--mfg`:
 
 ```bash
-python3 tools/create_ota.py <IntelProCube>/chips/ipro7/img_create_iot/whole_img.bin \
-    -o ipro_ble_remote_reef.xz.ota --hw-ver <hw-version> --fw-ver 202610160900
+python3 apps/ai/ipro_reef_teach/mfg_payload.py \
+    --voice apps/ai/ipro_reef_teach/model/model_b.spkb --mode image -o reef_teach_mfg.bin
 ```
 
-The overall OTA flow (Reef A/B partitions, transfer over BLE) is in [OTA Updates](../guides/ota.md).
+`--mode` is `image`, `voice` or `sensor`. Pass the resulting `reef_teach_mfg.bin` to IntelProCube with `--mfg`; the flash command is on the [example page](../examples/ipro_reef_teach.md). Leave out `--mfg` when you update only the firmware.
+
+### Reef OTA tools of ipro_ble_remote { #reef-ota-tools }
+
+| Tool | Command | Result |
+|---|---|---|
+| `make_reef_ota.sh` | `IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh` | Needs a `DEFCONFIG=defconfig_reef` build first; writes `build_reef/build_out/ipro_ble_remote_reef.xz.ota` (about 345 KB) |
+| `reef_ota.py` | `.venv/bin/python apps/bluetooth/ble/ipro_ble_remote/tools/reef_ota.py <package.xz.ota>` | Sends the package over BLE (bleak) to the board named `IPRO-Remote` and prints progress and status |
+| `reef_ble_test.py` | `.venv/bin/python apps/bluetooth/ble/ipro_ble_remote/tools/reef_ble_test.py` | Tests the Reef's GATT services as a bleak central (`info led env sound tone img`; `keys` and `motion` need someone at the board); captured JPEGs land next to the script |
+| `ipro_remote_demo.apk` | Install on an Android phone | Demo app for `ipro_ble_remote`; it can push `.xz.ota` packages |
+
+Both Python scripts need bleak: `python3 -m venv .venv && .venv/bin/pip install bleak`. OTA works only on a board flashed with boot2 and `partition_cfg_2M_remote_ab.toml`; never run OTA on a Reef flashed with the standard `partition_cfg_2M.toml`.
+
+### Tools of other Reef applications { #reef-app-tools }
+
+| Tool | Purpose |
+|---|---|
+| `apps/multimedia/ipro7_jpeg_decode/host/jpeg_check.py photo.jpg [--fix out.jpg]` | Check on the PC whether IPRO7 can decode a JPEG, and convert it if needed |
+| `apps/multimedia/ipro7_jpeg_decode/host/jdec_host.py -p <port> upload photo.jpg --go 565` | Send a JPEG to the board over the console for decoding, and fetch the result for comparison |
+| `apps/multimedia/ipro7_jpeg_decode/host/run_host_tests.py` | Check the decoder on the PC against libjpeg (needs `cc`, `djpeg`) |
+| `apps/multimedia/ipro_agora_sentino/setup_ncm_nat.sh` | Set up NAT for the USB-NCM link on macOS |
 
 ## Zephyr scripts { #zephyr-tools }
 
-The scripts in `tools/zephyr/` support the `ipro7_evb` and `ipro7ai_evk` boards. The full workflow is in [Zephyr RTOS](../guides/zephyr.md).
-
-| Script | Command | Description |
-|---|---|---|
-| `bootstrap.sh` | `tools/zephyr/bootstrap.sh [-w DIR] [--full]` | Creates `zephyr-workspace/`: a Python venv with west, Zephyr v4.4.0 and the modules `west.yml` lists, the patches in `zephyr/patches.yml`, and `env.sh`. `--full` fetches the modules in full; the toolchain path comes from `IPRO_TOOLCHAIN` |
-| `build.sh` | `tools/zephyr/build.sh [-b BOARD] [-d DIR] [-p] APP [-- CMAKE_ARGS]` | Builds a Zephyr application; `-b` defaults to `ipro7_evb`, `-p` is a pristine build, `APP` is a path or a sample name under `zephyr/samples/`. Output: `<workspace>/build/<board>/<app>/zephyr/zephyr.bin` |
-| `flash.sh` | `tools/zephyr/flash.sh [--port PORT] [--build-dir DIR | zephyr.bin]` | Flashes `zephyr.bin` with the IntelProCube tool (921600 baud, no `--pt`) |
-| `monitor.sh` | `tools/zephyr/monitor.sh [--port PORT] [--baud 2000000] [--timeout S]` | Opens the UART0 console at 2000000 baud; runs until Ctrl-C by default |
-| `ci_build.sh` | `tools/zephyr/ci_build.sh [-b BOARD] [-q]` | Builds the sample matrix pristine with warnings as errors and prints sizes; `-q` builds only hello_world and blinky. Summary in `<workspace>/build/ci/summary.md` |
-| `merge_mcuboot.py` | `merge_mcuboot.py <sysbuild build dir> [-o merged.bin] [--slot1 FILE]` | Joins MCUboot and the signed application into one FW image to flash with IntelProCube |
-| `csl_pcap.py` | `csl_pcap.py FILE.pcap [--ts-end] [--dump]` | Analyzes CSL timing in an 802.15.4 sniffer capture |
-
-```bash
-tools/zephyr/bootstrap.sh
-source zephyr-workspace/env.sh
-cd zephyr-workspace
-west build -b ipro7_evb zephyr/samples/hello_world
-west flash                    # enters download mode through the IPRO debug probe; without one add -- --boot manual
-```
-
-`west flash` uses the SDK's `ipro` runner; its options go after `--`:
-
-| Option | Description | Default |
-|---|---|---|
-| `--boot probe|shell|manual` | How the board enters download mode: the IPRO debug probe (CMSIS-DAP), the running image's `reboot_dl`, or BOOT and reset by hand | `probe` (`shell` on `ipro7ai_evk`) |
-| `--port` | Flashing serial port | `$IPRO_SERIAL_PORT` |
-| `--probe-port` | The debug probe's UART bridge | `$IPRO_PROBE_PORT`, else `--port` |
-| `--tool` | IntelProCube tool | `$IPRO_FLASH_TOOL`, else `PATH` |
-| `--pt` | Partition table | `ipro7_evb`: `partition_cfg_2M.toml`; `ipro7ai_evk`: `partition_cfg_1M_boot2.toml` |
-| `--baudrate` | Flashing baud rate | `2000000` |
-| `--console-baud` | Baud rate `--boot shell` uses to send `reboot_dl` | `2000000` |
-| `--attempts` | Flash attempts before giving up | `3` |
-| `--tool-arg` | Extra argument for the tool (repeatable) | — |
-| `--no-reset` | Stay in download mode after flashing | — |
-
-!!! warning "Known script limitations"
-    - `-h` on `bootstrap.sh`, `build.sh`, `flash.sh` and `ci_build.sh` does not print usage; use this page.
-    - `flash.sh` sends `reboot_dl` at 115200 baud, which a running Zephyr image (console at 2000000 baud) does not receive. Use `west flash -- --boot shell`, or put the board in download mode by hand.
-    - Without `-b`, `ci_build.sh` also builds `ipro6s_evb`, which this release does not support; pass `-b ipro7_evb` or `-b ipro7ai_evk`.
-    - This release has no Zephyr board definition for the IPRO7AI Reef EVK.
+`tools/zephyr/` (`bootstrap.sh`, `build.sh`, `flash.sh`, `monitor.sh`, `ci_build.sh`) serves the Zephyr boards `ipro7_evb` and `ipro7ai_evk`; this release has no Zephyr board for the Reef. Usage is in [Zephyr RTOS](../guides/zephyr.md).
 
 ## Size and memory analysis { #size-analysis }
 
-| Method | Command or location | What you get |
+| Method | Command or location | Shows |
 |---|---|---|
-| Linker memory report | the last lines of every build (in `build.log` with `build_freertos.sh`) | Used size and percentage per memory region (`flash`, `ocram`, plus `psram` when enabled) |
-| `size` action | `./build_freertos.sh size <app>` | text / data / bss totals and per-section sizes |
-| Map file | `<app>/build/build_out/<app>_IPRO7.map` | Address and size of every object file and library |
-| Symbols by size | `riscv64-unknown-elf-nm --size-sort -S <ELF>` | The largest functions and variables |
-| Disassembly | set `CONFIG_GENERATE_ASM=y` in `.config` | The build also writes `<app>_IPRO7.asm` |
+| Linker memory report | Last lines of every build (in `build.log` with `build_freertos.sh`) | Use and percentage of each memory region (`flash`, `ocram`, and `psram` when enabled) |
+| `size` action | `./build_freertos.sh size <app>` | text / data / bss totals and section sizes |
+| Map file | `<build dir>/build_out/<app>_IPRO7.map` | Address and size of every object file and library |
+| Symbols by size | `riscv64-unknown-elf-nm --size-sort -S <ELF>` | Largest functions and variables |
+| Disassembly | `CONFIG_GENERATE_ASM=y` in `.config` | Also writes `<app>_IPRO7.asm` |
 
 ```bash
 ./build_freertos.sh size ipro7ai_reef_demo
@@ -244,28 +294,21 @@ west flash                    # enters download mode through the IPRO debug prob
     apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.elf | tail -20
 ```
 
-With both `CONFIG_AI_SUPPORT` and `CONFIG_MM_SUPPORT` set, the linker script shrinks the OCRAM region to 64 KB (`CONFIG_EM_SIZE` of 0) or 48 KB (`CONFIG_EM_SIZE` above 0), which is why AI and BLE rarely fit in one image. The memory map is on the [IPRO7](../hardware/chips/ipro7.md) page and the OCRAM budget in [Build System & Configuration](../guides/build-system.md).
+With both `CONFIG_AI_SUPPORT` and `CONFIG_MM_SUPPORT`, the linker script shrinks the OCRAM region to 64 KB (`CONFIG_EM_SIZE` 0) or 48 KB (`CONFIG_EM_SIZE` above 0), and CMake prints `AI+MM …: OCRAM=…` at configure time. The memory map is on [IPRO7](../hardware/chips/ipro7.md); the OCRAM budget is in [Build System & Configuration](../guides/build-system.md).
 
 ## Automated testing { #automated-testing }
 
-```bash
-./build_freertos.sh test ipro_unit_test -p /dev/cu.usbserial-XXXX -t 60
-```
-
-`test` builds, flashes, sends `reboot` and waits for `ALL TESTS PASSED` or `SOME TESTS FAILED`. Exit codes: 0 pass, 1 fail, 2 timeout. Flashing uses the fixed `flash` settings above; `ipro_unit_test` is configured for the IPRO7 EVB. Test contents and on-board commands are under [On-board testing](debugging.md#board-testing).
+`./build_freertos.sh test ipro_unit_test` builds, flashes and waits for `ALL TESTS PASSED` or `SOME TESTS FAILED`; `ipro_unit_test` needs the IPRO7 EVB. The Reef's on-board self-test is `reef selftest` in the out-of-box firmware; see [Debugging & Troubleshooting](debugging.md#board-testing).
 
 ## Other tools { #other-tools }
 
-| Tool | Description |
+| Tool | What it does |
 |---|---|
-| `tools/script/parse_kconfig_dynamic.py Kconfig [PROJECT_SYMBOL]` | Prints a Kconfig tree as JSON; needs kconfiglib. The build does not use it: `cmake/generate_autoconf.cmake` reads `.config` directly to produce `autoconf.h` |
-| `apps/ai/ipro7ai_evk_person_detect/flash.sh`, `apps/ai/ipro7ai_evk_rps/flash.sh`, `apps/platform/ipro7ai_evk_launcher/flash.sh` | Flash scripts for the IPRO7AI EVK AI examples (partition table, firmware and `mfg` model) |
-| `apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh`, `reef_ota.py` | Build a Reef OTA package and send it over BLE |
-| `apps/test/ipro_gh7007_video/tools/video_convert.py` | Convert video for the GH7007 panel player |
-| `components/audio/tools/gen_asrc_coef.py` | Generate audio sample-rate converter coefficients |
+| `tools/script/parse_kconfig_dynamic.py Kconfig [PROJECT_SYMBOL]` | Prints a Kconfig tree as JSON; needs kconfiglib. The build does not use it: `cmake/generate_autoconf.cmake` reads `.config` directly to generate `autoconf.h` |
+| `components/audio/tools/gen_asrc_coef.py` | Generates the audio sample-rate converter coefficients |
+| `*/test_host/run.sh` | Unit tests that run on the PC, for example `components/audio/test_host/run.sh` and `apps/ai/ipro_reef_teach/sensor/test_host/run.sh` |
+| Tools for other boards | `flash.sh` and `enter_dl.py` of the IPRO7AI EVK examples, `tools/mkimg.py` of `ipro6_fmac` (IPRO6S EVB), `tools/android/IproMicDemo/` (`ipro_pdm_mic_demo`): they need those boards |
 
 ## Development workflow { #dev-workflow }
 
-One edit–build–flash–check loop on the Reef is walked through in [Build and Flash Workflow](../tutorials/build-and-flash.md).
-
-For Zephyr applications use `west build` / `west flash` instead (see [Zephyr scripts](#zephyr-tools)). Debugging and common errors are in [Debugging & Troubleshooting](debugging.md).
+The edit, build, flash and console loop on the Reef is in [Build and Flash Workflow](../tutorials/build-and-flash.md); to start your own application, see [Create your first application](../tutorials/first-own-app.md). Debugging and common errors are in [Debugging & Troubleshooting](debugging.md).

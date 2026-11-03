@@ -7,11 +7,59 @@ migrate_from:
 
 # Release Notes
 
-Official IPRO SDK releases, newest first. Downloads and the release notes of each version are on [GitHub Releases](https://github.com/INTELPRO-INC/IPRO-SDK/releases); the SDK package itself is described in the `README.md` at its root.
+Official IPRO SDK releases, newest first; the current release is V2.2.0. Downloads and the release notes of each version are on [GitHub Releases](https://github.com/INTELPRO-INC/IPRO-SDK/releases); the SDK package itself is described in the `README.md` at its root.
+
+## IPRO-SDK-V2.2.0 { #v2-2-0 }
+
+<span class="ipro-badge">Latest</span> Released 2026-11-03 · [GitHub release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0)
+
+Dual-chip release for IPRO7 / IPRO7AI and IPRO6S, replacing V2.1.0. 40 FreeRTOS applications: 37 for IPRO7, 3 for IPRO6S. The download is `IPRO-SDK-V2.2.0.tar.gz`; its SHA-256 is on the release page.
+
+**New and changed**
+
+- **IPRO6S applications are back**: `ipro6_demo` (Wi-Fi 6 station / soft-AP, DTIM low power), `ipro6_if_wifi` (Wi-Fi bridge to a host over SDIO or USB) and `ipro6_fmac` (FullMAC firmware and its flash loader). The Wi-Fi MAC, coexistence and RF libraries are prebuilt once per shipped `defconfig_*`, so each configuration links the libraries built for it. The firmware of the Reef's FIN Wi-Fi card is `ipro6_if_wifi` with `defconfig_ipro6_sdio`; see [IPRO6S](../hardware/chips/ipro6s.md).
+- **New application `ipro_reef_teach`**: Edge AI firmware for the IPRO7AI Reef EVK with three Teach tools: `image` (USB camera and classifier), `voice` (who is speaking) and `sensor` (any sensor). One mode is picked at boot, each with its own USB identity, driven from IPRO AI Studio; `tools/teach_web/` does image Teach in the browser. IPRO AI Studio and the Edge AI tools ship in the separate IPRO Edge AI package.
+- **IPRO Edge AI platform V2.0** in `components/ai`: runtime, a model store with one slot per tool, input sources, preprocessing and an application framework; a bounded NPU wait that resets the block and enters a fail-closed fault state; the Edge AI firmware arms the AON watchdog (download mode turns it off). The CPU layer graph no longer reads past the last layer record.
+- **Whole-chip reset**: `hal_reboot_full()` resets the whole chip through the AON watchdog, always-on domain included; with `CONFIG_APP_WATCHDOG`, `platform_init()` arms the watchdog from the start of the boot. `ipro_reef_teach` switches tools with it, which fixes a Reef with a camera hanging on the next boot after leaving `image` mode until it was reset.
+- **New application `ipro7_jpeg_decode`**: JPEG to RGB565 / RGB888 in software (TJpgDec), with a format probe and support for camera MJPEG frames without Huffman tables; IPRO7's MJPEG block only encodes. On the Reef use `defconfig_reef`; the console runs at 921600 baud.
+- **`ipro7ai_reef_demo`**: `mic usb` turns the Reef into a USB microphone (16 kHz, rate-converted from the PDM clock); `mic sdrec` records WAV files to the SD card.
+- **`build_freertos.sh`**: `flash` picks `--chip-variant` from the configuration (`IPRO7AI` for the Reef and the IPRO7AI EVK), overridable with `-c` or `IPRO_CHIP_VARIANT`; `-P` or `IPRO_FLASH_PT` passes a partition table; the `reboot_dl` that `flash` sends, `monitor` and `test` use the application's own console baud rate. See [Tool Command Lines](tools.md#build-cli).
+- **BLE controller**: the 16 IPRO7 prebuilt libraries are rebuilt from this release's source; `ipro_ble_ctlr_heap_watermarks()` and `ipro_ble_ctlr_link_diag_start()`, already declared in the header, now link.
+- **USB device**: fixes an RX FIFO overflow, detaches on de-init, fixes CDC-ECM framing, and the USB console attaches reliably. **lwIP**: `sys_mbox_trypost` from an interrupt takes the FromISR path. Opus builds against its own `arch.h`.
+- **BSP**: PLL-off system clocks for BLE-only applications; `CONFIG_OCRAM_NORET_SCRATCH_ONLY` keeps RAM state inside the PDS-retained 64 KB; `hal_lp_enter_fastboot()` enters HBN; security engine HAL v2 with a PSA accelerator driver.
+- The sample applications carry no built-in network credentials.
+
+**Applications**
+
+- 40 in all: 37 for IPRO7, 3 for IPRO6S. Compared with V2.1.0, `ipro_reef_teach`, `ipro7_jpeg_decode`, `ipro6_demo`, `ipro6_if_wifi` and `ipro6_fmac` are new, and the speaker-recognition application of V2.1.0 is renamed `ipro_speaker_recog`.
+- Nine applications have configurations for the IPRO7AI Reef EVK; the list and build commands are in the [FAQ](faq.md#reef-apps) and on [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md#examples).
+
+Built and checked from the package before release: the 36 IPRO7 FreeRTOS applications (`ipro_agora_sentino` needs the AOSL core first), seven IPRO6S configurations, and the Zephyr samples for `ipro7_evb` and `ipro7ai_evk`.
+
+**Not included**
+
+- The IntelProCube flash tool and the RISC-V toolchain: contact INTELPRO.
+- IPRO AI Studio and the Edge AI tools: they ship in the separate IPRO Edge AI package. The model conversion tool: contact INTELPRO.
+- An IPRO6S BLE controller library and BLE / BR/EDR applications for IPRO6S; the IPRO6S applications are Wi-Fi only.
+- Matter; Thread for FreeRTOS applications (Thread is available under Zephyr).
+- Setup for on-target debugging (OpenOCD / GDB), a crash-dump host tool, the board test script, `menuconfig`.
+- Zephyr: no Reef board; IPRO6S is not supported; no low-power modes and no drivers for the display, camera, audio codec, USB, SD host, Ethernet or NPU.
+- The AOSL core and the Sentino device triple that `ipro_agora_sentino` needs: AOSL comes from GitHub, as the application's README describes.
+
+### Known issues and notes { #v2-2-0-known-issues }
+
+- **Comments in the Reef board header**: the comments in `bsp/board/ipro7/ipro7ai_reef_board_config.h` describe the expansion header and jumpers of the earlier (V3.0) carrier; the pin definitions match V4.0. For the V4.0 header, switches and jumpers, [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md) on this site is the reference.
+- **Two IPRO6S configurations have no prebuilt library set**: `ipro6_demo/defconfig_ipro6_lpwifi_ping` and `ipro6_fmac/defconfig_ipro6_fmac_ap` ship in the package but do not set `CONFIG_WIRELESS_LIB_VARIANT`, and they are not among the configurations checked for the release. Use the configurations listed on the [IPRO6S](../hardware/chips/ipro6s.md) page.
+- **`ipro_le_audio_headset`**: the application's README marks audio rendering as currently disabled and media streaming as not yet validated; read its status section before relying on audio output.
+- **`ipro_throughput_test` documents**: the README and `OPERATION_MANUAL.md` mention a demo application, an Android app and controller build options (such as `CONFIG_BTBLECONTROLLER_LIB` and `link8`) that are not in this release; build and flash as in the README's Build / Flash sections and [BLE Throughput Test](../tutorials/ble-throughput.md).
+- **Waiting after a crash**: `ipro7ai_reef_demo` and `ipro_reef_teach` set `CONFIG_EXCEPTION_DUMP=y`, so after a crash they keep printing `==DUMP_READY:2000000==` while waiting for a host tool that does not ship; save the diagnostics and press SW2, or set it to `n`. See [Crash analysis](debugging.md#crash-analysis).
+- **`build_freertos.sh` flashes IPRO7 only**: it always passes `--chipname ipro7` and cannot pass `--boot2` or `--mfg`; flash IPRO6S images, the OTA build of `ipro_ble_remote` and `ipro_reef_teach` with IntelProCube directly.
+- **Flash pin wording for Zephyr flashing**: the help text of the `west flash` runner's `--flash-pin` option gives `0x9` for the EVB; FreeRTOS flashing selects the pins with `--chip-variant` (`IPRO7` = `0x2`, `IPRO7AI` = `0x9`; the Reef uses `IPRO7AI`).
+- **Items named in READMEs but not shipped**: some component and application READMEs refer to applications, tools or documents that are not in this release (for example the board user guide and the Edge AI programming guide). Documents are available from INTELPRO; see [Documents](../documents/index.md).
 
 ## IPRO-SDK-V2.1.0 { #v2-1-0 }
 
-<span class="ipro-badge">Latest</span> Released 2026-10-16 · [GitHub release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.1.0)
+Released 2026-10-16 · [GitHub release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.1.0)
 
 Adds Zephyr RTOS support; the FreeRTOS applications target IPRO7, 35 in all.
 
@@ -31,7 +79,7 @@ Adds Zephyr RTOS support; the FreeRTOS applications target IPRO7, 35 in all.
 
 **Not included**
 
-- IPRO6S applications, BLE controller libraries and `ipro6_rf`: the package README still mentions IPRO6S, but this release has none of it; for IPRO6S development use V2.0.1, see [IPRO6S (V2.0.1)](../hardware/chips/ipro6s.md).
+- IPRO6S applications, BLE controller libraries and `ipro6_rf`: the package README still mentions IPRO6S, but this release has none of it; for IPRO6S development V2.0.1 was the release to use then; from V2.2.0 the IPRO6S applications are back, see [IPRO6S](../hardware/chips/ipro6s.md).
 - The IPRO6S-side Wi-Fi firmware, including the Reef's FIN card; contact INTELPRO.
 - Matter; Thread for FreeRTOS applications (Thread is available under Zephyr); model conversion tools.
 - The IntelProCube flash tool and the RISC-V toolchain, which are obtained separately.
@@ -39,7 +87,7 @@ Adds Zephyr RTOS support; the FreeRTOS applications target IPRO7, 35 in all.
 **Known limitations**
 
 - `ipro_ble_remote/defconfig_lowpower` switches the BLE controller to a source build and cannot be built from this package.
-- `build_freertos.sh flash` passes neither `--chip-variant` nor `--pt`, and `monitor` always uses 115200 baud; for IPRO7AI boards and 921600-baud applications use the tools directly; see [Flashing & Serial Console](../get-started/flash-and-monitor.md#build-script).
+- `build_freertos.sh flash` passes neither `--chip-variant` nor `--pt`, and `monitor` always uses 115200 baud; for IPRO7AI boards and 921600-baud applications use the tools directly. Improved in V2.2.0; see [IPRO-SDK-V2.2.0](#v2-2-0).
 - Zephyr has no low-power modes yet and no drivers for the display, camera, audio codec, USB, SD host, Ethernet or NPU, and no board definition for the IPRO7AI Reef EVK.
 
 The build and on-board checks done for the release are listed on its GitHub release page.
@@ -65,7 +113,7 @@ Maintenance release for continuous BLE audio, following the V2.0 expansion to IP
 - Fixes Bluetooth host queue publication atomicity during sustained transfers.
 - PDM recording supports up to 4 logical hours with a 240-second PSRAM ring and automatic 30-second chunks; Android keeps a high connection priority between chunks.
 - PDM uses a `link2` controller, a one-connection host and 2M PHY; EVB / EVK configurations and Android companion source are included.
-- Adds IPRO6S Wi-Fi / BR/EDR references (see [IPRO6S (V2.0.1)](../hardware/chips/ipro6s.md)), both SDIO link endpoints, NPU / TFLM examples and bundled `.inm` / `.tflite` models.
+- Adds IPRO6S Wi-Fi / BR/EDR references, both SDIO link endpoints, NPU / TFLM examples and bundled `.inm` / `.tflite` models.
 - Includes `ipro_unit_test` and Linux x86-64 CMake; `serial_monitor.py` and `PREBUILT-ARCHIVES-STRIPPED.txt` from 1.2.1 are absent.
 
 The published release reports 31/31 application builds and a five-minute recording test with a Pixel 7a and an IPRO7AI board: ten 960,000-byte chunks, no lost packets or sequence gaps, a successful ring wrap, and steady transfer at 84.2–91.2 KB/s. These results apply to that test setup and are not a guarantee for every board or phone.
@@ -74,7 +122,7 @@ The published release reports 31/31 application builds and a five-minute recordi
 
 [Download the installer](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/online-installer-v3.4.0)
 
-Adds a dynamic public catalog, independent package versions, compatibility selection for full installs, and cached offline installation. The Extension stays at 3.3.0. As checked on 2026-10-16, the catalog's stable SDK is still 1.2.1 and has no V2.x entry; download SDK V2.x from its release page, as described in [Windows Setup & VS Code](../get-started/windows.md#sdk-2-1-0).
+Adds a dynamic public catalog, independent package versions, compatibility selection for full installs, and cached offline installation. The Extension stays at 3.3.0. The installer's SDK catalog still lists 1.2.1 as stable and has no V2.x entry; download SDK V2.2.0 from its [release page](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0), see [Windows Setup & VS Code](../get-started/windows.md).
 
 ## Development tools: Windows installer / Extension 3.3.0 { #tools-3-3-0 }
 

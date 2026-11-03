@@ -1,13 +1,13 @@
 ---
 title: "腳位與周邊對照"
-description: IPRO7 GPIO 功能選擇、UART／SPI／SDIO／I2S 腳位、替代功能表、開發板預設腳位與周邊接線範例
+description: IPRO7 GPIO 功能選擇、UART／SPI／SDIO／I2S 腳位、替代功能表，以及 IPRO7AI Reef EVK 的預設腳位與擴充排針接線
 migrate_from:
   - "hardware.html — 腳位定義、GPIO Function Select、UART／SPI／SDIO／I2S Pin Assignment、GPIO0~GPIO31 Alternate Function、周邊連接指南"
 ---
 
 # 腳位與周邊對照
 
-IPRO7 每支 GPIO 由 GLB 腳位多工器選擇功能：在 `GLB_GPIO_Cfg_Type` 填入腳位、功能值（0–27）、模式、上下拉、驅動強度與 Schmitt 觸發，再呼叫 `GLB_GPIO_Init()`。本頁的表格依 `bsp/drivers/ipro7_soc/std_drv/inc/drv_gpio.h`、`drv_glb.h` 與各開發板的設定檔整理；各板的完整接線見 [IPRO7AI Reef EVK](boards/reef-evk.md#pinout)、[IPRO7AI EVK](boards/ipro7ai-evk.md#pinout) 與 [IPRO7 EVB](boards/ipro7-evb.md#default-pins)。
+IPRO7 每支 GPIO 由 GLB 腳位多工器選擇功能：在 `GLB_GPIO_Cfg_Type` 填入腳位、功能值（0–27）、模式、上下拉、驅動強度與 Schmitt 觸發，再呼叫 `GLB_GPIO_Init()`。本頁的表格依 `bsp/drivers/ipro7_soc/std_drv/inc/drv_gpio.h`、`drv_glb.h` 與 Reef 的板級設定檔 `bsp/board/ipro7/ipro7ai_reef_board_config.h` 整理；板上的完整接線與 40-pin 排針見 [IPRO7AI Reef EVK](boards/reef-evk.md#pinout)。
 
 ```c title="設定一支腳位"
 /* 欄位順序：{ pin, function, mode, pull, drive, smt } */
@@ -57,7 +57,7 @@ UART 採兩段式多工，所以可以放在多數 GPIO 上：
 
 編號除以 12 餘數相同的腳位共用同一個 signal，不能同時擔任不同的 UART 訊號。
 
-三塊開發板的主控台都在 UART0：GPIO20（`GLB_UART_SIG_8` → TXD）與 GPIO21（`GLB_UART_SIG_9` → RXD）。GPIO20／21 也是 Boot ROM UART 下載使用的腳位。主控台鮑率由應用的 `CONFIG_PLATFORM_UART_BAUDRATE` 決定，未設定時為 115200。
+Reef 的主控台在 UART0：GPIO20（`GLB_UART_SIG_8` → TXD）與 GPIO21（`GLB_UART_SIG_9` → RXD），接到除錯排座 U6 的第 3／4 腳與 J_IO 的第 8／10 腳。GPIO20／21 也是 Boot ROM UART 下載使用的腳位。主控台鮑率由應用的 `CONFIG_PLATFORM_UART_BAUDRATE` 決定，未設定時為 115200。
 
 | GPIO | Signal | GPIO | Signal | GPIO | Signal |
 |---|---|---|---|---|---|
@@ -83,15 +83,15 @@ UART 採兩段式多工，所以可以放在多數 GPIO 上：
 
 `GLB_UART_Sig_Swap_Set()` 可對 GPIO0–7、GPIO8–15、GPIO16–22 三組分別啟用交換，把該組的 `uart_sig[0:3]` 與 `uart_sig[4:7]` 對調。啟動程式設定為 `UART_SIG_SWAP_NONE`（不交換），上表即為此預設值。
 
-```c title="UART1：GPIO14 為 TXD、GPIO15 為 RXD"
+```c title="UART1：GPIO2 為 TXD、GPIO3 為 RXD（Reef J_IO 第 40／38 腳，SW7＝GPIO）"
 GLB_GPIO_Cfg_Type uart_pins[] = {
-    { GLB_GPIO_PIN_14, GPIO_FUN_UART, GPIO_MODE_AF, GPIO_PULL_UP, 0, 1 },
-    { GLB_GPIO_PIN_15, GPIO_FUN_UART, GPIO_MODE_AF, GPIO_PULL_UP, 0, 1 },
+    { GLB_GPIO_PIN_2, GPIO_FUN_UART, GPIO_MODE_AF, GPIO_PULL_UP, 0, 1 },
+    { GLB_GPIO_PIN_3, GPIO_FUN_UART, GPIO_MODE_AF, GPIO_PULL_UP, 0, 1 },
 };
 GLB_GPIO_Init(&uart_pins[0]);
 GLB_GPIO_Init(&uart_pins[1]);
 
-/* GPIO14 → SIG_2、GPIO15 → SIG_3（GPIO 編號 mod 12） */
+/* GPIO2 → SIG_2、GPIO3 → SIG_3（GPIO 編號 mod 12） */
 GLB_UART_Fun_Sel(GLB_UART_SIG_2, GLB_UART_SIG_FUN_UART1_TXD);
 GLB_UART_Fun_Sel(GLB_UART_SIG_3, GLB_UART_SIG_FUN_UART1_RXD);
 ```
@@ -122,14 +122,14 @@ SPI1（功能 26）是獨立的第二組 SPI，腳位分組規則與 SPI0 相同
 | 預設 DMA 通道 | TX：DMA_CH3，RX：DMA_CH4 | — |
 | 腳位交換 | MOSI／MISO 可交換 | MOSI／MISO 可交換 |
 
-開發板實例：Reef 的 WS2812 資料線在 GPIO24（mod 4 = 0），以 SPI0 MOSI 驅動，需要 `pin_swap_enable = 0`；IPRO7AI EVK 的 LCD 使用 GPIO15（SCLK）與 GPIO16（MOSI），CS、DC、RST 為一般 GPIO。
+Reef 的 WS2812 資料線在 GPIO24（mod 4 = 0），以 SPI0 MOSI 驅動，需要 `pin_swap_enable = 0`。J_IO 上的 SPI 腳位見 [Reef 擴充排針的周邊](#peripherals)。
 
-```c title="SPI0 使用 GPIO12–15 這一組"
+```c title="SPI0 使用 GPIO4–7 這一組（pin_swap_enable = 0）"
 GLB_GPIO_Cfg_Type spi_pins[] = {
-    { GLB_GPIO_PIN_12, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_NONE, 1, 1 }, /* MOSI */
-    { GLB_GPIO_PIN_13, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_NONE, 1, 1 }, /* MISO */
-    { GLB_GPIO_PIN_14, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_UP,   1, 1 }, /* SS */
-    { GLB_GPIO_PIN_15, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_NONE, 1, 1 }, /* SCLK */
+    { GLB_GPIO_PIN_4, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_NONE, 1, 1 }, /* MOSI */
+    { GLB_GPIO_PIN_5, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_NONE, 1, 1 }, /* MISO */
+    { GLB_GPIO_PIN_6, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_UP,   1, 1 }, /* SS */
+    { GLB_GPIO_PIN_7, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_NONE, 1, 1 }, /* SCLK */
 };
 for (int i = 0; i < 4; i++) {
     GLB_GPIO_Init(&spi_pins[i]);
@@ -138,7 +138,7 @@ for (int i = 0; i < 4; i++) {
 
 ## SDIO／SD 卡腳位 { #sdio-pins }
 
-SD 主控（SDH，功能 27）固定使用 GPIO28–33。這組腳位也接到外接 Flash（SF2／SF3）：定義 `CONFIG_DISABLE_SDC_PINMUX` 時，GPIO28–33 改給外接 Flash，不能同時使用 SD 卡。IPRO7 經 SDIO 連接 IPRO6S Wi-Fi 夥伴晶片時，也使用這組腳位。
+SD 主控（SDH，功能 27）固定使用 GPIO28–33。這組腳位也接到外接 Flash（SF2／SF3）：定義 `CONFIG_DISABLE_SDC_PINMUX` 時，GPIO28–33 改給外接 Flash，不能同時使用 SD 卡。Reef 的 microSD 卡座接在這組腳位上，插入 IPRO6S FIN 卡時，IPRO7AI 也經這組腳位以 SDIO 驅動卡片。
 
 | GPIO | SDC 訊號 | 上下拉 | 驅動強度 | 說明 |
 |---|---|---|---|---|
@@ -156,7 +156,7 @@ SD 主控（SDH，功能 27）固定使用 GPIO28–33。這組腳位也接到�
 | 開發板預設 | PLL_96M，`div = 1`（48 MHz） |
 | 協定 | SD 3.0／SDIO |
 
-卡片偵測與電源開關由各板自行配置：Reef 為偵測 GPIO15、電源 GPIO14；IPRO7AI EVK 為電源 GPIO27、偵測 GPIO34。
+Reef 的卡片偵測在 GPIO15（卡片插入時為 0），卡座電源由 GPIO14 控制（JP3 在 GPIO 時，低準位＝有電）。CMD 與 DAT 線沒有外部上拉電阻，SDK 的板級設定開啟 IPRO7AI 的內部上拉。以 GPIO14 關閉卡座電源前，先把 GPIO28–33 設為低準位或輸入。
 
 ## I2S 腳位 { #i2s-pins }
 
@@ -251,105 +251,109 @@ I2S0（功能 3）以 4 支 GPIO 為一組，訊號依位置固定。第 3 支�
 
 ## DVP 相機腳位 { #camera-pins }
 
-兩塊 IPRO7AI 開發板的相機接線：
+Reef 的 OV5640 相機接線（SW7 必須在 CAM）：
 
-| 訊號 | IPRO7AI EVK | IPRO7AI Reef EVK |
-|---|---|---|
-| D0–D7 | GPIO0–7 | GPIO0–7 |
-| PCLK | GPIO38 | GPIO38 |
-| VSYNC | GPIO39 | GPIO39 |
-| HSYNC／HREF | GPIO40 | GPIO40 |
-| MCLK（`CAM_MISC` 參考時脈） | GPIO41 | GPIO22 |
-| RESET | GPIO35 | GPIO34 |
-| PWDN | — | GPIO35 |
-| SCCB SCL／SDA（I2C0） | GPIO36／GPIO37 | GPIO36／GPIO37 |
+| 訊號 | GPIO |
+|---|---|
+| D0–D7 | GPIO0–7 |
+| PCLK | GPIO38 |
+| VSYNC | GPIO39 |
+| HSYNC／HREF | GPIO40 |
+| XCLK（`CAM_MISC` 參考時脈，由 IPRO7AI 輸出） | GPIO22 |
+| RESETB | GPIO34 |
+| PWDN | GPIO35 |
+| SCCB SCL／SDA（I2C0） | GPIO36／GPIO37 |
 
-相機腳位都在 VDDIO1 電源域（GPIO0–9、GPIO36–41）。I2C0 的角色由腳位奇偶決定：偶數為 SCL，奇數為 SDA。
+VDDIO1 電源域涵蓋 GPIO0–9 與 GPIO36–41（相機、USB 與 BOOT 腳位）。I2C0 的角色由腳位奇偶決定：偶數為 SCL，奇數為 SDA。SW7 撥到 GPIO 時，這 16 支腳改接到 J_IO，相機的 2.8 V 與 1.5 V 穩壓器關閉。
 
 ## 開發板預設腳位 { #board-default-pins }
 
-### IPRO7 EVB { #evb-default-pins }
-
-依 `bsp/board/ipro7/ipro7_evb_board_config.h`：
-
-| GPIO | 功能 | 訊號 | 上下拉 | 驅動強度 | 說明 |
-|---|---|---|---|---|---|
-| GPIO0 | JTAG（14） | TMS／TCK | 上拉 | 0 | 除錯 |
-| GPIO1 | JTAG（14） | TDI／TDO | 上拉 | 0 | 除錯 |
-| GPIO2 | JTAG（14） | TCK／TMS | 上拉 | 0 | 除錯 |
-| GPIO11 | JTAG（14） | TDO／TDI | 上拉 | 0 | 除錯 |
-| GPIO15 | GPIO（11） | 輸出 | 下拉 | 2 | 軟體控制 |
-| GPIO20 | UART（7） | UART0_TXD | 上拉 | 0 | 主控台 TX |
-| GPIO21 | UART（7） | UART0_RXD | 上拉 | 0 | 主控台 RX |
-| GPIO28 | SDC（27） | SDC_DAT1 | 上拉 | 2 | SD 卡 |
-| GPIO29 | SDC（27） | SDC_DAT0 | 上拉 | 2 | SD 卡 |
-| GPIO30 | SDC（27） | SDC_CLK | 無 | 2 | SD 卡 |
-| GPIO31 | SDC（27） | SDC_CMD | 上拉 | 2 | SD 卡 |
-| GPIO32 | SDC（27） | SDC_DAT3 | 上拉 | 2 | SD 卡 |
-| GPIO33 | SDC（27） | SDC_DAT2 | 上拉 | 2 | SD 卡 |
-
-EVB 預設沒有佔用的 GPIO：GPIO3–10、GPIO12–19、GPIO22–27、GPIO34–41。
-
 ### IPRO7AI Reef EVK { #reef-default-pins }
 
-依 `bsp/board/ipro7/ipro7ai_reef_board_config.h`。Reef 沒有 JTAG 接頭；相機、音訊與類比腳位由驅動在啟用時設定。
+依 `bsp/board/ipro7/ipro7ai_reef_board_config.h`，開機時設定下列腳位。Reef 沒有 JTAG 接頭；相機、音訊與類比腳位由驅動在啟用時設定。
 
 | GPIO | 功能 | 設定 | 說明 |
 |---|---|---|---|
-| GPIO14 | GPIO（11） | 輸出，低電位 | SD_VDD 開關（低 = 開） |
-| GPIO15 | GPIO（11） | 輸入，上拉 | SD 卡偵測 |
+| GPIO14 | GPIO（11） | 輸出，低準位 | microSD 卡座電源開關（JP3 在 GPIO 時，低準位＝有電） |
+| GPIO15 | GPIO（11） | 輸入，上拉 | microSD 卡片偵測 |
 | GPIO20 | UART（7） | 上拉 | 主控台 TX |
 | GPIO21 | UART（7） | 上拉 | 主控台 RX |
-| GPIO24 | GPIO（11） | 輸出，低電位 | WS2812 資料線，避免上電時 LED 誤動作 |
-| GPIO25 | GPIO（11） | 輸出，下拉，擴大機關閉 | 喇叭擴大機致能 |
-| GPIO28–33 | SDC（27） | 與 EVB 相同 | SD 卡／FIN 卡 |
+| GPIO24 | GPIO（11） | 輸出，低準位 | WS2812 資料線，避免上電時 LED 誤動作 |
+| GPIO25 | GPIO（11） | 輸出，下拉，擴大機關閉 | 喇叭擴大機致能（高準位開啟） |
+| GPIO28–33 | SDC（27） | DAT 與 CMD 上拉，驅動強度 2 | microSD 卡座／FIN 卡 |
+
+其他開發板（IPRO7 EVB、IPRO7AI EVK）的預設腳位在 `bsp/board/ipro7/` 的板級設定檔中；這些板子的供應請洽 INTELPRO。
 
 ## 腳位衝突與設計注意事項 { #pin-conflicts }
 
-- **GPIO20／21**：Boot ROM UART 下載使用這兩支腳，保留板上的連接；應用啟動後的主控台設定由板級與應用決定。
-- **GPIO0–2、GPIO11**：EVB 預設為 JTAG，產品可以釋放使用。IPRO7AI 開發板把 GPIO0–7 用作相機資料線。
+- **GPIO20／21**：Boot ROM UART 下載與主控台使用這兩支腳，保留它們與 U6 的連接。
+- **GPIO0–7、GPIO22、GPIO34–40**：Reef 的相機腳位。SW7＝CAM 時由相機使用；SW7＝GPIO 時接到 J_IO，相機關閉。
+- **GPIO10、GPIO11、GPIO27**：Reef 的 SW3、SW5、SW4 按鍵（按下為低準位），也引到 J_IO。
+- **GPIO12、GPIO13**：Reef 的耳麥麥克風類比輸入（AIN6、AIN7）。
 - **GPIO17–22**：具 Flash（SF）功能。是否可用取決於封裝、Flash 配置與電路圖，不能只看編號判斷。
-- **GPIO23–28**：與外接 Flash（SF2）共用。
-- **GPIO28–33**：SD 卡與外接 Flash（SF2／SF3）互斥，由 `CONFIG_DISABLE_SDC_PINMUX` 選擇。
-- **GPIO18／19**：32 kHz 晶體腳位。Reef 沒有裝晶體，可作一般 GPIO；IPRO7AI EVK 用來接 PDM 麥克風。
-- **I/O 電壓**：由各 VDDIO 電源域決定。VDDIO1（GPIO0–9、GPIO36–41）在 Reef 可用 JP1 選 3.3 V 或 2.8 V，在 IPRO7AI EVK 為 2.8 V。
+- **GPIO23–28**：與外接 Flash（SF2）共用。Reef 的 GPIO23 是 GPDAC 喇叭輸出，GPIO24 是 WS2812，GPIO25 是擴大機致能，GPIO26 是耳麥插入偵測。
+- **GPIO28–33**：SD 卡與外接 Flash（SF2／SF3）互斥，由 `CONFIG_DISABLE_SDC_PINMUX` 選擇；Reef 用作 microSD。
+- **GPIO18／19**：32 kHz 晶體腳位。Reef 沒有裝晶體，這兩支腳是 J_IO 的 I2C（板上 4.7 kΩ 上拉）。
+- **I/O 電壓**：Reef V4.0 的所有 IO 都是 3.3 V 準位，不可接 5 V 訊號。
 - **Schmitt 觸發**：每支腳可個別開啟（`GLB_GPIO_Cfg_Type` 的最後一個欄位）。
 
 ## 周邊連接指南 { #peripherals }
 
-### I2S 音訊編解碼器 { #codec }
+Reef 的 40-pin 擴充排針 J_IO 位置與腳序同樹莓派。下表列出依 IPRO7 的腳位功能可以設定在 J_IO 上的介面；SDK 沒有為它們提供 Reef 的範例設定，使用前依前面各節設定腳位功能。標示 SW7＝GPIO 的介面使用相機腳位，此時相機關閉。
 
-外部音訊編解碼器使用 I2S 第 1 組（GPIO4–7）傳輸音訊，I2C0 控制：
+| 介面 | J_IO 腳位 | GPIO 與功能 | 條件 |
+|---|---|---|---|
+| I2C | 3 SDA、5 SCL | GPIO19、GPIO18，I2C0（功能 6） | 板上 4.7 kΩ 上拉；SW7 任一位置都可用 |
+| SPI0 | 19 MOSI、21 MISO、23 SCLK、24 SS | GPIO4、GPIO5、GPIO7、GPIO6，第 1 組（功能 4） | SW7＝GPIO；`pin_swap_enable = 0` |
+| I2S0 | 12 BCLK、35 FS、40 DO、38 DI | GPIO0、GPIO1、GPIO2、GPIO3，第 0 組（功能 3） | SW7＝GPIO |
+| UART1 | 40 TXD、38 RXD | GPIO2（SIG_2）、GPIO3（SIG_3），功能 7 | SW7＝GPIO；與 I2S0 擇一 |
+| 第二組 I2C 位置（ID EEPROM） | 27 SDA、28 SCL | GPIO37、GPIO36 | SW7＝GPIO |
+| 主控台 UART0 | 8 TXD、10 RXD | GPIO20、GPIO21 | 主控台已使用 |
 
-| IPRO7 | 功能 | 編解碼器 |
+J_IO 的 1、17 腳是 3.3 V 電源輸出，2、4 腳是 USB 5 V 經二極體的輸出，不能由此對板子供電。完整腳位表見 [IPRO7AI Reef EVK](boards/reef-evk.md#j-io)。
+
+### I2C 感測器 { #i2c-sensor }
+
+| J_IO | IPRO7AI | 感測器 |
 |---|---|---|
-| GPIO4（功能 3，I2S0_BCLK） | 位元時脈 | BCLK |
-| GPIO5（功能 3，I2S0_FS） | 框同步 | LRCLK／WS |
-| GPIO6（功能 3，I2S0_DO） | 資料輸出 | DIN |
-| GPIO7（功能 3，I2S0_DI） | 資料輸入 | DOUT |
-| GPIO12（功能 6，I2C0_SCL） | I2C 時脈 | SCL |
-| GPIO13（功能 6，I2C0_SDA） | I2C 資料 | SDA |
+| 1 | 3.3 V | VDD |
+| 3 | GPIO19（功能 6，I2C0_SDA） | SDA |
+| 5 | GPIO18（功能 6，I2C0_SCL） | SCL |
+| 6 | GND | GND |
 
-也可以使用其他組（0–7），每組 4 支依序為 BCLK、FS、DO、DI，見 [I2S 腳位](#i2s-pins)。
+板上已有 4.7 kΩ 上拉電阻，不必再外接。I2C1（功能 25）是獨立的第二組 I2C。
 
 ### SPI 周邊（LCD／感測器） { #spi-peripheral }
 
-SPI0 使用第 3 組（GPIO12–15）：
-
-| IPRO7 | 功能 | 周邊 |
+| J_IO | IPRO7AI | 周邊 |
 |---|---|---|
-| GPIO15（功能 4，SPI0_SCLK） | 時脈 | SCK |
-| GPIO12（功能 4，SPI0_MOSI） | 主出從入 | SDI／MOSI |
-| GPIO13（功能 4，SPI0_MISO） | 主入從出 | SDO／MISO |
-| GPIO14（功能 4，SPI0_SS） | 晶片選擇 | CS# |
+| 19 | GPIO4（功能 4，SPI0_MOSI） | SDI／MOSI |
+| 21 | GPIO5（功能 4，SPI0_MISO） | SDO／MISO |
+| 23 | GPIO7（功能 4，SPI0_SCLK） | SCK |
+| 24 | GPIO6（功能 4，SPI0_SS） | CS# |
 
-MOSI 與 MISO 的位置依 `pin_swap_enable` 而定，見 [SPI 腳位](#spi-pins)。
+需要 SW7＝GPIO 與 `pin_swap_enable = 0`；MOSI 與 MISO 的位置見 [SPI 腳位](#spi-pins)。
+
+### I2S 音訊編解碼器 { #codec }
+
+| J_IO | IPRO7AI | 編解碼器 |
+|---|---|---|
+| 12 | GPIO0（功能 3，I2S0_BCLK） | BCLK |
+| 35 | GPIO1（功能 3，I2S0_FS） | LRCLK／WS |
+| 40 | GPIO2（功能 3，I2S0_DO） | DIN |
+| 38 | GPIO3（功能 3，I2S0_DI） | DOUT |
+
+需要 SW7＝GPIO。編解碼器的控制介面接 J_IO 的 I2C（3、5 腳）。每組 4 支依序為 BCLK、FS、DO、DI，見 [I2S 腳位](#i2s-pins)。
+
+### UART 擴充 { #uart-expansion }
+
+UART1 可以放在多數 GPIO 上；在 J_IO 上可用 GPIO2（第 40 腳，TXD）與 GPIO3（第 38 腳，RXD），需要 SW7＝GPIO，設定方式見 [UART 腳位](#uart-pins)的範例。GPIO20／21 保留給 Boot ROM UART 下載與主控台。
 
 ### SD 卡 { #sd-card }
 
-SD 卡固定使用 GPIO28–33：
+Reef 的 microSD 卡座固定使用 GPIO28–33，沒有引到 J_IO：
 
-| IPRO7 | SD 卡 |
+| IPRO7AI | SD 卡 |
 |---|---|
 | GPIO28（功能 27，SDC_DAT1） | DAT1 |
 | GPIO29（功能 27，SDC_DAT0） | DAT0 |
@@ -358,40 +362,9 @@ SD 卡固定使用 GPIO28–33：
 | GPIO32（功能 27，SDC_DAT3） | DAT3 |
 | GPIO33（功能 27，SDC_DAT2） | DAT2 |
 
-### I2C 感測器 { #i2c-sensor }
-
-I2C0 可用任一組相鄰的偶數／奇數 GPIO（偶數為 SCL、奇數為 SDA）：
-
-| IPRO7 | 功能 | 感測器 |
-|---|---|---|
-| GPIO4（功能 6，I2C0_SCL） | I2C 時脈 | SCL |
-| GPIO5（功能 6，I2C0_SDA） | I2C 資料 | SDA |
-| GPIO10（功能 11，GPIO） | 中斷（選用） | INT |
-| 3V3 | 電源 | VDD |
-| GND | 地 | GND |
-
-I2C 匯流排需要外接上拉電阻（例如 4.7 kΩ），晶片內部上拉不足以驅動標準 I2C 匯流排。I2C1（功能 25）是獨立的第二組 I2C。
-
-### UART 擴充 { #uart-expansion }
-
-UART1 可以放在多數 GPIO 上，例如 GPIO14／15：
-
-| IPRO7 | 功能 | 周邊 |
-|---|---|---|
-| GPIO14（功能 7，UART_SIG2） | UART1_TXD | RXD |
-| GPIO15（功能 7，UART_SIG3） | UART1_RXD | TXD |
-
-GPIO20／21 保留給 Boot ROM UART 下載與主控台，見 [UART 腳位](#uart-pins)。
-
 ### PDM 麥克風 { #pdm-mic }
 
-PDM 麥克風經音訊 ADC（AUADC）擷取，腳位角色依奇偶：偶數為 PDM_CLK，奇數為 PDM_DATA。SDK 中的接法：
-
-| 開發板 | CLK | DATA | 範例 |
-|---|---|---|---|
-| IPRO7AI Reef EVK | GPIO16 | GPIO17 | `ipro7ai_reef_demo` |
-| IPRO7AI EVK | GPIO18 | GPIO19 | `ipro7ai_evk_launcher`、`ipro7ai_evk_demo` |
-| IPRO7 EVB（外接模組） | GPIO0 | GPIO1 | `ipro_pdm_mic_demo` |
+PDM 麥克風經音訊 ADC（AUADC）擷取，腳位角色依奇偶：偶數為 PDM_CLK，奇數為 PDM_DATA。Reef 的板上 PDM 麥克風 MK1 接在 CLK GPIO16、DATA GPIO17，`ipro7ai_reef_demo` 的 `mic rec pdm` 以它錄音。
 
 ### 天線 { #antenna }
 
@@ -403,11 +376,11 @@ PDM 麥克風經音訊 ADC（AUADC）擷取，腳位角色依奇偶：偶數為 
 | 晶片天線 | 體積小，需要匹配電路 |
 | 外接天線 | 效能最佳，需 U.FL 接頭 |
 
-RF 輸出與天線之間使用 π 型匹配電路：RF 輸出端並聯一顆電容到地，串聯一顆電感，天線端再並聯一顆電容到地。Reef 在 π 型匹配後以 0 Ω 電阻選擇 PCB 天線或 u.FL 天線座。
+RF 輸出與天線之間使用 π 型匹配電路：RF 輸出端並聯一顆電容到地，串聯一顆電感，天線端再並聯一顆電容到地。Reef 預設使用 PCB 天線 E1；把 R2 的 0 Ω 電阻移到 R1，改接 u.FL 天線座 RF1。
 
 ## 相關文件 { #documents }
 
-- [IPRO7AI Reef EVK](boards/reef-evk.md#pinout)、[IPRO7AI EVK](boards/ipro7ai-evk.md#pinout)、[IPRO7 EVB](boards/ipro7-evb.md#default-pins)：各板的完整接線。
+- [IPRO7AI Reef EVK](boards/reef-evk.md#pinout)：板上接線、J_IO 與 U6 腳位表。
 - [IPRO7](chips/ipro7.md#interfaces)：周邊介面的數量與規格。
-- [電源與功耗量測](power.md)：VDDIO 電源域與各板電源架構。
+- [電源與功耗量測](power.md)：Reef 的供電方式與電流量測。
 - IPRO7 資料手冊與硬體設計指南（腳位定義、GPIO 腳位多工）：見[文件下載](../documents/index.md)。

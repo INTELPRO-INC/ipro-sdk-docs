@@ -1,25 +1,63 @@
 ---
 title: ipro_agora_sentino
-description: 'Sentino cloud AI voice chat: BLE provisioning, Wi-Fi through the IPRO6S FIN card, MQTT login, Agora RTC voice. Needs a Sentino device triple and AOSL (see the README); the FIN card firmware is not included in V2.1.0, contact INTELPRO'
+description: 'Sentino cloud AI voice chat: BLE provisioning, Wi-Fi through the IPRO6S FIN card, MQTT login and Agora RTC voice; needs a Sentino device triple and the AOSL core'
 generated: tools/gen_examples.py
 migrate_from: []
 ---
 
 # ipro_agora_sentino
 
-Sentino cloud AI voice chat: BLE provisioning, Wi-Fi through the IPRO6S FIN card, MQTT login, Agora RTC voice. Needs a Sentino device triple and AOSL (see the README); the FIN card firmware is not included in V2.1.0, contact INTELPRO
+Sentino cloud AI voice chat: BLE provisioning, Wi-Fi through the IPRO6S FIN card, MQTT login and Agora RTC voice; needs a Sentino device triple and the AOSL core
 
 | Item | Details |
 |---|---|
-| Source | [`apps/multimedia/ipro_agora_sentino`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.1.0/apps/multimedia/ipro_agora_sentino) |
-| Boards and configs | Reef (`.config`, `make` or `make BOARD=reef`); EVK (`make BOARD=evk`, uses `config_evk`; builds but is not verified on the board) |
-| Console | Reef: UART 115200<br>EVK: UART 921600 |
+| Source | [`apps/multimedia/ipro_agora_sentino`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/multimedia/ipro_agora_sentino) |
+| Boards and configs | Reef + IPRO6S FIN card (`.config`, `make` or `make BOARD=reef`); `BOARD=evk` targets the IPRO7AI EVK (builds, not verified on a board) |
+| Console | Reef: UART 115200 |
 | Build | `make -C apps/multimedia/ipro_agora_sentino` |
+
+## Run it on the Reef { #on-the-reef }
+
+You need: an IPRO6S FIN card in the microSD slot running the `ipro6_if_wifi` firmware (`defconfig_ipro6_sdio`), with JP3 on GPIO; a speaker on the speaker connector; a Sentino device triple per board and the Sentino phone app (from Sentino, not part of the SDK); a 2.4 GHz access point with internet access.
+
+<div class="ipro-steps" markdown>
+
+1. **Get the AOSL core** (once; not part of the SDK). From the SDK root:
+
+    ```bash
+    git clone https://github.com/AgoraIO-Community/aosl components/3rdparty/agora/aosl
+    git -C components/3rdparty/agora/aosl checkout d825607
+    ```
+
+    Without this directory the build stops and prints these two commands.
+
+2. **Build**
+
+    ```bash
+    make -C apps/multimedia/ipro_agora_sentino
+    ```
+
+    The image is `apps/multimedia/ipro_agora_sentino/build/build_out/ipro_agora_sentino_IPRO7.bin`.
+
+3. **Flash**: enter [download mode](../hardware/boards/reef-evk.md#download-mode), then from the IntelProCube directory run
+
+    ```bash
+    ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+        --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+        --pt chips/ipro7/partition/partition_cfg_2M.toml \
+        --firmware <SDK>/apps/multimedia/ipro_agora_sentino/build/build_out/ipro_agora_sentino_IPRO7.bin
+    ```
+
+    Check for `[All Success]`, then press SW2.
+
+4. **Set up and run**: open the console at 115200 baud; the board prints `IPRO7 Agora Sentino AI Gateway`. Type `sentino_triple set <pid> <uuid> <secret>`, then `reboot`. The board advertises over BLE as `RY`; send the Wi-Fi and server settings from the Sentino phone app (or type `wifi_set <ssid> <psk>` at the console). Once logged in, talk to the AI through the microphone.
+
+</div>
 
 ## README { #readme }
 
 !!! note "The README as shipped"
-    Below is the README that ships with the application (SDK V2.1.0), as written; only content unfit for publication was replaced.
+    Below is the README that ships with the application (SDK V2.2.0), as written; only content unfit for publication was replaced.
 
 <!-- verbatim:start -->
 
@@ -29,7 +67,7 @@ Sentino cloud AI voice chat: BLE provisioning, Wi-Fi through the IPRO6S FIN card
 2. 裝置經插在卡槽的 IPRO6S FIN 連上 Wi-Fi，登入 Sentino 雲端（MQTT）。
 3. 雲端配發 Agora RTC 存取權，裝置加入頻道；PDM 麥克風收音、DAC 喇叭播放，與 AI 即時語音對話。
 
-程式模組與資料流見 [ARCHITECTURE.md](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.1.0/apps/multimedia/ipro_agora_sentino/ARCHITECTURE.md)。
+程式模組與資料流見 [ARCHITECTURE.md](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.0/apps/multimedia/ipro_agora_sentino/ARCHITECTURE.md)。
 
 ### 需要準備
 

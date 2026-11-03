@@ -11,15 +11,43 @@ migrate_from: []
 
 | 項目 | 內容 |
 |---|---|
-| 原始碼 | [`apps/bluetooth/ble/ipro_throughput_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.1.0/apps/bluetooth/ble/ipro_throughput_test) |
-| 板卡與設定 | EVB（`.config`）；Reef（`defconfig_reef`） |
+| 原始碼 | [`apps/bluetooth/ble/ipro_throughput_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/bluetooth/ble/ipro_throughput_test) |
+| 板卡與設定 | 兩塊 Reef（`defconfig_reef`）；`.config` 為 IPRO7 EVB |
 | 主控台 | UART 115200 |
-| 建置 | `make -C apps/bluetooth/ble/ipro_throughput_test` |
+| 建置 | Reef：`make -C apps/bluetooth/ble/ipro_throughput_test DEFCONFIG=defconfig_reef` |
+
+## 在 Reef 上執行 { #on-the-reef }
+
+需要兩塊 Reef，各接一條主控台線。
+
+<div class="ipro-steps" markdown>
+
+1. **建置**
+
+    ```bash
+    make -C apps/bluetooth/ble/ipro_throughput_test DEFCONFIG=defconfig_reef
+    ```
+
+    映像在 `apps/bluetooth/ble/ipro_throughput_test/build_reef/build_out/ipro_throughput_test_IPRO7.bin`。
+
+2. **燒錄兩塊板**：每塊板進入[下載模式](../hardware/boards/reef-evk.md#download-mode)後，在 IntelProCube 目錄執行（`--port` 換成該板的序列埠）
+
+    ```bash
+    ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+        --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+        --firmware <SDK>/apps/bluetooth/ble/ipro_throughput_test/build_reef/build_out/ipro_throughput_test_IPRO7.bin
+    ```
+
+    兩塊板都要看到 `[All Success]`，再各按一下 SW2。
+
+3. **執行**：以 115200 baud 各開一個主控台。重置約 7 秒後印出 `BLE initialized`。一塊板輸入 `tp slave`（以 `IPRO-TP-TEST` 廣播），另一塊輸入 `tp master`，等到 `Notifications enabled - ready for test`；在傳送端輸入 `tp phy 2` 與 `tp start 244 10`，10 秒後印出結果摘要。
+
+</div>
 
 ## README { #readme }
 
 !!! note "README 原文"
-    以下是應用隨附的 README（SDK V2.1.0），保留原文、未翻譯；只替換了不適合公開的內容。
+    以下是應用隨附的 README（SDK V2.2.0），保留原文、未翻譯；只替換了不適合公開的內容。
 
 <!-- verbatim:start -->
 
@@ -116,11 +144,9 @@ flash and 205 KB of the 224 KB OCRAM region.
 
 #### Flash
 
-Use the IntelProCube `ipro_iot_tool_macos`; the SDK's `tools/ipro_iot_tool_lite` is <!-- redline-ignore: retired-tool -->
-retired. The tool has no `--flash-pin` option: set `flash_pin` in <!-- redline-ignore: retired-tool -->
-`<IntelProCube>/chips/ipro7/eflash_loader/eflash_loader_cfg.ini` to `0x2` for the EVB or
-`0x9` for the Reef (QFN56), and put it back afterwards because the ini is shared by every
-board you flash.
+Use the IntelProCube command-line tool (`ipro_iot_tool_macos`; `_linux` and `.exe` on the
+other hosts), obtained separately from the SDK. Select the flash pin with `--chip-variant`:
+`IPRO7` for the EVB, `IPRO7AI` for the Reef (QFN56).
 
 1. Put the board in download mode. While the firmware runs, type `reboot_dl` in its
     shell. If the firmware does not answer, hold BOOT (SW1), tap RESET (SW2) and release
@@ -129,7 +155,7 @@ board you flash.
 2. Flash:
 
     ```bash
-    <IntelProCube>/ipro_iot_tool_macos --chipname ipro7 \
+    <IntelProCube>/ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
         --port /dev/cu.usbmodemXXXX02 \
         --firmware apps/bluetooth/ble/ipro_throughput_test/build_reef/build_out/ipro_throughput_test_IPRO7.bin \
         --baudrate 921600
@@ -290,7 +316,7 @@ CONFIG_FREERTOS_TIMER_TASK_STACK_WORDS=1024
 | Symptom | Cause and fix |
 |---------|---------------|
 | `IPRO FLASH WRITE CHECK FAIL` on every retry | Seen with some images. Set `decompress_write = false` in the IntelProCube ini, flash, then restore it. |
-| `flash jedec id: 00000000`, `IPRO FLASH MATCH TYPE FAIL` | Wrong `flash_pin` in the ini (`0x9` for the Reef, `0x2` for the EVB). |
+| `flash jedec id: 00000000`, `IPRO FLASH MATCH TYPE FAIL` | Wrong `--chip-variant` (`IPRO7AI` for the Reef, `IPRO7` for the EVB). |
 | No console output after flashing a custom build | Something called before `.tcmcode` is copied was moved into it. Keep `memcpy` and `port.c` out of `IPRO7_BLE_HOTCODE_OBJECTS`. |
 | `Malloc failed ... task: TPTest` at start-up | Timer task stack too large for the heap left by the hot code; set `CONFIG_FREERTOS_TIMER_TASK_STACK_WORDS=1024`. |
 | `relocation truncated to fit: R_RISCV_JAL` at link time | An object reached with `jal` from flash was moved to OCRAM; keep it in flash. |
@@ -299,9 +325,8 @@ CONFIG_FREERTOS_TIMER_TASK_STACK_WORDS=1024
 
 ### Related Documentation
 
-- [OPERATION_MANUAL.md](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.1.0/apps/bluetooth/ble/ipro_throughput_test/OPERATION_MANUAL.md) — operation manual in Chinese: hardware
-    setup, test workflow, troubleshooting. Its flashing steps still use the retired
-    `ipro_iot_tool_lite`; use the Flash section above instead. <!-- redline-ignore: retired-tool -->
+- [OPERATION_MANUAL.md](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.0/apps/bluetooth/ble/ipro_throughput_test/OPERATION_MANUAL.md) — operation manual in Chinese: hardware
+    setup, test workflow, troubleshooting.
 
 ### API Reference
 

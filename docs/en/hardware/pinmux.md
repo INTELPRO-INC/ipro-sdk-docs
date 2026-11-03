@@ -1,13 +1,13 @@
 ---
 title: "Pinout & Peripheral Mapping"
-description: IPRO7 GPIO function select, UART / SPI / SDIO / I2S pins, alternate-function tables, board default pins and peripheral wiring examples
+description: IPRO7 GPIO function select, UART / SPI / SDIO / I2S pins, alternate-function tables, and the IPRO7AI Reef EVK's default pins and expansion-header wiring
 migrate_from:
   - "hardware.html — 腳位定義、GPIO Function Select、UART／SPI／SDIO／I2S Pin Assignment、GPIO0~GPIO31 Alternate Function、周邊連接指南"
 ---
 
 # Pinout & Peripheral Mapping
 
-Each IPRO7 GPIO gets its role from the GLB pin multiplexer: fill a `GLB_GPIO_Cfg_Type` with the pin, a function value (0–27), the mode, pull, drive strength and Schmitt trigger, then call `GLB_GPIO_Init()`. The tables on this page come from `bsp/drivers/ipro7_soc/std_drv/inc/drv_gpio.h`, `drv_glb.h` and the board configuration headers; for the full wiring of each board see [IPRO7AI Reef EVK](boards/reef-evk.md#pinout), [IPRO7AI EVK](boards/ipro7ai-evk.md#pinout) and [IPRO7 EVB](boards/ipro7-evb.md#default-pins).
+Each IPRO7 GPIO gets its role from the GLB pin multiplexer: fill a `GLB_GPIO_Cfg_Type` with the pin, a function value (0–27), the mode, pull, drive strength and Schmitt trigger, then call `GLB_GPIO_Init()`. The tables on this page come from `bsp/drivers/ipro7_soc/std_drv/inc/drv_gpio.h`, `drv_glb.h` and the Reef's board configuration header `bsp/board/ipro7/ipro7ai_reef_board_config.h`; for the board's full wiring and its 40-pin header see [IPRO7AI Reef EVK](boards/reef-evk.md#pinout).
 
 ```c title="Configure one pin"
 /* field order: { pin, function, mode, pull, drive, smt } */
@@ -57,7 +57,7 @@ UART uses a two-stage multiplexer, so it can sit on most GPIOs:
 
 Pins whose numbers leave the same remainder modulo 12 share one signal and cannot carry different UART signals at the same time.
 
-All three boards have the console on UART0: GPIO20 (`GLB_UART_SIG_8` → TXD) and GPIO21 (`GLB_UART_SIG_9` → RXD). GPIO20 / 21 are also the Boot ROM's UART download pins. The console baud rate comes from the application's `CONFIG_PLATFORM_UART_BAUDRATE`, 115200 when unset.
+The Reef's console is on UART0: GPIO20 (`GLB_UART_SIG_8` → TXD) and GPIO21 (`GLB_UART_SIG_9` → RXD), wired to pins 3 / 4 of the U6 debug connector and pins 8 / 10 of J_IO. GPIO20 / 21 are also the Boot ROM's UART download pins. The console baud rate comes from the application's `CONFIG_PLATFORM_UART_BAUDRATE`, 115200 when unset.
 
 | GPIO | Signal | GPIO | Signal | GPIO | Signal |
 |---|---|---|---|---|---|
@@ -83,15 +83,15 @@ All three boards have the console on UART0: GPIO20 (`GLB_UART_SIG_8` → TXD) an
 
 `GLB_UART_Sig_Swap_Set()` can enable a swap separately for the groups GPIO0–7, GPIO8–15 and GPIO16–22; it exchanges `uart_sig[0:3]` and `uart_sig[4:7]` within the group. The startup code sets `UART_SIG_SWAP_NONE` (no swap), which is what the table shows.
 
-```c title="UART1: TXD on GPIO14, RXD on GPIO15"
+```c title="UART1: TXD on GPIO2, RXD on GPIO3 (Reef J_IO pins 40 / 38, SW7 on GPIO)"
 GLB_GPIO_Cfg_Type uart_pins[] = {
-    { GLB_GPIO_PIN_14, GPIO_FUN_UART, GPIO_MODE_AF, GPIO_PULL_UP, 0, 1 },
-    { GLB_GPIO_PIN_15, GPIO_FUN_UART, GPIO_MODE_AF, GPIO_PULL_UP, 0, 1 },
+    { GLB_GPIO_PIN_2, GPIO_FUN_UART, GPIO_MODE_AF, GPIO_PULL_UP, 0, 1 },
+    { GLB_GPIO_PIN_3, GPIO_FUN_UART, GPIO_MODE_AF, GPIO_PULL_UP, 0, 1 },
 };
 GLB_GPIO_Init(&uart_pins[0]);
 GLB_GPIO_Init(&uart_pins[1]);
 
-/* GPIO14 -> SIG_2, GPIO15 -> SIG_3 (GPIO number mod 12) */
+/* GPIO2 -> SIG_2, GPIO3 -> SIG_3 (GPIO number mod 12) */
 GLB_UART_Fun_Sel(GLB_UART_SIG_2, GLB_UART_SIG_FUN_UART1_TXD);
 GLB_UART_Fun_Sel(GLB_UART_SIG_3, GLB_UART_SIG_FUN_UART1_RXD);
 ```
@@ -122,14 +122,14 @@ SPI1 (function 26) is a separate second SPI with the same grouping rule.
 | Default DMA channels | TX: DMA_CH3, RX: DMA_CH4 | — |
 | Pin swap | MOSI / MISO swappable | MOSI / MISO swappable |
 
-On the boards: the Reef's WS2812 data line is on GPIO24 (mod 4 = 0) and is driven from SPI0 MOSI, which needs `pin_swap_enable = 0`; the IPRO7AI EVK's LCD uses GPIO15 (SCLK) and GPIO16 (MOSI), with CS, DC and RST as plain GPIOs.
+The Reef's WS2812 data line is on GPIO24 (mod 4 = 0) and is driven from SPI0 MOSI, which needs `pin_swap_enable = 0`. For SPI on J_IO see [Peripherals on the Reef's expansion header](#peripherals).
 
-```c title="SPI0 on the GPIO12–15 group"
+```c title="SPI0 on the GPIO4–7 group (pin_swap_enable = 0)"
 GLB_GPIO_Cfg_Type spi_pins[] = {
-    { GLB_GPIO_PIN_12, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_NONE, 1, 1 }, /* MOSI */
-    { GLB_GPIO_PIN_13, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_NONE, 1, 1 }, /* MISO */
-    { GLB_GPIO_PIN_14, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_UP,   1, 1 }, /* SS */
-    { GLB_GPIO_PIN_15, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_NONE, 1, 1 }, /* SCLK */
+    { GLB_GPIO_PIN_4, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_NONE, 1, 1 }, /* MOSI */
+    { GLB_GPIO_PIN_5, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_NONE, 1, 1 }, /* MISO */
+    { GLB_GPIO_PIN_6, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_UP,   1, 1 }, /* SS */
+    { GLB_GPIO_PIN_7, GPIO_FUN_SPI, GPIO_MODE_AF, GPIO_PULL_NONE, 1, 1 }, /* SCLK */
 };
 for (int i = 0; i < 4; i++) {
     GLB_GPIO_Init(&spi_pins[i]);
@@ -138,7 +138,7 @@ for (int i = 0; i < 4; i++) {
 
 ## SDIO / SD card pins { #sdio-pins }
 
-The SD host (SDH, function 27) always uses GPIO28–33. The same pins also reach the external flash (SF2 / SF3): with `CONFIG_DISABLE_SDC_PINMUX` defined, GPIO28–33 go to the external flash and the SD card cannot be used. An IPRO6S Wi-Fi companion connected over SDIO uses these pins too.
+The SD host (SDH, function 27) always uses GPIO28–33. The same pins also reach the external flash (SF2 / SF3): with `CONFIG_DISABLE_SDC_PINMUX` defined, GPIO28–33 go to the external flash and the SD card cannot be used. The Reef's microSD slot is wired to these pins; with the IPRO6S FIN card in the slot, the IPRO7AI drives the card over SDIO on the same pins.
 
 | GPIO | SDC signal | Pull | Drive | Description |
 |---|---|---|---|---|
@@ -156,7 +156,7 @@ The SD host (SDH, function 27) always uses GPIO28–33. The same pins also reach
 | Board default | PLL_96M, `div = 1` (48 MHz) |
 | Protocol | SD 3.0 / SDIO |
 
-Card detect and the slot supply switch are board-specific: detect on GPIO15 and supply on GPIO14 on the Reef; supply on GPIO27 and detect on GPIO34 on the IPRO7AI EVK.
+On the Reef, card detect is GPIO15 (0 when a card is seated) and GPIO14 switches the slot's supply (with JP3 on GPIO, low = on). CMD and DAT have no external pull-ups; the SDK's board configuration turns on the IPRO7AI's internal pull-ups. Before you switch the slot off with GPIO14, drive GPIO28–33 low or make them inputs.
 
 ## I2S pins { #i2s-pins }
 
@@ -251,105 +251,109 @@ Only functions that matter for peripheral design are listed; every GPIO also has
 
 ## DVP camera pins { #camera-pins }
 
-Camera wiring on the two IPRO7AI boards:
+The Reef's OV5640 camera wiring (SW7 must be on CAM):
 
-| Signal | IPRO7AI EVK | IPRO7AI Reef EVK |
-|---|---|---|
-| D0–D7 | GPIO0–7 | GPIO0–7 |
-| PCLK | GPIO38 | GPIO38 |
-| VSYNC | GPIO39 | GPIO39 |
-| HSYNC / HREF | GPIO40 | GPIO40 |
-| MCLK (`CAM_MISC` reference clock) | GPIO41 | GPIO22 |
-| RESET | GPIO35 | GPIO34 |
-| PWDN | — | GPIO35 |
-| SCCB SCL / SDA (I2C0) | GPIO36 / GPIO37 | GPIO36 / GPIO37 |
+| Signal | GPIO |
+|---|---|
+| D0–D7 | GPIO0–7 |
+| PCLK | GPIO38 |
+| VSYNC | GPIO39 |
+| HSYNC / HREF | GPIO40 |
+| XCLK (`CAM_MISC` reference clock, driven by the IPRO7AI) | GPIO22 |
+| RESETB | GPIO34 |
+| PWDN | GPIO35 |
+| SCCB SCL / SDA (I2C0) | GPIO36 / GPIO37 |
 
-All camera pins are in the VDDIO1 bank (GPIO0–9, GPIO36–41). I2C0 roles follow pin parity: even pins are SCL, odd pins SDA.
+The VDDIO1 power domain covers GPIO0–9 and GPIO36–41 (camera, USB and BOOT pins). I2C0 roles follow pin parity: even is SCL, odd is SDA. With SW7 on GPIO these 16 pins go to J_IO instead, and the camera's 2.8 V and 1.5 V regulators are off.
 
 ## Board default pins { #board-default-pins }
 
-### IPRO7 EVB { #evb-default-pins }
-
-From `bsp/board/ipro7/ipro7_evb_board_config.h`:
-
-| GPIO | Function | Signal | Pull | Drive | Notes |
-|---|---|---|---|---|---|
-| GPIO0 | JTAG (14) | TMS / TCK | Pull-up | 0 | Debug |
-| GPIO1 | JTAG (14) | TDI / TDO | Pull-up | 0 | Debug |
-| GPIO2 | JTAG (14) | TCK / TMS | Pull-up | 0 | Debug |
-| GPIO11 | JTAG (14) | TDO / TDI | Pull-up | 0 | Debug |
-| GPIO15 | GPIO (11) | Output | Pull-down | 2 | Software controlled |
-| GPIO20 | UART (7) | UART0_TXD | Pull-up | 0 | Console TX |
-| GPIO21 | UART (7) | UART0_RXD | Pull-up | 0 | Console RX |
-| GPIO28 | SDC (27) | SDC_DAT1 | Pull-up | 2 | SD card |
-| GPIO29 | SDC (27) | SDC_DAT0 | Pull-up | 2 | SD card |
-| GPIO30 | SDC (27) | SDC_CLK | None | 2 | SD card |
-| GPIO31 | SDC (27) | SDC_CMD | Pull-up | 2 | SD card |
-| GPIO32 | SDC (27) | SDC_DAT3 | Pull-up | 2 | SD card |
-| GPIO33 | SDC (27) | SDC_DAT2 | Pull-up | 2 | SD card |
-
-GPIOs the EVB leaves free by default: GPIO3–10, GPIO12–19, GPIO22–27, GPIO34–41.
-
 ### IPRO7AI Reef EVK { #reef-default-pins }
 
-From `bsp/board/ipro7/ipro7ai_reef_board_config.h`. The Reef has no JTAG header; camera, audio and analog pins are set up by their drivers when the peripheral starts.
+From `bsp/board/ipro7/ipro7ai_reef_board_config.h`, set at boot. The Reef has no JTAG connector; the camera, audio and analog pins are set by their drivers when enabled.
 
-| GPIO | Function | Setting | Notes |
+| GPIO | Function | Setting | Purpose |
 |---|---|---|---|
-| GPIO14 | GPIO (11) | Output, low | SD_VDD switch (low = on) |
-| GPIO15 | GPIO (11) | Input, pull-up | SD card detect |
+| GPIO14 | GPIO (11) | Output, low | microSD slot supply switch (with JP3 on GPIO, low = on) |
+| GPIO15 | GPIO (11) | Input, pull-up | microSD card detect |
 | GPIO20 | UART (7) | Pull-up | Console TX |
 | GPIO21 | UART (7) | Pull-up | Console RX |
-| GPIO24 | GPIO (11) | Output, low | WS2812 data line, held low so the LED does not latch noise at power-up |
-| GPIO25 | GPIO (11) | Output, pull-down, amplifier off | Speaker amplifier enable |
-| GPIO28–33 | SDC (27) | As on the EVB | SD card / FIN card |
+| GPIO24 | GPIO (11) | Output, low | WS2812 data line, held low so the LED stays dark at power-up |
+| GPIO25 | GPIO (11) | Output, pull-down, amplifier off | Speaker amplifier enable (active high) |
+| GPIO28–33 | SDC (27) | Pull-ups on DAT and CMD, drive strength 2 | microSD slot / FIN card |
+
+The default pins of the other boards (IPRO7 EVB, IPRO7AI EVK) are in their board configuration headers in `bsp/board/ipro7/`; contact INTELPRO for these boards.
 
 ## Pin conflicts and design notes { #pin-conflicts }
 
-- **GPIO20 / 21**: the Boot ROM downloads over these pins; keep their board connection. The console after boot is set by the board and the application.
-- **GPIO0–2, GPIO11**: JTAG by default on the EVB; a product can free them. The IPRO7AI boards use GPIO0–7 as camera data lines.
-- **GPIO17–22**: have flash (SF) functions. Whether you can use them depends on the package, the flash configuration and the schematic, not on the pin number alone.
-- **GPIO23–28**: shared with the external flash (SF2).
-- **GPIO28–33**: the SD card and the external flash (SF2 / SF3) exclude each other; `CONFIG_DISABLE_SDC_PINMUX` selects which.
-- **GPIO18 / 19**: the 32 kHz crystal pads. The Reef fits no crystal, so they are free GPIOs; the IPRO7AI EVK uses them for the PDM microphone.
-- **I/O voltage**: set by each VDDIO bank. VDDIO1 (GPIO0–9, GPIO36–41) is 3.3 V or 2.8 V on the Reef (JP1) and 2.8 V on the IPRO7AI EVK.
-- **Schmitt trigger**: can be enabled per pin (the last field of `GLB_GPIO_Cfg_Type`).
+- **GPIO20 / 21**: used by the Boot ROM's UART download and by the console; keep them connected to U6.
+- **GPIO0–7, GPIO22, GPIO34–40**: the Reef's camera pins. With SW7 on CAM the camera uses them; with SW7 on GPIO they go to J_IO and the camera is off.
+- **GPIO10, GPIO11, GPIO27**: the Reef's keys SW3, SW5 and SW4 (low when pressed); also brought out to J_IO.
+- **GPIO12, GPIO13**: the Reef's headset-microphone analog inputs (AIN6, AIN7).
+- **GPIO17–22**: carry flash (SF) functions. Whether they are free depends on the package, the flash configuration and the schematic, not on the number alone.
+- **GPIO23–28**: shared with the external flash (SF2). On the Reef, GPIO23 is the GPDAC speaker output, GPIO24 the WS2812, GPIO25 the amplifier enable and GPIO26 the headset-detect input.
+- **GPIO28–33**: SD card or external flash (SF2 / SF3), chosen with `CONFIG_DISABLE_SDC_PINMUX`; the Reef uses them for the microSD slot.
+- **GPIO18 / 19**: the 32 kHz crystal pins. The Reef has no crystal fitted; these two pins are the I2C on J_IO (4.7 kΩ pull-ups on the board).
+- **I/O voltage**: every IO on the Reef V4.0 is 3.3 V; never connect 5 V signals.
+- **Schmitt trigger**: per pin (the last field of `GLB_GPIO_Cfg_Type`).
 
 ## Peripheral connection guide { #peripherals }
 
-### I2S audio codec { #codec }
+The Reef's 40-pin expansion header J_IO follows the Raspberry Pi's position and pin order. The table lists interfaces that the IPRO7's pin functions allow on J_IO. The SDK has no Reef example configuration for them; set the pin functions as described in the sections above. Interfaces marked SW7 on GPIO use camera pins, and the camera is off while they do.
 
-An external audio codec takes audio over I2S group 1 (GPIO4–7) and control over I2C0:
+| Interface | J_IO pins | GPIO and function | Condition |
+|---|---|---|---|
+| I2C | 3 SDA, 5 SCL | GPIO19, GPIO18, I2C0 (function 6) | 4.7 kΩ pull-ups on the board; SW7 in either position |
+| SPI0 | 19 MOSI, 21 MISO, 23 SCLK, 24 SS | GPIO4, GPIO5, GPIO7, GPIO6, group 1 (function 4) | SW7 on GPIO; `pin_swap_enable = 0` |
+| I2S0 | 12 BCLK, 35 FS, 40 DO, 38 DI | GPIO0, GPIO1, GPIO2, GPIO3, group 0 (function 3) | SW7 on GPIO |
+| UART1 | 40 TXD, 38 RXD | GPIO2 (SIG_2), GPIO3 (SIG_3), function 7 | SW7 on GPIO; either this or I2S0 |
+| Second I2C position (ID EEPROM) | 27 SDA, 28 SCL | GPIO37, GPIO36 | SW7 on GPIO |
+| Console UART0 | 8 TXD, 10 RXD | GPIO20, GPIO21 | Taken by the console |
 
-| IPRO7 | Function | Codec |
+Pins 1 and 17 of J_IO are 3.3 V outputs; pins 2 and 4 output USB 5 V through a diode and cannot power the board. The full pin table is on [IPRO7AI Reef EVK](boards/reef-evk.md#j-io).
+
+### I2C sensor { #i2c-sensor }
+
+| J_IO | IPRO7AI | Sensor |
 |---|---|---|
-| GPIO4 (function 3, I2S0_BCLK) | Bit clock | BCLK |
-| GPIO5 (function 3, I2S0_FS) | Frame sync | LRCLK / WS |
-| GPIO6 (function 3, I2S0_DO) | Data out | DIN |
-| GPIO7 (function 3, I2S0_DI) | Data in | DOUT |
-| GPIO12 (function 6, I2C0_SCL) | I2C clock | SCL |
-| GPIO13 (function 6, I2C0_SDA) | I2C data | SDA |
+| 1 | 3.3 V | VDD |
+| 3 | GPIO19 (function 6, I2C0_SDA) | SDA |
+| 5 | GPIO18 (function 6, I2C0_SCL) | SCL |
+| 6 | GND | GND |
 
-Any other group (0–7) works too; each group's four pins are BCLK, FS, DO and DI in order, see [I2S pins](#i2s-pins).
+The board already has 4.7 kΩ pull-ups; add none. I2C1 (function 25) is a separate second I2C controller.
 
 ### SPI peripheral (LCD / sensor) { #spi-peripheral }
 
-SPI0 on group 3 (GPIO12–15):
-
-| IPRO7 | Function | Peripheral |
+| J_IO | IPRO7AI | Peripheral |
 |---|---|---|
-| GPIO15 (function 4, SPI0_SCLK) | Clock | SCK |
-| GPIO12 (function 4, SPI0_MOSI) | Master out, slave in | SDI / MOSI |
-| GPIO13 (function 4, SPI0_MISO) | Master in, slave out | SDO / MISO |
-| GPIO14 (function 4, SPI0_SS) | Chip select | CS# |
+| 19 | GPIO4 (function 4, SPI0_MOSI) | SDI / MOSI |
+| 21 | GPIO5 (function 4, SPI0_MISO) | SDO / MISO |
+| 23 | GPIO7 (function 4, SPI0_SCLK) | SCK |
+| 24 | GPIO6 (function 4, SPI0_SS) | CS# |
 
-Which pin is MOSI and which is MISO depends on `pin_swap_enable`, see [SPI pins](#spi-pins).
+Needs SW7 on GPIO and `pin_swap_enable = 0`; for where MOSI and MISO land, see [SPI pins](#spi-pins).
+
+### I2S audio codec { #codec }
+
+| J_IO | IPRO7AI | Codec |
+|---|---|---|
+| 12 | GPIO0 (function 3, I2S0_BCLK) | BCLK |
+| 35 | GPIO1 (function 3, I2S0_FS) | LRCLK / WS |
+| 40 | GPIO2 (function 3, I2S0_DO) | DIN |
+| 38 | GPIO3 (function 3, I2S0_DI) | DOUT |
+
+Needs SW7 on GPIO. Connect the codec's control interface to the I2C on J_IO (pins 3 and 5). Each group of four is BCLK, FS, DO, DI in order; see [I2S pins](#i2s-pins).
+
+### UART expansion { #uart-expansion }
+
+UART1 can sit on most GPIOs; on J_IO use GPIO2 (pin 40, TXD) and GPIO3 (pin 38, RXD) with SW7 on GPIO, configured as in the example under [UART pins](#uart-pins). GPIO20 / 21 stay reserved for the Boot ROM's UART download and the console.
 
 ### SD card { #sd-card }
 
-The SD card always uses GPIO28–33:
+The Reef's microSD slot always uses GPIO28–33; these pins do not reach J_IO:
 
-| IPRO7 | SD card |
+| IPRO7AI | SD card |
 |---|---|
 | GPIO28 (function 27, SDC_DAT1) | DAT1 |
 | GPIO29 (function 27, SDC_DAT0) | DAT0 |
@@ -358,40 +362,9 @@ The SD card always uses GPIO28–33:
 | GPIO32 (function 27, SDC_DAT3) | DAT3 |
 | GPIO33 (function 27, SDC_DAT2) | DAT2 |
 
-### I2C sensor { #i2c-sensor }
-
-I2C0 works on any adjacent even / odd GPIO pair (even = SCL, odd = SDA):
-
-| IPRO7 | Function | Sensor |
-|---|---|---|
-| GPIO4 (function 6, I2C0_SCL) | I2C clock | SCL |
-| GPIO5 (function 6, I2C0_SDA) | I2C data | SDA |
-| GPIO10 (function 11, GPIO) | Interrupt (optional) | INT |
-| 3V3 | Power | VDD |
-| GND | Ground | GND |
-
-The I2C bus needs external pull-up resistors (4.7 kΩ, for example); the chip's internal pull-ups are too weak for a standard I2C bus. I2C1 (function 25) is a separate second I2C.
-
-### UART expansion { #uart-expansion }
-
-UART1 can sit on most GPIOs, for example GPIO14 / 15:
-
-| IPRO7 | Function | Peripheral |
-|---|---|---|
-| GPIO14 (function 7, UART_SIG2) | UART1_TXD | RXD |
-| GPIO15 (function 7, UART_SIG3) | UART1_RXD | TXD |
-
-GPIO20 / 21 stay reserved for Boot ROM download and the console, see [UART pins](#uart-pins).
-
 ### PDM microphone { #pdm-mic }
 
-A PDM microphone is captured through the audio ADC (AUADC), and the pin role follows parity: even pins are PDM_CLK, odd pins PDM_DATA. Wiring used in the SDK:
-
-| Board | CLK | DATA | Example |
-|---|---|---|---|
-| IPRO7AI Reef EVK | GPIO16 | GPIO17 | `ipro7ai_reef_demo` |
-| IPRO7AI EVK | GPIO18 | GPIO19 | `ipro7ai_evk_launcher`, `ipro7ai_evk_demo` |
-| IPRO7 EVB (external module) | GPIO0 | GPIO1 | `ipro_pdm_mic_demo` |
+PDM microphones are captured through the audio ADC (AUADC); pin roles follow parity: even is PDM_CLK, odd is PDM_DATA. The Reef's on-board PDM microphone MK1 is on CLK GPIO16 and DATA GPIO17; `mic rec pdm` in `ipro7ai_reef_demo` records from it.
 
 ### Antenna { #antenna }
 
@@ -403,11 +376,11 @@ Choosing a 2.4 GHz antenna:
 | Chip antenna | Small; needs a matching network |
 | External antenna | Best performance; needs a U.FL connector |
 
-Put a π matching network between the RF output and the antenna: a shunt capacitor to ground at the RF side, a series inductor, and another shunt capacitor to ground at the antenna side. The Reef follows the π network with a 0 Ω resistor that selects either the PCB antenna or the u.FL connector.
+Put a π matching network between the RF output and the antenna: a shunt capacitor to ground at the RF side, a series inductor, and another shunt capacitor to ground at the antenna side. The Reef uses the PCB antenna E1 by default; move the 0 Ω resistor from R2 to R1 to use the u.FL connector RF1 instead.
 
 ## Related documents { #documents }
 
-- [IPRO7AI Reef EVK](boards/reef-evk.md#pinout), [IPRO7AI EVK](boards/ipro7ai-evk.md#pinout), [IPRO7 EVB](boards/ipro7-evb.md#default-pins): the full wiring of each board.
+- [IPRO7AI Reef EVK](boards/reef-evk.md#pinout): on-board wiring, J_IO and U6 pin tables.
 - [IPRO7](chips/ipro7.md#interfaces): peripheral counts and specifications.
-- [Power & Current Measurement](power.md): VDDIO power domains and the power tree of each board.
+- [Power & Current Measurement](power.md): how the Reef is powered and how to measure current.
 - IPRO7 datasheet and hardware design guide (pin definitions, GPIO multiplexing): see [Documents](../documents/index.md).

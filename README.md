@@ -84,11 +84,14 @@ GitHub Pages serves `/<page>` from `<page>.html`, so both URL forms keep working
 
 - `to` is the page that replaced the old one; old section anchors (`#flashing`)
   follow the `anchors` map, or keep their id when the target has a heading with it.
+- Pages of this site that are removed go under `removed:` (`<old page>.md: <target>`);
+  their URL (`<old page>/`) then redirects to the target in both languages.
 - The run fails, and writes nothing, if an old page in `legacy/` has no entry, an
   anchor names a section the old page never had, a target page or heading does not
-  exist in the build, or a redirect would replace a real page.
-- When a page moves or a heading id changes, update `data/redirects.yml` in the
-  same commit; the build tells you which entry broke.
+  exist in the build, or a redirect would replace a real page (including a `removed:`
+  page that is still built).
+- When a page moves, is deleted or a heading id changes, update `data/redirects.yml`
+  in the same commit; the build tells you which entry broke.
 
 ## Writing pages
 
@@ -105,8 +108,15 @@ GitHub Pages serves `/<page>` from `<page>.html`, so both URL forms keep working
 - **Networking on IPRO7**: describe how it connects — Ethernet (RMII), or Wi-Fi
   through an IPRO6S companion over SDIO. Never present Wi-Fi as an IPRO7 feature,
   but do not headline its absence either (no banners or lead sentences about it).
-- **IPRO6S (SDK V2.0.1)** is covered on its chip page, the release notes and the
-  FAQ only; other pages do not repeat the pointer.
+- **One board.** Step-by-step instructions target the IPRO7AI Reef EVK V4.0
+  only; other boards (IPRO7 EVB, IPRO7AI EVK, IPRO6S EVB, IPRO7 Arduino board)
+  get a one-line mention ("needs the IPRO7AI EVK"), never their own steps or pages.
+- **Hands-on task pages.** Every step is action → exact command or code → what
+  the user sees; every task page ends with Verify and Troubleshooting.
+- **IPRO6S** is part of SDK V2.2.0 with Wi-Fi applications only (`ipro6_demo`,
+  `ipro6_if_wifi`, `ipro6_fmac`; no IPRO6S Bluetooth). On the Reef it appears as
+  the FIN Wi-Fi card in the microSD slot, running `ipro6_if_wifi` with
+  `defconfig_ipro6_sdio`. Its chip page holds the details; other pages link to it.
 - **No internal or customer names.** Reference designs are described generically
   ("contact INTELPRO for availability").
 - **Document the released SDK**, not the development tree. Anything not in the

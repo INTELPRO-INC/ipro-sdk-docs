@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
-"""Write redirect pages for the old Jekyll URLs into the built site.
+"""Write redirect pages for old URLs into the built site.
 
-Runs after both languages are built (tools/build.sh calls it). For every page
-in data/redirects.yml it writes <page>.html into site/ and site/en/, which is
-where the old site served /<page> and /en/<page>. Each redirect page sends an
-old section anchor (#id) to its new home with a small script, and falls back
-to a meta refresh to the page target when scripts are off.
+Runs after both languages are built (tools/build.sh calls it). Two kinds of
+old URL are covered, both listed in data/redirects.yml:
+
+* `pages`: the old Jekyll site. For every page it writes <page>.html into
+  site/ and site/en/, which is where the old site served /<page> and
+  /en/<page>. Each redirect page sends an old section anchor (#id) to its new
+  home with a small script, and falls back to a meta refresh to the page
+  target when scripts are off.
+* `removed`: pages of this site that were taken out (`<path>.md: <target>`).
+  Their URL (<path>/index.html) gets a redirect page to the target; a section
+  id that the target page also has is kept when the target names no anchor.
 
 Before writing anything it checks that every old page has an entry, every
 anchor names a section of the old page, every target page is built and every
@@ -34,6 +40,7 @@ DATA = ROOT / "data" / "redirects.yml"
 GENERATOR = "tools/gen_redirects.py"
 LEGACY = ROOT / "legacy"
 SECTION_ID = re.compile(r'<section id="([^"]+)"')
+HEADING_ID = re.compile(r'<h[2-6][^>]*\bid="([^"]+)"')
 LABELS = {
     "zh": {"lang": "zh-TW", "moved": "這一頁已經搬到"},
     "en": {"lang": "en", "moved": "This page has moved to"},
@@ -65,6 +72,11 @@ def page_url(target: str) -> tuple[str, str]:
     else:
         url = stem + "/"
     return url, anchor
+
+
+def heading_ids(page_html: str) -> list[str]:
+    """The ids of the section headings in a built page."""
+    return HEADING_ID.findall(page_html)
 
 
 def has_id(page_html: str, anchor: str) -> bool:
@@ -114,6 +126,33 @@ def validate(data: dict[str, Any], sections: dict[str, list[str]], read: PageRea
                 errors.append(f"{name} {label}: {target} is not a built page")
             elif anchor and not has_id(built, anchor):
                 errors.append(f"{name} {label}: {target} has no heading #{anchor}")
+    return errors
+
+
+def validate_removed(data: dict[str, Any], read: PageReader) -> list[str]:
+    """Problems with the `removed` table: old pages still built, targets missing."""
+    errors = []
+    for old, target in (data.get("removed") or {}).items():
+        try:
+            old_url, old_anchor = page_url(old)
+        except ValueError as exc:
+            errors.append(f"removed {old}: {exc}")
+            continue
+        if old_anchor:
+            errors.append(f"removed {old}: name the page without an anchor")
+        built_old = read(old_url)
+        if built_old is not None and GENERATOR not in built_old:
+            errors.append(f"removed {old}: the page is still built; delete it or drop the entry")
+        try:
+            url, anchor = page_url(target or "")
+        except ValueError as exc:
+            errors.append(f"removed {old}: {exc}")
+            continue
+        built = read(url)
+        if built is None:
+            errors.append(f"removed {old}: {target} is not a built page")
+        elif anchor and not has_id(built, anchor):
+            errors.append(f"removed {old}: {target} has no heading #{anchor}")
     return errors
 
 
@@ -182,6 +221,7 @@ def build(data: dict[str, Any], sections: dict[str, list[str]], site: Path) -> t
         site_dir = site / Path(config["site_dir"]).relative_to("site")
         read = site_reader(site_dir)
         errors += [f"[{lang}] {err}" for err in validate(data, sections, read)]
+        errors += [f"[{lang}] {err}" for err in validate_removed(data, read)]
         if errors:
             continue
         for name, entry in data["pages"].items():
@@ -192,6 +232,14 @@ def build(data: dict[str, Any], sections: dict[str, list[str]], site: Path) -> t
             default, anchors = resolve(name, entry, sections.get(name, []), site_url.path, read)
             redirect = Redirect(name, default, anchors, page_title(lang, entry["to"]))
             outputs[out] = render(redirect, lang, f"{site_url.scheme}://{site_url.netloc}")
+        for old, target in (data.get("removed") or {}).items():
+            old_url, _ = page_url(old)
+            url, anchor = page_url(target)
+            default = site_url.path + url + (f"#{anchor}" if anchor else "")
+            kept = {} if anchor else {i: f"{default}#{i}" for i in heading_ids(read(url) or "")}
+            redirect = Redirect(old, default, kept, page_title(lang, target))
+            outputs[site_dir / old_url / "index.html"] = render(
+                redirect, lang, f"{site_url.scheme}://{site_url.netloc}")
     return outputs, errors
 
 
@@ -209,6 +257,7 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  {err}", file=sys.stderr)
         return 1
     for path, text in outputs.items():
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text, encoding="utf-8")
     print(f"redirects: {len(outputs)} old URLs -> new pages")
     return 0

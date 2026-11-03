@@ -31,7 +31,6 @@ The complete reference by area, generated from the public headers of SDK V2.1.0.
 | [Security Engine](security.md) | 9 | 49 | AES, GMAC, hashing, DSA, ECDSA, P-256 and the hardware random number generator. |
 | [Wireless & BLE Controller](wireless-ble.md) | 7 | 41 | Radio start-up and the IPRO BLE controller interfaces for bring-up, HCI transport, low power and NVDS. |
 | [AI Runtime](ai.md) | 18 | 133 | The NPU driver, inference core, operators and post-processing, and the detection and speech model interfaces. |
-| [IPRO7AI EVK Board Library](ipro7ai-evk.md) | 12 | 113 | The EVK sub-board interfaces for the panel, graphics, camera, microphone, speaker, PCM and microSD. |
 <!-- END generated: api-groups -->
 
 ## Platform init and FreeRTOS hooks { #rtos-platform }

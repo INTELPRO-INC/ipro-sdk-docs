@@ -1,6 +1,6 @@
 ---
 title: "IPRO7AI"
-description: How the IPRO7AI variant differs, how to set up the NPU runtime and its memory needs, and the SDK examples that use the NPU
+description: What sets the IPRO7AI apart, how to configure the NPU runtime and its memory, and the NPU examples on the IPRO7AI Reef EVK
 migrate_from:
   - "architecture.html#soc-variants"
   - "ai-npu.html#architecture"
@@ -8,81 +8,83 @@ migrate_from:
 
 # IPRO7AI
 
-IPRO7AI is the same die as [IPRO7](ipro7.md) with the NPU enabled and 8 MB of PSRAM inside the package. Everything else (CPU, radio, peripherals) matches IPRO7. In this SDK release it runs camera object detection, gesture classification and on-board inference for IPRO AI Studio; both the IPRO7AI EVK and the IPRO7AI Reef EVK carry it.
+IPRO7AI is the same die as [IPRO7](ipro7.md) with the NPU enabled and 8 MB of PSRAM and the flash in the package; CPU, wireless and peripherals are the same as IPRO7. It is the main chip of the IPRO7AI Reef EVK. In this release it runs camera object recognition, the three IPRO AI Teach tools and on-board inference for IPRO AI Studio.
 
 <div class="ipro-facts" markdown>
 <div><strong>0.1 TOPS</strong><span>NPU</span></div>
-<div><strong>8 MB</strong><span>In-package PSRAM</span></div>
+<div><strong>8 MB</strong><span>PSRAM in the package</span></div>
 <div><strong>IPRO7AI</strong><span><code>--chip-variant</code> when flashing</span></div>
-<div><strong>libai.a</strong><span>Prebuilt inference runtime</span></div>
+<div><strong>libai.a</strong><span>prebuilt inference runtime</span></div>
 </div>
 
 ## Differences from IPRO7 { #soc-variants }
 
 | Item | IPRO7AI |
 |---|---|
-| NPU | Enabled, 0.1 TOPS. NPU activation buffers live in PSRAM, so every AI application needs PSRAM |
+| NPU | Enabled, 0.1 TOPS; the NPU's activation buffers live in PSRAM, so every AI application needs PSRAM |
 | PSRAM | 8 MB in the package, at `0x1e000000` |
-| Flash | In the package, 1 MB or 2 MB depending on the part. The SDK links the 1 MB layout by default, which fits both; if the boot log reports JEDEC ID `0xEF4015` (2 MB), add `CONFIG_IPRO7_FLASH_2M=y` to `.config` to use the whole part |
-| Flashing | `--chip-variant IPRO7AI` selects this chip's flash pins (`flash_pin` = `0x9` in the tool's settings file) |
-| Everything else | CPU, memory map, radio and peripherals as on IPRO7, see [IPRO7 key specifications](ipro7.md#key-specs) |
+| Flash | In the package. The SDK links a 1 MB layout by default; `CONFIG_IPRO7_FLASH_2M=y` selects the 2 MB layout. The `.config` of `ipro7ai_reef_demo` notes that you can add this line when the boot log reports JEDEC ID `0xEF4015` (2 MB) |
+| Flashing | `--chip-variant IPRO7AI` selects this chip's flash pins (`flash_pin` `0x9` in the tool's configuration file) |
+| Everything else | CPU, memory map, wireless and peripherals as on IPRO7, see [IPRO7 key specifications](ipro7.md#key-specs) |
+
+Among the Reef configurations, the `.config` of `ipro_reef_teach` and `ipro_agora_sentino` and the `defconfig_reef` of `ipro_ble_remote`, `ipro_le_audio_headset` and `ipro_ai_link` already use the 2 MB layout; the other Reef configurations use the 1 MB layout.
 
 ## NPU and inference runtime { #architecture }
 
-The inference runtime ships as the prebuilt library `components/ai/lib/libai.a`, with public headers in `components/ai/` (`iproai_def.h`) and `components/ai/src/`. The package contains no runtime source. For inference on the CPU, TensorFlow Lite Micro, NMSIS-NN and TinyMaix are in `components/3rdparty/`.
+The inference runtime ships as the prebuilt library `components/ai/lib/libai.a`; its public headers are `components/ai/iproai_def.h` and the headers of the modules under `components/ai/`. The runtime source is not in the package. In V2.2.0 `components/ai` is the IPRO Edge AI platform V2.0: runtime, a model store with one slot per tool, input sources, preprocessing and an application framework. Waits on the NPU are bounded; a timeout resets the NPU block and leaves it in a safe fault state. For inference on the CPU there are TensorFlow Lite Micro, NMSIS-NN and TinyMaix (`components/3rdparty/`).
 
 ### Enable AI { #config }
 
-Write these settings into the application's `.config` explicitly. This SDK's build does not apply Kconfig `select`, so PSRAM is not turned on for you:
+Write these settings explicitly in the application's `.config`. This SDK's build does not apply Kconfig `select`, so PSRAM is not turned on for you:
 
 ```ini title=".config (excerpt)"
 CONFIG_AI_SUPPORT=y          # link components/ai (libai.a)
 CONFIG_USE_PSRAM=y           # NPU activation buffers and models live in PSRAM
-CONFIG_MM_SUPPORT=y          # when you use the camera and ISP
+CONFIG_MM_SUPPORT=y          # when you use the camera and the ISP
 CONFIG_AI_MODEL_FROM_FILE=y  # when you load models from the SD card
 ```
+
+The `.config` of `ipro_reef_teach` and the `defconfig_reef` of `ipro_ai_link` are complete Reef configurations to start from.
 
 ### Where models live { #models }
 
 The NPU runs models in the `.inm` format, stored in one of three places:
 
-| Location | How | Example |
+| Location | How | Reef example |
 |---|---|---|
-| `mfg` flash partition | The model sits at partition start + 0x1000 and the flash tool writes it with `--mfg`; `flash.sh --full` in the application directory writes the partition table, firmware and model in one go | `ipro7ai_evk_person_detect` |
-| Linked into the firmware | The model is embedded in the image through an assembly file | `ipro7ai_evk_rps` (`CONFIG_RPS_EMBED_MODEL=y`), `ipro_npu_yolo` |
-| SD card | At boot the whole `.inm` is read into PSRAM; paths use FatFS `sd:/` (for example `sd:/models/person.inm`) | the detection page of `ipro7ai_evk_launcher`, `ipro_ai_link` |
+| `mfg` flash partition | Written by the flash tool with `--mfg`. `ipro_reef_teach` has its own partition table `partition_reef_teach.toml` and `mfg` layout (one slot each for the mode, the voiceprint, image and sensor models); `mfg_payload.py` builds what you flash | `ipro_reef_teach` |
+| Linked into the firmware | The model is built into the image; nothing else to flash | `defconfig_reef_rps` of `ipro7_uvc_cam` |
+| SD card | Read from `sd:/` (FatFS) into PSRAM at run time | `defconfig_reef` of `ipro_ai_link` |
 
-The package ships models in `apps/platform/ipro7_demo/demo/ai/ai_model/`, `apps/test/ipro_npu_yolo/src/` and `apps/ai/ipro7ai_evk_rps/model/`. The model conversion tool is not included in V2.1.0; contact INTELPRO. `ipro7ai_evk_rps/train/` also has the training scripts for that classifier.
+Models in the package: `apps/ai/ipro_reef_teach/model/` (the voiceprint model `model_b.spkb`), `tools/teach_web/assets/`, `apps/platform/ipro7_demo/demo/ai/ai_model/`, `apps/test/ipro_npu_yolo/src/` and `apps/ai/ipro7ai_evk_rps/model/`. IPRO AI Studio and the Edge AI tools ship in the separate IPRO Edge AI package, not in the SDK; contact INTELPRO for the model conversion tool.
 
 ### Memory { #memory }
 
-With both AI and imaging enabled (`CONFIG_AI_SUPPORT`, `CONFIG_MM_SUPPORT`), the linker shrinks the OCRAM region to 64 KB, and to 48 KB when BLE is also used. The BLE controller and host need about 67 KB of OCRAM, so one image cannot use both the NPU and BLE; that is why `ipro7ai_evk_demo` splits AI (`config_ai`) and Bluetooth (`config_bt`) into separate configurations. The OCRAM size for each combination is in [Build System & Configuration](../../guides/build-system.md#memory-layout).
+With AI and imaging both enabled (`CONFIG_AI_SUPPORT`, `CONFIG_MM_SUPPORT`), the NPU's SRAM is mapped from `0x11020000` up, so the linker limits OCRAM to the first 64 KB (`0x11010000`–`0x11020000`). When the application also reserves BLE controller Exchange Memory (`CONFIG_EM_SIZE` not 0), OCRAM shrinks to 48 KB plus a non-retained region of 64 KB − `CONFIG_EM_SIZE`. CMake prints the layout it chose during the build, for example `AI+MM (EM=0): OCRAM=64KB`.
 
-The Zephyr RTOS port has no NPU driver in this release; the NPU examples are FreeRTOS applications.
+The Zephyr RTOS port has no NPU driver; the NPU examples are FreeRTOS applications.
 
-## AI examples in the SDK { #sdk-usage }
+## NPU examples on the Reef { #sdk-usage }
 
-| Example | Board (configuration) | What it does |
+| Example | Reef configuration | What it does |
 |---|---|---|
-| `ipro7ai_evk_person_detect` | IPRO7AI EVK | Camera preview with YOLOv8 person / pet boxes; model in the `mfg` partition |
-| `ipro7ai_evk_rps` | IPRO7AI EVK | Rock-paper-scissors against a 4-class int8 CNN linked into the firmware; training scripts included |
-| `ipro7ai_evk_launcher` | IPRO7AI EVK | Pages switched by hand gestures recognized on the NPU; a second model detects people and pets |
-| `ipro7_uvc_cam` | Reef (`defconfig_reef_rps`) | USB webcam that draws rock-paper-scissors results into the video stream |
-| `ipro_ai_link` | IPRO7 EVB; Reef (`defconfig_reef`) | Board firmware for IPRO AI Studio "Run on board": model and input from `sd:/`, outputs back over USB |
-| `ipro_npu_yolo` | IPRO7 EVB | YOLOv8 person / pet detection on the NPU |
-| `ipro_ai_bench` | IPRO7 EVB | NPU versus CPU inference timing |
+| [`ipro_reef_teach`](../../examples/ipro_reef_teach.md) | `.config` | Board firmware for IPRO AI Teach 2.0: three tools, `image` (USB camera and image classifier), `voice` (voiceprint) and `sensor` (sensor signals), one at a time, driven from IPRO AI Studio |
+| [`ipro7_uvc_cam`](../../examples/ipro7_uvc_cam.md) | `defconfig_reef_rps` | USB webcam that draws the NPU's rock-paper-scissors result into the video |
+| [`ipro_ai_link`](../../examples/ipro_ai_link.md) | `defconfig_reef` | Board firmware for IPRO AI Studio "Run on board": loads models and inputs from `sd:/` and returns the outputs over USB |
 
-For build and usage, see each application's README and the [AI and NPU guide](../../guides/ai-npu.md).
+The other NPU examples target the IPRO7AI EVK or the IPRO7 EVB (`ipro7ai_evk_person_detect`, `ipro7ai_evk_rps`, `ipro7ai_evk_launcher`, `ipro_speaker_recog`, `ipro_npu_yolo`, `ipro_ai_bench`); see [Examples](../../examples/index.md).
 
 ## Boards with IPRO7AI { #boards }
 
 | Board | Package | Board configuration |
 |---|---|---|
-| [IPRO7AI Reef EVK](../boards/reef-evk.md) | QFN56, soldered on the carrier | `CONFIG_IPRO7AI_REEF=y` |
-| [IPRO7AI EVK](../boards/ipro7ai-evk.md) | Module on the EVK sub-board | `CONFIG_IPRO7AI_EVK=y` |
+| [IPRO7AI Reef EVK V4.0](../boards/reef-evk.md) | QFN56, soldered on the board | `CONFIG_IPRO7AI_REEF=y` |
+
+The IPRO7AI EVK (`CONFIG_IPRO7AI_EVK=y`) also carries this chip; contact INTELPRO for it.
 
 ## Related documents { #documents }
 
 - [IPRO7](ipro7.md): full chip specifications and memory map.
-- [AI and NPU guide](../../guides/ai-npu.md): model deployment and the inference API.
+- [AI & NPU guide](../../guides/ai-npu.md): deploying models and the inference API.
+- [IPRO AI Teach](../../teach/index.md): teach the Reef to recognize images, voiceprints and sensor signals with IPRO AI Studio.
 - IPRO7 datasheet: see [Documents](../../documents/index.md).

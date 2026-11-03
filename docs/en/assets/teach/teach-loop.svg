@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#3d4a40"/></marker></defs>
+<rect x="150" y="14" width="250" height="118" rx="10" fill="#eef3ee" stroke="#3d5a45" stroke-width="2"/>
+<text x="275.0" y="54.4" font-size="24" text-anchor="middle" fill="#1f2328" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">Collect</text>
+<text x="275.0" y="81.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">with the Reef's camera,</text>
+<text x="275.0" y="108.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">microphone or sensor</text>
+<circle cx="172" cy="38" r="15" fill="#316200"/>
+<text x="172.0" y="43.5" font-size="16" text-anchor="middle" fill="#ffffff" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">1</text>
+<rect x="416" y="14" width="250" height="118" rx="10" fill="#eef3ee" stroke="#3d5a45" stroke-width="2"/>
+<text x="541.0" y="54.4" font-size="24" text-anchor="middle" fill="#1f2328" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">Train</text>
+<text x="541.0" y="81.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">on the PC, in</text>
+<text x="541.0" y="108.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">IPRO AI Studio</text>
+<circle cx="438" cy="38" r="15" fill="#316200"/>
+<text x="438.0" y="43.5" font-size="16" text-anchor="middle" fill="#ffffff" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">2</text>
+<rect x="682" y="14" width="250" height="118" rx="10" fill="#eef3ee" stroke="#3d5a45" stroke-width="2"/>
+<text x="807.0" y="54.4" font-size="24" text-anchor="middle" fill="#1f2328" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">Deploy</text>
+<text x="807.0" y="81.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">over the same USB-C,</text>
+<text x="807.0" y="108.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">into the board's flash</text>
+<circle cx="704" cy="38" r="15" fill="#316200"/>
+<text x="704.0" y="43.5" font-size="16" text-anchor="middle" fill="#ffffff" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">3</text>
+<rect x="948" y="14" width="250" height="118" rx="10" fill="#eef3ee" stroke="#3d5a45" stroke-width="2"/>
+<text x="1073.0" y="54.4" font-size="24" text-anchor="middle" fill="#1f2328" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">Run</text>
+<text x="1073.0" y="81.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">on the board's NPU;</text>
+<text x="1073.0" y="108.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">the PC only displays</text>
+<circle cx="970" cy="38" r="15" fill="#316200"/>
+<text x="970.0" y="43.5" font-size="16" text-anchor="middle" fill="#ffffff" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">4</text>
+<path d="M400.0,73.0 L414.0,73.0" fill="none" stroke="#3d4a40" stroke-width="2.2" marker-end="url(#ar)"/>
+<path d="M666.0,73.0 L680.0,73.0" fill="none" stroke="#3d4a40" stroke-width="2.2" marker-end="url(#ar)"/>
+<path d="M932.0,73.0 L946.0,73.0" fill="none" stroke="#3d4a40" stroke-width="2.2" marker-end="url(#ar)"/>
+<rect x="10" y="156" width="128" height="136" rx="10" fill="#316200" stroke="#316200" stroke-width="2"/>
+<text x="74.0" y="239.0" font-size="22" text-anchor="middle" fill="#ffffff" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">Image</text>
+
+<rect x="150" y="156" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="275.0" y="202.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">Hold each object in</text>
+<text x="275.0" y="231.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">the center box for a</text>
+<text x="275.0" y="260.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">few seconds per class</text>
+<rect x="416" y="156" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="541.0" y="216.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">Only the last layer</text>
+<text x="541.0" y="245.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">is trained: seconds</text>
+<rect x="682" y="156" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="807.0" y="202.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">Sent over USB serial;</text>
+<text x="807.0" y="231.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">the board restarts</text>
+<text x="807.0" y="260.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">by itself</text>
+<rect x="948" y="156" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="1073.0" y="216.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">Label and scores on</text>
+<text x="1073.0" y="245.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">the Reef's camera view</text>
+<rect x="10" y="304" width="128" height="136" rx="10" fill="#316200" stroke="#316200" stroke-width="2"/>
+<text x="74.0" y="387.0" font-size="22" text-anchor="middle" fill="#ffffff" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">Voice</text>
+
+<rect x="150" y="304" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="275.0" y="364.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">Read a passage for</text>
+<text x="275.0" y="393.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">15–30 s to enroll</text>
+<rect x="416" y="304" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="541.0" y="364.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">The board computes</text>
+<text x="541.0" y="393.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">the voiceprint itself</text>
+<rect x="682" y="304" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="807.0" y="364.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">Stored in the board's</text>
+<text x="807.0" y="393.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">flash; no restart</text>
+<rect x="948" y="304" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="1073.0" y="364.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">One speaker label</text>
+<text x="1073.0" y="393.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">a second on the PC</text>
+<rect x="10" y="452" width="128" height="136" rx="10" fill="#316200" stroke="#316200" stroke-width="2"/>
+<text x="74.0" y="535.0" font-size="22" text-anchor="middle" fill="#ffffff" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">Sensor</text>
+
+<rect x="150" y="452" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="275.0" y="498.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">Hold to record each</text>
+<text x="275.0" y="527.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">state: 10–30 s per</text>
+<text x="275.0" y="556.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">simulated class</text>
+<rect x="416" y="452" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="541.0" y="498.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">A small CNN trained</text>
+<text x="541.0" y="527.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">on the PC, from</text>
+<text x="541.0" y="556.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">seconds to about 90 s</text>
+<rect x="682" y="452" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="807.0" y="512.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">Written to the mfg</text>
+<text x="807.0" y="541.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">partition; restarts</text>
+<rect x="948" y="452" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="1073.0" y="512.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">4 results a second;</text>
+<text x="1073.0" y="541.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">RGB LED shows class</text>
+</svg>

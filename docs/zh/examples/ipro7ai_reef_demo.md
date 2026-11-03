@@ -1,25 +1,67 @@
 ---
 title: ipro7ai_reef_demo
-description: Reef 開箱韌體：WS2812、按鍵、喇叭與耳機、PDM／耳機麥克風／AUX-IN、SD 卡、OV5640／OV2640 相機，各有 shell 指令
+description: Reef 開箱韌體：RGB LED、按鍵、喇叭與耳機、PDM 與耳麥麥克風、microSD、OV5640 相機各有一組 shell 指令；mic usb 讓板子成為 USB 麥克風，mic sdrec 把錄音存成 SD 卡上的 WAV 檔
 generated: tools/gen_examples.py
 migrate_from: []
 ---
 
 # ipro7ai_reef_demo
 
-Reef 開箱韌體：WS2812、按鍵、喇叭與耳機、PDM／耳機麥克風／AUX-IN、SD 卡、OV5640／OV2640 相機，各有 shell 指令
+Reef 開箱韌體：RGB LED、按鍵、喇叭與耳機、PDM 與耳麥麥克風、microSD、OV5640 相機各有一組 shell 指令；`mic usb` 讓板子成為 USB 麥克風，`mic sdrec` 把錄音存成 SD 卡上的 WAV 檔
 
 | 項目 | 內容 |
 |---|---|
-| 原始碼 | [`apps/platform/ipro7ai_reef_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.1.0/apps/platform/ipro7ai_reef_demo) |
-| 板卡與設定 | Reef（`.config`）；`defconfig_wifi_ipro6s`：經 IPRO6S FIN 卡連 Wi-Fi，並以 RTSP 串流相機畫面 |
+| 原始碼 | [`apps/platform/ipro7ai_reef_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro7ai_reef_demo) |
+| 板卡與設定 | Reef（`.config`）；Reef＋IPRO6S FIN 卡（`defconfig_wifi_ipro6s`：Wi-Fi 與 RTSP 相機串流） |
 | 主控台 | UART 115200 |
-| 建置 | `make -C apps/platform/ipro7ai_reef_demo` |
+| 建置 | `make -C apps/platform/ipro7ai_reef_demo`；Wi-Fi 版加上 `DEFCONFIG=defconfig_wifi_ipro6s` |
+
+## 在 Reef 上執行 { #on-the-reef }
+
+SW7 在 CAM、SW8 在 PWR，U6 接上主控台線，USB-C 供電（見 [Reef 上手](../hardware/boards/reef-evk.md#quick-start)）。
+
+<div class="ipro-steps" markdown>
+
+1. **建置**：在 SDK 根目錄執行
+
+    ```bash
+    make -C apps/platform/ipro7ai_reef_demo
+    ```
+
+    結尾印出 Flash 與 RAM 用量，映像在 `apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin`。
+
+2. **燒錄**：讓板子進入[下載模式](../hardware/boards/reef-evk.md#download-mode)（按住 SW1，按一下 SW2，放開 SW1），在 IntelProCube 目錄執行
+
+    ```bash
+    ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+        --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+        --pt chips/ipro7/partition/partition_cfg_2M.toml \
+        --firmware <SDK>/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin
+    ```
+
+    輸出出現 `[All Success]` 才算成功（工具失敗時也以 0 結束）。按一下 SW2 啟動新韌體。
+
+3. **執行**：以 115200 baud 開啟主控台，輸入 `reef selftest`。
+
+    開機時 RGB LED 呼吸一次藍光；`reef selftest` 約 3 秒內依序點亮紅、綠、藍光，喇叭發出 1 kHz 測試音，再檢查 SD 卡偵測與相機。按 SW3、SW4、SW5、SW1 分別亮紅、綠、藍、白光。
+
+</div>
+
+一次完成建置、燒錄與主控台（板上已有 SDK 韌體時會自動送出 `reboot_dl`）：
+
+```bash
+export IPRO_FLASH_TOOL=<ICUBE>/ipro_iot_tool_macos
+./build_freertos.sh -p /dev/cu.usbserial-XXXX \
+    -P <ICUBE>/chips/ipro7/partition/partition_cfg_2M.toml \
+    build flash monitor ipro7ai_reef_demo
+```
+
+Wi-Fi 與 RTSP 版以 `DEFCONFIG=defconfig_wifi_ipro6s` 建置，輸出在 `build_wifi_ipro6s/build_out/`，需要執行 `ipro6_if_wifi` 韌體的 IPRO6S FIN 卡，步驟見 [Wi-Fi 與 RTSP 相機串流](../tutorials/wifi-rtsp.md)。這個設定不含 USB 裝置，沒有 `mic usb`。指令總表見 [Reef 開箱韌體](../hardware/boards/reef-evk.md#reef-demo)。
 
 ## README { #readme }
 
 !!! note "README 原文"
-    以下是應用隨附的 README（SDK V2.1.0），保留原文、未翻譯；只替換了不適合公開的內容。
+    以下是應用隨附的 README（SDK V2.2.0），保留原文、未翻譯；只替換了不適合公開的內容。
 
 <!-- verbatim:start -->
 
@@ -61,11 +103,17 @@ cable works; by hand it is hold **SW1** (BOOT), tap **SW2** (RESET).
 
 ### Before powering up
 
-| Jumper | Setting |
+On the V4.0 board (silkscreen "IPRO7AI REEF EVK V4.0"):
+
+| Switch / jumper | Setting |
 |---|---|
-| JP1 | VDDIO1: 1-2 = 3.3 V, 2-3 = 2.8 V. **JP1 must be fitted**, or the VDDIO1 bank (camera, USB, BOOT) is unpowered. |
-| JP2 | 1-2 (3V3 from the buck). R40 0R is the same link; fit one. |
-| JP3 | 1-2 = SD_VDD always on. 2-3 = switched by GPIO14 — use this with the IPRO6S_FIN so `fin cycle` works. |
+| SW7 | CAM: the camera pins go to the camera connector (GPIO routes them to the J_IO header instead). |
+| SW8 | PWR for normal use; MEAS only with a current meter or a 3.3 V supply on JP2. |
+| JP3 | ON = SD_VDD always on. GPIO = switched by GPIO14; use this with the IPRO6S_FIN so `fin cycle` works. |
+
+On the earlier V3.0 board: JP1 must be fitted (VDDIO1 1-2 = 3.3 V, or the
+camera, USB and BOOT bank is unpowered), JP2 on 1-2, and JP3 on 2-3 for the
+IPRO6S_FIN.
 
 Power is USB-C only. The WS2812 and the class-D amplifier run from VBUS, so
 a current-limited bench supply on 3V3 alone leaves the LED and speaker dead.
@@ -96,6 +144,8 @@ spk on | spk off | spk stop | spk status
 mic rec <pdm|headset|aux> <s>  record up to 10 s at 16 kHz into PSRAM
 mic play [hp]                  play it back (+20 dB make-up by default)
 mic loop <src> [sec] [hp]      live monitor; omit sec for "until mic stop"
+mic sdrec <src> <name> <s>     record up to 2 h to sd:/rec/<name>.wav (LED red while it runs)
+mic usb <src>                  USB microphone on the board's own USB-C until `mic stop` (LED red)
 mic gain <db> | mic ch <0|1> | mic stop | mic status
 
 sd status | sd mount | sd ls [path] | sd test | sd unmount
@@ -127,7 +177,7 @@ hp                             read the jack-detect level on GPIO26
 | Keys | SW1 41 (**active high**), SW3 10, SW4 27, SW5 11 | Polled at 10 ms, 30 ms debounce. SW3/SW5 are released while AUX-IN captures. |
 | Speaker | DAC A GPIO23 → PAM8302A, SD# GPIO25 | Enable is **active high**; the board header's `BOARD_SPK_EN_ACTIVE 1` is honoured by `audio_output_dac.c`. Gain 30 V/V — the demo defaults to 20 % amplitude. |
 | Headphone | same DAC → TLV9061 → J2 (PJ-342, OMTP) | Always connected; `hp` in a command just mutes the amp. Detect GPIO26 LOW = plugged. |
-| PDM mic | CLK 16, DATA 17 | MSM261DGT003 on 3V3, L/R = GND → left slot (`mic ch 1` to try the other). |
+| PDM mic | CLK 16, DATA 17 | MSM261DGT003 on 3V3, L/R = GND → left slot (`mic ch 1` to try the other). Runs at about 15,872 Hz, not 16,000; `mic sdrec` writes the measured rate into the WAV header; `mic usb` converts to the host's 16,000 Hz (`audio_asrc` holding the UAC queue). |
 | Headset mic | AIN7 (GPIO13) +, AIN6 (GPIO12) − | Differential AUADC, 24 dB PGA. Bias 2.2 k to 3V3 on the jack. |
 | AUX-IN | AIN4 (GPIO10) L, AIN5 (GPIO11) R | Single-ended, 6 dB PGA, left channel only in this demo. |
 | SD slot | 28–33 on SDH_0, DET 15, PWR 14 | 4-bit FatFS at `sd:`. DET low = seated. PWR low = on (reset default). |
@@ -185,7 +235,10 @@ If the camera does not stream, these are the things to check:
 ### Wi-Fi and RTSP (`defconfig_wifi_ipro6s`)
 
 The IPRO6S_FIN is an SDIO slave on the card slot's six lines, powered from
-SD_VDD. With JP3 on 2-3, `fin cycle` power-cycles it through GPIO14. The
+SD_VDD. It runs the IPRO6S `ipro6_if_wifi` firmware (SDIO profile):
+`make -C apps/platform/ipro6_if_wifi DEFCONFIG=defconfig_ipro6_sdio`. With JP3 on 2-3
+(GPIO on the V4.0 board), `fin cycle` power-cycles it through
+GPIO14. The
 `defconfig_wifi_ipro6s` build adds the host side (`components/network/ipronet_host`
 over SDIO, lwIP) and an RTSP MJPEG stream of the camera
 (`components/network/rtsp_server`):

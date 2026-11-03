@@ -1,12 +1,12 @@
 ---
 title: "開發指南"
-description: 依功能領域整理的 IPRO SDK 開發指南：架構、建置、BLE、音訊、相機、AI、網路、Zephyr、低功耗與 OTA
+description: 依功能領域整理的 IPRO SDK 開發指南：架構、建置、BLE、音訊、相機、AI、網路、Zephyr、Thread、低功耗、OTA 與 VS Code，附 IPRO7AI Reef EVK 上的動手做步驟
 migrate_from: []
 ---
 
 # 開發指南
 
-依功能領域說明 SDK 提供什麼、怎麼設定，以及該從哪個隨附範例開始。
+依功能領域說明 SDK 提供什麼、用哪些 `CONFIG_*` 開啟，並附在 IPRO7AI Reef EVK 上動手做的步驟。第一次使用 SDK，請先依[建立第一個自己的應用](../tutorials/first-own-app.md)做出自己的應用。
 
 <div class="grid cards" markdown>
 
@@ -14,39 +14,39 @@ migrate_from: []
 
     ---
 
-    分層架構、FreeRTOS 與 Zephyr 兩條路徑、元件與目錄配置、BSP。
+    分層架構、FreeRTOS 與 Zephyr 兩條路徑、元件與目錄配置、BSP，並從出廠韌體逐層對照。
 
 -   :material-hammer-wrench:{ .lg } **[建置系統與設定](build-system.md)**
 
     ---
 
-    建置流程、`.config` 與 `autoconf.h`、替代設定、記憶體配置、建立新應用。
+    建置流程、`.config` 與 `autoconf.h`、Reef 各組設定、記憶體配置、建立新應用。
 
 -   :material-bluetooth:{ .lg } **[BLE 開發](ble.md)**
 
     ---
 
-    Zephyr v4.4.0 Host 與 IPRO BLE 控制器：控制器選擇、初始化順序、GATT。
+    Zephyr v4.4.0 Host 與 IPRO7 BLE 控制器：控制器選擇、初始化順序、在 Reef 上實作 GATT。
 
 -   :material-headphones:{ .lg } **[音訊與 LE Audio](audio.md)**
 
     ---
 
-    音訊擷取與輸出、LE Audio 單播與廣播、LC3、USB 音訊、PDM 錄音。
+    PDM 與耳機麥克風、喇叭與耳機輸出、USB 麥克風、SD 卡錄音、LE Audio 與 LC3。
 
 -   :material-camera:{ .lg } **[相機與影像](camera.md)**
 
     ---
 
-    DVP 感測器、ISP、MJPEG 硬體編碼、USB 攝影機與 EVK 相機函式庫。
+    Reef 的 OV5640 相機：DVP、ISP、MJPEG 硬體編碼、USB 攝影機、RTSP 與軟體 JPEG 解碼。
 
 -   :material-brain:{ .lg } **[AI 與 NPU](ai-npu.md)**
 
     ---
 
-    預編譯推論執行庫、模型的存放與載入、NPU 範例。
+    預編譯推論執行庫、模型的存放與載入、Reef 的 AI 應用。
 
--   :material-school:{ .lg } **[IPRO AI Teach 2.0](edge-ai-teach.md)**
+-   :material-school:{ .lg } **[IPRO AI Teach](../teach/index.md)**
 
     ---
 
@@ -56,7 +56,7 @@ migrate_from: []
 
     ---
 
-    乙太網路、lwIP 與 mbedTLS，經 IPRO6S（SDIO）擴充 Wi-Fi。
+    lwIP 與 mbedTLS；Reef 經 SDIO 透過 IPRO6S FIN 卡使用 Wi-Fi；RMII 乙太網路。
 
 -   :material-cube-outline:{ .lg } **[Zephyr RTOS](zephyr.md)**
 
@@ -68,24 +68,24 @@ migrate_from: []
 
     ---
 
-    Zephyr 下的 IEEE 802.15.4 與 OpenThread，以及 Matter 的交付狀態。
+    Zephyr 下的 IEEE 802.15.4 與 OpenThread，以及 Matter 的現況。
 
 -   :material-battery-charging:{ .lg } **[低功耗](low-power.md)**
 
     ---
 
-    WFI、PDS 與 HBN 模式、低功耗框架、`ipro_lp_test` 與 BLE 睡眠。
+    WFI、PDS 與 HBN、低功耗框架、BLE 與睡眠，以及在 Reef 上量測電流。
 
 -   :material-update:{ .lg } **[OTA 更新](ota.md)**
 
     ---
 
-    boot2 OTA 套件與 A/B 分割表、經 BLE 更新 Reef，以及 Zephyr 的 MCUboot 與 MCUmgr。
+    boot2 OTA 套件與 A/B 分割表、經 BLE 更新 Reef、經 Wi-Fi 更新 FIN 卡，以及 Zephyr 的 MCUboot。
 
 -   :material-microsoft-visual-studio-code:{ .lg } **[VS Code Extension](vscode.md)**
 
     ---
 
-    Extension 3.3.0：專案瀏覽、建置、燒錄、主控台與記憶體分析。
+    Extension 3.3.0 搭配 SDK V2.2.0：建置、燒錄 Reef、序列埠監看與記憶體分析。
 
 </div>

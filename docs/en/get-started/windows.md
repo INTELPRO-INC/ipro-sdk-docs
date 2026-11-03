@@ -1,6 +1,6 @@
 ---
 title: "Windows Setup & VS Code"
-description: Install the Windows development tools and the VS Code Extension with the Online Installer, then add SDK V2.1.0 by hand and build your first project.
+description: Install the tools and the VS Code Extension on Windows with IPRO SDK Online Setup, add SDK V2.2.0 by hand, build the IPRO7AI Reef EVK out-of-box firmware, flash it with ipro_iot_tool.exe and open the console in a terminal program.
 migrate_from:
   - "windows-installation.html"
   - "vscode-extension.html#installation"
@@ -16,51 +16,68 @@ not_migrated:
 
 # Windows Setup & VS Code
 
-Use the Online Installer to put the toolchain, build tools, IntelProCube and the VS Code Extension on a Windows PC, then point the Extension at SDK V2.1.0 and build `ipro7ai_reef_demo`, the out-of-box firmware of the IPRO7AI Reef EVK.
+On Windows, install the toolchain, build tools, IntelProCube and the VS Code Extension with IPRO SDK Online Setup, add SDK V2.2.0 by hand, build the IPRO7AI Reef EVK out-of-box firmware `ipro7ai_reef_demo`, then flash it with `ipro_iot_tool.exe` and see the console on a COM port.
 
-!!! warning "The installer does not install V2.1.0 yet"
-    As checked on 2026-10-16, the Online Installer's package index still lists SDK 1.2.1 as stable and has no V2.x entry, so choosing latest does not install V2.1.0. Use the installer for the tools and the Extension, then add the SDK yourself as described in [Switch to SDK V2.1.0](#sdk-2-1-0).
+!!! info "The installer does not install V2.2.0"
+    Online Setup's catalog still lists SDK V1.2.1 as the stable SDK. Use the installer for the tools and the Extension, then add the SDK by hand as in [Add SDK V2.2.0](#get-sdk).
 
 ## Requirements { #requirements }
 
-- A Windows PC with internet access: the Online Installer downloads its components from a public package index.
-- VS Code 1.102 or later.
-- `IPRO-SDK-V2.1.0.tar.gz` and `IPRO-SDK-V2.1.0.tar.gz.sha256`, downloaded as described in [Choose Your Environment](environment.md#sdk-2-1-0).
-- A toolchain that works with V2.1.0. The V2.1.0 README specifies GCC 14, while the Windows toolchain in the installer's index is the combination declared for SDK 1.2.1. Contact INTELPRO for a suitable build and check its version.
+- Windows x64 with access to GitHub (Online Setup downloads its components from a public catalog and GitHub releases).
+- VS Code 1.102 or later (the installer can download it).
+- An IPRO7AI Reef EVK, a USB-C cable and a console cable; see [What you need](index.md#what-you-need).
+- A toolchain that matches V2.2.0: V2.2.0 is built with GCC 14, while the installer picks the toolchain declared compatible with SDK V1.2.1. Ask INTELPRO for a Windows toolchain that matches V2.2.0.
 
 ## Install the tools { #online-3-4-0 }
 
 <div class="ipro-steps" markdown>
 
-1. **Download the installer**: get `IPRO-SDK-Online-Setup-3.4.0.exe` from the [Online Installer 3.4.0 release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/online-installer-v3.4.0). No GitHub sign-in is needed.
+1. **Download the installer** `IPRO-SDK-Online-Setup-3.4.0.exe` from the [Online Setup 3.4.0 release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/online-installer-v3.4.0); no GitHub sign-in is needed.
 
-2. **Choose a mode and a directory**: pick **Full** for a first installation; the other six modes (SDK, toolchain, build tools, IntelProCube, OpenOCD, Extension) each install a single component. Install into a new, empty folder.
+2. **Choose a directory:** run the installer and, under **Select Destination Location**, enter a new folder that does not exist yet (the installation root).
 
-3. **Review the options, then install**: writing the VS Code settings and updating PATH are both unchecked by default; tick them if you want them. With version latest, the installer picks the version each component marks as stable / compatible, not the newest GitHub release.
+3. **Choose Full environment** under **Choose packages**. It installs the SDK, the RISC-V toolchain, the build tools (CMake, Ninja, Python), IntelProCube, OpenOCD and VS Code Extension 3.3.0. Keep the versions at **latest**: latest means the version each component marks as stable / compatible, not the newest GitHub release.
 
-4. **Restart VS Code and any open terminals** so they pick up the new PATH.
+4. **Choose the extra tasks:** tick **Install VS Code from Microsoft if absent** if VS Code is not installed; keep **Install the selected Extension into VS Code** ticked; tick **Add installed tools to user PATH** to run the tools from an ordinary terminal.
+
+5. **Check the summary and install:** on **Ready to Install**, check the directory, mode and versions, then click **Install**.
+
+6. **Reopen VS Code and your terminals** so they pick up the new `PATH`.
 
 </div>
 
-## Switch to SDK V2.1.0 { #sdk-2-1-0 }
+## Add SDK V2.2.0 { #get-sdk }
 
 <div class="ipro-steps" markdown>
 
-1. **Verify the download**: in PowerShell, compute the hash and compare it with the value in the `.sha256` file (case does not matter).
+1. **Download** `IPRO-SDK-V2.2.0.tar.gz` from the [IPRO-SDK-V2.2.0 release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0) and note the SHA-256 published there.
+
+2. **Verify** it in PowerShell:
 
     ```powershell
-    Get-FileHash .\IPRO-SDK-V2.1.0.tar.gz -Algorithm SHA256
-    Get-Content .\IPRO-SDK-V2.1.0.tar.gz.sha256
+    Get-FileHash .\IPRO-SDK-V2.2.0.tar.gz -Algorithm SHA256
     ```
 
-2. **Unpack into a new directory**: do not overwrite an older SDK; keep it so you can go back.
+    The 64 hexadecimal characters in the `Hash` column must match the release page (case does not matter).
+
+3. **Unpack into a new directory and check the version:**
 
     ```powershell
-    tar -xzf .\IPRO-SDK-V2.1.0.tar.gz
-    Get-Content .\IPRO-SDK-V2.1.0\VERSION.txt
+    tar -xzf .\IPRO-SDK-V2.2.0.tar.gz
+    Get-Content .\IPRO-SDK-V2.2.0\VERSION.txt
     ```
 
-    `VERSION.txt` should show `IPRO-SDK-V2.1.0`, and the root `IPRO-SDK-V2.1.0\` should contain `CMakeLists.txt`, `apps\` and `bsp\`.
+    ```text
+    IPRO SDK Release
+    ========================================
+    IPRO7: IPRO-SDK-V2.2.0
+    IPRO6: IPRO-SDK-V2.2.0
+
+    Release Date: 2026-11-03
+    Base Commit: 60afd4ab
+    ```
+
+    `IPRO-SDK-V2.2.0\` contains `CMakeLists.txt`, `apps\` and `bsp\`.
 
 </div>
 
@@ -68,42 +85,93 @@ Use the Online Installer to put the toolchain, build tools, IntelProCube and the
 
 <div class="ipro-steps" markdown>
 
-1. **Check that the Extension is installed**: search for `@installed IPRO` in the Extensions view; the IPRO SDK Extension (ID `ipro.ipro-sdk-extension`) should be listed. If it is not, install the VSIX with **… → Install from VSIX…** and run `Developer: Reload Window`.
+1. **Check that the Extension is installed:** search the Extensions view for `@installed IPRO`; IPRO SDK Extension (identifier `ipro.ipro-sdk-extension`) should be listed.
 
-2. **Open the SDK**: use **File → Open Folder…** to open the `IPRO-SDK-V2.1.0` root, and trust the workspace once you have checked where it came from.
+2. **Open the SDK** with **File → Open Folder…** on the `IPRO-SDK-V2.2.0` root, and grant Workspace Trust once you have checked the source.
 
-3. **Set the SDK root**: press ++f1++, run `IPRO Setup: Set SDK Root` and select the same directory.
+3. **Set the SDK root:** press ++f1++, run `IPRO Setup: Set SDK Root` and choose the same directory.
 
-4. **Check the environment**: run `IPRO Setup: Run Diagnostics` and confirm the paths it reports for the SDK root, compiler, CMake and Python. The compiler must be a V2.1.0-compatible toolchain.
+4. **Check the environment:** run `IPRO Setup: Run Diagnostics` and check the paths of the SDK root, compiler, CMake, Python and flash tool. The compiler must be a toolchain that matches V2.2.0; the folder of the flash tool is `<IntelProCube>` in the steps below.
 
-5. **Build your first project**: run `IPRO: Go to Project…`, pick `ipro7ai_reef_demo` under platform, then run `IPRO: Build`.
+5. **Build the out-of-box firmware:** run `IPRO: Go to Project…`, choose `ipro7ai_reef_demo` in the platform category, then run `IPRO: Build`.
 
 </div>
 
-For the Extension's commands, flash settings and monitor, see [VS Code Extension](../guides/vscode.md).
+The other Extension commands and settings are in [VS Code Extension](../guides/vscode.md).
+
+## Flash { #flash }
+
+<div class="ipro-steps" markdown>
+
+1. **Wire the board:** SW7 on CAM, SW8 on PWR, console cable on U6, USB-C plugged in; see [Set the switches and wire the board](first-app-freertos.md#connect).
+
+2. **Find the COM port:** open **Device Manager → Ports (COM & LPT)**; the entry that appears when you plug in the adapter is the console, for example `COM5`. The IPRO Debug Probe adds two COM ports; see [Recognise the ports](flash-and-monitor.md#ports).
+
+3. **Enter download mode:** hold SW1 (BOOT), press and release SW2 (RESET), release SW1.
+
+4. **Flash** from the IntelProCube folder in PowerShell:
+
+    ```powershell
+    cd <IntelProCube>
+    .\ipro_iot_tool.exe --chipname ipro7 --chip-variant IPRO7AI `
+        --port COM5 --baudrate 921600 `
+        --pt chips/ipro7/partition/partition_cfg_2M.toml `
+        --firmware <SDK>\apps\platform\ipro7ai_reef_demo\build\build_out\ipro7ai_reef_demo_IPRO7.bin
+    ```
+
+    Only a final `[All Success]` line means success; the tool exits 0 even on failure. The options are explained in [Flashing & Serial Console](flash-and-monitor.md#flash-tool).
+
+</div>
+
+## Console { #console }
+
+<div class="ipro-steps" markdown>
+
+1. **Open a terminal program:** in PuTTY choose **Serial**, set Serial line to `COM5` and Speed to `115200`, and click **Open**. Tera Term works too, as does the VS Code Extension's `IPRO: Serial Monitor` (pick the port with `IPRO: Select Serial Port`).
+
+2. **Reset:** press SW2 (RESET). The window shows the boot banner `IPRO7AI Reef carrier demo`; press ++enter++ for the `ipro />` prompt.
+
+3. **Self-test:** type `reef selftest`. The expected output is in [First FreeRTOS Application](first-app-freertos.md#verify).
+
+</div>
+
+Close the terminal program before flashing, or `ipro_iot_tool.exe` cannot open the COM port.
+
+## Building from the command line { #command-line }
+
+The SDK does not document a Windows command-line build, and `build_freertos.sh` and `tools/serial_monitor.py` need bash and POSIX termios, so they do not run on Windows. What the build scripts need on Windows:
+
+- `cmake` and `python` on `PATH` (on Windows the build calls `python`, not `python3`).
+- `CROSS_COMPILE=<toolchain dir>\bin\riscv64-unknown-elf-` (with the trailing hyphen) on the `make` command line: the applications' `.config` files hold the Unix path `/opt/toolchain/...` in `CONFIG_CROSS_COMPILE`, and Windows has no default path.
+- GNU Make: Online Setup's build tools package contains CMake, Ninja and Python, not make.
 
 ## Verify { #verify }
 
-A successful build produces:
+- `IPRO: Build` produces:
 
-```text
-apps\platform\ipro7ai_reef_demo\build\build_out\ipro7ai_reef_demo_IPRO7.bin
-```
+    ```text
+    apps\platform\ipro7ai_reef_demo\build\build_out\ipro7ai_reef_demo_IPRO7.bin
+    ```
 
-A successful build only shows that the tools work; nothing has been written to the board yet.
+- The output of `ipro_iot_tool.exe` ends with `[All Success]`.
+- After a reset the terminal shows the boot messages and `ipro />`, and `reef selftest` steps the LED through its colours and plays a 1 kHz tone.
 
 ## Troubleshooting { #troubleshooting }
 
 | Symptom | Cause | Fix |
 |---|---|---|
-| The installed SDK is 1.2.1 | The package index has no V2.x entry yet | Add the SDK by hand as in [Switch to SDK V2.1.0](#sdk-2-1-0) |
-| The old SDK is still used after switching | The SDK root in the workspace or User settings still points at the old version | Run `IPRO Setup: Set SDK Root`, then check the actual path with `IPRO Setup: Run Diagnostics` |
-| No IPRO commands | The Extension is not in the current VS Code profile, or the workspace is not trusted | Check the Extension, profile and Workspace Trust, then run `Developer: Reload Window` |
-| Running `make` from a command prompt cannot find the compiler | The app's `.config` sets `CONFIG_CROSS_COMPILE` to a Unix path (`/opt/toolchain/...`); on Windows the build uses the `cmake` on PATH | Add `CROSS_COMPILE=<toolchain dir>\bin\riscv64-unknown-elf-` (with the trailing hyphen) to the `make` command line, and make sure the CMake on PATH is 3.19 or later |
-| `build_freertos.sh` or `tools/serial_monitor.py` does not run | Both need bash and POSIX termios | On Windows, build, flash and monitor through the Extension, or use another serial terminal |
+| The installed SDK is V1.2.1 | the catalog does not list V2.x yet | add the SDK as in [Add SDK V2.2.0](#get-sdk) and point `IPRO Setup: Set SDK Root` at it |
+| Windows warns of an unknown publisher or shows SmartScreen | the installer is not code-signed | follow your company's security policy; do not turn protection off |
+| Diagnostics still shows the old SDK path | workspace or user settings point to the old SDK | run `IPRO Setup: Set SDK Root`, then Diagnostics again |
+| No IPRO commands | the Extension is not in the current VS Code profile, or the workspace is not trusted | check the Extension, profile and Workspace Trust, then run `Developer: Reload Window` |
+| `IPRO: Build` cannot find the compiler or fails to compile | toolchain does not match V2.2.0, or wrong path | get a V2.2.0 toolchain from INTELPRO and check the path in Diagnostics |
+| No new COM port in Device Manager | charge-only USB cable, or missing adapter driver | change the cable; install the adapter maker's driver; for the Debug Probe contact INTELPRO |
+| `ipro_iot_tool.exe` prints no `[All Success]` | the board is not in download mode, or a terminal program holds the COM port | close the terminal; enter download mode again with SW1 + SW2 |
+| `flash jedec id: 00000000` | `--chip-variant IPRO7AI` is missing | add it and flash again |
+| Garbage or nothing in the terminal | baud rate not 115200, board still in download mode, or RX/TX swapped | open at 115200; press SW2; swap RX and TX |
 
 ## Next steps { #next-steps }
 
-- [First FreeRTOS Application](first-app-freertos.md): flash `ipro7ai_reef_demo` and run the self-test on the Reef.
-- [Flashing & Serial Console](flash-and-monitor.md): `ipro_iot_tool.exe` options and per-board settings.
-- [VS Code Extension](../guides/vscode.md): Control Center, flash settings and monitor.
+- [First FreeRTOS Application](first-app-freertos.md): the self-test and commands of the out-of-box firmware.
+- [Flashing & Serial Console](flash-and-monitor.md): other download-mode methods, partition tables, boot2 and `mfg` data.
+- [VS Code Extension](../guides/vscode.md): Extension commands and settings.

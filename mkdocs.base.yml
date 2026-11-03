@@ -49,11 +49,11 @@ theme:
 extra:
   # Single source for the release shown in the banner and on the home page.
   release:
-    sdk: V2.1.0
-    date: "2026-10-16"
+    sdk: V2.2.0
+    date: "2026-11-03"
     installer: "3.4.0"
     extension: "3.3.0"
-    download: https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.1.0
+    download: https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0
   generator: false
 
 markdown_extensions:

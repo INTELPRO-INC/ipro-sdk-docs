@@ -31,7 +31,6 @@ IPRO 專屬的公開 C API。下方「API 分類」由 SDK V2.1.0 隨附的公�
 | [安全引擎](security.md) | 9 | 49 | AES、GMAC、雜湊、DSA、ECDSA、P-256 與硬體亂數。 |
 | [無線與 BLE 控制器](wireless-ble.md) | 7 | 41 | 無線電初始化，以及 IPRO BLE 控制器的啟動、HCI 傳輸、低功耗與 NVDS 介面。 |
 | [AI 執行庫](ai.md) | 18 | 133 | NPU 驅動、推論核心、運算子與後處理，以及偵測與語音模型的介面。 |
-| [IPRO7AI EVK 板卡庫](ipro7ai-evk.md) | 12 | 113 | EVK 子板的面板、繪圖、相機、麥克風、喇叭、PCM 與 microSD 介面。 |
 <!-- END generated: api-groups -->
 
 ## 平台初始化與 FreeRTOS 掛鉤 { #rtos-platform }

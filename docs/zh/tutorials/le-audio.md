@@ -1,26 +1,28 @@
 ---
 title: "LE Audio 入門"
-description: 在 IPRO7AI Reef EVK 上執行 LE Audio unicast 耳機 ipro_le_audio_headset，與手機配對、以按鍵調整音量，並認識設定重點與 Zephyr 廣播範例。
+description: 在 IPRO7AI Reef EVK 上執行 LE Audio unicast 耳機 ipro_le_audio_headset：與 LE Audio 手機配對、以按鍵調整 VCP 音量、用測試音確認音訊輸出，並認識設定重點與本版的驗證範圍。
 migrate_from:
   - "tutorials.html — 教學 4"
 ---
 
 # LE Audio 入門
 
-完成本教學後，IPRO7AI Reef EVK 會執行 `ipro_le_audio_headset`：以 `IPRO-LE-Audio` 名稱廣播，與支援 LE Audio 的手機配對，提供 PACS、ASCS、VCP 等 LE Audio 服務，並把 LC3 解碼後的音訊送到板上的喇叭與耳機孔。您也會用板上按鍵調整 VCP 音量，並了解建置 LE Audio 應用需要的設定。
+完成本教學後，IPRO7AI Reef EVK 會執行 `ipro_le_audio_headset`：以 `IPRO-LE-Audio` 名稱廣播，與支援 LE Audio 的手機配對，提供 PACS、ASCS、CAS 與 VCP 等 LE Audio 服務。您會用板上按鍵調整 VCP 音量、以測試音確認喇叭與耳機孔的輸出，並了解建置 LE Audio 應用需要的設定。
 
-!!! abstract "V2.1.0 的 LE Audio"
-    - FreeRTOS：`ipro_le_audio_headset`，LE Audio unicast 耳機（BAP unicast server），支援 IPRO7 EVB 與 IPRO7AI Reef EVK。
-    - Zephyr：`zephyr/samples/` 下的 BIS 廣播來源、廣播接收與 unicast 耳機範例，見 [Zephyr 範例](#zephyr-samples)。
-    - 獨立的 FreeRTOS BIS 廣播來源與接收應用：未包含於 V2.1.0，請洽 INTELPRO。
-    - 控制器需使用 `bt54_iso2` 函式庫與 `CONFIG_EM_SIZE=32`。
+!!! warning "本版的驗證範圍"
+    依應用 README，這個應用目前是 profile 與 ISO 資料路徑的開發版本，不是完成的音訊產品：
+    
+    - 已驗證：手機掃描、連線、配對（安全等級 4）、LE Audio 服務探索（`1853`、`1850`、`184e`、`1844`），以及 VCP 音量控制。
+    - 尚未驗證：從手機串流音樂。Android 手機目前顯示此韌體沒有已連線的音訊通道。LC3 解碼後的播放與聲學驗證也尚未完成。
+    
+    `test_tone` 測試音直接驅動 DAC，不經 LE Audio 串流。
 
 ## 前置需求 { #prerequisites }
 
-- IPRO7AI Reef EVK：上電前插上 JP1，以 USB-C 供電；USB 轉 UART 線接 U6（115200 8N1）。可另接耳機到 J2。
-- 已完成[第一個 FreeRTOS 應用](../get-started/first-app-freertos.md)，並取得 IntelProCube v0.6.3 命令列燒錄工具。
+- IPRO7AI Reef EVK：SW8 在 PWR，以 USB-C 供電；U6 接 IPRO Debug Probe 或 3.3 V USB 轉 UART 線（115200 8N1，接法見 [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)）。可另接耳機到 J2。
+- 已完成[第一個 FreeRTOS 應用](../get-started/first-app-freertos.md)，並取得 IntelProCube v0.6.3 命令列燒錄工具（需另行取得）。
 - 一個可輸入指令的序列埠終端程式（見[燒錄與序列埠](../get-started/flash-and-monitor.md)）。
-- 一支支援並已開啟 LE Audio 的 Android 手機。
+- 一支支援並已開啟 LE Audio 的 Android 手機。應用 README 記錄的測試手機是 Pixel 10 Pro（Android 17）。
 
 ## 步驟 { #steps }
 
@@ -32,16 +34,15 @@ migrate_from:
     make -C apps/bluetooth/le_audio/ipro_le_audio_headset DEFCONFIG=defconfig_reef
     ```
 
-    產出：`apps/bluetooth/le_audio/ipro_le_audio_headset/build_reef/build_out/ipro_le_audio_headset_IPRO7.bin`。這個設定以 2 MB Flash 連結（`CONFIG_IPRO7_FLASH_2M=y`）；Reef 的封裝內 Flash 容量見 [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md#bsp)。
+    產出：`apps/bluetooth/le_audio/ipro_le_audio_headset/build_reef/build_out/ipro_le_audio_headset_IPRO7.bin`。這個設定以 2 MB Flash 連結（`CONFIG_IPRO7_FLASH_2M=y`）。不加 `DEFCONFIG=` 的 `make` 建置的是 IPRO7 EVB 版本。
 
-2. **燒錄**：讓 Reef 進入下載模式（按住 SW1、按一下 SW2、放開 SW1），再於 IntelProCube 目錄下執行：
+2. **燒錄**：讓 Reef 進入下載模式（按住 SW1、按一下 SW2、放開 SW1；板上韌體有 shell 時也可以輸入 `reboot_dl`），再於 IntelProCube 目錄下執行：
 
     === "macOS"
 
         ```bash
         ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
             --port /dev/cu.usbserial-XXXX --baudrate 921600 \
-            --pt chips/ipro7/partition/partition_cfg_2M.toml \
             --firmware <SDK>/apps/bluetooth/le_audio/ipro_le_audio_headset/build_reef/build_out/ipro_le_audio_headset_IPRO7.bin
         ```
 
@@ -50,7 +51,6 @@ migrate_from:
         ```bash
         ./ipro_iot_tool_linux --chipname ipro7 --chip-variant IPRO7AI \
             --port /dev/ttyUSB0 --baudrate 921600 \
-            --pt chips/ipro7/partition/partition_cfg_2M.toml \
             --firmware <SDK>/apps/bluetooth/le_audio/ipro_le_audio_headset/build_reef/build_out/ipro_le_audio_headset_IPRO7.bin
         ```
 
@@ -59,11 +59,10 @@ migrate_from:
         ```powershell
         .\ipro_iot_tool.exe --chipname ipro7 --chip-variant IPRO7AI `
             --port COM5 --baudrate 921600 `
-            --pt chips/ipro7/partition/partition_cfg_2M.toml `
             --firmware <SDK>\apps\bluetooth\le_audio\ipro_le_audio_headset\build_reef\build_out\ipro_le_audio_headset_IPRO7.bin
         ```
 
-    確認輸出中有 `[All Success]`。
+    工具失敗時也會以 0 結束，請確認輸出中有 `[All Success]`。
 
 3. **開啟主控台並重置**：以 115200 baud 開啟主控台，按 SW2。開機後會看到下列訊息（省略行首的等級、時間等欄位）：
 
@@ -110,7 +109,7 @@ migrate_from:
 </div>
 
 !!! info "從手機串流音樂"
-    依 V2.1.0 隨附的應用 README，這個應用已驗證手機連線、配對、LE Audio 服務探索與 VCP 音量控制；從手機串流音樂尚未驗證。來源端建立串流時，主控台會印出 `Stream … started (Streaming state)`，`leaudio_status` 的 `Frames Received` 會持續增加。
+    從手機串流音樂在本版尚未驗證（見本頁開頭）。若您的音源端建立了串流，主控台會印出 `Stream … started (Streaming state)`，`leaudio_status` 的 `Frames Received` 會持續增加；結果請以實際量測為準。
 
 ## 確認結果 { #verify }
 
@@ -159,32 +158,20 @@ CONFIG_BSP_USING_DAC=y
 - `CONFIG_IPRO_BLE_CTLR_CFG_DBG=y` 選用除錯版控制器函式庫；未設定時使用 `_release` 版。
 - 這個應用沒有啟用媒體控制（MCP）與通話控制（CCP）。
 
-應用附有三種輸出設定：
-
-| 設定檔 | 板卡 | 解碼後的音訊 |
-|---|---|---|
-| `.config`（與 `DAC.config` 相同的 DAC 輸出） | IPRO7 EVB | 晶片內建 DAC 與喇叭 |
-| `UAC.config` | IPRO7 EVB | 以 48 kHz 單聲道 USB 麥克風送給電腦（USB Audio Class） |
-| `defconfig_reef` | IPRO7AI Reef EVK | DAC 輸出到喇叭與 J2 耳機孔；SW3／SW4／SW5 控制音量 |
-
-`DAC.config` 與 `UAC.config` 依檔頭說明複製成 `.config` 後做乾淨建置（見[建置與燒錄流程](build-and-flash.md#variants)）。
+Reef 只使用 `defconfig_reef`：DAC 輸出到喇叭與 J2 耳機孔（J2 插著耳機時喇叭放大器關閉），SW3／SW4／SW5 經 VCP 調整音量。`dac os 0|1|2` 切換 DAC 輸出路徑（Reef 預設 `1`，512 kHz 加雜訊整形），`dac spk <dB>` 調整喇叭路徑的增益。應用的 `.config`、`DAC.config` 與 `UAC.config` 是 IPRO7 EVB 的設定。
 
 ## LE Audio 名詞 { #concepts }
 
 | 名詞 | 意義 | 在 `ipro_le_audio_headset` 中 |
 |---|---|---|
 | CIS | 連線式等時串流，一對一，用於耳機 | 接收端 |
-| BIS | 廣播等時串流，一對多（Auracast） | 未使用；見 Zephyr 廣播範例 |
+| BIS | 廣播等時串流，一對多（Auracast） | 未使用 |
 | BAP | 建立與管理音訊串流 | Unicast Server，2 個 sink ASE |
 | PACS | 宣告支援的編解碼能力 | LC3：16／32／48 kHz、7.5／10 ms、單聲道、每幀 26–155 octets |
 | ASCS | 音訊串流端點（ASE）的設定與狀態 | 啟用 |
 | VCP | 音量控制 | Volume Renderer |
 | CAP／CSIP | 通用音訊 profile／協同裝置組 | CAP Acceptor 與 CSIP set member |
 | LC3 | LE Audio 的標準編解碼器 | 預編譯函式庫 |
-
-## Zephyr 範例 { #zephyr-samples }
-
-V2.1.0 的 Zephyr 移植另附三個 LE Audio 範例：BIS 廣播來源 `bap_broadcast_source`、廣播接收 `bap_broadcast_sink`，以及以 CIS 接收的 unicast 耳機 `le_audio_headset`。Zephyr 沒有 Reef 的板級定義，這些範例使用 IPRO7 EVB 與 IPRO7AI EVK。各範例的板卡、內容與建置命令見[音訊與 LE Audio](../guides/audio.md#broadcast-audio)，工作區的建立與燒錄見 [Zephyr RTOS](../guides/zephyr.md)。
 
 ## 疑難排解 { #troubleshooting }
 
@@ -200,4 +187,4 @@ V2.1.0 的 Zephyr 移植另附三個 LE Audio 範例：BIS 廣播來源 `bap_bro
 
 - [音訊與 LE Audio](../guides/audio.md)：音訊框架、DAC、PDM 與 LC3。
 - [BLE 開發](../guides/ble.md)：控制器函式庫選擇與 Host 設定。
-- [Zephyr RTOS](../guides/zephyr.md)：建置與燒錄 Zephyr 範例。
+- [第一個 BLE 應用](first-ble-app.md)：在 Reef 上修改 GATT 應用並以 BLE OTA 更新。

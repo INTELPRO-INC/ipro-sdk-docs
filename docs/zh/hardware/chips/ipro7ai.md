@@ -1,6 +1,6 @@
 ---
 title: "IPRO7AI"
-description: IPRO7AI 型號的差異、NPU 推論執行庫的設定與記憶體需求，以及使用 NPU 的 SDK 範例
+description: IPRO7AI 型號的差異、NPU 推論執行庫的設定與記憶體需求，以及在 IPRO7AI Reef EVK 上使用 NPU 的範例
 migrate_from:
   - "architecture.html#soc-variants"
   - "ai-npu.html#architecture"
@@ -8,7 +8,7 @@ migrate_from:
 
 # IPRO7AI
 
-IPRO7AI 與 [IPRO7](ipro7.md) 是同一顆晶粒：IPRO7AI 啟用 NPU，並在封裝內放入 8 MB PSRAM。其餘規格（CPU、無線、周邊）與 IPRO7 相同。本版 SDK 用它執行相機影像辨識、手勢分類與 IPRO AI Studio 的板端推論；IPRO7AI EVK 與 IPRO7AI Reef EVK 都使用這顆晶片。
+IPRO7AI 與 [IPRO7](ipro7.md) 是同一顆晶粒：IPRO7AI 啟用 NPU，並在封裝內放入 8 MB PSRAM 與 Flash，其餘規格（CPU、無線、周邊）與 IPRO7 相同。它是 IPRO7AI Reef EVK 的主晶片；本版 SDK 用它執行相機影像辨識、IPRO AI Teach 的三種教學工具與 IPRO AI Studio 的板端推論。
 
 <div class="ipro-facts" markdown>
 <div><strong>0.1 TOPS</strong><span>NPU</span></div>
@@ -23,13 +23,15 @@ IPRO7AI 與 [IPRO7](ipro7.md) 是同一顆晶粒：IPRO7AI 啟用 NPU，並在�
 |---|---|
 | NPU | 啟用，0.1 TOPS；NPU 的 activation 緩衝區放在 PSRAM，所以 AI 應用一定要開 PSRAM |
 | PSRAM | 封裝內 8 MB，位址 `0x1e000000` |
-| Flash | 封裝內，依料號為 1 MB 或 2 MB；SDK 預設連結 1 MB 版面，兩種都放得下。開機訊息回報 JEDEC ID `0xEF4015`（2 MB）時，可在 `.config` 加入 `CONFIG_IPRO7_FLASH_2M=y` 使用整顆 Flash |
+| Flash | 封裝內。SDK 預設連結 1 MB 版面；設定 `CONFIG_IPRO7_FLASH_2M=y` 改用 2 MB 版面。`ipro7ai_reef_demo` 的 `.config` 註明：開機訊息回報 JEDEC ID `0xEF4015`（2 MB）時可加入這一行 |
 | 燒錄 | `--chip-variant IPRO7AI`，選用這顆晶片的 Flash 腳位（工具設定檔中 `flash_pin` 為 `0x9`） |
 | 其他 | CPU、記憶體配置、無線與周邊與 IPRO7 相同，見 [IPRO7 主要規格](ipro7.md#key-specs) |
 
+Reef 的應用設定中，`ipro_reef_teach`、`ipro_agora_sentino` 的 `.config` 與 `ipro_ble_remote`、`ipro_le_audio_headset`、`ipro_ai_link` 的 `defconfig_reef` 已設定 2 MB 版面，其他 Reef 設定使用 1 MB 版面。
+
 ## NPU 與推論執行庫 { #architecture }
 
-推論執行庫以預編譯函式庫 `components/ai/lib/libai.a` 提供，公開標頭在 `components/ai/`（`iproai_def.h`）與 `components/ai/src/`。套件不含推論執行庫原始碼；CPU 端推論另有 TensorFlow Lite Micro、NMSIS-NN 與 TinyMaix（`components/3rdparty/`）。
+推論執行庫以預編譯函式庫 `components/ai/lib/libai.a` 提供，公開標頭為 `components/ai/iproai_def.h` 與 `components/ai/` 下各模組的標頭；套件不含推論執行庫原始碼。V2.2.0 的 `components/ai` 是 IPRO Edge AI 平台 V2.0：執行庫、每個工具一個槽位的模型儲存區、輸入來源、前處理與應用框架。等待 NPU 有時間上限，逾時會重置 NPU 區塊並進入安全的故障狀態。CPU 端推論另有 TensorFlow Lite Micro、NMSIS-NN 與 TinyMaix（`components/3rdparty/`）。
 
 ### 啟用 AI { #config }
 
@@ -42,47 +44,47 @@ CONFIG_MM_SUPPORT=y          # 使用相機與 ISP 時
 CONFIG_AI_MODEL_FROM_FILE=y  # 從 SD 卡載入模型時
 ```
 
+`ipro_reef_teach` 的 `.config` 與 `ipro_ai_link` 的 `defconfig_reef` 是完整的 Reef 範例設定。
+
 ### 模型存放 { #models }
 
 NPU 使用 `.inm` 格式的模型，可放在三個位置：
 
-| 位置 | 做法 | 範例 |
+| 位置 | 做法 | Reef 上的範例 |
 |---|---|---|
-| `mfg` Flash 分割區 | 模型放在分割區起點 +0x1000，燒錄工具以 `--mfg` 寫入；應用目錄內的 `flash.sh --full` 一次寫入分割表、韌體與模型 | `ipro7ai_evk_person_detect` |
-| 連結進韌體 | 模型以組語檔嵌入映像 | `ipro7ai_evk_rps`（`CONFIG_RPS_EMBED_MODEL=y`）、`ipro_npu_yolo` |
-| SD 卡 | 開機時把整個 `.inm` 讀入 PSRAM，路徑使用 FatFS 的 `sd:/`（例如 `sd:/models/person.inm`） | `ipro7ai_evk_launcher` 的偵測頁、`ipro_ai_link` |
+| `mfg` Flash 分割區 | 燒錄工具以 `--mfg` 寫入。`ipro_reef_teach` 使用自己的分割表 `partition_reef_teach.toml` 與 `mfg` 配置（模式、聲紋、影像與感測模型各一個槽位），燒錄內容由 `mfg_payload.py` 產生 | `ipro_reef_teach` |
+| 連結進韌體 | 模型編進映像，不必另外燒錄 | `ipro7_uvc_cam` 的 `defconfig_reef_rps` |
+| SD 卡 | 執行時把 `.inm` 由 FatFS 的 `sd:/` 讀入 PSRAM | `ipro_ai_link` 的 `defconfig_reef` |
 
-套件隨附的模型位於 `apps/platform/ipro7_demo/demo/ai/ai_model/`、`apps/test/ipro_npu_yolo/src/` 與 `apps/ai/ipro7ai_evk_rps/model/`。模型轉換工具未包含於 V2.1.0，請洽 INTELPRO。`ipro7ai_evk_rps/train/` 另附該分類模型的訓練腳本。
+套件隨附的模型位於 `apps/ai/ipro_reef_teach/model/`（聲紋模型 `model_b.spkb`）、`tools/teach_web/assets/`、`apps/platform/ipro7_demo/demo/ai/ai_model/`、`apps/test/ipro_npu_yolo/src/` 與 `apps/ai/ipro7ai_evk_rps/model/`。IPRO AI Studio 與 Edge AI 工具隨另外的 IPRO Edge AI 套件提供，不在 SDK 內；模型轉換工具請洽 INTELPRO。
 
 ### 記憶體 { #memory }
 
-同時啟用 AI 與影像（`CONFIG_AI_SUPPORT`、`CONFIG_MM_SUPPORT`）時，連結器把 OCRAM 可用區縮為 64 KB，使用 BLE 時再縮為 48 KB；BLE 控制器與 Host 約需 67 KB OCRAM，因此同一個映像不能同時啟用 NPU 與 BLE，`ipro7ai_evk_demo` 為此把 AI（`config_ai`）與藍牙（`config_bt`）分成不同設定。各組合的 OCRAM 大小見[建置系統與設定](../../guides/build-system.md#memory-layout)。
+同時啟用 AI 與影像（`CONFIG_AI_SUPPORT`、`CONFIG_MM_SUPPORT`）時，NPU 的 SRAM 映射在 `0x11020000` 以上，連結器把 OCRAM 縮為前 64 KB（`0x11010000`–`0x11020000`）。應用同時設定 BLE 控制器的 Exchange Memory（`CONFIG_EM_SIZE` 不為 0）時，OCRAM 再縮為 48 KB，另有一段 64 KB − `CONFIG_EM_SIZE` 的非保留區。建置時 CMake 會印出實際採用的大小，例如 `AI+MM (EM=0): OCRAM=64KB`。
 
 Zephyr RTOS 版本未提供 NPU 驅動；NPU 範例都是 FreeRTOS 應用。
 
-## SDK 中的 AI 範例 { #sdk-usage }
+## 在 Reef 上使用 NPU 的範例 { #sdk-usage }
 
-| 範例 | 開發板（設定） | 內容 |
+| 範例 | Reef 設定 | 內容 |
 |---|---|---|
-| `ipro7ai_evk_person_detect` | IPRO7AI EVK | 相機預覽與 YOLOv8 人物／寵物框，模型在 `mfg` 分割區 |
-| `ipro7ai_evk_rps` | IPRO7AI EVK | 剪刀石頭布：4 類 int8 CNN，模型連結進韌體，附訓練腳本 |
-| `ipro7ai_evk_launcher` | IPRO7AI EVK | 以 NPU 辨識手勢切換頁面；第二個模型做人物／寵物偵測 |
-| `ipro7_uvc_cam` | Reef（`defconfig_reef_rps`） | USB 網路攝影機，把剪刀石頭布結果畫進影像串流 |
-| `ipro_ai_link` | IPRO7 EVB；Reef（`defconfig_reef`） | IPRO AI Studio「Run on board」的板端韌體：從 `sd:/` 載入模型與輸入，經 USB 傳回輸出 |
-| `ipro_npu_yolo` | IPRO7 EVB | NPU 上的 YOLOv8 人物／寵物偵測 |
-| `ipro_ai_bench` | IPRO7 EVB | NPU 與 CPU 推論時間比較 |
+| [`ipro_reef_teach`](../../examples/ipro_reef_teach.md) | `.config` | IPRO AI Teach 2.0 的板端韌體：`image`（USB 相機與影像分類）、`voice`（聲紋）、`sensor`（感測訊號）三種工具，一次執行一種，由 IPRO AI Studio 操作 |
+| [`ipro7_uvc_cam`](../../examples/ipro7_uvc_cam.md) | `defconfig_reef_rps` | USB 網路攝影機，把 NPU 剪刀石頭布的辨識結果畫進影像 |
+| [`ipro_ai_link`](../../examples/ipro_ai_link.md) | `defconfig_reef` | IPRO AI Studio「Run on board」的板端韌體：從 `sd:/` 載入模型與輸入，經 USB 傳回輸出 |
 
-建置與使用方式見各應用目錄的 README，以及 [AI 與 NPU 指南](../../guides/ai-npu.md)。
+其他 NPU 範例以 IPRO7AI EVK 或 IPRO7 EVB 為目標（`ipro7ai_evk_person_detect`、`ipro7ai_evk_rps`、`ipro7ai_evk_launcher`、`ipro_speaker_recog`、`ipro_npu_yolo`、`ipro_ai_bench`），見[範例](../../examples/index.md)。
 
 ## 搭載 IPRO7AI 的開發板 { #boards }
 
 | 開發板 | 封裝 | 板級設定 |
 |---|---|---|
-| [IPRO7AI Reef EVK](../boards/reef-evk.md) | QFN56，焊於載板 | `CONFIG_IPRO7AI_REEF=y` |
-| [IPRO7AI EVK](../boards/ipro7ai-evk.md) | 模組，裝在 EVK 子板上 | `CONFIG_IPRO7AI_EVK=y` |
+| [IPRO7AI Reef EVK V4.0](../boards/reef-evk.md) | QFN56，焊在板上 | `CONFIG_IPRO7AI_REEF=y` |
+
+IPRO7AI EVK（`CONFIG_IPRO7AI_EVK=y`）也使用這顆晶片；供應請洽 INTELPRO。
 
 ## 相關文件 { #documents }
 
 - [IPRO7](ipro7.md)：完整晶片規格與記憶體配置。
 - [AI 與 NPU 指南](../../guides/ai-npu.md)：模型部署與推論 API。
-- IPRO7 規格書：見 [文件下載](../../documents/index.md)。
+- [IPRO AI Teach](../../teach/index.md)：在 Reef 上以 IPRO AI Studio 教會板子辨識影像、聲紋與感測訊號。
+- IPRO7 規格書：見[文件下載](../../documents/index.md)。

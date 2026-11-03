@@ -1,12 +1,12 @@
 ---
 title: "硬體"
-description: IPRO 晶片與開發板的規格、腳位對照與電源量測
+description: IPRO 晶片規格、IPRO7AI Reef EVK 開發板、腳位對照與電流量測
 migrate_from: []
 ---
 
 # 硬體
 
-查晶片規格、選開發板、對照腳位與量測電流時從這裡開始；範例預設使用 IPRO7AI Reef EVK。
+查晶片規格、IPRO7AI Reef EVK 的接線、腳位對照與電流量測時從這裡開始。本站的上手步驟與範例都以 IPRO7AI Reef EVK V4.0 為準。
 
 ## 晶片 { #chips }
 
@@ -16,19 +16,19 @@ migrate_from: []
 
     ---
 
-    RISC-V RV32IMAFC、BLE 5.4 與 LE Audio、ISP 與周邊介面；本版 SDK 的主要晶片。
+    RISC-V RV32IMAFC、BLE 5.4 與 LE Audio、IEEE 802.15.4、ISP 與硬體 MJPEG；本版 37 個應用的目標晶片。
 
 -   :material-brain:{ .lg } **[IPRO7AI](chips/ipro7ai.md)**
 
     ---
 
-    啟用 NPU 並內含 PSRAM 的 IPRO7 型號，用於相機影像辨識與手勢分類範例。
+    啟用 NPU、封裝內含 8 MB PSRAM 的 IPRO7 型號；Reef EVK 上的主晶片。
 
--   :material-wifi:{ .lg } **[IPRO6S（V2.0.1）](chips/ipro6s.md)**
+-   :material-wifi:{ .lg } **[IPRO6S](chips/ipro6s.md)**
 
     ---
 
-    Wi-Fi 6 與 BLE／BR/EDR 晶片；獨立開發使用 SDK V2.0.1。本版提供 IPRO7 經 SDIO 把它當作 Wi-Fi 夥伴晶片的主機端。
+    內建 Wi-Fi 6 的 RISC-V SoC。本版隨附三個 IPRO6S Wi-Fi 應用；在 Reef 上它是插在 microSD 卡座的 FIN Wi-Fi 卡。
 
 </div>
 
@@ -36,25 +36,15 @@ migrate_from: []
 
 <div class="grid cards" markdown>
 
--   :material-developer-board:{ .lg } **[IPRO7AI Reef EVK](boards/reef-evk.md)** <span class="ipro-badge">推薦</span>
+-   :material-developer-board:{ .lg } **[IPRO7AI Reef EVK V4.0](boards/reef-evk.md)**
 
     ---
 
-    IPRO7AI（QFN56）載板：OV5640 相機、喇叭與耳機、三種收音、SD 卡槽，可插 IPRO6S FIN 卡擴充 Wi-Fi。
-
--   :material-monitor-dashboard:{ .lg } **[IPRO7AI EVK](boards/ipro7ai-evk.md)**
-
-    ---
-
-    2.4 吋 LCD、SC101IOT 相機、PDM 麥克風、喇叭與 micro-SD，適合影像 AI 與人機介面。
-
--   :material-expansion-card:{ .lg } **[IPRO7 EVB](boards/ipro7-evb.md)**
-
-    ---
-
-    IPRO7 評估板：乙太網路、JTAG、USB 與擴充接頭；多數應用 `.config` 的預設板型。
+    IPRO7AI（QFN56）開發板：OV5640 相機排線座、PDM 麥克風、耳麥孔與喇叭、microSD 卡座（可插 IPRO6S FIN 卡）、RGB LED、40-pin 擴充排針；只由 USB-C 供電。
 
 </div>
+
+SDK 中另有以 IPRO7 EVB、IPRO7AI EVK、IPRO6S EVB 與 IPRO7 Arduino 板為目標的應用，見[範例](../examples/index.md)；這些板子的供應請洽 INTELPRO。
 
 ## 腳位與電源 { #pinout-power }
 
@@ -64,12 +54,12 @@ migrate_from: []
 
     ---
 
-    GPIO 功能選擇、UART／SPI／SDIO／I2S 腳位、替代功能表、開發板預設腳位與周邊接線。
+    GPIO 功能選擇、UART／SPI／SDIO／I2S 腳位、替代功能表，以及 Reef 的預設腳位。
 
 -   :material-flash:{ .lg } **[電源與功耗量測](power.md)**
 
     ---
 
-    各開發板的電源架構、電源設計建議，以及用 `ipro_lp_test` 量測睡眠電流的步驟。
+    Reef 的供電方式、以 SW8 與 JP2 量測 IPRO7AI 電流的步驟，以及電源設計建議。
 
 </div>

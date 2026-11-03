@@ -14,30 +14,30 @@ Look-up material for development: the exact names of APIs and tool options, what
 
     ---
 
-    APIs and headers for platform init, BLE controller bring-up, HAL peripherals, logging, the IPRO7AI EVK board library and the AI inference runtime.
+    APIs and headers for platform init, BLE controller bring-up, HAL peripherals, logging and the AI inference runtime.
 
 -   :material-console:{ .lg } **[Tool Command Lines](tools.md)**
 
     ---
 
-    Options and examples for `build_freertos.sh`, the IntelProCube flash tool, `serial_monitor.py`, `create_ota.py` and the Zephyr scripts.
+    Options and examples for `build_freertos.sh`, the IntelProCube flash tool, `serial_monitor.py`, `create_ota.py` and the Reef Teach and OTA tools; what does not ship.
 
 -   :material-bug-outline:{ .lg } **[Debugging & Troubleshooting](debugging.md)**
 
     ---
 
-    Console and logs, reading crash output, on-board unit tests, and tables of build, flash and console problems.
+    Console and logs, entering download mode, reading crash output, the Reef self-test, and tables of build, flash and console problems.
 
 -   :material-tag-outline:{ .lg } **[Release Notes](release-notes.md)**
 
     ---
 
-    What V2.1.0 adds, leaves out and limits, plus the history of earlier releases.
+    What V2.2.0 adds, leaves out and its known issues, plus the history of earlier releases.
 
 -   :material-frequently-asked-questions:{ .lg } **[FAQ](faq.md)**
 
     ---
 
-    Common questions about building, flashing, BLE, Wi-Fi and RTOS.
+    Common questions about building, the applications for the Reef, flashing, BLE, Wi-Fi, IPRO6S and RTOSes.
 
 </div>

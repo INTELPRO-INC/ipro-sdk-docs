@@ -1,6 +1,6 @@
 ---
-title: IPRO7AI Reef EVK
-description: IPRO7AI Reef EVK (V4.0 board) on-board features, switches and jumpers, quick start, out-of-box firmware, supported examples and pin map
+title: IPRO7AI Reef EVK V4.0
+description: IPRO7AI Reef EVK V4.0 on-board features, switches and jumpers, quick start and download mode, out-of-box firmware, Wi-Fi, supported examples, USB identities and pin map
 migrate_from:
   - "hardware.html — IPRO7AI Reef EVK"
   - "audio-multimedia.html#reef-demo"
@@ -8,11 +8,11 @@ migrate_from:
   - "getting-started.html#flashing — Reef"
 ---
 
-# IPRO7AI Reef EVK
+# IPRO7AI Reef EVK V4.0
 
-<span class="ipro-badge">Recommended</span>
+<span class="ipro-badge">V4.0</span>
 
-The IPRO7AI Reef EVK is built around an IPRO7AI (QFN56) with its flash and PSRAM inside the chip package. The board carries an OV5640 camera connector, a PDM digital microphone, a headset jack and a speaker amplifier, a microSD socket, an RGB LED, keys, and a 40-pin expansion header in the same position and pin order as on a Raspberry Pi. It is powered from USB-C only and has no LCD and no battery. This page covers the V4.0 board (silkscreen "IPRO7AI REEF EVK V4.0"); the quick starts and examples on this site use this board by default.
+The IPRO7AI Reef EVK is built around an IPRO7AI (QFN56) with its flash and PSRAM inside the chip package. The board carries an OV5640 camera connector, a PDM digital microphone, a headset jack and a speaker amplifier, a microSD socket, an RGB LED, keys, and a 40-pin expansion header in the same position and pin order as on a Raspberry Pi. It is powered from USB-C only and has no LCD and no battery. This page covers the V4.0 board (silkscreen "IPRO7AI REEF EVK V4.0"); every step on this site is written for it.
 
 <figure>
   <img src="/ipro-sdk-docs/assets/images/reef-v4-top.jpg" alt="Top side of the IPRO7AI Reef EVK V4.0: the 40-pin header J_IO along the top edge, SW1, SW2 and the PCB antenna at the top right, SW7, U6 and the microSD socket on the left edge, and JP3, the speaker connector, the headset jack, SW8, JP2 and USB-C along the bottom edge" width="1500" height="1011" loading="lazy">
@@ -70,21 +70,36 @@ To measure the IPRO7AI's current, unplug USB-C, connect an ammeter between JP2 p
 
 ## Quick start { #quick-start }
 
+At the end the board runs the out-of-box firmware `ipro7ai_reef_demo` and answers `reef selftest` on its console. The host needs the RISC-V toolchain and IntelProCube v0.6.3 (from INTELPRO), CMake 3.15 or later, GNU make and Python 3.8 or later; see [Get Started](../../get-started/index.md).
+
 <div class="ipro-steps" markdown>
 
-1. **Connect**: check that SW7 is on CAM and SW8 on PWR. Connect the IPRO Debug Probe to U6 (a 3.3 V USB-to-UART cable also works; the pinout is under [Debug connector U6](#debug-connector)), then plug in USB-C for power. U6 supplies no power; the board runs from its own USB-C.
+1. **Set the switches and connect**: slide SW7 to CAM and SW8 to PWR. Connect the console cable to U6: a 3.3 V USB-to-UART cable (pinout under [Debug connector U6](#debug-connector)), or the IPRO Debug Probe through a pin-reversed cable. Plug in USB-C last.
 
-2. **Build the out-of-box firmware**
+    The green power LED, LED2, lights up. U6 does not power the board; only USB-C does.
+
+2. **Find the serial port**: list the serial ports on the host.
+
+    ```bash
+    ls /dev/cu.usb*                # macOS
+    ls /dev/ttyUSB* /dev/ttyACM*   # Linux
+    ```
+
+    A USB-to-UART cable shows up as one port, for example `/dev/cu.usbserial-XXXX`. The IPRO Debug Probe shows up as two (device name `IPRO7 CMSIS_DAP`): the one ending in `02` is the Reef console, the one ending in `04` the CCI bridge. On Windows, look up the `COM` number in Device Manager.
+
+3. **Build the out-of-box firmware** from the SDK root:
 
     ```bash
     make -C apps/platform/ipro7ai_reef_demo
     ```
 
-    Output: `apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin`
+    The build ends with the flash and RAM usage; the image is `apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin`.
 
-3. **Enter download mode**: hold SW1 (BOOT), tap SW2 (RESET), then release SW1. With the IPRO Debug Probe connected, the probe drives download mode through the BOOT and RESET lines on U6; if firmware is already running, you can also type `reboot_dl` at the console.
+4. **Enter download mode**: hold SW1 (BOOT), press and release SW2 (RESET), then release SW1.
 
-4. **Flash**: run the command-line tool from the IntelProCube directory. `--chip-variant IPRO7AI` selects the QFN56 flash pins and `--pt` uses the partition table from the Reef application READMEs. The macOS command is shown; the Linux and Windows commands are in [Flashing & Serial Console](../../get-started/flash-and-monitor.md#flashing):
+    The console goes silent. Other ways are under [Download mode](#download-mode).
+
+5. **Flash** from the IntelProCube directory (`./ipro_iot_tool_linux` on Linux, `ipro_iot_tool.exe` on Windows):
 
     ```bash
     ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
@@ -93,77 +108,148 @@ To measure the IPRO7AI's current, unplug USB-C, connect an ammeter between JP2 p
         --firmware <SDK>/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin
     ```
 
-    The tool exits with 0 even when it fails; check the output for `[All Success]`. The `flash` action of `build_freertos.sh` passes neither `--chip-variant` nor `--pt`, so do not use it for the Reef.
+    Flashing worked only if the output ends with `[All Success]`; the tool exits 0 even when it fails. `--chip-variant IPRO7AI` selects the flash pins of the QFN56.
 
-5. **Open the console and run the self-test**: reset with SW2, then send `reef selftest` on U6 at 115200 baud (8N1). On Windows, open `COM5` in any serial terminal and type the command.
+6. **Start and self-test**: press SW2, open the console at 115200 baud (8N1, no flow control) and type `reef selftest`.
 
     ```bash
-    python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --send "reef selftest" --timeout 10
+    screen /dev/cu.usbserial-XXXX 115200
     ```
 
-    At power-on the LED breathes blue once; SW3, SW4, SW5 and BOOT light it red, green, blue and white. `reef selftest` checks the LED, a 1 kHz speaker tone, SD card detection and the camera probe in about 3 seconds; the output is explained in [First FreeRTOS Application](../../get-started/first-app-freertos.md#verify).
+    The boot log shows `IPRO7AI Reef carrier demo` and `shell ready - ...`, and the RGB LED breathes blue once. Within about 3 seconds `reef selftest` prints:
+
+    ```text
+    [1/4] RGB LED: red, green, blue
+    [2/4] speaker: 1 kHz, 300 ms, 20%
+    [3/4] SD slot: empty, supply on
+    [4/4] camera bus: OV5640 at 0x3C
+    done - keys: press any and run `btn status`
+    ```
+
+    Line 3 depends on whether a card is inserted; without a camera line 4 reads `no sensor`. SW3, SW4, SW5 and SW1 light the LED red, green, blue and white.
 
 </div>
 
+Once you know the steps, `build_freertos.sh` builds, flashes and opens the console in one go. It picks `--chip-variant IPRO7AI` from the application's configuration and opens the console at the application's own baud rate. With SDK firmware already running it sends `reboot_dl` first; for the very first flash, enter download mode with the keys:
+
+```bash
+export IPRO_FLASH_TOOL=<ICUBE>/ipro_iot_tool_macos
+./build_freertos.sh -p /dev/cu.usbserial-XXXX \
+    -P <ICUBE>/chips/ipro7/partition/partition_cfg_2M.toml \
+    build flash monitor ipro7ai_reef_demo
+```
+
+The script cannot write boot2 or an mfg payload: flash the first `ipro_ble_remote` image and `ipro_reef_teach` with IntelProCube directly. Options are listed under [Tool Command Lines](../../reference/tools.md).
+
+## Download mode { #download-mode }
+
+To be flashed, the IPRO7AI has to see BOOT (GPIO41) high when it comes out of reset; it then enters the ROM's download mode. In download mode the console is silent. After flashing, press SW2 to boot normally.
+
+| Method | How | When |
+|---|---|---|
+| Keys | Hold SW1 (BOOT), press and release SW2 (RESET), release SW1 | Always, including when the firmware does not respond |
+| Console command | Type `reboot_dl` at the console | While SDK firmware runs; `build_freertos.sh flash` sends it for you |
+| Auto-download cable | U6 pin 5 (BOOT) and pin 6 (RESET) reach the IPRO7AI through 1 kΩ each; wire them to the DTR and RTS lines of a USB-to-UART cable so the host can drive them | With a cable that brings out DTR and RTS |
+| IPRO Debug Probe | Write `IPRODL_1`, then `IPRORST_RESET` to the probe port ending in `02`; after flashing write `IPRODL_0`, then `IPRORST_RESET` | With the IPRO Debug Probe |
+
+Enter download mode through the Debug Probe (one keyword per line):
+
+```bash
+python3 tools/serial_monitor.py /dev/cu.usbmodemXXXX02 --send IPRODL_1 --timeout 1
+python3 tools/serial_monitor.py /dev/cu.usbmodemXXXX02 --send IPRORST_RESET --timeout 1
+```
+
+After flashing, send `IPRODL_0` and `IPRORST_RESET` the same way and the board boots normally.
+
+Images that use boot2 (for example the Reef build of `ipro_ble_remote`) also have `reboot_usb [code]`: it restarts into boot2's USB download mode (waiting indefinitely by default). boot2 also stops in this USB rescue mode when an OTA package fails its check.
+
 ## Out-of-box firmware ipro7ai_reef_demo { #reef-demo }
 
-Each block on the board has its own set of shell commands. The Reef has no LCD; check the camera from the shell.
+Each block on the board has its own group of shell commands; `help` lists them all. The Reef has no LCD, so the camera is checked from the shell.
 
-| Block | Shell commands | Description |
+| Block | Shell commands | What they do |
 |---|---|---|
-| Status and self-test | `reef status`, `reef selftest` | Pins, key states, LED, amplifier and detect lines; the whole self-test in one go |
+| Status and self-test | `reef status`, `reef selftest` | State of the pins, keys, LED, amplifier and detect lines; one-shot self-test |
 | RGB LED | `led <r> <g> <b>`, `led rainbow`, `led off` | Set a color (0–255) or a rainbow effect |
 | Keys | `btn status`, `btn watch` | Debounced state and press counts; live press / release events |
-| Speaker and headphones | `spk tone <hz> <ms>`, `hp` | Sine wave from the GPDAC; add `hp` to a command to keep the amplifier muted and use the headphones only. On its own, `hp` reads the level of GPIO26 (headset plug detect) |
-| Audio input | `mic rec <source> <s>`, `mic play`, `mic loop` | Source is `pdm` (on-board microphone) or `headset`; record at 16 kHz into PSRAM (up to 10 s) and play back, or monitor live |
+| Speaker and headset | `spk tone <hz> <ms>`, `hp` | Sine wave from the GPDAC; adding `hp` to a command mutes the amplifier so only the headset plays. `hp` on its own reads the headset detect (GPIO26) |
+| Audio input | `mic rec <source> <s>`, `mic play`, `mic loop` | Source `pdm` (on-board microphone) or `headset`; records at 16 kHz into PSRAM (up to 10 s) for playback, or monitors live |
+| Recording to SD | `mic sdrec <source> <name> <s>` | Writes `sd:/rec/<name>.wav` |
+| USB microphone | `mic usb <source>` | The board becomes a 16 kHz USB microphone on USB-C |
 | SD card | `sd mount`, `sd ls`, `sd test`, `sd bench`, `sd power` | FatFS mounted at `sd:`; write, read back and verify; with JP3 on GPIO, `sd power` switches the socket supply through GPIO14 |
-| FIN card | `fin`, `fin cycle` | Status of the IPRO6S Wi-Fi card in the socket; power-cycle the card when JP3 is on GPIO |
-| Camera | `cam probe`, `cam start`, `cam status`, `cam snap`, `cam bar on` | OV5640 in YUV422 1280×720 through ISP channel 0; frame count, frame rate and error counters, ASCII thumbnail, sensor color bars |
+| FIN card | `fin`, `fin cycle` | State of the IPRO6S FIN card in the socket; with JP3 on GPIO, power-cycles the card |
+| Camera | `cam probe`, `cam start`, `cam status`, `cam snap`, `cam bar on` | OV5640 in YUV422 1280×720 through ISP channel 0; frame, frame-rate and error counters, ASCII thumbnail, sensor color bars |
 
-Bring the camera up in this order (SW7 on CAM):
+The AUX-IN input in the application's README (`mic rec aux`) belongs to the earlier carrier; V4.0 has no AUX-IN jack.
+
+Camera bring-up order (SW7 on CAM):
 
 ```text
 cam probe        read the sensor ID over SCCB
 cam start        start capture
-cam status       run twice a second apart: frames climb, errors stay flat
+cam status       run twice, one second apart: the frame count rises, the error count stays
 cam bar on       switch to color bars
 cam snap         the ASCII thumbnail shows vertical bands
 cam bar off
 cam snap         the real scene
 ```
 
-## Wi-Fi and RTSP camera streaming { #wifi-rtsp }
+## Wi-Fi and RTSP camera stream { #wifi-rtsp }
 
-The `defconfig_wifi_ipro6s` build connects through an IPRO6S Wi-Fi card (FIN card) on the SDIO interface of the microSD socket and serves the camera as an RTSP MJPEG stream (`rtsp://<ip>:8554/av0_0`), using the SDK components `components/network/ipronet_host` and `components/network/rtsp_server` on the IPRO7 side.
+With the IPRO6S FIN card in the microSD socket, the Reef joins Wi-Fi over SDIO and serves an MJPEG stream of the camera over RTSP (`rtsp://<ip>:8554/av0_0`).
 
-```bash
-make -C apps/platform/ipro7ai_reef_demo DEFCONFIG=defconfig_wifi_ipro6s   # output in build_wifi_ipro6s/build_out/
-```
+- **FIN card firmware**: the IPRO6S application `ipro6_if_wifi`, built with `defconfig_ipro6_sdio`:
 
-The connection and streaming steps, the command table and the `ipronet_host` API are in [Networking](../../guides/networking.md#wifi-ipro6). With JP3 on GPIO, `fin cycle` power-cycles the card.
+    ```bash
+    make -C apps/platform/ipro6_if_wifi DEFCONFIG=defconfig_ipro6_sdio   # build_ipro6_sdio/build_out/ipro6_if_wifi_IPRO6.bin
+    ```
 
-!!! info "Obtain separately"
-    The IPRO6S Wi-Fi card (FIN card) and its firmware are not included in V2.1.0; contact INTELPRO.
+    How to update it is on the [IPRO6S](../chips/ipro6s.md) page; once the card is on Wi-Fi, `ipro6s_ota <http url>` at the Reef console updates it.
+
+- **Reef firmware**: `ipro7ai_reef_demo` with `defconfig_wifi_ipro6s`:
+
+    ```bash
+    make -C apps/platform/ipro7ai_reef_demo DEFCONFIG=defconfig_wifi_ipro6s   # build_wifi_ipro6s/build_out/
+    ```
+
+- **Switches**: put JP3 on GPIO so that `fin cycle` can power-cycle the card.
+
+At the console type `ipronet_up <ssid> <psk>`, then `rtsp_cam on`, and open `rtsp://<ip>:8554/av0_0` in an RTSP player. The full walkthrough is [Wi-Fi and RTSP Camera Stream](../../tutorials/wifi-rtsp.md).
 
 ## Supported examples { #examples }
 
-| Example | Reef configuration | Contents |
+These 9 applications (12 configurations) build and run on the Reef; each has an [example page](../../examples/index.md#reef) with the flash and run steps. Apart from `ipro7ai_reef_demo`, `ipro_reef_teach` and `ipro_agora_sentino`, a plain `make` builds another board: add `DEFCONFIG=` for the Reef.
+
+| Application | Build command (from the SDK root) | Console | Flashing notes |
+|---|---|---|---|
+| [`ipro7ai_reef_demo`](../../examples/ipro7ai_reef_demo.md) | `make -C apps/platform/ipro7ai_reef_demo` | 115200 | `--pt chips/ipro7/partition/partition_cfg_2M.toml` |
+| `ipro7ai_reef_demo` (Wi-Fi) | `make -C apps/platform/ipro7ai_reef_demo DEFCONFIG=defconfig_wifi_ipro6s` | 115200 | Needs a FIN card running `ipro6_if_wifi`, JP3 on GPIO |
+| [`ipro_reef_teach`](../../examples/ipro_reef_teach.md) | `make -C apps/ai/ipro_reef_teach` | 115200 | Own table `partition_reef_teach.toml`, `--skip-ota` and `--mfg`; see [Flash the Edge AI Firmware](../../teach/firmware.md) |
+| [`ipro_ble_remote`](../../examples/ipro_ble_remote.md) | `make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef` | 115200 | The first flash needs `--boot2` and `partition_cfg_2M_remote_ab.toml`; OTA only with this A/B table |
+| [`ipro_throughput_test`](../../examples/ipro_throughput_test.md) | `make -C apps/bluetooth/ble/ipro_throughput_test DEFCONFIG=defconfig_reef` | 115200 | Needs two boards |
+| [`ipro_le_audio_headset`](../../examples/ipro_le_audio_headset.md) | `make -C apps/bluetooth/le_audio/ipro_le_audio_headset DEFCONFIG=defconfig_reef` | 115200 | — |
+| [`ipro7_uvc_cam`](../../examples/ipro7_uvc_cam.md) | `make -C apps/multimedia/ipro7_uvc_cam DEFCONFIG=defconfig_reef_ov5640` | 115200 | `--pt chips/ipro7/partition/partition_cfg_2M.toml` |
+| `ipro7_uvc_cam` (rock-paper-scissors) | `make -C apps/multimedia/ipro7_uvc_cam DEFCONFIG=defconfig_reef_rps` | 115200 | As above; the model is linked into the firmware |
+| [`ipro7_jpeg_decode`](../../examples/ipro7_jpeg_decode.md) | `make -C apps/multimedia/ipro7_jpeg_decode DEFCONFIG=defconfig_reef` | **921600** | — |
+| [`ipro_ai_link`](../../examples/ipro_ai_link.md) | `make -C apps/test/ipro_ai_link DEFCONFIG=defconfig_reef` | 115200 | Needs a microSD card |
+| [`ipro_agora_sentino`](../../examples/ipro_agora_sentino.md) | `make -C apps/multimedia/ipro_agora_sentino` | 115200 | Fetch the AOSL core first; needs a FIN card and a Sentino device triple |
+
+A `DEFCONFIG=` build goes to `build_<name>/build_out/`, where the name is the file name without `defconfig_`: `defconfig_reef` builds into `build_reef/`.
+
+## USB identities { #usb-ids }
+
+The Reef's USB-C carries the IPRO7AI's USB 2.0 Full-Speed device; what the host sees depends on the firmware. Every application uses VID `0x3896` (INTELPRO INC.).
+
+| PID | Application and mode | What the host sees |
 |---|---|---|
-| `apps/platform/ipro7ai_reef_demo` | default `.config`; `defconfig_wifi_ipro6s` | Out-of-box firmware; adds Wi-Fi and RTSP streaming |
-| `apps/bluetooth/ble/ipro_ble_remote` | `defconfig_reef` | GATT services on the Reef hardware (LED, keys, camera, microphone, speaker, SD card) and BLE OTA. OTA needs boot2 and `partition_cfg_2M_remote_ab.toml`, not the standard `partition_cfg_2M.toml`; see the application README |
-| `apps/bluetooth/ble/ipro_throughput_test` | `defconfig_reef` | BLE throughput test between two boards |
-| `apps/bluetooth/le_audio/ipro_le_audio_headset` | `defconfig_reef` | LE Audio unicast headset, DAC output variant |
-| `apps/multimedia/ipro7_uvc_cam` | `defconfig_reef_ov5640`, `defconfig_reef_rps` | USB webcam; the second configuration draws NPU rock-paper-scissors results into the video |
-| `apps/test/ipro_ai_link` | `defconfig_reef` | Board firmware for IPRO AI Studio "Run on board" |
-| `apps/multimedia/ipro_agora_sentino` | default `.config` | Cloud AI voice chat: BLE provisioning, FIN-card Wi-Fi, Agora RTC. Needs a device triple, the FIN-card firmware and the AOSL submodule; see the application README |
+| `0x0705` | `ipro_reef_teach`, `image` mode | UVC camera + CDC serial port |
+| `0x0720` | `ipro_reef_teach`, `voice` mode | CDC serial port |
+| `0x0721` | `ipro_reef_teach`, `sensor` mode | CDC serial port |
+| `0x0701` | `ipro7_uvc_cam` | UVC camera "IPRO7 UVC Cam" |
+| `0x0704` | `ipro_ai_link` | Two CDC serial ports (data, console) |
+| `0x0003` | `ipro7ai_reef_demo`, `mic usb` | USB audio device (microphone) |
 
-Select a Reef configuration with `DEFCONFIG=`. The output goes to `build_<name>/`, where the name is the file name without `defconfig_`:
-
-```bash
-make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef   # output in build_reef/build_out/
-```
-
-Every Reef configuration in the table uses a 115200-baud console.
+`ipro_ble_remote`, `ipro_throughput_test`, `ipro_le_audio_headset`, `ipro7_jpeg_decode`, `ipro_agora_sentino` and the `defconfig_wifi_ipro6s` build of `ipro7ai_reef_demo` use no USB device; USB-C only powers the board.
 
 ## Pin map { #pinout }
 
@@ -235,16 +321,17 @@ Connect the CN_UART connector of the IPRO Debug Probe to U6 with a cable whose p
 
 ## SDK board support { #bsp }
 
-- **Board configuration**: put `CONFIG_IPRO7AI_REEF=y` and `CONFIG_BOARD="IPRO7AI_REEF"` in `.config`; the header is `bsp/board/ipro7/ipro7ai_reef_board_config.h`. The build does not apply Kconfig `select`, so also write `CONFIG_USE_PSRAM=y` explicitly.
-- **Pin definitions**: the header's `BOARD_*` pins for the console, USB, camera, speaker, microphones, LED, keys and SD card match this page. The comments in the header and the jumper, expansion-header and audio-input notes in the `ipro7ai_reef_demo` README describe the previous carrier board; for V4.0, follow this page.
-- **Crystal trim**: when `.config` does not set `CONFIG_IPRO7_XTAL_CAPCODE`, `bsp/board/ipro7/CMakeLists.txt` applies 95 for the Reef; write another value in `.config` to override it (0 = keep the value from boot).
-- **Flash layout**: `ipro7ai_reef_demo` links the 1 MB layout by default. The V4.0 board has 2 MB of in-package flash; add `CONFIG_IPRO7_FLASH_2M=y` to give the linker the whole part. The `defconfig_reef` files of `ipro_ble_remote`, `ipro_le_audio_headset` and `ipro_ai_link`, and `ipro_agora_sentino`, already select 2 MB.
-- **Zephyr RTOS**: this release has no Zephyr board for the Reef. The SoC's Kconfig help says the Reef runs `ipro7_evb` images with `CONFIG_SOC_IPRO7_XTAL_CAPCODE=95` set.
+- **Board selection**: the `.config` sets `CONFIG_IPRO7AI_REEF=y` and `CONFIG_BOARD="IPRO7AI_REEF"`; the pin definitions are in `bsp/board/ipro7/ipro7ai_reef_board_config.h`. Do not also set `CONFIG_EVB=y` in the same configuration: with both, the build targets the IPRO7 EVB.
+- **PSRAM**: the build does not apply Kconfig `select`, so every Reef configuration states `CONFIG_USE_PSRAM=y` explicitly (except the `defconfig_reef` of `ipro_throughput_test`, which leaves PSRAM off). Start a new application from a copy of `apps/platform/ipro7ai_reef_demo/.config`.
+- **Pin definitions**: the `BOARD_*` pins for the console, USB, camera, speaker, microphones, LED, keys and SD card match this page. The comments in that file about the expansion header and jumpers describe the earlier (V3.0) carrier; for V4.0 this page is the reference.
+- **Crystal trim**: when the `.config` does not set `CONFIG_IPRO7_XTAL_CAPCODE`, the build applies 95 for the Reef; set another value in `.config` to override it (0 keeps the value found at boot). The `[XTAL] capcode` line in the boot log shows the value in use.
+- **Flash layout**: the Reef configurations of `ipro7ai_reef_demo`, `ipro7_uvc_cam`, `ipro7_jpeg_decode` and `ipro_throughput_test` link a 1 MB layout, which fits either in-package flash; the `.config` of `ipro_reef_teach` and `ipro_agora_sentino` and the `defconfig_reef` of `ipro_ble_remote`, `ipro_le_audio_headset` and `ipro_ai_link` set `CONFIG_IPRO7_FLASH_2M=y`. To give a 1 MB-layout application the whole 2 MB flash, add `CONFIG_IPRO7_FLASH_2M=y` to its configuration.
+- **Zephyr RTOS**: this release has no Zephyr board for the Reef. The SoC Kconfig notes that a Reef can run `ipro7_evb` images with `CONFIG_SOC_IPRO7_XTAL_CAPCODE=95`; that use is not validated.
 
 ## Related documents { #documents }
 
-- `apps/platform/ipro7ai_reef_demo/README.md`: all commands and camera troubleshooting.
-- `bsp/board/ipro7/ipro7ai_reef_board_config.h`: the pin definitions the SDK uses.
-- [IPRO AI Teach 2.0](../../guides/edge-ai-teach.md): IPRO AI Teach 2.0 on this board, teaching it to recognize images, voices and sensor signals from IPRO AI Studio.
-- [Pinout & Peripheral Mapping](../pinmux.md), [IPRO7AI](../chips/ipro7ai.md).
-- IPRO7AI Reef Development Kit User Guide (V4.0 board hardware, interfaces and power) and IPRO Debug Probe Board User Guide: available on request, see [Documents](../../documents/index.md).
+- [IPRO AI Teach](../../teach/index.md): teach this board to recognize images, voices and sensor signals with IPRO AI Studio.
+- [Examples](../../examples/index.md#reef): the applications that run on the Reef, each with build, flash and run steps.
+- [Pinout & Peripheral Mapping](../pinmux.md), [Power & Current Measurement](../power.md), [IPRO7AI](../chips/ipro7ai.md), [IPRO6S](../chips/ipro6s.md).
+- `apps/platform/ipro7ai_reef_demo/README.md`: the out-of-box firmware's full command set and camera debugging notes.
+- IPRO7AI Reef development kit user guide (V4.0 board hardware, interfaces and power) and IPRO Debug Probe user guide: available from INTELPRO, see [Documents](../../documents/index.md).

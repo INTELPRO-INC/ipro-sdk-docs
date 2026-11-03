@@ -7,7 +7,7 @@ migrate_from:
 
 # IPRO7
 
-IPRO7 is INTELPRO's 2.4 GHz low-power wireless SoC: a 192 MHz RISC-V RV32IMAFC core, Bluetooth 5.4 with LE Audio, an IEEE 802.15.4 radio, an ISP and hardware MJPEG. Every application in this SDK release targets IPRO7. For the variant with the NPU enabled, see [IPRO7AI](ipro7ai.md).
+IPRO7 is INTELPRO's 2.4 GHz low-power wireless SoC: a 192 MHz RISC-V RV32IMAFC core, Bluetooth 5.4 with LE Audio, an IEEE 802.15.4 radio, an ISP and hardware MJPEG. 37 of the 40 applications in this SDK release target IPRO7. The variant with the NPU enabled, [IPRO7AI](ipro7ai.md), is the main chip of the IPRO7AI Reef EVK.
 
 <div class="ipro-facts" markdown>
 <div><strong>192 MHz</strong><span>RISC-V RV32IMAFC</span></div>
@@ -22,7 +22,7 @@ IPRO7 is INTELPRO's 2.4 GHz low-power wireless SoC: a 192 MHz RISC-V RV32IMAFC c
 - **Processing and memory**: RV32IMAFC with DSP extensions, 256 KB OCRAM, 4 KB of RAM retained in hibernate, code executed in place from flash; 8 MB of in-package PSRAM is optional (built into the IPRO7AI variant).
 - **Wireless**: Bluetooth 5.4 LE with LE Audio and IEEE 802.15.4 on an integrated 2.4 GHz RF transceiver.
 - **Imaging and audio**: DVP camera interface, ISP, MJPEG codec, audio ADC, GPDAC and I2S.
-- **Networking**: wired networking uses the on-chip EMAC (RMII); for Wi-Fi, add an IPRO6S companion over SDIO, see [IPRO6S](ipro6s.md).
+- **Networking**: wired networking uses the on-chip EMAC (RMII); wireless networking uses an external radio over SDIO or UART, for example an IPRO6S over SDIO, see [Network connections](#networking).
 
 ## Key specifications { #key-specs }
 
@@ -37,7 +37,7 @@ IPRO7 is INTELPRO's 2.4 GHz low-power wireless SoC: a 192 MHz RISC-V RV32IMAFC c
 | ROM | 128 KB |
 | eFuse | 2 Kb |
 | PSRAM | Optional, 8 MB in the package (built into the IPRO7AI variant); none on QFN32 |
-| Flash | Execute in place; the SDK's default layout is 1 MB, and 2 / 4 / 8 MB with an external SF3 flash |
+| Flash | Execute in place; the SDK links a 1 MB layout by default, `CONFIG_IPRO7_FLASH_2M` and its siblings select 2 / 4 / 8 MB |
 | Timing | RTC, 2 timers, watchdog (WDT) |
 | DMA | 8 channels |
 | Clock | 32 MHz crystal on the boards; the PLL generates the 192 MHz system clock |
@@ -51,7 +51,17 @@ IPRO7 is INTELPRO's 2.4 GHz low-power wireless SoC: a 192 MHz RISC-V RV32IMAFC c
 | Connections | Up to 4 with this release's prebuilt controllers (`link1_periph` / `link1` / `link2` / `link4`) |
 | IEEE 802.15.4 | 802.15.4 radio; the SDK provides the driver and OpenThread under Zephyr RTOS |
 | RF | 2.4 GHz transceiver with integrated balun and PA / LNA; control lines for an external PA / LNA |
-| Wi-Fi | None built in; add an IPRO6S companion over SDIO |
+
+### Network connections { #networking }
+
+Wired networking uses the on-chip EMAC (RMII). Wireless networking uses an external radio over SDIO or UART; the SDK ships drivers for these:
+
+| Radio | Interface | Where in the SDK |
+|---|---|---|
+| IPRO6S (Wi-Fi 6) | SDIO, lwIP network interface `iproeth0` | `components/network/ipronet_host`; on the Reef it is the FIN card in the microSD slot, see [IPRO6S](ipro6s.md) |
+| ATBM6162 | SDIO | `components/wireless/wifi_atbm6162`; `ipro_atbm_probe` |
+| AIC8800 | SDIO (prebuilt vendor library) | `components/wireless/wifi_aic8800`; `config_evk` of `ipro_agora_sentino` |
+| ESP32 | UART AT commands | `components/network/esp32_wifi_at`; `ipro7_demo` (`CONFIG_ESP32_WIFI_AT`) |
 
 ### Multimedia and AI { #ai-multimedia }
 
@@ -105,32 +115,32 @@ IPRO7 is INTELPRO's 2.4 GHz low-power wireless SoC: a 192 MHz RISC-V RV32IMAFC c
 
 | Region | Size | Base address | Notes |
 |---|---|---|---|
-| Flash | 1 MB | `0x13000000` | Execute in place; with an external SF3 flash select 2 / 4 / 8 MB with `CONFIG_IPRO7_FLASH_2M` and its siblings |
+| Flash | 1 MB | `0x13000000` | Execute in place; `CONFIG_IPRO7_FLASH_2M` and its siblings select 2 / 4 / 8 MB |
 | PSRAM | 8 MB | `0x1e000000` | Needed by AI / NPU and ISP applications; set `CONFIG_USE_PSRAM=y` explicitly in `.config` |
-| OCRAM | 256 KB | `0x11010000` | Stacks, interrupt handling and time-critical code; the BLE controller's Exchange Memory is taken from the top |
+| OCRAM | 256 KB | `0x11010000` | Stacks, interrupt handling and time-critical code; the BLE controller's Exchange Memory is taken from the top. In PDS31 sleep only the first 64 KB is retained; the rest only while the MISC power domain stays on |
 | HBN RAM | 4 KB | `0x20090000` | Retained in hibernate |
 
-With AI and imaging both enabled the usable OCRAM region shrinks; see [Build System & Configuration](../../guides/build-system.md#memory-layout).
+With AI and imaging both enabled (`CONFIG_AI_SUPPORT`, `CONFIG_MM_SUPPORT`) the linker limits OCRAM to 64 KB; see [IPRO7AI](ipro7ai.md#memory).
 
 ## SDK support in this release { #sdk-support }
 
-| Item | V2.1.0 |
+| Item | V2.2.0 |
 |---|---|
-| FreeRTOS applications | All 35 target IPRO7: `CONFIG_IPRO7=y`, `CONFIG_CHIP="IPRO7"`, `CONFIG_CPU_ID="intelpro_ipro7"` |
-| Zephyr RTOS | Zephyr v4.4.0 module; boards `ipro7_evb` and `ipro7ai_evk` |
+| FreeRTOS applications | 37 of the 40 target IPRO7: `CONFIG_IPRO7=y`, `CONFIG_CHIP="IPRO7"`, `CONFIG_CPU_ID="intelpro_ipro7"`; images are `<app>_IPRO7.bin` |
+| Zephyr RTOS | Zephyr v4.4.0 module; boards `ipro7_evb` and `ipro7ai_evk`; there is no Zephyr board for the Reef in this release |
 | Toolchain | RISC-V GCC (`riscv64-unknown-elf-`, `rv32imafc` / `ilp32f`); not part of the SDK, obtain it from INTELPRO |
-| BLE | Zephyr v4.4.0 host (source) on the IPRO BLE controller (prebuilt library, 16 IPRO7 builds) |
+| BLE | Zephyr v4.4.0 host (source) on the IPRO BLE controller (prebuilt library, 16 IPRO7 builds: `link1_periph` / `link1` / `link2` / `link4` × `bt52` / `bt54_iso2` × debug / `_release`) |
 | IEEE 802.15.4 / Thread | Zephyr RTOS only: IEEE 802.15.4 driver and OpenThread |
-| Matter, Zigbee | Not included in V2.1.0; contact INTELPRO. |
-| Flashing | IntelProCube v0.6.3 command-line tool (obtained separately): `--chipname ipro7`, with `--chip-variant IPRO7` for the IPRO7 EVB and `--chip-variant IPRO7AI` for IPRO7AI boards |
+| Matter, Zigbee | Not included in V2.2.0; contact INTELPRO. |
+| Flashing | IntelProCube v0.6.3 command-line tool (obtained separately): `--chipname ipro7`, with `--chip-variant IPRO7AI` for IPRO7AI boards such as the Reef |
 
 ## Boards with IPRO7 { #boards }
 
 | Board | Chip | Board configuration |
 |---|---|---|
-| [IPRO7AI Reef EVK](../boards/reef-evk.md) | IPRO7AI (QFN56, soldered on the carrier) | `CONFIG_IPRO7AI_REEF=y` |
-| [IPRO7AI EVK](../boards/ipro7ai-evk.md) | IPRO7AI | `CONFIG_IPRO7AI_EVK=y` |
-| [IPRO7 EVB](../boards/ipro7-evb.md) | IPRO7 (QFN56 socket) | `CONFIG_EVB=y` |
+| [IPRO7AI Reef EVK V4.0](../boards/reef-evk.md) | IPRO7AI (QFN56, soldered on the board) | `CONFIG_IPRO7AI_REEF=y`, `CONFIG_BOARD="IPRO7AI_REEF"` |
+
+The IPRO7 EVB (`CONFIG_EVB=y`) and the IPRO7AI EVK (`CONFIG_IPRO7AI_EVK=y`) are the default boards in most applications' `.config`; contact INTELPRO for these boards.
 
 ## Related documents { #documents }
 

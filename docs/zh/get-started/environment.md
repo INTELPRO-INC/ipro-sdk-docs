@@ -1,62 +1,301 @@
 ---
-title: "選擇開發環境"
-description: SDK V2.1.0 的內容與下載、需要準備的硬體與工具，以及 Windows 與 macOS／Linux 兩種開發環境的差異。
+title: "準備開發環境"
+description: 在 macOS、Linux 或 Windows 上取得並校驗 SDK，安裝建置工具、RISC-V 工具鏈與 IntelProCube，接上主控台線，並以一次建置確認環境。
 migrate_from:
   - "getting-started.html#sdk-2-1-0"
   - "getting-started.html#prerequisites"
 ---
 
-# 選擇開發環境
+# 準備開發環境
 
-IPRO SDK 可以在 Windows 上以安裝程式與 VS Code Extension 開發，也可以在 macOS／Linux 上以命令列開發。先下載 SDK、備妥板卡與另行取得的工具，再依[下表](#choose)選擇環境。
+完成本頁後，主機上有 SDK、建置工具、RISC-V 工具鏈與 IntelProCube 燒錄工具，能辨識 Reef 的主控台序列埠，並能在 SDK 根目錄建置 IPRO7AI Reef EVK 的開箱韌體。各步驟依作業系統分頁；Windows 的完整流程另見 [Windows 安裝與 VS Code](windows.md)。
 
-## SDK V2.1.0 { #sdk-2-1-0 }
+## 前置需求 { #prerequisites }
 
-從 [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.1.0) 下載 `IPRO-SDK-V2.1.0.tar.gz` 與校驗檔 `IPRO-SDK-V2.1.0.tar.gz.sha256`。解壓與校驗步驟在各環境的安裝頁。
-
-| 內容 | 說明 |
+| 項目 | 需求 |
 |---|---|
-| FreeRTOS 應用 | 35 個，全部以 IPRO7 系列為目標，涵蓋 IPRO7 EVB、IPRO7AI EVK 與 IPRO7AI Reef EVK |
-| Zephyr RTOS | SDK 同時是 Zephyr v4.4.0 模組，支援 `ipro7_evb` 與 `ipro7ai_evk` 兩個板型 |
-| 主機端工具 | `build_freertos.sh`（建置、燒錄、監看）、`tools/serial_monitor.py`（主控台）、`tools/zephyr/`（Zephyr 工作區與燒錄腳本） |
+| 主機 | macOS 或 Linux（有 bash）；或 Windows x64 |
+| 權限 | 安裝套件與寫入 `/opt/toolchain/` 需要系統管理員權限 |
+| 網路 | 下載 SDK；Windows 的 Online Setup 需要連上 GitHub |
+| 另行取得 | RISC-V 工具鏈與 IntelProCube v0.6.3：macOS／Linux 版向 INTELPRO 索取，Windows 版由 Online Setup 安裝 |
+| 硬體 | IPRO7AI Reef EVK、USB-C 線、主控台線，見[需要準備](index.md#what-you-need) |
 
-!!! info "需另行取得"
-    - **RISC-V 工具鏈**（`riscv64-unknown-elf-gcc`）：未包含於 V2.1.0，請洽 INTELPRO。
-    - **IntelProCube v0.6.3 命令列燒錄工具**（`ipro_iot_tool.exe`、`ipro_iot_tool_macos`、`ipro_iot_tool_linux`）：未包含於 V2.1.0，請洽 INTELPRO。
-    - **Zephyr 本體與模組**：第一次執行 `tools/zephyr/bootstrap.sh` 時從 GitHub 下載。
+## 取得 SDK { #get-sdk }
 
-## 系統需求 { #prerequisites }
+<div class="ipro-steps" markdown>
 
-**硬體**
+1. **下載**：從 [IPRO-SDK-V2.2.0 Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0) 下載 `IPRO-SDK-V2.2.0.tar.gz`，並記下頁面上公布的 SHA-256 值。
 
-- 開發板：IPRO7AI Reef EVK（入門範例使用此板）、IPRO7AI EVK 或 IPRO7 EVB。
-- Reef EVK 需要兩條線：USB-C 線（供電，Reef 只能由 USB-C 供電）與 USB 轉 UART 線（接 U6 主控台接頭，SH1.0）。
-- 其他板卡：連到主控台 UART0（GPIO20 TX／GPIO21 RX）的 USB 序列埠，接法見[板卡頁](../hardware/index.md)。
+2. **校驗**：計算下載檔的 SHA-256。
 
-**軟體**
+    === "macOS"
 
-| 項目 | Windows（VS Code） | macOS／Linux（命令列） |
-|---|---|---|
-| SDK | V2.1.0 壓縮檔，解壓到新目錄 | 同左 |
-| 工具鏈 | 請洽 INTELPRO 取得相容 V2.1.0 的版本 | 預設路徑 `/opt/toolchain/riscv_ipro7/`，或以 `CROSS_COMPILE` 指定 |
-| 建置工具 | 由 Online Installer 安裝 | CMake 3.19 以上、GNU Make、Python 3.8 以上；Zephyr 另需 CMake 3.20 以上 |
-| 燒錄工具 | IntelProCube（`ipro_iot_tool.exe`） | IntelProCube（`ipro_iot_tool_macos`／`ipro_iot_tool_linux`） |
-| 編輯器 | VS Code 與 IPRO SDK Extension | 不限 |
+        ```bash
+        shasum -a 256 IPRO-SDK-V2.2.0.tar.gz
+        ```
+
+    === "Linux"
+
+        ```bash
+        sha256sum IPRO-SDK-V2.2.0.tar.gz
+        ```
+
+    === "Windows"
+
+        ```powershell
+        Get-FileHash .\IPRO-SDK-V2.2.0.tar.gz -Algorithm SHA256
+        ```
+
+    畫面印出 64 個十六進位字元，應與 Release 頁面公布的值完全相同（大小寫不影響）。不同時請重新下載。
+
+3. **解壓並確認版本**：解壓到新的目錄，不要覆蓋舊版 SDK。
+
+    === "macOS／Linux"
+
+        ```bash
+        tar xzf IPRO-SDK-V2.2.0.tar.gz
+        cd IPRO-SDK-V2.2.0
+        cat VERSION.txt
+        ```
+
+    === "Windows"
+
+        ```powershell
+        tar -xzf .\IPRO-SDK-V2.2.0.tar.gz
+        Get-Content .\IPRO-SDK-V2.2.0\VERSION.txt
+        ```
+
+    `VERSION.txt` 的內容：
+
+    ```text
+    IPRO SDK Release
+    ========================================
+    IPRO7: IPRO-SDK-V2.2.0
+    IPRO6: IPRO-SDK-V2.2.0
+
+    Release Date: 2026-11-03
+    Base Commit: 60afd4ab
+    ```
+
+    解壓出的 `IPRO-SDK-V2.2.0/` 就是 SDK 根目錄（本站寫作 `<SDK>`），裡面有 `apps/`、`bsp/`、`components/`、`build_freertos.sh` 與 `VERSION.txt`。
+
+</div>
+
+## 安裝建置工具 { #host-tools }
+
+<div class="ipro-steps" markdown>
+
+1. **安裝 CMake、GNU Make 與 Python**
+
+    === "macOS"
+
+        ```bash
+        xcode-select --install          # 提供 make
+        brew install cmake python3
+        ```
+
+    === "Linux"
+
+        ```bash
+        sudo apt update
+        sudo apt install -y cmake make python3
+        ```
+
+        以 Debian／Ubuntu 為例，其他發行版請安裝對應的套件。Linux x86-64 上若 PATH 沒有 `cmake`，建置會改用 SDK 隨附的 `tools/cmake/`（CMake 3.15）。
+
+    === "Windows"
+
+        由 Online Setup 的 **Full environment** 或 **Build tools only** 安裝 CMake、Ninja 與 Python，見 [Windows 安裝與 VS Code](windows.md#online-3-4-0)。
+
+2. **確認版本**（macOS／Linux）
+
+    ```bash
+    cmake --version     # 3.15 以上；Zephyr 需 3.20 以上
+    make --version      # 第一行為 GNU Make
+    python3 --version   # 3.8 以上
+    ```
+
+</div>
+
+## 安裝 RISC-V 工具鏈 { #toolchain }
+
+<div class="ipro-steps" markdown>
+
+1. **放到預設路徑**
+
+    === "macOS／Linux"
+
+        依 INTELPRO 提供的壓縮檔解壓，讓下列檔案存在：
+
+        ```text
+        /opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-gcc
+        ```
+
+    === "Windows"
+
+        Online Setup 會安裝 Windows 版工具鏈，但它的套件清單是依 SDK 1.2.1 選擇相容版本。V2.2.0 以 GCC 14 建置，請向 INTELPRO 取得相容 V2.2.0 的 Windows 工具鏈。
+
+2. **確認可以執行**（macOS／Linux）
+
+    ```bash
+    /opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-gcc --version
+    ```
+
+    第一行以 `riscv64-unknown-elf-gcc` 開頭，版本為 14.x。
+
+3. **放在其他路徑時**：設定編譯器前綴 `CROSS_COMPILE`（含最後的連字號）。建置依序採用命令列或環境變數的 `CROSS_COMPILE`、應用 `.config` 的 `CONFIG_CROSS_COMPILE`，最後才是預設路徑。
+
+    ```bash
+    export CROSS_COMPILE=<工具鏈目錄>/bin/riscv64-unknown-elf-
+    ```
+
+    要長期使用，把這行加進 `~/.zshrc`（macOS）或 `~/.bashrc`（Linux）。
+
+</div>
+
+## 安裝 IntelProCube { #intelprocube }
+
+<div class="ipro-steps" markdown>
+
+1. **解壓**：把 IntelProCube v0.6.3 解壓到自選的目錄（本站寫作 `<IntelProCube>`）。命令列工具要在這個目錄下執行，因為它從 `chips/` 讀取晶片設定與分割表。Windows 由 Online Setup 安裝，見 [Windows 安裝與 VS Code](windows.md)。
+
+2. **確認可以執行**
+
+    === "macOS"
+
+        ```bash
+        cd <IntelProCube>
+        ./ipro_iot_tool_macos --help
+        ```
+
+    === "Linux"
+
+        ```bash
+        cd <IntelProCube>
+        ./ipro_iot_tool_linux --help
+        ```
+
+    === "Windows"
+
+        ```powershell
+        cd <IntelProCube>
+        .\ipro_iot_tool.exe --help
+        ```
+
+    畫面以用法說明開頭，例如：
+
+    ```text
+    usage: ipro_iot_tool_macos [-h] --chipname CHIPNAME [--interface INTERFACE]
+                               [--port PORT] [--baudrate BAUDRATE] [--xtal XTAL]
+                               [--chip-variant CHIP_VARIANT] [--dts DTS] [--pt PT]
+                               [--boot2 BOOT2] [--firmware FIRMWARE] [--mfg MFG]
+    ...
+    ```
+
+3. **讓 `build_freertos.sh` 找得到工具**（macOS／Linux）：設定 `IPRO_FLASH_TOOL`，或把 `<IntelProCube>` 加入 `PATH`。
+
+    === "macOS"
+
+        ```bash
+        export IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos
+        ```
+
+    === "Linux"
+
+        ```bash
+        export IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_linux
+        ```
+
+</div>
+
+## 接上主控台線 { #usb-serial }
+
+Reef 板上沒有 USB 轉 UART 晶片：USB-C 只負責供電與板上 USB 裝置功能，主控台與燒錄都經 U6 的轉接器或 IPRO Debug Probe。
+
+<div class="ipro-steps" markdown>
+
+1. **把轉接器或 Debug Probe 接到電腦**（先不必接板子），查看新增的序列埠：
+
+    === "macOS"
+
+        ```bash
+        ls /dev/cu.*
+        ```
+
+        USB 轉 UART 轉接器出現為 `/dev/cu.usbserial-XXXX`（名稱依轉接器而定）；IPRO Debug Probe 出現兩個 `/dev/cu.usbmodem…`，名稱結尾為 `02` 的是主控台。
+
+    === "Linux"
+
+        ```bash
+        ls /dev/ttyUSB* /dev/ttyACM*
+        ```
+
+        轉接器多半出現為 `/dev/ttyUSB0`；IPRO Debug Probe 出現兩個 `/dev/ttyACM*`。
+
+    === "Windows"
+
+        開啟「裝置管理員」→「連接埠 (COM 和 LPT)」，插入前後比較，多出來的就是新的 COM 埠（例如 `COM5`）；IPRO Debug Probe 會多出兩個。
+
+2. **沒有新增序列埠時**：換一條確定能傳資料的 USB 線；作業系統無法辨識轉接器時，安裝轉接器廠商提供的驅動程式；Debug Probe 請洽 INTELPRO。
+
+3. **Linux 的權限**：開啟序列埠出現 `Permission denied` 時，以 `ls -l /dev/ttyUSB0` 查看擁有序列埠的群組（常見為 `dialout`），把自己加入該群組後重新登入：
+
+    ```bash
+    sudo usermod -aG dialout $USER
+    ```
+
+</div>
+
+Debug Probe 的兩個序列埠怎麼分辨、Reef 各應用在 USB-C 上出現的裝置，見[燒錄與序列埠：辨識序列埠](flash-and-monitor.md#ports)。
+
+## 確認結果 { #verify }
+
+在 SDK 根目錄建置開箱韌體（macOS／Linux）：
+
+```bash
+./build_freertos.sh ipro7ai_reef_demo
+```
+
+成功時的輸出：
+
+```text
+Project: ipro7ai_reef_demo  (platform/ipro7ai_reef_demo)
+
+→ Building ipro7ai_reef_demo...
+✓ Build succeeded (14s)
+  Binary: <SDK>/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin (244 KB)
+  Log: <SDK>/apps/platform/ipro7ai_reef_demo/build/build.log
+```
+
+建置時間與檔案大小會因主機與工具鏈而略有不同。Windows 上以 VS Code Extension 的 `IPRO: Build` 確認，見 [Windows 安裝與 VS Code](windows.md#verify)。
 
 ## 兩種環境的差異 { #choose }
 
-| 工作 | Windows＋VS Code | macOS／Linux 命令列 |
+| 工作 | macOS／Linux | Windows |
 |---|---|---|
-| 安裝 | Online Installer 安裝工具與 Extension；SDK V2.1.0 手動下載解壓 | 自行安裝工具，下載解壓 SDK |
-| 建置 FreeRTOS 應用 | Extension 的 `IPRO: Build` | `make -C apps/<分類>/<應用>` 或 `./build_freertos.sh <應用>` |
-| 燒錄 | Extension 的 `IPRO: Flash`，或直接執行 `ipro_iot_tool.exe` | 直接執行 IntelProCube 命令列工具，或 `./build_freertos.sh <應用> flash` |
-| 主控台 | Extension 的 Serial Monitor 或其他序列埠終端程式 | `tools/serial_monitor.py` 或其他序列埠終端程式 |
-| Zephyr | SDK 未提供 Windows 流程 | `tools/zephyr/bootstrap.sh` 與 `west` |
+| 安裝工具 | 系統套件管理工具，加上 INTELPRO 提供的工具鏈與 IntelProCube | Online Setup（工具鏈、CMake／Ninja／Python、IntelProCube、OpenOCD、VS Code Extension） |
+| 建置 | `make -C apps/<分類>/<應用>` 或 `./build_freertos.sh` | VS Code Extension 的 `IPRO: Build` |
+| 燒錄 | IntelProCube 命令列工具，或 `./build_freertos.sh … flash` | `ipro_iot_tool.exe` |
+| 主控台 | `screen`、`picocom` 等終端程式；`tools/serial_monitor.py` | PuTTY 等終端程式，或 Extension 的 Serial Monitor |
+| 自動化（`build_freertos.sh`、`tools/serial_monitor.py`） | 可用 | 不可用：兩者需要 bash 與 POSIX termios |
+| Zephyr（`tools/zephyr/`） | 可用 | SDK 未提供 Windows 流程 |
 
-SDK 隨附的腳本（`build_freertos.sh`、`tools/zephyr/*.sh`）需要 bash，`tools/serial_monitor.py` 使用 POSIX 的 termios，因此這些工具在 macOS／Linux 上執行。需要 Zephyr，或要以腳本自動化建置、燒錄與測試時，選擇 macOS／Linux；習慣 VS Code 圖形介面時，選擇 Windows。
+本站的命令列範例以 macOS／Linux 為準。
+
+## 疑難排解 { #troubleshooting }
+
+| 現象 | 原因 | 處理 |
+|---|---|---|
+| 計算出的 SHA-256 與 Release 頁面不同 | 下載不完整或檔案損毀 | 刪除後重新下載 |
+| `No cmake found. Install cmake or provide bundled cmake at …` | PATH 上沒有 `cmake`，且隨附的 CMake 無法在此主機執行（隨附版只適用 Linux x86-64） | 依[安裝建置工具](#host-tools)安裝 CMake 3.15 以上 |
+| `riscv64-unknown-elf-gcc: No such file or directory` | 工具鏈不在 `/opt/toolchain/riscv_ipro7/` | 依[安裝 RISC-V 工具鏈](#toolchain)設定 `CROSS_COMPILE` |
+| `Flash tool not found: ipro_iot_tool_macos` | 未設定 `IPRO_FLASH_TOOL`，PATH 上也沒有 IntelProCube | 依[安裝 IntelProCube](#intelprocube) 第 3 步設定 |
+| 插上轉接器後沒有新的序列埠 | USB 線只能充電，或缺驅動程式 | 換線；安裝轉接器廠商的驅動程式 |
+| Linux 開啟序列埠時 `Permission denied` | 使用者不在序列埠的群組內 | 加入 `dialout` 等群組後重新登入 |
+| macOS 開啟 `/dev/tty.*` 後卡住 | `tty.*` 會等待 carrier detect 訊號 | 改用 `/dev/cu.*` |
 
 ## 下一步 { #next-steps }
 
-- [Windows 安裝與 VS Code](windows.md)
-- [macOS／Linux 命令列](command-line.md)
+- 使用 Windows：[Windows 安裝與 VS Code](windows.md)
 - 環境已就緒：[第一個 FreeRTOS 應用](first-app-freertos.md)
+- 命令列參考：[macOS／Linux 命令列](command-line.md)

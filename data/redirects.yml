@@ -1,6 +1,6 @@
-# Old Jekyll URLs to new pages, for tools/gen_redirects.py.
+# Old URLs to new pages, for tools/gen_redirects.py.
 #
-# Each key is a page of the old site (legacy/<key>.html), served as <key>.html
+# pages: the old Jekyll site. Each key is a page of the old site (legacy/<key>.html), served as <key>.html
 # and en/<key>.html; the same entry covers both languages. `to` is where the
 # old page now lives. `anchors` sends an old section (#id) somewhere else.
 #
@@ -39,12 +39,12 @@ pages:
       ipro-le-audio-headset: examples/ipro_le_audio_headset.md
       ipro-le-audio-bis-source: examples/index.md#audio
       ipro-le-audio-bis-sink: examples/index.md#audio
-      ipro-pdm-mic-demo: examples/ipro_pdm_mic_demo.md
-      ipro7-demo: examples/ipro7_demo.md
-      ipro7-sdio-wifi: examples/ipro7_sdio_wifi.md
-      ipro7ai-evk-demo: examples/ipro7ai_evk_demo.md
+      ipro-pdm-mic-demo: examples/index.md#audio
+      ipro7-demo: examples/index.md#platform
+      ipro7-sdio-wifi: examples/index.md#networking
+      ipro7ai-evk-demo: examples/index.md#platform
       ipro7ai-reef-demo: examples/ipro7ai_reef_demo.md
-      ipro7ai-evk-launcher: examples/ipro7ai_evk_launcher.md
+      ipro7ai-evk-launcher: examples/index.md#platform
       ipro-agora-sentino: examples/ipro_agora_sentino.md
       creating-apps: guides/build-system.md
   architecture:
@@ -81,7 +81,7 @@ pages:
       directory-structure: get-started/command-line.md
       freertos-quickstart: get-started/first-app-freertos.md
       first-build: get-started/first-app-freertos.md
-      zephyr-quickstart: get-started/first-app-zephyr.md
+      zephyr-quickstart: guides/zephyr.md
       kconfig: guides/build-system.md#configuration
       flashing: get-started/flash-and-monitor.md
       serial-monitor: get-started/flash-and-monitor.md
@@ -125,5 +125,29 @@ pages:
   zephyr-rtos:
     to: guides/zephyr.md
     anchors:
-      setup: get-started/first-app-zephyr.md
-      build-flash: get-started/first-app-zephyr.md
+      setup: guides/zephyr.md#workspace
+      build-flash: guides/zephyr.md#flash-console
+
+# removed: pages of this site that were taken out. Each key is the removed page
+# (its path under docs/<lang>/); the value is the page that replaced it. Its old
+# URL (<page>/) redirects there in both languages; an old section id that the
+# target page also has is kept. Since V2.2.0 the site documents the IPRO7AI
+# Reef EVK V4.0 only.
+removed:
+  get-started/first-app-zephyr.md: guides/zephyr.md
+  hardware/boards/ipro7-evb.md: hardware/boards/reef-evk.md
+  hardware/boards/ipro7ai-evk.md: hardware/boards/reef-evk.md
+  reference/api/ipro7ai-evk.md: reference/api/index.md
+  guides/edge-ai-teach.md: teach/index.md
+  examples/ipro7_demo.md: examples/index.md#platform
+  examples/ipro7_sdio_wifi.md: examples/index.md#networking
+  examples/ipro7ai_evk_demo.md: examples/index.md#platform
+  examples/ipro7ai_evk_launcher.md: examples/index.md#platform
+  examples/ipro7ai_evk_person_detect.md: examples/index.md#ai-vision
+  examples/ipro7ai_evk_rps.md: examples/index.md#ai-vision
+  examples/ipro_enc28j60_test.md: examples/index.md#test-apps
+  examples/ipro_epd_el036.md: examples/index.md#test-apps
+  examples/ipro_gh7007_test.md: examples/index.md#test-apps
+  examples/ipro_pdm_mic_demo.md: examples/index.md#audio
+  examples/ipro_pio_sdh_test.md: examples/index.md#test-apps
+  examples/kw307_radar_test.md: examples/index.md#test-apps

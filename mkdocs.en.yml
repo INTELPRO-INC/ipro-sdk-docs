@@ -26,22 +26,28 @@ nav:
   - "Home": index.md
   - "Get Started":
       - get-started/index.md
-      - "Choose Your Environment": get-started/environment.md
+      - "Set Up Your Host": get-started/environment.md
       - "Windows Setup & VS Code": get-started/windows.md
       - "macOS / Linux Command Line": get-started/command-line.md
       - "First FreeRTOS Application": get-started/first-app-freertos.md
-      - "First Zephyr Application": get-started/first-app-zephyr.md
       - "Flashing & Serial Console": get-started/flash-and-monitor.md
+  - "IPRO AI Teach":
+      - "IPRO AI Teach": teach/index.md
+      - "Install IPRO AI Studio": teach/install.md
+      - "Flash the Edge AI Firmware": teach/firmware.md
+      - "Image Recognition": teach/image.md
+      - "Voiceprint Recognition": teach/voice.md
+      - "Sensor Recognition": teach/sensor.md
+      - "Image Teach in the Browser": teach/browser.md
+      - "Troubleshooting": teach/troubleshooting.md
   - "Hardware":
       - hardware/index.md
       - "Chips":
           - "IPRO7": hardware/chips/ipro7.md
           - "IPRO7AI": hardware/chips/ipro7ai.md
-          - "IPRO6S (V2.0.1)": hardware/chips/ipro6s.md
+          - "IPRO6S": hardware/chips/ipro6s.md
       - "Boards":
-          - "IPRO7AI Reef EVK": hardware/boards/reef-evk.md
-          - "IPRO7AI EVK": hardware/boards/ipro7ai-evk.md
-          - "IPRO7 EVB": hardware/boards/ipro7-evb.md
+          - "IPRO7AI Reef EVK V4.0": hardware/boards/reef-evk.md
       - "Pinout & Peripheral Mapping": hardware/pinmux.md
       - "Power & Current Measurement": hardware/power.md
   - "Guides":
@@ -52,7 +58,6 @@ nav:
       - "Audio & LE Audio": guides/audio.md
       - "Camera & Imaging": guides/camera.md
       - "AI & NPU": guides/ai-npu.md
-      - "IPRO AI Teach 2.0": guides/edge-ai-teach.md
       - "Networking": guides/networking.md
       - "Zephyr RTOS": guides/zephyr.md
       - "Thread & Matter": guides/thread-matter.md
@@ -62,36 +67,27 @@ nav:
   - "Examples":
       - examples/index.md
       # BEGIN generated: examples
-      - "BLE":
+      - "Reef EVK examples":
+          - "ipro7ai_reef_demo": examples/ipro7ai_reef_demo.md
+          - "ipro_reef_teach": examples/ipro_reef_teach.md
           - "ipro_ble_remote": examples/ipro_ble_remote.md
           - "ipro_throughput_test": examples/ipro_throughput_test.md
           - "ipro_le_audio_headset": examples/ipro_le_audio_headset.md
-      - "Audio and voice":
-          - "ipro_pdm_mic_demo": examples/ipro_pdm_mic_demo.md
+          - "ipro7_uvc_cam": examples/ipro7_uvc_cam.md
+          - "ipro7_jpeg_decode": examples/ipro7_jpeg_decode.md
+          - "ipro_ai_link": examples/ipro_ai_link.md
           - "ipro_agora_sentino": examples/ipro_agora_sentino.md
-      - "Platform and boards":
-          - "ipro7_demo": examples/ipro7_demo.md
-          - "ipro7ai_evk_demo": examples/ipro7ai_evk_demo.md
-          - "ipro7ai_evk_launcher": examples/ipro7ai_evk_launcher.md
-          - "ipro7ai_reef_demo": examples/ipro7ai_reef_demo.md
-      - "AI and vision":
-          - "ipro7ai_evk_person_detect": examples/ipro7ai_evk_person_detect.md
-          - "ipro7ai_evk_rps": examples/ipro7ai_evk_rps.md
-      - "Networking":
-          - "ipro7_sdio_wifi": examples/ipro7_sdio_wifi.md
-      - "Test and bring-up programs":
-          - "ipro_gh7007_test": examples/ipro_gh7007_test.md
-          - "ipro_epd_el036": examples/ipro_epd_el036.md
-          - "kw307_radar_test": examples/kw307_radar_test.md
-          - "ipro_enc28j60_test": examples/ipro_enc28j60_test.md
-          - "ipro_pio_sdh_test": examples/ipro_pio_sdh_test.md
       # END generated: examples
   - "Tutorials":
       - tutorials/index.md
-      - "Your First BLE Application": tutorials/first-ble-app.md
       - "Build and Flash Workflow": tutorials/build-and-flash.md
+      - "Create Your First Application": tutorials/first-own-app.md
+      - "Test Your Application": tutorials/testing.md
+      - "Your First BLE Application": tutorials/first-ble-app.md
       - "BLE Throughput Test": tutorials/ble-throughput.md
       - "Getting Started with LE Audio": tutorials/le-audio.md
+      - "USB Webcam and Rock-Paper-Scissors": tutorials/usb-webcam.md
+      - "Wi-Fi and RTSP Camera Stream": tutorials/wifi-rtsp.md
   - "Reference":
       - reference/index.md
       - "API Reference":
@@ -109,7 +105,6 @@ nav:
           - "Security Engine": reference/api/security.md
           - "Wireless & BLE Controller": reference/api/wireless-ble.md
           - "AI Runtime": reference/api/ai.md
-          - "IPRO7AI EVK Board Library": reference/api/ipro7ai-evk.md
           # END generated: api
       - "Tool Command Lines": reference/tools.md
       - "Debugging & Troubleshooting": reference/debugging.md

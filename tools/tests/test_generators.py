@@ -10,6 +10,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import doxy_md  # noqa: E402
 import gen_common  # noqa: E402
 import gen_documents  # noqa: E402
+import gen_examples  # noqa: E402
 import gen_redirects  # noqa: E402
 import readme_md  # noqa: E402
 
@@ -129,6 +130,39 @@ def test_documents_availability():
     assert gen_documents.availability(public, "en") == "[zh-TW](https://z.pdf) / [English](https://e.pdf)"
 
 
+# ---------- gen_examples ----------
+
+APP = {"name": "demo", "path": "apps/x/demo",
+       "purpose": {"zh": "示範", "en": "Demo, see [above](#reef)"},
+       "boards": {"zh": "Reef", "en": "Reef"}, "console": {"zh": "UART 115200", "en": "UART 115200"}}
+
+
+def test_example_page_with_reef_section_and_no_readme():
+    app = dict(APP, build={"en": "`make -C apps/x/demo DEFCONFIG=defconfig_reef`"},
+               reef={"zh": "步驟", "en": "1. **Build**"})
+    meta, body = gen_examples.page(app, "en", None)
+    assert "## Run it on the Reef { #on-the-reef }\n\n1. **Build**" in body
+    assert "| Build | `make -C apps/x/demo DEFCONFIG=defconfig_reef` |" in body
+    assert "README" not in body
+    assert "[above](index.md#reef)" in body
+    assert meta["description"] == "Demo, see above"
+
+
+def test_example_page_defaults_without_reef_section():
+    _, body = gen_examples.page(APP, "zh", "Text")
+    assert "| 建置 | `make -C apps/x/demo` |" in body
+    assert "on-the-reef" not in body and "## README { #readme }" in body
+
+
+def test_example_has_page(tmp_path):
+    (tmp_path / "apps/x/demo").mkdir(parents=True)
+    assert not gen_examples.has_page(APP, tmp_path)
+    assert gen_examples.has_page(dict(APP, reef={"zh": "a", "en": "b"}), tmp_path)
+    (tmp_path / "apps/x/demo/README.md").write_text("# demo")
+    assert gen_examples.has_page(APP, tmp_path)
+    assert not gen_examples.has_page(dict(APP, readme={"exclude": True}), tmp_path)
+
+
 # ---------- gen_redirects ----------
 
 BUILT = {
@@ -170,6 +204,26 @@ def test_redirect_validation():
     assert "p#typo: the old page has no such section" in errors
     assert "p #flashing: get-started/flash.md#nope has no heading #nope" in errors
     assert "r to: missing.md is not a built page" in errors
+
+
+def test_removed_page_validation():
+    built = dict(BUILT, **{"old/kept/": "<h1>still here</h1>", "old/stale/": f"<meta content=\"{gen_redirects.GENERATOR}\">"})
+    data = {"removed": {"old/gone.md": "get-started/flash.md#flashing",
+                        "old/kept.md": "index.md",
+                        "old/stale.md": "get-started/index.md",
+                        "old/bad.md": "get-started/flash.md#nope",
+                        "old/missing.md": "nowhere.md",
+                        "old/anchor.md#x": "index.md"}}
+    errors = gen_redirects.validate_removed(data, built.get)
+    assert errors == ["removed old/kept.md: the page is still built; delete it or drop the entry",
+                      "removed old/bad.md: get-started/flash.md#nope has no heading #nope",
+                      "removed old/missing.md: nowhere.md is not a built page",
+                      "removed old/anchor.md#x: name the page without an anchor"]
+
+
+def test_heading_ids():
+    html = '<h1 id="t">T</h1><h2 id="a">A</h2><div id="x"></div><h3 class="c" id="b">B</h3>'
+    assert gen_redirects.heading_ids(html) == ["a", "b"]
 
 
 def test_redirect_page_escapes_and_falls_back():

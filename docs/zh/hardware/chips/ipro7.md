@@ -7,7 +7,7 @@ migrate_from:
 
 # IPRO7
 
-IPRO7 是 INTELPRO 的 2.4 GHz 低功耗無線 SoC：RISC-V RV32IMAFC 192 MHz 處理器、Bluetooth 5.4 與 LE Audio、IEEE 802.15.4 無線電、ISP 影像處理與硬體 MJPEG。本版 SDK 的所有應用都以 IPRO7 為目標。啟用 NPU 的型號見 [IPRO7AI](ipro7ai.md)。
+IPRO7 是 INTELPRO 的 2.4 GHz 低功耗無線 SoC：RISC-V RV32IMAFC 192 MHz 處理器、Bluetooth 5.4 與 LE Audio、IEEE 802.15.4 無線電、ISP 影像處理與硬體 MJPEG。本版 SDK 的 40 個應用中有 37 個以 IPRO7 為目標。啟用 NPU 的型號 [IPRO7AI](ipro7ai.md) 是 IPRO7AI Reef EVK 的主晶片。
 
 <div class="ipro-facts" markdown>
 <div><strong>192 MHz</strong><span>RISC-V RV32IMAFC</span></div>
@@ -22,7 +22,7 @@ IPRO7 是 INTELPRO 的 2.4 GHz 低功耗無線 SoC：RISC-V RV32IMAFC 192 MHz �
 - **處理與記憶體**：RV32IMAFC（含 DSP 擴充）、256 KB OCRAM、4 KB 休眠保留 RAM，Flash 以 XIP 執行；可選配封裝內 8 MB PSRAM（IPRO7AI 型號內含）。
 - **無線**：Bluetooth 5.4 LE 與 LE Audio、IEEE 802.15.4，整合 2.4 GHz RF 收發器。
 - **影像與音訊**：DVP 相機介面、ISP、MJPEG 編解碼、音訊 ADC、GPDAC 與 I2S。
-- **網路**：有線網路使用內建 EMAC（RMII）；需要 Wi-Fi 時，經 SDIO 外接 IPRO6S 夥伴晶片，見 [IPRO6S](ipro6s.md)。
+- **網路**：有線網路使用內建 EMAC（RMII）；無線網路經 SDIO 或 UART 外接無線電，例如經 SDIO 外接 IPRO6S，見[網路連線](#networking)。
 
 ## 主要規格 { #key-specs }
 
@@ -37,7 +37,7 @@ IPRO7 是 INTELPRO 的 2.4 GHz 低功耗無線 SoC：RISC-V RV32IMAFC 192 MHz �
 | ROM | 128 KB |
 | eFuse | 2 Kb |
 | PSRAM | 選配，封裝內 8 MB（IPRO7AI 型號內含）；QFN32 沒有 |
-| Flash | XIP 執行；SDK 預設 1 MB 版面，外接 SF3 Flash 時可用 2／4／8 MB |
+| Flash | XIP 執行；SDK 預設連結 1 MB 版面，以 `CONFIG_IPRO7_FLASH_2M` 等設定改用 2／4／8 MB |
 | 計時 | RTC、Timer ×2、看門狗（WDT） |
 | DMA | 8 通道 |
 | 時脈 | 開發板使用 32 MHz 石英晶體，系統時脈由 PLL 產生 192 MHz |
@@ -51,7 +51,17 @@ IPRO7 是 INTELPRO 的 2.4 GHz 低功耗無線 SoC：RISC-V RV32IMAFC 192 MHz �
 | 連線數 | 本版預編譯控制器最多 4 條連線（`link1_periph`／`link1`／`link2`／`link4`） |
 | IEEE 802.15.4 | 802.15.4 無線電；SDK 在 Zephyr RTOS 下提供驅動與 OpenThread |
 | RF | 2.4 GHz 收發器，整合 balun 與 PA／LNA；可控制外接 PA／LNA |
-| Wi-Fi | 不內建；經 SDIO 外接 IPRO6S 夥伴晶片 |
+
+### 網路連線 { #networking }
+
+有線網路使用晶片內的 EMAC（RMII 介面）。無線網路經 SDIO 或 UART 外接無線電，SDK 隨附下列驅動：
+
+| 無線電 | 介面 | SDK 中的位置 |
+|---|---|---|
+| IPRO6S（Wi-Fi 6） | SDIO，lwIP 網路介面 `iproeth0` | `components/network/ipronet_host`；Reef 上是插在 microSD 卡座的 FIN 卡，見 [IPRO6S](ipro6s.md) |
+| ATBM6162 | SDIO | `components/wireless/wifi_atbm6162`；`ipro_atbm_probe` |
+| AIC8800 | SDIO（預編譯的廠商函式庫） | `components/wireless/wifi_aic8800`；`ipro_agora_sentino` 的 `config_evk` |
+| ESP32 | UART AT 指令 | `components/network/esp32_wifi_at`；`ipro7_demo`（`CONFIG_ESP32_WIFI_AT`） |
 
 ### 多媒體與 AI { #ai-multimedia }
 
@@ -105,32 +115,32 @@ IPRO7 是 INTELPRO 的 2.4 GHz 低功耗無線 SoC：RISC-V RV32IMAFC 192 MHz �
 
 | 區域 | 大小 | 起始位址 | 說明 |
 |---|---|---|---|
-| Flash | 1 MB | `0x13000000` | XIP；外接 SF3 Flash 時以 `CONFIG_IPRO7_FLASH_2M` 等鍵選 2／4／8 MB |
+| Flash | 1 MB | `0x13000000` | XIP；以 `CONFIG_IPRO7_FLASH_2M` 等設定改用 2／4／8 MB |
 | PSRAM | 8 MB | `0x1e000000` | AI／NPU 與 ISP 應用需要；在 `.config` 明確設定 `CONFIG_USE_PSRAM=y` |
-| OCRAM | 256 KB | `0x11010000` | 堆疊、中斷與效能關鍵程式碼；BLE 控制器的 Exchange Memory 由頂端劃出 |
+| OCRAM | 256 KB | `0x11010000` | 堆疊、中斷與效能關鍵程式碼；BLE 控制器的 Exchange Memory 由頂端劃出。PDS31 睡眠時只保留前 64 KB，其餘只在 MISC 電源域保持供電時保留 |
 | HBN RAM | 4 KB | `0x20090000` | 休眠期間保留 |
 
-同時啟用 AI 與影像時 OCRAM 可用區會縮小，見[建置系統與設定](../../guides/build-system.md#memory-layout)。
+同時啟用 AI 與影像（`CONFIG_AI_SUPPORT`、`CONFIG_MM_SUPPORT`）時，連結器把 OCRAM 縮為 64 KB，見 [IPRO7AI](ipro7ai.md#memory)。
 
 ## 本版 SDK 支援 { #sdk-support }
 
-| 項目 | V2.1.0 |
+| 項目 | V2.2.0 |
 |---|---|
-| FreeRTOS 應用 | 35 個應用全部以 IPRO7 為目標：`CONFIG_IPRO7=y`、`CONFIG_CHIP="IPRO7"`、`CONFIG_CPU_ID="intelpro_ipro7"` |
-| Zephyr RTOS | Zephyr v4.4.0 模組；板型 `ipro7_evb` 與 `ipro7ai_evk` |
+| FreeRTOS 應用 | 40 個應用中 37 個以 IPRO7 為目標：`CONFIG_IPRO7=y`、`CONFIG_CHIP="IPRO7"`、`CONFIG_CPU_ID="intelpro_ipro7"`；映像為 `<應用>_IPRO7.bin` |
+| Zephyr RTOS | Zephyr v4.4.0 模組；板型 `ipro7_evb` 與 `ipro7ai_evk`，本版沒有 Reef 的 Zephyr 板型 |
 | 工具鏈 | RISC-V GCC（`riscv64-unknown-elf-`，`rv32imafc`／`ilp32f`），不隨 SDK 提供，請向 INTELPRO 取得 |
-| BLE | Zephyr v4.4.0 Host（原始碼）搭配 IPRO BLE 控制器（預編譯函式庫，16 個 IPRO7 版本） |
+| BLE | Zephyr v4.4.0 Host（原始碼）搭配 IPRO BLE 控制器（預編譯函式庫，16 個 IPRO7 版本：`link1_periph`／`link1`／`link2`／`link4` × `bt52`／`bt54_iso2` × 除錯／`_release`） |
 | IEEE 802.15.4／Thread | 僅 Zephyr RTOS：IEEE 802.15.4 驅動與 OpenThread |
-| Matter、Zigbee | 未包含於 V2.1.0，請洽 INTELPRO。 |
-| 燒錄 | IntelProCube v0.6.3 命令列工具（另行取得）：`--chipname ipro7`，IPRO7 EVB 用 `--chip-variant IPRO7`，IPRO7AI 板用 `--chip-variant IPRO7AI` |
+| Matter、Zigbee | 未包含於 V2.2.0，請洽 INTELPRO。 |
+| 燒錄 | IntelProCube v0.6.3 命令列工具（另行取得）：`--chipname ipro7`；Reef 等 IPRO7AI 板用 `--chip-variant IPRO7AI` |
 
 ## 搭載 IPRO7 的開發板 { #boards }
 
 | 開發板 | 晶片 | 板級設定 |
 |---|---|---|
-| [IPRO7AI Reef EVK](../boards/reef-evk.md) | IPRO7AI（QFN56，焊於載板） | `CONFIG_IPRO7AI_REEF=y` |
-| [IPRO7AI EVK](../boards/ipro7ai-evk.md) | IPRO7AI | `CONFIG_IPRO7AI_EVK=y` |
-| [IPRO7 EVB](../boards/ipro7-evb.md) | IPRO7（QFN56 插座） | `CONFIG_EVB=y` |
+| [IPRO7AI Reef EVK V4.0](../boards/reef-evk.md) | IPRO7AI（QFN56，焊在板上） | `CONFIG_IPRO7AI_REEF=y`、`CONFIG_BOARD="IPRO7AI_REEF"` |
+
+IPRO7 EVB（`CONFIG_EVB=y`）與 IPRO7AI EVK（`CONFIG_IPRO7AI_EVK=y`）是多數應用 `.config` 的預設板型；這些板子的供應請洽 INTELPRO。
 
 ## 相關文件 { #documents }
 

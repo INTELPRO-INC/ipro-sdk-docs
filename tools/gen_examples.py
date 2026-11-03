@@ -4,9 +4,10 @@
 Writes, for both languages:
   * the catalog tables in examples/index.md (between `examples-<category>`
     markers; the prose around them stays hand-written);
-  * examples/<app>.md for every app that ships a README (unless excluded),
-    with the catalog data on top and the README below, converted by
-    readme_md.py and the curation rules in data/examples.yml;
+  * examples/<app>.md for every app that ships a README (unless excluded)
+    or has a `reef` section, with the catalog data on top, then the `reef`
+    section (how to build, flash and run it on the Reef EVK), then the README,
+    converted by readme_md.py and the curation rules in data/examples.yml;
   * the `examples` nav block in mkdocs.<lang>.yml.
 Generated pages must pass the red-line check, or nothing is written.
 
@@ -31,11 +32,12 @@ GENERATOR = "tools/gen_examples.py"
 RAW_BASE = "https://raw.githubusercontent.com/INTELPRO-INC/IPRO-SDK"
 LABELS = {
     "zh": {"app": "應用", "purpose": "用途", "boards": "板卡與設定", "console": "主控台", "item": "項目",
-           "content": "內容", "source": "原始碼", "build": "建置",
+           "content": "內容", "source": "原始碼", "build": "建置", "reef": "在 Reef 上執行",
            "note_title": "README 原文",
            "note": "以下是應用隨附的 README（SDK {sdk}），保留原文、未翻譯；只替換了不適合公開的內容。"},
     "en": {"app": "Application", "purpose": "Purpose", "boards": "Boards and configs", "console": "Console",
            "item": "Item", "content": "Details", "source": "Source", "build": "Build",
+           "reef": "Run it on the Reef",
            "note_title": "The README as shipped",
            "note": "Below is the README that ships with the application (SDK {sdk}), as written; "
                    "only content unfit for publication was replaced."},
@@ -51,9 +53,13 @@ def apps(data: dict[str, Any]) -> list[tuple[dict[str, Any], dict[str, Any]]]:
     return [(category, app) for category in data["categories"] for app in category["apps"]]
 
 
-def has_page(app: dict[str, Any], sdk: Path) -> bool:
+def has_readme(app: dict[str, Any], sdk: Path) -> bool:
     readme = app.get("readme") or {}
     return not readme.get("exclude") and (sdk / app["path"] / "README.md").is_file()
+
+
+def has_page(app: dict[str, Any], sdk: Path) -> bool:
+    return bool(app.get("reef")) or has_readme(app, sdk)
 
 
 def plain(text: str) -> str:
@@ -94,22 +100,25 @@ def annotate_ignores(text: str, rule_ids: list[str], rules: list[redline_check.R
     return "\n".join(lines)
 
 
-def page(app: dict[str, Any], lang: str, readme: str) -> tuple[dict[str, Any], str]:
+def page(app: dict[str, Any], lang: str, readme: "str | None") -> tuple[dict[str, Any], str]:
     labels = LABELS[lang]
     purpose = app["purpose"][lang].replace("](#", "](index.md#")
+    build = (app.get("build") or {}).get(lang) or f"`make -C {app['path']}`"
     facts = table([labels["item"], labels["content"]], [
         [labels["source"], f"[`{app['path']}`]({github_url(app['path'])})"],
         [labels["boards"], app["boards"][lang]],
         [labels["console"], app["console"][lang]],
-        [labels["build"], f"`make -C {app['path']}`"],
+        [labels["build"], build],
     ])
-    note = labels["note"].format(sdk=release()["sdk"])
-    body = "\n".join([
-        f"# {app['name']}", "", purpose, "", facts, "",
-        "## README { #readme }", "",
-        f'!!! note "{labels["note_title"]}"', f"    {note}", "",
-        "<!-- verbatim:start -->", "", readme.strip(), "", "<!-- verbatim:end -->",
-    ])
+    lines = [f"# {app['name']}", "", purpose, "", facts, ""]
+    if app.get("reef"):
+        lines += [f"## {labels['reef']} {{ #on-the-reef }}", "", app["reef"][lang].strip(), ""]
+    if readme is not None:
+        note = labels["note"].format(sdk=release()["sdk"])
+        lines += ["## README { #readme }", "",
+                  f'!!! note "{labels["note_title"]}"', f"    {note}", "",
+                  "<!-- verbatim:start -->", "", readme.strip(), "", "<!-- verbatim:end -->"]
+    body = "\n".join(lines)
     meta = {"title": app["name"], "description": plain(app["purpose"][lang]), "generated": GENERATOR,
             "migrate_from": []}
     return meta, body
@@ -121,8 +130,10 @@ def render_all(data: dict[str, Any], sdk: Path, rules: list[redline_check.Rule])
     for _, app in apps(data):
         if not has_page(app, sdk):
             continue
-        readme = readme_text(app, sdk)
-        readme = annotate_ignores(readme, (app.get("readme") or {}).get("redline_ignore") or [], rules)
+        readme = None
+        if has_readme(app, sdk):
+            readme = readme_text(app, sdk)
+            readme = annotate_ignores(readme, (app.get("readme") or {}).get("redline_ignore") or [], rules)
         for lang in LANGS:
             meta, body = page(app, lang, readme)
             out[lang][f"examples/{app['name']}.md"] = front_matter(meta) + "\n" + body.strip() + "\n"

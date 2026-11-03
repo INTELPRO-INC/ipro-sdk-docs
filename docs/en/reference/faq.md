@@ -1,102 +1,144 @@
 ---
 title: "FAQ"
-description: Short answers to common questions about building, flashing and the console, BLE, platform and networking, and debugging, with links to the detailed pages.
+description: Short answers to common questions on building, flashing and the console, BLE, platform and networking, and debugging, for the IPRO7AI Reef EVK, with links to the detailed pages.
 migrate_from:
   - "faq.html"
 ---
 
 # FAQ
 
-Each answer starts with the conclusion and links to the page with the details. For a table of error messages, see [Debugging & Troubleshooting](debugging.md#troubleshooting).
+Each answer starts with the conclusion; where you need to act, it gives the command and what you should see, and links to the page with the details. Examples use the IPRO7AI Reef EVK V4.0. For a table of error messages, see [Debugging & Troubleshooting](debugging.md#troubleshooting).
 
 ## Building { #build }
 
-### Where do I get the flash tool and the toolchain? { #get-tools }
+### Where do I get the SDK, the flash tool and the toolchain? { #get-tools }
 
-Neither is included in V2.1.0; contact INTELPRO for:
+- **SDK V2.2.0**: download `IPRO-SDK-V2.2.0.tar.gz` from the [GitHub release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0), check it against the SHA-256 on that page and unpack it:
 
-- the RISC-V toolchain, installed by default in `/opt/toolchain/riscv_ipro7/`;
-- the command-line flasher of IntelProCube v0.6.3: `ipro_iot_tool_macos`, `ipro_iot_tool_linux` or `ipro_iot_tool.exe`.
+    ```bash
+    shasum -a 256 IPRO-SDK-V2.2.0.tar.gz      # Linux: sha256sum; must match the release page
+    tar xzf IPRO-SDK-V2.2.0.tar.gz
+    cat IPRO-SDK-V2.2.0/VERSION.txt
+    ```
 
-The SDK itself is available from its [GitHub release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.1.0).
+    `VERSION.txt` prints `IPRO7: IPRO-SDK-V2.2.0`, `IPRO6: IPRO-SDK-V2.2.0` and `Release Date: 2026-11-03`.
+- **The RISC-V toolchain** and **the IntelProCube v0.6.3 command-line flash tool** (`ipro_iot_tool_macos`, `ipro_iot_tool_linux`, `ipro_iot_tool.exe`): not included in V2.2.0; contact INTELPRO. The toolchain installs to `/opt/toolchain/riscv_ipro7/` by default.
+- **Windows online installer 3.4.0 and VS Code extension 3.3.0**: still current, but the installer's SDK catalog still lists V1.2.1 as stable; download V2.2.0 from the release page above.
+- **IPRO AI Studio and the Edge AI tools**: ship in the separate IPRO Edge AI package, not in the SDK.
 
 ### What is the difference between build_freertos.sh and make -C? { #build-cli-vs-make }
 
-`make -C apps/<category>/<app>` builds one application from its `.config` and needs the full path. `build_freertos.sh` wraps `make` and adds the `clean`, `flash`, `monitor`, `size` and `test` actions; it takes just the application name and chains actions:
+`make -C apps/<category>/<app>` builds one application and needs the full path. `build_freertos.sh` adds `clean`, `flash`, `monitor`, `size` and `test`, takes just the application name and chains actions:
 
 ```bash
 make -C apps/platform/ipro7ai_reef_demo
 ./build_freertos.sh clean build ipro7ai_reef_demo
 ```
 
-Both produce the same output in `<app>/build/build_out/`. The `flash` and `monitor` actions of `build_freertos.sh` use fixed baud rates and arguments, so flash the Reef and other IPRO7AI boards with the IntelProCube tool directly; see [Flashing & Serial Console](../get-started/flash-and-monitor.md#build-script).
+Both produce the same output in `<app>/build/build_out/`. `build_freertos.sh flash` picks `--chip-variant IPRO7AI` for Reef configurations by itself and takes a partition table with `-P`; `monitor` opens the console at the application's own baud rate. It cannot pass `--boot2` or `--mfg` and cannot flash IPRO6S; use the IntelProCube tool directly for those. See [Tool Command Lines](tools.md#build-cli).
+
+### Which applications run on the Reef, and which configuration do I pick? { #reef-apps }
+
+Nine of the 40 applications have a Reef configuration. Only `ipro7ai_reef_demo`, `ipro_reef_teach` and `ipro_agora_sentino` build for the Reef with a plain `make`; for the others, `.config` targets the IPRO7 EVB or the IPRO7AI EVK, and you select the Reef configuration with `DEFCONFIG=`:
+
+| Application | Build command (from the SDK root) |
+|---|---|
+| `ipro7ai_reef_demo` | `make -C apps/platform/ipro7ai_reef_demo` |
+| `ipro7ai_reef_demo` (Wi-Fi and RTSP) | `make -C apps/platform/ipro7ai_reef_demo DEFCONFIG=defconfig_wifi_ipro6s` |
+| `ipro_reef_teach` | `make -C apps/ai/ipro_reef_teach` |
+| `ipro_ble_remote` | `make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef` |
+| `ipro_throughput_test` | `make -C apps/bluetooth/ble/ipro_throughput_test DEFCONFIG=defconfig_reef` |
+| `ipro_le_audio_headset` | `make -C apps/bluetooth/le_audio/ipro_le_audio_headset DEFCONFIG=defconfig_reef` |
+| `ipro7_uvc_cam` (webcam) | `make -C apps/multimedia/ipro7_uvc_cam DEFCONFIG=defconfig_reef_ov5640` |
+| `ipro7_uvc_cam` (rock-paper-scissors) | `make -C apps/multimedia/ipro7_uvc_cam DEFCONFIG=defconfig_reef_rps` |
+| `ipro7_jpeg_decode` | `make -C apps/multimedia/ipro7_jpeg_decode DEFCONFIG=defconfig_reef` (console 921600) |
+| `ipro_ai_link` | `make -C apps/test/ipro_ai_link DEFCONFIG=defconfig_reef` |
+| `ipro_agora_sentino` | `make -C apps/multimedia/ipro_agora_sentino` |
+
+`DEFCONFIG=defconfig_<name>` builds into `build_<name>/build_out/` (for example `build_reef/build_out/` for `defconfig_reef`) and leaves `.config` alone. To check whether a configuration file is for the Reef:
+
+```bash
+grep CONFIG_IPRO7AI_REEF apps/bluetooth/ble/ipro_ble_remote/defconfig_reef
+```
+
+It prints `CONFIG_IPRO7AI_REEF=y` for a Reef configuration. The partition table, `--boot2`, `--mfg` and USB identity of each application are on [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md#examples); the boards the other applications need are in [Examples](../examples/index.md).
 
 ### I changed .config, but a dependent option did not take effect. Why? { #kconfig }
 
-The build reads `.config` as written and generates `autoconf.h` with `cmake/generate_autoconf.cmake`. The Kconfig files are documentation only: `select`, `depends on` and defaults are not applied, so write every dependency into `.config` yourself. For example, with `CONFIG_AI_SUPPORT=y` also set `CONFIG_USE_PSRAM=y`.
+The build reads `.config` as written and generates `autoconf.h` from it with `cmake/generate_autoconf.cmake`. The Kconfig files only document the options: `select`, `depends on` and defaults are not applied, so you write the dependent options into `.config` yourself. For example, `CONFIG_AI_SUPPORT=y` also needs `CONFIG_USE_PSRAM=y`. The one exception is the Reef crystal trim: when the configuration does not set `CONFIG_IPRO7_XTAL_CAPCODE`, the build adds 95.
 
-The package's Kconfig tree references components that do not ship, so `menuconfig` does not work; edit `.config` directly. See [Build System & Configuration](../guides/build-system.md).
+`make menuconfig` needs `tools/kconfig/menuconfig.py`, and `make defconfig` needs a `configs/` directory; neither ships. Edit `.config` directly, or save a copy as `defconfig_<name>` and build it with `DEFCONFIG=`. See [Build System & Configuration](../guides/build-system.md).
 
 ### The toolchain is not found, or it is not in the default path { #toolchain }
 
-Every `.config` points `CONFIG_CROSS_COMPILE` at `/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-`. If your toolchain is elsewhere, set `CROSS_COMPILE` in the environment; it overrides `.config`:
+The toolchain prefix comes from, in order: `CROSS_COMPILE` in the environment or on the command line, `CONFIG_CROSS_COMPILE` in the configuration file, and the default in `project.build`, `/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-` (there is no default on Windows). 30 of the 40 `.config` files set `CONFIG_CROSS_COMPILE`. With the toolchain elsewhere:
 
 ```bash
-export CROSS_COMPILE=<toolchain path>/bin/riscv64-unknown-elf-
+export CROSS_COMPILE=<toolchain dir>/bin/riscv64-unknown-elf-
 make -C apps/platform/ipro7ai_reef_demo
 ```
 
-Keep `CONFIG_CPU_ID="intelpro_ipro7"` in `.config`; the build picks its compiler flags from it. `build_freertos.sh size` always uses `size` from the default path, and the Zephyr workspace takes its toolchain directory from `IPRO_TOOLCHAIN`.
+`[toolchain] Vendor toolchain detected …` at configure time means the INTELPRO toolchain was found. Keep `CONFIG_CPU_ID="intelpro_ipro7"` in `.config`. `build_freertos.sh size` always uses the `size` at the default path.
+
+### Can I build on Windows? { #windows }
+
+The command-line flow in the package targets macOS and Linux: `build_freertos.sh` is a bash script and `tools/serial_monitor.py` uses termios, so neither runs on Windows. `project.build` has a Windows branch, with these conditions:
+
+- Pass `CROSS_COMPILE` on every build, because Windows has no default toolchain path and the `CONFIG_CROSS_COMPILE` in `.config` is a Unix path: `make -C apps/platform/ipro7ai_reef_demo CROSS_COMPILE=<toolchain dir>/bin/riscv64-unknown-elf-`.
+- `cmake` and `python` (not `python3`) must be on `PATH`; the bundled `tools/cmake/` is Linux only.
+- Flash with `ipro_iot_tool.exe` and a port such as `COM5`; open the console with any Windows serial terminal.
+
+The package does not say which shell or `make` to use on Windows. For the Windows installer and the VS Code extension, see [Windows Setup & VS Code](../get-started/windows.md).
 
 ### Flash or RAM is too small { #memory }
 
-Start with the memory-region usage the linker prints at the end of the build, then find the largest users with `./build_freertos.sh size <app>` and the `.map` file, as described in [Size and memory analysis](tools.md#size-analysis). OCRAM is 256 KB, and the BLE controller's Exchange Memory (`CONFIG_EM_SIZE`) comes out of it; with both `CONFIG_AI_SUPPORT` and `CONFIG_MM_SUPPORT` set, the OCRAM region shrinks to 64 KB or 48 KB. Disable components you do not need, or move large buffers to PSRAM (`CONFIG_USE_PSRAM=y`).
+Start with the memory region use the linker prints at the end of the build, then find the largest users with `./build_freertos.sh size <app>` and the `.map` file; see [Size and memory analysis](tools.md#size-analysis). OCRAM is 256 KB, and the BLE controller's Exchange Memory (`CONFIG_EM_SIZE`) comes out of it; with both `CONFIG_AI_SUPPORT` and `CONFIG_MM_SUPPORT`, the OCRAM region shrinks to 64 KB or 48 KB. Turn off components you do not need, or move large buffers to PSRAM (`CONFIG_USE_PSRAM=y`). Flash links with a 1 MB layout by default; `CONFIG_IPRO7_FLASH_2M=y` selects the 2 MB layout. What each Reef configuration uses is on [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md#bsp).
 
 ## Flashing and console { #flash-console }
 
 ### Flashing fails. What should I check? { #flashing }
 
-In this order:
+Check, in order:
 
-1. Is `[All Success]` in the tool output? The tool exits with 0 even when it fails.
-2. Does `--chip-variant` match the board? `IPRO7AI` for the IPRO7AI Reef EVK and IPRO7AI EVK, `IPRO7` for the IPRO7 EVB. The tool remembers the last setting, so always pass it when you switch boards.
-3. Is the board in download mode? Type `reboot_dl` on the console; on the Reef you can also hold SW1 (BOOT) and press SW2 (RESET).
-4. Is a serial monitor holding the port? On macOS, use `/dev/cu.*`.
-5. Is the partition table right? The Reef uses `--pt chips/ipro7/partition/partition_cfg_2M.toml`; the IPRO7AI EVK AI examples use their own `flash.sh --full`.
+1. **The verdict line**: is `[All Success]` in the tool's output? The tool exits 0 even when it fails.
+2. **Chip setting**: use `--chip-variant IPRO7AI` on the Reef. The tool remembers the last setting, so always pass it again when you switch boards. `flash jedec id: 00000000` or `IPRO FLASH MATCH TYPE FAIL` in the output means this is the problem.
+3. **Download mode**: hold SW1 (BOOT), press and release SW2 (RESET), release SW1; the console should stay silent. Or type `reboot_dl` at the console; it prints `reboot to download mode`. Other methods are in [Enter download mode](debugging.md#download-mode).
+4. **Serial port**: close other monitors; use `/dev/cu.*` on macOS; on the IPRO Debug Probe use the port whose name ends in `02`.
+5. **Partition table**: `ipro7ai_reef_demo` and `ipro7_uvc_cam` use `--pt chips/ipro7/partition/partition_cfg_2M.toml`; the OTA build of `ipro_ble_remote` needs `--boot2` and `partition_cfg_2M_remote_ab.toml` the first time; `ipro_reef_teach` uses its own `partition_reef_teach.toml` with `--skip-ota` and `--mfg`. Each application is listed on [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md#examples).
 
-Error messages are listed under [Flashing troubleshooting](debugging.md#troubleshooting-flash); the full procedure is in [Flashing & Serial Console](../get-started/flash-and-monitor.md).
+After flashing, press SW2 to reset; the application's boot messages on the console mean it worked. The full steps are in [Flashing & Serial Console](../get-started/flash-and-monitor.md).
 
 ### The console shows garbage or nothing at all { #console }
 
-Garbage usually means a baud rate mismatch. The rate is the application's `CONFIG_PLATFORM_UART_BAUDRATE`, 115200 when unset; `ipro7ai_evk_demo`, `ipro7ai_evk_launcher`, `ipro7ai_evk_rps`, `ipro7_uvc_cam`, `ipro_epd_el036` and a few others use 921600; Zephyr images use 2000000. `build_freertos.sh monitor` always uses 115200, so for other rates run:
+Garbage is usually a baud-rate mismatch. The rate is `CONFIG_PLATFORM_UART_BAUDRATE` in the configuration file, 115200 when unset; every Reef configuration uses 115200 except `defconfig_reef` of `ipro7_jpeg_decode`, which uses 921600. `build_freertos.sh monitor` uses the application's rate by itself; when you open the port yourself, pass `--baud`:
 
 ```bash
 python3 tools/serial_monitor.py /dev/cu.usbserial-XXXX --baud 921600 --timeout 0
 ```
 
-`ipro_enc28j60_test`, `ipro_gh7007_test`, `ipro_gh7007_video` and `ipro_pio_sdh_test` run their console over USB CDC; open the USB serial port the board enumerates.
+No output at all: the board may still be in download mode (press SW2), TX / RX on U6 may be swapped (U6 pin 3 is the Reef's TX), or you opened the probe's `04` port. `serial_monitor.py` only reads and sends one command; to type commands line by line, use `screen /dev/cu.usbserial-XXXX 115200` or another serial terminal.
 
 ### What is the difference between /dev/cu.* and /dev/tty.* on macOS? { #macos-serial }
 
-macOS gives each serial device two nodes: `/dev/cu.*` opens immediately, while `/dev/tty.*` waits for the carrier-detect (DCD) signal, so the program hangs. Always use `/dev/cu.*`.
+macOS creates two nodes for the same serial device: `/dev/cu.*` opens immediately; `/dev/tty.*` waits for the carrier detect (DCD) signal, so programs hang. Always use `/dev/cu.*`.
 
-`Resource busy` means another program — a second monitor, an IDE or `stty -f` — holds the port. Find and close it with `lsof /dev/cu.usbserial-XXXX`, and keep only one monitor open at a time.
+`Resource busy` means another program (another monitor, an IDE or `stty -f`) holds the port. Find and close it with `lsof /dev/cu.usbserial-XXXX`, and keep only one monitor open at a time.
 
 ## BLE { #ble }
 
 ### Which BLE controller library should I use? { #ble-variant }
 
-Three `.config` settings select the library: `CONFIG_IPRO_BLE_CTLR_LIB` (`link1_periph` is peripheral and broadcaster only; for the central role or more connections use `link1`, `link2` or `link4`), `CONFIG_IPRO_BLE_CTLR_FEATURE` (`bt54_iso2` adds ISO / LE Audio and needs `CONFIG_EM_SIZE=32`) and `CONFIG_IPRO_BLE_CTLR_CFG_DBG` (not set selects the `_release` library). The full rules and what each shipped application uses are in [BLE Development](../guides/ble.md#controller-variants); start from the `.config` of the closest application.
+Three `.config` settings select the library: `CONFIG_IPRO_BLE_CTLR_LIB` (`link1_periph` is peripheral and broadcaster only; use `link1`, `link2` or `link4` for a central or several links), `CONFIG_IPRO_BLE_CTLR_FEATURE` (`bt54_iso2` adds ISO / LE Audio and needs `CONFIG_EM_SIZE=32`) and `CONFIG_IPRO_BLE_CTLR_CFG_DBG` (unset selects the `_release` library). `CONFIG_BT_CONN` must not exceed the library's link count. At configure time CMake prints `[ipro_ble_controller] Using prebuilt <file>`, the library actually linked. The full rules are in [BLE Development](../guides/ble.md); start from the closest Reef configuration (for example `ipro_ble_remote/defconfig_reef`).
 
 ### Is the BLE controller source available? { #ble-prebuilt }
 
-No. The IPRO BLE controller ships only as prebuilt libraries in `components/wireless/bluetooth/ipro_ble_controller/lib/`: 16 IPRO7 libraries, 4 connection configurations × 2 feature profiles × debug / release.
+No. The IPRO BLE controller ships only as prebuilt libraries in `components/wireless/bluetooth/ipro_ble_controller/lib/`: 16 IPRO7 libraries, 4 link configurations × 2 feature profiles × debug / release. This release has no IPRO6S BLE controller library; the IPRO6S applications are Wi-Fi only.
 
-These settings switch the controller to a source build, which cannot be built from this package: `CONFIG_IPRO_BLE_CTLR_FORCE_SOURCE_BUILD`, `CONFIG_IPRO_BLE_CTLR_SUBRATING`, `CONFIG_IPRO_BLE_CTLR_CSSA`, `CONFIG_IPRO_PM_BLE` and `CONFIG_IPRO_PM_PDS_CONNECTED` (`ipro_ble_remote/defconfig_lowpower` sets the last two). Contact INTELPRO if you need another library combination or these features.
+These settings build the controller from source and cannot be built from this package: `CONFIG_IPRO_BLE_CTLR_FORCE_SOURCE_BUILD`, `CONFIG_IPRO_BLE_CTLR_SUBRATING`, `CONFIG_IPRO_BLE_CTLR_CSSA`, `CONFIG_IPRO_PM_BLE`, `CONFIG_IPRO_PM_PDS_CONNECTED`. Contact INTELPRO if you need another library combination or these features.
 
 ### Bonds are lost after a reset { #ble-bonding }
 
-Bond keys are stored through the host's Settings. Use the settings from `ipro_pdm_mic_demo` and `ipro_le_audio_headset`:
+The host's Settings store the bond keys. Use `defconfig_reef` of `ipro_le_audio_headset` as the reference:
 
 ```ini title=".config"
 CONFIG_BT_SMP=y
@@ -104,53 +146,63 @@ CONFIG_BT_SETTINGS=y
 CONFIG_EASYFLASH4=y
 ```
 
-In the `bt_enable()` ready callback, call `ipro_ble_ctlr_hcitl_host_ready()` first, then `settings_load_subtree("bt")` before you start advertising, and check its return value. If you advertise first, a bonded phone that connects finds no keys and pairs again. The default `ipro_ble_remote` configuration does not store bonds. If the board has no bond but the phone still keeps the old one, remove the device on the phone and pair again.
+In the `bt_enable()` ready callback, call `ipro_ble_ctlr_hcitl_host_ready()` first, then `settings_load_subtree("bt")` before you start advertising, and check its return value; if you advertise first, a bonded phone that connects finds no keys and pairs again. The `ipro_ble_remote` configurations do not store bonds. If the board has lost its bonds but the phone still has the old one, remove the device in the phone's Bluetooth settings and pair again.
 
 ### What BLE throughput can I expect? { #ble-throughput }
 
-Measured with `ipro_throughput_test` between two IPRO7AI Reef EVKs (prebuilt `link2` controller, ATT MTU 247, DLE 251 bytes, 244-byte packets, 50 ms connection interval, `CONFIG_IPRO7_BLE_HOTCODE=y`, 8 s one-way flood): about 1.34 Mbps on 2M PHY and 747 kbps on 1M PHY. The numbers apply to that setup only.
+Measured with `ipro_throughput_test` between two IPRO7AI Reef EVKs (prebuilt `link2` controller, ATT MTU 247, DLE 251 bytes, 244-byte packets, 50 ms connection interval, `CONFIG_IPRO7_BLE_HOTCODE=y`, one direction for 8 seconds): about 1.34 Mbps on the 2M PHY and about 747 kbps on the 1M PHY. The numbers belong to that setup, not to every situation.
 
-For bulk data, use 2M PHY, a 30–50 ms connection interval and 244-byte packets; under these conditions longer intervals are faster, not slower. Steps and full results are in [BLE Throughput Test](../tutorials/ble-throughput.md).
+For bulk data, use the 2M PHY, a 30–50 ms connection interval and 244-byte packets. Steps and full results are in [BLE Throughput Test](../tutorials/ble-throughput.md).
 
 ### How do I update firmware over the air? { #ota }
 
-- **FreeRTOS**: build the OTA package with `tools/create_ota.py` from the combined image IntelProCube produces (see [create_ota.py](tools.md#ota-package)). The OTA GATT service (`0xFF60`) of `ipro_ble_remote` is enabled only in its `defconfig_reef` build, together with the A/B partition table `partition_cfg_2M_remote_ab.toml`; OTA on the Reef requires that table.
-- **Zephyr**: build MCUboot with sysbuild (`zephyr/samples/mcuboot_app`) and upload images over BLE with MCUmgr SMP (`zephyr/samples/ble_ota`).
+On the Reef, `defconfig_reef` of `ipro_ble_remote` provides BLE OTA (GATT service `0xFF60`); it needs boot2 and the A/B partition table `partition_cfg_2M_remote_ab.toml`:
 
-The full flow is in [OTA Updates](../guides/ota.md).
+1. Flash the first time with `--boot2` and `--pt …/partition_cfg_2M_remote_ab.toml`; the boot messages start with `[BOOT2] IPRO7 Boot2 v0.5.2`.
+2. Build `build_reef/build_out/ipro_ble_remote_reef.xz.ota` with `make_reef_ota.sh`.
+3. Send the package with `reef_ota.py` or the Android demo app `ipro_remote_demo.apk`; after the reboot the board runs the new firmware.
+
+Never run OTA on a Reef flashed with the standard `partition_cfg_2M.toml`: the board goes completely silent and has to be reflashed from download mode. The commands are in [Reef OTA tools](tools.md#reef-ota-tools); the complete flow is in [OTA Updates](../guides/ota.md).
 
 ## Platform and networking { #platform }
 
-### Does V2.1.0 support IPRO6S? { #ipro6s }
+### Does V2.2.0 support IPRO6S? { #ipro6s }
 
-No. V2.1.0 contains IPRO7 applications only; for IPRO6S development use SDK V2.0.1, see [IPRO6S (V2.0.1)](../hardware/chips/ipro6s.md).
+Yes, for Wi-Fi. V2.2.0 ships three IPRO6S applications: `ipro6_demo` (Wi-Fi 6 station / soft-AP), `ipro6_if_wifi` (Wi-Fi bridge to a host over SDIO or USB) and `ipro6_fmac` (FullMAC firmware for a Linux host). This release has no IPRO6S BLE controller library and no BLE or BR/EDR application for IPRO6S.
+
+On the Reef, the IPRO6S is the FIN Wi-Fi card in the microSD slot, and its firmware is the SDIO configuration of `ipro6_if_wifi`:
+
+```bash
+make -C apps/platform/ipro6_if_wifi DEFCONFIG=defconfig_ipro6_sdio
+```
+
+The output is `apps/platform/ipro6_if_wifi/build_ipro6_sdio/build_out/ipro6_if_wifi_IPRO6.bin`. IPRO6S images are flashed with IntelProCube's `--chipname ipro6`; `build_freertos.sh flash` does not apply. The supported configurations and flashing are on [IPRO6S](../hardware/chips/ipro6s.md).
 
 ### How does IPRO7 connect to a network? { #wifi }
 
-Wi-Fi comes from an IPRO6S companion acting as the radio over SDIO:
+IPRO7 has no on-chip Wi-Fi; it connects through an external radio:
 
-- The IPRO7-side component is `components/network/ipronet_host` (lwIP interface `iproeth0`), used by `ipro7_sdio_wifi`, the `defconfig_wifi_ipro6s` build of `ipro7ai_reef_demo` (the IPRO6S FIN card on the Reef, with an RTSP stream) and `ipro_agora_sentino`.
-- The IPRO6S-side firmware, including the FIN card's, is not included in V2.1.0; contact INTELPRO.
-
-For wired networking there is the EMAC (RMII) driver (`CONFIG_ETHERNET`), and `ipro_enc28j60_test` for an ENC28J60 over SPI.
+- **IPRO6S (SDIO)**: the IPRO7 component `components/network/ipronet_host`, with the lwIP network interface `iproeth0`. On the Reef this is the FIN card: `defconfig_wifi_ipro6s` of `ipro7ai_reef_demo` (with an RTSP camera stream) and `ipro_agora_sentino`. Steps are in [Wi-Fi and RTSP streaming](../tutorials/wifi-rtsp.md).
+- **Others**: components for ATBM6162 (SDIO), AIC8800 (SDIO) and ESP32 (UART AT commands) are also in the package.
+- **Wired**: the EMAC (RMII) driver (`CONFIG_ETHERNET`).
 
 See [Networking](../guides/networking.md).
 
 ### Which RTOSes does the SDK support? Is the BLE host Zephyr? { #rtos }
 
-All 35 applications use FreeRTOS (kernel V11.1.0). The BLE host comes from Zephyr v4.4.0 and runs on FreeRTOS through the SDK's port layer: applications use Zephyr's `bt_*` APIs, but no Zephyr installation is needed.
+All 40 applications are FreeRTOS (kernel V11.1.0): 37 for IPRO7 and 3 for IPRO6S. The BLE host is Zephyr v4.4.0's, running on FreeRTOS through the SDK's port layer; applications use Zephyr's `bt_*` API without installing Zephyr.
 
-The SDK is also a Zephyr v4.4.0 module for `ipro7_evb` and `ipro7ai_evk`. Zephyr in this release has no low-power modes and no display, camera, audio codec, USB, SD host, Ethernet or NPU drivers — use FreeRTOS for those — and no board definition for the IPRO7AI Reef EVK. See [Zephyr RTOS](../guides/zephyr.md).
+The SDK is also a Zephyr v4.4.0 module with the boards `ipro7_evb` and `ipro7ai_evk`, and no Reef board; the SoC's Kconfig help notes that a Reef running `ipro7_evb` images needs `CONFIG_SOC_IPRO7_XTAL_CAPCODE=95`. See [Zephyr RTOS](../guides/zephyr.md).
 
 ### Can I use Thread or Matter? { #thread-matter }
 
-Thread is available under Zephyr only: Zephyr's IEEE 802.15.4 driver with OpenThread, built from Zephyr's `samples/net/openthread/shell` with the SDK's `zephyr/samples/ieee802154_shell/ot.conf` and `app.overlay`. FreeRTOS applications do not include Thread, and this release does not include Matter. See [Thread & Matter](../guides/thread-matter.md).
+Thread is available under Zephyr only: Zephyr's IEEE 802.15.4 driver plus OpenThread, built from Zephyr's `samples/net/openthread/shell` with the SDK's `zephyr/samples/ieee802154_shell/ot.conf` and `app.overlay`. FreeRTOS applications have no Thread, and this release has no Matter. See [Thread & Matter](../guides/thread-matter.md).
 
 ### How do I trim the crystal frequency offset (CFO)? { #xtal-capcode }
 
-Set `CONFIG_IPRO7_XTAL_CAPCODE=<1–255>` in `.config`. `board_init()` applies it at boot and prints `[XTAL] capcode <boot value> -> <setting>`, and every RF init loads it again. With 0, the boot value stays until the first RF init loads the ROM default of 85. The IPRO7AI Reef EVK uses 95 when the config does not set a value.
+Set `CONFIG_IPRO7_XTAL_CAPCODE=<1–255>` in `.config`. At boot `board_init()` applies it and prints `[XTAL] capcode <boot value> -> <set value>`, and every RF initialization reloads it. With 0 the boot value stays until the first RF initialization loads the ROM default 85. The Reef uses 95 when it is not set, and CMake prints `[board] IPRO7AI Reef: CONFIG_IPRO7_XTAL_CAPCODE=95 (board default)` at configure time.
 
-A higher value lowers the frequency: increase it when the frequency is high (positive offset), decrease it when low. This is a board-level value; production units still need a per-unit trim. Under Zephyr the option is `CONFIG_SOC_IPRO7_XTAL_CAPCODE`; set it to 95 on the Reef. From code you can also call `AON_Set_Xtal_CapCode()` and `AON_Get_Xtal_CapCode()` (`bsp/drivers/ipro7_soc/std_drv/inc/drv_aon.h`).
+A higher value lowers the frequency: raise it when the frequency is high (positive offset), lower it when it is low. This is a per-board value; production still calibrates each unit. Code can also call `AON_Set_Xtal_CapCode()` and `AON_Get_Xtal_CapCode()` (`bsp/drivers/ipro7_soc/std_drv/inc/drv_aon.h`).
 
 ## Debugging { #debug }
 
@@ -163,8 +215,8 @@ CONFIG_IPRO_LOG_ENABLE=y
 CONFIG_LOG_DEFAULT_LEVEL=4    # 1 error, 2 warning, 3 info, 4 debug, 5 verbose
 ```
 
-The code reads the integer `CONFIG_LOG_DEFAULT_LEVEL`; changing only an option such as `CONFIG_LOG_DEFAULT_LEVEL_DEBUG=y` has no effect, and `CONFIG_BT_DEBUG` does not turn on host logs. At run time, use `ipro_log_set_level()`; see [API Reference](api/index.md#log-api).
+The code reads the integer `CONFIG_LOG_DEFAULT_LEVEL`; setting options such as `CONFIG_LOG_DEFAULT_LEVEL_DEBUG=y` has no effect, and `CONFIG_BT_DEBUG` does not turn on host logs. Change the level at run time with `ipro_log_set_level()`; see [API Reference](api/index.md#log-api).
 
 ### How do I analyze a crash or a stack overflow? { #crash }
 
-On a CPU exception the firmware prints `MCAUSE`, `MEPC`, the faulting task and a backtrace; run the toolchain's `addr2line` against the `.elf` from the same build to get source lines. A stack overflow prints `[!] Stack overflow: <task>`; increase the stack depth passed to `xTaskCreate()` (in words). See [Crash analysis](debugging.md#crash-analysis).
+On a CPU exception the firmware prints `MCAUSE`, `MEPC`, the faulting task and a backtrace; run the toolchain's `addr2line` against the `.elf` of the same build to get the function and source line. A stack overflow prints `[!] Stack overflow: <task>`; increase the stack depth in `xTaskCreate()` (in words). After a crash, `ipro7ai_reef_demo` and `ipro_reef_teach` keep printing `==DUMP_READY:2000000==` while they wait for a host tool that does not ship: save the diagnostics and press SW2 to reset. This release has no setup for an on-target debugger (JTAG / GDB). See [Crash analysis](debugging.md#crash-analysis).

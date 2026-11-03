@@ -5,6 +5,19 @@
 exclude:
   # GPL-2.0 licensed MII register header; kept out of the public reference until decided.
   - bsp/hal/inc/mii.h
+  # IPRO7AI EVK board library: the site documents the IPRO7AI Reef EVK only (since V2.2.0).
+  - components/board/ipro7ai_evk/include/evk.h
+  - components/board/ipro7ai_evk/include/st7789p3.h
+  - components/board/ipro7ai_evk/include/st7789p3_port.h
+  - components/board/ipro7ai_evk/include/evk_gfx.h
+  - components/board/ipro7ai_evk/include/font5x7.h
+  - components/board/ipro7ai_evk/include/evk_cam.h
+  - components/board/ipro7ai_evk/include/evk_cam_port.h
+  - components/board/ipro7ai_evk/include/evk_mic.h
+  - components/board/ipro7ai_evk/include/evk_spk.h
+  - components/board/ipro7ai_evk/include/evk_audio_port.h
+  - components/board/ipro7ai_evk/include/evk_pcm.h
+  - components/board/ipro7ai_evk/include/evk_sd.h
 groups:
   - id: platform
     title: {zh: 平台與系統, en: Platform & System}
@@ -162,21 +175,3 @@ groups:
       - components/ai/src/inst/include/audio/speaker_recog.h
       - components/ai/src/inst/include/audio/gallery.h
       - components/ai/src/inst/include/audio/diarize.h
-  - id: ipro7ai-evk
-    title: {zh: IPRO7AI EVK 板卡庫, en: IPRO7AI EVK Board Library}
-    summary:
-      zh: EVK 子板的面板、繪圖、相機、麥克風、喇叭、PCM 與 microSD 介面。
-      en: The EVK sub-board interfaces for the panel, graphics, camera, microphone, speaker, PCM and microSD.
-    headers:
-      - components/board/ipro7ai_evk/include/evk.h
-      - components/board/ipro7ai_evk/include/st7789p3.h
-      - components/board/ipro7ai_evk/include/st7789p3_port.h
-      - components/board/ipro7ai_evk/include/evk_gfx.h
-      - components/board/ipro7ai_evk/include/font5x7.h
-      - components/board/ipro7ai_evk/include/evk_cam.h
-      - components/board/ipro7ai_evk/include/evk_cam_port.h
-      - components/board/ipro7ai_evk/include/evk_mic.h
-      - components/board/ipro7ai_evk/include/evk_spk.h
-      - components/board/ipro7ai_evk/include/evk_audio_port.h
-      - components/board/ipro7ai_evk/include/evk_pcm.h
-      - components/board/ipro7ai_evk/include/evk_sd.h
