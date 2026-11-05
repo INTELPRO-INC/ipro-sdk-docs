@@ -20,10 +20,12 @@ exclude:
   - components/board/ipro7ai_evk/include/evk_sd.h
 groups:
   - id: platform
-    title: {zh: 平台與系統, en: Platform & System}
+    title: {zh: 平台與系統, en: Platform & System, zh-cn: 平台与系统, ja: プラットフォームとシステム}
     summary:
       zh: FreeRTOS 啟動與掛鉤、HAL 共用定義、系統控制、時脈、計時器、看門狗、RTC 與記憶體配置輔助。
       en: FreeRTOS start-up and hooks, common HAL definitions, system control, clocks, timers, watchdogs, RTC and memory helpers.
+      zh-cn: FreeRTOS 启动与钩子、HAL 公共定义、系统控制、时钟、定时器、看门狗、RTC 与内存分配辅助。
+      ja: FreeRTOS の起動とフック、HAL の共通定義、システム制御、クロック、タイマー、ウォッチドッグ、RTC、メモリ割り当ての補助。
     headers:
       - components/os/freertos/freertos_app_hooks.h
       - bsp/hal/inc/hal_common.h
@@ -37,10 +39,12 @@ groups:
       - bsp/hal/inc/hal_cache_alloc.h
       - bsp/hal/inc/hal_hbnram_mgnt.h
   - id: memory-boot
-    title: {zh: 記憶體、Flash 與開機, en: Memory, Flash & Boot}
+    title: {zh: 記憶體、Flash 與開機, en: "Memory, Flash & Boot", zh-cn: 内存、Flash 与启动, ja: メモリ、Flash、ブート}
     summary:
       zh: Flash 讀寫、PSRAM、boot2 與分割表管理。
       en: Flash access, PSRAM, boot2 and the partition table manager.
+      zh-cn: Flash 读写、PSRAM、boot2 与分区表管理。
+      ja: Flash の読み書き、PSRAM、boot2、パーティションテーブルの管理。
     headers:
       - bsp/hal/inc/hal_flash.h
       - bsp/hal/inc/hal_psram.h
@@ -48,20 +52,24 @@ groups:
       - bsp/hal/inc/hal_boot2.h
       - bsp/hal/inc/hal_ptmgr.h
   - id: power
-    title: {zh: 電源管理與低功耗, en: Power Management & Low Power}
+    title: {zh: 電源管理與低功耗, en: Power Management & Low Power, zh-cn: 电源管理与低功耗, ja: 電源管理と低消費電力}
     summary:
       zh: 電源模式、PDS 休眠與喚醒，以及低功耗框架與低功耗 UART。
       en: Power modes, PDS sleep and wake-up, the low-power framework and the low-power UART.
+      zh-cn: 电源模式、PDS 休眠与唤醒，以及低功耗框架与低功耗 UART。
+      ja: 電源モード、PDS スリープと復帰、低消費電力フレームワークと低消費電力 UART。
     headers:
       - bsp/hal/inc/hal_pm.h
       - bsp/hal/inc/hal_pm_util.h
       - bsp/hal/lp_framework/ipro7/hal_lp.h
       - bsp/hal/lp_framework/ipro7/lp_uart.h
   - id: peripherals
-    title: {zh: 周邊 I/O, en: Peripheral I/O}
+    title: {zh: 周邊 I/O, en: Peripheral I/O, zh-cn: 外设 I/O, ja: 周辺 I/O}
     summary:
       zh: GPIO、UART、SPI、I2C、PWM、ADC、DAC、類比比較器、KeyScan、QDEC 與 DMA。
       en: GPIO, UART, SPI, I2C, PWM, ADC, DAC, analog comparator, KeyScan, QDEC and DMA.
+      zh-cn: GPIO、UART、SPI、I2C、PWM、ADC、DAC、模拟比较器、KeyScan、QDEC 与 DMA。
+      ja: GPIO、UART、SPI、I2C、PWM、ADC、DAC、アナログコンパレーター、KeyScan、QDEC、DMA。
     headers:
       - bsp/hal/inc/hal_gpio.h
       - bsp/hal/inc/hal_uart.h
@@ -77,57 +85,69 @@ groups:
       - bsp/hal/inc/hal_qdec.h
       - bsp/hal/inc/hal_dma.h
   - id: audio
-    title: {zh: 音訊, en: Audio}
+    title: {zh: 音訊, en: Audio, zh-cn: 音频, ja: オーディオ}
     summary:
       zh: 音訊 ADC（PDM 與類比麥克風）與 I2S。
       en: Audio ADC (PDM and analog microphones) and I2S.
+      zh-cn: 音频 ADC（PDM 与模拟麦克风）与 I2S。
+      ja: オーディオ ADC（PDM マイクとアナログマイク）と I2S。
     headers:
       - bsp/hal/inc/hal_auadc.h
       - bsp/hal/inc/hal_i2s.h
       - bsp/hal/default_config/i2s_config.h
   - id: camera
-    title: {zh: 相機與影像, en: Camera & Imaging}
+    title: {zh: 相機與影像, en: Camera & Imaging, zh-cn: 摄像头与图像, ja: カメラと画像処理}
     summary:
       zh: DVP 相機介面、ISP，以及硬體 MJPEG 編碼與解碼。
       en: DVP camera interface, ISP, and hardware MJPEG encoding and decoding.
+      zh-cn: DVP 摄像头接口、ISP，以及硬件 MJPEG 编码与解码。
+      ja: DVP カメラインターフェース、ISP、ハードウェア MJPEG のエンコードとデコード。
     headers:
       - bsp/hal/inc/hal_cam.h
       - bsp/hal/inc/hal_isp.h
       - bsp/hal/inc/hal_mjpeg.h
       - bsp/hal/inc/hal_mjdec.h
   - id: sd-sdio
-    title: {zh: SD 卡與 SDIO, en: SD Card & SDIO}
+    title: {zh: SD 卡與 SDIO, en: SD Card & SDIO, zh-cn: SD 卡与 SDIO, ja: SD カードと SDIO}
     summary:
       zh: 硬體 SD 主機、SDIO，以及以 PIO 實作的 SD 主機。
       en: Hardware SD host, SDIO, and the PIO-based SD host.
+      zh-cn: 硬件 SD 主机、SDIO，以及用 PIO 实现的 SD 主机。
+      ja: ハードウェア SD ホスト、SDIO、PIO で実装した SD ホスト。
     headers:
       - bsp/hal/inc/hal_sdh.h
       - bsp/hal/inc/hal_sdio.h
       - bsp/hal/inc/hal_pio_sdh.h
       - bsp/hal/inc/hal_pio_sdh_crc.h
   - id: ethernet
-    title: {zh: 乙太網路, en: Ethernet}
+    title: {zh: 乙太網路, en: Ethernet, zh-cn: 以太网, ja: イーサネット}
     summary:
       zh: EMAC、lwIP 網路介面與乙太網路 PHY。
       en: EMAC, the lwIP network interface and the Ethernet PHY.
+      zh-cn: EMAC、lwIP 网络接口与以太网 PHY。
+      ja: EMAC、lwIP ネットワークインターフェース、イーサネット PHY。
     headers:
       - bsp/hal/inc/hal_emac.h
       - bsp/hal/inc/hal_ethernetif.h
       - bsp/hal/inc/ethernet_phy.h
   - id: pio
-    title: {zh: PIO, en: PIO}
+    title: {zh: PIO, en: PIO, zh-cn: PIO, ja: PIO}
     summary:
       zh: 可程式 I/O：CCI、CMSIS-DAP 與掃描介面。
       en: Programmable I/O for CCI, CMSIS-DAP and scan interfaces.
+      zh-cn: 可编程 I/O：CCI、CMSIS-DAP 与扫描接口。
+      ja: プログラマブル I/O：CCI、CMSIS-DAP、スキャンインターフェース。
     headers:
       - bsp/hal/inc/hal_pio_cci.h
       - bsp/hal/inc/hal_pio_cmsis_dap.h
       - bsp/hal/inc/hal_pio_scan.h
   - id: security
-    title: {zh: 安全引擎, en: Security Engine}
+    title: {zh: 安全引擎, en: Security Engine, zh-cn: 安全引擎, ja: セキュリティエンジン}
     summary:
       zh: AES、GMAC、雜湊、DSA、ECDSA、P-256 與硬體亂數。
       en: AES, GMAC, hashing, DSA, ECDSA, P-256 and the hardware random number generator.
+      zh-cn: AES、GMAC、哈希、DSA、ECDSA、P-256 与硬件随机数。
+      ja: AES、GMAC、ハッシュ、DSA、ECDSA、P-256、ハードウェア乱数。
     headers:
       - bsp/hal/inc/hal_sec_common.h
       - bsp/hal/inc/hal_sec_hw_common.h
@@ -139,10 +159,12 @@ groups:
       - bsp/hal/inc/hal_sec_p256.h
       - bsp/hal/inc/hal_sec_trng.h
   - id: wireless-ble
-    title: {zh: 無線與 BLE 控制器, en: Wireless & BLE Controller}
+    title: {zh: 無線與 BLE 控制器, en: Wireless & BLE Controller, zh-cn: 无线与 BLE 控制器, ja: ワイヤレスと BLE コントローラー}
     summary:
       zh: 無線電初始化，以及 IPRO BLE 控制器的啟動、HCI 傳輸、低功耗與 NVDS 介面。
       en: Radio start-up and the IPRO BLE controller interfaces for bring-up, HCI transport, low power and NVDS.
+      zh-cn: 无线电初始化，以及 IPRO BLE 控制器的启动、HCI 传输、低功耗与 NVDS 接口。
+      ja: 無線の初期化と、IPRO BLE コントローラーの起動、HCI トランスポート、低消費電力、NVDS のインターフェース。
     headers:
       - bsp/hal/inc/hal_wireless.h
       - components/wireless/bluetooth/ipro_ble_controller/include/ipro_ble_controller.h
@@ -152,10 +174,12 @@ groups:
       - components/wireless/bluetooth/ipro_ble_controller/plf/ipro7/lowpower/ipro_ble_ctlr_pds_snapshot.h
       - components/wireless/bluetooth/ipro_ble_controller/plf/ipro7/nvds/ipro_ble_ctlr_nvds.h
   - id: ai
-    title: {zh: AI 執行庫, en: AI Runtime}
+    title: {zh: AI 執行庫, en: AI Runtime, zh-cn: AI 运行库, ja: AI ランタイム}
     summary:
       zh: NPU 驅動、推論核心、運算子與後處理，以及偵測與語音模型的介面。
       en: The NPU driver, inference core, operators and post-processing, and the detection and speech model interfaces.
+      zh-cn: NPU 驱动、推理核心、算子与后处理，以及检测与语音模型的接口。
+      ja: NPU ドライバー、推論コア、演算子と後処理、検出モデルと音声モデルのインターフェース。
     headers:
       - bsp/hal/inc/hal_npu.h
       - components/ai/iproai_def.h

@@ -42,7 +42,7 @@ of the nav fails the build.
 
 | Tool | Checks |
 |---|---|
-| `tools/parity_check.py` | zh and en have the same pages, nav order, level-2 heading count and explicit heading ids |
+| `tools/parity_check.py` | every language (en, zh-cn, ja) has the same pages, nav order, level-2 heading count and explicit heading ids as zh-TW |
 | `tools/redline_check.py` | public-content rules (below) and Taiwan terminology on zh-TW pages (`tools/zh_tw_terms.yml`) |
 | `tools/stub_report.py` | pages still marked `status: stub`, and legacy sections no page claims |
 | `python -m pytest tools/tests` | unit tests for the tools above |

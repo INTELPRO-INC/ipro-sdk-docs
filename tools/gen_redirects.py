@@ -34,7 +34,10 @@ from urllib.parse import urlparse
 
 import yaml
 
-from gen_common import DOCS, LANGS, ROOT, load_yaml, mkdocs_config
+from gen_common import DOCS, ROOT, load_yaml, mkdocs_config
+
+# The old Jekyll site had only these two languages; zh-cn and ja have no old URLs.
+LANGS = ("zh", "en")
 
 DATA = ROOT / "data" / "redirects.yml"
 GENERATOR = "tools/gen_redirects.py"

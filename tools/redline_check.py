@@ -52,7 +52,7 @@ class Rule:
     severity: str
     message: str
     private: bool = False
-    lang: str | None = None          # "zh" / "en" limits the rule to that language's pages
+    lang: str | None = None          # "zh" / "en" / "zh-cn" / "ja" limits the rule to that language's pages
     unless: re.Pattern[str] | None = None  # skip the line when this also matches
 
 
@@ -77,7 +77,8 @@ def public_rules() -> list[Rule]:
         Rule("ipro7-wifi", re.compile(r"IPRO7(?:AI)?\b.*\bWi-?Fi\b|\bWi-?Fi\b.*IPRO7(?:AI)?\b"),
              "warning", "IPRO7 has no built-in Wi-Fi; say how Wi-Fi is added (IPRO6S over SDIO, FIN card)",
              unless=re.compile(r"不內建|未內建|沒有內建|無內建|no built-in|IPRO6S?|FIN|companion|SDIO|"
-                               r"AIC8800|ATBM|乙太網路|Ethernet", re.I)),
+                               r"AIC8800|ATBM|乙太網路|Ethernet|不内置|未内置|没有内置|以太网|内蔵されていない|非搭載|"
+                               r"イーサネット|コンパニオン", re.I)),
     ]
     terms = yaml.safe_load(TERMS_FILE.read_text(encoding="utf-8")) or {}
     for item in terms.get("terms", []):
@@ -129,7 +130,7 @@ def files_to_scan(paths: list[str]) -> list[Path]:
 
 def page_lang(path: Path) -> str | None:
     parts = path.relative_to(ROOT).parts if path.is_relative_to(ROOT) else path.parts
-    if len(parts) > 1 and parts[0] == "docs" and parts[1] in ("zh", "en"):
+    if len(parts) > 1 and parts[0] == "docs" and parts[1] in ("zh", "en", "zh-cn", "ja"):
         return parts[1]
     return None
 

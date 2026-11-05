@@ -21,6 +21,8 @@ extra:
   alternate:
     - { name: 繁體中文, link: /ipro-sdk-docs/, lang: zh-TW }
     - { name: English, link: /ipro-sdk-docs/en/, lang: en }
+    - { name: 简体中文, link: /ipro-sdk-docs/zh-cn/, lang: zh-CN }
+    - { name: 日本語, link: /ipro-sdk-docs/ja/, lang: ja }
 
 nav:
   - "Home": index.md
@@ -106,7 +108,7 @@ nav:
           - reference/api/index.md
           # BEGIN generated: api
           - "Platform & System": reference/api/platform.md
-          - "Memory": reference/api/memory-boot.md
+          - "Memory, Flash & Boot": reference/api/memory-boot.md
           - "Power Management & Low Power": reference/api/power.md
           - "Peripheral I/O": reference/api/peripherals.md
           - "Audio": reference/api/audio.md

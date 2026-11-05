@@ -19,7 +19,7 @@ from typing import Any
 
 import redline_check
 from doxy_md import Doc, parse_doc, text_of
-from gen_common import (LANGS, ROOT, front_matter, github_url, load_yaml, redline_errors, replace_block,
+from gen_common import (CJK_LANGS, LANGS, ROOT, front_matter, github_url, load_yaml, redline_errors, replace_block,
                         table, update_nav, write_page)
 
 DATA = ROOT / "data" / "api.yml"
@@ -39,6 +39,19 @@ LABELS = {
            "sections": {"note": "Note", "warning": "Warning", "attention": "Attention", "see": "See also",
                         "pre": "Precondition", "post": "Postcondition", "remark": "Remark", "since": "Since",
                         "deprecated": "Deprecated"}},
+    "zh-cn": {"param": "参数", "desc": "说明", "returns": "返回值", "retval": "返回码", "name": "名称", "value": "值",
+              "field": "字段", "type": "类型", "definition": "定义", "header": "头文件", "functions": "函数",
+              "macros": "宏", "typedefs": "类型定义", "group": "分类", "headers": "头文件数", "contents": "内容",
+              "source": "源代码", "anon_enum": "匿名枚举", "comment_lang": "说明取自头文件注释（英文）。",
+              "sections": {"note": "注意", "warning": "警告", "attention": "注意", "see": "参见", "pre": "前置条件",
+                           "post": "后置条件", "remark": "备注", "since": "起始版本", "deprecated": "已弃用"}},
+    "ja": {"param": "パラメーター", "desc": "説明", "returns": "戻り値", "retval": "リターンコード", "name": "名前",
+           "value": "値", "field": "フィールド", "type": "型", "definition": "定義", "header": "ヘッダー",
+           "functions": "関数", "macros": "マクロ", "typedefs": "型定義", "group": "分類", "headers": "ヘッダー数",
+           "contents": "内容", "source": "ソースコード", "anon_enum": "無名列挙型",
+           "comment_lang": "説明はヘッダーファイルのコメント（英語）から取っています。",
+           "sections": {"note": "注記", "warning": "警告", "attention": "注意", "see": "参照", "pre": "事前条件",
+                        "post": "事後条件", "remark": "備考", "since": "導入バージョン", "deprecated": "非推奨"}},
 }
 ADMONITION = {"note": "note", "attention": "warning", "warning": "warning", "deprecated": "warning"}
 
@@ -139,7 +152,7 @@ def doc_blocks(doc: Doc, lang: str) -> list[str]:
     if doc.params:
         out.append(table([labels["param"], labels["desc"]], [[f"`{n}`", d] for n, d in doc.params]))
     if doc.returns:
-        out.append(f"**{labels['returns']}**：{doc.returns}" if lang == "zh" else f"**{labels['returns']}:** {doc.returns}")
+        out.append(f"**{labels['returns']}**：{doc.returns}" if lang in CJK_LANGS else f"**{labels['returns']}:** {doc.returns}")
     if doc.retvals:
         out.append(table([labels["retval"], labels["desc"]], [[f"`{n}`", d] for n, d in doc.retvals]))
     for kind, text in doc.sections:
@@ -147,7 +160,7 @@ def doc_blocks(doc: Doc, lang: str) -> list[str]:
         if kind in ADMONITION:
             out.append(f'!!! {ADMONITION[kind]} "{title}"\n    ' + text.replace("\n", "\n    "))
         else:
-            out.append(f"**{title}**：{text}" if lang == "zh" else f"**{title}:** {text}")
+            out.append(f"**{title}**：{text}" if lang in CJK_LANGS else f"**{title}:** {text}")
     return out
 
 
@@ -216,7 +229,7 @@ def typedef_rows(header: Header, resolve: Any) -> list[list[str]]:
 
 def include_line(name: str, path: str, lang: str) -> str:
     link = f"[{LABELS[lang]['source']}]({github_url(path, 'blob')})"
-    return f'`#include "{name}"`（{link}）' if lang == "zh" else f'`#include "{name}"` ({link})'
+    return f'`#include "{name}"`（{link}）' if lang in CJK_LANGS else f'`#include "{name}"` ({link})'
 
 
 def header_md(header: Header, xml_dir: Path, lang: str, resolve: Any) -> str:

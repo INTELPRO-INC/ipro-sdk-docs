@@ -41,6 +41,15 @@ LABELS = {
            "note_title": "The README as shipped",
            "note": "Below is the README that ships with the application (SDK {sdk}), as written; "
                    "only content unfit for publication was replaced."},
+    "zh-cn": {"app": "应用", "purpose": "用途", "boards": "开发板与配置", "console": "控制台", "item": "项目",
+              "content": "内容", "source": "源代码", "build": "构建", "reef": "在 Reef 上运行",
+              "note_title": "README 原文",
+              "note": "以下是应用附带的 README（SDK {sdk}），保留原文、未翻译；只替换了不适合公开的内容。"},
+    "ja": {"app": "アプリケーション", "purpose": "用途", "boards": "ボードと設定", "console": "コンソール",
+           "item": "項目", "content": "内容", "source": "ソースコード", "build": "ビルド", "reef": "Reef で動かす",
+           "note_title": "README の原文",
+           "note": "以下はアプリケーションに付属する README（SDK {sdk}）を原文のまま掲載したものです。"
+                   "翻訳はしておらず、公開に適さない内容だけを置き換えています。"},
 }
 
 

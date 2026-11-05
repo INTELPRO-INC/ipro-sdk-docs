@@ -20,7 +20,7 @@ The complete reference by area, generated from the public headers of SDK V2.1.0.
 | Group | Headers | Functions | Contents |
 |---|---|---|---|
 | [Platform & System](platform.md) | 11 | 65 | FreeRTOS start-up and hooks, common HAL definitions, system control, clocks, timers, watchdogs, RTC and memory helpers. |
-| [Memory](memory-boot.md) | 5 | 45 | Flash access, PSRAM, boot2 and the partition table manager. |
+| [Memory, Flash & Boot](memory-boot.md) | 5 | 45 | Flash access, PSRAM, boot2 and the partition table manager. |
 | [Power Management & Low Power](power.md) | 4 | 52 | Power modes, PDS sleep and wake-up, the low-power framework and the low-power UART. |
 | [Peripheral I/O](peripherals.md) | 13 | 62 | GPIO, UART, SPI, I2C, PWM, ADC, DAC, analog comparator, KeyScan, QDEC and DMA. |
 | [Audio](audio.md) | 3 | 16 | Audio ADC (PDM and analog microphones) and I2S. |

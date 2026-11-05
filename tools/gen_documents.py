@@ -22,6 +22,12 @@ LABELS = {
     "en": {"document": "Document", "version": "Version", "languages": "Languages", "contents": "Contents",
            "get": "Availability", "request": "On request", "notice": "How to get them",
            "lang": {"zh-TW": "zh-TW", "en": "English"}, "sep": " / "},
+    "zh-cn": {"document": "文档", "version": "版本", "languages": "语言", "contents": "内容", "get": "获取方式",
+              "request": "向 INTELPRO 索取", "notice": "获取方式", "lang": {"zh-TW": "繁体中文", "en": "English"},
+              "sep": "／"},
+    "ja": {"document": "ドキュメント", "version": "バージョン", "languages": "言語", "contents": "内容",
+           "get": "入手方法", "request": "INTELPRO にお問い合わせください", "notice": "入手方法",
+           "lang": {"zh-TW": "繁体字中国語", "en": "英語"}, "sep": "／"},
 }
 
 

@@ -26,7 +26,7 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Tool tests
         run: python -m pytest tools/tests -q
-      - name: zh / en parity
+      - name: Language parity (zh-TW, en, zh-cn, ja)
         run: python tools/parity_check.py
       - name: Red-line check
         # Private rules come from the REDLINE_RULES secret; matches print no text.

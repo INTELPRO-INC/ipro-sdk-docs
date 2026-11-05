@@ -1,5 +1,6 @@
 #!/bin/sh
-# Build both languages: zh-TW into site/, English into site/en/.
+# Build every language: zh-TW into site/, then English, Simplified Chinese and
+# Japanese into site/en/, site/zh-cn/ and site/ja/ (zh-TW first: its build cleans site/).
 #   ENGINE=zensical (default)  primary builder
 #   ENGINE=material            fallback builder (Material for MkDocs on MkDocs 1.x)
 # Both run in strict mode, so any warning fails the build. Afterwards the old
@@ -12,12 +13,10 @@ ENGINE=${ENGINE:-zensical}
 rm -rf site
 case "$ENGINE" in
   zensical)
-    zensical build --strict -f mkdocs.zh.yml
-    zensical build --strict -f mkdocs.en.yml
+    for lang in zh en zh-cn ja; do zensical build --strict -f "mkdocs.$lang.yml"; done
     ;;
   material)
-    mkdocs build --strict -f mkdocs.zh.yml
-    mkdocs build --strict -f mkdocs.en.yml
+    for lang in zh en zh-cn ja; do mkdocs build --strict -f "mkdocs.$lang.yml"; done
     ;;
   *)
     echo "unknown ENGINE '$ENGINE' (zensical | material)" >&2

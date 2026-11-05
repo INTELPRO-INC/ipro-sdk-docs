@@ -103,6 +103,27 @@ def test_zh_terms_apply_to_zh_pages_only(tmp_path):
         en.unlink(missing_ok=True)
 
 
+def test_page_lang_knows_every_site_language():
+    root = redline_check.ROOT
+    for lang in ("zh", "en", "zh-cn", "ja"):
+        assert redline_check.page_lang(root / "docs" / lang / "index.md") == lang
+    assert redline_check.page_lang(root / "README.md") is None
+
+
+def test_parity_compare_reports_missing_pages_nav_and_ids(monkeypatch, tmp_path):
+    for lang, body in (("zh", "## A { #a }\n## B { #b }\n"), ("ja", "## A { #a }\n## B { #other }\n")):
+        (tmp_path / "docs" / lang).mkdir(parents=True)
+        (tmp_path / "docs" / lang / "p.md").write_text(body, encoding="utf-8")
+    (tmp_path / "docs" / "zh" / "only.md").write_text("", encoding="utf-8")
+    monkeypatch.setattr(parity_check, "ROOT", tmp_path)
+    pages = {"zh": {"p.md", "only.md"}, "ja": {"p.md"}}
+    nav = {"zh": ["p.md", "only.md"], "ja": ["p.md"]}
+    errors = parity_check.compare("ja", pages, nav)
+    assert "docs/zh/only.md: no ja counterpart" in errors
+    assert any(e.startswith("nav length differs") for e in errors)
+    assert any("heading ids differ between zh and ja" in e for e in errors)
+
+
 def test_term_pattern_override_skips_compound_words():
     rules = redline_check.public_rules()
     zh = redline_check.ROOT / "docs" / "zh" / "_redline_term_test.md"

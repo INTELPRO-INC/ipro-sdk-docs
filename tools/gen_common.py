@@ -13,7 +13,10 @@ import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
-LANGS = ("zh", "en")
+# zh = Traditional Chinese (site root, the reference language), zh-cn = Simplified Chinese.
+LANGS = ("zh", "en", "zh-cn", "ja")
+# Languages that write CJK punctuation (full-width colon and parentheses).
+CJK_LANGS = ("zh", "zh-cn", "ja")
 GITHUB_REPO = "https://github.com/INTELPRO-INC/IPRO-SDK"
 
 
@@ -30,7 +33,7 @@ def load_yaml(path: Path) -> Any:
 
 
 def mkdocs_config(name: str) -> dict[str, Any]:
-    """One mkdocs*.yml file as read, without following INHERIT (name: "base", "zh" or "en")."""
+    """One mkdocs*.yml file as read, without following INHERIT (name: "base" or a language)."""
     return yaml.load((ROOT / f"mkdocs.{name}.yml").read_text(encoding="utf-8"), Loader=_AnyTagLoader)
 
 
@@ -110,7 +113,7 @@ def nav_lines(entries: list[NavEntry], indent: str) -> list[str]:
 def update_nav(name: str, entries: dict[str, list[NavEntry]]) -> None:
     """Rewrite the generated nav block `name` in mkdocs.<lang>.yml.
 
-    entries[lang] lists the same files in the same order for both languages;
+    entries[lang] lists the same files in the same order for every language;
     the block's indentation comes from its BEGIN marker.
     """
     for lang in LANGS:

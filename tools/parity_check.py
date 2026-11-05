@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Check that the zh-TW and English sites mirror each other.
+"""Check that every language mirrors the zh-TW site (the reference language).
 
-Fails when:
+Each of en, zh-cn and ja is compared with zh. Fails when:
   * a page exists in one language only;
-  * the two nav trees list different files or a different order;
+  * two nav trees list different files or a different order;
   * a page pair has a different number of level-2 headings, or different
     explicit heading ids ({ #id }), which the language switch and old anchor
     links rely on;
@@ -20,7 +20,8 @@ from typing import Any
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
-LANGS = ("zh", "en")
+REFERENCE = "zh"
+LANGS = ("zh", "en", "zh-cn", "ja")
 FENCE = re.compile(r"^\s*(```|~~~)")
 HEADING = re.compile(r"^(#{2,6})\s+(.*?)\s*$")
 EXPLICIT_ID = re.compile(r"\{[^}]*#([\w-]+)[^}]*\}\s*$")
@@ -81,43 +82,50 @@ def nav_files(config: str) -> list[str]:
     return list(walk(data.get("nav")))
 
 
-def main() -> int:
+def compare(lang: str, pages: dict[str, set[str]], nav: dict[str, list[str]]) -> list[str]:
+    """Problems between the reference language and `lang`."""
+    ref = REFERENCE
     errors = []
-    pages = {lang: {p.relative_to(ROOT / "docs" / lang).as_posix()
-                    for p in (ROOT / "docs" / lang).rglob("*.md")} for lang in LANGS}
-    for lang, other in (("zh", "en"), ("en", "zh")):
-        for rel in sorted(pages[lang] - pages[other]):
-            errors.append(f"docs/{lang}/{rel}: no {other} counterpart")
+    for a, b in ((ref, lang), (lang, ref)):
+        for rel in sorted(pages[a] - pages[b]):
+            errors.append(f"docs/{a}/{rel}: no {b} counterpart")
 
-    nav = {lang: nav_files(f"mkdocs.{lang}.yml") for lang in LANGS}
-    if nav["zh"] != nav["en"]:
-        for i, (a, b) in enumerate(zip(nav["zh"], nav["en"])):
+    if nav[ref] != nav[lang]:
+        for i, (a, b) in enumerate(zip(nav[ref], nav[lang])):
             if a != b:
-                errors.append(f"nav differs at entry {i + 1}: zh={a} en={b}")
+                errors.append(f"nav differs at entry {i + 1}: {ref}={a} {lang}={b}")
                 break
         else:
-            errors.append(f"nav length differs: zh={len(nav['zh'])} en={len(nav['en'])}")
+            errors.append(f"nav length differs: {ref}={len(nav[ref])} {lang}={len(nav[lang])}")
 
-    for rel in sorted(pages["zh"] & pages["en"]):
+    for rel in sorted(pages[ref] & pages[lang]):
         meta = {}
         heads = {}
-        for lang in LANGS:
-            m, body = split_front_matter((ROOT / "docs" / lang / rel).read_text(encoding="utf-8"))
-            meta[lang] = m
-            heads[lang] = headings(body)
-        (zh_h2, zh_ids), (en_h2, en_ids) = heads["zh"], heads["en"]
-        if zh_h2 != en_h2:
-            errors.append(f"{rel}: level-2 headings zh={zh_h2} en={en_h2}")
-        if zh_ids != en_ids:
-            missing = sorted(set(zh_ids) ^ set(en_ids))
+        for side in (ref, lang):
+            m, body = split_front_matter((ROOT / "docs" / side / rel).read_text(encoding="utf-8"))
+            meta[side] = m
+            heads[side] = headings(body)
+        (ref_h2, ref_ids), (h2, ids) = heads[ref], heads[lang]
+        if ref_h2 != h2:
+            errors.append(f"{rel}: level-2 headings {ref}={ref_h2} {lang}={h2}")
+        if ref_ids != ids:
+            missing = sorted(set(ref_ids) ^ set(ids))
             detail = f"only on one side: {', '.join(missing)}" if missing else "same ids, different order"
-            errors.append(f"{rel}: heading ids differ ({detail})")
-        if meta["zh"].get("status") != meta["en"].get("status"):
-            errors.append(f"{rel}: status zh={meta['zh'].get('status')} en={meta['en'].get('status')}")
+            errors.append(f"{rel}: heading ids differ between {ref} and {lang} ({detail})")
+        if meta[ref].get("status") != meta[lang].get("status"):
+            errors.append(f"{rel}: status {ref}={meta[ref].get('status')} {lang}={meta[lang].get('status')}")
+    return errors
 
+
+def main() -> int:
+    pages = {lang: {p.relative_to(ROOT / "docs" / lang).as_posix()
+                    for p in (ROOT / "docs" / lang).rglob("*.md")} for lang in LANGS}
+    nav = {lang: nav_files(f"mkdocs.{lang}.yml") for lang in LANGS}
+    errors = [err for lang in LANGS if lang != REFERENCE for err in compare(lang, pages, nav)]
     for err in errors:
         print(f"parity: {err}")
-    print(f"parity: {len(pages['zh'])} page pairs, {len(nav['zh'])} nav entries, {len(errors)} problem(s)")
+    print(f"parity: {len(pages[REFERENCE])} pages x {len(LANGS)} languages, {len(nav[REFERENCE])} nav entries, "
+          f"{len(errors)} problem(s)")
     return 1 if errors else 0
 
 

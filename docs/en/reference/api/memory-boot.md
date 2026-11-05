@@ -1,11 +1,11 @@
 ---
-title: Memory
+title: Memory, Flash & Boot
 description: Flash access, PSRAM, boot2 and the partition table manager.
 generated: tools/gen_api.py
 migrate_from: []
 ---
 
-# Memory
+# Memory, Flash & Boot
 
 Flash access, PSRAM, boot2 and the partition table manager.
 
