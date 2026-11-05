@@ -182,7 +182,7 @@ F1 or Ctrl+Shift+P opens the command palette. The Extension declares no default 
 |---|---|
 | IPRO commands are missing | Check the Extension version, the VS Code profile, Workspace Trust and the SDK root, then reload the window |
 | Diagnostics still shows the old SDK | Workspace and folder settings can override user settings; run `IPRO Setup: Set SDK Root` again on the V2.2.0 directory |
-| Build fails to compile or link | Check that the compiler is a toolchain that matches V2.2.0 (GCC 14) |
+| Build fails to compile or link | Check with Diagnostics that the compiler is the toolchain of the same installation (on Windows, the GCC 13.1.1 Online Setup installs; on macOS / Linux, GCC 14) |
 | Garbled console or the old baud rate | Check the firmware's console rate and `ipro.monitorBaudRate`, then close and reopen the monitor |
 | `flash jedec id: 00000000` while flashing the Reef | Set the chip variant to `IPRO7AI` |
 | No `[All Success]` from the flash tool | The board is not in download mode, or another program holds the port |

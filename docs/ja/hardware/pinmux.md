@@ -193,7 +193,7 @@ I2S0（機能 3）は 4 本の GPIO を 1 グループとして使い、各ピ�
 - UART 行の Sn は UART 信号 n です（スワップなし）。
 - QDEC 行：Qn_A / Qn_B は QDECn の A 相 / B 相、Qn_LED はその LED 駆動です。
 - ADC 行の CHn は GPADC のチャネルです。DAC_A / DAC_B は 2 つの GPDAC 出力です。
-- PWM ドライバー（`drv_pwm.h`）は CH0–CH3 を提供します。
+- PWM 行の CH0–CH4 は GPIO 機能定義（`drv_gpio.h`）の信号名です。PWM ドライバー（`drv_pwm.h`）が提供するのは CH0–CH3 だけで、CH4 に割り当てたピンにはドライバーがありません。
 
 ### GPIO0–GPIO7 { #alt-gpio0-7 }
 

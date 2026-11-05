@@ -77,7 +77,7 @@ Extension 的其他命令與設定見 [VS Code Extension](../guides/vscode.md)�
 
 ## 命令列建置 { #command-line }
 
-`build_freertos.ps1` 是 `build_freertos.sh` 的 Windows 版，動作與選項相同：`build`、`clean`、`flash`、`monitor`、`size`、`test` 可以組合，依序執行。它使用同一個安裝目錄中的工具鏈、CMake、Ninja、Python 與 IntelProCube，沒有加入 PATH 也能執行。Windows 預設不允許直接執行 `.ps1`；以 `powershell -ExecutionPolicy Bypass -File` 執行只影響這一次，不會改變系統設定。
+`build_freertos.ps1` 是 `build_freertos.sh` 的 Windows 版，動作相同：`build`、`clean`、`flash`、`monitor`、`size`、`test` 可以組合，依序執行。選項大致相同，但 `-c` 在這裡是工具鏈前綴（`--cross`）；晶片變體與分割表只有長選項 `--chip-variant`、`--pt`（`build_freertos.sh` 的 `-c` 是 `--chip-variant`，`-P` 是分割表）。它使用同一個安裝目錄中的工具鏈、CMake、Ninja、Python 與 IntelProCube，沒有加入 PATH 也能執行。Windows 預設不允許直接執行 `.ps1`；以 `powershell -ExecutionPolicy Bypass -File` 執行只影響這一次，不會改變系統設定。
 
 <div class="ipro-steps" markdown>
 

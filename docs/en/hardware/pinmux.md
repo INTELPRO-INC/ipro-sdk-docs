@@ -193,7 +193,7 @@ Only functions that matter for peripheral design are listed; every GPIO also has
 - Sn in the UART row is UART signal n (no swap).
 - QDEC row: Qn_A / Qn_B are the A / B phases of QDECn, Qn_LED is its LED drive.
 - CHn in the ADC row is a GPADC channel; DAC_A / DAC_B are the two GPDAC outputs.
-- The PWM driver (`drv_pwm.h`) provides CH0–CH3.
+- CH0–CH4 in the PWM rows are the signal names of the GPIO function definitions (`drv_gpio.h`); the PWM driver (`drv_pwm.h`) provides CH0–CH3 only, so pins routed to CH4 have no driver.
 
 ### GPIO0–GPIO7 { #alt-gpio0-7 }
 

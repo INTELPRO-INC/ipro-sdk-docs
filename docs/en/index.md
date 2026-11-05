@@ -116,7 +116,7 @@ The SDK also carries applications for the IPRO7 EVB, the IPRO7AI EVK and the IPR
 <span class="ln o">[1/4] RGB LED: red, green, blue</span>
 <span class="ln o">[2/4] speaker: 1 kHz, 300 ms, 20%</span>
 <span class="ln o">[3/4] SD slot: empty, supply on</span>
-<span class="ln o">[4/4] camera bus: OV5640 at 0x3C</span>
+<span class="ln o">[4/4] camera bus: __rti_name_ov5640 at 0x3C</span>
 <span class="ln ok">done - keys: press any and run `btn status`</span></code></pre>
 </div>
 

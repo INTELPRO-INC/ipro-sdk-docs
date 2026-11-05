@@ -82,13 +82,15 @@ make -C apps/platform/ipro7ai_reef_demo
 
 ### Can I build on Windows? { #windows }
 
-The command-line flow in the package targets macOS and Linux: `build_freertos.sh` is a bash script and `tools/serial_monitor.py` uses termios, so neither runs on Windows. `project.build` has a Windows branch, with these conditions:
+Yes. The SDK that IPRO SDK Online Setup installs has its Windows build problems fixed and adds `build_freertos.ps1`, a PowerShell version of the build script, so you can build, flash and open the console in PowerShell or VS Code; see [Windows Setup & VS Code](../get-started/windows.md).
+
+With the package downloaded straight from GitHub, the command-line flow targets macOS and Linux: `build_freertos.sh` is a bash script and `tools/serial_monitor.py` uses termios, so neither runs on Windows. `project.build` has a Windows branch, with these conditions:
 
 - Pass `CROSS_COMPILE` on every build, because Windows has no default toolchain path and the `CONFIG_CROSS_COMPILE` in `.config` is a Unix path: `make -C apps/platform/ipro7ai_reef_demo CROSS_COMPILE=<toolchain dir>/bin/riscv64-unknown-elf-`.
 - `cmake` and `python` (not `python3`) must be on `PATH`; the bundled `tools/cmake/` is Linux only.
 - Flash with `ipro_iot_tool.exe` and a port such as `COM5`; open the console with any Windows serial terminal.
 
-The package does not say which shell or `make` to use on Windows. For the Windows installer and the VS Code extension, see [Windows Setup & VS Code](../get-started/windows.md).
+The package itself does not say which shell or `make` to use on Windows; use the environment Online Setup installs instead.
 
 ### Flash or RAM is too small { #memory }
 

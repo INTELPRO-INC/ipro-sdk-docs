@@ -7,7 +7,7 @@ migrate_from: []
 
 # ドキュメント
 
-INTELPRO が IPRO7 と IPRO7AI 向けに提供している正式ドキュメントです。SDK V2.1 と IPRO AI Teach 2.0 に対応しています。各ドキュメントの提供言語は表に記載しています。
+INTELPRO が IPRO7 と IPRO7AI 向けに提供している正式ドキュメントです。ソフトウェアのドキュメントは SDK V2.1 と IPRO AI Teach 2.0 に、IPRO Workbench 操作マニュアルは IPRO Workbench 0.1.0 に対応しています。各ドキュメントの提供言語は表に記載しています。
 
 !!! info "入手方法"
     「INTELPRO にお問い合わせください」と記載されたドキュメントは、ドキュメント名、バージョン、言語を明記のうえ INTELPRO にお問い合わせください。

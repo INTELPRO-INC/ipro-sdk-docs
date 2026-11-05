@@ -82,13 +82,15 @@ make -C apps/platform/ipro7ai_reef_demo
 
 ### Windows でビルドできますか？ { #windows }
 
-パッケージに含まれるコマンドラインの手順は macOS と Linux が対象です。`build_freertos.sh` は bash スクリプトで、`tools/serial_monitor.py` は termios を使うため、どちらも Windows では動作しません。`project.build` には Windows 用の分岐があり、次の条件があります。
+はい。IPRO SDK Online Setup でインストールした SDK は Windows でのビルドの問題が修正され、PowerShell 版の `build_freertos.ps1` が追加されているため、PowerShell や VS Code でビルド、書き込み、コンソールの表示ができます。[Windows のセットアップと VS Code](../get-started/windows.md) を参照してください。
+
+GitHub からダウンロードしたパッケージをそのまま使う場合、コマンドラインの手順は macOS と Linux が対象です。`build_freertos.sh` は bash スクリプトで、`tools/serial_monitor.py` は termios を使うため、どちらも Windows では動作しません。`project.build` には Windows 用の分岐があり、次の条件があります。
 
 - Windows にはデフォルトのツールチェーンパスがなく、`.config` の `CONFIG_CROSS_COMPILE` は Unix のパスなので、ビルドのたびに `CROSS_COMPILE` を渡します：`make -C apps/platform/ipro7ai_reef_demo CROSS_COMPILE=<toolchain dir>/bin/riscv64-unknown-elf-`。
 - `cmake` と `python`（`python3` ではない）が `PATH` 上にある必要があります。同梱の `tools/cmake/` は Linux 専用です。
 - 書き込みは `ipro_iot_tool.exe` と `COM5` などのポートで行います。コンソールは Windows の任意のシリアルターミナルで開きます。
 
-Windows でどのシェルや `make` を使うかは、パッケージには記載されていません。Windows インストーラーと VS Code 拡張機能については [Windows のセットアップと VS Code](../get-started/windows.md) を参照してください。
+Windows でどのシェルや `make` を使うかは、パッケージ自体には記載されていません。Online Setup でインストールした環境を使ってください。
 
 ### Flash または RAM が足りない { #memory }
 

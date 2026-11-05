@@ -7,7 +7,7 @@ migrate_from: []
 
 # 文件下載
 
-INTELPRO 為 IPRO7 與 IPRO7AI 提供的正式文件，對應 SDK V2.1 與 IPRO AI Teach 2.0。各文件提供的語言列於表中。
+INTELPRO 為 IPRO7 與 IPRO7AI 提供的正式文件，軟體文件對應 SDK V2.1 與 IPRO AI Teach 2.0，IPRO Workbench 操作手冊對應 IPRO Workbench 0.1.0。各文件提供的語言列於表中。
 
 !!! info "取得方式"
     標示「向 INTELPRO 索取」的文件，請向 INTELPRO 索取，並註明文件名稱、版本與語言。

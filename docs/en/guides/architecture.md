@@ -54,7 +54,7 @@ flowchart TB
 | Applications and samples | 40 applications under `apps/` | SDK samples in `zephyr/samples/` and upstream Zephyr samples; driver tests in `zephyr/tests/` |
 | Build | `make -C apps/<category>/<app>` or `./build_freertos.sh` | Create a workspace with `tools/zephyr/bootstrap.sh`, then `west build` |
 | Chips | IPRO7, IPRO7AI, IPRO6S | IPRO7, IPRO7AI |
-| Boards | IPRO7AI Reef EVK (12 configurations in 9 applications) and other INTELPRO boards | `ipro7_evb`, `ipro7ai_evk`; no Reef board in this release |
+| Boards | IPRO7AI Reef EVK (11 configurations in 9 applications) and other INTELPRO boards | `ipro7_evb`, `ipro7ai_evk`; no Reef board in this release |
 | BLE | Zephyr v4.4 host running on FreeRTOS through a port layer, with the IPRO BLE controller (prebuilt library) | Zephyr's host with the same controller archives |
 | IEEE 802.15.4 / Thread | Not provided | Zephyr IEEE 802.15.4 driver and OpenThread |
 | Low power, camera, audio codec, USB, SD host, Ethernet, NPU | Provided | Not yet |

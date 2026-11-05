@@ -218,7 +218,7 @@ At the console type `ipronet_up <ssid> <psk>`, then `rtsp_cam on`, and open `rts
 
 ## Supported examples { #examples }
 
-These 9 applications (12 configurations) build and run on the Reef; each has an [example page](../../examples/index.md#reef) with the flash and run steps. Apart from `ipro7ai_reef_demo`, `ipro_reef_teach` and `ipro_agora_sentino`, a plain `make` builds another board: add `DEFCONFIG=` for the Reef.
+These 9 applications (11 configurations) build and run on the Reef; each has an [example page](../../examples/index.md#reef) with the flash and run steps. Apart from `ipro7ai_reef_demo`, `ipro_reef_teach` and `ipro_agora_sentino`, a plain `make` builds another board: add `DEFCONFIG=` for the Reef.
 
 | Application | Build command (from the SDK root) | Console | Flashing notes |
 |---|---|---|---|

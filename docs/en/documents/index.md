@@ -7,7 +7,7 @@ migrate_from: []
 
 # Documents
 
-The formal documents INTELPRO provides for IPRO7 and IPRO7AI, matching SDK V2.1 and IPRO AI Teach 2.0. The languages of each document are listed in the table.
+The formal documents INTELPRO provides for IPRO7 and IPRO7AI, The software documents match SDK V2.1 and IPRO AI Teach 2.0; the IPRO Workbench Operation Manual matches IPRO Workbench 0.1.0. The languages of each document are listed in the table.
 
 !!! info "How to get them"
     For documents marked "On request", contact INTELPRO and name the document, version and language.

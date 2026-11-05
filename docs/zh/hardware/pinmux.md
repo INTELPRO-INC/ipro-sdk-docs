@@ -193,7 +193,7 @@ I2S0（功能 3）以 4 支 GPIO 為一組，訊號依位置固定。第 3 支�
 - UART 列的 Sn 代表 UART signal n（預設不交換）。
 - QDEC 列：Qn_A／Qn_B 為 QDECn 的 A／B 相，Qn_LED 為 QDECn 的 LED 驅動。
 - ADC 列的 CHn 為 GPADC 通道；DAC_A／DAC_B 為 GPDAC 兩個通道的輸出。
-- PWM 驅動（`drv_pwm.h`）提供 CH0–CH3。
+- PWM 列的 CH0–CH4 是 GPIO 功能定義（`drv_gpio.h`）的訊號名稱；PWM 驅動（`drv_pwm.h`）只提供 CH0–CH3，接到 CH4 的腳位沒有驅動可用。
 
 ### GPIO0–GPIO7 { #alt-gpio0-7 }
 

@@ -218,7 +218,7 @@ cam snap         拍到实际画面
 
 ## 支持的示例 { #examples }
 
-下列 9 个应用（12 个配置）可在 Reef 上构建与运行，每个都有[示例页面](../../examples/index.md#reef)给出烧录与运行步骤。除 `ipro7ai_reef_demo`、`ipro_reef_teach` 与 `ipro_agora_sentino` 外，其他应用直接执行 `make` 会构建为其他开发板，Reef 要加上 `DEFCONFIG=`。
+下列 9 个应用（11 个配置）可在 Reef 上构建与运行，每个都有[示例页面](../../examples/index.md#reef)给出烧录与运行步骤。除 `ipro7ai_reef_demo`、`ipro_reef_teach` 与 `ipro_agora_sentino` 外，其他应用直接执行 `make` 会构建为其他开发板，Reef 要加上 `DEFCONFIG=`。
 
 | 应用 | 构建命令（在 SDK 根目录） | 控制台 | 烧录注意事项 |
 |---|---|---|---|

@@ -218,7 +218,7 @@ IPRO6S FIN カードを microSD ソケットに挿すと、Reef は SDIO 経由�
 
 ## 対応サンプル { #examples }
 
-次の 9 個のアプリケーション（12 構成）は Reef でビルドして実行できます。それぞれに書き込みと実行の手順を記載した[サンプルページ](../../examples/index.md#reef)があります。`ipro7ai_reef_demo`、`ipro_reef_teach`、`ipro_agora_sentino` 以外は、単に `make` を実行すると別のボード向けにビルドされるため、Reef 向けには `DEFCONFIG=` を追加してください。
+次の 9 個のアプリケーション（11 構成）は Reef でビルドして実行できます。それぞれに書き込みと実行の手順を記載した[サンプルページ](../../examples/index.md#reef)があります。`ipro7ai_reef_demo`、`ipro_reef_teach`、`ipro_agora_sentino` 以外は、単に `make` を実行すると別のボード向けにビルドされるため、Reef 向けには `DEFCONFIG=` を追加してください。
 
 | アプリケーション | ビルドコマンド（SDK のルートで実行） | コンソール | 書き込みの注意 |
 |---|---|---|---|

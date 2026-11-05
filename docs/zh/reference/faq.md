@@ -82,13 +82,15 @@ CMake 設定階段印出 `[toolchain] Vendor toolchain detected …` 表示找�
 
 ### 可以在 Windows 上建置嗎？ { #windows }
 
-套件中的命令列流程以 macOS 與 Linux 為主：`build_freertos.sh` 是 bash 腳本，`tools/serial_monitor.py` 使用 termios，兩者都不能在 Windows 執行。`project.build` 有 Windows 分支，條件如下：
+可以。以 IPRO SDK Online Setup 安裝的 SDK 已修正 Windows 上的建置問題，並加入 PowerShell 版的 `build_freertos.ps1`，可以在 PowerShell 或 VS Code 建置、燒錄與開啟主控台，見 [Windows 安裝與 VS Code](../get-started/windows.md)。
+
+直接使用從 GitHub 下載的套件時，命令列流程以 macOS 與 Linux 為主：`build_freertos.sh` 是 bash 腳本，`tools/serial_monitor.py` 使用 termios，兩者都不能在 Windows 執行。`project.build` 有 Windows 分支，條件如下：
 
 - 每次建置都要指定 `CROSS_COMPILE`，因為 Windows 沒有預設的工具鏈路徑，而 `.config` 中的 `CONFIG_CROSS_COMPILE` 是 Unix 路徑：`make -C apps/platform/ipro7ai_reef_demo CROSS_COMPILE=<工具鏈路徑>/bin/riscv64-unknown-elf-`。
 - `cmake` 與 `python`（不是 `python3`）必須在 `PATH` 上；隨附的 `tools/cmake/` 只有 Linux 版。
 - 燒錄用 `ipro_iot_tool.exe`，序列埠為 `COM5` 這類名稱；主控台用任一 Windows 序列埠終端程式開啟。
 
-套件沒有說明 Windows 上使用哪一種 shell 與 `make`。Windows 的安裝程式與 VS Code Extension 見 [Windows 安裝與 VS Code](../get-started/windows.md)。
+套件本身沒有說明 Windows 上使用哪一種 shell 與 `make`；建議改用 Online Setup 安裝的環境。
 
 ### Flash 或 RAM 不夠用？ { #memory }
 

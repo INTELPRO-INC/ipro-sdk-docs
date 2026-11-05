@@ -77,7 +77,7 @@ Extension のその他のコマンドと設定は [VS Code Extension](../guides/
 
 ## コマンドラインでのビルド { #command-line }
 
-`build_freertos.ps1` は `build_freertos.sh` の Windows 版で、アクションとオプションも同じです。`build`、`clean`、`flash`、`monitor`、`size`、`test` は組み合わせて指定でき、順に実行されます。`PATH` に登録されているかどうかにかかわらず、同じインストールのツールチェーン、CMake、Ninja、Python、IntelProCube を使います。Windows はデフォルトでは `.ps1` ファイルを直接実行しません。`powershell -ExecutionPolicy Bypass -File` はその 1 回の実行にだけ適用され、システムの設定は変更しません。
+`build_freertos.ps1` は `build_freertos.sh` の Windows 版で、アクションは同じです。`build`、`clean`、`flash`、`monitor`、`size`、`test` は組み合わせて指定でき、順に実行されます。オプションもほぼ同じですが、ここでの `-c` はツールチェーンのプレフィックス（`--cross`）で、チップバリアントとパーティションテーブルは長い形式の `--chip-variant` と `--pt` だけです（`build_freertos.sh` では `-c` が `--chip-variant`、`-P` がパーティションテーブルです）。`PATH` に登録されているかどうかにかかわらず、同じインストールのツールチェーン、CMake、Ninja、Python、IntelProCube を使います。Windows はデフォルトでは `.ps1` ファイルを直接実行しません。`powershell -ExecutionPolicy Bypass -File` はその 1 回の実行にだけ適用され、システムの設定は変更しません。
 
 <div class="ipro-steps" markdown>
 

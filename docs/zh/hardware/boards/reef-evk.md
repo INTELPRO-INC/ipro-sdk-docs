@@ -218,7 +218,7 @@ cam snap         拍到實際畫面
 
 ## 支援的範例 { #examples }
 
-下列 9 個應用（12 個設定）可在 Reef 上建置與執行，每個都有[範例頁](../../examples/index.md#reef)寫出燒錄與執行步驟。除 `ipro7ai_reef_demo`、`ipro_reef_teach` 與 `ipro_agora_sentino` 外，其他應用直接執行 `make` 會建置成別的板卡，Reef 要加上 `DEFCONFIG=`。
+下列 9 個應用（11 個設定）可在 Reef 上建置與執行，每個都有[範例頁](../../examples/index.md#reef)寫出燒錄與執行步驟。除 `ipro7ai_reef_demo`、`ipro_reef_teach` 與 `ipro_agora_sentino` 外，其他應用直接執行 `make` 會建置成別的板卡，Reef 要加上 `DEFCONFIG=`。
 
 | 應用 | 建置命令（在 SDK 根目錄） | 主控台 | 燒錄注意事項 |
 |---|---|---|---|

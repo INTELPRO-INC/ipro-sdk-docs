@@ -54,7 +54,7 @@ flowchart TB
 | アプリケーションとサンプル | `apps/` 以下の 40 個のアプリケーション | `zephyr/samples/` の SDK サンプルと Zephyr アップストリームのサンプル。ドライバーテストは `zephyr/tests/` |
 | ビルド | `make -C apps/<category>/<app>` または `./build_freertos.sh` | `tools/zephyr/bootstrap.sh` でワークスペースを作成し、`west build` を実行 |
 | チップ | IPRO7、IPRO7AI、IPRO6S | IPRO7、IPRO7AI |
-| ボード | IPRO7AI Reef EVK（9 個のアプリケーションで 12 構成）と他の INTELPRO ボード | `ipro7_evb`、`ipro7ai_evk`。本リリースには Reef のボード定義はありません |
+| ボード | IPRO7AI Reef EVK（9 個のアプリケーションで 11 構成）と他の INTELPRO ボード | `ipro7_evb`、`ipro7ai_evk`。本リリースには Reef のボード定義はありません |
 | BLE | Zephyr v4.4 ホストを移植レイヤー経由で FreeRTOS 上で動かし、IPRO BLE コントローラー（ビルド済みライブラリ）と組み合わせます | Zephyr のホストと同じコントローラーアーカイブ |
 | IEEE 802.15.4／Thread | 提供なし | Zephyr の IEEE 802.15.4 ドライバーと OpenThread |
 | 低消費電力、カメラ、オーディオコーデック、USB、SD ホスト、イーサネット、NPU | 提供 | 未対応 |

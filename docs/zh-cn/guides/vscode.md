@@ -182,7 +182,7 @@ SDK only 与 Toolchain only 可以加入现有环境，见[单独安装 SDK 或�
 |---|---|
 | 找不到 IPRO 命令 | 确认 Extension 版本、VS Code Profile、Workspace Trust 与 SDK 根目录，再重新加载窗口 |
 | Diagnostics 仍显示旧的 SDK | 工作区与文件夹设置可能覆盖了用户设置；对 V2.2.0 目录再执行一次 `IPRO Setup: Set SDK Root` |
-| 编译或链接失败 | 确认编译器是与 V2.2.0 相符的工具链（GCC 14） |
+| 编译或链接失败 | 用 Diagnostics 确认编译器是同一个安装目录中的工具链（Windows 为 Online Setup 安装的 GCC 13.1.1；macOS／Linux 为 GCC 14） |
 | 控制台乱码或仍是旧的波特率 | 核对固件的控制台波特率与 `ipro.monitorBaudRate`，再关闭并重新打开控制台 |
 | 烧录 Reef 时出现 `flash jedec id: 00000000` | 把芯片配置设为 `IPRO7AI` |
 | 烧录工具没有打印 `[All Success]` | 开发板没有进入下载模式，或串口被其他程序占用 |

@@ -182,7 +182,7 @@ F1 或 Ctrl+Shift+P 開啟命令面板。Extension 沒有預設快捷鍵，可�
 |---|---|
 | 找不到 IPRO 命令 | 確認 Extension 版本、VS Code Profile、Workspace Trust 與 SDK 根目錄，再重新載入視窗 |
 | Diagnostics 仍顯示舊的 SDK | 工作區與資料夾設定可能蓋過使用者設定；對 V2.2.0 目錄再執行一次 `IPRO Setup: Set SDK Root` |
-| 編譯或連結失敗 | 確認編譯器是與 V2.2.0 相符的工具鏈（GCC 14） |
+| 編譯或連結失敗 | 以 Diagnostics 確認編譯器是同一個安裝目錄的工具鏈（Windows 為 Online Setup 安裝的 GCC 13.1.1；macOS／Linux 為 GCC 14） |
 | 主控台亂碼或仍是舊鮑率 | 核對韌體的主控台鮑率與 `ipro.monitorBaudRate`，再關閉並重開主控台 |
 | 燒錄 Reef 時出現 `flash jedec id: 00000000` | 把晶片配置設為 `IPRO7AI` |
 | 燒錄工具沒有印出 `[All Success]` | 開發板沒有進入下載模式，或序列埠被其他程式占用 |

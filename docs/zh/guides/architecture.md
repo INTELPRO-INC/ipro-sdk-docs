@@ -54,7 +54,7 @@ flowchart TB
 | 應用與範例 | `apps/` 下 40 個應用 | `zephyr/samples/` 的 SDK 範例與 Zephyr 上游範例；驅動測試在 `zephyr/tests/` |
 | 建置 | `make -C apps/<分類>/<應用>` 或 `./build_freertos.sh` | `tools/zephyr/bootstrap.sh` 建立工作區後以 `west build` 建置 |
 | 晶片 | IPRO7、IPRO7AI、IPRO6S | IPRO7、IPRO7AI |
-| 板卡 | IPRO7AI Reef EVK（9 個應用、12 組設定）與其他 INTELPRO 板卡 | `ipro7_evb`、`ipro7ai_evk`；本版沒有 Reef 板卡定義 |
+| 板卡 | IPRO7AI Reef EVK（9 個應用、11 組設定）與其他 INTELPRO 板卡 | `ipro7_evb`、`ipro7ai_evk`；本版沒有 Reef 板卡定義 |
 | BLE | Zephyr v4.4 Host 經移植層執行於 FreeRTOS，搭配 IPRO BLE 控制器（預編譯函式庫） | Zephyr Host 搭配同一組控制器函式庫 |
 | IEEE 802.15.4／Thread | 未提供 | Zephyr IEEE 802.15.4 驅動與 OpenThread |
 | 低功耗、相機、音訊 codec、USB、SD Host、乙太網路、NPU | 提供 | 尚未提供 |

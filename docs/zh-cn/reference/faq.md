@@ -82,13 +82,15 @@ CMake 配置阶段打印 `[toolchain] Vendor toolchain detected …` 表示找�
 
 ### 可以在 Windows 上构建吗？ { #windows }
 
-软件包中的命令行流程以 macOS 与 Linux 为主：`build_freertos.sh` 是 bash 脚本，`tools/serial_monitor.py` 使用 termios，两者都不能在 Windows 上运行。`project.build` 有 Windows 分支，条件如下：
+可以。用 IPRO SDK Online Setup 安装的 SDK 已修正 Windows 上的构建问题，并加入 PowerShell 版的 `build_freertos.ps1`，可以在 PowerShell 或 VS Code 中构建、烧录并打开控制台，见 [Windows 安装与 VS Code](../get-started/windows.md)。
+
+直接使用从 GitHub 下载的软件包时，命令行流程以 macOS 与 Linux 为主：`build_freertos.sh` 是 bash 脚本，`tools/serial_monitor.py` 使用 termios，两者都不能在 Windows 上运行。`project.build` 有 Windows 分支，条件如下：
 
 - 每次构建都要指定 `CROSS_COMPILE`，因为 Windows 没有默认的工具链路径，而 `.config` 中的 `CONFIG_CROSS_COMPILE` 是 Unix 路径：`make -C apps/platform/ipro7ai_reef_demo CROSS_COMPILE=<工具链路径>/bin/riscv64-unknown-elf-`。
 - `cmake` 与 `python`（不是 `python3`）必须在 `PATH` 上；随附的 `tools/cmake/` 只有 Linux 版。
 - 烧录用 `ipro_iot_tool.exe`，串口为 `COM5` 这类名称；控制台用任一 Windows 串口终端程序打开。
 
-软件包没有说明在 Windows 上使用哪一种 shell 与 `make`。Windows 的安装程序与 VS Code Extension 见 [Windows 安装与 VS Code](../get-started/windows.md)。
+软件包本身没有说明在 Windows 上使用哪一种 shell 与 `make`；建议改用 Online Setup 安装的环境。
 
 ### Flash 或 RAM 不够用？ { #memory }
 

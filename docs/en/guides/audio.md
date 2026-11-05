@@ -60,7 +60,7 @@ The audio blocks of the IPRO7AI Reef EVK V4.0 and the board-header names that co
 | Headset plug detect | GPIO26, low = plug inserted | `BOARD_HP_DET_PIN`, `BOARD_HP_DET_ACTIVE` (0) |
 
 - The headphone jack always gets the DAC signal. "Headphones only" means keeping the speaker amplifier off; there is no other routing switch.
-- The PDM path runs at about 15,872 Hz, not exactly 16,000 Hz. `mic sdrec` writes the measured rate into the WAV header, and `mic usb` converts to the host's 16,000 Hz with `audio_asrc`.
+- The PDM path does not run at exactly 16,000 Hz: nominally 15,875 Hz (2.032 MHz / 128), measured at about 15,872 Hz on a Reef. `mic sdrec` writes the measured rate into the WAV header, and `mic usb` converts to the host's 16,000 Hz with `audio_asrc`.
 - The DAC backend of `audio_output` runs at a fixed 32 kHz (`DAC_RATE` in `audio_capture.h`); other sample rates are resampled.
 - The amplifier gain is high (30 V/V in the demo README); the demo plays tones at 20 % amplitude by default.
 - Set `CONFIG_DMA_CHANNEL_ALLOCATOR=y` so capture, playback and the USB isochronous endpoint get DMA channels at run time without clashing.
@@ -419,7 +419,7 @@ Both enumerate as VID 0x3896, PID 0x0003. An application that implements its own
 
 - `mic gain <dB>` sets the playback make-up gain (0–40 dB, default 20 dB); `mic ch <0|1>` selects the PDM slot.
 - `mic status` reports the last recording's peak, RMS and voice-band (300–3,400 Hz) level in dBFS. The first 100 ms after start are left out of those numbers because the decimator starts with a step.
-- `mic sdrec` flushes the file every 30 s, so pulling the power loses at most the last 30 s. A measured rate far from 15,875 Hz is reported as lost samples.
+- `mic sdrec` flushes the file every 30 s, so pulling the power loses at most the last 30 s. A measured rate more than 80 Hz away from the nominal 15,875 Hz is reported as lost samples, and the header then carries 15,875 Hz.
 - A microphone monitored on the speaker howls; use headphones and `hp`.
 
 The PDM recording example for the IPRO7 EVB and the IPRO7AI EVK is `ipro_pdm_mic_demo` (BLE transfer with LC3, Android companion source in `tools/android/IproMicDemo/`).

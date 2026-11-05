@@ -60,7 +60,7 @@ IPRO7AI Reef EVK V4.0 的音频模块，以及代码使用的板级头文件名�
 | 耳机插入检测 | GPIO26，低电平表示已插入 | `BOARD_HP_DET_PIN`、`BOARD_HP_DET_ACTIVE`（0） |
 
 - 耳机插孔始终能收到 DAC 信号。“只用耳机”就是让扬声器放大器保持关闭，没有其他切换开关。
-- PDM 路径实际约为 15,872 Hz，不是正好 16,000 Hz。`mic sdrec` 会把测得的采样率写进 WAV 头，`mic usb` 则通过 `audio_asrc` 转换成主机的 16,000 Hz。
+- PDM 路径不是正好 16,000 Hz：标称 15,875 Hz（2.032 MHz ÷ 128），Reef 实测约 15,872 Hz。`mic sdrec` 会把测得的采样率写进 WAV 头，`mic usb` 则通过 `audio_asrc` 转换成主机的 16,000 Hz。
 - `audio_output` 的 DAC 后端固定以 32 kHz 运行（`audio_capture.h` 中的 `DAC_RATE`），其他采样率会先转换。
 - 放大器增益很高（demo README 写的是 30 V/V），demo 默认以 20% 振幅播放测试音。
 - 设置 `CONFIG_DMA_CHANNEL_ALLOCATOR=y`，让采集、播放与 USB 同步传输端点在运行时获取 DMA 通道，不会互相冲突。
@@ -419,7 +419,7 @@ CONFIG_CHERRYUSB_DEVICE_AUDIO=y
 
 - `mic gain <dB>` 设置播放补偿增益（0–40 dB，默认 20 dB）；`mic ch <0|1>` 选择 PDM 声道。
 - `mic status` 显示最后一段录音的峰值、RMS 与语音频带（300–3,400 Hz）电平，单位 dBFS。开始后的前 100 ms 不计入，因为抽取滤波器启动时有一个阶跃。
-- `mic sdrec` 每 30 秒同步一次文件，突然断电时最多只会丢失最后 30 秒。测得的采样率若偏离 15,875 Hz 太远，会报告有样本丢失。
+- `mic sdrec` 每 30 秒同步一次文件，突然断电时最多只会丢失最后 30 秒。测得的采样率若与标称的 15,875 Hz 相差超过 80 Hz，会报告有样本丢失，并在头部改写为 15,875 Hz。
 - 麦克风监听输出到扬声器会产生啸叫，请使用耳机并加上 `hp`。
 
 IPRO7 EVB 与 IPRO7AI EVK 的 PDM 录音示例是 `ipro_pdm_mic_demo`（用 LC3 经 BLE 传输，Android 示例 App 源代码在 `tools/android/IproMicDemo/`）。

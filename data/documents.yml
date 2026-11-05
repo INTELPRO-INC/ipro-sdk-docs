@@ -10,10 +10,10 @@ page:
     zh-cn: IPRO7／IPRO7AI 正式芯片、软件与开发板文档清单，含版本、语言与涵盖内容。
     ja: IPRO7／IPRO7AI のチップ、ソフトウェア、ボードに関する正式ドキュメントの一覧（バージョン、言語、内容）。
   intro:
-    zh: INTELPRO 為 IPRO7 與 IPRO7AI 提供的正式文件，對應 SDK V2.1 與 IPRO AI Teach 2.0。各文件提供的語言列於表中。
-    en: The formal documents INTELPRO provides for IPRO7 and IPRO7AI, matching SDK V2.1 and IPRO AI Teach 2.0. The languages of each document are listed in the table.
-    zh-cn: INTELPRO 为 IPRO7 与 IPRO7AI 提供的正式文档，对应 SDK V2.1 与 IPRO AI Teach 2.0。各文档提供的语言列于表中。
-    ja: INTELPRO が IPRO7 と IPRO7AI 向けに提供している正式ドキュメントです。SDK V2.1 と IPRO AI Teach 2.0 に対応しています。各ドキュメントの提供言語は表に記載しています。
+    zh: INTELPRO 為 IPRO7 與 IPRO7AI 提供的正式文件，軟體文件對應 SDK V2.1 與 IPRO AI Teach 2.0，IPRO Workbench 操作手冊對應 IPRO Workbench 0.1.0。各文件提供的語言列於表中。
+    en: The formal documents INTELPRO provides for IPRO7 and IPRO7AI, The software documents match SDK V2.1 and IPRO AI Teach 2.0; the IPRO Workbench Operation Manual matches IPRO Workbench 0.1.0. The languages of each document are listed in the table.
+    zh-cn: INTELPRO 为 IPRO7 与 IPRO7AI 提供的正式文档，软件文档对应 SDK V2.1 与 IPRO AI Teach 2.0，IPRO Workbench 操作手册对应 IPRO Workbench 0.1.0。各文档提供的语言列于表中。
+    ja: INTELPRO が IPRO7 と IPRO7AI 向けに提供している正式ドキュメントです。ソフトウェアのドキュメントは SDK V2.1 と IPRO AI Teach 2.0 に、IPRO Workbench 操作マニュアルは IPRO Workbench 0.1.0 に対応しています。各ドキュメントの提供言語は表に記載しています。
   request_notice:
     zh: 標示「向 INTELPRO 索取」的文件，請向 INTELPRO 索取，並註明文件名稱、版本與語言。
     en: For documents marked "On request", contact INTELPRO and name the document, version and language.
