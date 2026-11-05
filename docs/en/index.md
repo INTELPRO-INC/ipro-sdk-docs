@@ -126,6 +126,7 @@ The SDK also carries applications for the IPRO7 EVB, the IPRO7AI EVK and the IPR
 
 <div class="ipro-links" markdown>
 
+- [:material-monitor-dashboard: **IPRO Workbench**](workbench/index.md)<br>The IPRO development environment: set up the tools, build, flash, monitor and debug in one window
 - [:material-brain: **IPRO AI Teach**](teach/index.md)<br>Install IPRO AI Studio, flash the Edge AI firmware and teach the Reef images, voices and sensor signals
 - [:material-school-outline: **Tutorials**](tutorials/index.md)<br>Build and flash, your first application, testing, BLE, LE Audio, the webcam and Wi-Fi
 - [:material-view-grid-outline: **Examples**](examples/index.md)<br>The 40 shipped applications; the 9 that run on the Reef come with steps

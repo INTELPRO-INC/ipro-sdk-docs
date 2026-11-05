@@ -122,6 +122,17 @@ categories:
           en: "Model preparation and compilation, NPU dispatch inspection, numerical verification, running on board and the operator support matrix"
         access: request
         files: {}
+      - id: ipro-workbench-operation-manual
+        title: {zh: "IPRO Workbench 操作手冊", en: "IPRO Workbench Operation Manual"}
+        version: V1.1
+        languages: [zh-TW, en]
+        summary:
+          zh: "IPRO Workbench 0.1.0 的安裝、第一次執行、開發與設定、燒錄、序列埠監看、除錯、板上測試與量測、AI 助理與疑難排解"
+          en: "Installing IPRO Workbench 0.1.0, first run, development and settings, flashing, serial monitor, debugging, on-board tests and measurement, the AI assistant and troubleshooting"
+        access: public
+        files:
+          zh-TW: https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.0/IPRO-Workbench-Operation-Manual-V1.1-zh-TW.pdf
+          en: https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.0/IPRO-Workbench-Operation-Manual-V1.1-en.pdf
   - id: board-documents
     title: {zh: "開發板文件", en: "Board documents"}
     documents:

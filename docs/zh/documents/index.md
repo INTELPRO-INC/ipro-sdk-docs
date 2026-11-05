@@ -32,6 +32,7 @@ INTELPRO 為 IPRO7 與 IPRO7AI 提供的正式文件，對應 SDK V2.1 與 IPRO 
 | IPRO7 軟體工具使用指南 | V1.1 | 繁中／English | RISC-V 工具鏈、建置與設定系統、燒錄與下載工具、除錯工具、序列埠監看、BLE 工具、RF 調校工具、映像檔工具、記憶體與大小分析 | 向 INTELPRO 索取 |
 | IPRO7AI Edge AI 程式設計指南 | V1.2 | 繁中 | Edge AI 平台 V2.0 的執行層、模型存放、資料來源、前處理、應用框架與事件、裝置協定、主機端 SDK 與命令列 | 向 INTELPRO 索取 |
 | IPRO7AI AI Studio 使用指南 | V1.3 | 繁中／English | 模型準備與編譯、NPU 派工檢視、數值驗證、上板執行與運算子支援表 | 向 INTELPRO 索取 |
+| IPRO Workbench 操作手冊 | V1.1 | 繁中／English | IPRO Workbench 0.1.0 的安裝、第一次執行、開發與設定、燒錄、序列埠監看、除錯、板上測試與量測、AI 助理與疑難排解 | [繁中](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.0/IPRO-Workbench-Operation-Manual-V1.1-zh-TW.pdf)／[English](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.0/IPRO-Workbench-Operation-Manual-V1.1-en.pdf) |
 
 ## 開發板文件 { #board-documents }
 

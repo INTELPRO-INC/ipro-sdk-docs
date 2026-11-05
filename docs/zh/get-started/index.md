@@ -23,6 +23,9 @@ migrate_from: []
 
 主控台線的接法見 [IPRO7AI Reef EVK：除錯排座 U6](../hardware/boards/reef-evk.md#debug-connector)。
 
+!!! tip "圖形化開發環境"
+    IPRO Workbench（Apple 晶片的 macOS、Windows 11）把補齊工具、建置、燒錄與序列埠監看放在同一個視窗，見 [IPRO Workbench](../workbench/index.md)。
+
 ## 依序完成 { #path }
 
 <div class="grid cards" markdown>

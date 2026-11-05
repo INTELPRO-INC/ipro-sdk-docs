@@ -34,6 +34,18 @@ nav:
       - "macOS／Linux 命令列": get-started/command-line.md
       - "第一個 FreeRTOS 應用": get-started/first-app-freertos.md
       - "燒錄與序列埠": get-started/flash-and-monitor.md
+  - "IPRO Workbench":
+      - "IPRO Workbench": workbench/index.md
+      - "安裝 IPRO Workbench": workbench/install.md
+      - "第一次執行": workbench/first-run.md
+      - "開發應用程式": workbench/develop.md
+      - "燒錄與開發板": workbench/flash.md
+      - "序列埠監看": workbench/monitor.md
+      - "除錯與分析": workbench/debug.md
+      - "測試與量測": workbench/measure.md
+      - "AI 助理": workbench/ai.md
+      - "疑難排解": workbench/troubleshooting.md
+      - "快捷鍵、命令與設定": workbench/reference.md
   - "IPRO AI Teach":
       - "IPRO AI Teach": teach/index.md
       - "安裝 IPRO AI Studio": teach/install.md

@@ -31,6 +31,18 @@ nav:
       - "macOS / Linux Command Line": get-started/command-line.md
       - "First FreeRTOS Application": get-started/first-app-freertos.md
       - "Flashing & Serial Console": get-started/flash-and-monitor.md
+  - "IPRO Workbench":
+      - "IPRO Workbench": workbench/index.md
+      - "Install IPRO Workbench": workbench/install.md
+      - "First Run": workbench/first-run.md
+      - "Develop an Application": workbench/develop.md
+      - "Flashing and the Board": workbench/flash.md
+      - "Serial Monitor": workbench/monitor.md
+      - "Debugging and Analysis": workbench/debug.md
+      - "Testing and Measurement": workbench/measure.md
+      - "AI Assistant": workbench/ai.md
+      - "Troubleshooting": workbench/troubleshooting.md
+      - "Shortcuts, Commands and Settings": workbench/reference.md
   - "IPRO AI Teach":
       - "IPRO AI Teach": teach/index.md
       - "Install IPRO AI Studio": teach/install.md

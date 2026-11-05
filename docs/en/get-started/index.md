@@ -23,6 +23,9 @@ Work through these pages in order to go from a fresh computer to the out-of-box 
 
 How to wire the console cable: [IPRO7AI Reef EVK: Debug connector U6](../hardware/boards/reef-evk.md#debug-connector).
 
+!!! tip "Graphical development environment"
+    IPRO Workbench (macOS on Apple silicon, Windows 11) puts setting up the tools, building, flashing and the serial monitor in one window; see [IPRO Workbench](../workbench/index.md).
+
 ## In this order { #path }
 
 <div class="grid cards" markdown>

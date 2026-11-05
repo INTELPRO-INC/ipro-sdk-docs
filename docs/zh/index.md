@@ -126,6 +126,7 @@ SDK 也包含 IPRO7 EVB、IPRO7AI EVK 與 IPRO6S EVB 的應用，列在[範例](
 
 <div class="ipro-links" markdown>
 
+- [:material-monitor-dashboard: **IPRO Workbench**](workbench/index.md)<br>IPRO 的整合開發環境：補齊工具、建置、燒錄、序列埠監看與除錯都在同一個視窗
 - [:material-brain: **IPRO AI Teach**](teach/index.md)<br>安裝 IPRO AI Studio、燒錄 Edge AI 韌體，教會 Reef 辨識影像、聲紋與感測訊號
 - [:material-school-outline: **教學**](tutorials/index.md)<br>建置與燒錄、第一個自己的應用、測試、BLE、LE Audio、網路攝影機與 Wi-Fi
 - [:material-view-grid-outline: **範例**](examples/index.md)<br>40 個隨附應用；Reef 上可執行的 9 個各有步驟
