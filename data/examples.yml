@@ -14,22 +14,30 @@
 # readme.exclude: true to leave the README out (catalog only, unless `reef` is set).
 categories:
   - id: reef
-    title: {zh: "Reef EVK 範例", en: "Reef EVK examples"}
+    title: {zh: "Reef EVK 範例", en: "Reef EVK examples", zh-cn: "Reef EVK 示例", ja: "Reef EVK のサンプル"}
     apps:
       - name: ipro7ai_reef_demo
         path: apps/platform/ipro7ai_reef_demo
         purpose:
           zh: "Reef 開箱韌體：RGB LED、按鍵、喇叭與耳機、PDM 與耳麥麥克風、microSD、OV5640 相機各有一組 shell 指令；`mic usb` 讓板子成為 USB 麥克風，`mic sdrec` 把錄音存成 SD 卡上的 WAV 檔"
           en: "Reef out-of-box firmware: a shell command group for the RGB LED, keys, speaker and headset, PDM and headset microphones, microSD and the OV5640 camera; `mic usb` turns the board into a USB microphone, `mic sdrec` records WAV files to the SD card"
+          zh-cn: "Reef 出厂固件：RGB LED、按键、扬声器与耳机、PDM 与耳麦麦克风、microSD、OV5640 摄像头各有一组 shell 命令；`mic usb` 让开发板成为 USB 麦克风，`mic sdrec` 把录音保存为 SD 卡上的 WAV 文件"
+          ja: "Reef の出荷時ファームウェア：RGB LED、キー、スピーカーとヘッドセット、PDM マイクとヘッドセットマイク、microSD、OV5640 カメラごとにシェルコマンド群があります。`mic usb` でボードが USB マイクになり、`mic sdrec` で SD カードに WAV ファイルを録音します"
         boards:
           zh: "Reef（`.config`）；Reef＋IPRO6S FIN 卡（`defconfig_wifi_ipro6s`：Wi-Fi 與 RTSP 相機串流）"
           en: "Reef (`.config`); Reef + IPRO6S FIN card (`defconfig_wifi_ipro6s`: Wi-Fi and an RTSP camera stream)"
+          zh-cn: "Reef（`.config`）；Reef＋IPRO6S FIN 卡（`defconfig_wifi_ipro6s`：Wi-Fi 与 RTSP 摄像头视频流）"
+          ja: "Reef（`.config`）、Reef＋IPRO6S FIN カード（`defconfig_wifi_ipro6s`：Wi-Fi と RTSP カメラストリーミング）"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         build:
           zh: "`make -C apps/platform/ipro7ai_reef_demo`；Wi-Fi 版加上 `DEFCONFIG=defconfig_wifi_ipro6s`"
           en: "`make -C apps/platform/ipro7ai_reef_demo`; Wi-Fi build: add `DEFCONFIG=defconfig_wifi_ipro6s`"
+          zh-cn: "`make -C apps/platform/ipro7ai_reef_demo`；Wi-Fi 版加上 `DEFCONFIG=defconfig_wifi_ipro6s`"
+          ja: "`make -C apps/platform/ipro7ai_reef_demo`、Wi-Fi 版は `DEFCONFIG=defconfig_wifi_ipro6s` を追加"
         reef:
           zh: |
             SW7 在 CAM、SW8 在 PWR，U6 接上主控台線，USB-C 供電（見 [Reef 上手](../hardware/boards/reef-evk.md#quick-start)）。
@@ -111,17 +119,103 @@ categories:
             ```
 
             The Wi-Fi and RTSP build uses `DEFCONFIG=defconfig_wifi_ipro6s`, builds into `build_wifi_ipro6s/build_out/` and needs an IPRO6S FIN card running the `ipro6_if_wifi` firmware; see [Wi-Fi and RTSP Camera Stream](../tutorials/wifi-rtsp.md). That configuration has no USB device, so `mic usb` is not available. The full command list is under [Reef out-of-box firmware](../hardware/boards/reef-evk.md#reef-demo).
+          zh-cn: |
+            SW7 拨到 CAM、SW8 拨到 PWR，U6 接上控制台线，USB-C 供电（见 [Reef 快速上手](../hardware/boards/reef-evk.md#quick-start)）。
+
+            <div class="ipro-steps" markdown>
+
+            1. **构建**：在 SDK 根目录执行
+
+                ```bash
+                make -C apps/platform/ipro7ai_reef_demo
+                ```
+
+                结尾打印 Flash 与 RAM 用量，镜像位于 `apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin`。
+
+            2. **烧录**：让开发板进入[下载模式](../hardware/boards/reef-evk.md#download-mode)（按住 SW1，按一下 SW2，松开 SW1），在 IntelProCube 目录执行
+
+                ```bash
+                ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+                    --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+                    --pt chips/ipro7/partition/partition_cfg_2M.toml \
+                    --firmware <SDK>/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin
+                ```
+
+                输出中出现 `[All Success]` 才算成功（工具失败时也以 0 退出）。按一下 SW2 启动新固件。
+
+            3. **运行**：以 115200 baud 打开控制台，输入 `reef selftest`。
+
+                开机时 RGB LED 呼吸一次蓝光；`reef selftest` 约 3 秒内依次点亮红、绿、蓝光，扬声器发出 1 kHz 测试音，再检查 SD 卡检测与摄像头。按 SW3、SW4、SW5、SW1 分别亮红、绿、蓝、白光。
+
+            </div>
+
+            一次完成构建、烧录与控制台（开发板上已有 SDK 固件时会自动发送 `reboot_dl`）：
+
+            ```bash
+            export IPRO_FLASH_TOOL=<ICUBE>/ipro_iot_tool_macos
+            ./build_freertos.sh -p /dev/cu.usbserial-XXXX \
+                -P <ICUBE>/chips/ipro7/partition/partition_cfg_2M.toml \
+                build flash monitor ipro7ai_reef_demo
+            ```
+
+            Wi-Fi 与 RTSP 版以 `DEFCONFIG=defconfig_wifi_ipro6s` 构建，输出在 `build_wifi_ipro6s/build_out/`，需要运行 `ipro6_if_wifi` 固件的 IPRO6S FIN 卡，步骤见 [Wi-Fi 与 RTSP 摄像头视频流](../tutorials/wifi-rtsp.md)。这个配置不含 USB 设备，没有 `mic usb`。命令总表见 [Reef 出厂固件](../hardware/boards/reef-evk.md#reef-demo)。
+          ja: |
+            SW7 を CAM、SW8 を PWR に設定し、コンソールケーブルを U6 に接続して、USB-C から給電します（[Reef のクイックスタート](../hardware/boards/reef-evk.md#quick-start)を参照）。
+
+            <div class="ipro-steps" markdown>
+
+            1. **ビルド**：SDK のルートで次を実行します。
+
+                ```bash
+                make -C apps/platform/ipro7ai_reef_demo
+                ```
+
+                ビルドの最後に Flash と RAM の使用量が表示されます。イメージは `apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin` です。
+
+            2. **書き込み**：ボードを[ダウンロードモード](../hardware/boards/reef-evk.md#download-mode)にし（SW1 を押したまま SW2 を押し、SW1 を離す）、IntelProCube のディレクトリで次を実行します。
+
+                ```bash
+                ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+                    --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+                    --pt chips/ipro7/partition/partition_cfg_2M.toml \
+                    --firmware <SDK>/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin
+                ```
+
+                出力に `[All Success]` が表示された場合のみ書き込み成功です（ツールは失敗時も 0 で終了します）。SW2 を押して新しいファームウェアを起動します。
+
+            3. **実行**：115200 baud でコンソールを開き、`reef selftest` と入力します。
+
+                電源投入時に RGB LED が青色で 1 回呼吸点灯します。`reef selftest` は約 3 秒で赤、緑、青を点灯し、スピーカーから 1 kHz のトーンを鳴らしたあと、SD カードの検出とカメラを確認します。SW3、SW4、SW5、SW1 を押すと、LED がそれぞれ赤、緑、青、白に点灯します。
+
+            </div>
+
+            ビルド、書き込み、コンソールの起動を 1 つのコマンドで行えます（SDK のファームウェアがすでに動作している場合は、スクリプトが `reboot_dl` を自動で送信します）。
+
+            ```bash
+            export IPRO_FLASH_TOOL=<ICUBE>/ipro_iot_tool_macos
+            ./build_freertos.sh -p /dev/cu.usbserial-XXXX \
+                -P <ICUBE>/chips/ipro7/partition/partition_cfg_2M.toml \
+                build flash monitor ipro7ai_reef_demo
+            ```
+
+            Wi-Fi と RTSP 版は `DEFCONFIG=defconfig_wifi_ipro6s` でビルドし、出力先は `build_wifi_ipro6s/build_out/` です。`ipro6_if_wifi` ファームウェアを実行する IPRO6S FIN カードが必要です。手順は [Wi-Fi と RTSP カメラストリーミング](../tutorials/wifi-rtsp.md)を参照してください。この構成には USB デバイスがないため、`mic usb` は使えません。コマンドの一覧は [Reef の出荷時ファームウェア](../hardware/boards/reef-evk.md#reef-demo)にあります。
       - name: ipro_reef_teach
         path: apps/ai/ipro_reef_teach
         purpose:
           zh: "Reef 的 Edge AI 韌體：一個映像包含三個 Teach 工具，`image`（USB 相機＋影像分類）、`voice`（聲紋辨識）與 `sensor`（感測器分類），開機時依 Flash 中儲存的模式擇一執行，由 IPRO AI Studio 操作。完整操作見 [IPRO AI Teach](../teach/index.md)"
           en: "The Reef's Edge AI firmware: one image with three Teach tools, `image` (USB camera + image classifier), `voice` (speaker recognition) and `sensor` (sensor classification); the mode stored in flash picks one at boot, driven from IPRO AI Studio. Full walkthrough: [IPRO AI Teach](../teach/index.md)"
+          zh-cn: "Reef 的 Edge AI 固件：一个镜像包含三个 Teach 工具，`image`（USB 摄像头＋图像分类）、`voice`（声纹识别）与 `sensor`（传感器分类），启动时根据 Flash 中保存的模式选择其一运行，由 IPRO AI Studio 操作。完整操作见 [IPRO AI Teach](../teach/index.md)"
+          ja: "Reef の Edge AI ファームウェア：1 つのイメージに 3 つの Teach ツール、`image`（USB カメラ＋画像分類）、`voice`（声紋認識）、`sensor`（センサー分類）を収録し、起動時に Flash に保存されたモードで 1 つを選んで実行します。操作は IPRO AI Studio から行います。詳しい手順は [IPRO AI Teach](../teach/index.md) を参照してください"
         boards:
           zh: "Reef（`.config`）；`image` 模式需要 OV5640 相機"
           en: "Reef (`.config`); `image` mode needs the OV5640 camera"
+          zh-cn: "Reef（`.config`）；`image` 模式需要 OV5640 摄像头"
+          ja: "Reef（`.config`）、`image` モードには OV5640 カメラが必要"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         reef:
           zh: |
             這個韌體使用自己的分割表 `partition_reef_teach.toml`（韌體 640 KB、mfg 1364 KB），第一次燒錄時連同 mfg 資料（開機模式與聲紋模型）一起寫入。影像與感測器模型之後由 IPRO AI Studio 經 USB 部署。
@@ -201,20 +295,106 @@ categories:
             </div>
 
             Each mode has its own USB-C identity (VID `0x3896`): `image` is PID `0x0705` (UVC camera + serial port), `voice` `0x0720` and `sensor` `0x0721` (serial port). Without IPRO AI Studio, the image tool also runs in a browser: `python3 tools/teach_web/serve.py`, then open http://localhost:8780 in Chrome or Edge. Each mode is walked through in [IPRO AI Teach](../teach/index.md).
+          zh-cn: |
+            这个固件使用自己的分区表 `partition_reef_teach.toml`（固件 640 KB、mfg 1364 KB），首次烧录时连同 mfg 数据（启动模式与声纹模型）一起写入。图像与传感器模型之后由 IPRO AI Studio 经 USB 部署。
+
+            <div class="ipro-steps" markdown>
+
+            1. **构建**
+
+                ```bash
+                make -C apps/ai/ipro_reef_teach
+                ```
+
+                镜像位于 `apps/ai/ipro_reef_teach/build/build_out/ipro_reef_teach_IPRO7.bin`（约 360 KB）。
+
+            2. **生成 mfg 数据**：启动模式（此处为 `image`）与随附的声纹模型
+
+                ```bash
+                python3 apps/ai/ipro_reef_teach/mfg_payload.py \
+                    --voice apps/ai/ipro_reef_teach/model/model_b.spkb --mode image -o reef_teach_mfg.bin
+                ```
+
+                在 SDK 根目录生成 `reef_teach_mfg.bin`。
+
+            3. **烧录**：让开发板进入[下载模式](../hardware/boards/reef-evk.md#download-mode)，在 IntelProCube 目录执行
+
+                ```bash
+                ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+                    --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+                    --skip-ota --pt <SDK>/apps/ai/ipro_reef_teach/partition_reef_teach.toml \
+                    --firmware <SDK>/apps/ai/ipro_reef_teach/build/build_out/ipro_reef_teach_IPRO7.bin \
+                    --mfg <SDK>/reef_teach_mfg.bin
+                ```
+
+                确认输出中有 `[All Success]`，按一下 SW2。之后只更新固件时去掉 `--mfg`，模式与三个模型都会保留。
+
+            4. **确认模式**：以 115200 baud 打开控制台。启动信息中的 `RTCH:   mode: image` 一行表示当前的模式。输入 `mode voice`，开发板约 2 秒后以声纹模式重启，打印 `RTCH: voice ready`。
+
+            </div>
+
+            每个模式的 USB-C 标识不同（VID `0x3896`）：`image` 为 PID `0x0705`（UVC 摄像头＋串口），`voice` 为 `0x0720`、`sensor` 为 `0x0721`（串口）。不安装 IPRO AI Studio 时，可以使用浏览器版图像 Teach（`python3 tools/teach_web/serve.py`，用 Chrome 或 Edge 打开 http://localhost:8780）。各模式的操作见 [IPRO AI Teach](../teach/index.md)。
+          ja: |
+            このファームウェアは専用のパーティションテーブル `partition_reef_teach.toml`（ファームウェア 640 KB、mfg 1364 KB）を使用します。初回の書き込みでは mfg ペイロード（ブートモードと声紋モデル）も書き込みます。画像モデルとセンサーモデルは、あとから IPRO AI Studio が USB 経由でデプロイします。
+
+            <div class="ipro-steps" markdown>
+
+            1. **ビルド**
+
+                ```bash
+                make -C apps/ai/ipro_reef_teach
+                ```
+
+                イメージは `apps/ai/ipro_reef_teach/build/build_out/ipro_reef_teach_IPRO7.bin`（約 360 KB）です。
+
+            2. **mfg ペイロードの作成**：ブートモード（ここでは `image`）と付属の声紋モデルを含めます。
+
+                ```bash
+                python3 apps/ai/ipro_reef_teach/mfg_payload.py \
+                    --voice apps/ai/ipro_reef_teach/model/model_b.spkb --mode image -o reef_teach_mfg.bin
+                ```
+
+                SDK のルートに `reef_teach_mfg.bin` が作成されます。
+
+            3. **書き込み**：ボードを[ダウンロードモード](../hardware/boards/reef-evk.md#download-mode)にし、IntelProCube のディレクトリで次を実行します。
+
+                ```bash
+                ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+                    --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+                    --skip-ota --pt <SDK>/apps/ai/ipro_reef_teach/partition_reef_teach.toml \
+                    --firmware <SDK>/apps/ai/ipro_reef_teach/build/build_out/ipro_reef_teach_IPRO7.bin \
+                    --mfg <SDK>/reef_teach_mfg.bin
+                ```
+
+                `[All Success]` を確認してから SW2 を押します。あとでファームウェアだけを更新する場合は `--mfg` を外します。モードと 3 つのモデルはすべて保持されます。
+
+            4. **モードの確認**：115200 baud でコンソールを開きます。起動ログの `RTCH:   mode: image` の行が実行中のモードを示します。`mode voice` と入力すると、ボードは約 2 秒後に声紋モードで再起動し、`RTCH: voice ready` を表示します。
+
+            </div>
+
+            モードごとに USB-C の識別情報が異なります（VID `0x3896`）。`image` は PID `0x0705`（UVC カメラ＋シリアルポート）、`voice` は `0x0720`、`sensor` は `0x0721`（シリアルポート）です。IPRO AI Studio がなくても、画像ツールはブラウザーで動作します。`python3 tools/teach_web/serve.py` を実行し、Chrome または Edge で http://localhost:8780 を開いてください。各モードの手順は [IPRO AI Teach](../teach/index.md) で説明しています。
       - name: ipro_ble_remote
         path: apps/bluetooth/ble/ipro_ble_remote
         purpose:
           zh: "GATT 參考應用：LED、按鍵、環境、UART、相機影像與影像上傳服務；Reef 版另有 Reef 硬體服務與 BLE A/B OTA。隨附 Android 示範 App `ipro_remote_demo.apk`。教學見[第一個 BLE 應用](../tutorials/first-ble-app.md)"
           en: "GATT reference: LED, key, environment, UART, camera image and image upload services; the Reef build adds a Reef hardware service and BLE A/B OTA. Ships the Android demo app `ipro_remote_demo.apk`. Tutorial: [Your First BLE Application](../tutorials/first-ble-app.md)"
+          zh-cn: "GATT 参考应用：LED、按键、环境、UART、摄像头图像与图像上传服务；Reef 版另有 Reef 硬件服务与 BLE A/B OTA。附带 Android 演示 App `ipro_remote_demo.apk`。教程见[第一个 BLE 应用](../tutorials/first-ble-app.md)"
+          ja: "GATT リファレンス：LED、キー、環境、UART、カメラ画像、画像アップロードの各サービス。Reef 版では Reef ハードウェアサービスと BLE A/B OTA が加わります。Android デモアプリ `ipro_remote_demo.apk` が付属します。チュートリアル：[最初の BLE アプリケーション](../tutorials/first-ble-app.md)"
         boards:
           zh: "Reef（`defconfig_reef`：WS2812、相機、SD 卡、音訊與 BLE A/B OTA）；`.config`、`defconfig` 為 IPRO7 EVB"
           en: "Reef (`defconfig_reef`: WS2812, camera, SD card, audio and BLE A/B OTA); `.config` and `defconfig` target the IPRO7 EVB"
+          zh-cn: "Reef（`defconfig_reef`：WS2812、摄像头、SD 卡、音频与 BLE A/B OTA）；`.config`、`defconfig` 对应 IPRO7 EVB"
+          ja: "Reef（`defconfig_reef`：WS2812、カメラ、SD カード、オーディオ、BLE A/B OTA）、`.config` と `defconfig` は IPRO7 EVB 用"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         build:
           zh: "Reef：`make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef`"
           en: "Reef: `make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef`"
+          zh-cn: "Reef：`make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef`"
+          ja: "Reef：`make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef`"
         reef:
           zh: |
             Reef 版使用 boot2 與 A/B 分割表 `partition_cfg_2M_remote_ab.toml`，才能做 BLE OTA。第一次燒錄要連同 boot2 一起寫入；boot2 映像隨 IntelProCube 提供，不在 SDK 內。
@@ -298,20 +478,110 @@ categories:
 
             !!! warning "OTA needs the A/B table"
                 Never OTA a Reef that was flashed with the stock `partition_cfg_2M.toml`: after an update is written to its FW B and selected, the board prints nothing and has to be reflashed from download mode.
+          zh-cn: |
+            Reef 版使用 boot2 与 A/B 分区表 `partition_cfg_2M_remote_ab.toml`，才能进行 BLE OTA。首次烧录要连同 boot2 一起写入；boot2 镜像随 IntelProCube 提供，不在 SDK 内。
+
+            <div class="ipro-steps" markdown>
+
+            1. **构建**
+
+                ```bash
+                make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef
+                ```
+
+                镜像位于 `apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin`。只执行 `make`（不加 `DEFCONFIG=`）构建的是 IPRO7 EVB 版。
+
+            2. **首次烧录**：进入[下载模式](../hardware/boards/reef-evk.md#download-mode)，在 IntelProCube 目录执行
+
+                ```bash
+                ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+                    --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+                    --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
+                    --pt <SDK>/apps/bluetooth/ble/ipro_ble_remote/partition_cfg_2M_remote_ab.toml \
+                    --firmware <SDK>/apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin
+                ```
+
+                确认 `[All Success]` 后按一下 SW2。
+
+            3. **运行**：以 115200 baud 打开控制台。启动信息先出现 `[BOOT2] IPRO7 Boot2 v0.5.2`，接着是 `[BLE] Advertising: IPRO-Remote`。用手机上的 nRF Connect 或 `ipro_remote_demo.apk` 连接 `IPRO-Remote`；在控制台输入 `reef status` 查看开发板、摄像头与 LED 状态。
+
+            4. **BLE OTA**：生成 OTA 包并通过 BLE 推送（主机需安装 Python 包 `bleak`）
+
+                ```bash
+                IPRO_FLASH_TOOL=<ICUBE>/ipro_iot_tool_macos sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
+                python3 apps/bluetooth/ble/ipro_ble_remote/tools/reef_ota.py \
+                    apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_reef.xz.ota
+                ```
+
+                OTA 包约 345 KB，传输完成后开发板重启，从新镜像启动。
+
+            </div>
+
+            !!! warning "OTA 只能使用 A/B 分区表"
+                不要在 Reef 上以标准的 `partition_cfg_2M.toml` 进行 OTA：写入其 FW B 并切换后，开发板没有任何输出，只能进入下载模式重新烧录。
+          ja: |
+            Reef 版は boot2 と A/B パーティションテーブル `partition_cfg_2M_remote_ab.toml` を使用します。BLE OTA にはこれが必要です。初回の書き込みでは boot2 も書き込みます。boot2 イメージは SDK ではなく IntelProCube に付属しています。
+
+            <div class="ipro-steps" markdown>
+
+            1. **ビルド**
+
+                ```bash
+                make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef
+                ```
+
+                イメージは `apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin` です。`DEFCONFIG=` を付けずに `make` だけを実行すると、IPRO7 EVB 版がビルドされます。
+
+            2. **初回の書き込み**：[ダウンロードモード](../hardware/boards/reef-evk.md#download-mode)に入り、IntelProCube のディレクトリで次を実行します。
+
+                ```bash
+                ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+                    --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+                    --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
+                    --pt <SDK>/apps/bluetooth/ble/ipro_ble_remote/partition_cfg_2M_remote_ab.toml \
+                    --firmware <SDK>/apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin
+                ```
+
+                `[All Success]` を確認してから SW2 を押します。
+
+            3. **実行**：115200 baud でコンソールを開きます。起動ログは `[BOOT2] IPRO7 Boot2 v0.5.2` で始まり、続いて `[BLE] Advertising: IPRO-Remote` が表示されます。スマートフォンの nRF Connect または `ipro_remote_demo.apk` で `IPRO-Remote` に接続します。コンソールで `reef status` と入力すると、ボード、カメラ、LED の状態が表示されます。
+
+            4. **BLE OTA**：OTA パッケージを作成し、BLE で送信します（ホストには Python パッケージ `bleak` が必要です）。
+
+                ```bash
+                IPRO_FLASH_TOOL=<ICUBE>/ipro_iot_tool_macos sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
+                python3 apps/bluetooth/ble/ipro_ble_remote/tools/reef_ota.py \
+                    apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_reef.xz.ota
+                ```
+
+                パッケージは約 345 KB です。転送が完了するとボードが再起動し、新しいイメージから起動します。
+
+            </div>
+
+            !!! warning "OTA には A/B テーブルが必要"
+                標準の `partition_cfg_2M.toml` で書き込んだ Reef には OTA を行わないでください。FW B に更新を書き込んで切り替えると、ボードは何も出力しなくなり、ダウンロードモードから書き込み直す必要があります。
       - name: ipro_throughput_test
         path: apps/bluetooth/ble/ipro_throughput_test
         purpose:
           zh: "兩板 BLE 吞吐量測試：1M／2M／Coded PHY、DLE、ATT MTU 247。教學見 [BLE 吞吐量測試](../tutorials/ble-throughput.md)"
           en: "Two-board BLE throughput test: 1M / 2M / Coded PHY, DLE, ATT MTU 247. Tutorial: [BLE Throughput Test](../tutorials/ble-throughput.md)"
+          zh-cn: "双板 BLE 吞吐量测试：1M／2M／Coded PHY、DLE、ATT MTU 247。教程见 [BLE 吞吐量测试](../tutorials/ble-throughput.md)"
+          ja: "2 枚のボードによる BLE スループットテスト：1M／2M／Coded PHY、DLE、ATT MTU 247。チュートリアル：[BLE スループットテスト](../tutorials/ble-throughput.md)"
         boards:
           zh: "兩塊 Reef（`defconfig_reef`）；`.config` 為 IPRO7 EVB"
           en: "Two Reefs (`defconfig_reef`); `.config` targets the IPRO7 EVB"
+          zh-cn: "两块 Reef（`defconfig_reef`）；`.config` 对应 IPRO7 EVB"
+          ja: "Reef 2 枚（`defconfig_reef`）、`.config` は IPRO7 EVB 用"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         build:
           zh: "Reef：`make -C apps/bluetooth/ble/ipro_throughput_test DEFCONFIG=defconfig_reef`"
           en: "Reef: `make -C apps/bluetooth/ble/ipro_throughput_test DEFCONFIG=defconfig_reef`"
+          zh-cn: "Reef：`make -C apps/bluetooth/ble/ipro_throughput_test DEFCONFIG=defconfig_reef`"
+          ja: "Reef：`make -C apps/bluetooth/ble/ipro_throughput_test DEFCONFIG=defconfig_reef`"
         reef:
           zh: |
             需要兩塊 Reef，各接一條主控台線。
@@ -365,6 +635,58 @@ categories:
             3. **Run**: open a console on each board at 115200 baud. About 7 seconds after reset each prints `BLE initialized`. Type `tp slave` on one board (it advertises as `IPRO-TP-TEST`) and `tp master` on the other, and wait for `Notifications enabled - ready for test`. On the sender type `tp phy 2` and `tp start 244 10`; the summary follows after 10 seconds.
 
             </div>
+          zh-cn: |
+            需要两块 Reef，各接一条控制台线。
+
+            <div class="ipro-steps" markdown>
+
+            1. **构建**
+
+                ```bash
+                make -C apps/bluetooth/ble/ipro_throughput_test DEFCONFIG=defconfig_reef
+                ```
+
+                镜像位于 `apps/bluetooth/ble/ipro_throughput_test/build_reef/build_out/ipro_throughput_test_IPRO7.bin`。
+
+            2. **烧录两块开发板**：每块开发板进入[下载模式](../hardware/boards/reef-evk.md#download-mode)后，在 IntelProCube 目录执行（`--port` 换成该开发板的串口）
+
+                ```bash
+                ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+                    --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+                    --firmware <SDK>/apps/bluetooth/ble/ipro_throughput_test/build_reef/build_out/ipro_throughput_test_IPRO7.bin
+                ```
+
+                两块开发板都要看到 `[All Success]`，再各按一下 SW2。
+
+            3. **运行**：以 115200 baud 各打开一个控制台。复位约 7 秒后打印 `BLE initialized`。一块开发板输入 `tp slave`（以 `IPRO-TP-TEST` 广播），另一块输入 `tp master`，等到 `Notifications enabled - ready for test`；在发送端输入 `tp phy 2` 与 `tp start 244 10`，10 秒后打印结果摘要。
+
+            </div>
+          ja: |
+            コンソールケーブルを接続した Reef が 2 枚必要です。
+
+            <div class="ipro-steps" markdown>
+
+            1. **ビルド**
+
+                ```bash
+                make -C apps/bluetooth/ble/ipro_throughput_test DEFCONFIG=defconfig_reef
+                ```
+
+                イメージは `apps/bluetooth/ble/ipro_throughput_test/build_reef/build_out/ipro_throughput_test_IPRO7.bin` です。
+
+            2. **2 枚のボードへの書き込み**：各ボードを[ダウンロードモード](../hardware/boards/reef-evk.md#download-mode)にし、IntelProCube のディレクトリで次を実行します（ポートはそのボードのものを指定します）。
+
+                ```bash
+                ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+                    --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+                    --firmware <SDK>/apps/bluetooth/ble/ipro_throughput_test/build_reef/build_out/ipro_throughput_test_IPRO7.bin
+                ```
+
+                両方のボードで `[All Success]` を確認してから、それぞれの SW2 を押します。
+
+            3. **実行**：各ボードで 115200 baud のコンソールを開きます。リセットから約 7 秒後に、それぞれ `BLE initialized` を表示します。一方のボードで `tp slave` と入力し（`IPRO-TP-TEST` としてアドバタイズします）、もう一方で `tp master` と入力して、`Notifications enabled - ready for test` が表示されるまで待ちます。送信側で `tp phy 2` と `tp start 244 10` を入力すると、10 秒後に結果の概要が表示されます。
+
+            </div>
         readme:
           # these lines say the old tool is retired, which is correct
           redline_ignore: [retired-tool]
@@ -373,15 +695,23 @@ categories:
         purpose:
           zh: "LE Audio unicast 耳機：BAP unicast server、PACS、ASCS、CAP、CSIP、VCP，LC3 解碼後由 DAC 輸出。教學見 [LE Audio 入門](../tutorials/le-audio.md)"
           en: "LE Audio unicast headset: BAP unicast server, PACS, ASCS, CAP, CSIP, VCP, with LC3 decoded to the DAC. Tutorial: [Getting Started with LE Audio](../tutorials/le-audio.md)"
+          zh-cn: "LE Audio unicast 耳机：BAP unicast server、PACS、ASCS、CAP、CSIP、VCP，LC3 解码后由 DAC 输出。教程见 [LE Audio 入门](../tutorials/le-audio.md)"
+          ja: "LE Audio ユニキャストヘッドセット：BAP unicast server、PACS、ASCS、CAP、CSIP、VCP。LC3 をデコードして DAC に出力します。チュートリアル：[LE Audio 入門](../tutorials/le-audio.md)"
         boards:
           zh: "Reef（`defconfig_reef`：DAC 輸出到耳麥孔與喇叭）；`.config`、`DAC.config`、`UAC.config` 為 IPRO7 EVB"
           en: "Reef (`defconfig_reef`: DAC output to the headset jack and speaker); `.config`, `DAC.config` and `UAC.config` target the IPRO7 EVB"
+          zh-cn: "Reef（`defconfig_reef`：DAC 输出到耳麦插孔与扬声器）；`.config`、`DAC.config`、`UAC.config` 对应 IPRO7 EVB"
+          ja: "Reef（`defconfig_reef`：DAC 出力をヘッドセットジャックとスピーカーへ）、`.config`、`DAC.config`、`UAC.config` は IPRO7 EVB 用"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         build:
           zh: "Reef：`make -C apps/bluetooth/le_audio/ipro_le_audio_headset DEFCONFIG=defconfig_reef`"
           en: "Reef: `make -C apps/bluetooth/le_audio/ipro_le_audio_headset DEFCONFIG=defconfig_reef`"
+          zh-cn: "Reef：`make -C apps/bluetooth/le_audio/ipro_le_audio_headset DEFCONFIG=defconfig_reef`"
+          ja: "Reef：`make -C apps/bluetooth/le_audio/ipro_le_audio_headset DEFCONFIG=defconfig_reef`"
         reef:
           zh: |
             <div class="ipro-steps" markdown>
@@ -437,6 +767,60 @@ categories:
 
             !!! info "Status in this release"
                 The application's README records that a phone connects, discovers the services and bonds at security level 4; media streaming from a phone is not validated yet.
+          zh-cn: |
+            <div class="ipro-steps" markdown>
+
+            1. **构建**
+
+                ```bash
+                make -C apps/bluetooth/le_audio/ipro_le_audio_headset DEFCONFIG=defconfig_reef
+                ```
+
+                镜像位于 `apps/bluetooth/le_audio/ipro_le_audio_headset/build_reef/build_out/ipro_le_audio_headset_IPRO7.bin`。
+
+            2. **烧录**：进入[下载模式](../hardware/boards/reef-evk.md#download-mode)，在 IntelProCube 目录执行
+
+                ```bash
+                ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+                    --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+                    --firmware <SDK>/apps/bluetooth/le_audio/ipro_le_audio_headset/build_reef/build_out/ipro_le_audio_headset_IPRO7.bin
+                ```
+
+                确认 `[All Success]` 后按一下 SW2。
+
+            3. **运行**：以 115200 baud 打开控制台。开发板以 `IPRO-LE-Audio` 广播；用支持 LE Audio 的手机配对，数字比较在开发板上自动确认。在控制台输入 `leaudio_status` 查看连接与音频流状态。SW3、SW4、SW5 经 VCP 分别调低音量、调高音量与静音。
+
+            </div>
+
+            !!! info "本版本状态"
+                应用 README 记载：手机可连接、发现服务并以安全等级 4 绑定；由手机推送媒体流尚未验证。
+          ja: |
+            <div class="ipro-steps" markdown>
+
+            1. **ビルド**
+
+                ```bash
+                make -C apps/bluetooth/le_audio/ipro_le_audio_headset DEFCONFIG=defconfig_reef
+                ```
+
+                イメージは `apps/bluetooth/le_audio/ipro_le_audio_headset/build_reef/build_out/ipro_le_audio_headset_IPRO7.bin` です。
+
+            2. **書き込み**：[ダウンロードモード](../hardware/boards/reef-evk.md#download-mode)に入り、IntelProCube のディレクトリで次を実行します。
+
+                ```bash
+                ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+                    --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+                    --firmware <SDK>/apps/bluetooth/le_audio/ipro_le_audio_headset/build_reef/build_out/ipro_le_audio_headset_IPRO7.bin
+                ```
+
+                `[All Success]` を確認してから SW2 を押します。
+
+            3. **実行**：115200 baud でコンソールを開きます。ボードは `IPRO-LE-Audio` としてアドバタイズします。LE Audio 対応のスマートフォンからペアリングします（数値比較はボード側で自動的に承認されます）。コンソールで `leaudio_status` と入力すると、接続とストリームの状態が表示されます。SW3、SW4、SW5 は VCP による音量ダウン、音量アップ、ミュートです。
+
+            </div>
+
+            !!! info "本リリースでの状態"
+                アプリケーションの README には、スマートフォンからの接続、サービス探索、セキュリティレベル 4 でのボンディングまで動作すると記載されています。スマートフォンからのメディアストリーミングはまだ検証されていません。
         readme:
           replace:
             # host-side log paths in the README's test commands: a generic temp dir
@@ -447,15 +831,23 @@ categories:
         purpose:
           zh: "USB 網路攝影機：OV5640、ISP、硬體 MJPEG、USB Video Class；另一個 Reef 設定在 NPU 上跑剪刀石頭布並畫進影像。教學見 [USB 網路攝影機與剪刀石頭布](../tutorials/usb-webcam.md)"
           en: "USB webcam: OV5640, ISP, hardware MJPEG, USB Video Class; a second Reef configuration plays rock-paper-scissors on the NPU and draws it into the stream. Tutorial: [USB Webcam and Rock-Paper-Scissors](../tutorials/usb-webcam.md)"
+          zh-cn: "USB 网络摄像头：OV5640、ISP、硬件 MJPEG、USB Video Class；另一个 Reef 配置在 NPU 上运行石头剪刀布并画进画面。教程见 [USB 网络摄像头与石头剪刀布](../tutorials/usb-webcam.md)"
+          ja: "USB ウェブカメラ：OV5640、ISP、ハードウェア MJPEG、USB Video Class。もう 1 つの Reef 構成では NPU でじゃんけんを行い、その結果を映像に描画します。チュートリアル：[USB ウェブカメラとじゃんけん](../tutorials/usb-webcam.md)"
         boards:
           zh: "Reef（`defconfig_reef_ov5640`：網路攝影機；`defconfig_reef_rps`：剪刀石頭布）；`.config` 為 IPRO7 EVB 搭配 SC101IOT"
           en: "Reef (`defconfig_reef_ov5640`: webcam; `defconfig_reef_rps`: rock-paper-scissors); `.config` targets the IPRO7 EVB with an SC101IOT"
+          zh-cn: "Reef（`defconfig_reef_ov5640`：网络摄像头；`defconfig_reef_rps`：石头剪刀布）；`.config` 对应 IPRO7 EVB 搭配 SC101IOT"
+          ja: "Reef（`defconfig_reef_ov5640`：ウェブカメラ、`defconfig_reef_rps`：じゃんけん）、`.config` は IPRO7 EVB と SC101IOT の組み合わせ用"
         console:
           zh: "Reef：UART 115200<br>`.config`：UART 921600"
           en: "Reef: UART 115200<br>`.config`: UART 921600"
+          zh-cn: "Reef：UART 115200<br>`.config`：UART 921600"
+          ja: "Reef：UART 115200<br>`.config`：UART 921600"
         build:
           zh: "Reef：`make -C apps/multimedia/ipro7_uvc_cam DEFCONFIG=defconfig_reef_ov5640`（或 `defconfig_reef_rps`）"
           en: "Reef: `make -C apps/multimedia/ipro7_uvc_cam DEFCONFIG=defconfig_reef_ov5640` (or `defconfig_reef_rps`)"
+          zh-cn: "Reef：`make -C apps/multimedia/ipro7_uvc_cam DEFCONFIG=defconfig_reef_ov5640`（或 `defconfig_reef_rps`）"
+          ja: "Reef：`make -C apps/multimedia/ipro7_uvc_cam DEFCONFIG=defconfig_reef_ov5640`（または `defconfig_reef_rps`）"
         reef:
           zh: |
             SW7 必須在 CAM。
@@ -513,20 +905,84 @@ categories:
             3. **Run**: connect USB-C to the computer. The console (115200 baud) prints `[UVC] Streaming pipeline started` and the computer finds a camera named "IPRO7 UVC Cam" (VID `0x3896`, PID `0x0701`) with no driver to install. Open it in any camera app: the webcam build offers 1280×720 (about 15 fps) or 640×360 (30 fps); the rock-paper-scissors build streams 640×360 with a play box, the live label, a 3-2-1 countdown and the score.
 
             </div>
+          zh-cn: |
+            SW7 必须拨到 CAM。
+
+            <div class="ipro-steps" markdown>
+
+            1. **构建**
+
+                ```bash
+                make -C apps/multimedia/ipro7_uvc_cam DEFCONFIG=defconfig_reef_ov5640   # 网络摄像头
+                make -C apps/multimedia/ipro7_uvc_cam DEFCONFIG=defconfig_reef_rps      # 石头剪刀布
+                ```
+
+                镜像分别位于 `apps/multimedia/ipro7_uvc_cam/build_reef_ov5640/build_out/` 与 `build_reef_rps/build_out/`，文件名都是 `ipro7_uvc_cam_IPRO7.bin`。
+
+            2. **烧录**：进入[下载模式](../hardware/boards/reef-evk.md#download-mode)，在 IntelProCube 目录执行
+
+                ```bash
+                ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+                    --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+                    --pt chips/ipro7/partition/partition_cfg_2M.toml \
+                    --firmware <SDK>/apps/multimedia/ipro7_uvc_cam/build_reef_ov5640/build_out/ipro7_uvc_cam_IPRO7.bin
+                ```
+
+                确认 `[All Success]` 后按一下 SW2。石头剪刀布的模型已链接进固件，不需要另外烧录。
+
+            3. **运行**：USB-C 连接到电脑。控制台（115200 baud）打印 `[UVC] Streaming pipeline started`，电脑上出现名为“IPRO7 UVC Cam”的摄像头（VID `0x3896`、PID `0x0701`），无需安装驱动程序。用任意摄像头软件打开：网络摄像头版可选 1280×720（约 15 fps）或 640×360（30 fps）；石头剪刀布版为 640×360，画面上有出拳框、实时识别结果、3-2-1 倒数与比分。
+
+            </div>
+          ja: |
+            SW7 は必ず CAM にしてください。
+
+            <div class="ipro-steps" markdown>
+
+            1. **ビルド**
+
+                ```bash
+                make -C apps/multimedia/ipro7_uvc_cam DEFCONFIG=defconfig_reef_ov5640   # ウェブカメラ
+                make -C apps/multimedia/ipro7_uvc_cam DEFCONFIG=defconfig_reef_rps      # じゃんけん
+                ```
+
+                イメージは `apps/multimedia/ipro7_uvc_cam/build_reef_ov5640/build_out/` と `build_reef_rps/build_out/` にあり、ファイル名はどちらも `ipro7_uvc_cam_IPRO7.bin` です。
+
+            2. **書き込み**：[ダウンロードモード](../hardware/boards/reef-evk.md#download-mode)に入り、IntelProCube のディレクトリで次を実行します。
+
+                ```bash
+                ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+                    --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+                    --pt chips/ipro7/partition/partition_cfg_2M.toml \
+                    --firmware <SDK>/apps/multimedia/ipro7_uvc_cam/build_reef_ov5640/build_out/ipro7_uvc_cam_IPRO7.bin
+                ```
+
+                `[All Success]` を確認してから SW2 を押します。じゃんけんのモデルはファームウェアにリンク済みのため、ほかに書き込むものはありません。
+
+            3. **実行**：USB-C をコンピューターに接続します。コンソール（115200 baud）に `[UVC] Streaming pipeline started` が表示され、コンピューターが「IPRO7 UVC Cam」という名前のカメラ（VID `0x3896`、PID `0x0701`）を認識します。ドライバーのインストールは不要です。任意のカメラアプリで開きます。ウェブカメラ版では 1280×720（約 15 fps）または 640×360（30 fps）を選べます。じゃんけん版は 640×360 で、プレイ枠、リアルタイムの判定結果、3-2-1 のカウントダウン、スコアを表示します。
+
+            </div>
       - name: ipro7_jpeg_decode
         path: apps/multimedia/ipro7_jpeg_decode
         purpose:
           zh: "以軟體（TJpgDec）把 JPEG 解碼成 RGB565／RGB888，附格式探測、內建測試圖與主機端工具；IPRO7 的 MJPEG 硬體只能編碼"
           en: "Software JPEG decoding (TJpgDec) to RGB565 / RGB888, with a format probe, built-in test images and host tools; IPRO7's MJPEG block encodes only"
+          zh-cn: "用软件（TJpgDec）把 JPEG 解码成 RGB565／RGB888，附格式探测、内置测试图与主机端工具；IPRO7 的 MJPEG 硬件只能编码"
+          ja: "ソフトウェア（TJpgDec）による JPEG から RGB565／RGB888 へのデコード。フォーマット判定、内蔵テスト画像、ホストツール付き。IPRO7 の MJPEG ブロックはエンコード専用です"
         boards:
           zh: "Reef（`defconfig_reef`）；`.config` 為 IPRO7AI EVK"
           en: "Reef (`defconfig_reef`); `.config` targets the IPRO7AI EVK"
+          zh-cn: "Reef（`defconfig_reef`）；`.config` 对应 IPRO7AI EVK"
+          ja: "Reef（`defconfig_reef`）、`.config` は IPRO7AI EVK 用"
         console:
           zh: "UART **921600**"
           en: "UART **921600**"
+          zh-cn: "UART **921600**"
+          ja: "UART **921600**"
         build:
           zh: "Reef：`make -C apps/multimedia/ipro7_jpeg_decode DEFCONFIG=defconfig_reef`"
           en: "Reef: `make -C apps/multimedia/ipro7_jpeg_decode DEFCONFIG=defconfig_reef`"
+          zh-cn: "Reef：`make -C apps/multimedia/ipro7_jpeg_decode DEFCONFIG=defconfig_reef`"
+          ja: "Reef：`make -C apps/multimedia/ipro7_jpeg_decode DEFCONFIG=defconfig_reef`"
         reef:
           zh: |
             這是 Reef 設定中唯一主控台為 921600 baud 的應用。
@@ -580,20 +1036,80 @@ categories:
             3. **Run**: open the console at **921600** baud. The board prints `ipro7_jpeg_decode: JPEG -> RGB565 / RGB888, ...`; type `jdec run all` and the last line reads `... failed -> ALL PASS`. `jdec list` lists the test images and what is expected of each.
 
             </div>
+          zh-cn: |
+            这是 Reef 配置中唯一控制台为 921600 baud 的应用。
+
+            <div class="ipro-steps" markdown>
+
+            1. **构建**
+
+                ```bash
+                make -C apps/multimedia/ipro7_jpeg_decode DEFCONFIG=defconfig_reef
+                ```
+
+                镜像位于 `apps/multimedia/ipro7_jpeg_decode/build_reef/build_out/ipro7_jpeg_decode_IPRO7.bin`，测试图已链接在内。
+
+            2. **烧录**：进入[下载模式](../hardware/boards/reef-evk.md#download-mode)，在 IntelProCube 目录执行
+
+                ```bash
+                ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+                    --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+                    --firmware <SDK>/apps/multimedia/ipro7_jpeg_decode/build_reef/build_out/ipro7_jpeg_decode_IPRO7.bin
+                ```
+
+                确认 `[All Success]` 后按一下 SW2。
+
+            3. **运行**：以 **921600** baud 打开控制台。开机打印 `ipro7_jpeg_decode: JPEG -> RGB565 / RGB888, ...`；输入 `jdec run all`，最后一行为 `... failed -> ALL PASS`。`jdec list` 列出测试图与预期结果。
+
+            </div>
+          ja: |
+            Reef 構成の中で、コンソールが 921600 baud なのはこのアプリケーションだけです。
+
+            <div class="ipro-steps" markdown>
+
+            1. **ビルド**
+
+                ```bash
+                make -C apps/multimedia/ipro7_jpeg_decode DEFCONFIG=defconfig_reef
+                ```
+
+                イメージは `apps/multimedia/ipro7_jpeg_decode/build_reef/build_out/ipro7_jpeg_decode_IPRO7.bin` で、テスト画像もリンクされています。
+
+            2. **書き込み**：[ダウンロードモード](../hardware/boards/reef-evk.md#download-mode)に入り、IntelProCube のディレクトリで次を実行します。
+
+                ```bash
+                ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+                    --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+                    --firmware <SDK>/apps/multimedia/ipro7_jpeg_decode/build_reef/build_out/ipro7_jpeg_decode_IPRO7.bin
+                ```
+
+                `[All Success]` を確認してから SW2 を押します。
+
+            3. **実行**：**921600** baud でコンソールを開きます。ボードは `ipro7_jpeg_decode: JPEG -> RGB565 / RGB888, ...` を表示します。`jdec run all` と入力すると、最終行は `... failed -> ALL PASS` になります。`jdec list` はテスト画像と、それぞれの期待される結果を一覧表示します。
+
+            </div>
       - name: ipro_ai_link
         path: apps/test/ipro_ai_link
         purpose:
           zh: "IPRO AI Studio「Run on board」的板端韌體：由 microSD（`sd:/`）載入 `.inm` 模型與輸入、在 NPU 上推論、輸出原始結果；也可在主控台手動操作"
           en: "Board firmware for IPRO AI Studio \"Run on board\": loads `.inm` models and inputs from microSD (`sd:/`), runs them on the NPU and prints the raw outputs; also usable by hand from the console"
+          zh-cn: "IPRO AI Studio“Run on board”的板端固件：从 microSD（`sd:/`）加载 `.inm` 模型与输入、在 NPU 上推理、输出原始结果；也可在控制台手动操作"
+          ja: "IPRO AI Studio の「Run on board」用ボード側ファームウェア：microSD（`sd:/`）から `.inm` モデルと入力を読み込み、NPU で実行して生の出力を表示します。コンソールから手動でも操作できます"
         boards:
           zh: "Reef（`defconfig_reef`）；`.config` 為 IPRO7 EVB"
           en: "Reef (`defconfig_reef`); `.config` targets the IPRO7 EVB"
+          zh-cn: "Reef（`defconfig_reef`）；`.config` 对应 IPRO7 EVB"
+          ja: "Reef（`defconfig_reef`）、`.config` は IPRO7 EVB 用"
         console:
           zh: "UART 115200（另有 USB CDC 主控台）"
           en: "UART 115200 (also on a USB CDC port)"
+          zh-cn: "UART 115200（另有 USB CDC 控制台）"
+          ja: "UART 115200（USB CDC ポートでも使用可）"
         build:
           zh: "Reef：`make -C apps/test/ipro_ai_link DEFCONFIG=defconfig_reef`"
           en: "Reef: `make -C apps/test/ipro_ai_link DEFCONFIG=defconfig_reef`"
+          zh-cn: "Reef：`make -C apps/test/ipro_ai_link DEFCONFIG=defconfig_reef`"
+          ja: "Reef：`make -C apps/test/ipro_ai_link DEFCONFIG=defconfig_reef`"
         readme: {exclude: true}   # no README in the release
         reef:
           zh: |
@@ -676,17 +1192,103 @@ categories:
             </div>
 
             The SDK ships models to try, for example `apps/platform/ipro7_demo/demo/ai/ai_model/mbv2.inm`. Download IPRO AI Studio from [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest).
+          zh-cn: |
+            这个应用没有 README，以下根据源代码整理。需要一张 FAT 格式的 microSD 卡。
+
+            <div class="ipro-steps" markdown>
+
+            1. **构建**
+
+                ```bash
+                make -C apps/test/ipro_ai_link DEFCONFIG=defconfig_reef
+                ```
+
+                镜像位于 `apps/test/ipro_ai_link/build_reef/build_out/ipro_ai_link_IPRO7.bin`。
+
+            2. **烧录**：进入[下载模式](../hardware/boards/reef-evk.md#download-mode)，在 IntelProCube 目录执行
+
+                ```bash
+                ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+                    --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+                    --firmware <SDK>/apps/test/ipro_ai_link/build_reef/build_out/ipro_ai_link_IPRO7.bin
+                ```
+
+                确认 `[All Success]` 后按一下 SW2。
+
+            3. **运行**：以 115200 baud 打开控制台，开机打印 `ipro_ai_link ready`。USB-C 连接电脑时，开发板显示为两个 CDC 串口（VID `0x3896`、PID `0x0704`）：第一个传输数据，第二个是控制台。
+
+            4. **手动推理**：把 `.inm` 模型与原始输入文件复制到 SD 卡，插入卡座后依次输入
+
+                ```text
+                ai_mount
+                ai_load sd:/model.inm
+                ai_input sd:/input.bin
+                ai_run
+                ai_out
+                ```
+
+                `ai_out` 以十六进制打印输出张量，每个字节都以 XOR 0x80 存储。路径一律以 `sd:/` 开头。
+
+            </div>
+
+            SDK 随附可用的模型，例如 `apps/platform/ipro7_demo/demo/ai/ai_model/mbv2.inm`。IPRO AI Studio 可从 [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) 下载。
+          ja: |
+            このアプリケーションには README がないため、以下の手順はソースコードに基づいています。FAT でフォーマットした microSD カードが必要です。
+
+            <div class="ipro-steps" markdown>
+
+            1. **ビルド**
+
+                ```bash
+                make -C apps/test/ipro_ai_link DEFCONFIG=defconfig_reef
+                ```
+
+                イメージは `apps/test/ipro_ai_link/build_reef/build_out/ipro_ai_link_IPRO7.bin` です。
+
+            2. **書き込み**：[ダウンロードモード](../hardware/boards/reef-evk.md#download-mode)に入り、IntelProCube のディレクトリで次を実行します。
+
+                ```bash
+                ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+                    --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+                    --firmware <SDK>/apps/test/ipro_ai_link/build_reef/build_out/ipro_ai_link_IPRO7.bin
+                ```
+
+                `[All Success]` を確認してから SW2 を押します。
+
+            3. **実行**：115200 baud でコンソールを開くと、ボードが `ipro_ai_link ready` を表示します。コンピューターの USB ポートに接続すると、ボードは 2 つの CDC シリアルポート（VID `0x3896`、PID `0x0704`）として認識されます。1 つ目はデータ用、2 つ目はコンソールです。
+
+            4. **モデルを手動で実行**：`.inm` モデルと生の入力ファイルを SD カードにコピーして挿入し、次のように入力します。
+
+                ```text
+                ai_mount
+                ai_load sd:/model.inm
+                ai_input sd:/input.bin
+                ai_run
+                ai_out
+                ```
+
+                `ai_out` は出力テンソルを 16 進数で表示します。各バイトは XOR 0x80 で格納されています。パスは必ず `sd:/` で始めます。
+
+            </div>
+
+            SDK には試せるモデルが付属しています（例：`apps/platform/ipro7_demo/demo/ai/ai_model/mbv2.inm`）。IPRO AI Studio は [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) からダウンロードできます。
       - name: ipro_agora_sentino
         path: apps/multimedia/ipro_agora_sentino
         purpose:
           zh: "Sentino 雲端 AI 語音對話：BLE 配網、經 IPRO6S FIN 卡連 Wi-Fi、MQTT 登入、Agora RTC 即時語音；需另備 Sentino 裝置三元組與 AOSL 核心"
           en: "Sentino cloud AI voice chat: BLE provisioning, Wi-Fi through the IPRO6S FIN card, MQTT login and Agora RTC voice; needs a Sentino device triple and the AOSL core"
+          zh-cn: "Sentino 云端 AI 语音对话：BLE 配网、经 IPRO6S FIN 卡连接 Wi-Fi、MQTT 登录、Agora RTC 实时语音；需另备 Sentino 设备三元组与 AOSL 核心"
+          ja: "Sentino クラウド AI 音声対話：BLE によるプロビジョニング、IPRO6S FIN カード経由の Wi-Fi、MQTT ログイン、Agora RTC 音声。Sentino デバイストリプルと AOSL コアが別途必要です"
         boards:
           zh: "Reef＋IPRO6S FIN 卡（`.config`，`make` 或 `make BOARD=reef`）；`BOARD=evk` 為 IPRO7AI EVK（可建置，未經板上驗證）"
           en: "Reef + IPRO6S FIN card (`.config`, `make` or `make BOARD=reef`); `BOARD=evk` targets the IPRO7AI EVK (builds, not verified on a board)"
+          zh-cn: "Reef＋IPRO6S FIN 卡（`.config`，`make` 或 `make BOARD=reef`）；`BOARD=evk` 对应 IPRO7AI EVK（可构建，未经板上验证）"
+          ja: "Reef＋IPRO6S FIN カード（`.config`、`make` または `make BOARD=reef`）、`BOARD=evk` は IPRO7AI EVK 用（ビルドは可能、ボード上では未検証）"
         console:
           zh: "Reef：UART 115200"
           en: "Reef: UART 115200"
+          zh-cn: "Reef：UART 115200"
+          ja: "Reef：UART 115200"
         reef:
           zh: |
             需要：插在 microSD 卡座、執行 `ipro6_if_wifi`（`defconfig_ipro6_sdio`）韌體的 IPRO6S FIN 卡，JP3 在 GPIO；接在喇叭座的喇叭；每塊板一組 Sentino 裝置三元組與 Sentino 手機 App（向 Sentino 取得，不隨 SDK 提供）；可連網際網路的 2.4 GHz 基地台。
@@ -760,393 +1362,651 @@ categories:
             4. **Set up and run**: open the console at 115200 baud; the board prints `IPRO7 Agora Sentino AI Gateway`. Type `sentino_triple set <pid> <uuid> <secret>`, then `reboot`. The board advertises over BLE as `RY`; send the Wi-Fi settings for the IPRO6S FIN card and the server settings from the Sentino phone app (or type `wifi_set <ssid> <psk>` at the console). Once logged in, talk to the AI through the microphone.
 
             </div>
+          zh-cn: |
+            需要：插在 microSD 卡座、运行 `ipro6_if_wifi`（`defconfig_ipro6_sdio`）固件的 IPRO6S FIN 卡，JP3 置于 GPIO；接在扬声器座上的扬声器；每块开发板一组 Sentino 设备三元组与 Sentino 手机 App（向 Sentino 获取，不随 SDK 提供）；可连接互联网的 2.4 GHz 无线接入点。
+
+            <div class="ipro-steps" markdown>
+
+            1. **获取 AOSL 核心**（只需一次，SDK 不含）：在 SDK 根目录执行
+
+                ```bash
+                git clone https://github.com/AgoraIO-Community/aosl components/3rdparty/agora/aosl
+                git -C components/3rdparty/agora/aosl checkout d825607
+                ```
+
+                缺少这个目录时，构建会停止并打印这两行命令。
+
+            2. **构建**
+
+                ```bash
+                make -C apps/multimedia/ipro_agora_sentino
+                ```
+
+                镜像位于 `apps/multimedia/ipro_agora_sentino/build/build_out/ipro_agora_sentino_IPRO7.bin`。
+
+            3. **烧录**：进入[下载模式](../hardware/boards/reef-evk.md#download-mode)，在 IntelProCube 目录执行
+
+                ```bash
+                ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+                    --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+                    --pt chips/ipro7/partition/partition_cfg_2M.toml \
+                    --firmware <SDK>/apps/multimedia/ipro_agora_sentino/build/build_out/ipro_agora_sentino_IPRO7.bin
+                ```
+
+                确认 `[All Success]` 后按一下 SW2。
+
+            4. **设置与运行**：以 115200 baud 打开控制台，开机打印 `IPRO7 Agora Sentino AI Gateway`。输入 `sentino_triple set <pid> <uuid> <secret>` 后输入 `reboot`。开发板以 BLE 名称 `RY` 广播，用 Sentino 手机 App 发送 IPRO6S FIN 卡的 Wi-Fi 配置与服务器配置（或在控制台输入 `wifi_set <ssid> <psk>`）；登录后即可对着麦克风与 AI 对话。
+
+            </div>
+          ja: |
+            必要なもの：`ipro6_if_wifi` ファームウェア（`defconfig_ipro6_sdio`）を実行し、JP3 を GPIO に設定して microSD スロットに挿した IPRO6S FIN カード、スピーカーコネクターに接続したスピーカー、ボードごとの Sentino デバイストリプルと Sentino スマートフォンアプリ（Sentino から入手します。SDK には含まれません）、インターネットに接続できる 2.4 GHz アクセスポイント。
+
+            <div class="ipro-steps" markdown>
+
+            1. **AOSL コアの取得**（初回のみ。SDK には含まれません）：SDK のルートで次を実行します。
+
+                ```bash
+                git clone https://github.com/AgoraIO-Community/aosl components/3rdparty/agora/aosl
+                git -C components/3rdparty/agora/aosl checkout d825607
+                ```
+
+                このディレクトリがないと、ビルドは停止してこの 2 つのコマンドを表示します。
+
+            2. **ビルド**
+
+                ```bash
+                make -C apps/multimedia/ipro_agora_sentino
+                ```
+
+                イメージは `apps/multimedia/ipro_agora_sentino/build/build_out/ipro_agora_sentino_IPRO7.bin` です。
+
+            3. **書き込み**：[ダウンロードモード](../hardware/boards/reef-evk.md#download-mode)に入り、IntelProCube のディレクトリで次を実行します。
+
+                ```bash
+                ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+                    --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+                    --pt chips/ipro7/partition/partition_cfg_2M.toml \
+                    --firmware <SDK>/apps/multimedia/ipro_agora_sentino/build/build_out/ipro_agora_sentino_IPRO7.bin
+                ```
+
+                `[All Success]` を確認してから SW2 を押します。
+
+            4. **設定と実行**：115200 baud でコンソールを開くと、ボードが `IPRO7 Agora Sentino AI Gateway` を表示します。`sentino_triple set <pid> <uuid> <secret>` と入力してから `reboot` を入力します。ボードは BLE 名 `RY` でアドバタイズします。Sentino スマートフォンアプリから IPRO6S FIN カード用の Wi-Fi 設定とサーバー設定を送信します（またはコンソールで `wifi_set <ssid> <psk>` と入力します）。ログインが完了したら、マイクに向かって AI と会話できます。
+
+            </div>
   - id: ble
-    title: {zh: "BLE", en: "BLE"}
+    title: {zh: "BLE", en: "BLE", zh-cn: "BLE", ja: "BLE"}
     apps:
       - name: ipro_ble_transparent
         path: apps/bluetooth/ble/ipro_ble_transparent
         purpose:
           zh: "UART／BLE 透明傳輸橋接，以 AT 指令設定（AT 指令走 USB CDC）"
           en: "UART-to-BLE transparent bridge configured with AT commands (over USB CDC)"
+          zh-cn: "UART／BLE 透明传输桥接，通过 AT 命令配置（AT 命令走 USB CDC）"
+          ja: "AT コマンド（USB CDC 経由）で設定する UART／BLE 透過ブリッジ"
         boards:
           zh: "需要 IPRO7 EVB"
           en: "Needs the IPRO7 EVB"
+          zh-cn: "需要 IPRO7 EVB"
+          ja: "IPRO7 EVB が必要"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         readme: {exclude: true}   # no README in the release
       - name: ipro_ble_hid_keyboard
         path: apps/bluetooth/ble/ipro_ble_hid_keyboard
         purpose:
           zh: "HID over GATT 鍵盤"
           en: "HID over GATT keyboard"
+          zh-cn: "HID over GATT 键盘"
+          ja: "HID over GATT キーボード"
         boards:
           zh: "需要 IPRO7 EVB"
           en: "Needs the IPRO7 EVB"
+          zh-cn: "需要 IPRO7 EVB"
+          ja: "IPRO7 EVB が必要"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         readme: {exclude: true}   # no README in the release
   - id: audio
-    title: {zh: "音訊與語音", en: "Audio and voice"}
+    title: {zh: "音訊與語音", en: "Audio and voice", zh-cn: "音频与语音", ja: "オーディオと音声"}
     apps:
       - name: ipro_pdm_mic_demo
         path: apps/multimedia/ipro_pdm_mic_demo
         purpose:
           zh: "PDM 麥克風收音、DAC 播放、經 BLE 以 LC3 串流、SMP 配對、PDS31 休眠與綁定重連；Android 範例 App 原始碼在 `tools/android/IproMicDemo/`。Reef 上的錄音與播放見 `ipro7ai_reef_demo` 的 `mic` 指令"
           en: "PDM microphone capture, DAC playback, LC3 streaming over BLE, SMP pairing, PDS31 sleep with bonded reconnect; the Android companion app's source is in `tools/android/IproMicDemo/`. On the Reef, use the `mic` commands of `ipro7ai_reef_demo`"
+          zh-cn: "PDM 麦克风采集、DAC 播放、经 BLE 以 LC3 传输音频流、SMP 配对、PDS31 休眠与绑定重连；Android 示例 App 源代码在 `tools/android/IproMicDemo/`。Reef 上的录音与播放见 `ipro7ai_reef_demo` 的 `mic` 命令"
+          ja: "PDM マイクによる収音、DAC 再生、BLE 経由の LC3 ストリーミング、SMP ペアリング、PDS31 スリープとボンディング済みデバイスへの再接続。Android コンパニオンアプリのソースは `tools/android/IproMicDemo/` にあります。Reef では `ipro7ai_reef_demo` の `mic` コマンドを使用します"
         boards:
           zh: "需要 IPRO7 EVB（`.config`）或 IPRO7AI EVK（`make BOARD=evk`）"
           en: "Needs the IPRO7 EVB (`.config`) or the IPRO7AI EVK (`make BOARD=evk`)"
+          zh-cn: "需要 IPRO7 EVB（`.config`）或 IPRO7AI EVK（`make BOARD=evk`）"
+          ja: "IPRO7 EVB（`.config`）または IPRO7AI EVK（`make BOARD=evk`）が必要"
         console:
           zh: "EVB：UART 115200<br>EVK：UART 921600"
           en: "EVB: UART 115200<br>EVK: UART 921600"
+          zh-cn: "EVB：UART 115200<br>EVK：UART 921600"
+          ja: "EVB：UART 115200<br>EVK：UART 921600"
         readme: {exclude: true}   # catalog only: other boards
   - id: platform
-    title: {zh: "平台與板卡", en: "Platform and boards"}
+    title: {zh: "平台與板卡", en: "Platform and boards", zh-cn: "平台与开发板", ja: "プラットフォームとボード"}
     apps:
       - name: ipro7_demo
         path: apps/platform/ipro7_demo
         purpose:
           zh: "全晶片參考：PWM、SPI、I2S、LCD、音訊 ADC／DAC、USB 裝置（CDC、HID、MSC、UAC、UVC）、檔案系統、TRNG、DSP 等，各有 shell 指令"
           en: "Full-chip reference: PWM, SPI, I2S, LCD, audio ADC / DAC, USB device (CDC, HID, MSC, UAC, UVC), file systems, TRNG, DSP and more, each with shell commands"
+          zh-cn: "全芯片参考：PWM、SPI、I2S、LCD、音频 ADC／DAC、USB 设备（CDC、HID、MSC、UAC、UVC）、文件系统、TRNG、DSP 等，各有 shell 命令"
+          ja: "チップ全体のリファレンス：PWM、SPI、I2S、LCD、オーディオ ADC／DAC、USB デバイス（CDC、HID、MSC、UAC、UVC）、ファイルシステム、TRNG、DSP など。それぞれにシェルコマンドがあります"
         boards:
           zh: "需要 IPRO7 EVB；另有 `defconfig_boot2_nopsram`、`defconfig_boot2_ota`、`defconfig_nist_fulltest`、`defconfig_security_cert`"
           en: "Needs the IPRO7 EVB; also `defconfig_boot2_nopsram`, `defconfig_boot2_ota`, `defconfig_nist_fulltest`, `defconfig_security_cert`"
+          zh-cn: "需要 IPRO7 EVB；另有 `defconfig_boot2_nopsram`、`defconfig_boot2_ota`、`defconfig_nist_fulltest`、`defconfig_security_cert`"
+          ja: "IPRO7 EVB が必要。`defconfig_boot2_nopsram`、`defconfig_boot2_ota`、`defconfig_nist_fulltest`、`defconfig_security_cert` もあります"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         readme: {exclude: true}   # catalog only: other boards
       - name: ipro7ai_evk_demo
         path: apps/platform/ipro7ai_evk_demo
         purpose:
           zh: "IPRO7AI EVK bring-up：LCD、相機、麥克風、喇叭與 SD 卡；`config_bt` 加上 BLE 與 LE Audio"
           en: "IPRO7AI EVK bring-up: LCD, camera, microphone, speaker and SD card; `config_bt` adds BLE and LE Audio"
+          zh-cn: "IPRO7AI EVK bring-up：LCD、摄像头、麦克风、扬声器与 SD 卡；`config_bt` 加上 BLE 与 LE Audio"
+          ja: "IPRO7AI EVK のブリングアップ：LCD、カメラ、マイク、スピーカー、SD カード。`config_bt` で BLE と LE Audio が加わります"
         boards:
           zh: "需要 IPRO7AI EVK"
           en: "Needs the IPRO7AI EVK"
+          zh-cn: "需要 IPRO7AI EVK"
+          ja: "IPRO7AI EVK が必要"
         console:
           zh: "`.config`：UART 921600<br>`config_*`：UART 115200"
           en: "`.config`: UART 921600<br>`config_*`: UART 115200"
+          zh-cn: "`.config`：UART 921600<br>`config_*`：UART 115200"
+          ja: "`.config`：UART 921600<br>`config_*`：UART 115200"
         readme: {exclude: true}   # catalog only: other boards
       - name: ipro7ai_evk_launcher
         path: apps/platform/ipro7ai_evk_launcher
         purpose:
           zh: "相機、LCD、麥克風與喇叭整合在單一映像，以 NPU 辨識手勢切換頁面"
           en: "Camera, LCD, microphone and speaker in one image, with pages switched by hand gestures recognized on the NPU"
+          zh-cn: "摄像头、LCD、麦克风与扬声器集成在单一镜像中，通过 NPU 识别手势切换页面"
+          ja: "カメラ、LCD、マイク、スピーカーを 1 つのイメージに統合し、NPU で認識したハンドジェスチャーでページを切り替えます"
         boards:
           zh: "需要 IPRO7AI EVK"
           en: "Needs the IPRO7AI EVK"
+          zh-cn: "需要 IPRO7AI EVK"
+          ja: "IPRO7AI EVK が必要"
         console:
           zh: "UART 921600"
           en: "UART 921600"
+          zh-cn: "UART 921600"
+          ja: "UART 921600"
         readme: {exclude: true}   # catalog only: other boards
   - id: ai-vision
-    title: {zh: "AI 與影像", en: "AI and vision"}
+    title: {zh: "AI 與影像", en: "AI and vision", zh-cn: "AI 与图像", ja: "AI と画像処理"}
     apps:
       - name: ipro7ai_evk_person_detect
         path: apps/ai/ipro7ai_evk_person_detect
         purpose:
           zh: "相機預覽顯示在 LCD，疊加 NPU 執行 YOLOv8 的人形／寵物框"
           en: "Camera preview on the LCD with YOLOv8 person / pet boxes from the NPU"
+          zh-cn: "摄像头预览显示在 LCD 上，叠加 NPU 运行 YOLOv8 得到的人形／宠物框"
+          ja: "カメラのプレビューを LCD に表示し、NPU で実行した YOLOv8 による人物／ペットの枠を重ねます"
         boards:
           zh: "需要 IPRO7AI EVK"
           en: "Needs the IPRO7AI EVK"
+          zh-cn: "需要 IPRO7AI EVK"
+          ja: "IPRO7AI EVK が必要"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         readme: {exclude: true}   # catalog only: other boards
       - name: ipro7ai_evk_rps
         path: apps/ai/ipro7ai_evk_rps
         purpose:
           zh: "與 NPU 上的 int8 CNN 玩剪刀石頭布，附模型與訓練腳本；Reef 上的同一個遊戲為 `ipro7_uvc_cam` 的 `defconfig_reef_rps`"
           en: "Rock-paper-scissors against an int8 CNN on the NPU, with the model and training scripts; on the Reef the same game is `ipro7_uvc_cam` `defconfig_reef_rps`"
+          zh-cn: "与 NPU 上的 int8 CNN 玩石头剪刀布，附模型与训练脚本；Reef 上的同一个游戏为 `ipro7_uvc_cam` 的 `defconfig_reef_rps`"
+          ja: "NPU 上の int8 CNN とじゃんけん。モデルと学習スクリプト付き。Reef での同じゲームは `ipro7_uvc_cam` の `defconfig_reef_rps` です"
         boards:
           zh: "需要 IPRO7AI EVK"
           en: "Needs the IPRO7AI EVK"
+          zh-cn: "需要 IPRO7AI EVK"
+          ja: "IPRO7AI EVK が必要"
         console:
           zh: "UART 921600"
           en: "UART 921600"
+          zh-cn: "UART 921600"
+          ja: "UART 921600"
         readme: {exclude: true}   # catalog only: other boards
       - name: ipro_speaker_recog
         path: apps/ai/ipro_speaker_recog
         purpose:
           zh: "以 NPU 辨識說話者，模型放在 mfg 分割區；Reef 上的聲紋辨識為 `ipro_reef_teach` 的 `voice` 模式"
           en: "Speaker recognition on the NPU, with the model in the mfg partition; on the Reef, speaker recognition is the `voice` mode of `ipro_reef_teach`"
+          zh-cn: "用 NPU 识别说话人，模型放在 mfg 分区；Reef 上的声纹识别为 `ipro_reef_teach` 的 `voice` 模式"
+          ja: "NPU による話者認識。モデルは mfg パーティションに格納します。Reef での話者認識は `ipro_reef_teach` の `voice` モードです"
         boards:
           zh: "需要 IPRO7 EVB"
           en: "Needs the IPRO7 EVB"
+          zh-cn: "需要 IPRO7 EVB"
+          ja: "IPRO7 EVB が必要"
         console:
           zh: "UART 921600"
           en: "UART 921600"
+          zh-cn: "UART 921600"
+          ja: "UART 921600"
         readme: {exclude: true}   # catalog only: other boards
   - id: networking
-    title: {zh: "網路與 IPRO6S", en: "Networking and IPRO6S"}
+    title: {zh: "網路與 IPRO6S", en: "Networking and IPRO6S", zh-cn: "网络与 IPRO6S", ja: "ネットワークと IPRO6S"}
     apps:
       - name: ipro7_sdio_wifi
         path: apps/platform/ipro7_sdio_wifi
         purpose:
           zh: "IPRO7 作為 SDIO 主機、IPRO6S 作為 Wi-Fi 無線電，提供 lwIP 網路介面 `iproeth0` 與 DHCP。Reef 上的同等功能為 `ipro7ai_reef_demo` 的 `defconfig_wifi_ipro6s`"
           en: "IPRO7 as the SDIO host with an IPRO6S as the Wi-Fi radio, providing the lwIP network interface `iproeth0` and DHCP. On the Reef the same is `ipro7ai_reef_demo` `defconfig_wifi_ipro6s`"
+          zh-cn: "IPRO7 作为 SDIO 主机、IPRO6S 作为 Wi-Fi 无线电，提供 lwIP 网络接口 `iproeth0` 与 DHCP。Reef 上的同等功能为 `ipro7ai_reef_demo` 的 `defconfig_wifi_ipro6s`"
+          ja: "IPRO7 を SDIO ホスト、IPRO6S を Wi-Fi 無線として使用し、lwIP ネットワークインターフェース `iproeth0` と DHCP を提供します。Reef での同じ機能は `ipro7ai_reef_demo` の `defconfig_wifi_ipro6s` です"
         boards:
           zh: "需要 IPRO7 EVB 與 IPRO6S"
           en: "Needs the IPRO7 EVB and an IPRO6S"
+          zh-cn: "需要 IPRO7 EVB 与 IPRO6S"
+          ja: "IPRO7 EVB と IPRO6S が必要"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         readme: {exclude: true}   # catalog only: other boards
       - name: ipro6_demo
         path: apps/platform/ipro6_demo
         purpose:
           zh: "IPRO6S Wi-Fi 6 station／soft-AP 與 shell；`defconfig_ipro6_lpwifi` 加上 DTIM 省電，`defconfig_ipro6_lp` 為低功耗示範"
           en: "IPRO6S Wi-Fi 6 station / soft-AP with a shell; `defconfig_ipro6_lpwifi` adds DTIM power save, `defconfig_ipro6_lp` is the low-power demo"
+          zh-cn: "IPRO6S Wi-Fi 6 station／soft-AP 与 shell；`defconfig_ipro6_lpwifi` 加上 DTIM 省电，`defconfig_ipro6_lp` 为低功耗演示"
+          ja: "シェル付きの IPRO6S Wi-Fi 6 station／soft-AP。`defconfig_ipro6_lpwifi` で DTIM 省電力が加わり、`defconfig_ipro6_lp` は低消費電力のデモです"
         boards:
           zh: "需要 IPRO6S EVB（見 [IPRO6S](../hardware/chips/ipro6s.md)）"
           en: "Needs the IPRO6S EVB (see [IPRO6S](../hardware/chips/ipro6s.md))"
+          zh-cn: "需要 IPRO6S EVB（见 [IPRO6S](../hardware/chips/ipro6s.md)）"
+          ja: "IPRO6S EVB が必要（[IPRO6S](../hardware/chips/ipro6s.md) を参照）"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         readme: {exclude: true}   # no README in the release
       - name: ipro6_if_wifi
         path: apps/platform/ipro6_if_wifi
         purpose:
           zh: "IPRO6S Wi-Fi 6 橋接到主機：SDIO（`defconfig_ipro6_sdio`，也是 Reef FIN 卡的韌體）或 USB（`defconfig_ipro6_usb`）"
           en: "IPRO6S Wi-Fi 6 bridge to a host over SDIO (`defconfig_ipro6_sdio`, also the Reef FIN card's firmware) or USB (`defconfig_ipro6_usb`)"
+          zh-cn: "IPRO6S Wi-Fi 6 桥接到主机：SDIO（`defconfig_ipro6_sdio`，也是 Reef FIN 卡的固件）或 USB（`defconfig_ipro6_usb`）"
+          ja: "SDIO（`defconfig_ipro6_sdio`。Reef の FIN カードのファームウェアでもあります）または USB（`defconfig_ipro6_usb`）でホストに接続する IPRO6S Wi-Fi 6 ブリッジ"
         boards:
           zh: "IPRO6S EVB；FIN 卡（`defconfig_ipro6_sdio`，以 `--chipname ipro6` 燒錄，見 [IPRO6S](../hardware/chips/ipro6s.md)）"
           en: "IPRO6S EVB; FIN card (`defconfig_ipro6_sdio`, flashed with `--chipname ipro6`, see [IPRO6S](../hardware/chips/ipro6s.md))"
+          zh-cn: "IPRO6S EVB；FIN 卡（`defconfig_ipro6_sdio`，以 `--chipname ipro6` 烧录，见 [IPRO6S](../hardware/chips/ipro6s.md)）"
+          ja: "IPRO6S EVB、FIN カード（`defconfig_ipro6_sdio`。`--chipname ipro6` で書き込み。[IPRO6S](../hardware/chips/ipro6s.md) を参照）"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         readme: {exclude: true}   # no README in the release
       - name: ipro6_fmac
         path: apps/platform/ipro6_fmac
         purpose:
           zh: "給 Linux cfg80211 主機的 FullMAC 韌體（`defconfig_ipro6_fmac`）與其 Flash 載入程式（`defconfig_ipro6_fmac_loader`）；Linux 驅動程式不在 SDK 內"
           en: "FullMAC firmware for a Linux cfg80211 host (`defconfig_ipro6_fmac`) and its flash loader (`defconfig_ipro6_fmac_loader`); the Linux driver is not part of the SDK"
+          zh-cn: "面向 Linux cfg80211 主机的 FullMAC 固件（`defconfig_ipro6_fmac`）及其 Flash 加载程序（`defconfig_ipro6_fmac_loader`）；Linux 驱动程序不在 SDK 内"
+          ja: "Linux cfg80211 ホスト向けの FullMAC ファームウェア（`defconfig_ipro6_fmac`）とその Flash ローダー（`defconfig_ipro6_fmac_loader`）。Linux ドライバーは SDK に含まれません"
         boards:
           zh: "需要 IPRO6S EVB"
           en: "Needs the IPRO6S EVB"
+          zh-cn: "需要 IPRO6S EVB"
+          ja: "IPRO6S EVB が必要"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         readme: {exclude: true}   # no README in the release
   - id: test-apps
-    title: {zh: "測試與 bring-up 程式", en: "Test and bring-up programs"}
+    title: {zh: "測試與 bring-up 程式", en: "Test and bring-up programs", zh-cn: "测试与 bring-up 程序", ja: "テストとブリングアップ用のプログラム"}
     apps:
       - name: ipro_unit_test
         path: apps/test/ipro_unit_test
         purpose:
           zh: "HAL 與共用元件的單元測試，結束時印出 `ALL TESTS PASSED` 或 `SOME TESTS FAILED`"
           en: "Unit tests for the HAL and the shared components; ends with `ALL TESTS PASSED` or `SOME TESTS FAILED`"
+          zh-cn: "HAL 与公共组件的单元测试，结束时打印 `ALL TESTS PASSED` 或 `SOME TESTS FAILED`"
+          ja: "HAL と共通コンポーネントのユニットテスト。最後に `ALL TESTS PASSED` または `SOME TESTS FAILED` を表示します"
         boards:
           zh: "需要 IPRO7 EVB"
           en: "Needs the IPRO7 EVB"
+          zh-cn: "需要 IPRO7 EVB"
+          ja: "IPRO7 EVB が必要"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         readme: {exclude: true}   # no README in the release
       - name: ipro_ai_bench
         path: apps/test/ipro_ai_bench
         purpose:
           zh: "整個模型在 NPU 與 CPU 上的推論時間比較"
           en: "Whole-model inference time on the NPU versus the CPU"
+          zh-cn: "整个模型在 NPU 与 CPU 上的推理时间对比"
+          ja: "モデル全体の推論時間の NPU と CPU での比較"
         boards:
           zh: "需要 IPRO7 EVB"
           en: "Needs the IPRO7 EVB"
+          zh-cn: "需要 IPRO7 EVB"
+          ja: "IPRO7 EVB が必要"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         readme: {exclude: true}   # no README in the release
       - name: ipro_npu_yolo
         path: apps/test/ipro_npu_yolo
         purpose:
           zh: "NPU 上的 YOLOv8 人形／寵物偵測"
           en: "YOLOv8 person / pet detection on the NPU"
+          zh-cn: "NPU 上的 YOLOv8 人形／宠物检测"
+          ja: "NPU による YOLOv8 の人物／ペット検出"
         boards:
           zh: "需要 IPRO7 EVB"
           en: "Needs the IPRO7 EVB"
+          zh-cn: "需要 IPRO7 EVB"
+          ja: "IPRO7 EVB が必要"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         readme: {exclude: true}   # no README in the release
       - name: ipro_tflm_test
         path: apps/test/ipro_tflm_test
         purpose:
           zh: "TensorFlow Lite Micro 搭配 NMSIS-NN 核心的模型效能測試"
           en: "TensorFlow Lite Micro model benchmark with NMSIS-NN kernels"
+          zh-cn: "TensorFlow Lite Micro 搭配 NMSIS-NN 内核的模型性能测试"
+          ja: "NMSIS-NN カーネルを使用した TensorFlow Lite Micro のモデルベンチマーク"
         boards:
           zh: "需要 IPRO7 EVB"
           en: "Needs the IPRO7 EVB"
+          zh-cn: "需要 IPRO7 EVB"
+          ja: "IPRO7 EVB が必要"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         readme: {exclude: true}   # no README in the release
       - name: ipro_tflm_yolo
         path: apps/test/ipro_tflm_yolo
         purpose:
           zh: "以 TensorFlow Lite Micro 在 CPU 上執行 YOLOv8"
           en: "YOLOv8 on the CPU with TensorFlow Lite Micro"
+          zh-cn: "用 TensorFlow Lite Micro 在 CPU 上运行 YOLOv8"
+          ja: "TensorFlow Lite Micro による CPU 上での YOLOv8"
         boards:
           zh: "需要 IPRO7 EVB"
           en: "Needs the IPRO7 EVB"
+          zh-cn: "需要 IPRO7 EVB"
+          ja: "IPRO7 EVB が必要"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         readme: {exclude: true}   # no README in the release
       - name: ipro_nmsis_nn_test
         path: apps/test/ipro_nmsis_nn_test
         purpose:
           zh: "NMSIS-NN 運算子測試"
           en: "NMSIS-NN operator tests"
+          zh-cn: "NMSIS-NN 算子测试"
+          ja: "NMSIS-NN 演算子のテスト"
         boards:
           zh: "需要 IPRO7 EVB"
           en: "Needs the IPRO7 EVB"
+          zh-cn: "需要 IPRO7 EVB"
+          ja: "IPRO7 EVB が必要"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         readme: {exclude: true}   # no README in the release
       - name: ipro_tinymaix_demo
         path: apps/test/ipro_tinymaix_demo
         purpose:
           zh: "TinyMaix INT8 MNIST 推論（`nn_info`、`nn_run`、`nn_benchmark`）"
           en: "TinyMaix INT8 MNIST inference (`nn_info`, `nn_run`, `nn_benchmark`)"
+          zh-cn: "TinyMaix INT8 MNIST 推理（`nn_info`、`nn_run`、`nn_benchmark`）"
+          ja: "TinyMaix INT8 MNIST 推論（`nn_info`、`nn_run`、`nn_benchmark`）"
         boards:
           zh: "需要 IPRO7 EVB"
           en: "Needs the IPRO7 EVB"
+          zh-cn: "需要 IPRO7 EVB"
+          ja: "IPRO7 EVB が必要"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         readme: {exclude: true}   # no README in the release
       - name: ipro_gh7007_test
         path: apps/test/ipro_gh7007_test
         purpose:
           zh: "GH7007 5 吋 SPI LCD bring-up"
           en: "GH7007 5-inch SPI LCD bring-up"
+          zh-cn: "GH7007 5 英寸 SPI LCD bring-up"
+          ja: "GH7007 5 インチ SPI LCD のブリングアップ"
         boards:
           zh: "需要 IPRO7 EVB"
           en: "Needs the IPRO7 EVB"
+          zh-cn: "需要 IPRO7 EVB"
+          ja: "IPRO7 EVB が必要"
         console:
           zh: "USB CDC"
           en: "USB CDC"
+          zh-cn: "USB CDC"
+          ja: "USB CDC"
         readme: {exclude: true}   # catalog only: other boards
       - name: ipro_gh7007_video
         path: apps/test/ipro_gh7007_video
         purpose:
           zh: "在 GH7007 面板播放 SD 卡上的影片"
           en: "Plays videos from the SD card on the GH7007 panel"
+          zh-cn: "在 GH7007 面板上播放 SD 卡中的视频"
+          ja: "SD カードの動画を GH7007 パネルで再生します"
         boards:
           zh: "需要 IPRO7 EVB"
           en: "Needs the IPRO7 EVB"
+          zh-cn: "需要 IPRO7 EVB"
+          ja: "IPRO7 EVB が必要"
         console:
           zh: "USB CDC"
           en: "USB CDC"
+          zh-cn: "USB CDC"
+          ja: "USB CDC"
         readme: {exclude: true}   # no README in the release
       - name: ipro_epd_test
         path: apps/test/ipro_epd_test
         purpose:
           zh: "GDEY0213F52 2.13 吋電子紙 bring-up"
           en: "GDEY0213F52 2.13-inch e-paper bring-up"
+          zh-cn: "GDEY0213F52 2.13 英寸电子纸 bring-up"
+          ja: "GDEY0213F52 2.13 インチ電子ペーパーのブリングアップ"
         boards:
           zh: "需要 IPRO7 EVB"
           en: "Needs the IPRO7 EVB"
+          zh-cn: "需要 IPRO7 EVB"
+          ja: "IPRO7 EVB が必要"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         readme: {exclude: true}   # no README in the release
       - name: ipro_epd_el036
         path: apps/test/ipro_epd_el036
         purpose:
           zh: "EL036MF1 電子紙 bring-up"
           en: "EL036MF1 e-paper bring-up"
+          zh-cn: "EL036MF1 电子纸 bring-up"
+          ja: "EL036MF1 電子ペーパーのブリングアップ"
         boards:
           zh: "需要 IPRO7 EVB"
           en: "Needs the IPRO7 EVB"
+          zh-cn: "需要 IPRO7 EVB"
+          ja: "IPRO7 EVB が必要"
         console:
           zh: "UART 921600"
           en: "UART 921600"
+          zh-cn: "UART 921600"
+          ja: "UART 921600"
         readme: {exclude: true}   # catalog only: other boards
       - name: kw307_radar_test
         path: apps/test/kw307_radar_test
         purpose:
           zh: "KW307 24 GHz 雷達模組（UART）"
           en: "KW307 24 GHz radar module over UART"
+          zh-cn: "KW307 24 GHz 雷达模块（UART）"
+          ja: "UART 接続の KW307 24 GHz レーダーモジュール"
         boards:
           zh: "需要 IPRO7AI EVK"
           en: "Needs the IPRO7AI EVK"
+          zh-cn: "需要 IPRO7AI EVK"
+          ja: "IPRO7AI EVK が必要"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         readme: {exclude: true}   # catalog only: other boards
       - name: mpu6500_test
         path: apps/test/mpu6500_test
         purpose:
           zh: "MPU-6500 IMU（I2C；`mpu_init`、`mpu_read`、`mpu_stream`）"
           en: "MPU-6500 IMU over I2C (`mpu_init`, `mpu_read`, `mpu_stream`)"
+          zh-cn: "MPU-6500 IMU（I2C；`mpu_init`、`mpu_read`、`mpu_stream`）"
+          ja: "I2C 接続の MPU-6500 IMU（`mpu_init`、`mpu_read`、`mpu_stream`）"
         boards:
           zh: "需要 IPRO7 EVB"
           en: "Needs the IPRO7 EVB"
+          zh-cn: "需要 IPRO7 EVB"
+          ja: "IPRO7 EVB が必要"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         readme: {exclude: true}   # no README in the release
       - name: ipro_enc28j60_test
         path: apps/test/ipro_enc28j60_test
         purpose:
           zh: "ENC28J60 SPI 乙太網路 bring-up，收發原始封包"
           en: "ENC28J60 SPI Ethernet bring-up, sending and receiving raw frames"
+          zh-cn: "ENC28J60 SPI 以太网 bring-up，收发原始数据包"
+          ja: "ENC28J60 SPI イーサネットのブリングアップ。生フレームを送受信します"
         boards:
           zh: "需要 IPRO7 Arduino 板"
           en: "Needs the IPRO7 Arduino board"
+          zh-cn: "需要 IPRO7 Arduino 开发板"
+          ja: "IPRO7 Arduino ボードが必要"
         console:
           zh: "USB CDC"
           en: "USB CDC"
+          zh-cn: "USB CDC"
+          ja: "USB CDC"
         readme: {exclude: true}   # catalog only: other boards
       - name: ipro_pio_sdh_test
         path: apps/test/ipro_pio_sdh_test
         purpose:
           zh: "軟體（PIO）SD 主機與硬體 SDH 同時掛載的檔案系統測試"
           en: "File-system test with a software (PIO) SD host and the hardware SDH mounted at the same time"
+          zh-cn: "软件（PIO）SD 主机与硬件 SDH 同时挂载的文件系统测试"
+          ja: "ソフトウェア（PIO）SD ホストとハードウェア SDH を同時にマウントしたファイルシステムテスト"
         boards:
           zh: "需要 IPRO7 EVB"
           en: "Needs the IPRO7 EVB"
+          zh-cn: "需要 IPRO7 EVB"
+          ja: "IPRO7 EVB が必要"
         console:
           zh: "USB CDC"
           en: "USB CDC"
+          zh-cn: "USB CDC"
+          ja: "USB CDC"
         readme: {exclude: true}   # catalog only: other boards
       - name: ipro_sdio_probe
         path: apps/test/ipro_sdio_probe
         purpose:
           zh: "SDIO 主機基本測試"
           en: "Basic SDIO host test"
+          zh-cn: "SDIO 主机基本测试"
+          ja: "SDIO ホストの基本テスト"
         boards:
           zh: "需要 IPRO7 EVB"
           en: "Needs the IPRO7 EVB"
+          zh-cn: "需要 IPRO7 EVB"
+          ja: "IPRO7 EVB が必要"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         readme: {exclude: true}   # no README in the release
       - name: ipro_atbm_probe
         path: apps/test/ipro_atbm_probe
         purpose:
           zh: "ATBM6162 SDIO Wi-Fi 模組 bring-up 探測"
           en: "Bring-up probe for an ATBM6162 SDIO Wi-Fi module"
+          zh-cn: "ATBM6162 SDIO Wi-Fi 模块 bring-up 探测"
+          ja: "ATBM6162 SDIO Wi-Fi モジュールのブリングアッププローブ"
         boards:
           zh: "需要 IPRO7 EVB"
           en: "Needs the IPRO7 EVB"
+          zh-cn: "需要 IPRO7 EVB"
+          ja: "IPRO7 EVB が必要"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         readme: {exclude: true}   # no README in the release
       - name: ipro_lp_test
         path: apps/test/ipro_lp_test
         purpose:
           zh: "PDS31 進出與 RTC 喚醒測試（`lp` 指令）"
           en: "PDS31 entry and exit with RTC wake-up (`lp` commands)"
+          zh-cn: "PDS31 进入／退出与 RTC 唤醒测试（`lp` 命令）"
+          ja: "PDS31 への移行と復帰、RTC ウェイクアップのテスト（`lp` コマンド）"
         boards:
           zh: "需要 IPRO7 EVB"
           en: "Needs the IPRO7 EVB"
+          zh-cn: "需要 IPRO7 EVB"
+          ja: "IPRO7 EVB が必要"
         console:
           zh: "UART 115200"
           en: "UART 115200"
+          zh-cn: "UART 115200"
+          ja: "UART 115200"
         readme: {exclude: true}   # no README in the release

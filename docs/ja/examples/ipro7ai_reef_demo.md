@@ -1,0 +1,260 @@
+---
+title: ipro7ai_reef_demo
+description: Reef の出荷時ファームウェア：RGB LED、キー、スピーカーとヘッドセット、PDM マイクとヘッドセットマイク、microSD、OV5640 カメラごとにシェルコマンド群があります。mic usb でボードが USB マイクになり、mic sdrec で SD カードに WAV ファイルを録音します
+generated: tools/gen_examples.py
+migrate_from: []
+---
+
+# ipro7ai_reef_demo
+
+Reef の出荷時ファームウェア：RGB LED、キー、スピーカーとヘッドセット、PDM マイクとヘッドセットマイク、microSD、OV5640 カメラごとにシェルコマンド群があります。`mic usb` でボードが USB マイクになり、`mic sdrec` で SD カードに WAV ファイルを録音します
+
+| 項目 | 内容 |
+|---|---|
+| ソースコード | [`apps/platform/ipro7ai_reef_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro7ai_reef_demo) |
+| ボードと設定 | Reef（`.config`）、Reef＋IPRO6S FIN カード（`defconfig_wifi_ipro6s`：Wi-Fi と RTSP カメラストリーミング） |
+| コンソール | UART 115200 |
+| ビルド | `make -C apps/platform/ipro7ai_reef_demo`、Wi-Fi 版は `DEFCONFIG=defconfig_wifi_ipro6s` を追加 |
+
+## Reef で動かす { #on-the-reef }
+
+SW7 を CAM、SW8 を PWR に設定し、コンソールケーブルを U6 に接続して、USB-C から給電します（[Reef のクイックスタート](../hardware/boards/reef-evk.md#quick-start)を参照）。
+
+<div class="ipro-steps" markdown>
+
+1. **ビルド**：SDK のルートで次を実行します。
+
+    ```bash
+    make -C apps/platform/ipro7ai_reef_demo
+    ```
+
+    ビルドの最後に Flash と RAM の使用量が表示されます。イメージは `apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin` です。
+
+2. **書き込み**：ボードを[ダウンロードモード](../hardware/boards/reef-evk.md#download-mode)にし（SW1 を押したまま SW2 を押し、SW1 を離す）、IntelProCube のディレクトリで次を実行します。
+
+    ```bash
+    ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
+        --port /dev/cu.usbserial-XXXX --baudrate 921600 \
+        --pt chips/ipro7/partition/partition_cfg_2M.toml \
+        --firmware <SDK>/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin
+    ```
+
+    出力に `[All Success]` が表示された場合のみ書き込み成功です（ツールは失敗時も 0 で終了します）。SW2 を押して新しいファームウェアを起動します。
+
+3. **実行**：115200 baud でコンソールを開き、`reef selftest` と入力します。
+
+    電源投入時に RGB LED が青色で 1 回呼吸点灯します。`reef selftest` は約 3 秒で赤、緑、青を点灯し、スピーカーから 1 kHz のトーンを鳴らしたあと、SD カードの検出とカメラを確認します。SW3、SW4、SW5、SW1 を押すと、LED がそれぞれ赤、緑、青、白に点灯します。
+
+</div>
+
+ビルド、書き込み、コンソールの起動を 1 つのコマンドで行えます（SDK のファームウェアがすでに動作している場合は、スクリプトが `reboot_dl` を自動で送信します）。
+
+```bash
+export IPRO_FLASH_TOOL=<ICUBE>/ipro_iot_tool_macos
+./build_freertos.sh -p /dev/cu.usbserial-XXXX \
+    -P <ICUBE>/chips/ipro7/partition/partition_cfg_2M.toml \
+    build flash monitor ipro7ai_reef_demo
+```
+
+Wi-Fi と RTSP 版は `DEFCONFIG=defconfig_wifi_ipro6s` でビルドし、出力先は `build_wifi_ipro6s/build_out/` です。`ipro6_if_wifi` ファームウェアを実行する IPRO6S FIN カードが必要です。手順は [Wi-Fi と RTSP カメラストリーミング](../tutorials/wifi-rtsp.md)を参照してください。この構成には USB デバイスがないため、`mic usb` は使えません。コマンドの一覧は [Reef の出荷時ファームウェア](../hardware/boards/reef-evk.md#reef-demo)にあります。
+
+## README { #readme }
+
+!!! note "README の原文"
+    以下はアプリケーションに付属する README（SDK V2.2.0）を原文のまま掲載したものです。翻訳はしておらず、公開に適さない内容だけを置き換えています。
+
+<!-- verbatim:start -->
+
+Out-of-box firmware for the **IPRO7AI Reef EVK**: one shell command per block
+on the board, including a headless OV5640 / OV2640 camera stream, and in the
+`defconfig_wifi_ipro6s` build Wi-Fi through the IPRO6S_FIN with an RTSP stream
+of the camera. Board support: `bsp/board/ipro7/ipro7ai_reef_board_config.h`
+(`CONFIG_IPRO7AI_REEF`). The full pin map, power tree and jumpers are in the
+IPRO7AI Reef EVK Board User Guide.
+
+This is a different board from `ipro7ai_evk_demo` (the SoM sub-board with the
+ST7789 LCD and SC101IOT camera). On the Reef the IPRO7AI QFN56 sits directly on
+the carrier; there is no LCD, no battery, and the camera connector is the
+24-pin OmniVision FLEX-24 (OV5640 / OV2640 modules).
+
+### Build / flash
+
+```bash
+make -C apps/platform/ipro7ai_reef_demo                                  # -> build/build_out/ipro7ai_reef_demo_IPRO7.bin
+make -C apps/platform/ipro7ai_reef_demo DEFCONFIG=defconfig_wifi_ipro6s  # + Wi-Fi and RTSP -> build_wifi_ipro6s/build_out/
+```
+
+Flash with the command-line tool of IntelProCube (`ipro_iot_tool.exe`,
+`ipro_iot_tool_macos` or `ipro_iot_tool_linux`), run from the IntelProCube
+directory:
+
+```bash
+ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI --port /dev/cu.usbserial-XXXX \
+    --baudrate 921600 --pt chips/ipro7/partition/partition_cfg_2M.toml \
+    --firmware <SDK>/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin
+```
+
+`--chip-variant IPRO7AI` selects the QFN56 flash pins. The tool exits 0 even
+when flashing fails, so look for `[All Success]` in its output.
+
+Console: 115200 8N1 on the U6 SH1.0 wafer (GPIO20 TX / GPIO21 RX). The wafer's
+DTR and RTS pull BOOT (GPIO41) and RESET through 1 k, so an auto-download
+cable works; by hand it is hold **SW1** (BOOT), tap **SW2** (RESET).
+
+### Before powering up
+
+On the V4.0 board (silkscreen "IPRO7AI REEF EVK V4.0"):
+
+| Switch / jumper | Setting |
+|---|---|
+| SW7 | CAM: the camera pins go to the camera connector (GPIO routes them to the J_IO header instead). |
+| SW8 | PWR for normal use; MEAS only with a current meter or a 3.3 V supply on JP2. |
+| JP3 | ON = SD_VDD always on. GPIO = switched by GPIO14; use this with the IPRO6S_FIN so `fin cycle` works. |
+
+On the earlier V3.0 board: JP1 must be fitted (VDDIO1 1-2 = 3.3 V, or the
+camera, USB and BOOT bank is unpowered), JP2 on 1-2, and JP3 on 2-3 for the
+IPRO6S_FIN.
+
+Power is USB-C only. The WS2812 and the class-D amplifier run from VBUS, so
+a current-limited bench supply on 3V3 alone leaves the LED and speaker dead.
+
+### What happens at power-on
+
+1. Camera parked (PWDN high, RESETB low, XCLK off).
+2. RGB LED breathes blue once, then off.
+3. Keys drive the LED: SW3 red, SW4 green, SW5 blue, BOOT white.
+4. Shell prompt. `reef selftest` runs LED, a 1 kHz tone on the speaker, the
+    slot detect and the camera probe in ~3 s.
+
+### Shell commands
+
+```
+reef status                    pins, key states, LED, amp, detect lines
+reef selftest                  LED r/g/b, 1 kHz 300 ms, SD detect, cam probe
+
+led <r> <g> <b>                WS2812 colour (0..255), e.g. led 40 0 0
+led rainbow [sec] | led off | led status
+
+btn status                     debounced state + press counts
+btn watch [sec]                print press/release events
+
+spk tone <hz> <ms> [amp%] [hp] sine on DAC A; 'hp' keeps the amplifier muted
+spk on | spk off | spk stop | spk status
+
+mic rec <pdm|headset|aux> <s>  record up to 10 s at 16 kHz into PSRAM
+mic play [hp]                  play it back (+20 dB make-up by default)
+mic loop <src> [sec] [hp]      live monitor; omit sec for "until mic stop"
+mic sdrec <src> <name> <s>     record up to 2 h to sd:/rec/<name>.wav (LED red while it runs)
+mic usb <src>                  USB microphone on the board's own USB-C until `mic stop` (LED red)
+mic gain <db> | mic ch <0|1> | mic stop | mic status
+
+sd status | sd mount | sd ls [path] | sd test | sd unmount
+sd bench [kib]                 write, read back and verify (default 1024 KiB)
+sd power on|off|cycle          SD_VDD gate on GPIO14 (JP3 2-3)
+
+fin                            IPRO6S_FIN slot status
+fin cycle | fin power on|off   power-cycle the fin (JP3 2-3)
+
+cam probe                      power sequence + SCCB through components/sensor
+cam start | cam stop           YUV422 -> ISP ch0 (1/4 size YUYV in PSRAM)
+cam status                     frames, measured fps, sync/fifo errors, mean luma
+cam snap [cols]                ASCII thumbnail of the latest frame
+cam bar on|off                 sensor colour bars - proves the pipeline without optics
+cam reg <addr> [val]           sensor register (OV2640: 0x1xx = sensor bank)
+cam order lower|higher         DVP byte order (next start)
+cam sync <high|low> <high|low> VSYNC / HSYNC polarity (next start)
+cam pins [ms]                  DVP pad activity: edges/s and duty per pin
+cam park | cam xclk on|off
+
+hp                             read the jack-detect level on GPIO26
+```
+
+### How each block is wired
+
+| Block | Pins | Notes |
+|---|---|---|
+| RGB LED | DI GPIO24 | Driven from SPI0 MOSI: 4 SPI bits per WS2812 bit at 3.2 MHz. GPIO24 % 4 == 0 is MOSI with `pin_swap_enable = 0` (the SDK default swap 1 makes it MISO and the LED stays dark). Supply is VBUS − D3. |
+| Keys | SW1 41 (**active high**), SW3 10, SW4 27, SW5 11 | Polled at 10 ms, 30 ms debounce. SW3/SW5 are released while AUX-IN captures. |
+| Speaker | DAC A GPIO23 → PAM8302A, SD# GPIO25 | Enable is **active high**; the board header's `BOARD_SPK_EN_ACTIVE 1` is honoured by `audio_output_dac.c`. Gain 30 V/V — the demo defaults to 20 % amplitude. |
+| Headphone | same DAC → TLV9061 → J2 (PJ-342, OMTP) | Always connected; `hp` in a command just mutes the amp. Detect GPIO26 LOW = plugged. |
+| PDM mic | CLK 16, DATA 17 | MSM261DGT003 on 3V3, L/R = GND → left slot (`mic ch 1` to try the other). Runs at about 15,872 Hz, not 16,000; `mic sdrec` writes the measured rate into the WAV header; `mic usb` converts to the host's 16,000 Hz (`audio_asrc` holding the UAC queue). |
+| Headset mic | AIN7 (GPIO13) +, AIN6 (GPIO12) − | Differential AUADC, 24 dB PGA. Bias 2.2 k to 3V3 on the jack. |
+| AUX-IN | AIN4 (GPIO10) L, AIN5 (GPIO11) R | Single-ended, 6 dB PGA, left channel only in this demo. |
+| SD slot | 28–33 on SDH_0, DET 15, PWR 14 | 4-bit FatFS at `sd:`. DET low = seated. PWR low = on (reset default). |
+| Camera | D0-7 = 0-7, PCLK 38, VSYNC 39, HREF 40, XCLK 22, RST 34, PWDN 35, SCCB 36/37 | OV5640 / OV2640 YUV422 720p → ISP ch0, see below. |
+
+### Camera
+
+`components/sensor/ov5640.c` and `ov2640.c` (`CONFIG_SENSOR_OV5640` /
+`CONFIG_SENSOR_OV2640`, opt-in) drive the FLEX-24 module in YUV422 YUYV at
+1280x720 — OV5640 2x-binned through a 16:9 window, OV2640 from its UXGA base
+through a 1600x900 window and DSP scaler. Both keep AEC/AGC/AWB on the sensor,
+so the demo never starts the ISP firmware's imgproc 3A (the descriptor hooks
+it would call are no-ops).
+
+There is no display, so `cam start` runs the ISP with channel 0 only: YUYV
+scaled 4x down (320x180) into a PSRAM ping-pong pair, counted in the ISP
+callback. `cam status` gives frames, fps, the ISP's VSYNC/HSYNC/FIFO error
+counters and the mean luma; `cam snap` prints the frame as ASCII; `cam bar on`
+switches the sensor to colour bars so the pipeline can be judged without
+lens or light.
+
+The bring-up sequence: `cam probe` (identity over SCCB), `cam start`,
+`cam status` twice a second apart (frames climbing, errors flat), `cam bar on`
+then `cam snap` (vertical bands), `cam bar off`, `cam snap` (the scene).
+
+If the camera does not stream, these are the things to check:
+
+- The DVP pixel clock. `hal_isp` sizes the DVP_AS FIFO threshold as
+    `width x (1 - (pclk/2) / BCLK) + 10` (BCLK 96 MHz, FIFO 1024 entries), so a
+    720p stream needs a DVP PCLK of at least ~40 MHz. Below that `isp_init`
+    prints `[WARN] dvp as threshold over 1024` and the ISP delivers 0 frames
+    with 0 errors. The descriptor `pclk` must be the real DVP PCLK - reporting
+    low is not the safe side. The OV5640 driver runs an 84 MHz DVP PCLK with
+    OmniVision's 720p line timing: 30 fps, down to 15 in dim light.
+- Orientation: the Reef's OV5640 module reads out top-to-bottom mirrored.
+    `cam.c` flips in the capture DMA (DVP2AXI flip mode, `CAM_DVP_VFLIP`), not
+    in the sensor - sensor flip / mirror in the binned mode puts the demosaic a
+    Bayer phase off. Flip mode writes the first line at the start address and
+    each next one a line lower, so the DMA is given the buffer's last line.
+- Whether anything reaches the SoC at all. `cam pins [ms]` samples D0-7,
+    PCLK, VSYNC and HREF (rising edges per second, duty): VSYNC edges/s is the
+    sensor frame rate, HREF edges/s the line rate, HREF duty tells the DVP
+    clock against the line length. It switches the pads to plain GPIO inputs
+    for the measurement (with the camera function selected they read 0) and
+    hands them back to the camera block after.
+- Sync polarity and byte order. VSYNC/HSYNC errors that climb with the frame
+    count mean the polarity is wrong: `cam sync low high` / `cam sync high low`
+    and restart. A picture with Y/UV swapped (grey-green, doubled edges in
+    `cam snap`) means `cam order higher`.
+- Whether `camera_module_init()`'s 8-bit SCCB scan sees the OV5640 (16-bit
+    registers). It should — the scan only needs the address ACK — and if it
+    does not, `cam probe` says so: it re-reads both OmniVision IDs directly and
+    logs "framework scan missed it" when the sensor is there after all.
+
+### Wi-Fi and RTSP (`defconfig_wifi_ipro6s`)
+
+The IPRO6S_FIN is an SDIO slave on the card slot's six lines, powered from
+SD_VDD. It runs the IPRO6S `ipro6_if_wifi` firmware (SDIO profile):
+`make -C apps/platform/ipro6_if_wifi DEFCONFIG=defconfig_ipro6_sdio`. With JP3 on 2-3
+(GPIO on the V4.0 board), `fin cycle` power-cycles it through
+GPIO14. The
+`defconfig_wifi_ipro6s` build adds the host side (`components/network/ipronet_host`
+over SDIO, lwIP) and an RTSP MJPEG stream of the camera
+(`components/network/rtsp_server`):
+
+```
+ipronet_up [<ssid> <psk>]      ipronet_start() on the fin, then ipronet_connect() if given an AP
+ipronet_down                   ipronet_stop()
+ipro6s_scan | ipro6s_scan_last scan for APs; print the last result
+ipro6s_connect <ssid> <psk>    associate and run DHCP
+ipro6s_link_status             STA link status
+ipro6s_disconnect              disconnect from the AP
+rtsp_cam on [fps] | off | stats  camera stream at rtsp://<ip>:8554/av0_0 (ch0 at sensor / 2)
+ipro6s_ota <http url>          update the IPRO6S_FIN firmware over HTTP
+```
+
+`apps/platform/ipro7_sdio_wifi` is the stand-alone Wi-Fi reference app; build it
+with `CONFIG_IPRO7AI_REEF=y` to run it on this board.
+
+<!-- verbatim:end -->

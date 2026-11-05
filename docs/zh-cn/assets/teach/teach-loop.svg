@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#3d4a40"/></marker></defs>
+<rect x="150" y="14" width="250" height="118" rx="10" fill="#eef3ee" stroke="#3d5a45" stroke-width="2"/>
+<text x="275.0" y="54.4" font-size="24" text-anchor="middle" fill="#1f2328" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">采集数据</text>
+<text x="275.0" y="81.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">Reef 自己的摄像头、</text>
+<text x="275.0" y="108.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">麦克风或传感器</text>
+<circle cx="172" cy="38" r="15" fill="#316200"/>
+<text x="172.0" y="43.5" font-size="16" text-anchor="middle" fill="#ffffff" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">1</text>
+<rect x="416" y="14" width="250" height="118" rx="10" fill="#eef3ee" stroke="#3d5a45" stroke-width="2"/>
+<text x="541.0" y="54.4" font-size="24" text-anchor="middle" fill="#1f2328" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">在电脑上训练</text>
+<text x="541.0" y="81.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">IPRO AI Studio</text>
+<text x="541.0" y="108.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif"></text>
+<circle cx="438" cy="38" r="15" fill="#316200"/>
+<text x="438.0" y="43.5" font-size="16" text-anchor="middle" fill="#ffffff" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">2</text>
+<rect x="682" y="14" width="250" height="118" rx="10" fill="#eef3ee" stroke="#3d5a45" stroke-width="2"/>
+<text x="807.0" y="54.4" font-size="24" text-anchor="middle" fill="#1f2328" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">部署到 Reef</text>
+<text x="807.0" y="81.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">同一条 USB-C，</text>
+<text x="807.0" y="108.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">写入板上 Flash</text>
+<circle cx="704" cy="38" r="15" fill="#316200"/>
+<text x="704.0" y="43.5" font-size="16" text-anchor="middle" fill="#ffffff" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">3</text>
+<rect x="948" y="14" width="250" height="118" rx="10" fill="#eef3ee" stroke="#3d5a45" stroke-width="2"/>
+<text x="1073.0" y="54.4" font-size="24" text-anchor="middle" fill="#1f2328" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">板上 NPU 推理</text>
+<text x="1073.0" y="81.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">推理在板上完成，</text>
+<text x="1073.0" y="108.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">电脑只负责显示</text>
+<circle cx="970" cy="38" r="15" fill="#316200"/>
+<text x="970.0" y="43.5" font-size="16" text-anchor="middle" fill="#ffffff" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">4</text>
+<path d="M400.0,73.0 L414.0,73.0" fill="none" stroke="#3d4a40" stroke-width="2.2" marker-end="url(#ar)"/>
+<path d="M666.0,73.0 L680.0,73.0" fill="none" stroke="#3d4a40" stroke-width="2.2" marker-end="url(#ar)"/>
+<path d="M932.0,73.0 L946.0,73.0" fill="none" stroke="#3d4a40" stroke-width="2.2" marker-end="url(#ar)"/>
+<rect x="10" y="156" width="128" height="136" rx="10" fill="#316200" stroke="#316200" stroke-width="2"/>
+<text x="74.0" y="239.0" font-size="22" text-anchor="middle" fill="#ffffff" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">图像识别</text>
+
+<rect x="150" y="156" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="275.0" y="202.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">物品放进画面中央</text>
+<text x="275.0" y="231.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">的方框，每类按住</text>
+<text x="275.0" y="260.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">录制数秒</text>
+<rect x="416" y="156" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="541.0" y="216.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">只训练最后一层，</text>
+<text x="541.0" y="245.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">数秒完成</text>
+<rect x="682" y="156" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="807.0" y="202.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">模型经 USB 串口</text>
+<text x="807.0" y="231.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">写入，开发板自动</text>
+<text x="807.0" y="260.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">重启</text>
+<rect x="948" y="156" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="1073.0" y="216.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">标签与概率叠加在</text>
+<text x="1073.0" y="245.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">Reef 的摄像头画面上</text>
+<rect x="10" y="304" width="128" height="136" rx="10" fill="#316200" stroke="#316200" stroke-width="2"/>
+<text x="74.0" y="387.0" font-size="22" text-anchor="middle" fill="#ffffff" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">声纹识别</text>
+
+<rect x="150" y="304" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="275.0" y="364.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">照稿朗读 15～30 秒</text>
+<text x="275.0" y="393.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">（注册一位说话人）</text>
+<rect x="416" y="304" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="541.0" y="364.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">开发板自己算出声纹，</text>
+<text x="541.0" y="393.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">电脑不做训练</text>
+<rect x="682" y="304" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="807.0" y="364.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">声纹直接存在板上</text>
+<text x="807.0" y="393.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">Flash，无需重启</text>
+<rect x="948" y="304" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="1073.0" y="364.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">每秒一个说话人标签，</text>
+<text x="1073.0" y="393.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">显示在电脑画面上</text>
+<rect x="10" y="452" width="128" height="136" rx="10" fill="#316200" stroke="#316200" stroke-width="2"/>
+<text x="74.0" y="535.0" font-size="22" text-anchor="middle" fill="#ffffff" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">传感器识别</text>
+
+<rect x="150" y="452" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="275.0" y="498.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">每种状态按住录制，</text>
+<text x="275.0" y="527.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">模拟传感器每类</text>
+<text x="275.0" y="556.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">10～30 秒</text>
+<rect x="416" y="452" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="541.0" y="498.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">整个小型 CNN</text>
+<text x="541.0" y="527.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">在电脑上训练，</text>
+<text x="541.0" y="556.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">数秒到约 90 秒</text>
+<rect x="682" y="452" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="807.0" y="512.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">模型写入 mfg 分区，</text>
+<text x="807.0" y="541.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">开发板自动重启</text>
+<rect x="948" y="452" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="1073.0" y="512.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">每秒 4 个结果，</text>
+<text x="1073.0" y="541.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'PingFang SC','Heiti SC','Noto Sans SC','Heiti TC',sans-serif">RGB LED 显示类别</text>
+</svg>

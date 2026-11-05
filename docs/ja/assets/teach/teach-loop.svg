@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#3d4a40"/></marker></defs>
+<rect x="150" y="14" width="250" height="118" rx="10" fill="#eef3ee" stroke="#3d5a45" stroke-width="2"/>
+<text x="275.0" y="54.4" font-size="24" text-anchor="middle" fill="#1f2328" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">データ収集</text>
+<text x="275.0" y="81.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">Reef のカメラ、マイク</text>
+<text x="275.0" y="108.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">またはセンサーで</text>
+<circle cx="172" cy="38" r="15" fill="#316200"/>
+<text x="172.0" y="43.5" font-size="16" text-anchor="middle" fill="#ffffff" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">1</text>
+<rect x="416" y="14" width="250" height="118" rx="10" fill="#eef3ee" stroke="#3d5a45" stroke-width="2"/>
+<text x="541.0" y="54.4" font-size="24" text-anchor="middle" fill="#1f2328" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">学習</text>
+<text x="541.0" y="81.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">PC 上の</text>
+<text x="541.0" y="108.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">IPRO AI Studio で</text>
+<circle cx="438" cy="38" r="15" fill="#316200"/>
+<text x="438.0" y="43.5" font-size="16" text-anchor="middle" fill="#ffffff" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">2</text>
+<rect x="682" y="14" width="250" height="118" rx="10" fill="#eef3ee" stroke="#3d5a45" stroke-width="2"/>
+<text x="807.0" y="54.4" font-size="24" text-anchor="middle" fill="#1f2328" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">デプロイ</text>
+<text x="807.0" y="81.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">同じ USB-C で</text>
+<text x="807.0" y="108.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">ボードの Flash へ</text>
+<circle cx="704" cy="38" r="15" fill="#316200"/>
+<text x="704.0" y="43.5" font-size="16" text-anchor="middle" fill="#ffffff" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">3</text>
+<rect x="948" y="14" width="250" height="118" rx="10" fill="#eef3ee" stroke="#3d5a45" stroke-width="2"/>
+<text x="1073.0" y="54.4" font-size="24" text-anchor="middle" fill="#1f2328" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">実行</text>
+<text x="1073.0" y="81.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">ボードの NPU で、</text>
+<text x="1073.0" y="108.4" font-size="19" text-anchor="middle" fill="#4b5563" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">PC は表示のみ</text>
+<circle cx="970" cy="38" r="15" fill="#316200"/>
+<text x="970.0" y="43.5" font-size="16" text-anchor="middle" fill="#ffffff" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Heiti TC',sans-serif">4</text>
+<path d="M400.0,73.0 L414.0,73.0" fill="none" stroke="#3d4a40" stroke-width="2.2" marker-end="url(#ar)"/>
+<path d="M666.0,73.0 L680.0,73.0" fill="none" stroke="#3d4a40" stroke-width="2.2" marker-end="url(#ar)"/>
+<path d="M932.0,73.0 L946.0,73.0" fill="none" stroke="#3d4a40" stroke-width="2.2" marker-end="url(#ar)"/>
+<rect x="10" y="156" width="128" height="136" rx="10" fill="#316200" stroke="#316200" stroke-width="2"/>
+<text x="74.0" y="239.0" font-size="22" text-anchor="middle" fill="#ffffff" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">画像</text>
+
+<rect x="150" y="156" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="275.0" y="202.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">物体を中央の枠に</text>
+<text x="275.0" y="231.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">かざし、クラスごとに</text>
+<text x="275.0" y="260.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">数秒間記録</text>
+<rect x="416" y="156" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="541.0" y="216.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">最後の層だけを学習：</text>
+<text x="541.0" y="245.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">数秒で完了</text>
+<rect x="682" y="156" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="807.0" y="202.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">USB シリアルで送信、</text>
+<text x="807.0" y="231.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">ボードは自動的に</text>
+<text x="807.0" y="260.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">再起動</text>
+<rect x="948" y="156" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="1073.0" y="216.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">ラベルとスコアを</text>
+<text x="1073.0" y="245.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">Reef の映像に表示</text>
+<rect x="10" y="304" width="128" height="136" rx="10" fill="#316200" stroke="#316200" stroke-width="2"/>
+<text x="74.0" y="387.0" font-size="22" text-anchor="middle" fill="#ffffff" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">声紋</text>
+
+<rect x="150" y="304" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="275.0" y="364.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">文章を 15～30 秒</text>
+<text x="275.0" y="393.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">読み上げて登録</text>
+<rect x="416" y="304" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="541.0" y="364.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">ボード自身が</text>
+<text x="541.0" y="393.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">声紋を計算</text>
+<rect x="682" y="304" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="807.0" y="364.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">ボードの Flash に保存、</text>
+<text x="807.0" y="393.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">再起動は不要</text>
+<rect x="948" y="304" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="1073.0" y="364.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">PC に話者ラベルを</text>
+<text x="1073.0" y="393.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">1 秒に 1 つ表示</text>
+<rect x="10" y="452" width="128" height="136" rx="10" fill="#316200" stroke="#316200" stroke-width="2"/>
+<text x="74.0" y="535.0" font-size="22" text-anchor="middle" fill="#ffffff" font-weight="bold" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">センサー</text>
+
+<rect x="150" y="452" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="275.0" y="498.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">状態ごとに押し続けて</text>
+<text x="275.0" y="527.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">記録。模擬センサーは</text>
+<text x="275.0" y="556.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">1 クラス 10～30 秒</text>
+<rect x="416" y="452" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="541.0" y="498.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">小さな CNN を</text>
+<text x="541.0" y="527.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">PC で学習：</text>
+<text x="541.0" y="556.0" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">数秒～約 90 秒</text>
+<rect x="682" y="452" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="807.0" y="512.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">mfg パーティションに</text>
+<text x="807.0" y="541.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">書き込み、再起動</text>
+<rect x="948" y="452" width="250" height="136" rx="8" fill="#ffffff" stroke="#c9d3c9" stroke-width="1.5"/>
+<text x="1073.0" y="512.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">1 秒に 4 回判定、</text>
+<text x="1073.0" y="541.5" font-size="20" text-anchor="middle" fill="#1f2328" font-weight="normal" font-family="'Helvetica Neue',Helvetica,'Hiragino Sans','Noto Sans JP','Heiti TC',sans-serif">RGB LED にクラス表示</text>
+</svg>

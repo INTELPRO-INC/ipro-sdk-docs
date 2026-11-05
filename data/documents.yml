@@ -3,154 +3,190 @@
 #   access: public   -> download links from files (one URL per language, e.g. a GitHub Release asset)
 # Before setting a document public, check it against the customer-facing wording rules.
 page:
-  title: {zh: "文件下載", en: "Documents"}
+  title: {zh: "文件下載", en: "Documents", zh-cn: "文档下载", ja: "ドキュメント"}
   description:
     zh: IPRO7／IPRO7AI 正式晶片、軟體與開發板文件清單，含版本、語言與涵蓋內容。
     en: The formal IPRO7 / IPRO7AI chip, software and board documents, with version, languages and contents.
+    zh-cn: IPRO7／IPRO7AI 正式芯片、软件与开发板文档清单，含版本、语言与涵盖内容。
+    ja: IPRO7／IPRO7AI のチップ、ソフトウェア、ボードに関する正式ドキュメントの一覧（バージョン、言語、内容）。
   intro:
     zh: INTELPRO 為 IPRO7 與 IPRO7AI 提供的正式文件，對應 SDK V2.1 與 IPRO AI Teach 2.0。各文件提供的語言列於表中。
     en: The formal documents INTELPRO provides for IPRO7 and IPRO7AI, matching SDK V2.1 and IPRO AI Teach 2.0. The languages of each document are listed in the table.
+    zh-cn: INTELPRO 为 IPRO7 与 IPRO7AI 提供的正式文档，对应 SDK V2.1 与 IPRO AI Teach 2.0。各文档提供的语言列于表中。
+    ja: INTELPRO が IPRO7 と IPRO7AI 向けに提供している正式ドキュメントです。SDK V2.1 と IPRO AI Teach 2.0 に対応しています。各ドキュメントの提供言語は表に記載しています。
   request_notice:
     zh: 標示「向 INTELPRO 索取」的文件，請向 INTELPRO 索取，並註明文件名稱、版本與語言。
     en: For documents marked "On request", contact INTELPRO and name the document, version and language.
+    zh-cn: 标注“向 INTELPRO 索取”的文档，请向 INTELPRO 索取，并注明文档名称、版本与语言。
+    ja: 「INTELPRO にお問い合わせください」と記載されたドキュメントは、ドキュメント名、バージョン、言語を明記のうえ INTELPRO にお問い合わせください。
   outro:
     zh: 板卡的上手步驟見 [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)，SDK 的 API 索引見 [API 參考](../reference/api/index.md)。
     en: For board bring-up steps see [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md); for the SDK's API index see [API Reference](../reference/api/index.md).
+    zh-cn: 开发板的上手步骤见 [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)，SDK 的 API 索引见 [API 参考](../reference/api/index.md)。
+    ja: ボードの立ち上げ手順は [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)、SDK の API 索引は [API リファレンス](../reference/api/index.md) を参照してください。
 categories:
   - id: chip-documents
-    title: {zh: "晶片文件", en: "Chip documents"}
+    title: {zh: "晶片文件", en: "Chip documents", zh-cn: "芯片文档", ja: "チップのドキュメント"}
     documents:
       - id: ipro7-product-brief
-        title: {zh: "IPRO7 產品簡介", en: "IPRO7 Product Brief"}
+        title: {zh: "IPRO7 產品簡介", en: "IPRO7 Product Brief", zh-cn: "IPRO7 产品简介", ja: "IPRO7 製品概要"}
         version: V1.0
         languages: [zh-TW, en]
         summary:
           zh: "功能概要、方塊圖、目標應用、封裝與訂購資訊"
           en: "Feature overview, block diagram, target applications, package and ordering information"
+          zh-cn: "功能概要、框图、目标应用、封装与订购信息"
+          ja: "機能概要、ブロック図、ターゲットアプリケーション、パッケージと注文情報"
         access: request
         files: {}
       - id: ipro7-datasheet
-        title: {zh: "IPRO7 資料手冊", en: "IPRO7 Datasheet"}
+        title: {zh: "IPRO7 資料手冊", en: "IPRO7 Datasheet", zh-cn: "IPRO7 数据手册", ja: "IPRO7 データシート"}
         version: V1.6
         languages: [zh-TW, en]
         summary:
           zh: "功能描述、腳位定義與 GPIO 腳位多工、AI／NPU、電氣規格、標記與訂購資訊"
           en: "Functional description, pin definitions and GPIO pin multiplexing, AI / NPU, electrical specifications, marking and ordering information"
+          zh-cn: "功能描述、引脚定义与 GPIO 引脚复用、AI／NPU、电气规格、标识与订购信息"
+          ja: "機能説明、ピン定義と GPIO ピンマルチプレクス、AI／NPU、電気的仕様、マーキングと注文情報"
         access: request
         files: {}
       - id: ipro7-reference-manual
-        title: {zh: "IPRO7 暫存器參考手冊", en: "IPRO7 Reference Manual"}
+        title: {zh: "IPRO7 暫存器參考手冊", en: "IPRO7 Reference Manual", zh-cn: "IPRO7 寄存器参考手册", ja: "IPRO7 リファレンスマニュアル"}
         version: V1.3
         languages: [zh-TW, en]
         summary:
           zh: "系統與記憶體、重置與時脈，以及 GPIO、ADC、DMA、SPI、UART、I2C、PWM、計時器、音訊 ADC、KeyScan、低功耗、安全引擎與 MJPEG 的暫存器"
           en: "System and memory, reset and clocks, and the registers of GPIO, ADC, DMA, SPI, UART, I2C, PWM, timers, audio ADC, KeyScan, low power, the security engine and MJPEG"
+          zh-cn: "系统与内存、复位与时钟，以及 GPIO、ADC、DMA、SPI、UART、I2C、PWM、定时器、音频 ADC、KeyScan、低功耗、安全引擎与 MJPEG 的寄存器"
+          ja: "システムとメモリ、リセットとクロック、および GPIO、ADC、DMA、SPI、UART、I2C、PWM、タイマー、オーディオ ADC、KeyScan、低消費電力、セキュリティエンジン、MJPEG のレジスター"
         access: request
         files: {}
       - id: ipro7-hardware-design-guide
-        title: {zh: "IPRO7 硬體設計指南", en: "IPRO7 Hardware Design Guide"}
+        title: {zh: "IPRO7 硬體設計指南", en: "IPRO7 Hardware Design Guide", zh-cn: "IPRO7 硬件设计指南", ja: "IPRO7 ハードウェア設計ガイド"}
         version: V1.1
         languages: [zh-TW, en]
         summary:
           zh: "SoC 硬體參考，以及電源、PCB 佈線、時脈電路、開機模式與 strap 腳、介面參考設計、封裝 footprint 與 SoM 參考設計"
           en: "SoC hardware reference, plus power, PCB routing, clock circuits, boot mode and strap pins, interface reference designs, package footprint and the SoM reference design"
+          zh-cn: "SoC 硬件参考，以及电源、PCB 布线、时钟电路、启动模式与 strap 引脚、接口参考设计、封装 footprint 与 SoM 参考设计"
+          ja: "SoC のハードウェアリファレンス、および電源、PCB 配線、クロック回路、ブートモードとストラップピン、インターフェースのリファレンスデザイン、パッケージのフットプリント、SoM のリファレンスデザイン"
         access: request
         files: {}
       - id: ipro7-application-note-power-up-verification
-        title: {zh: "IPRO7 應用說明：電源上電驗證", en: "IPRO7 Application Note: Power-up Verification"}
+        title: {zh: "IPRO7 應用說明：電源上電驗證", en: "IPRO7 Application Note: Power-up Verification", zh-cn: "IPRO7 应用笔记：电源上电验证", ja: "IPRO7 アプリケーションノート：電源投入の検証"}
         version: V1.1
         languages: [zh-TW, en]
         summary:
           zh: "電源架構與上電順序、測試點、量測步驟與驗收標準、檢查表"
           en: "Power architecture and power-on sequence, test points, measurement procedure and acceptance criteria, checklist"
+          zh-cn: "电源架构与上电时序、测试点、测量步骤与验收标准、检查表"
+          ja: "電源構成と電源投入シーケンス、テストポイント、測定手順と合格基準、チェックリスト"
         access: request
         files: {}
   - id: software-documents
-    title: {zh: "軟體文件", en: "Software documents"}
+    title: {zh: "軟體文件", en: "Software documents", zh-cn: "软件文档", ja: "ソフトウェアのドキュメント"}
     documents:
       - id: ipro7-sdk-installation-guide
-        title: {zh: "IPRO7 SDK 安裝指南", en: "IPRO7 SDK Installation Guide"}
+        title: {zh: "IPRO7 SDK 安裝指南", en: "IPRO7 SDK Installation Guide", zh-cn: "IPRO7 SDK 安装指南", ja: "IPRO7 SDK インストールガイド"}
         version: V1.1
         languages: [zh-TW, en]
         summary:
           zh: "安裝程式與安裝模式、編輯器設定、單一套件更新與離線安裝、第一次建置、燒錄與序列埠鮑率"
           en: "Installer and installation modes, editor setup, single-package updates and offline installation, first build, flashing and console baud rate"
+          zh-cn: "安装程序与安装模式、编辑器设置、单个软件包更新与离线安装、首次构建、烧录与串口波特率"
+          ja: "インストーラーとインストールモード、エディターの設定、個別パッケージの更新とオフラインインストール、最初のビルド、書き込みとコンソールのボーレート"
         access: request
         files: {}
       - id: ipro7-programming-guide
-        title: {zh: "IPRO7 程式設計指南", en: "IPRO7 Programming Guide"}
+        title: {zh: "IPRO7 程式設計指南", en: "IPRO7 Programming Guide", zh-cn: "IPRO7 编程指南", ja: "IPRO7 プログラミングガイド"}
         version: V1.1
         languages: [zh-TW, en]
         summary:
           zh: "開發環境、SDK 架構、建置系統、FreeRTOS、各周邊、BLE、經 SDIO 外接的 Wi-Fi、多媒體、USB、安全引擎、電源管理、OTA、除錯與日誌"
           en: "Development environment, SDK architecture, build system, FreeRTOS, peripherals, BLE, Wi-Fi through an external companion chip, multimedia, USB, security engine, power management, OTA, debugging and logging"
+          zh-cn: "开发环境、SDK 架构、构建系统、FreeRTOS、各外设、BLE、经 SDIO 外接的 Wi-Fi、多媒体、USB、安全引擎、电源管理、OTA、调试与日志"
+          ja: "開発環境、SDK のアーキテクチャ、ビルドシステム、FreeRTOS、周辺機能、BLE、外付けコンパニオンチップ経由の Wi-Fi、マルチメディア、USB、セキュリティエンジン、電源管理、OTA、デバッグとログ"
         access: request
         files: {}
       - id: ipro7-api-specification
-        title: {zh: "IPRO7 API 規格書", en: "IPRO7 API Specification"}
+        title: {zh: "IPRO7 API 規格書", en: "IPRO7 API Specification", zh-cn: "IPRO7 API 规格书", ja: "IPRO7 API 仕様書"}
         version: V1.1
         languages: [zh-TW, en]
         summary:
           zh: "HAL、USB、安全引擎、BLE、經 SDIO 外接的 Wi-Fi、檔案系統、OS 抽象層與 AI／NPU 執行環境的 API，以及錯誤碼"
           en: "APIs for the HAL, USB, security engine, BLE, Wi-Fi through an external companion chip, file system, OS abstraction layer and AI / NPU runtime, plus error codes"
+          zh-cn: "HAL、USB、安全引擎、BLE、经 SDIO 外接的 Wi-Fi、文件系统、OS 抽象层与 AI／NPU 运行环境的 API，以及错误码"
+          ja: "HAL、USB、セキュリティエンジン、BLE、外付けコンパニオンチップ経由の Wi-Fi、ファイルシステム、OS 抽象化レイヤー、AI／NPU ランタイムの API、およびエラーコード"
         access: request
         files: {}
       - id: ipro7-software-tools-user-guide
-        title: {zh: "IPRO7 軟體工具使用指南", en: "IPRO7 Software Tools User Guide"}
+        title: {zh: "IPRO7 軟體工具使用指南", en: "IPRO7 Software Tools User Guide", zh-cn: "IPRO7 软件工具使用指南", ja: "IPRO7 ソフトウェアツール ユーザーガイド"}
         version: V1.1
         languages: [zh-TW, en]
         summary:
           zh: "RISC-V 工具鏈、建置與設定系統、燒錄與下載工具、除錯工具、序列埠監看、BLE 工具、RF 調校工具、映像檔工具、記憶體與大小分析"
           en: "RISC-V toolchain, build and configuration system, flashing and download tool, debugging tools, serial monitoring, BLE tools, RF tuning tool, image tools, memory and size analysis"
+          zh-cn: "RISC-V 工具链、构建与配置系统、烧录与下载工具、调试工具、串口监视、BLE 工具、RF 调校工具、镜像文件工具、内存与大小分析"
+          ja: "RISC-V ツールチェーン、ビルドと設定のシステム、書き込み・ダウンロードツール、デバッグツール、シリアルモニター、BLE ツール、RF 調整ツール、イメージツール、メモリとサイズの解析"
         access: request
         files: {}
       - id: ipro7ai-edge-ai-programming-guide
-        title: {zh: "IPRO7AI Edge AI 程式設計指南", en: "IPRO7AI Edge AI Programming Guide"}
+        title: {zh: "IPRO7AI Edge AI 程式設計指南", en: "IPRO7AI Edge AI Programming Guide", zh-cn: "IPRO7AI Edge AI 编程指南", ja: "IPRO7AI Edge AI プログラミングガイド"}
         version: V1.2
         languages: [zh-TW]
         summary:
           zh: "Edge AI 平台 V2.0 的執行層、模型存放、資料來源、前處理、應用框架與事件、裝置協定、主機端 SDK 與命令列"
           en: "The Edge AI Platform V2.0 runtime, model store, data sources, pre-processing, application framework and events, device protocol, host SDK and command line"
+          zh-cn: "Edge AI 平台 V2.0 的运行层、模型存储、数据源、预处理、应用框架与事件、设备协议、主机端 SDK 与命令行"
+          ja: "Edge AI Platform V2.0 のランタイム、モデルストア、データソース、前処理、アプリケーションフレームワークとイベント、デバイスプロトコル、ホスト SDK とコマンドライン"
         access: request
         files: {}
       - id: ipro7ai-ai-studio-user-guide
-        title: {zh: "IPRO7AI AI Studio 使用指南", en: "IPRO7AI AI Studio User Guide"}
+        title: {zh: "IPRO7AI AI Studio 使用指南", en: "IPRO7AI AI Studio User Guide", zh-cn: "IPRO7AI AI Studio 使用指南", ja: "IPRO7AI AI Studio ユーザーガイド"}
         version: V1.3
         languages: [zh-TW, en]
         summary:
           zh: "模型準備與編譯、NPU 派工檢視、數值驗證、上板執行與運算子支援表"
           en: "Model preparation and compilation, NPU dispatch inspection, numerical verification, running on board and the operator support matrix"
+          zh-cn: "模型准备与编译、NPU 任务分派查看、数值验证、上板运行与算子支持表"
+          ja: "モデルの準備とコンパイル、NPU ディスパッチの確認、数値検証、ボード上での実行、演算子サポート表"
         access: request
         files: {}
       - id: ipro-workbench-operation-manual
-        title: {zh: "IPRO Workbench 操作手冊", en: "IPRO Workbench Operation Manual"}
+        title: {zh: "IPRO Workbench 操作手冊", en: "IPRO Workbench Operation Manual", zh-cn: "IPRO Workbench 操作手册", ja: "IPRO Workbench 操作マニュアル"}
         version: V1.1
         languages: [zh-TW, en]
         summary:
           zh: "IPRO Workbench 0.1.0 的安裝、第一次執行、開發與設定、燒錄、序列埠監看、除錯、板上測試與量測、AI 助理與疑難排解"
           en: "Installing IPRO Workbench 0.1.0, first run, development and settings, flashing, serial monitor, debugging, on-board tests and measurement, the AI assistant and troubleshooting"
+          zh-cn: "IPRO Workbench 0.1.0 的安装、首次运行、开发与设置、烧录、串口监视、调试、板上测试与测量、AI 助手与故障排除"
+          ja: "IPRO Workbench 0.1.0 のインストール、初回の実行、開発と設定、書き込み、シリアルモニター、デバッグ、ボード上のテストと測定、AI アシスタント、トラブルシューティング"
         access: public
         files:
           zh-TW: https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.0/IPRO-Workbench-Operation-Manual-V1.1-zh-TW.pdf
           en: https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.0/IPRO-Workbench-Operation-Manual-V1.1-en.pdf
   - id: board-documents
-    title: {zh: "開發板文件", en: "Board documents"}
+    title: {zh: "開發板文件", en: "Board documents", zh-cn: "开发板文档", ja: "ボードのドキュメント"}
     documents:
       - id: ipro7ai-reef-development-kit-user-guide
-        title: {zh: "IPRO7AI Reef 開發套件使用手冊", en: "IPRO7AI Reef Development Kit User Guide"}
+        title: {zh: "IPRO7AI Reef 開發套件使用手冊", en: "IPRO7AI Reef Development Kit User Guide", zh-cn: "IPRO7AI Reef 开发套件使用手册", ja: "IPRO7AI Reef 開発キット ユーザーガイド"}
         version: V1.1
         languages: [zh-TW]
         summary:
           zh: "V4.0 開發板硬體、介面與供電；燒錄；IPRO AI Teach 2.0 的影像、聲紋、感測器工具；模型套件與命令列；效能與疑難排解"
           en: "V4.0 board hardware, interfaces and power; flashing; the image, voiceprint and sensor tools of IPRO AI Teach 2.0; model packages and the command line; performance and troubleshooting"
+          zh-cn: "V4.0 开发板硬件、接口与供电；烧录；IPRO AI Teach 2.0 的图像、声纹、传感器工具；模型包与命令行；性能与故障排除"
+          ja: "V4.0 ボードのハードウェア・インターフェース・電源、書き込み、IPRO AI Teach 2.0 の画像・声紋・センサーツール、モデルパッケージとコマンドライン、性能とトラブルシューティング"
         access: request
         files: {}
       - id: ipro-debug-probe-board-user-guide
-        title: {zh: "IPRO Debug Probe 使用手冊", en: "IPRO Debug Probe Board User Guide"}
+        title: {zh: "IPRO Debug Probe 使用手冊", en: "IPRO Debug Probe Board User Guide", zh-cn: "IPRO Debug Probe 使用手册", ja: "IPRO Debug Probe ボード ユーザーガイド"}
         version: V1.1
         languages: [zh-TW, en]
         summary:
           zh: "板面、快速上手、按鍵與 LED、UART 與 JTAG／CCI 介面、電源、主機設定、燒錄與除錯、BOM 與製造資料"
           en: "Board overview, quick start, button and LED, UART and JTAG / CCI interfaces, power, host setup, programming and debug, BOM and fabrication data"
+          zh-cn: "板面、快速上手、按键与 LED、UART 与 JTAG／CCI 接口、电源、主机设置、烧录与调试、BOM 与生产数据"
+          ja: "ボードの概要、クイックスタート、ボタンと LED、UART と JTAG／CCI インターフェース、電源、ホストの設定、書き込みとデバッグ、BOM と製造データ"
         access: request
         files: {}

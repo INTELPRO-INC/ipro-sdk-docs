@@ -1,0 +1,66 @@
+---
+title: "故障排除"
+description: IPRO Workbench 的消息、工具栏和侧边栏状态的含义及处理方法，macOS 与 Windows 上的问题，以及报告问题时需要附上的信息。
+---
+
+# 故障排除
+
+按出现的位置，列出 IPRO Workbench 0.1.0 中各种消息和状态的原因及解决方法。
+
+## 界面上的消息 { #messages }
+
+任何一步失败时，IDE 都会弹出说明以及处理问题的按钮。下表列出每条消息的原因和处理方法。
+
+| 界面上的消息 | 原因 | 处理方法 |
+|---|---|---|
+| The board did not answer on … | 探针线缆没有接好、开发板没有供电，或选错了端口 | 检查线缆和电源，然后点击 **Select Port** 或 **Retry** |
+| Another program has … open, so IntelProCube cannot use it | 其他串口监视器或终端打开了同一个端口 | 关闭该程序，然后点击 **Retry** |
+| … has not been built yet. | 还没有可烧录的固件 | 点击 **Build and Flash** |
+| Flashing needs IntelProCube, and it was not found. | 未安装 IntelProCube | 点击 **Install IntelProCube**，或点击 **Browse…** 指向已有的 IntelProCube |
+| … did not compile. First error at … | 代码有错误 | 点击 **Go to Error**；**Problems** 视图列出所有错误。也可以点击 **Ask AI to Fix** |
+| CMake could not configure … | `.config` 或 `CMakeLists.txt` 有误 | 阅读 **IPRO Build** 的输出，修正问题后点击 **Reconfigure and Build** |
+| The toolchain or the build tools are missing. | 开发环境尚未补全 | 点击 **Fix Environment** |
+| pins.yaml of … has errors, so app_pins.c was not generated. | 引脚配置有冲突，或某个信号在该引脚上不可用 | 点击 **Open Pin Configuration**，逐项修正 **Problems** 下的问题，然后点击 **Save and Generate** |
+| The board started firmware built …, not the … just flashed. | 烧录实际上没有写入开发板 | 查看 **IPRO Flash** 的输出，然后点击 **Flash Again** |
+| … is over its memory budget | 某个内存区域超出了 `ipro.build.memoryBudget` 中设置的上限 | 点击 **Memory Map** 找出占用较大的符号，或点击 **Budget Settings** 调整上限 |
+| The partition table of … reaches …, but the board on this probe has … of flash | 所选的分区表大于开发板的 Flash | 点击 **Partition Table** 选择其他分区表，或检查 `.config` 中的 Flash 大小 |
+| `mfg uses the same space as FW …`（**Partition Table** 和 **AI Model** 视图中的检查结果） | 1M 分区表没有为 AI 模型单独预留空间 | 在 **Partition Table** 中选择带有独立 mfg 分区的分区表（例如应用程序自带的分区表） |
+| The board did not answer. Is it running the MFG firmware? | 射频测试期间，开发板运行的不是 MFG 固件，或监视器没有打开 | 烧录 MFG 固件并打开监视器，然后点击 **Check Firmware** |
+| **Testing** 视图中没有结果 | 监视器的过滤隐藏了测试行，或开发板没有重启 | 清除过滤，然后点击 **Run Tests on Board** |
+| The board did not restart. Is the monitor on the console port of an IPRO Debug Probe? | 监视器打开在 CCI 或其他端口上 | 点击工具栏上的开发板，用 **Select Port…** 切换回探针的 UART |
+
+## 工具栏和侧边栏的状态 { #status }
+
+| 看到的状态 | 处理方法 |
+|---|---|
+| 工具栏以琥珀色显示“no probe” | IDE 找不到 IPRO Debug Probe。检查 USB 线，并尽量将探针直接连接到计算机；插好后，探针会在几秒内自动出现。 |
+| 状态栏显示“Setup: N” | 点击它打开 IPRO Home，然后点击横幅中的 **Fix Environment**。 |
+| **Board** 显示“Runs other firmware” | 开发板运行的不是当前应用程序的最新构建。要运行当前的程序，请烧录它。 |
+
+## macOS 上的问题 { #macos }
+
+| 情况 | 处理方法 |
+|---|---|
+| 首次启动时提示无法验证开发者 | 前往“系统设置 → 隐私与安全性”，点击 **仍要打开**（请参阅[安装 IPRO Workbench](install.md#install)）。 |
+| **Environment** 显示 **macOS quarantine** | 这些工具是用浏览器或聊天应用下载的，因此 macOS 会在运行时阻止它们。点击该行的锁形图标并确认，即可移除该标记。 |
+| 提示缺少 CMake 或构建程序 | macOS 上 IDE 不会安装构建工具。在终端中运行 `xcode-select --install` 和 `brew install cmake ninja`，然后点击 **Check Again**。 |
+| 烧录中途失败，显示 `Device not configured` | 探针从 USB 上掉线（线缆、集线器或供电问题）。更换线缆或将探针直接连接到计算机，然后点击 **Retry**。 |
+
+## Windows 上的问题 { #windows }
+
+| 情况 | 处理方法 |
+|---|---|
+| 安装时显示“Windows 已保护你的电脑” | 点击 **更多信息**，确认应用名称为 IPRO-Workbench，然后点击 **仍要运行**。 |
+| 其他串口工具无法打开 COM 端口 | 在 Windows 上，一个 COM 端口同一时间只能被一个程序使用。打开其他工具前先关闭 IPRO Monitor；用完后也请关闭该工具，以便 IDE 进行烧录。 |
+| **SDK for this toolchain** 提示需要调整 | SDK 2.2.0 需要几处主机端修正才能在 Windows 上构建。点击 **Fix Environment**（或该行的 **Prepare the SDK for this toolchain**），IDE 会自动处理。 |
+| Python 一行提示缺少 kconfiglib | 在命令提示符中运行 `python -m pip install kconfiglib windows-curses`，然后点击 **Check Again**。 |
+| 代码编辑器提示下载 clangd | 代码导航使用 clangd。按提示让它下载即可。 |
+
+## 收集问题信息 { #collect }
+
+向 INTELPRO 报告问题时，请附上：
+
+1. IDE 的版本：选择 **Help → About**。
+2. 失败步骤的输出：在 **Output** 面板中选择 **IPRO Build**、**IPRO Flash** 或 **IPRO Setup**，全选并复制。
+3. 开发板的输出：在 IPRO Monitor 标签页上点击 **Save Monitor Output…**，或附上 `build/logs` 中的监视器日志。
+4. 如果是崩溃，请附上 `build/crash` 中的崩溃转储文件夹。

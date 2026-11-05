@@ -1,0 +1,127 @@
+# Japanese site, served at /ipro-sdk-docs/ja/.
+# Keep nav entries in the same order and files as mkdocs.zh.yml (tools/parity_check.py).
+INHERIT: mkdocs.base.yml
+site_url: https://intelpro-inc.github.io/ipro-sdk-docs/ja/
+site_description: INTELPRO IPRO SDK ドキュメント
+docs_dir: docs/ja
+site_dir: site/ja
+
+theme:
+  language: ja
+
+plugins:
+  - search:
+      lang: ja
+
+extra:
+  # Sidebar marker for pages whose front matter says status: stub
+  status:
+    stub: "移行待ち：旧サイトからまだ移していない内容"
+  notice: "このドキュメントは IPRO SDK {sdk}（{date}）に対応しています。"
+  alternate:
+    - { name: 繁體中文, link: /ipro-sdk-docs/, lang: zh-TW }
+    - { name: English, link: /ipro-sdk-docs/en/, lang: en }
+    - { name: 简体中文, link: /ipro-sdk-docs/zh-cn/, lang: zh-CN }
+    - { name: 日本語, link: /ipro-sdk-docs/ja/, lang: ja }
+
+nav:
+  - "ホーム": index.md
+  - "はじめに":
+      - get-started/index.md
+      - "開発環境の準備": get-started/environment.md
+      - "Windows のセットアップと VS Code": get-started/windows.md
+      - "macOS／Linux のコマンドライン": get-started/command-line.md
+      - "最初の FreeRTOS アプリケーション": get-started/first-app-freertos.md
+      - "書き込みとシリアルコンソール": get-started/flash-and-monitor.md
+  - "IPRO Workbench":
+      - "IPRO Workbench": workbench/index.md
+      - "IPRO Workbench のインストール": workbench/install.md
+      - "初回の実行": workbench/first-run.md
+      - "アプリケーションの開発": workbench/develop.md
+      - "書き込みとボード": workbench/flash.md
+      - "シリアルモニター": workbench/monitor.md
+      - "デバッグと解析": workbench/debug.md
+      - "テストと測定": workbench/measure.md
+      - "AI アシスタント": workbench/ai.md
+      - "トラブルシューティング": workbench/troubleshooting.md
+      - "ショートカット、コマンド、設定": workbench/reference.md
+  - "IPRO AI Teach":
+      - "IPRO AI Teach": teach/index.md
+      - "IPRO AI Studio のインストール": teach/install.md
+      - "Edge AI ファームウェアの書き込み": teach/firmware.md
+      - "画像認識": teach/image.md
+      - "声紋認識": teach/voice.md
+      - "センサー認識": teach/sensor.md
+      - "ブラウザー版の画像 Teach": teach/browser.md
+      - "トラブルシューティング": teach/troubleshooting.md
+  - "ハードウェア":
+      - hardware/index.md
+      - "チップ":
+          - "IPRO7": hardware/chips/ipro7.md
+          - "IPRO7AI": hardware/chips/ipro7ai.md
+          - "IPRO6S": hardware/chips/ipro6s.md
+      - "ボード":
+          - "IPRO7AI Reef EVK V4.0": hardware/boards/reef-evk.md
+      - "ピン配置と周辺機能の対応": hardware/pinmux.md
+      - "電源と消費電流の測定": hardware/power.md
+  - "開発ガイド":
+      - guides/index.md
+      - "システムアーキテクチャ": guides/architecture.md
+      - "ビルドシステムと設定": guides/build-system.md
+      - "BLE 開発": guides/ble.md
+      - "オーディオと LE Audio": guides/audio.md
+      - "カメラと画像処理": guides/camera.md
+      - "AI と NPU": guides/ai-npu.md
+      - "ネットワーク": guides/networking.md
+      - "Zephyr RTOS": guides/zephyr.md
+      - "Thread と Matter": guides/thread-matter.md
+      - "低消費電力": guides/low-power.md
+      - "OTA アップデート": guides/ota.md
+      - "VS Code Extension": guides/vscode.md
+  - "サンプル":
+      - examples/index.md
+      # BEGIN generated: examples
+      - "Reef EVK のサンプル":
+          - "ipro7ai_reef_demo": examples/ipro7ai_reef_demo.md
+          - "ipro_reef_teach": examples/ipro_reef_teach.md
+          - "ipro_ble_remote": examples/ipro_ble_remote.md
+          - "ipro_throughput_test": examples/ipro_throughput_test.md
+          - "ipro_le_audio_headset": examples/ipro_le_audio_headset.md
+          - "ipro7_uvc_cam": examples/ipro7_uvc_cam.md
+          - "ipro7_jpeg_decode": examples/ipro7_jpeg_decode.md
+          - "ipro_ai_link": examples/ipro_ai_link.md
+          - "ipro_agora_sentino": examples/ipro_agora_sentino.md
+      # END generated: examples
+  - "チュートリアル":
+      - tutorials/index.md
+      - "ビルドと書き込みの流れ": tutorials/build-and-flash.md
+      - "最初の独自アプリケーションを作る": tutorials/first-own-app.md
+      - "アプリケーションのテスト": tutorials/testing.md
+      - "最初の BLE アプリケーション": tutorials/first-ble-app.md
+      - "BLE スループットテスト": tutorials/ble-throughput.md
+      - "LE Audio 入門": tutorials/le-audio.md
+      - "USB ウェブカメラとじゃんけん": tutorials/usb-webcam.md
+      - "Wi-Fi と RTSP カメラストリーミング": tutorials/wifi-rtsp.md
+  - "リファレンス":
+      - reference/index.md
+      - "API リファレンス":
+          - reference/api/index.md
+          # BEGIN generated: api
+          - "プラットフォームとシステム": reference/api/platform.md
+          - "メモリ、Flash、ブート": reference/api/memory-boot.md
+          - "電源管理と低消費電力": reference/api/power.md
+          - "周辺 I/O": reference/api/peripherals.md
+          - "オーディオ": reference/api/audio.md
+          - "カメラと画像処理": reference/api/camera.md
+          - "SD カードと SDIO": reference/api/sd-sdio.md
+          - "イーサネット": reference/api/ethernet.md
+          - "PIO": reference/api/pio.md
+          - "セキュリティエンジン": reference/api/security.md
+          - "ワイヤレスと BLE コントローラー": reference/api/wireless-ble.md
+          - "AI ランタイム": reference/api/ai.md
+          # END generated: api
+      - "ツールのコマンドライン": reference/tools.md
+      - "デバッグとトラブルシューティング": reference/debugging.md
+      - "リリースノート": reference/release-notes.md
+      - "よくある質問": reference/faq.md
+  - "ドキュメント": documents/index.md
