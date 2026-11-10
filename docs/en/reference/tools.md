@@ -28,7 +28,7 @@ Command syntax, options and examples for the host tools that ship with the SDK. 
 | `parse_kconfig_dynamic.py` | `tools/script/` | Export a Kconfig tree as JSON (needs kconfiglib; not used by the build) | Included |
 | CMake 3.15 | `tools/cmake/` | Fallback when no `cmake` is on `PATH`; Linux x86-64 only | Included |
 | Zephyr scripts | `tools/zephyr/` | Zephyr workspace, build, flash and console (`ipro7_evb` and `ipro7ai_evk` boards) | Included |
-| IntelProCube v0.6.3 command-line flasher | `ipro_iot_tool_macos`, `ipro_iot_tool_linux`, `ipro_iot_tool.exe` | Flash firmware, partition tables, boot2 and `mfg` content over the serial port | Not included in V2.2.0; contact INTELPRO |
+| IntelProCube 0.7.0.1 command-line flasher | `ipro_iot_tool_macos`, `ipro_iot_tool_linux`, `ipro_iot_tool.exe` | Flash firmware, partition tables, boot2 and `mfg` content over the serial port | Not included in V2.2.0; download it from [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) |
 | RISC-V toolchain | `/opt/toolchain/riscv_ipro7/` | Compiler (GCC 14, `riscv64-unknown-elf-`) | Not included in V2.2.0; contact INTELPRO |
 | IPRO AI Studio | — | IPRO AI Teach, model conversion and deployment | Not in the SDK; download from [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) |
 | OpenOCD / GDB connection setup, the board test script `tools/board_test.sh`, a crash-dump host tool | — | On-target debugging, automated board tests, reading memory after `==DUMP_READY:` | Not included in V2.2.0; contact INTELPRO |
@@ -138,7 +138,7 @@ Each application's `Makefile` calls `project.build` in the SDK root (CMake with 
 
 ## IntelProCube flash tool { #flash-tool }
 
-Flashing uses the IntelProCube v0.6.3 command-line tool, which is not included in V2.2.0; contact INTELPRO. The tool reads its chip files from its own `chips/` directory, so run it from the IntelProCube directory. The table is compiled from the READMEs and scripts in the SDK; the tool itself is the reference for the full option set.
+Flashing uses the IntelProCube command-line tool. It is not included in V2.2.0: download 0.7.0.1 from [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) and install it as in [Set Up Your Host](../get-started/environment.md#intelprocube). The tool reads its chip files from its own `chips/` directory, so run it from the IntelProCube directory. The table is compiled from the READMEs and scripts in the SDK; the tool itself is the reference for the full option set.
 
 | Option | Meaning |
 |---|---|
@@ -148,7 +148,7 @@ Flashing uses the IntelProCube v0.6.3 command-line tool, which is not included i
 | `--baudrate 921600` | Flashing baud rate, independent of the application's console rate |
 | `--firmware` | The `.bin` to flash |
 | `--pt` | Partition table (`.toml`): a path relative to the tool directory (for example `chips/ipro7/partition/partition_cfg_2M.toml`) or a full path. Without it, the tool's default table is used |
-| `--boot2` | Also flash a boot2 image (for example the tool's `chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin`); needed for `ipro_ble_remote` OTA on the Reef |
+| `--boot2` | Also flash a boot2 image (for example the tool's `chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin`); needed for `ipro_ble_remote` OTA on the Reef |
 | `--mfg` | File to write into the `mfg` partition (AI models; the boot mode and voiceprint model of `ipro_reef_teach`) |
 | `--skip-ota` | Used with an application's own partition table, for example `ipro_reef_teach` |
 | `--build` | Only build the combined image `chips/ipro7/img_create_iot/whole_img.bin`, without flashing; input for [`create_ota.py`](#ota-package) |
@@ -258,7 +258,7 @@ python3 apps/ai/ipro_reef_teach/mfg_payload.py \
 
 | Tool | Command | Result |
 |---|---|---|
-| `make_reef_ota.sh` | `IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh` | Needs a `DEFCONFIG=defconfig_reef` build first; writes `build_reef/build_out/ipro_ble_remote_reef.xz.ota` (about 345 KB) |
+| `make_reef_ota.sh` | `IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh` | Needs a `DEFCONFIG=defconfig_reef` build first; writes `build_reef/build_out/ipro_ble_remote_reef.xz.ota` (about 345 KB). The V2.2.0 script names boot2 v0.5.2: change it to v0.6.0 first, as in step 4 of [OTA Updates](../guides/ota.md#hands-on) |
 | `reef_ota.py` | `.venv/bin/python apps/bluetooth/ble/ipro_ble_remote/tools/reef_ota.py <package.xz.ota>` | Sends the package over BLE (bleak) to the board named `IPRO-Remote` and prints progress and status |
 | `reef_ble_test.py` | `.venv/bin/python apps/bluetooth/ble/ipro_ble_remote/tools/reef_ble_test.py` | Tests the Reef's GATT services as a bleak central (`info led env sound tone img`; `keys` and `motion` need someone at the board); captured JPEGs land next to the script |
 | `ipro_remote_demo.apk` | Install on an Android phone | Demo app for `ipro_ble_remote`; it can push `.xz.ota` packages |

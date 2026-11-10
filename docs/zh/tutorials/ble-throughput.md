@@ -12,7 +12,7 @@ migrate_from:
 ## 前置需求 { #prerequisites }
 
 - 兩塊 IPRO7AI Reef EVK，各自以 USB-C 供電，SW8 在 PWR。每塊板子的 U6 各接一個 IPRO Debug Probe（或 3.3 V USB 轉 UART 線），接法見 [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)。
-- 已完成[第一個 FreeRTOS 應用](../get-started/first-app-freertos.md)，並取得 IntelProCube v0.6.3 命令列燒錄工具（需另行取得）。
+- 已完成[第一個 FreeRTOS 應用](../get-started/first-app-freertos.md)，並依[準備開發環境](../get-started/environment.md#intelprocube)安裝 IntelProCube 0.7.0.1 命令列燒錄工具。
 - 每塊板子各開一個可輸入指令的序列埠終端程式（115200 8N1，見[燒錄與序列埠](../get-started/flash-and-monitor.md)）。
 
 !!! tip "分清楚兩塊板子的序列埠"

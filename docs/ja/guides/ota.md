@@ -10,7 +10,7 @@ migrate_from:
 FreeRTOS アプリケーションでは、更新は boot2 が行います。動作中のアプリケーションが OTA パッケージをパーティションテーブルの空いている FW スロットに書き込み、アクティブインデックスを切り替えます。再起動後、boot2 がパッケージを検査して実行スロットに展開し、起動します。SDK には、パッケージ作成ツール `tools/create_ota.py` と、IPRO7AI Reef EVK を BLE で更新する完全なリファレンスが含まれています。リファレンスは、`defconfig_reef` でビルドした `ipro_ble_remote`、その A/B パーティションテーブル、パッケージ作成スクリプト、Python の送信ツール、Android アプリで構成されます。
 
 !!! abstract "要点"
-    - リファレンス：`ipro_ble_remote` の `defconfig_reef` + `partition_cfg_2M_remote_ab.toml` + boot2 v0.5.2（IntelProCube に同梱）。デフォルトの `.config` には OTA がありません。
+    - リファレンス：`ipro_ble_remote` の `defconfig_reef` + `partition_cfg_2M_remote_ab.toml` + boot2 v0.6.0（IntelProCube に同梱）。デフォルトの `.config` には OTA がありません。
     - パッケージ：`tools/create_ota.py` が IntelProCube で結合した `whole_img.bin` を `.xz.ota`（512 バイトのヘッダー + XZ ペイロード）にまとめます。Reef 向けには `make_reef_ota.sh` が両方の手順を実行します。
     - 送信側：`tools/reef_ota.py`（Python、bleak）または `ipro_remote_demo.apk`（Android）。BLE OTA サービス 0xFF60 を使います。
     - IPRO6S FIN カードは、`defconfig_wifi_ipro6s` でビルドした `ipro7ai_reef_demo` の `ipro6s_ota <http url>` で Wi-Fi 経由で更新します。
@@ -39,7 +39,7 @@ sequenceDiagram
 
 | アドレス | パーティション | サイズ | 用途 |
 |---|---|---|---|
-| 0x000000 | boot2 | 64 KB | IntelProCube に同梱の boot2 v0.5.2 |
+| 0x000000 | boot2 | 64 KB | IntelProCube に同梱の boot2 v0.6.0 |
 | 0x010000 | PT0 / PT1 | 4 KB + 4 KB | パーティションテーブル |
 | 0x012000 | FW A[0] | 824 KB | 実行スロット。boot2 がここにパッケージを展開します |
 | 0x0E0000 | FW A[1] | 512 KB | OTA のステージング。アプリケーションがここに `.xz.ota` を書き込みます |
@@ -49,7 +49,7 @@ sequenceDiagram
 | 0x1FF000 | factory | 4 KB | |
 
 - このレイアウトには 2 MB の Flash が必要です。`defconfig_reef` は `CONFIG_IPRO7_FLASH_2M=y` を設定しています。
-- boot2 のイメージは IntelProCube のディレクトリにある `chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin` で、SDK パッケージには含まれていません。
+- boot2 のイメージは IntelProCube のディレクトリにある `chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin` で、SDK パッケージには含まれていません。
 - このテーブルには意図的に boot2 のエントリを入れていません。エントリがあると、書き込みツールがブート ROM の読み込まない boot2 ヘッダーを書き込んでしまいます。代わりに `--boot2` で boot2 を渡します。
 
 !!! danger "標準のパーティションテーブルで OTA を実行しないでください"
@@ -64,7 +64,7 @@ sequenceDiagram
 #    失敗しても 0 で終了するため、出力に "PT Check: whole_img.bin" があることを確認する）
 cd <ICUBE>
 ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI --build \
-    --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
+    --boot2 chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin \
     --pt <SDK>/apps/bluetooth/ble/ipro_ble_remote/partition_cfg_2M_remote_ab.toml \
     --firmware <SDK>/apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin
 
@@ -91,7 +91,7 @@ python3 <SDK>/tools/create_ota.py chips/ipro7/img_create_iot/whole_img.bin \
 | 96–511 | 予約（0xFF）。署名付きパッケージでは署名ブロックが入ります |
 | 512 以降 | ペイロード（boot2 のデコーダーに合わせた 32 KB 辞書の XZ） |
 
-Reef 向けには、`apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh` が両方の手順を 1 つのコマンドで実行し、ビルド時刻をファームウェアバージョンとして書き込みます。[Reef でのハンズオン](#hands-on)を参照してください。
+Reef 向けには、`apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh` が両方の手順を 1 つのコマンドで実行し、ビルド時刻をファームウェアバージョンとして書き込みます。[Reef でのハンズオン](#hands-on)を参照してください。V2.2.0 のスクリプトは boot2 v0.5.2 のパスを指定しているため、使う前に IntelProCube 0.7.0 以降に付属する v0.6.0 に書き換えてください（手順 4 の 1 行目）。
 
 ## BLE OTA（ipro_ble_remote） { #ble-ota }
 
@@ -187,18 +187,19 @@ CONFIG_IPRO_BLE_REMOTE_OTA=y
     cd <ICUBE>
     ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
         --port /dev/cu.usbserial-XXXX --baudrate 921600 \
-        --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
+        --boot2 chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin \
         --pt <SDK>/apps/bluetooth/ble/ipro_ble_remote/partition_cfg_2M_remote_ab.toml \
         --firmware <SDK>/apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin
     ```
 
-    `[All Success]` を確認してから（ツールは失敗しても 0 で終了します）、SW2（RESET）を押します。115200 baud のコンソールに `[BOOT2] IPRO7 Boot2 v0.5.2` が表示され、続いてアプリケーションが FW A（0x12000）から起動して `[OTA] Service ready` を出力します。書き込みの詳細は[書き込みとシリアルコンソール](../get-started/flash-and-monitor.md)を参照してください。
+    `[All Success]` を確認してから（ツールは失敗しても 0 で終了します）、SW2（RESET）を押します。115200 baud のコンソールに `[BOOT2] IPRO7 Boot2 v0.6.0` が表示され、続いてアプリケーションが FW A（0x12000）から起動して `[OTA] Service ready` を出力します。書き込みの詳細は[書き込みとシリアルコンソール](../get-started/flash-and-monitor.md)を参照してください。
 
 4. **コードを変更して OTA パッケージをビルドする**
 
-    コードに任意の変更を加え、同じ `make` コマンドで再ビルドしてから、新しいビルドをパッケージにします（Linux では `ipro_iot_tool_linux`）。
+    コードに任意の変更を加え、同じ `make` コマンドで再ビルドしてから、新しいビルドをパッケージにします。SDK V2.2.0 のパッケージ化スクリプトは boot2 v0.5.2 のパスを指定していますが、IntelProCube 0.7.0 以降に付属するのは v0.6.0 です。そのため 1 行目でスクリプト内のバージョンを v0.6.0 に書き換えます（もう一度実行しても影響はありません）。Linux では `sed -i`（`''` なし）と `ipro_iot_tool_linux` を使います。
 
     ```bash
+    sed -i '' 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
     IPRO_FLASH_TOOL=<ICUBE>/ipro_iot_tool_macos \
         sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
     ```
@@ -227,10 +228,18 @@ CONFIG_IPRO_BLE_REMOTE_OTA=y
     [OTA] CRC32 OK! Switching partition...
     [OTA] Ready to reboot
     [OTA] Rebooting...
-    [BOOT2] IPRO7 Boot2 v0.5.2
+    [BOOT2] IPRO7 Boot2 v0.6.0
+    ...
+    [BOOT2] OTA pending
+    [OTA] E0000->12000
+    [OTA] no eFuse key, package unverified
+    [OTA] XZ …
+    [OTA] …
+    [OTA] OK
+    [BOOT2] OTA ok
     ```
 
-    コンピューター側では、`reef_ota.py` が `verified, slot switched; rebooting` を出力し、ボードの再接続後に `running: IPRO7AI Reef; camera …; SD …; build <date> <time>` を出力します。ビルド時刻が更新前に表示されたものより新しければ、新しいイメージが動作しています。
+    `[BOOT2] OTA ok` は、boot2 がパッケージの SHA256 を確認して FW A に展開し、新しいイメージを起動することを示します。`no eFuse key, package unverified` は、チップの eFuse に署名鍵がないため署名を検証しないことを示します。コンピューター側では、`reef_ota.py` が `verified, slot switched; rebooting` を出力し、ボードの再接続後に `running: IPRO7AI Reef; camera …; SD …; build <date> <time>` を出力します。このビルド時刻は `src/board/reef_hw.c` から取られ、このファイルが再コンパイルされたときにだけ変わります。更新はコンソールの `[BOOT2] OTA ok` で確認してください。
 
 </div>
 

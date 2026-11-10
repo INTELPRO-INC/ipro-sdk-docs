@@ -12,7 +12,7 @@ The IPRO7AI Reef EVK reaches the network through the FIN card: an IPRO6S Wi-Fi c
 - An IPRO7AI Reef EVK, an IPRO6S FIN card and an OV5640 FLEX-24 camera module.
 - Wi-Fi firmware on the FIN card: the IPRO6S `ipro6_if_wifi` application built with `defconfig_ipro6_sdio` (the SDIO version, see step 2).
 - An IPRO Debug Probe or a 3.3 V USB-UART cable on U6 (115200 8N1; wiring in [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)).
-- [First FreeRTOS Application](../get-started/first-app-freertos.md) done, and the IntelProCube v0.6.3 command-line flasher at hand (obtained separately).
+- [First FreeRTOS Application](../get-started/first-app-freertos.md) done, and the IntelProCube 0.7.0.1 command-line flasher installed as in [Set Up Your Host](../get-started/environment.md#intelprocube).
 - A Wi-Fi access point (SSID and passphrase) and a computer on the same network with VLC or `ffplay`.
 
 !!! info "First firmware on a FIN card"

@@ -38,7 +38,8 @@ IPRO7／IPRO7AI 與 IPRO6S 雙晶片版本，取代 V2.1.0。共 40 個 FreeRTOS
 
 **未包含**
 
-- IntelProCube 燒錄工具與 RISC-V 工具鏈：請洽 INTELPRO。
+- IntelProCube 燒錄工具：從 [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) 下載 0.7.0.1，見[準備開發環境](../get-started/environment.md#intelprocube)。
+- RISC-V 工具鏈：請洽 INTELPRO。
 - IPRO AI Studio（含模型轉換）：從 [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) 下載。
 - IPRO6S 的 BLE 控制器函式庫與 BLE／BR/EDR 應用；IPRO6S 應用只有 Wi-Fi。
 - Matter；FreeRTOS 應用的 Thread（Thread 只在 Zephyr 下提供）。

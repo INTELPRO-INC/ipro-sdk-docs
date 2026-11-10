@@ -17,7 +17,8 @@ migrate_from:
 | ホスト | bash が使える macOS または Linux、または Windows x64 |
 | 権限 | パッケージのインストールと `/opt/toolchain/` への書き込みには管理者権限が必要です |
 | ネットワーク | SDK のダウンロードに必要です。Windows の Online Setup には GitHub へのアクセスが必要です |
-| 別途入手するもの | RISC-V ツールチェーンと IntelProCube v0.6.3：macOS／Linux 用は INTELPRO から入手し、Windows では Online Setup がインストールします |
+| 別途入手するもの | RISC-V ツールチェーン：macOS／Linux 用は INTELPRO から入手し、Windows では Online Setup がインストールします |
+| 書き込みツール | IntelProCube 0.7.0.1：[GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) からダウンロードします。[IntelProCube のインストール](#intelprocube)を参照してください。Windows では Online Setup がインストールします |
 | ハードウェア | IPRO7AI Reef EVK、USB-C ケーブル、コンソールケーブル。[必要なもの](index.md#what-you-need) を参照してください |
 
 ## SDK の入手 { #get-sdk }
@@ -155,11 +156,51 @@ migrate_from:
 
 ## IntelProCube のインストール { #intelprocube }
 
+IntelProCube は IPRO6 と IPRO7 の書き込み・OTA ツールで、[GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) で公開されています。このサイトは 0.7.0.1 を前提にしています。Windows では Online Setup が 0.7.0 をインストールします。IPRO7 と Reef の書き込みに使うファイルは 0.7.0.1 と同じです（[Windows のセットアップと VS Code](windows.md) を参照）。IPRO6S に書き込むときは、[IntelProCube の README](https://github.com/INTELPRO-INC/ipro-cube#windows) に従って 0.7.0.1 も別途インストールしてください。
+
 <div class="ipro-steps" markdown>
 
-1. **展開します：** IntelProCube v0.6.3 を任意のディレクトリ（このサイトでは `<IntelProCube>`）に展開します。コマンドラインツールはそのディレクトリで実行してください。チップ設定とパーティションテーブルを `chips/` から読み込むためです。Windows では Online Setup がインストールします。[Windows のセットアップと VS Code](windows.md) を参照してください。
+1. **ダウンロードして確認します。**
 
-2. **動作を確認します。**
+    === "macOS"
+
+        ```bash
+        curl -LO https://github.com/INTELPRO-INC/ipro-cube/releases/download/v0.7.0.1/IntelProCube-0.7.0.1-macos-arm64.tar.gz
+        shasum -a 256 IntelProCube-0.7.0.1-macos-arm64.tar.gz
+        ```
+
+        `c3a8bf7eca2a48c3f9bf40c3241ddf6aec5155688f2a92f40a84cc47f7633bc4` と表示されます。macOS 版には Apple シリコンが必要です。ブラウザーでダウンロードした場合は、展開する前に `xattr -d com.apple.quarantine IntelProCube-0.7.0.1-macos-arm64.tar.gz` を実行してください。実行しないと、macOS がパッケージ内のプログラムを終了させます。
+
+    === "Linux"
+
+        ```bash
+        curl -LO https://github.com/INTELPRO-INC/ipro-cube/releases/download/v0.7.0.1/IntelProCube-0.7.0.1-linux-x64.tar.gz
+        sha256sum IntelProCube-0.7.0.1-linux-x64.tar.gz
+        ```
+
+        `efc5765ca402d0af00b42489dd61a74481531875b871517af5c0bca9d7387df9` と表示されます。Linux 版は x86-64 用です。
+
+    値が異なる場合はダウンロードし直してください。各バージョンの値はリリースの `SHA256SUMS.txt` にも記載されています。
+
+2. **展開します。**
+
+    === "macOS"
+
+        ```bash
+        mkdir -p ~/ipro
+        tar xzf IntelProCube-0.7.0.1-macos-arm64.tar.gz -C ~/ipro
+        ```
+
+    === "Linux"
+
+        ```bash
+        mkdir -p ~/ipro
+        tar xzf IntelProCube-0.7.0.1-linux-x64.tar.gz -C ~/ipro
+        ```
+
+    `~/ipro/IntelProCube` ができます。このサイトでは `<IntelProCube>` と表記します。コマンドラインツールはこのディレクトリで実行してください。チップ設定、パーティションテーブル、boot2 イメージを `chips/` から読み込むためです。
+
+3. **動作を確認します。**
 
     === "macOS"
 
@@ -185,14 +226,15 @@ migrate_from:
     出力は使い方の概要から始まります：
 
     ```text
-    usage: ipro_iot_tool_macos [-h] --chipname CHIPNAME [--interface INTERFACE]
-                               [--port PORT] [--baudrate BAUDRATE] [--xtal XTAL]
+    usage: ipro_iot_tool_macos [-h] [--list-ports] --chipname CHIPNAME
+                               [--interface INTERFACE] [--port PORT]
+                               [--baudrate BAUDRATE] [--xtal XTAL]
                                [--chip-variant CHIP_VARIANT] [--dts DTS] [--pt PT]
                                [--boot2 BOOT2] [--firmware FIRMWARE] [--mfg MFG]
     ...
     ```
 
-3. **`build_freertos.sh` から見つけられるようにします**（macOS／Linux）：`IPRO_FLASH_TOOL` を設定するか、`<IntelProCube>` を `PATH` に追加します。
+4. **`build_freertos.sh` から見つけられるようにします**（macOS／Linux）：`IPRO_FLASH_TOOL` を設定するか、`<IntelProCube>` を `PATH` に追加します。
 
     === "macOS"
 
@@ -273,7 +315,7 @@ Project: ipro7ai_reef_demo  (platform/ipro7ai_reef_demo)
 
 | 作業 | macOS／Linux | Windows |
 |---|---|---|
-| ツールのインストール | システムのパッケージマネージャーに加え、INTELPRO から入手するツールチェーンと IntelProCube | Online Setup（ツールチェーン、CMake / Ninja / Python、IntelProCube、OpenOCD、VS Code Extension） |
+| ツールのインストール | システムのパッケージマネージャーに加え、INTELPRO から入手するツールチェーンと、GitHub からダウンロードする IntelProCube | Online Setup（ツールチェーン、CMake / Ninja / Python、IntelProCube、OpenOCD、VS Code Extension） |
 | ビルド | `make -C apps/<category>/<app>` または `./build_freertos.sh` | VS Code Extension の `IPRO: Build` |
 | 書き込み | IntelProCube のコマンドラインツール、または `./build_freertos.sh … flash` | `ipro_iot_tool.exe` |
 | コンソール | `screen` や `picocom` などのターミナルプログラム、`tools/serial_monitor.py` | PuTTY などのターミナルプログラム、または Extension の Serial Monitor |
@@ -289,7 +331,7 @@ Project: ipro7ai_reef_demo  (platform/ipro7ai_reef_demo)
 | 計算した SHA-256 がリリースページの値と異なる | ダウンロードが不完全、またはファイルが破損している | ファイルを削除して、もう一度ダウンロードします |
 | `No cmake found. Install cmake or provide bundled cmake at …` | `PATH` に `cmake` がなく、同梱の CMake もこのホストでは実行できない（Linux x86-64 専用） | [ビルドツールのインストール](#host-tools) のとおり CMake 3.15 以降をインストールします |
 | `riscv64-unknown-elf-gcc: No such file or directory` | ツールチェーンが `/opt/toolchain/riscv_ipro7/` にない | [RISC-V ツールチェーンのインストール](#toolchain) のとおり `CROSS_COMPILE` を設定します |
-| `Flash tool not found: ipro_iot_tool_macos` | `IPRO_FLASH_TOOL` が未設定で、IntelProCube が `PATH` にない | [IntelProCube のインストール](#intelprocube) の手順 3 を行います |
+| `Flash tool not found: ipro_iot_tool_macos` | `IPRO_FLASH_TOOL` が未設定で、IntelProCube が `PATH` にない | [IntelProCube のインストール](#intelprocube) の手順 4 を行います |
 | アダプターを接続しても新しいシリアルポートが現れない | 充電専用の USB ケーブル、またはドライバーがない | ケーブルを交換します。アダプターメーカーのドライバーをインストールします |
 | Linux でポートを開くと `Permission denied` になる | ポートのグループに属していない | `dialout`（または表示されたグループ）に参加して、ログインし直します |
 | macOS で `/dev/tty.*` を開くとターミナルが固まる | `tty.*` はキャリア検出を待つ | `/dev/cu.*` を使います |

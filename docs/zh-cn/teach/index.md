@@ -49,7 +49,7 @@ IPRO AI Teach 让 IPRO7AI Reef EVK 无需编写代码就能学会识别：用开
 | 电脑 | Apple 芯片的 Mac（macOS 11 及以上），或 Windows 64 位（x64） | ● | ● | ● |
 | IPRO AI Studio | 0.4.2，见[安装 IPRO AI Studio](install.md) | ● | ● | ● |
 | IPRO Debug Probe | 接 Reef 的调试接口 U6；仅在烧录固件、查看控制台时需要 | ● | ● | ● |
-| IntelProCube v0.6.3 | 命令行烧录工具；仅在烧录固件时需要 | ● | ● | ● |
+| IntelProCube 0.7.0.1 | 命令行烧录工具，从 [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) 下载；仅在烧录固件时需要 | ● | ● | ● |
 | Edge AI 固件文件 | IPRO Edge AI 套件的 `firmware/`，或用 SDK 自行构建，见[烧录 Edge AI 固件](firmware.md) | ● | ● | ● |
 
 传感器识别不需要外接传感器：固件内置 5 种模拟传感器，只需一块 Reef 和一条 USB-C 线就能走完整个流程。接入自己的传感器需要在固件中添加数据源，见[传感器识别](sensor.md#own-sensor)。

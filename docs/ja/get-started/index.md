@@ -17,7 +17,7 @@ migrate_from: []
 | コンソールケーブル（いずれか） | U6 用の SH1.0 6 ピンプラグ付き 3.3 V USB-UART 変換アダプター、またはピン順が逆のケーブルで U6 に接続する IPRO Debug Probe | アダプター：ご自身で用意、Debug Probe：INTELPRO |
 | ホスト | macOS または Linux（bash）では SDK のすべてのコマンドラインツールが動作します。Windows ではインストーラー、VS Code Extension、`build_freertos.ps1` を使います | — |
 | RISC-V ツールチェーン | GCC 14（Windows では GCC 13.1.1）、`riscv64-unknown-elf-gcc` | macOS／Linux：INTELPRO、Windows：Online Setup がインストール |
-| IntelProCube v0.6.3 | 書き込みツール：`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe` | macOS／Linux：INTELPRO、Windows：Online Setup がインストール |
+| IntelProCube 0.7.0.1 | 書き込みツール：`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe` | [GitHub Release](https://github.com/INTELPRO-INC/ipro-cube/releases)。Windows では Online Setup もインストールします |
 | SDK | `IPRO-SDK-V2.2.0.tar.gz` | [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0) |
 | オプション | OV5640 FLEX-24 カメラモジュール、microSD カード、8 Ω スピーカー（J_SPK に接続）、ヘッドホン | ご自身で用意。セルフテストのカメラ、スロット、スピーカーの項目がすべて確認できます |
 

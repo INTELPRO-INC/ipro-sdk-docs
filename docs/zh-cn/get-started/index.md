@@ -17,7 +17,7 @@ migrate_from: []
 | 控制台线（二选一） | 3.3 V 的 USB 转 UART 适配器，通过 SH1.0 6 pin 插头接 U6；或 IPRO Debug Probe，通过两端引脚顺序对调的排线接 U6 | 适配器自备；Debug Probe 向 INTELPRO 索取 |
 | 主机 | macOS 或 Linux（bash）可使用 SDK 全部的命令行工具；Windows 通过安装程序、VS Code Extension 与 `build_freertos.ps1` 开发 | — |
 | RISC-V 工具链 | GCC 14（Windows 为 GCC 13.1.1），`riscv64-unknown-elf-gcc` | macOS／Linux 版向 INTELPRO 索取；Windows 版由安装程序安装 |
-| IntelProCube v0.6.3 | 烧录工具：`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe` | macOS／Linux 版向 INTELPRO 索取；Windows 版由安装程序安装 |
+| IntelProCube 0.7.0.1 | 烧录工具：`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe` | [GitHub Release](https://github.com/INTELPRO-INC/ipro-cube/releases)；Windows 版也由安装程序安装 |
 | SDK | `IPRO-SDK-V2.2.0.tar.gz` | [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0) |
 | 可选 | OV5640 FLEX-24 摄像头模组、microSD 卡、8 Ω 扬声器（接 J_SPK）、耳机 | 自备；用于完成自检中的摄像头、卡槽与扬声器项目 |
 

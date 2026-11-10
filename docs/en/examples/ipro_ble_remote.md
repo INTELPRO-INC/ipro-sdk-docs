@@ -35,18 +35,19 @@ The Reef build uses boot2 and the A/B partition table `partition_cfg_2M_remote_a
     ```bash
     ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
         --port /dev/cu.usbserial-XXXX --baudrate 921600 \
-        --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
+        --boot2 chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin \
         --pt <SDK>/apps/bluetooth/ble/ipro_ble_remote/partition_cfg_2M_remote_ab.toml \
         --firmware <SDK>/apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin
     ```
 
     Check for `[All Success]`, then press SW2.
 
-3. **Run**: open the console at 115200 baud. The boot log starts with `[BOOT2] IPRO7 Boot2 v0.5.2`, then shows `[BLE] Advertising: IPRO-Remote`. Connect to `IPRO-Remote` with nRF Connect or `ipro_remote_demo.apk` on a phone; `reef status` at the console shows the board, camera and LED state.
+3. **Run**: open the console at 115200 baud. The boot log starts with `[BOOT2] IPRO7 Boot2 v0.6.0`, then shows `[BLE] Advertising: IPRO-Remote`. Connect to `IPRO-Remote` with nRF Connect or `ipro_remote_demo.apk` on a phone; `reef status` at the console shows the board, camera and LED state.
 
-4. **BLE OTA**: build the OTA package and push it over BLE (the host needs the Python package `bleak`):
+4. **BLE OTA**: build the OTA package and push it over BLE (the host needs the Python package `bleak`). The first line changes boot2 v0.5.2 in the V2.2.0 packaging script to v0.6.0, which IntelProCube ships from 0.7.0 on (on Linux use `sed -i` without `''`):
 
     ```bash
+    sed -i '' 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
     IPRO_FLASH_TOOL=<ICUBE>/ipro_iot_tool_macos sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
     python3 apps/bluetooth/ble/ipro_ble_remote/tools/reef_ota.py \
         apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_reef.xz.ota
@@ -798,12 +799,12 @@ make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef
 
 # --chip-variant IPRO7AI：Reef（QFN56）的 flash pin。工具失敗時也回傳 0，請看輸出有沒有 [All Success]
 ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI --port /dev/cu.usbmodemXXXX --baudrate 921600 \
-    --boot2 <IntelProCube>/chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
+    --boot2 <IntelProCube>/chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin \
     --pt apps/bluetooth/ble/ipro_ble_remote/partition_cfg_2M_remote_ab.toml \
     --firmware apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin
 ```
 
-開機訊息會先出現 `[BOOT2] IPRO7 Boot2 v0.5.2`，然後從 FW A（0x12000）啟動 App。
+開機訊息會先出現 `[BOOT2] IPRO7 Boot2 v0.6.0`，然後從 FW A（0x12000）啟動 App。
 
 #### BLE OTA
 
@@ -811,6 +812,7 @@ ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI --port /dev/cu.usbmo
 
 ```bash
 # 產生套件（需要 IntelProCube 命令列工具：IPRO_FLASH_TOOL 指向它，或放在 PATH 裡）
+sed -i '' 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
 IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
 # -> build_reef/build_out/ipro_ble_remote_reef.xz.ota（約 345 KB）
 

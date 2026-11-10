@@ -10,7 +10,7 @@ migrate_from:
 For FreeRTOS applications, boot2 performs the update: the running application writes an OTA package into the idle FW slot of the partition table and switches the active index; after a reboot, boot2 checks the package, unpacks it into the execution slot and boots it. The SDK ships the packaging tool `tools/create_ota.py` and a complete reference for updating the IPRO7AI Reef EVK over BLE: `ipro_ble_remote` with `defconfig_reef`, its A/B partition table, a packaging script, a Python sender and an Android app.
 
 !!! abstract "At a glance"
-    - Reference: `ipro_ble_remote` `defconfig_reef` + `partition_cfg_2M_remote_ab.toml` + boot2 v0.5.2 (from IntelProCube); the default `.config` has no OTA.
+    - Reference: `ipro_ble_remote` `defconfig_reef` + `partition_cfg_2M_remote_ab.toml` + boot2 v0.6.0 (from IntelProCube); the default `.config` has no OTA.
     - Package: `tools/create_ota.py` wraps IntelProCube's combined `whole_img.bin` into an `.xz.ota` (512-byte header + XZ payload); `make_reef_ota.sh` runs both steps for the Reef.
     - Senders: `tools/reef_ota.py` (Python, bleak) or `ipro_remote_demo.apk` (Android), over the BLE OTA service 0xFF60.
     - The IPRO6S FIN card updates over Wi-Fi with `ipro6s_ota <http url>` from `ipro7ai_reef_demo` `defconfig_wifi_ipro6s`.
@@ -39,7 +39,7 @@ According to the `ipro_ble_remote` README, boot2 erases the execution slot only 
 
 | Address | Partition | Size | Use |
 |---|---|---|---|
-| 0x000000 | boot2 | 64 KB | boot2 v0.5.2 from IntelProCube |
+| 0x000000 | boot2 | 64 KB | boot2 v0.6.0 from IntelProCube |
 | 0x010000 | PT0 / PT1 | 4 KB + 4 KB | Partition tables |
 | 0x012000 | FW A[0] | 824 KB | Execution slot; boot2 unpacks packages here |
 | 0x0E0000 | FW A[1] | 512 KB | OTA staging; the application writes the `.xz.ota` here |
@@ -49,7 +49,7 @@ According to the `ipro_ble_remote` README, boot2 erases the execution slot only 
 | 0x1FF000 | factory | 4 KB | |
 
 - This layout needs 2 MB of flash; `defconfig_reef` sets `CONFIG_IPRO7_FLASH_2M=y`.
-- The boot2 image is `chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin` in the IntelProCube directory; it is not part of the SDK package.
+- The boot2 image is `chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin` in the IntelProCube directory; it is not part of the SDK package.
 - The table has no boot2 entry on purpose: with one, the flash tool writes a boot2 header that the boot ROM does not load. Pass boot2 with `--boot2` instead.
 
 !!! danger "Do not run OTA with the standard partition table"
@@ -64,7 +64,7 @@ The input of `tools/create_ota.py` must be a combined image that starts with the
 #    exits 0 even on failure, so look for "PT Check: whole_img.bin" in its output)
 cd <ICUBE>
 ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI --build \
-    --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
+    --boot2 chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin \
     --pt <SDK>/apps/bluetooth/ble/ipro_ble_remote/partition_cfg_2M_remote_ab.toml \
     --firmware <SDK>/apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin
 
@@ -91,7 +91,7 @@ python3 <SDK>/tools/create_ota.py chips/ipro7/img_create_iot/whole_img.bin \
 | 96–511 | Reserved (0xFF); holds the signature block in signed packages |
 | 512 onward | Payload (XZ with a 32 KB dictionary, matching the boot2 decoder) |
 
-For the Reef, `apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh` runs both steps in one command and stamps the build time as the firmware version; see [Hands-on on the Reef](#hands-on).
+For the Reef, `apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh` runs both steps in one command and stamps the build time as the firmware version; see [Hands-on on the Reef](#hands-on). The V2.2.0 script names boot2 v0.5.2; change it to v0.6.0, which IntelProCube ships from 0.7.0 on, before you use it (the first line of step 4).
 
 ## BLE OTA (ipro_ble_remote) { #ble-ota }
 
@@ -187,18 +187,19 @@ Flash `ipro_ble_remote` once over UART, change the code, then install the new bu
     cd <ICUBE>
     ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
         --port /dev/cu.usbserial-XXXX --baudrate 921600 \
-        --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
+        --boot2 chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin \
         --pt <SDK>/apps/bluetooth/ble/ipro_ble_remote/partition_cfg_2M_remote_ab.toml \
         --firmware <SDK>/apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin
     ```
 
-    Look for `[All Success]` (the tool exits 0 even on failure), then press SW2 (RESET). At 115200 baud the console shows `[BOOT2] IPRO7 Boot2 v0.5.2`, then the application starts from FW A (0x12000) and prints `[OTA] Service ready`. Flashing details are in [Flashing & Serial Console](../get-started/flash-and-monitor.md).
+    Look for `[All Success]` (the tool exits 0 even on failure), then press SW2 (RESET). At 115200 baud the console shows `[BOOT2] IPRO7 Boot2 v0.6.0`, then the application starts from FW A (0x12000) and prints `[OTA] Service ready`. Flashing details are in [Flashing & Serial Console](../get-started/flash-and-monitor.md).
 
 4. **Change the code and build the OTA package**
 
-    Make any change, rebuild with the same `make` command, then package the new build (Linux: `ipro_iot_tool_linux`):
+    Make any change, rebuild with the same `make` command, then package the new build. The packaging script in SDK V2.2.0 names boot2 v0.5.2, while IntelProCube 0.7.0 and later ship v0.6.0, so the first line changes the version in the script to v0.6.0 (running it again does no harm). On Linux use `sed -i` (without `''`) and `ipro_iot_tool_linux`:
 
     ```bash
+    sed -i '' 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
     IPRO_FLASH_TOOL=<ICUBE>/ipro_iot_tool_macos \
         sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
     ```
@@ -227,10 +228,18 @@ Flash `ipro_ble_remote` once over UART, change the code, then install the new bu
     [OTA] CRC32 OK! Switching partition...
     [OTA] Ready to reboot
     [OTA] Rebooting...
-    [BOOT2] IPRO7 Boot2 v0.5.2
+    [BOOT2] IPRO7 Boot2 v0.6.0
+    ...
+    [BOOT2] OTA pending
+    [OTA] E0000->12000
+    [OTA] no eFuse key, package unverified
+    [OTA] XZ …
+    [OTA] …
+    [OTA] OK
+    [BOOT2] OTA ok
     ```
 
-    On the computer, `reef_ota.py` prints `verified, slot switched; rebooting`, then after the board reconnects `running: IPRO7AI Reef; camera …; SD …; build <date> <time>`. A build time later than the one printed before the update means the new image is running.
+    `[BOOT2] OTA ok` means boot2 checked the package's SHA256, unpacked it into FW A and is starting the new image; `no eFuse key, package unverified` means the chip has no signing key in eFuse, so the signature is not checked. On the computer, `reef_ota.py` prints `verified, slot switched; rebooting`, then after the board reconnects `running: IPRO7AI Reef; camera …; SD …; build <date> <time>`. That build time comes from `src/board/reef_hw.c` and changes only when that file is recompiled, so confirm the update with `[BOOT2] OTA ok` on the console.
 
 </div>
 

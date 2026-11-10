@@ -13,7 +13,7 @@ At the end of this tutorial the IPRO7AI Reef EVK runs the SDK's GATT reference a
 
 - An IPRO7AI Reef EVK with SW7 on CAM and SW8 on PWR, powered from USB-C, with an IPRO Debug Probe or a 3.3 V USB-UART cable on U6 (115200 8N1; wiring in [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)). An OV5640 FLEX-24 camera module and a microSD card are optional, for the photo feature.
 - [First FreeRTOS Application](../get-started/first-app-freertos.md) done: the toolchain is in `/opt/toolchain/riscv_ipro7/` and `make` builds SDK apps.
-- IntelProCube v0.6.3, obtained separately: the command-line flasher `ipro_iot_tool_macos`, `ipro_iot_tool_linux` or `ipro_iot_tool.exe`, and the boot2 image that comes with it, `chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin`.
+- IntelProCube 0.7.0.1, installed as in [Set Up Your Host](../get-started/environment.md#intelprocube): the command-line flasher `ipro_iot_tool_macos`, `ipro_iot_tool_linux` or `ipro_iot_tool.exe`, and the boot2 image that comes with it, `chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin`.
 - A phone with either:
     - Android: the demo app shipped in the app directory, `apps/bluetooth/ble/ipro_ble_remote/ipro_remote_demo.apk`.
     - Android or iOS: a BLE tool app that reads and writes GATT characteristics, such as nRF Connect or LightBlue. The steps below use such a tool.
@@ -43,7 +43,7 @@ At the end of this tutorial the IPRO7AI Reef EVK runs the SDK's GATT reference a
         ```bash
         ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
             --port /dev/cu.usbserial-XXXX --baudrate 921600 \
-            --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
+            --boot2 chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin \
             --pt <SDK>/apps/bluetooth/ble/ipro_ble_remote/partition_cfg_2M_remote_ab.toml \
             --firmware <SDK>/apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin
         ```
@@ -53,7 +53,7 @@ At the end of this tutorial the IPRO7AI Reef EVK runs the SDK's GATT reference a
         ```bash
         ./ipro_iot_tool_linux --chipname ipro7 --chip-variant IPRO7AI \
             --port /dev/ttyUSB0 --baudrate 921600 \
-            --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
+            --boot2 chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin \
             --pt <SDK>/apps/bluetooth/ble/ipro_ble_remote/partition_cfg_2M_remote_ab.toml \
             --firmware <SDK>/apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin
         ```
@@ -63,7 +63,7 @@ At the end of this tutorial the IPRO7AI Reef EVK runs the SDK's GATT reference a
         ```powershell
         .\ipro_iot_tool.exe --chipname ipro7 --chip-variant IPRO7AI `
             --port COM5 --baudrate 921600 `
-            --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin `
+            --boot2 chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin `
             --pt <SDK>\apps\bluetooth\ble\ipro_ble_remote\partition_cfg_2M_remote_ab.toml `
             --firmware <SDK>\apps\bluetooth\ble\ipro_ble_remote\build_reef\build_out\ipro_ble_remote_IPRO7.bin
         ```
@@ -73,7 +73,7 @@ At the end of this tutorial the IPRO7AI Reef EVK runs the SDK's GATT reference a
 4. **Open the console and reset.** Open the U6 port at 115200 baud (see [Flashing & Serial Console](../get-started/flash-and-monitor.md)) and tap SW2 (RESET). boot2 prints first, then the application (the level and time fields at the start of each line are left out):
 
     ```text
-    [BOOT2] IPRO7 Boot2 v0.5.2
+    [BOOT2] IPRO7 Boot2 v0.6.0
     ...
     REMOTE_APP: [BLE] Initialized
     REMOTE_APP: [BLE] All services initialized
@@ -146,11 +146,12 @@ At the end of this tutorial the IPRO7AI Reef EVK runs the SDK's GATT reference a
 
     Disconnect the phone first: the Reef build allows one connection only (`CONFIG_BT_CONN=1`).
 
-11. **Build an OTA package.** Make any small change (for example, change the beep to `reef_hw_tone(2000, 150, 30)`), rebuild (step 1), then package the build as a boot2 OTA package. The script has IntelProCube build the combined image and compresses it with the SDK's `tools/create_ota.py`:
+11. **Build an OTA package.** Make any small change (for example, change the beep to `reef_hw_tone(2000, 150, 30)`), rebuild (step 1), then package the build as a boot2 OTA package. The script has IntelProCube build the combined image and compresses it with the SDK's `tools/create_ota.py`. The packaging script in SDK V2.2.0 names boot2 v0.5.2, while IntelProCube 0.7.0 and later ship boot2 v0.6.0, so the first line changes the version in the script to v0.6.0 (running it again does no harm):
 
     === "macOS"
 
         ```bash
+        sed -i '' 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos \
             sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         ```
@@ -158,6 +159,7 @@ At the end of this tutorial the IPRO7AI Reef EVK runs the SDK's GATT reference a
     === "Linux"
 
         ```bash
+        sed -i 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_linux \
             sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         ```
@@ -178,10 +180,10 @@ At the end of this tutorial the IPRO7AI Reef EVK runs the SDK's GATT reference a
     ipro_ble_remote_reef.xz.ota: <bytes> bytes, CRC32 <value>, <payload> bytes/packet
     sent in <seconds> s (<rate> KB/s)
     verified, slot switched; rebooting
-    running: <new build time>
+    running: <camera, SD card and build time>
     ```
 
-    Meanwhile the board's console prints `[OTA] START: …`, `[OTA] CRC32 OK! Switching partition...` and `[OTA] Ready to reboot`, and `[BOOT2] IPRO7 Boot2 v0.5.2` appears again on the restart: boot2 checks the package's SHA256 and unpacks it into FW A before it starts the app. INTELPRO measured 13 to 17 s for a 345 KB package on macOS with MTU 247. The shipped Android demo app can send the same `.xz.ota` package.
+    Meanwhile the board's console prints `[OTA] START: …`, `[OTA] CRC32 OK! Switching partition...` and `[OTA] Ready to reboot`, and on the restart boot2 prints `[BOOT2] IPRO7 Boot2 v0.6.0` and `[BOOT2] OTA pending`, checks the package's SHA256, unpacks it into FW A and prints `[BOOT2] OTA ok` before it starts the app. On a chip without a signing key in eFuse, an extra line `[OTA] no eFuse key, package unverified` says that the signature is not checked. The build time after `running:` comes from `src/board/reef_hw.c`, so it does not change when you only edit `remote_app.c`. INTELPRO measured 13 to 17 s for a 345 KB package on macOS with MTU 247. The shipped Android demo app can send the same `.xz.ota` package.
 
 </div>
 
@@ -193,7 +195,7 @@ At the end of this tutorial the IPRO7AI Reef EVK runs the SDK's GATT reference a
 - The console's advertising line shows `IPRO-Hello`, and so does the phone's scan list.
 - The board beeps when the phone connects, and the console prints `Connected! Peer: …`.
 - The LED, key and UART operations from step 6 still work.
-- The final `running:` line from `reef_ota.py` shows the new build time, and on the next connection you hear the beep you changed in step 11.
+- The console prints `[BOOT2] OTA ok` on the restart, and on the next connection you hear the beep you changed in step 11.
 
 The `Device Name: 'IPRO-Remote'` in the `main.c` boot banner is a fixed string and does not affect the advertised name.
 
@@ -239,6 +241,7 @@ The Reef build adds two services: OTA `0xFF60` (control `0xFF61`, data `0xFF62`,
 | The build fails on a warning | The app compiles with `-Werror` | Keep `#include "reef_hw.h"` inside the `CONFIG_IPRO7AI_REEF` block and the call inside the function |
 | `make_reef_ota.sh` prints `IntelProCube tool not found` | `IPRO_FLASH_TOOL` is unset and the flasher is not on PATH | Set `IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos` (or `_linux`) |
 | `make_reef_ota.sh` prints `build first: …` | There is no build in `build_reef/` yet | Run step 1 first |
+| `make_reef_ota.sh` prints `No such file or directory: …boot2_v0.5.2…` and `IntelProCube did not build whole_img.bin` | The script still names boot2 v0.5.2, which IntelProCube no longer ships from 0.7.0 on | Run the `sed` line of step 11, then package again |
 | `reef_ota.py` prints `IPRO-Remote not found` | The board was renamed, a phone is connected, or the computer's Bluetooth is off or not allowed | Set `REMOTE_NAME=IPRO-Hello`; disconnect the phone; on macOS, allow the terminal to use Bluetooth |
 | `reef_ota.py` prints `device error …` | The board rejected the package or a write failed | Check that you sent the `.xz.ota`; read the `[OTA]` lines on the console |
 | The board does not come back after OTA | When boot2 rejects a package it stays in its USB rescue mode | Enter download mode and reflash with the command from step 3 |

@@ -12,7 +12,7 @@ Two IPRO7AI Reef EVK boards run the same `ipro_throughput_test` firmware: one is
 ## Prerequisites { #prerequisites }
 
 - Two IPRO7AI Reef EVK boards, each powered from USB-C with SW8 on PWR, and each with an IPRO Debug Probe (or a 3.3 V USB-UART cable) on U6; wiring in [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md).
-- [First FreeRTOS Application](../get-started/first-app-freertos.md) done, and the IntelProCube v0.6.3 command-line flasher at hand (obtained separately).
+- [First FreeRTOS Application](../get-started/first-app-freertos.md) done, and the IntelProCube 0.7.0.1 command-line flasher installed as in [Set Up Your Host](../get-started/environment.md#intelprocube).
 - One serial terminal per board in which you can type commands (115200 8N1; see [Flashing & Serial Console](../get-started/flash-and-monitor.md)).
 
 !!! tip "Tell the two serial ports apart"

@@ -38,7 +38,8 @@ Built and checked from the package before release: the 36 IPRO7 FreeRTOS applica
 
 **Not included**
 
-- The IntelProCube flash tool and the RISC-V toolchain: contact INTELPRO.
+- The IntelProCube flash tool: download 0.7.0.1 from [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases); see [Set Up Your Host](../get-started/environment.md#intelprocube).
+- The RISC-V toolchain: contact INTELPRO.
 - IPRO AI Studio, which includes the model converter: download it from [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest).
 - An IPRO6S BLE controller library and BLE / BR/EDR applications for IPRO6S; the IPRO6S applications are Wi-Fi only.
 - Matter; Thread for FreeRTOS applications (Thread is available under Zephyr).

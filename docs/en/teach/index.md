@@ -49,7 +49,7 @@ Voiceprint recognition does not train on the computer: when you enroll someone, 
 | Computer | macOS 11 or later on Apple silicon, or 64-bit Windows (x64) | ● | ● | ● |
 | IPRO AI Studio | 0.4.2; see [Install IPRO AI Studio](install.md) | ● | ● | ● |
 | IPRO Debug Probe | On the Reef's debug connector U6; needed only to flash firmware and read the console | ● | ● | ● |
-| IntelProCube v0.6.3 | Command-line flash tool; needed only to flash firmware | ● | ● | ● |
+| IntelProCube 0.7.0.1 | Command-line flash tool, downloaded from [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases); needed only to flash firmware | ● | ● | ● |
 | Edge AI firmware files | `firmware/` in the IPRO Edge AI package, or built from the SDK; see [Flash the Edge AI Firmware](firmware.md) | ● | ● | ● |
 
 Sensor recognition needs no external sensor: the firmware has five simulated sensors, so one Reef and one USB-C cable take you through the whole flow. To use your own sensor, add a data source to the firmware; see [Sensor Recognition](sensor.md#own-sensor).

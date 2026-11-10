@@ -11,7 +11,7 @@ description: 從空目錄開始，在 IPRO7AI Reef EVK 上寫出自己的 FreeRT
 
 - IPRO7AI Reef EVK，SW7 在 CAM、SW8 在 PWR，以 USB-C 供電；U6 接 IPRO Debug Probe 或 3.3 V USB 轉 UART 線（接法見 [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)）。
 - 已完成[第一個 FreeRTOS 應用](../get-started/first-app-freertos.md)：工具鏈可用，`make -C apps/platform/ipro7ai_reef_demo` 能建置成功，也燒錄過一次。
-- IntelProCube v0.6.3 命令列燒錄工具（`ipro_iot_tool_macos`、`ipro_iot_tool_linux` 或 `ipro_iot_tool.exe`），需另行取得。燒錄與主控台的共通步驟見[燒錄與序列埠](../get-started/flash-and-monitor.md)。
+- IntelProCube 0.7.0.1 命令列燒錄工具（`ipro_iot_tool_macos`、`ipro_iot_tool_linux` 或 `ipro_iot_tool.exe`），安裝方式見[準備開發環境](../get-started/environment.md#intelprocube)。燒錄與主控台的共通步驟見[燒錄與序列埠](../get-started/flash-and-monitor.md)。
 - 一個可輸入指令的序列埠終端程式，設為 115200 baud、8N1。
 
 所有命令都在 SDK 根目錄（下文以 `<SDK>` 表示）執行。

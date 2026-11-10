@@ -132,7 +132,7 @@ IPRO7 是 INTELPRO 的 2.4 GHz 低功耗無線 SoC：RISC-V RV32IMAFC 192 MHz �
 | BLE | Zephyr v4.4.0 Host（原始碼）搭配 IPRO BLE 控制器（預編譯函式庫，16 個 IPRO7 版本：`link1_periph`／`link1`／`link2`／`link4` × `bt52`／`bt54_iso2` × 除錯／`_release`） |
 | IEEE 802.15.4／Thread | 僅 Zephyr RTOS：IEEE 802.15.4 驅動與 OpenThread |
 | Matter、Zigbee | 未包含於 V2.2.0，請洽 INTELPRO。 |
-| 燒錄 | IntelProCube v0.6.3 命令列工具（另行取得）：`--chipname ipro7`；Reef 等 IPRO7AI 板用 `--chip-variant IPRO7AI` |
+| 燒錄 | IntelProCube 0.7.0.1 命令列工具（[GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases)）：`--chipname ipro7`；Reef 等 IPRO7AI 板用 `--chip-variant IPRO7AI` |
 
 ## 搭載 IPRO7 的開發板 { #boards }
 

@@ -11,7 +11,7 @@ At the end of this tutorial the IPRO7AI Reef EVK with an OV5640 camera shows up 
 
 - An IPRO7AI Reef EVK, an OV5640 FLEX-24 camera module and a USB-C data cable to your computer (it powers the board and carries the video).
 - An IPRO Debug Probe or a 3.3 V USB-UART cable on U6 (115200 8N1; wiring in [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)) for flashing and the console.
-- [First FreeRTOS Application](../get-started/first-app-freertos.md) done, and the IntelProCube v0.6.3 command-line flasher at hand (obtained separately).
+- [First FreeRTOS Application](../get-started/first-app-freertos.md) done, and the IntelProCube 0.7.0.1 command-line flasher installed as in [Set Up Your Host](../get-started/environment.md#intelprocube).
 - An app that opens a USB camera: QuickTime Player on macOS, the Camera app on Windows, or any V4L2 program such as `ffplay` on Linux. The host uses the operating system's built-in UVC driver; INTELPRO has verified this on macOS.
 
 ## Steps { #steps }

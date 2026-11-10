@@ -14,7 +14,7 @@ FreeRTOS applications are flashed over UART0 with the IntelProCube command-line 
 
 ## Prerequisites { #prerequisites }
 
-- IntelProCube v0.6.3: `ipro_iot_tool_macos`, `ipro_iot_tool_linux` or `ipro_iot_tool.exe`; see [Set Up Your Host](environment.md#intelprocube).
+- IntelProCube 0.7.0.1: `ipro_iot_tool_macos`, `ipro_iot_tool_linux` or `ipro_iot_tool.exe`; see [Set Up Your Host](environment.md#intelprocube).
 - A built image: `apps/<category>/<app>/build/build_out/<app>_IPRO7.bin`, or `build_<name>/build_out/` when built with `DEFCONFIG=defconfig_<name>`.
 - A console cable on U6; see [Set the switches and wire the board](first-app-freertos.md#connect). Ports are written `/dev/cu.usbserial-XXXX` (macOS), `/dev/ttyUSB0` (Linux) and `COM5` (Windows).
 
@@ -49,6 +49,9 @@ Before flashing, the IPRO7AI must be in the boot ROM's download mode. The consol
 | `reboot_dl` | type `reboot_dl` at the console; it prints `reboot to download mode` | the board runs SDK firmware with a shell; `build_freertos.sh flash` uses this method |
 | Auto-download cable | the adapter's DTR goes to U6 pin 5 (BOOT) and RTS to pin 6 (RESET); on the board each passes 1 kΩ to GPIO41 and the reset pin, so such a cable enters download mode without the buttons | adapters with DTR and RTS |
 | IPRO Debug Probe | send control keywords on the probe port ending in `02`, see below | the Debug Probe is wired to U6 |
+
+!!! tip "IntelProCube 0.7.0.1 enters download mode by itself"
+    Before it flashes, the tool sends `reboot_dl` on the serial port; with an IPRO Debug Probe it also puts the chip in download mode through the probe's BOOT and RESET lines, and resets the chip when flashing is done. INTELPRO checked this with 0.7.0.1 on a Reef through the Debug Probe: no buttons or control keywords were needed, and it took about 8 s. With a plain USB-to-UART adapter and firmware without a shell, use the buttons. The manual steps below are for when the tool cannot handshake.
 
 Download mode with the Debug Probe (macOS shown, from the SDK root):
 
@@ -122,6 +125,8 @@ Download mode with the Debug Probe (macOS shown, from the SDK root):
     [...] - Baudrate is 921600
     [...] - Firmware is <SDK>/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin
     ...
+    [...] - shake hand success
+    ...
     [...] - flash jedec id: ef401500
     ...
     [...] - Verify success
@@ -168,14 +173,14 @@ The Reef configuration of `ipro_ble_remote` supports BLE OTA, which needs boot2 
     cd <IntelProCube>
     ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
         --port /dev/cu.usbserial-XXXX --baudrate 921600 \
-        --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
+        --boot2 chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin \
         --pt <SDK>/apps/bluetooth/ble/ipro_ble_remote/partition_cfg_2M_remote_ab.toml \
         --firmware <SDK>/apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin
     ```
 
     The output ends with `[All Success]`.
 
-3. **Check:** press SW2. The console at 115200 baud shows the boot2 banner `[BOOT2] IPRO7 Boot2 v0.5.2`, then the application logs `[BLE] Advertising: IPRO-Remote`.
+3. **Check:** press SW2. The console at 115200 baud shows the boot2 banner `[BOOT2] IPRO7 Boot2 v0.6.0`, then the application logs `[BLE] Advertising: IPRO-Remote`.
 
 </div>
 

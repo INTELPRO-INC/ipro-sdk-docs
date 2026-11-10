@@ -12,7 +12,7 @@ IPRO7AI Reef EVK 通过 FIN 卡联网：FIN 卡是插在 microSD 卡座（CARD1�
 - IPRO7AI Reef EVK、IPRO6S FIN 卡、OV5640 FLEX-24 摄像头模组。
 - FIN 卡上要有 Wi-Fi 固件：IPRO6S 的 `ipro6_if_wifi`，用 `defconfig_ipro6_sdio` 构建（SDIO 版本，见步骤 2）。
 - U6 接 IPRO Debug Probe 或 3.3 V USB 转 UART 线（115200 8N1，接法见 [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)）。
-- 已完成[第一个 FreeRTOS 应用](../get-started/first-app-freertos.md)，并已获取 IntelProCube v0.6.3 命令行烧录工具（需另行获取）。
+- 已完成[第一个 FreeRTOS 应用](../get-started/first-app-freertos.md)，并已按[准备开发环境](../get-started/environment.md#intelprocube)安装 IntelProCube 0.7.0.1 命令行烧录工具。
 - 一台无线接入点（SSID 和密码），以及一台连接在同一网络上、装有 VLC 或 `ffplay` 的电脑。
 
 !!! info "FIN 卡的首次烧录"

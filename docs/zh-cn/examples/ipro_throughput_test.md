@@ -122,7 +122,7 @@ Slave (Peripheral)                    Master (Central)
 
 - Two IPRO7 boards: IPRO7 EVB, or IPRO7AI Reef with an IPRO Debug Probe on each
 - RISC-V cross-compiler (`/opt/toolchain/riscv_ipro7/`)
-- IntelProCube v0.6.3 (`ipro_iot_tool_macos`) for flashing
+- IntelProCube 0.7.0.1 (`ipro_iot_tool_macos`) for flashing
 - macOS or Linux host
 
 Each Debug Probe enumerates as `IPRO7 CMSIS_DAP` with two CDC ports. The one whose name

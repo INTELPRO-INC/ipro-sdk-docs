@@ -12,7 +12,7 @@ migrate_from:
 ## 前提条件 { #prerequisites }
 
 - 2 枚の IPRO7AI Reef EVK ボード。それぞれ SW8 を PWR にして USB-C から給電し、U6 に IPRO Debug Probe（または 3.3 V USB-UART ケーブル）を接続します。配線は [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md) を参照してください。
-- [最初の FreeRTOS アプリケーション](../get-started/first-app-freertos.md)を完了し、IntelProCube v0.6.3 のコマンドライン書き込みツール（別途入手）を用意していること。
+- [最初の FreeRTOS アプリケーション](../get-started/first-app-freertos.md)を完了し、[開発環境の準備](../get-started/environment.md#intelprocube)に従って IntelProCube 0.7.0.1 のコマンドライン書き込みツールをインストールしていること。
 - ボードごとに、コマンドを入力できるシリアルターミナルを 1 つ（115200 8N1。[書き込みとシリアルコンソール](../get-started/flash-and-monitor.md)を参照）。
 
 !!! tip "2 つのシリアルポートを区別する"

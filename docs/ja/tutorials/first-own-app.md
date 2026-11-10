@@ -11,7 +11,7 @@ description: 空のディレクトリから IPRO7AI Reef EVK 用の独自 FreeRT
 
 - SW7 を CAM、SW8 を PWR にし、USB-C から給電した IPRO7AI Reef EVK。U6 に IPRO Debug Probe または 3.3 V USB-UART ケーブルを接続します（配線は [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md) を参照）。
 - [最初の FreeRTOS アプリケーション](../get-started/first-app-freertos.md)を完了していること。ツールチェーンが動作し、`make -C apps/platform/ipro7ai_reef_demo` でビルドでき、ボードへの書き込みを一度行っています。
-- 別途入手した IntelProCube v0.6.3 のコマンドライン書き込みツール（`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、または `ipro_iot_tool.exe`）。すべてのアプリケーションに共通する書き込みとコンソールの手順は[書き込みとシリアルコンソール](../get-started/flash-and-monitor.md)にあります。
+- IntelProCube 0.7.0.1 のコマンドライン書き込みツール（`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、または `ipro_iot_tool.exe`）。インストール方法は[開発環境の準備](../get-started/environment.md#intelprocube)を参照してください。すべてのアプリケーションに共通する書き込みとコンソールの手順は[書き込みとシリアルコンソール](../get-started/flash-and-monitor.md)にあります。
 - 文字を入力できるシリアルターミナル（115200 ボー、8N1 に設定）。
 
 すべてのコマンドは SDK のルート（以下 `<SDK>` と表記）から実行します。

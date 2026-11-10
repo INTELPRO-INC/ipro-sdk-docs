@@ -72,7 +72,7 @@ Reef 的控制台是 UART0（GPIO20 TX／GPIO21 RX），由调试排座 U6 引�
 |---|---|
 | `[XTAL] capcode <启动值> -> <设定值>` | 已应用 `CONFIG_IPRO7_XTAL_CAPCODE` 的晶体微调；Reef 未指定时默认为 95 |
 | `[PSRAM] WARNING: init failed` | 应用启用了 `CONFIG_USE_PSRAM`，但 PSRAM 初始化失败 |
-| `[BOOT2] IPRO7 Boot2 v0.5.2` | 镜像以 boot2 方式烧录（例如 `ipro_ble_remote` 的 Reef OTA 版本），boot2 先运行，再启动应用 |
+| `[BOOT2] IPRO7 Boot2 v0.6.0` | 镜像以 boot2 方式烧录（例如 `ipro_ble_remote` 的 Reef OTA 版本），boot2 先运行，再启动应用 |
 
 ## 进入下载模式 { #download-mode }
 

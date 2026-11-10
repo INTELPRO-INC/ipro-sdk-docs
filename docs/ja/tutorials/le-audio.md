@@ -20,7 +20,7 @@ migrate_from:
 ## 前提条件 { #prerequisites }
 
 - SW8 を PWR にし、USB-C から給電した IPRO7AI Reef EVK。U6 に IPRO Debug Probe または 3.3 V USB-UART ケーブルを接続します（115200 8N1。配線は [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md) を参照）。J2 のヘッドホンは任意です。
-- [最初の FreeRTOS アプリケーション](../get-started/first-app-freertos.md)を完了し、IntelProCube v0.6.3 のコマンドライン書き込みツール（別途入手）を用意していること。
+- [最初の FreeRTOS アプリケーション](../get-started/first-app-freertos.md)を完了し、[開発環境の準備](../get-started/environment.md#intelprocube)に従って IntelProCube 0.7.0.1 のコマンドライン書き込みツールをインストールしていること。
 - コマンドを入力できるシリアルターミナル（[書き込みとシリアルコンソール](../get-started/flash-and-monitor.md)を参照）。
 - LE Audio に対応し、LE Audio を有効にした Android スマートフォン。アプリケーションの README に記録されているスマートフォンは、Android 17 を搭載した Pixel 10 Pro です。
 

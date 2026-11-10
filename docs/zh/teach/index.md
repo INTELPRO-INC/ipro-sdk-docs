@@ -49,7 +49,7 @@ IPRO AI Teach 讓 IPRO7AI Reef EVK 不寫程式就學會辨識：用板子自己
 | 電腦 | Apple 晶片的 Mac（macOS 11 以上），或 Windows 64 位元（x64） | ● | ● | ● |
 | IPRO AI Studio | 0.4.2，見[安裝 IPRO AI Studio](install.md) | ● | ● | ● |
 | IPRO Debug Probe | 接 Reef 的除錯排座 U6；只在燒錄韌體、看主控台時需要 | ● | ● | ● |
-| IntelProCube v0.6.3 | 命令列燒錄工具；只在燒錄韌體時需要 | ● | ● | ● |
+| IntelProCube 0.7.0.1 | 命令列燒錄工具，從 [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) 下載；只在燒錄韌體時需要 | ● | ● | ● |
 | Edge AI 韌體檔 | IPRO Edge AI 套件的 `firmware/`，或以 SDK 自行建置，見[燒錄 Edge AI 韌體](firmware.md) | ● | ● | ● |
 
 感測器辨識不需要外接感測器：韌體內建 5 種模擬感測器，只要一片 Reef 與一條 USB-C 線就能走完整個流程。接上自己的感測器需要在韌體加入資料來源，見[感測器辨識](sensor.md#own-sensor)。

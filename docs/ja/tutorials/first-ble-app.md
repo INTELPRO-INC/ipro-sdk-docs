@@ -13,7 +13,7 @@ migrate_from:
 
 - SW7 を CAM、SW8 を PWR にし、USB-C から給電した IPRO7AI Reef EVK。U6 に IPRO Debug Probe または 3.3 V USB-UART ケーブルを接続します（115200 8N1。配線は [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md) を参照）。写真撮影機能を使う場合は、OV5640 FLEX-24 カメラモジュールと microSD カードを用意します（任意）。
 - [最初の FreeRTOS アプリケーション](../get-started/first-app-freertos.md)を完了していること。ツールチェーンが `/opt/toolchain/riscv_ipro7/` にあり、`make` で SDK のアプリケーションをビルドできます。
-- 別途入手した IntelProCube v0.6.3。コマンドライン書き込みツール `ipro_iot_tool_macos`、`ipro_iot_tool_linux`、または `ipro_iot_tool.exe` と、付属の boot2 イメージ `chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin` を使います。
+- [開発環境の準備](../get-started/environment.md#intelprocube)に従ってインストールした IntelProCube 0.7.0.1。コマンドライン書き込みツール `ipro_iot_tool_macos`、`ipro_iot_tool_linux`、または `ipro_iot_tool.exe` と、付属の boot2 イメージ `chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin` を使います。
 - 次のいずれかを用意したスマートフォン。
     - Android：アプリケーションディレクトリに含まれるデモアプリ `apps/bluetooth/ble/ipro_ble_remote/ipro_remote_demo.apk`。
     - Android または iOS：nRF Connect や LightBlue など、GATT キャラクタリスティックを読み書きできる BLE ツールアプリ。以下の手順ではこのようなツールを使います。
@@ -43,7 +43,7 @@ migrate_from:
         ```bash
         ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
             --port /dev/cu.usbserial-XXXX --baudrate 921600 \
-            --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
+            --boot2 chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin \
             --pt <SDK>/apps/bluetooth/ble/ipro_ble_remote/partition_cfg_2M_remote_ab.toml \
             --firmware <SDK>/apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin
         ```
@@ -53,7 +53,7 @@ migrate_from:
         ```bash
         ./ipro_iot_tool_linux --chipname ipro7 --chip-variant IPRO7AI \
             --port /dev/ttyUSB0 --baudrate 921600 \
-            --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
+            --boot2 chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin \
             --pt <SDK>/apps/bluetooth/ble/ipro_ble_remote/partition_cfg_2M_remote_ab.toml \
             --firmware <SDK>/apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin
         ```
@@ -63,7 +63,7 @@ migrate_from:
         ```powershell
         .\ipro_iot_tool.exe --chipname ipro7 --chip-variant IPRO7AI `
             --port COM5 --baudrate 921600 `
-            --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin `
+            --boot2 chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin `
             --pt <SDK>\apps\bluetooth\ble\ipro_ble_remote\partition_cfg_2M_remote_ab.toml `
             --firmware <SDK>\apps\bluetooth\ble\ipro_ble_remote\build_reef\build_out\ipro_ble_remote_IPRO7.bin
         ```
@@ -73,7 +73,7 @@ migrate_from:
 4. **コンソールを開いてリセットします。** U6 のポートを 115200 ボーで開き（[書き込みとシリアルコンソール](../get-started/flash-and-monitor.md)を参照）、SW2（RESET）を短く押します。最初に boot2 が、続いてアプリケーションが出力します（各行の先頭にあるレベルと時刻のフィールドは省略しています）。
 
     ```text
-    [BOOT2] IPRO7 Boot2 v0.5.2
+    [BOOT2] IPRO7 Boot2 v0.6.0
     ...
     REMOTE_APP: [BLE] Initialized
     REMOTE_APP: [BLE] All services initialized
@@ -146,11 +146,12 @@ migrate_from:
 
     先にスマートフォンの接続を切断してください。Reef ビルドは 1 つの接続しか許可しません（`CONFIG_BT_CONN=1`）。
 
-11. **OTA パッケージをビルドします。** 小さな変更を加え（例：ビープ音を `reef_hw_tone(2000, 150, 30)` に変更）、再ビルド（手順 1）してから、ビルド結果を boot2 OTA パッケージにまとめます。スクリプトは IntelProCube に結合イメージを作成させ、SDK の `tools/create_ota.py` で圧縮します。
+11. **OTA パッケージをビルドします。** 小さな変更を加え（例：ビープ音を `reef_hw_tone(2000, 150, 30)` に変更）、再ビルド（手順 1）してから、ビルド結果を boot2 OTA パッケージにまとめます。スクリプトは IntelProCube に結合イメージを作成させ、SDK の `tools/create_ota.py` で圧縮します。SDK V2.2.0 のパッケージ化スクリプトは boot2 v0.5.2 のパスを指定していますが、IntelProCube 0.7.0 以降に付属するのは boot2 v0.6.0 です。そのため 1 行目でスクリプト内のバージョンを v0.6.0 に書き換えます（もう一度実行しても影響はありません）。
 
     === "macOS"
 
         ```bash
+        sed -i '' 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos \
             sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         ```
@@ -158,6 +159,7 @@ migrate_from:
     === "Linux"
 
         ```bash
+        sed -i 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_linux \
             sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         ```
@@ -178,10 +180,10 @@ migrate_from:
     ipro_ble_remote_reef.xz.ota: <バイト数> bytes, CRC32 <値>, <ペイロード> bytes/packet
     sent in <秒数> s (<速度> KB/s)
     verified, slot switched; rebooting
-    running: <新しいビルド日時>
+    running: <カメラ、SD カード、ビルド日時>
     ```
 
-    その間、ボードのコンソールには `[OTA] START: …`、`[OTA] CRC32 OK! Switching partition...`、`[OTA] Ready to reboot` が表示され、再起動時に再び `[BOOT2] IPRO7 Boot2 v0.5.2` が表示されます。boot2 はパッケージの SHA256 を確認し、FW A に展開してからアプリケーションを起動します。INTELPRO の測定では、macOS、MTU 247 で 345 KB のパッケージの送信に 13～17 秒かかりました。付属の Android デモアプリでも同じ `.xz.ota` パッケージを送信できます。
+    その間、ボードのコンソールには `[OTA] START: …`、`[OTA] CRC32 OK! Switching partition...`、`[OTA] Ready to reboot` が表示され、再起動時に boot2 が `[BOOT2] IPRO7 Boot2 v0.6.0` と `[BOOT2] OTA pending` を表示し、パッケージの SHA256 を確認して FW A に展開し、`[BOOT2] OTA ok` を表示してからアプリケーションを起動します。チップの eFuse に署名鍵が書き込まれていない場合は `[OTA] no eFuse key, package unverified` という行も表示されます。これは署名を検証しないという意味です。`running:` のビルド日時は `src/board/reef_hw.c` から取られるため、`remote_app.c` だけを変更した場合は変わりません。INTELPRO の測定では、macOS、MTU 247 で 345 KB のパッケージの送信に 13～17 秒かかりました。付属の Android デモアプリでも同じ `.xz.ota` パッケージを送信できます。
 
 </div>
 
@@ -193,7 +195,7 @@ migrate_from:
 - コンソールのアドバタイズの行に `IPRO-Hello` と表示され、スマートフォンのスキャン一覧にも同じ名前が表示されます。
 - スマートフォンが接続するとボードがビープ音を鳴らし、コンソールに `Connected! Peer: …` と表示されます。
 - 手順 6 の LED、キー、UART の操作が引き続き動作します。
-- `reef_ota.py` の最後の `running:` 行に新しいビルド日時が表示され、次に接続したときに手順 11 で変更したビープ音が聞こえます。
+- 再起動時にコンソールに `[BOOT2] OTA ok` が表示され、次に接続したときに手順 11 で変更したビープ音が聞こえます。
 
 `main.c` の起動バナーにある `Device Name: 'IPRO-Remote'` は固定文字列で、アドバタイズ名には影響しません。
 
@@ -239,6 +241,7 @@ Reef ビルドでは 2 つのサービスが追加されます。OTA `0xFF60`（
 | 警告でビルドが失敗する | アプリケーションは `-Werror` でコンパイルされる | `#include "reef_hw.h"` は `CONFIG_IPRO7AI_REEF` ブロック内に、呼び出しは関数内に置きます |
 | `make_reef_ota.sh` が `IntelProCube tool not found` を表示する | `IPRO_FLASH_TOOL` が未設定で、書き込みツールが PATH 上にない | `IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos`（または `_linux`）を設定します |
 | `make_reef_ota.sh` が `build first: …` を表示する | `build_reef/` にまだビルド結果がない | 先に手順 1 を実行します |
+| `make_reef_ota.sh` が `No such file or directory: …boot2_v0.5.2…` と `IntelProCube did not build whole_img.bin` を表示する | スクリプトが、IntelProCube 0.7.0 以降には付属しない boot2 v0.5.2 を指している | 手順 11 の `sed` の行を実行してから、もう一度パッケージ化します |
 | `reef_ota.py` が `IPRO-Remote not found` を表示する | ボードの名前が変更されている、スマートフォンが接続している、またはコンピューターの Bluetooth がオフか使用を許可されていない | `REMOTE_NAME=IPRO-Hello` を設定します。スマートフォンの接続を切断します。macOS では、ターミナルに Bluetooth の使用を許可します |
 | `reef_ota.py` が `device error …` を表示する | ボードがパッケージを拒否した、または書き込みに失敗した | `.xz.ota` を送信したことを確認します。コンソールの `[OTA]` 行を確認します |
 | OTA 後にボードが復帰しない | boot2 はパッケージを拒否すると USB レスキューモードのままになる | ダウンロードモードに入り、手順 3 のコマンドで再書き込みします |

@@ -11,7 +11,7 @@ This tutorial starts from an empty directory and builds `my_reef_app` on the IPR
 
 - An IPRO7AI Reef EVK with SW7 on CAM and SW8 on PWR, powered from USB-C, with an IPRO Debug Probe or a 3.3 V USB-UART cable on U6 (wiring in [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)).
 - [First FreeRTOS Application](../get-started/first-app-freertos.md) done: the toolchain works, `make -C apps/platform/ipro7ai_reef_demo` builds, and you have flashed the board once.
-- The IntelProCube v0.6.3 command-line flasher (`ipro_iot_tool_macos`, `ipro_iot_tool_linux` or `ipro_iot_tool.exe`), obtained separately. The flashing and console steps common to every app are in [Flashing & Serial Console](../get-started/flash-and-monitor.md).
+- The IntelProCube 0.7.0.1 command-line flasher (`ipro_iot_tool_macos`, `ipro_iot_tool_linux` or `ipro_iot_tool.exe`); [Set Up Your Host](../get-started/environment.md#intelprocube) shows how to install it. The flashing and console steps common to every app are in [Flashing & Serial Console](../get-started/flash-and-monitor.md).
 - A serial terminal you can type into, set to 115200 baud, 8N1.
 
 Run every command from the SDK root, written `<SDK>` below.

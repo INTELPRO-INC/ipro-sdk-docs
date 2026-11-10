@@ -96,7 +96,7 @@ SDK 也包含 IPRO7 EVB、IPRO7AI EVK 與 IPRO6S EVK 的應用，列在[範例](
 
 <div class="ipro-steps" markdown>
 
-1. **準備開發環境**：向 INTELPRO 取得 RISC-V 工具鏈與 IntelProCube v0.6.3，安裝 CMake 3.15 以上、GNU make 與 Python 3.8 以上，再從發佈頁下載 SDK V2.2.0。[安裝說明](get-started/index.md)
+1. **準備開發環境**：向 INTELPRO 取得 RISC-V 工具鏈，從 GitHub 下載 IntelProCube 0.7.0.1，安裝 CMake 3.15 以上、GNU make 與 Python 3.8 以上，再從發佈頁下載 SDK V2.2.0。[安裝說明](get-started/index.md)
 2. **建置開箱韌體**：在 SDK 根目錄執行 `make -C apps/platform/ipro7ai_reef_demo`，映像在 `build/build_out/ipro7ai_reef_demo_IPRO7.bin`。
 3. **燒錄並自我檢查**：按住 SW1、按一下 SW2 進入下載模式，以 IntelProCube 燒錄並確認 `[All Success]`；在 U6 主控台（115200 baud）輸入 `reef selftest`，LED、喇叭、SD 卡與相機依序通過。[完整步驟](get-started/first-app-freertos.md)
 

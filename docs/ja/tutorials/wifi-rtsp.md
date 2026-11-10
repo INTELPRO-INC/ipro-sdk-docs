@@ -12,7 +12,7 @@ IPRO7AI Reef EVK は FIN カードを通じてネットワークに接続しま�
 - IPRO7AI Reef EVK、IPRO6S FIN カード、OV5640 FLEX-24 カメラモジュール。
 - FIN カード上の Wi-Fi ファームウェア：`defconfig_ipro6_sdio` でビルドした IPRO6S の `ipro6_if_wifi` アプリケーション（SDIO 版。手順 2 を参照）。
 - U6 に接続した IPRO Debug Probe または 3.3 V USB-UART ケーブル（115200 8N1。配線は [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md) を参照）。
-- [最初の FreeRTOS アプリケーション](../get-started/first-app-freertos.md)を完了し、IntelProCube v0.6.3 のコマンドライン書き込みツール（別途入手）を用意していること。
+- [最初の FreeRTOS アプリケーション](../get-started/first-app-freertos.md)を完了し、[開発環境の準備](../get-started/environment.md#intelprocube)に従って IntelProCube 0.7.0.1 のコマンドライン書き込みツールをインストールしていること。
 - Wi-Fi アクセスポイント（SSID とパスフレーズ）と、同じネットワーク上にあり、VLC または `ffplay` をインストールしたコンピューター。
 
 !!! info "FIN カードへの最初のファームウェア"

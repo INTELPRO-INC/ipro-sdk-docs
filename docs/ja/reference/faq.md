@@ -22,7 +22,8 @@ migrate_from:
     ```
 
     `VERSION.txt` には `IPRO7: IPRO-SDK-V2.2.0`、`IPRO6: IPRO-SDK-V2.2.0`、`Release Date: 2026-11-03` と表示されます。
-- **RISC-V ツールチェーン** と **IntelProCube v0.6.3 コマンドライン書き込みツール**（`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe`）：V2.2.0 には含まれていません。INTELPRO にお問い合わせください。ツールチェーンはデフォルトで `/opt/toolchain/riscv_ipro7/` にインストールされます。
+- **RISC-V ツールチェーン**：V2.2.0 には含まれていません。INTELPRO にお問い合わせください。デフォルトで `/opt/toolchain/riscv_ipro7/` にインストールされます。
+- **IntelProCube コマンドライン書き込みツール**（`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe`）：V2.2.0 には含まれていません。[GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) から 0.7.0.1 をダウンロードしてください。[開発環境の準備](../get-started/environment.md#intelprocube)を参照してください。
 - **Windows オンラインインストーラー 3.6.0 と VS Code 拡張機能 3.3.0**：最新版です。インストーラーは [ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest) からダウンロードします。SDK V2.2.0 と Windows 用ツールチェーンを直接インストールします。[Windows のセットアップと VS Code](../get-started/windows.md) を参照してください。
 - **IPRO AI Studio**：SDK には含まれていません。[GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) からダウンロードしてください。
 
@@ -160,8 +161,8 @@ CONFIG_EASYFLASH4=y
 
 Reef では、`ipro_ble_remote` の `defconfig_reef` が BLE OTA（GATT サービス `0xFF60`）を提供します。boot2 と A/B パーティションテーブル `partition_cfg_2M_remote_ab.toml` が必要です。
 
-1. 初回は `--boot2` と `--pt …/partition_cfg_2M_remote_ab.toml` で書き込みます。起動メッセージは `[BOOT2] IPRO7 Boot2 v0.5.2` から始まります。
-2. `make_reef_ota.sh` で `build_reef/build_out/ipro_ble_remote_reef.xz.ota` を生成します。
+1. 初回は `--boot2` と `--pt …/partition_cfg_2M_remote_ab.toml` で書き込みます。起動メッセージは `[BOOT2] IPRO7 Boot2 v0.6.0` から始まります。
+2. `make_reef_ota.sh` で `build_reef/build_out/ipro_ble_remote_reef.xz.ota` を生成します。V2.2.0 では、先にスクリプトの boot2 のパスを v0.6.0 に書き換えます（[OTA アップデート](../guides/ota.md#hands-on)の手順 4）。
 3. `reef_ota.py` または Android デモアプリ `ipro_remote_demo.apk` でパッケージを送信します。再起動後、ボードは新しいファームウェアで動作します。
 
 標準の `partition_cfg_2M.toml` で書き込んだ Reef では、絶対に OTA を実行しないでください。ボードがまったく応答しなくなり、ダウンロードモードから書き込み直す必要があります。コマンドは [Reef OTA ツール](tools.md#reef-ota-tools) に、全体の流れは [OTA アップデート](../guides/ota.md) にあります。

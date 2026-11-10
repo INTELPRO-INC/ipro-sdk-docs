@@ -17,7 +17,8 @@ migrate_from:
 | 主机 | macOS 或 Linux（有 bash）；或 Windows x64 |
 | 权限 | 安装软件包与写入 `/opt/toolchain/` 需要管理员权限 |
 | 网络 | 下载 SDK；Windows 的 Online Setup 需要能访问 GitHub |
-| 另行获取 | RISC-V 工具链与 IntelProCube v0.6.3：macOS／Linux 版向 INTELPRO 索取，Windows 版由 Online Setup 安装 |
+| 另行获取 | RISC-V 工具链：macOS／Linux 版向 INTELPRO 索取，Windows 版由 Online Setup 安装 |
+| 烧录工具 | IntelProCube 0.7.0.1：从 [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) 下载，见[安装 IntelProCube](#intelprocube)；Windows 版由 Online Setup 安装 |
 | 硬件 | IPRO7AI Reef EVK、USB-C 线、控制台线，见[需要准备](index.md#what-you-need) |
 
 ## 获取 SDK { #get-sdk }
@@ -155,11 +156,51 @@ migrate_from:
 
 ## 安装 IntelProCube { #intelprocube }
 
+IntelProCube 是 IPRO6 与 IPRO7 的烧录与 OTA 工具，公开在 [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases)；本站以 0.7.0.1 为准。Windows 由 Online Setup 安装 0.7.0，它烧录 IPRO7 与 Reef 的文件与 0.7.0.1 相同，见 [Windows 安装与 VS Code](windows.md)；烧录 IPRO6S 时，按 [IntelProCube 的 README](https://github.com/INTELPRO-INC/ipro-cube#windows) 另外安装 0.7.0.1。
+
 <div class="ipro-steps" markdown>
 
-1. **解压**：把 IntelProCube v0.6.3 解压到自选的目录（本站写作 `<IntelProCube>`）。命令行工具要在这个目录下运行，因为它从 `chips/` 读取芯片配置与分区表。Windows 由 Online Setup 安装，见 [Windows 安装与 VS Code](windows.md)。
+1. **下载并核对**
 
-2. **确认可以运行**
+    === "macOS"
+
+        ```bash
+        curl -LO https://github.com/INTELPRO-INC/ipro-cube/releases/download/v0.7.0.1/IntelProCube-0.7.0.1-macos-arm64.tar.gz
+        shasum -a 256 IntelProCube-0.7.0.1-macos-arm64.tar.gz
+        ```
+
+        屏幕显示 `c3a8bf7eca2a48c3f9bf40c3241ddf6aec5155688f2a92f40a84cc47f7633bc4`。macOS 版需要 Apple 芯片。改用浏览器下载时，解压前先运行 `xattr -d com.apple.quarantine IntelProCube-0.7.0.1-macos-arm64.tar.gz`，否则 macOS 会终止软件包里的程序。
+
+    === "Linux"
+
+        ```bash
+        curl -LO https://github.com/INTELPRO-INC/ipro-cube/releases/download/v0.7.0.1/IntelProCube-0.7.0.1-linux-x64.tar.gz
+        sha256sum IntelProCube-0.7.0.1-linux-x64.tar.gz
+        ```
+
+        屏幕显示 `efc5765ca402d0af00b42489dd61a74481531875b871517af5c0bca9d7387df9`。Linux 版适用 x86-64。
+
+    数值不同时请重新下载。每个版本的值都列在 Release 页的 `SHA256SUMS.txt`。
+
+2. **解压**
+
+    === "macOS"
+
+        ```bash
+        mkdir -p ~/ipro
+        tar xzf IntelProCube-0.7.0.1-macos-arm64.tar.gz -C ~/ipro
+        ```
+
+    === "Linux"
+
+        ```bash
+        mkdir -p ~/ipro
+        tar xzf IntelProCube-0.7.0.1-linux-x64.tar.gz -C ~/ipro
+        ```
+
+    解压后得到 `~/ipro/IntelProCube`，本站写作 `<IntelProCube>`。命令行工具要在这个目录下运行，因为它从 `chips/` 读取芯片配置、分区表与 boot2 镜像。
+
+3. **确认可以运行**
 
     === "macOS"
 
@@ -185,14 +226,15 @@ migrate_from:
     屏幕以用法说明开头，例如：
 
     ```text
-    usage: ipro_iot_tool_macos [-h] --chipname CHIPNAME [--interface INTERFACE]
-                               [--port PORT] [--baudrate BAUDRATE] [--xtal XTAL]
+    usage: ipro_iot_tool_macos [-h] [--list-ports] --chipname CHIPNAME
+                               [--interface INTERFACE] [--port PORT]
+                               [--baudrate BAUDRATE] [--xtal XTAL]
                                [--chip-variant CHIP_VARIANT] [--dts DTS] [--pt PT]
                                [--boot2 BOOT2] [--firmware FIRMWARE] [--mfg MFG]
     ...
     ```
 
-3. **让 `build_freertos.sh` 找到工具**（macOS／Linux）：设置 `IPRO_FLASH_TOOL`，或把 `<IntelProCube>` 加入 `PATH`。
+4. **让 `build_freertos.sh` 找到工具**（macOS／Linux）：设置 `IPRO_FLASH_TOOL`，或把 `<IntelProCube>` 加入 `PATH`。
 
     === "macOS"
 
@@ -273,7 +315,7 @@ Project: ipro7ai_reef_demo  (platform/ipro7ai_reef_demo)
 
 | 任务 | macOS／Linux | Windows |
 |---|---|---|
-| 安装工具 | 系统包管理器，加上 INTELPRO 提供的工具链与 IntelProCube | Online Setup（工具链、CMake／Ninja／Python、IntelProCube、OpenOCD、VS Code Extension） |
+| 安装工具 | 系统包管理器，加上 INTELPRO 提供的工具链，以及从 GitHub 下载的 IntelProCube | Online Setup（工具链、CMake／Ninja／Python、IntelProCube、OpenOCD、VS Code Extension） |
 | 构建 | `make -C apps/<分类>/<应用>` 或 `./build_freertos.sh` | VS Code Extension 的 `IPRO: Build` |
 | 烧录 | IntelProCube 命令行工具，或 `./build_freertos.sh … flash` | `ipro_iot_tool.exe` |
 | 控制台 | `screen`、`picocom` 等终端程序；`tools/serial_monitor.py` | PuTTY 等终端程序，或 Extension 的 Serial Monitor |
@@ -289,7 +331,7 @@ Project: ipro7ai_reef_demo  (platform/ipro7ai_reef_demo)
 | 计算出的 SHA-256 与 Release 页面不同 | 下载不完整或文件损坏 | 删除后重新下载 |
 | `No cmake found. Install cmake or provide bundled cmake at …` | PATH 中没有 `cmake`，且随附的 CMake 无法在此主机上运行（随附版仅适用于 Linux x86-64） | 按[安装构建工具](#host-tools)安装 CMake 3.15 及以上版本 |
 | `riscv64-unknown-elf-gcc: No such file or directory` | 工具链不在 `/opt/toolchain/riscv_ipro7/` | 按[安装 RISC-V 工具链](#toolchain)设置 `CROSS_COMPILE` |
-| `Flash tool not found: ipro_iot_tool_macos` | 未设置 `IPRO_FLASH_TOOL`，PATH 中也没有 IntelProCube | 按[安装 IntelProCube](#intelprocube) 第 3 步设置 |
+| `Flash tool not found: ipro_iot_tool_macos` | 未设置 `IPRO_FLASH_TOOL`，PATH 中也没有 IntelProCube | 按[安装 IntelProCube](#intelprocube) 第 4 步设置 |
 | 插上适配器后没有新的串口 | USB 线只能充电，或缺少驱动程序 | 换线；安装适配器厂商的驱动程序 |
 | Linux 打开串口时出现 `Permission denied` | 用户不在串口所属的用户组中 | 加入 `dialout` 等用户组后重新登录 |
 | macOS 打开 `/dev/tty.*` 后卡住 | `tty.*` 会等待 carrier detect 信号 | 改用 `/dev/cu.*` |

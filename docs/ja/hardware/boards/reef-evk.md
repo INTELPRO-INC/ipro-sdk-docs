@@ -70,7 +70,7 @@ IPRO7AI の電流を測定するには、USB-C を外し、JP2 の 1 番ピン�
 
 ## クイックスタート { #quick-start }
 
-この手順を終えると、ボード上で出荷時ファームウェア `ipro7ai_reef_demo` が動作し、コンソールで `reef selftest` に応答するようになります。ホストには RISC-V ツールチェーンと IntelProCube v0.6.3（INTELPRO から入手）、CMake 3.15 以降、GNU make、Python 3.8 以降が必要です。[はじめに](../../get-started/index.md)を参照してください。
+この手順を終えると、ボード上で出荷時ファームウェア `ipro7ai_reef_demo` が動作し、コンソールで `reef selftest` に応答するようになります。ホストには RISC-V ツールチェーン（INTELPRO から入手）、IntelProCube 0.7.0.1（[GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) からダウンロード）、CMake 3.15 以降、GNU make、Python 3.8 以降が必要です。[はじめに](../../get-started/index.md)を参照してください。
 
 <div class="ipro-steps" markdown>
 
@@ -97,7 +97,7 @@ IPRO7AI の電流を測定するには、USB-C を外し、JP2 の 1 番ピン�
 
 4. **ダウンロードモードに入る**：SW1（BOOT）を押したまま SW2（RESET）を押して離し、次に SW1 を離します。
 
-    コンソールの出力が止まります。ほかの方法は[ダウンロードモード](#download-mode)を参照してください。
+    コンソールの出力が止まります。ほかの方法は[ダウンロードモード](#download-mode)を参照してください。IPRO Debug Probe で接続している場合は、この手順を省略できます。IntelProCube 0.7.0.1 がプローブ経由でチップをダウンロードモードにし、書き込み後に自動でリセットします。
 
 5. **書き込む**：IntelProCube のディレクトリで実行します（Linux では `./ipro_iot_tool_linux`、Windows では `ipro_iot_tool.exe`）。
 

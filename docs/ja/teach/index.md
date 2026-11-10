@@ -49,7 +49,7 @@ IPRO AI Teach を使うと、コードを書かずに IPRO7AI Reef EVK に認識
 | コンピューター | Apple シリコン搭載の macOS 11 以降、または 64 ビット Windows（x64） | ● | ● | ● |
 | IPRO AI Studio | 0.4.2。[IPRO AI Studio のインストール](install.md)を参照 | ● | ● | ● |
 | IPRO Debug Probe | Reef のデバッグコネクター U6 に接続します。ファームウェアの書き込みとコンソールの表示にのみ必要です | ● | ● | ● |
-| IntelProCube v0.6.3 | コマンドラインの書き込みツール。ファームウェアの書き込みにのみ必要です | ● | ● | ● |
+| IntelProCube 0.7.0.1 | コマンドラインの書き込みツール。[GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) からダウンロードします。ファームウェアの書き込みにのみ必要です | ● | ● | ● |
 | Edge AI ファームウェアのファイル | IPRO Edge AI パッケージの `firmware/`、または SDK からビルドします。[Edge AI ファームウェアの書き込み](firmware.md)を参照 | ● | ● | ● |
 
 センサー認識に外部センサーは不要です。ファームウェアに 5 種類の模擬センサーがあるので、Reef 1 台と USB-C ケーブル 1 本で全体の流れを試せます。独自のセンサーを使うには、ファームウェアにデータソースを追加します。[センサー認識](sensor.md#own-sensor)を参照してください。

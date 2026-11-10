@@ -11,7 +11,7 @@ description: 在 IPRO7AI Reef EVK 上以 ipro7_uvc_cam 把 OV5640 相機變成�
 
 - IPRO7AI Reef EVK、OV5640 FLEX-24 相機模組，以及一條可傳資料的 USB-C 線（接電腦，同時供電與傳影像）。
 - U6 接 IPRO Debug Probe 或 3.3 V USB 轉 UART 線（115200 8N1，接法見 [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)），用來燒錄與看主控台。
-- 已完成[第一個 FreeRTOS 應用](../get-started/first-app-freertos.md)，並取得 IntelProCube v0.6.3 命令列燒錄工具（需另行取得）。
+- 已完成[第一個 FreeRTOS 應用](../get-started/first-app-freertos.md)，並依[準備開發環境](../get-started/environment.md#intelprocube)安裝 IntelProCube 0.7.0.1 命令列燒錄工具。
 - 電腦上能開啟 USB 相機的程式：macOS 的 QuickTime Player、Windows 的「相機」App，或 Linux 上任何 V4L2 程式（例如 `ffplay`）。主機使用作業系統內建的 UVC 驅動；INTELPRO 在 macOS 上驗證過。
 
 ## 步驟 { #steps }

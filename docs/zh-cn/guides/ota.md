@@ -10,7 +10,7 @@ migrate_from:
 FreeRTOS 应用的 OTA 由 boot2 完成：运行中的应用把 OTA 包写入分区表中空闲的 FW 位置并切换激活索引，重启后 boot2 检查 OTA 包、解压写入运行区后再启动。SDK 随附打包工具 `tools/create_ota.py`，以及在 IPRO7AI Reef EVK 上经 BLE 更新的完整参考：`ipro_ble_remote` 的 `defconfig_reef`，配合 A/B 分区表、打包脚本、Python 发送程序与 Android App。
 
 !!! abstract "要点"
-    - 参考：`ipro_ble_remote` 的 `defconfig_reef`＋`partition_cfg_2M_remote_ab.toml`＋boot2 v0.5.2（随 IntelProCube 提供）；默认 `.config` 不含 OTA。
+    - 参考：`ipro_ble_remote` 的 `defconfig_reef`＋`partition_cfg_2M_remote_ab.toml`＋boot2 v0.6.0（随 IntelProCube 提供）；默认 `.config` 不含 OTA。
     - OTA 包：`tools/create_ota.py` 把 IntelProCube 生成的合并镜像 `whole_img.bin` 打包为 `.xz.ota`（512 字节头＋XZ 内容）；Reef 用 `make_reef_ota.sh` 一次完成这两个步骤。
     - 发送端：`tools/reef_ota.py`（Python，bleak）或 `ipro_remote_demo.apk`（Android），经 BLE OTA 服务 0xFF60。
     - IPRO6S FIN 卡通过 `ipro7ai_reef_demo` `defconfig_wifi_ipro6s` 的 `ipro6s_ota <http url>` 经 Wi-Fi 更新。
@@ -39,7 +39,7 @@ sequenceDiagram
 
 | 地址 | 分区 | 大小 | 用途 |
 |---|---|---|---|
-| 0x000000 | boot2 | 64 KB | IntelProCube 的 boot2 v0.5.2 |
+| 0x000000 | boot2 | 64 KB | IntelProCube 的 boot2 v0.6.0 |
 | 0x010000 | PT0／PT1 | 4 KB＋4 KB | 分区表 |
 | 0x012000 | FW A[0] | 824 KB | 运行区，boot2 把 OTA 包解压到这里 |
 | 0x0E0000 | FW A[1] | 512 KB | OTA 暂存区，应用把 `.xz.ota` 写到这里 |
@@ -49,7 +49,7 @@ sequenceDiagram
 | 0x1FF000 | factory | 4 KB | |
 
 - 这个布局需要 2 MB Flash；`defconfig_reef` 设置了 `CONFIG_IPRO7_FLASH_2M=y`。
-- boot2 镜像位于 IntelProCube 目录下的 `chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin`，不在 SDK 包中。
+- boot2 镜像位于 IntelProCube 目录下的 `chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin`，不在 SDK 包中。
 - 分区表有意不包含 boot2 条目：有这个条目时，烧录工具写出的 boot2 头不会被启动 ROM 加载。boot2 请用 `--boot2` 指定。
 
 !!! danger "不要用标准分区表做 OTA"
@@ -64,7 +64,7 @@ sequenceDiagram
 #    请确认输出中有 "PT Check: whole_img.bin"）
 cd <ICUBE>
 ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI --build \
-    --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
+    --boot2 chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin \
     --pt <SDK>/apps/bluetooth/ble/ipro_ble_remote/partition_cfg_2M_remote_ab.toml \
     --firmware <SDK>/apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin
 
@@ -91,7 +91,7 @@ python3 <SDK>/tools/create_ota.py chips/ipro7/img_create_iot/whole_img.bin \
 | 96–511 | 保留（0xFF）；签名 OTA 包在此存放签名块 |
 | 512 起 | 内容（XZ，字典 32 KB，与 boot2 解码器一致） |
 
-Reef 可用 `apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh` 一次完成上述两步，并以构建时间作为固件版本，见[在 Reef 上动手实践](#hands-on)。
+Reef 可用 `apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh` 一次完成上述两步，并以构建时间作为固件版本，见[在 Reef 上动手实践](#hands-on)。V2.2.0 的脚本写的是 boot2 v0.5.2 的路径，使用前要先改成 IntelProCube 0.7.0 起附带的 v0.6.0（第 4 步的第一行）。
 
 ## BLE OTA（ipro_ble_remote） { #ble-ota }
 
@@ -187,18 +187,19 @@ CONFIG_IPRO_BLE_REMOTE_OTA=y
     cd <ICUBE>
     ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
         --port /dev/cu.usbserial-XXXX --baudrate 921600 \
-        --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
+        --boot2 chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin \
         --pt <SDK>/apps/bluetooth/ble/ipro_ble_remote/partition_cfg_2M_remote_ab.toml \
         --firmware <SDK>/apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin
     ```
 
-    确认输出中有 `[All Success]`（失败时工具也返回 0），再按 SW2（RESET）。以 115200 baud 打开控制台，会先看到 `[BOOT2] IPRO7 Boot2 v0.5.2`，接着应用从 FW A（0x12000）启动并打印 `[OTA] Service ready`。烧录细节见[烧录与串口](../get-started/flash-and-monitor.md)。
+    确认输出中有 `[All Success]`（失败时工具也返回 0），再按 SW2（RESET）。以 115200 baud 打开控制台，会先看到 `[BOOT2] IPRO7 Boot2 v0.6.0`，接着应用从 FW A（0x12000）启动并打印 `[OTA] Service ready`。烧录细节见[烧录与串口](../get-started/flash-and-monitor.md)。
 
 4. **修改代码并生成 OTA 包**
 
-    做任何修改后用同一条 `make` 命令重新构建，再把新版本打包（Linux 用 `ipro_iot_tool_linux`）：
+    做任何修改后用同一条 `make` 命令重新构建，再把新版本打包。SDK V2.2.0 的打包脚本写的是 boot2 v0.5.2 的路径，IntelProCube 0.7.0 起附带的是 v0.6.0，所以第一行先把脚本里的版本改成 v0.6.0（重复运行没有影响）。Linux 用 `sed -i`（不加 `''`）与 `ipro_iot_tool_linux`：
 
     ```bash
+    sed -i '' 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
     IPRO_FLASH_TOOL=<ICUBE>/ipro_iot_tool_macos \
         sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
     ```
@@ -227,10 +228,18 @@ CONFIG_IPRO_BLE_REMOTE_OTA=y
     [OTA] CRC32 OK! Switching partition...
     [OTA] Ready to reboot
     [OTA] Rebooting...
-    [BOOT2] IPRO7 Boot2 v0.5.2
+    [BOOT2] IPRO7 Boot2 v0.6.0
+    ...
+    [BOOT2] OTA pending
+    [OTA] E0000->12000
+    [OTA] no eFuse key, package unverified
+    [OTA] XZ …
+    [OTA] …
+    [OTA] OK
+    [BOOT2] OTA ok
     ```
 
-    电脑端 `reef_ota.py` 打印 `verified, slot switched; rebooting`，开发板重新连接后打印 `running: IPRO7AI Reef; camera …; SD …; build <date> <time>`。构建时间比更新前打印的晚，就说明新镜像已在运行。
+    `[BOOT2] OTA ok` 表示 boot2 已校验包的 SHA256 并解压到 FW A，接着启动新镜像；`no eFuse key, package unverified` 表示芯片没有烧录签名密钥，不校验签名。电脑端 `reef_ota.py` 打印 `verified, slot switched; rebooting`，开发板重新连接后打印 `running: IPRO7AI Reef; camera …; SD …; build <date> <time>`。这个构建时间取自 `src/board/reef_hw.c`，只有该文件重新编译时才会改变，所以请以控制台的 `[BOOT2] OTA ok` 确认更新。
 
 </div>
 

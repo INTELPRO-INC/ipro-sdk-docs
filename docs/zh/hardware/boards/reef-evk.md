@@ -70,7 +70,7 @@ IPRO7AI Reef EVK 以 IPRO7AI（QFN56）為核心，Flash 與 PSRAM 都在晶片�
 
 ## 上手 { #quick-start }
 
-完成後，板子執行開箱韌體 `ipro7ai_reef_demo`，並在主控台回應 `reef selftest`。主機需要 RISC-V 工具鏈與 IntelProCube v0.6.3（向 INTELPRO 取得）、CMake 3.15 以上、GNU make 與 Python 3.8 以上，見[開始使用](../../get-started/index.md)。
+完成後，板子執行開箱韌體 `ipro7ai_reef_demo`，並在主控台回應 `reef selftest`。主機需要 RISC-V 工具鏈（向 INTELPRO 取得）、IntelProCube 0.7.0.1（從 [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) 下載）、CMake 3.15 以上、GNU make 與 Python 3.8 以上，見[開始使用](../../get-started/index.md)。
 
 <div class="ipro-steps" markdown>
 
@@ -97,7 +97,7 @@ IPRO7AI Reef EVK 以 IPRO7AI（QFN56）為核心，Flash 與 PSRAM 都在晶片�
 
 4. **進入下載模式**：按住 SW1（BOOT），按一下 SW2（RESET），再放開 SW1。
 
-    主控台不再有任何輸出。其他方式見[下載模式](#download-mode)。
+    主控台不再有任何輸出。其他方式見[下載模式](#download-mode)。以 IPRO Debug Probe 連接時可以略過這一步：IntelProCube 0.7.0.1 會經探針讓晶片進入下載模式，燒錄後自動重置。
 
 5. **燒錄**：在 IntelProCube 目錄執行（Linux 為 `./ipro_iot_tool_linux`，Windows 為 `ipro_iot_tool.exe`）
 

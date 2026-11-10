@@ -22,7 +22,8 @@ Each answer starts with the conclusion; where you need to act, it gives the comm
     ```
 
     `VERSION.txt` prints `IPRO7: IPRO-SDK-V2.2.0`, `IPRO6: IPRO-SDK-V2.2.0` and `Release Date: 2026-11-03`.
-- **The RISC-V toolchain** and **the IntelProCube v0.6.3 command-line flash tool** (`ipro_iot_tool_macos`, `ipro_iot_tool_linux`, `ipro_iot_tool.exe`): not included in V2.2.0; contact INTELPRO. The toolchain installs to `/opt/toolchain/riscv_ipro7/` by default.
+- **The RISC-V toolchain**: not included in V2.2.0; contact INTELPRO. It installs to `/opt/toolchain/riscv_ipro7/` by default.
+- **The IntelProCube command-line flash tool** (`ipro_iot_tool_macos`, `ipro_iot_tool_linux`, `ipro_iot_tool.exe`): not included in V2.2.0; download 0.7.0.1 from [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases), see [Set Up Your Host](../get-started/environment.md#intelprocube).
 - **Windows online installer 3.6.0 and VS Code extension 3.3.0**: current; download the installer from [ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest). It installs SDK V2.2.0 and the Windows toolchain directly; see [Windows Setup & VS Code](../get-started/windows.md).
 - **IPRO AI Studio**: not in the SDK; download it from [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest).
 
@@ -160,8 +161,8 @@ For bulk data, use the 2M PHY, a 30–50 ms connection interval and 244-byte pac
 
 On the Reef, `defconfig_reef` of `ipro_ble_remote` provides BLE OTA (GATT service `0xFF60`); it needs boot2 and the A/B partition table `partition_cfg_2M_remote_ab.toml`:
 
-1. Flash the first time with `--boot2` and `--pt …/partition_cfg_2M_remote_ab.toml`; the boot messages start with `[BOOT2] IPRO7 Boot2 v0.5.2`.
-2. Build `build_reef/build_out/ipro_ble_remote_reef.xz.ota` with `make_reef_ota.sh`.
+1. Flash the first time with `--boot2` and `--pt …/partition_cfg_2M_remote_ab.toml`; the boot messages start with `[BOOT2] IPRO7 Boot2 v0.6.0`.
+2. Build `build_reef/build_out/ipro_ble_remote_reef.xz.ota` with `make_reef_ota.sh`. In V2.2.0, first change the script's boot2 path to v0.6.0, as in step 4 of [OTA Updates](../guides/ota.md#hands-on).
 3. Send the package with `reef_ota.py` or the Android demo app `ipro_remote_demo.apk`; after the reboot the board runs the new firmware.
 
 Never run OTA on a Reef flashed with the standard `partition_cfg_2M.toml`: the board goes completely silent and has to be reflashed from download mode. The commands are in [Reef OTA tools](tools.md#reef-ota-tools); the complete flow is in [OTA Updates](../guides/ota.md).

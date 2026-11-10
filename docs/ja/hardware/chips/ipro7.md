@@ -132,7 +132,7 @@ AI と画像処理の両方を有効にすると（`CONFIG_AI_SUPPORT`、`CONFIG
 | BLE | Zephyr v4.4.0 ホスト（ソース）を IPRO BLE コントローラー（ビルド済みライブラリ、IPRO7 用 16 ビルド：`link1_periph` / `link1` / `link2` / `link4` × `bt52` / `bt54_iso2` × debug / `_release`）上で使用 |
 | IEEE 802.15.4 / Thread | Zephyr RTOS のみ：IEEE 802.15.4 ドライバーと OpenThread |
 | Matter、Zigbee | V2.2.0 には含まれていません。INTELPRO にお問い合わせください。 |
-| 書き込み | IntelProCube v0.6.3 コマンドラインツール（別途入手）：`--chipname ipro7`。Reef などの IPRO7AI ボードでは `--chip-variant IPRO7AI` を追加します |
+| 書き込み | IntelProCube 0.7.0.1 コマンドラインツール（[GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases)）：`--chipname ipro7`。Reef などの IPRO7AI ボードでは `--chip-variant IPRO7AI` を追加します |
 
 ## IPRO7 搭載ボード { #boards }
 

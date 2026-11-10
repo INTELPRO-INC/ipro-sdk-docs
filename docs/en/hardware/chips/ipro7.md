@@ -132,7 +132,7 @@ With AI and imaging both enabled (`CONFIG_AI_SUPPORT`, `CONFIG_MM_SUPPORT`) the 
 | BLE | Zephyr v4.4.0 host (source) on the IPRO BLE controller (prebuilt library, 16 IPRO7 builds: `link1_periph` / `link1` / `link2` / `link4` × `bt52` / `bt54_iso2` × debug / `_release`) |
 | IEEE 802.15.4 / Thread | Zephyr RTOS only: IEEE 802.15.4 driver and OpenThread |
 | Matter, Zigbee | Not included in V2.2.0; contact INTELPRO. |
-| Flashing | IntelProCube v0.6.3 command-line tool (obtained separately): `--chipname ipro7`, with `--chip-variant IPRO7AI` for IPRO7AI boards such as the Reef |
+| Flashing | IntelProCube 0.7.0.1 command-line tool ([GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases)): `--chipname ipro7`, with `--chip-variant IPRO7AI` for IPRO7AI boards such as the Reef |
 
 ## Boards with IPRO7 { #boards }
 

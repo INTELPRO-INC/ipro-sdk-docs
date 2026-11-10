@@ -365,7 +365,7 @@ int ble_init(void)
     cd <ICUBE>
     ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
         --port /dev/cu.usbserial-XXXX --baudrate 921600 \
-        --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
+        --boot2 chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin \
         --pt <SDK>/apps/bluetooth/ble/ipro_ble_remote/partition_cfg_2M_remote_ab.toml \
         --firmware <SDK>/apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin
     ```
@@ -374,7 +374,7 @@ int ble_init(void)
 
 5. **コンソールを確認して接続します**
 
-    115200 baud でコンソールを開きます。boot2 のバナー `[BOOT2] IPRO7 Boot2 v0.5.2` のあと、アプリケーションが他の行に混じって次の行を出力します（ログのプレフィックスは省略しています）。
+    115200 baud でコンソールを開きます。boot2 のバナー `[BOOT2] IPRO7 Boot2 v0.6.0` のあと、アプリケーションが他の行に混じって次の行を出力します（ログのプレフィックスは省略しています）。
 
     ```text
     [BLE] Initialized

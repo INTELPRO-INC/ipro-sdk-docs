@@ -72,7 +72,7 @@ Reef のコンソールは U6 デバッグコネクターの UART0（GPIO20 TX /
 |---|---|
 | `[XTAL] capcode <boot value> -> <set value>` | `CONFIG_IPRO7_XTAL_CAPCODE` の水晶発振子調整値が適用されました。Reef では未設定の場合のデフォルトは 95 です |
 | `[PSRAM] WARNING: init failed` | アプリケーションは `CONFIG_USE_PSRAM` を有効にしていますが、PSRAM が初期化されませんでした |
-| `[BOOT2] IPRO7 Boot2 v0.5.2` | イメージは boot2 付きで書き込まれています（例：`ipro_ble_remote` の Reef OTA ビルド）。boot2 が先に実行され、その後アプリケーションを起動します |
+| `[BOOT2] IPRO7 Boot2 v0.6.0` | イメージは boot2 付きで書き込まれています（例：`ipro_ble_remote` の Reef OTA ビルド）。boot2 が先に実行され、その後アプリケーションを起動します |
 
 ## ダウンロードモードに入る { #download-mode }
 

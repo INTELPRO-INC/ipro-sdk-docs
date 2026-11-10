@@ -14,7 +14,7 @@ FreeRTOS アプリケーションは IntelProCube のコマンドラインツー
 
 ## 前提条件 { #prerequisites }
 
-- IntelProCube v0.6.3：`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、または `ipro_iot_tool.exe`。[開発環境の準備](environment.md#intelprocube) を参照してください。
+- IntelProCube 0.7.0.1：`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、または `ipro_iot_tool.exe`。[開発環境の準備](environment.md#intelprocube) を参照してください。
 - ビルド済みのイメージ：`apps/<category>/<app>/build/build_out/<app>_IPRO7.bin`。`DEFCONFIG=defconfig_<name>` でビルドした場合は `build_<name>/build_out/` にあります。
 - U6 に接続したコンソールケーブル。[スイッチの設定とボードの接続](first-app-freertos.md#connect) を参照してください。ポートは `/dev/cu.usbserial-XXXX`（macOS）、`/dev/ttyUSB0`（Linux）、`COM5`（Windows）と表記します。
 
@@ -49,6 +49,9 @@ FreeRTOS アプリケーションは IntelProCube のコマンドラインツー
 | `reboot_dl` | コンソールで `reboot_dl` と入力すると、`reboot to download mode` と表示される | ボードでシェル付きの SDK ファームウェアが動作している場合。`build_freertos.sh flash` はこの方法を使います |
 | 自動ダウンロードケーブル | アダプターの DTR を U6 のピン 5（BOOT）、RTS をピン 6（RESET）に接続する。ボード上でそれぞれ 1 kΩ を介して GPIO41 とリセットピンにつながるため、このケーブルならボタンを使わずにダウンロードモードに入れる | DTR と RTS を備えたアダプター |
 | IPRO Debug Probe | プローブの末尾が `02` のポートで制御キーワードを送信する（下記参照） | Debug Probe が U6 に接続されている場合 |
+
+!!! tip "IntelProCube 0.7.0.1 は自動でダウンロードモードに入ります"
+    ツールは書き込みの前にシリアルポートへ `reboot_dl` を送信します。IPRO Debug Probe で接続している場合は、さらにプローブの BOOT 線と RESET 線でチップをダウンロードモードにし、書き込みが終わるとチップをリセットします。INTELPRO が 0.7.0.1 と Debug Probe を使って Reef で確認したところ、ボタン操作も制御キーワードの送信も不要で、約 8 秒で完了しました。一般的な USB-UART アダプターを使い、ファームウェアにシェルがない場合は、ボタンでダウンロードモードに入ってください。下の手動手順は、ツールがハンドシェイクできないときに使います。
 
 Debug Probe でダウンロードモードに入る手順（macOS の例、SDK ルートで実行）：
 
@@ -122,6 +125,8 @@ Debug Probe でダウンロードモードに入る手順（macOS の例、SDK �
     [...] - Baudrate is 921600
     [...] - Firmware is <SDK>/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin
     ...
+    [...] - shake hand success
+    ...
     [...] - flash jedec id: ef401500
     ...
     [...] - Verify success
@@ -168,14 +173,14 @@ Debug Probe でダウンロードモードに入る手順（macOS の例、SDK �
     cd <IntelProCube>
     ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
         --port /dev/cu.usbserial-XXXX --baudrate 921600 \
-        --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
+        --boot2 chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin \
         --pt <SDK>/apps/bluetooth/ble/ipro_ble_remote/partition_cfg_2M_remote_ab.toml \
         --firmware <SDK>/apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin
     ```
 
     出力は `[All Success]` で終わります。
 
-3. **確認します：** SW2 を押します。115200 baud のコンソールに boot2 のバナー `[BOOT2] IPRO7 Boot2 v0.5.2` が表示され、続いてアプリケーションが `[BLE] Advertising: IPRO-Remote` を出力します。
+3. **確認します：** SW2 を押します。115200 baud のコンソールに boot2 のバナー `[BOOT2] IPRO7 Boot2 v0.6.0` が表示され、続いてアプリケーションが `[BLE] Advertising: IPRO-Remote` を出力します。
 
 </div>
 

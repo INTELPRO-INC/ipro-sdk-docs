@@ -17,7 +17,7 @@ Work through these pages in order to go from a fresh computer to the out-of-box 
 | Console cable (one of) | a 3.3 V USB-to-UART adapter with an SH1.0 6-pin plug for U6, or the IPRO Debug Probe with a pin-reversed cable to U6 | adapter: your own; Debug Probe: INTELPRO |
 | Host | macOS or Linux (bash) runs every SDK command-line tool; Windows works through the installer, the VS Code Extension and `build_freertos.ps1` | — |
 | RISC-V toolchain | GCC 14 (GCC 13.1.1 on Windows), `riscv64-unknown-elf-gcc` | macOS / Linux: INTELPRO; Windows: installed by Online Setup |
-| IntelProCube v0.6.3 | the flash tool: `ipro_iot_tool_macos`, `ipro_iot_tool_linux`, `ipro_iot_tool.exe` | macOS / Linux: INTELPRO; Windows: installed by Online Setup |
+| IntelProCube 0.7.0.1 | the flash tool: `ipro_iot_tool_macos`, `ipro_iot_tool_linux`, `ipro_iot_tool.exe` | [GitHub Release](https://github.com/INTELPRO-INC/ipro-cube/releases); on Windows Online Setup also installs it |
 | SDK | `IPRO-SDK-V2.2.0.tar.gz` | [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0) |
 | Optional | OV5640 FLEX-24 camera module, microSD card, 8 Ω speaker (on J_SPK), headphones | your own; they complete the camera, slot and speaker steps of the self-test |
 

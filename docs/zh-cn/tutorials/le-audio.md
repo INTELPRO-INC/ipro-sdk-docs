@@ -20,7 +20,7 @@ migrate_from:
 ## 前提条件 { #prerequisites }
 
 - IPRO7AI Reef EVK：SW8 拨到 PWR，用 USB-C 供电；U6 接 IPRO Debug Probe 或 3.3 V USB 转 UART 线（115200 8N1，接法见 [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)）。可另将耳机接到 J2。
-- 已完成[第一个 FreeRTOS 应用](../get-started/first-app-freertos.md)，并已获取 IntelProCube v0.6.3 命令行烧录工具（需另行获取）。
+- 已完成[第一个 FreeRTOS 应用](../get-started/first-app-freertos.md)，并已按[准备开发环境](../get-started/environment.md#intelprocube)安装 IntelProCube 0.7.0.1 命令行烧录工具。
 - 一个可输入命令的串口终端程序（见[烧录与串口](../get-started/flash-and-monitor.md)）。
 - 一部支持并已开启 LE Audio 的 Android 手机。应用 README 中记录的测试手机是 Pixel 10 Pro（Android 17）。
 

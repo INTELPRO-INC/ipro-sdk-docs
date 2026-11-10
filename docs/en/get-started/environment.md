@@ -17,7 +17,8 @@ At the end of this page your computer has the SDK, the build tools, the RISC-V t
 | Host | macOS or Linux with bash, or Windows x64 |
 | Rights | installing packages and writing `/opt/toolchain/` need administrator rights |
 | Network | to download the SDK; Windows Online Setup needs access to GitHub |
-| Obtained separately | the RISC-V toolchain and IntelProCube v0.6.3: from INTELPRO for macOS / Linux, installed by Online Setup on Windows |
+| Obtained separately | the RISC-V toolchain: from INTELPRO for macOS / Linux, installed by Online Setup on Windows |
+| Flash tool | IntelProCube 0.7.0.1: download it from [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases), see [Install IntelProCube](#intelprocube); installed by Online Setup on Windows |
 | Hardware | IPRO7AI Reef EVK, USB-C cable, console cable; see [What you need](index.md#what-you-need) |
 
 ## Get the SDK { #get-sdk }
@@ -155,11 +156,51 @@ At the end of this page your computer has the SDK, the build tools, the RISC-V t
 
 ## Install IntelProCube { #intelprocube }
 
+IntelProCube, the flashing and OTA tool for IPRO6 and IPRO7, is published on [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases); this site uses 0.7.0.1. On Windows, Online Setup installs 0.7.0, whose files for IPRO7 and the Reef are the same as 0.7.0.1's; see [Windows Setup & VS Code](windows.md). To flash an IPRO6S, install 0.7.0.1 as well, following the [IntelProCube README](https://github.com/INTELPRO-INC/ipro-cube#windows).
+
 <div class="ipro-steps" markdown>
 
-1. **Unpack** IntelProCube v0.6.3 to a directory of your choice (`<IntelProCube>` on this site). Run its command-line tool from that directory: it reads the chip settings and partition tables from `chips/`. On Windows, Online Setup installs it; see [Windows Setup & VS Code](windows.md).
+1. **Download and check it.**
 
-2. **Check that it runs.**
+    === "macOS"
+
+        ```bash
+        curl -LO https://github.com/INTELPRO-INC/ipro-cube/releases/download/v0.7.0.1/IntelProCube-0.7.0.1-macos-arm64.tar.gz
+        shasum -a 256 IntelProCube-0.7.0.1-macos-arm64.tar.gz
+        ```
+
+        You should see `c3a8bf7eca2a48c3f9bf40c3241ddf6aec5155688f2a92f40a84cc47f7633bc4`. The macOS package needs Apple silicon. If you download it with a browser instead, run `xattr -d com.apple.quarantine IntelProCube-0.7.0.1-macos-arm64.tar.gz` before extracting, or macOS stops the programs inside.
+
+    === "Linux"
+
+        ```bash
+        curl -LO https://github.com/INTELPRO-INC/ipro-cube/releases/download/v0.7.0.1/IntelProCube-0.7.0.1-linux-x64.tar.gz
+        sha256sum IntelProCube-0.7.0.1-linux-x64.tar.gz
+        ```
+
+        You should see `efc5765ca402d0af00b42489dd61a74481531875b871517af5c0bca9d7387df9`. The Linux package is for x86-64.
+
+    If the value differs, download the file again. The values for every version are in the release's `SHA256SUMS.txt`.
+
+2. **Extract it.**
+
+    === "macOS"
+
+        ```bash
+        mkdir -p ~/ipro
+        tar xzf IntelProCube-0.7.0.1-macos-arm64.tar.gz -C ~/ipro
+        ```
+
+    === "Linux"
+
+        ```bash
+        mkdir -p ~/ipro
+        tar xzf IntelProCube-0.7.0.1-linux-x64.tar.gz -C ~/ipro
+        ```
+
+    This gives `~/ipro/IntelProCube`, written `<IntelProCube>` on this site. Run the command-line tool from that directory: it reads the chip settings, partition tables and boot2 images from `chips/`.
+
+3. **Check that it runs.**
 
     === "macOS"
 
@@ -185,14 +226,15 @@ At the end of this page your computer has the SDK, the build tools, the RISC-V t
     The output starts with the usage summary:
 
     ```text
-    usage: ipro_iot_tool_macos [-h] --chipname CHIPNAME [--interface INTERFACE]
-                               [--port PORT] [--baudrate BAUDRATE] [--xtal XTAL]
+    usage: ipro_iot_tool_macos [-h] [--list-ports] --chipname CHIPNAME
+                               [--interface INTERFACE] [--port PORT]
+                               [--baudrate BAUDRATE] [--xtal XTAL]
                                [--chip-variant CHIP_VARIANT] [--dts DTS] [--pt PT]
                                [--boot2 BOOT2] [--firmware FIRMWARE] [--mfg MFG]
     ...
     ```
 
-3. **Let `build_freertos.sh` find it** (macOS / Linux): set `IPRO_FLASH_TOOL`, or put `<IntelProCube>` on `PATH`.
+4. **Let `build_freertos.sh` find it** (macOS / Linux): set `IPRO_FLASH_TOOL`, or put `<IntelProCube>` on `PATH`.
 
     === "macOS"
 
@@ -273,7 +315,7 @@ Build time and image size vary slightly with the host and toolchain. On Windows,
 
 | Task | macOS / Linux | Windows |
 |---|---|---|
-| Install the tools | system package manager, plus the toolchain and IntelProCube from INTELPRO | Online Setup (toolchain, CMake / Ninja / Python, IntelProCube, OpenOCD, VS Code Extension) |
+| Install the tools | system package manager, plus the toolchain from INTELPRO and IntelProCube from GitHub | Online Setup (toolchain, CMake / Ninja / Python, IntelProCube, OpenOCD, VS Code Extension) |
 | Build | `make -C apps/<category>/<app>` or `./build_freertos.sh` | `IPRO: Build` in the VS Code Extension |
 | Flash | the IntelProCube command-line tool, or `./build_freertos.sh … flash` | `ipro_iot_tool.exe` |
 | Console | a terminal program such as `screen` or `picocom`; `tools/serial_monitor.py` | a terminal program such as PuTTY, or the Extension's Serial Monitor |
@@ -289,7 +331,7 @@ Command-line examples on this site are written for macOS / Linux.
 | The computed SHA-256 differs from the release page | incomplete or damaged download | delete the file and download it again |
 | `No cmake found. Install cmake or provide bundled cmake at …` | no `cmake` on `PATH`, and the bundled one cannot run on this host (it is Linux x86-64 only) | install CMake 3.15 or later as in [Install the build tools](#host-tools) |
 | `riscv64-unknown-elf-gcc: No such file or directory` | the toolchain is not at `/opt/toolchain/riscv_ipro7/` | set `CROSS_COMPILE` as in [Install the RISC-V toolchain](#toolchain) |
-| `Flash tool not found: ipro_iot_tool_macos` | `IPRO_FLASH_TOOL` is not set and IntelProCube is not on `PATH` | step 3 of [Install IntelProCube](#intelprocube) |
+| `Flash tool not found: ipro_iot_tool_macos` | `IPRO_FLASH_TOOL` is not set and IntelProCube is not on `PATH` | step 4 of [Install IntelProCube](#intelprocube) |
 | No new serial port after plugging in the adapter | charge-only USB cable, or a missing driver | change the cable; install the adapter maker's driver |
 | `Permission denied` when opening the port on Linux | you are not in the port's group | join `dialout` (or the group shown) and log in again |
 | A terminal hangs after opening `/dev/tty.*` on macOS | `tty.*` waits for carrier detect | use `/dev/cu.*` |

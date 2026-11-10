@@ -96,7 +96,7 @@ The SDK also carries applications for the IPRO7 EVB, the IPRO7AI EVK and the IPR
 
 <div class="ipro-steps" markdown>
 
-1. **Set up your host**: get the RISC-V toolchain and IntelProCube v0.6.3 from INTELPRO, install CMake 3.15 or later, GNU make and Python 3.8 or later, then download SDK V2.2.0 from the release page. [Installation](get-started/index.md)
+1. **Set up your host**: get the RISC-V toolchain from INTELPRO and IntelProCube 0.7.0.1 from GitHub, install CMake 3.15 or later, GNU make and Python 3.8 or later, then download SDK V2.2.0 from the release page. [Installation](get-started/index.md)
 2. **Build the out-of-box firmware**: from the SDK root run `make -C apps/platform/ipro7ai_reef_demo`; the image is `build/build_out/ipro7ai_reef_demo_IPRO7.bin`.
 3. **Flash and self-test**: hold SW1 and press SW2 for download mode, flash with IntelProCube and check for `[All Success]`; on the U6 console (115200 baud) type `reef selftest` and watch the LED, speaker, SD card and camera pass in turn. [Full walkthrough](get-started/first-app-freertos.md)
 

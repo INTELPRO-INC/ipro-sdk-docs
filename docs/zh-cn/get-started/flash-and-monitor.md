@@ -14,7 +14,7 @@ FreeRTOS 应用通过 IntelProCube 命令行工具经 UART0 烧录，控制台�
 
 ## 前提条件 { #prerequisites }
 
-- IntelProCube v0.6.3：`ipro_iot_tool_macos`、`ipro_iot_tool_linux` 或 `ipro_iot_tool.exe`，见[准备开发环境](environment.md#intelprocube)。
+- IntelProCube 0.7.0.1：`ipro_iot_tool_macos`、`ipro_iot_tool_linux` 或 `ipro_iot_tool.exe`，见[准备开发环境](environment.md#intelprocube)。
 - 已构建的镜像文件：`apps/<分类>/<应用>/build/build_out/<应用>_IPRO7.bin`；以 `DEFCONFIG=defconfig_<名称>` 构建时位于 `build_<名称>/build_out/`。
 - 控制台线接在 U6，见[设置开关与接线](first-app-freertos.md#connect)。串口写法：macOS `/dev/cu.usbserial-XXXX`、Linux `/dev/ttyUSB0`、Windows `COM5`。
 
@@ -49,6 +49,9 @@ FreeRTOS 应用通过 IntelProCube 命令行工具经 UART0 烧录，控制台�
 | `reboot_dl` | 在控制台输入 `reboot_dl`，屏幕输出 `reboot to download mode` | 板上正在运行含 shell 的 SDK 固件；`build_freertos.sh flash` 自动使用这种方式 |
 | 自动下载线 | 适配器的 DTR 接 U6 第 5 脚（BOOT），RTS 接第 6 脚（RESET），板上分别经 1 kΩ 接到 GPIO41 与复位脚；这种自动下载线无需按键即可进入下载模式 | 适配器有 DTR 与 RTS 引脚 |
 | IPRO Debug Probe | 在探针名称以 `02` 结尾的串口上发送控制字，见下方步骤 | 用 Debug Probe 连接 U6 |
+
+!!! tip "IntelProCube 0.7.0.1 会自己进入下载模式"
+    工具开始烧录前会先在串口发送 `reboot_dl`；用 IPRO Debug Probe 连接时，还会通过探针的 BOOT 与 RESET 线让芯片进入下载模式，烧录完成后再复位芯片。INTELPRO 用 0.7.0.1 通过 Debug Probe 在 Reef 上实测，无需按键或手动发送控制字，约 8 秒完成。板上固件没有 shell、又只用普通 USB 转 UART 线时，仍要用按键进入下载模式。下面的手动步骤供工具无法握手时使用。
 
 用 Debug Probe 进入下载模式（以 macOS 为例，在 SDK 根目录执行）：
 
@@ -122,6 +125,8 @@ FreeRTOS 应用通过 IntelProCube 命令行工具经 UART0 烧录，控制台�
     [...] - Baudrate is 921600
     [...] - Firmware is <SDK>/apps/platform/ipro7ai_reef_demo/build/build_out/ipro7ai_reef_demo_IPRO7.bin
     ...
+    [...] - shake hand success
+    ...
     [...] - flash jedec id: ef401500
     ...
     [...] - Verify success
@@ -168,14 +173,14 @@ FreeRTOS 应用通过 IntelProCube 命令行工具经 UART0 烧录，控制台�
     cd <IntelProCube>
     ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
         --port /dev/cu.usbserial-XXXX --baudrate 921600 \
-        --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
+        --boot2 chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin \
         --pt <SDK>/apps/bluetooth/ble/ipro_ble_remote/partition_cfg_2M_remote_ab.toml \
         --firmware <SDK>/apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin
     ```
 
     输出以 `[All Success]` 结尾。
 
-3. **确认**：按 SW2 复位，在 115200 baud 的控制台中看到 boot2 标题 `[BOOT2] IPRO7 Boot2 v0.5.2`，接着应用输出 `[BLE] Advertising: IPRO-Remote`。
+3. **确认**：按 SW2 复位，在 115200 baud 的控制台中看到 boot2 标题 `[BOOT2] IPRO7 Boot2 v0.6.0`，接着应用输出 `[BLE] Advertising: IPRO-Remote`。
 
 </div>
 

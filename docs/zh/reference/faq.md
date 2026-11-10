@@ -22,7 +22,8 @@ migrate_from:
     ```
 
     `VERSION.txt` 印出 `IPRO7: IPRO-SDK-V2.2.0`、`IPRO6: IPRO-SDK-V2.2.0` 與 `Release Date: 2026-11-03`。
-- **RISC-V 工具鏈**與 **IntelProCube v0.6.3 命令列燒錄工具**（`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe`）：未包含於 V2.2.0，請洽 INTELPRO。工具鏈預設安裝於 `/opt/toolchain/riscv_ipro7/`。
+- **RISC-V 工具鏈**：未包含於 V2.2.0，請洽 INTELPRO。預設安裝於 `/opt/toolchain/riscv_ipro7/`。
+- **IntelProCube 命令列燒錄工具**（`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe`）：未包含於 V2.2.0，從 [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) 下載 0.7.0.1，見[準備開發環境](../get-started/environment.md#intelprocube)。
 - **Windows 線上安裝程式 3.6.0 與 VS Code Extension 3.3.0**：目前版本，從 [ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest) 下載；安裝程式會直接安裝 SDK V2.2.0 與 Windows 版工具鏈，見 [Windows 安裝與 VS Code](../get-started/windows.md)。
 - **IPRO AI Studio**：不在 SDK 內，從 [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) 下載。
 
@@ -160,8 +161,8 @@ CONFIG_EASYFLASH4=y
 
 在 Reef 上，`ipro_ble_remote` 的 `defconfig_reef` 提供 BLE OTA（GATT 服務 `0xFF60`），需要 boot2 與 A/B 分割表 `partition_cfg_2M_remote_ab.toml`：
 
-1. 以 `--boot2` 與 `--pt …/partition_cfg_2M_remote_ab.toml` 第一次燒錄，開機訊息先出現 `[BOOT2] IPRO7 Boot2 v0.5.2`。
-2. 以 `make_reef_ota.sh` 產生 `build_reef/build_out/ipro_ble_remote_reef.xz.ota`。
+1. 以 `--boot2` 與 `--pt …/partition_cfg_2M_remote_ab.toml` 第一次燒錄，開機訊息先出現 `[BOOT2] IPRO7 Boot2 v0.6.0`。
+2. 以 `make_reef_ota.sh` 產生 `build_reef/build_out/ipro_ble_remote_reef.xz.ota`。V2.2.0 的腳本要先把 boot2 路徑改成 v0.6.0，見 [OTA 更新](../guides/ota.md#hands-on)第 4 步。
 3. 以 `reef_ota.py` 或 Android 示範 App `ipro_remote_demo.apk` 傳送套件；板子重新開機後執行新韌體。
 
 不要在以標準 `partition_cfg_2M.toml` 燒錄的 Reef 上做 OTA，板子會完全沒有輸出，只能進下載模式重燒。命令見 [Reef 的 OTA 工具](tools.md#reef-ota-tools)，整體流程見 [OTA 更新](../guides/ota.md)。

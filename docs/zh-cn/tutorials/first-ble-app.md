@@ -13,7 +13,7 @@ migrate_from:
 
 - IPRO7AI Reef EVK：SW7 拨到 CAM、SW8 拨到 PWR，用 USB-C 供电；U6 接 IPRO Debug Probe 或 3.3 V USB 转 UART 线（115200 8N1，接法见 [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)）。可另接 OV5640 FLEX-24 摄像头模组和 microSD 卡，用来试用拍照功能。
 - 已完成[第一个 FreeRTOS 应用](../get-started/first-app-freertos.md)：工具链位于 `/opt/toolchain/riscv_ipro7/`，`make` 能构建 SDK 应用。
-- IntelProCube v0.6.3（需另行获取）：命令行烧录工具 `ipro_iot_tool_macos`、`ipro_iot_tool_linux` 或 `ipro_iot_tool.exe`，以及它附带的 boot2 镜像文件 `chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin`。
+- IntelProCube 0.7.0.1（安装方法见[准备开发环境](../get-started/environment.md#intelprocube)）：命令行烧录工具 `ipro_iot_tool_macos`、`ipro_iot_tool_linux` 或 `ipro_iot_tool.exe`，以及它附带的 boot2 镜像文件 `chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin`。
 - 一部手机，二选一：
     - Android：应用目录中附带的演示 App `apps/bluetooth/ble/ipro_ble_remote/ipro_remote_demo.apk`。
     - Android 或 iOS：可读写 GATT 特征值的 BLE 工具 App，例如 nRF Connect 或 LightBlue。以下步骤以这类工具为例说明。
@@ -43,7 +43,7 @@ migrate_from:
         ```bash
         ./ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI \
             --port /dev/cu.usbserial-XXXX --baudrate 921600 \
-            --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
+            --boot2 chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin \
             --pt <SDK>/apps/bluetooth/ble/ipro_ble_remote/partition_cfg_2M_remote_ab.toml \
             --firmware <SDK>/apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin
         ```
@@ -53,7 +53,7 @@ migrate_from:
         ```bash
         ./ipro_iot_tool_linux --chipname ipro7 --chip-variant IPRO7AI \
             --port /dev/ttyUSB0 --baudrate 921600 \
-            --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin \
+            --boot2 chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin \
             --pt <SDK>/apps/bluetooth/ble/ipro_ble_remote/partition_cfg_2M_remote_ab.toml \
             --firmware <SDK>/apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_IPRO7.bin
         ```
@@ -63,7 +63,7 @@ migrate_from:
         ```powershell
         .\ipro_iot_tool.exe --chipname ipro7 --chip-variant IPRO7AI `
             --port COM5 --baudrate 921600 `
-            --boot2 chips/ipro7/builtin_imgs/boot2_v0.5.2/ipro_boot2_IPRO7_v0.5.2.bin `
+            --boot2 chips/ipro7/builtin_imgs/boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin `
             --pt <SDK>\apps\bluetooth\ble\ipro_ble_remote\partition_cfg_2M_remote_ab.toml `
             --firmware <SDK>\apps\bluetooth\ble\ipro_ble_remote\build_reef\build_out\ipro_ble_remote_IPRO7.bin
         ```
@@ -73,7 +73,7 @@ migrate_from:
 4. **打开控制台并复位**：以 115200 baud 打开 U6 的串口（方法见[烧录与串口](../get-started/flash-and-monitor.md)），按一下 SW2（RESET）。控制台先出现 boot2 的信息，再出现应用的启动信息（行首的级别、时间等字段已省略）：
 
     ```text
-    [BOOT2] IPRO7 Boot2 v0.5.2
+    [BOOT2] IPRO7 Boot2 v0.6.0
     ...
     REMOTE_APP: [BLE] Initialized
     REMOTE_APP: [BLE] All services initialized
@@ -146,11 +146,12 @@ migrate_from:
 
     先让手机和工具 App 断开与开发板的连接：Reef 配置只允许一条连接（`CONFIG_BT_CONN=1`）。
 
-11. **生成 OTA 包**：随意修改一处代码（例如把提示音改为 `reef_hw_tone(2000, 150, 30)`），重新构建（步骤 1），再把构建结果打包成 boot2 OTA 包。打包脚本会调用 IntelProCube 生成整体镜像，再用 SDK 的 `tools/create_ota.py` 压缩：
+11. **生成 OTA 包**：随意修改一处代码（例如把提示音改为 `reef_hw_tone(2000, 150, 30)`），重新构建（步骤 1），再把构建结果打包成 boot2 OTA 包。打包脚本会调用 IntelProCube 生成整体镜像，再用 SDK 的 `tools/create_ota.py` 压缩。SDK V2.2.0 的打包脚本写的是 boot2 v0.5.2 的路径，IntelProCube 0.7.0 起附带的是 boot2 v0.6.0，所以第一行先把脚本里的版本改成 v0.6.0（重复运行没有影响）：
 
     === "macOS"
 
         ```bash
+        sed -i '' 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos \
             sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         ```
@@ -158,6 +159,7 @@ migrate_from:
     === "Linux"
 
         ```bash
+        sed -i 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_linux \
             sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         ```
@@ -178,10 +180,10 @@ migrate_from:
     ipro_ble_remote_reef.xz.ota: <字节数> bytes, CRC32 <值>, <有效载荷> bytes/packet
     sent in <秒数> s (<速率> KB/s)
     verified, slot switched; rebooting
-    running: <新的编译时间>
+    running: <摄像头、SD 卡与编译时间>
     ```
 
-    开发板的控制台同时打印 `[OTA] START: …`、`[OTA] CRC32 OK! Switching partition...`、`[OTA] Ready to reboot`，重启时再次出现 `[BOOT2] IPRO7 Boot2 v0.5.2`：boot2 校验包的 SHA256、解压到 FW A 后才启动应用。INTELPRO 在 macOS、MTU 247 下实测 345 KB 包的传输时间为 13–17 秒。附带的 Android 演示 App 也能推送同一个 `.xz.ota` 包。
+    开发板的控制台同时打印 `[OTA] START: …`、`[OTA] CRC32 OK! Switching partition...`、`[OTA] Ready to reboot`，重启时 boot2 打印 `[BOOT2] IPRO7 Boot2 v0.6.0` 与 `[BOOT2] OTA pending`，校验包的 SHA256、解压到 FW A，打印 `[BOOT2] OTA ok` 后才启动应用。芯片没有烧录签名密钥时另有一行 `[OTA] no eFuse key, package unverified`，表示不校验签名。`running:` 的编译时间取自 `src/board/reef_hw.c`，只修改 `remote_app.c` 时不会变。INTELPRO 在 macOS、MTU 247 下实测 345 KB 包的传输时间为 13–17 秒。附带的 Android 演示 App 也能推送同一个 `.xz.ota` 包。
 
 </div>
 
@@ -193,7 +195,7 @@ migrate_from:
 - 控制台的广播信息显示 `IPRO-Hello`，手机扫描列表中也出现 `IPRO-Hello`。
 - 手机连接时能听到哔声，控制台打印 `Connected! Peer: …`。
 - 步骤 6 中的 LED、按键和 UART 操作仍然正常。
-- `reef_ota.py` 最后一行的 `running:` 显示新的编译时间，重新连接时听到步骤 11 中改过的提示音。
+- 控制台在重启时打印 `[BOOT2] OTA ok`，重新连接时听到步骤 11 中改过的提示音。
 
 `main.c` 启动横幅中的 `Device Name: 'IPRO-Remote'` 是固定字符串，不影响广播名称。
 
@@ -239,6 +241,7 @@ Reef 配置另外编入两个服务：OTA `0xFF60`（控制 `0xFF61`、数据 `0
 | 构建因警告失败 | 应用以 `-Werror` 编译 | 确认 `#include "reef_hw.h"` 放在 `CONFIG_IPRO7AI_REEF` 条件内，且调用写在函数内 |
 | `make_reef_ota.sh` 打印 `IntelProCube tool not found` | 没有设置 `IPRO_FLASH_TOOL`，PATH 中也没有烧录工具 | 设置 `IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos`（或 `_linux`） |
 | `make_reef_ota.sh` 打印 `build first: …` | 还没有 `build_reef/` 的构建结果 | 先执行步骤 1 |
+| `make_reef_ota.sh` 打印 `No such file or directory: …boot2_v0.5.2…` 与 `IntelProCube did not build whole_img.bin` | 脚本仍指向 IntelProCube 0.7.0 起不再附带的 boot2 v0.5.2 | 运行步骤 11 的 `sed` 行，再重新打包 |
 | `reef_ota.py` 打印 `IPRO-Remote not found` | 开发板已改名、正与手机连接，或电脑的蓝牙未开启／未授权 | 设置 `REMOTE_NAME=IPRO-Hello`；断开手机连接；在 macOS 上允许“终端”使用蓝牙 |
 | `reef_ota.py` 打印 `device error …` | 开发板拒绝了该包或写入失败 | 确认发送的是 `.xz.ota`；查看控制台的 `[OTA]` 信息 |
 | OTA 后开发板没有恢复运行 | boot2 校验包失败时会停在 USB 救援模式 | 进入下载模式，用步骤 3 的命令重新烧录 |

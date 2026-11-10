@@ -72,7 +72,7 @@ Boot messages worth knowing:
 |---|---|
 | `[XTAL] capcode <boot value> -> <set value>` | The `CONFIG_IPRO7_XTAL_CAPCODE` crystal trim was applied; on the Reef it defaults to 95 when not set |
 | `[PSRAM] WARNING: init failed` | The application enables `CONFIG_USE_PSRAM`, but PSRAM did not initialize |
-| `[BOOT2] IPRO7 Boot2 v0.5.2` | The image was flashed with boot2 (for example the Reef OTA build of `ipro_ble_remote`); boot2 runs first, then starts the application |
+| `[BOOT2] IPRO7 Boot2 v0.6.0` | The image was flashed with boot2 (for example the Reef OTA build of `ipro_ble_remote`); boot2 runs first, then starts the application |
 
 ## Enter download mode { #download-mode }
 

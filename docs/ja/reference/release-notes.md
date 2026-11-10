@@ -38,7 +38,8 @@ IPRO7 / IPRO7AI と IPRO6S のデュアルチップリリースで、V2.1.0 を�
 
 **含まれないもの**
 
-- IntelProCube 書き込みツールと RISC-V ツールチェーン：INTELPRO にお問い合わせください。
+- IntelProCube 書き込みツール：[GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) から 0.7.0.1 をダウンロードします。[開発環境の準備](../get-started/environment.md#intelprocube)を参照してください。
+- RISC-V ツールチェーン：INTELPRO にお問い合わせください。
 - モデル変換ツールを含む IPRO AI Studio：[GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) からダウンロードしてください。
 - IPRO6S 用の BLE コントローラーライブラリと、IPRO6S 用の BLE / BR/EDR アプリケーション。IPRO6S アプリケーションは Wi-Fi のみです。
 - Matter。FreeRTOS アプリケーションの Thread（Thread は Zephyr で利用可能）。

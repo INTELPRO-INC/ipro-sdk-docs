@@ -70,7 +70,7 @@ To measure the IPRO7AI's current, unplug USB-C, connect an ammeter between JP2 p
 
 ## Quick start { #quick-start }
 
-At the end the board runs the out-of-box firmware `ipro7ai_reef_demo` and answers `reef selftest` on its console. The host needs the RISC-V toolchain and IntelProCube v0.6.3 (from INTELPRO), CMake 3.15 or later, GNU make and Python 3.8 or later; see [Get Started](../../get-started/index.md).
+At the end the board runs the out-of-box firmware `ipro7ai_reef_demo` and answers `reef selftest` on its console. The host needs the RISC-V toolchain (from INTELPRO), IntelProCube 0.7.0.1 (from [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases)), CMake 3.15 or later, GNU make and Python 3.8 or later; see [Get Started](../../get-started/index.md).
 
 <div class="ipro-steps" markdown>
 
@@ -97,7 +97,7 @@ At the end the board runs the out-of-box firmware `ipro7ai_reef_demo` and answer
 
 4. **Enter download mode**: hold SW1 (BOOT), press and release SW2 (RESET), then release SW1.
 
-    The console goes silent. Other ways are under [Download mode](#download-mode).
+    The console goes silent. Other ways are under [Download mode](#download-mode). With an IPRO Debug Probe you can skip this step: IntelProCube 0.7.0.1 puts the chip in download mode through the probe and resets it after flashing.
 
 5. **Flash** from the IntelProCube directory (`./ipro_iot_tool_linux` on Linux, `ipro_iot_tool.exe` on Windows):
 

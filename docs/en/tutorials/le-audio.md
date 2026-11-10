@@ -20,7 +20,7 @@ By the end of this tutorial your IPRO7AI Reef EVK runs `ipro_le_audio_headset`: 
 ## Prerequisites { #prerequisites }
 
 - IPRO7AI Reef EVK with SW8 on PWR, powered from USB-C, with an IPRO Debug Probe or a 3.3 V USB-UART cable on U6 (115200 8N1; wiring in [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)). Headphones on J2 are optional.
-- [First FreeRTOS Application](../get-started/first-app-freertos.md) done, and the IntelProCube v0.6.3 command-line flash tool at hand (obtained separately).
+- [First FreeRTOS Application](../get-started/first-app-freertos.md) done, and the IntelProCube 0.7.0.1 command-line flash tool installed as in [Set Up Your Host](../get-started/environment.md#intelprocube).
 - A serial terminal in which you can type commands (see [Flashing & Serial Console](../get-started/flash-and-monitor.md)).
 - An Android phone that supports LE Audio, with LE Audio switched on. The phone recorded in the application README is a Pixel 10 Pro with Android 17.
 
