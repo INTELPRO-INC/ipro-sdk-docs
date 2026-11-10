@@ -1,11 +1,11 @@
 ---
 title: "書き込みとボード"
-description: IPRO Workbench が書き込みの前後にチェックする内容、パーティションテーブルの表示とチェック、ボードの Flash とファームウェアの確認、mfg パーティションへの AI モデルの書き込みを説明します。
+description: IPRO Workbench が書き込みの前後にチェックする内容、パーティションテーブルの表示とチェック、ボードの Flash とファームウェアの確認、mfg パーティションへの AI モデルの書き込み、IPRO6S EVK のビルド、書き込み、モニターを説明します。
 ---
 
 # 書き込みとボード
 
-書き込み時に IDE が行うチェック、パーティションテーブル、ボードの Flash、ファームウェアの確認、AI モデルの書き込みについて説明します。ボードは IPRO Debug Probe に接続した IPRO7AI Reef EVK V4.0 で、書き込みには IntelProCube を使用します。
+書き込み時に IDE が行うチェック、パーティションテーブル、ボードの Flash、ファームウェアの確認、AI モデルの書き込みについて説明します。最後のセクションでは、[IPRO6S EVK](#ipro6s) と、IPRO7 シリーズとの違いを説明します。それ以外のセクションのボードは IPRO Debug Probe に接続した IPRO7AI Reef EVK V4.0 で、書き込みには IntelProCube を使用します。
 
 ## 書き込み { #flash }
 
@@ -33,6 +33,7 @@ description: IPRO Workbench が書き込みの前後にチェックする内容�
 | ボードが応答しない | プローブのケーブルと電源の確認を促し、**Select Port** と **Retry** を提示する |
 | ポートがほかのプログラムで使用中 | そのプログラムを閉じてから **Retry** するよう促す |
 | パーティションテーブルがボードの Flash より大きい | 書き込みの前に確認する。**Flash Anyway** を選ぶか、代わりに **Partition Table** を開くことができる |
+| このボードに必要なパーティションテーブルが IntelProCube にない | 書き込まない（そのテーブルがないとボードが起動しないため）。**Partition Table** と **Install IntelProCube** を提示する |
 
 ## パーティションテーブル { #partitions }
 
@@ -40,7 +41,7 @@ description: IPRO Workbench が書き込みの前後にチェックする内容�
 
 <div class="ipro-steps" markdown>
 
-1. **パーティションテーブルを開きます。** アプリケーションを右クリックして **Partition Table** を選択します。
+1. **パーティションテーブルを開きます。** アプリケーションを右クリックして **Partition Table** を選択します（または IPRO Home の **Tools** にある **Partition table** をクリックします）。
 
     **期待される結果**：「Partition table of &lt;application&gt;」が開きます。**Flash with** には今回の書き込みで使用するパーティションテーブル（デフォルトでは、IntelProCube が `.config` の Flash サイズから選ぶもの）が表示され、その横に `.config` で設定された Flash サイズとファームウェアのサイズが表示されます。IDE がボードの Flash を把握している場合は、比較の行が追加されます（例：「The board on this probe has 2 MB of flash (Winbond EF4015); ipro_unit_test is set to 1 MB.」）。その下には、Flash マップ（スロット A とスロット B に 1 行ずつ）、各パーティションのアドレスとサイズ、FW パーティションのうちファームウェアが占める割合が表示されます。
 
@@ -84,7 +85,7 @@ IPRO7AI の NPU モデル（`.inm`）は Flash の mfg パーティションに�
 
 <div class="ipro-steps" markdown>
 
-1. **モデルを選択します。** アプリケーションを右クリックして **AI Model…** を選択します。**Model** でアプリケーションフォルダー内の `.inm` を選択するか、**Browse…** をクリックして別のファイルを選択します。
+1. **モデルを選択します。** アプリケーションを右クリックして **AI Model…** を選択します（または IPRO Home の **Tools** にある **AI model** をクリックします）。**Model** でアプリケーションフォルダー内の `.inm` を選択するか、**Browse…** をクリックして別のファイルを選択します。
 
     **期待される結果**：モデルのサイズ、フォーマットのバージョン、レイヤー数、入力、NPU 命令・CPU 命令・重みの各サイズ、読み込み後に使用するメモリ（モデルとワークバッファーの合計を 8 MB の PSRAM と比較）、書き込み先の mfg パーティションが表示されます。最後の行には「The model fits this application and its partition table.」、または収まらない理由が表示されます。
 
@@ -100,3 +101,77 @@ IPRO7AI の NPU モデル（`.inm`）は Flash の mfg パーティションに�
 
 !!! note
     IntelProCube の 1M パーティションテーブルにはモデル用の独立した領域がない（mfg が FW と重なっている）ため、IDE は書き込みを拒否します。**Partition Table** で、アプリケーションに付属するパーティションテーブル（例：独立した mfg を持つもの）を選択してから、モデルを書き込みます。
+
+## IPRO6S EVK { #ipro6s }
+
+IPRO Workbench は、IPRO SDK の IPRO6 アプリケーション（`.config` に `CONFIG_CHIP="IPRO6"` があるもの）のビルド、書き込み、モニターを行えます。ボードは IPRO6S EVK です。このセクションでは、IPRO SDK 2.2.1 の `platform/ipro6_demo` を使用します。チップ、そのアプリケーション、コマンドラインからの書き込みについては [IPRO6S](../hardware/chips/ipro6s.md) を参照してください。
+
+| 項目 | バージョン |
+|---|---|
+| IPRO Workbench | 0.1.1 以降 |
+| IPRO SDK | 2.2.1 以降 |
+| IntelProCube | 0.7.0.1 以降（IPRO6S 用のパーティションテーブル `partition_cfg_fw_direct.toml` を含む） |
+
+### ipro6_demo のビルド、書き込み、モニター { #ipro6s-run }
+
+<div class="ipro-steps" markdown>
+
+1. **プローブとボードを接続します。** IPRO Debug Probe を USB ケーブルでコンピューターに接続し、次にプローブを IPRO6S EVK に接続します。
+
+    **期待される結果**：サイドバーの **Board** に、**IPRO Debug Probe** とその 2 つのポート（UART と CCI）が表示されます。
+
+2. **アプリケーションを選択します。** サイドバーの **Applications** で **ipro6_demo** をクリックします（`platform` カテゴリーにあります。検索ボックスに `ipro6` と入力することもできます）。
+
+    **期待される結果**：ツールバーに `ipro6_demo` と表示され、ボードは自動的に **IPRO6S EVK** に変わります。サイドバーの **Board** に表示されるチップのラベルは `IPRO6S` です。ボードはアプリケーションのチップに従うため、自分で選択する必要はありません。
+
+3. **2 台のボードを接続している場合はポートを選択します。** 2 台のボード（例：Reef と IPRO6S EVK をそれぞれ別のプローブで）を同時に接続している場合は、ツールバーのボード名をクリックして **Select Port…** を選択し、IPRO6S EVK につないだプローブの UART を選びます。ボードが 1 台だけの場合、この手順は不要です。
+
+4. **ビルド、書き込み、モニターを行います。** **Build, Flash and Monitor** をクリックします（`Cmd+Alt+R` / `Ctrl+Alt+R`）。
+
+    **期待される結果**：次の順に表示されます。
+
+    1. **IPRO Build** で `[100%] Built target ipro6_demo_IPRO6.elf` までコンパイルが進みます。
+    2. **IPRO Flash** の最初の行は「Partition table: …/chips/ipro6/partition/partition_cfg_fw_direct.toml」です。その後のコマンドには `--chipname ipro6 --chip-variant IPRO6S` と `--pt …/partition_cfg_fw_direct.toml` が含まれ、最後の行は `[All Success]` です。
+    3. **IPRO Monitor** が開いてボードが再起動し、出力の最後に `Init Shell (RT-Thread FinSH based)` とプロンプト `ipro />` が表示されます。
+
+5. **ボードのコマンドを一覧表示します。** モニターで `help` と入力し、Enter を押します。
+
+    **期待される結果**：ボードがコマンドの一覧を表示します。その中に、Wi-Fi のコマンド（`stack_wifi`、`wifi_sta_connect`、`wifi_ap_start`）と `iperf` があります。[Wi-Fi スループット（iperf）](measure.md#iperf)（[テストと測定](measure.md)のセクション）では、これらのコマンドを使用します。
+
+</div>
+
+![IPRO Workbench のウィンドウ全体。ツールバーに ipro6_demo と IPRO6S EVK が表示され、IPRO Home にメモリのバーがあり、IPRO Monitor の最後に「Init Shell (RT-Thread FinSH based)」とプロンプトが表示され、ビルドと書き込みの完了を知らせる通知が出ている](../assets/workbench/ipro6s-run.svg)
+
+!!! warning "重要"
+    IPRO6S EVK には、必ず `partition_cfg_fw_direct.toml` を使って書き込みます。このテーブルは IDE が自動的に選択します。IntelProCube のバージョンが古く、このテーブルを含んでいない場合、IDE は書き込みを行わず、「IntelProCube has no partition_cfg_fw_direct.toml, the partition table ipro6_demo flashes with. Without one the board would not boot. Update IntelProCube, or choose a partition table for ipro6_demo.」と表示します。**Install IntelProCube** をクリックして新しいバージョンをインストールし、もう一度書き込んでください。
+
+### IPRO6S EVK 用のアプリケーションを作成する { #ipro6s-new-app }
+
+<div class="ipro-steps" markdown>
+
+1. **新しいアプリケーションの作成を開始します。** **Applications** の一覧の上にある **+**（**New Application…**）をクリックします。
+
+2. **フォームに入力します。** **Start from** で **Hello World for a board** を選択し、**Board** で **IPRO6S EVK** を選択し、名前に `my_wifi_app` と入力して、**Create** をクリックします。
+
+    **期待される結果**：一覧に新しい `user/my_wifi_app` が追加され、ツールバーのボードが **IPRO6S EVK** になり、エディターにその `main.c` が開きます。
+
+3. **実行します。** **Build, Flash and Monitor** をクリックします。
+
+    **期待される結果**：IPRO Monitor に `Hello from my_wifi_app` と表示されます。
+
+</div>
+
+![New IPRO Application ダイアログ。ボードに IPRO6S EVK (IPRO6S)、名前に my_wifi_app が入力されている](../assets/workbench/new-app-ipro6s.svg)
+
+### IPRO7 シリーズとの違い { #ipro6s-differences }
+
+IPRO6 シリーズのボードは、起動時にファームウェアのビルド時刻、パーティションテーブル、Flash の ID を出力しません。そのため、これらのメッセージに依存する機能は IPRO6S EVK には適用されません。
+
+| 機能 | IPRO6S EVK の場合 |
+|---|---|
+| ボード上のファームウェアの確認（**Board** の「Runs …」の行） | 表示されません。書き込みは、**IPRO Flash** の `[All Success]` とモニターの起動メッセージで確認します。 |
+| パーティションテーブルとボードの比較（**On the board**） | 比較されません。**Partition Table** には、書き込みで使われるテーブルがこれまでどおり表示されます。 |
+| 起動時のボードの Flash の検出 | 起動時には検出されません。一度書き込むと、**Board** に、IntelProCube が書き込み中に読み取った Flash が表示されます（例：「Flash Winbond 2 MB」）。 |
+| AI モデル | 適用されません（NPU は IPRO7AI の機能です）。 |
+
+ビルド、書き込み、シリアルモニター、設定（Kconfig）、ピン設定、メモリマップ、[Wi-Fi スループット（iperf）](measure.md#iperf)は、ほかのページで説明しているとおりに動作します。

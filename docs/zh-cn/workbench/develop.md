@@ -1,11 +1,11 @@
 ---
 title: "开发应用程序"
-description: 编写代码时最常用的 IPRO Workbench 视图：配置（Kconfig）、引脚配置与生成的代码、构建与错误、内存映射和内存预算。
+description: 编写代码时最常用的 IPRO Workbench 视图：配置（Kconfig）、引脚配置与生成的代码、GATT 服务与生成的代码、构建与错误、内存映射和内存预算。
 ---
 
 # 开发应用程序
 
-编写代码时最常用的视图：修改配置（Kconfig）、配置引脚、处理构建错误，以及查看内存用在了哪里。示例使用 IPRO7AI Reef EVK V4.0。
+编写代码时最常用的视图：修改配置（Kconfig）、配置引脚、配置 GATT 服务、处理构建错误，以及查看内存用在了哪里。示例使用 IPRO7AI Reef EVK V4.0。
 
 ## 修改配置（Kconfig） { #kconfig }
 
@@ -85,6 +85,83 @@ description: 编写代码时最常用的 IPRO Workbench 视图：配置（Kconfi
     - `app_pins.h` 和 `app_pins.c` 由 IDE 生成，请勿手动编辑。对于手动编辑过的文件，IDE 不会直接覆盖，而是先询问是否 **Overwrite**。
     - `pins.yaml` 有错误时，构建会停止，错误列在 **Problems** 面板中。
     - 引脚数据来自 IPRO7 数据手册。
+
+## 配置 GATT 服务 { #gatt }
+
+**GATT Configuration** 以树状列表和表单定义 BLE 应用程序的 GATT 服务和特征，将其保存在 `gatt.yaml` 中，并生成 `app_gatt.h` 和 `app_gatt.c`：每个服务对应一个 `BT_GATT_SERVICE_DEFINE`，每个特征则有读取和修改其值以及发送通知的函数。应用程序无需自己编写 GATT 属性表。
+
+应用程序的 `.config` 需要 `CONFIG_BLUETOOTH_LE_ENABLE=y` 和 `CONFIG_BT_PERIPHERAL=y`，`ipro_ble_remote` 就是这样配置的。
+
+<div class="ipro-steps" markdown>
+
+1. **打开 GATT Configuration。** 右键点击应用程序并选择 **GATT Configuration…**（或点击 IPRO Home 上的 **GATT services**）。
+
+    **应看到**：打开一个 **GATT: &lt;application&gt;** 标签页。还没有 `gatt.yaml` 时，顶部有一条说明，提示先添加服务。
+
+2. **添加服务。** 点击 **+ Service**，将名称改为 `sensor`。
+
+    **应看到**：左侧列表中出现 `sensor`；它的 UUID 已经是一个随机的 128 位 UUID，点击 **New** 可以换一个。
+
+3. **添加特征。** 点击 **+ Characteristic**，将名称改为 `counter`，勾选属性 **read** 和 **notify**，值类型选择 `uint32`，描述输入 `Seconds since boot`。
+
+    **应看到**：右侧的 **In app_gatt.h** 列出 `app_gatt_sensor_counter_get`、`_set`、`_notify` 和 `_subscribed`，其下方是你可以自行定义的钩子 `app_gatt_sensor_counter_subscription_changed`；并显示“No problems.”
+
+4. **尝试输入无效的 UUID。** 将 UUID 改为 `2a1`。
+
+    **应看到**：问题列表显示 `sensor.counter: "2a1" is not a 16-bit UUID such as 2a19 or a 128-bit UUID`，生成的代码被替换为“Fix the errors to see the generated code.”点击 **New** 即可恢复为有效的 UUID。
+
+5. **保存并生成。** 点击 **Save and Generate**（`Cmd+S` / `Ctrl+S`）。
+
+    **应看到**：通知“Saved gatt.yaml and generated app_gatt.h and app_gatt.c.”应用程序文件夹中出现 `gatt.yaml`、`app_gatt.h` 和 `app_gatt.c`，`CMakeLists.txt` 中新增一行 `app_gatt.c`。
+
+6. **在代码中使用生成的函数。** 添加 `#include "app_gatt.h"`，在自己的任务中更新数值并通知已订阅的对端设备；将服务 UUID 放入广播数据，以便按该 UUID 扫描的对端设备能够找到开发板：
+
+    ```c
+    #include "app_gatt.h"
+
+    static const struct bt_data ad[] = {
+        BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
+        BT_DATA_BYTES(BT_DATA_UUID128_ALL, APP_GATT_SENSOR_UUID_VAL),
+    };
+
+    /* Once a second, in your own task (not in an interrupt) */
+    app_gatt_sensor_counter_set(seconds);
+    if (app_gatt_sensor_counter_subscribed()) {
+        app_gatt_sensor_counter_notify(NULL);   /* NULL: every subscribed peer */
+    }
+    ```
+
+    点击 **Build, Flash and Monitor**。
+
+    **应看到**：**IPRO Build** 先显示 `gatt: wrote app_gatt.c from gatt.yaml`，然后再编译。用手机或计算机上的 BLE 工具（例如 nRF Connect）连接后，可以看到 `sensor` 服务和 `counter`；订阅通知后，每秒收到一个新的数值。
+
+</div>
+
+![gatt_check 的 GATT 配置页面，左侧是服务树，右侧是特征 check.counter 的表单，下方是生成的代码](../assets/workbench/gatt.svg)
+
+| 设置 | 含义 |
+|---|---|
+| Properties | read、write、write_without_response、notify、indicate；选择 notify 或 indicate 时会添加 CCC，供对端设备订阅 |
+| Value type | `uint8` 到 `int32`（固定大小，以小端序发送）、`bytes`、`string`（最大长度 1–512 字节） |
+| Initial value | 整数类型填数字（也可以写 `0x1f`）；`string` 填文本；`bytes` 填十六进制，例如 `01 02 ff` |
+| Security | 要求加密链路或经过认证（防 MITM）的配对时，`.config` 需要 `CONFIG_BT_SMP=y` |
+| Description | 写入 Characteristic User Description，BLE 工具会显示它 |
+
+为每个特征生成的函数（服务 `sensor`，特征 `counter`）：
+
+| 函数 | 用途 |
+|---|---|
+| `app_gatt_sensor_counter_get` / `_set` | 读取和修改对端设备读到的值 |
+| `app_gatt_sensor_counter_notify` / `_indicate` | 将当前值发送给已订阅的对端设备（选择了 notify / indicate 时） |
+| `app_gatt_sensor_counter_subscribed` | 是否有对端设备订阅 |
+| `app_gatt_sensor_counter_written`（钩子） | 对端设备写入后调用，此时值已经保存；在自己的源文件中定义同名函数即可 |
+| `app_gatt_sensor_counter_subscription_changed`（钩子） | 对端设备开启或关闭通知时调用 |
+
+!!! note
+    - `app_gatt.h` 和 `app_gatt.c` 由 IDE 生成，请勿手动编辑。钩子是弱函数：自己的源文件中的同名函数会取代它们。对于手动编辑过的文件，IDE 不会直接覆盖，而是先询问是否 **Overwrite**。
+    - `gatt.yaml` 有错误时，构建会停止，错误列在 **Problems** 面板中。
+    - 长度超过 20 字节的通知，要在对端设备提高 ATT MTU 之后才能完整送达；一条通知最多携带 244 字节。
+    - 在服务变更之前已经配对的对端设备，可能仍保留旧的服务列表；请在对端设备的蓝牙设置中忽略该设备，然后重新配对。
 
 ## 构建与错误 { #build }
 

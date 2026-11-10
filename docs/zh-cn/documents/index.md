@@ -7,7 +7,7 @@ migrate_from: []
 
 # 文档下载
 
-INTELPRO 为 IPRO7 与 IPRO7AI 提供的正式文档，软件文档对应 SDK V2.1 与 IPRO AI Teach 2.0，IPRO Workbench 操作手册对应 IPRO Workbench 0.1.0。各文档提供的语言列于表中。
+INTELPRO 为 IPRO7 与 IPRO7AI 提供的正式文档，软件文档对应 SDK V2.1 与 IPRO AI Teach 2.0，IPRO Workbench 操作手册对应 IPRO Workbench 0.1.1。各文档提供的语言列于表中。
 
 !!! info "获取方式"
     标注“向 INTELPRO 索取”的文档，请向 INTELPRO 索取，并注明文档名称、版本与语言。
@@ -32,7 +32,7 @@ INTELPRO 为 IPRO7 与 IPRO7AI 提供的正式文档，软件文档对应 SDK V2
 | IPRO7 软件工具使用指南 | V1.1 | 繁体中文／English | RISC-V 工具链、构建与配置系统、烧录与下载工具、调试工具、串口监视、BLE 工具、RF 调校工具、镜像文件工具、内存与大小分析 | 向 INTELPRO 索取 |
 | IPRO7AI Edge AI 编程指南 | V1.2 | 繁体中文 | Edge AI 平台 V2.0 的运行层、模型存储、数据源、预处理、应用框架与事件、设备协议、主机端 SDK 与命令行 | 向 INTELPRO 索取 |
 | IPRO7AI AI Studio 使用指南 | V1.3 | 繁体中文／English | 模型准备与编译、NPU 任务分派查看、数值验证、上板运行与算子支持表 | 向 INTELPRO 索取 |
-| IPRO Workbench 操作手册 | V1.1 | 繁体中文／English | IPRO Workbench 0.1.0 的安装、首次运行、开发与设置、烧录、串口监视、调试、板上测试与测量、AI 助手与故障排除 | [繁体中文](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.0/IPRO-Workbench-Operation-Manual-V1.1-zh-TW.pdf)／[English](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.0/IPRO-Workbench-Operation-Manual-V1.1-en.pdf) |
+| IPRO Workbench 操作手册 | V1.2 | 繁体中文／English | IPRO Workbench 0.1.1 的安装、首次运行、开发与设置、烧录（含 IPRO6S EVK）、串口监视、调试、板上测试与测量（含 Wi-Fi 传输速率）、AI 助手与故障排除 | [繁体中文](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.1/IPRO-Workbench-Operation-Manual-V1.2-zh-TW.pdf)／[English](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.1/IPRO-Workbench-Operation-Manual-V1.2-en.pdf) |
 
 ## 开发板文档 { #board-documents }
 

@@ -53,7 +53,7 @@ SDK に付属するユニットテスト `ipro_unit_test` を使って「ビル�
 
 1. **新しいアプリケーションを開始します。** **Applications** 一覧の上にある **+**（**New Application…**）か、IPRO Home の **New application from a template or an example** をクリックします。
 
-2. **フォームに入力します。** **Start from** で **Hello World for a board** を、**Board** で **IPRO7AI Reef** を選択し、名前に `my_app` と入力します。カテゴリーは `user` のままにして、**Create** をクリックします。
+2. **フォームに入力します。** **Start from** で **Hello World for a board** を、**Board** で **IPRO7AI Reef** を選択し（IPRO6S EVK の場合は **IPRO6S EVK** を選択します。[IPRO6S EVK 用のアプリケーションを作成する](flash.md#ipro6s-new-app)を参照）、名前に `my_app` と入力します。カテゴリーは `user` のままにして、**Create** をクリックします。
 
     名前に使用できるのは英小文字、数字、アンダースコアだけで、先頭は英字にする必要があります。
 
@@ -80,6 +80,7 @@ SDK に付属するユニットテスト `ipro_unit_test` を使って「ビル�
 | **Build, Flash and Monitor** / **Build** / **Flash** / **Debug** | ツールバーと同じ |
 | **Settings (Kconfig)…** / **Menuconfig** / **Open .config** | アプリケーションの設定を変更する。[アプリケーションの開発](develop.md#kconfig)を参照 |
 | **Pin Configuration…** | GPIO の機能を割り当て、コードを生成する |
+| **GATT Configuration…** | BLE のサービスとキャラクタリスティックを定義し、コードを生成する。[GATT サービスを設定する](develop.md#gatt)を参照 |
 | **Reconfigure and Build** / **Clean** | CMake の構成をやり直してビルドする／ビルド結果を削除する |
 | **Memory Map** | メモリの使われ方を確認する |
 | **Partition Table** / **AI Model…** / **Power…** | [書き込みとボード](flash.md)と[テストと測定](measure.md#power)を参照 |
@@ -88,6 +89,6 @@ SDK に付属するユニットテスト `ipro_unit_test` を使って「ビル�
 
 ## 次のステップ { #next-steps }
 
-- [アプリケーションの開発](develop.md)：設定（Kconfig）、ピン、ビルドエラー、メモリの使われ方。
-- [書き込みとボード](flash.md)：書き込み時に IDE がチェックする内容、パーティションテーブル、AI モデル。
+- [アプリケーションの開発](develop.md)：設定（Kconfig）、ピン、GATT サービス、ビルドエラー、メモリの使われ方。
+- [書き込みとボード](flash.md)：書き込み時に IDE がチェックする内容、パーティションテーブル、AI モデル、IPRO6S EVK。
 - [シリアルモニター](monitor.md)：フィルター、タイムスタンプ、ログ、シリアルプロッター、2 つ目のポート。

@@ -53,7 +53,7 @@ description: 在 IPRO Workbench 中用 ipro_unit_test 完整走一遍构建、�
 
 1. **新建应用程序。** 点击 **Applications** 列表上方的 **+**（**New Application…**），或点击 IPRO Home 上的 **New application from a template or an example**。
 
-2. **填写表单。** 在 **Start from** 中选择 **Hello World for a board**；在 **Board** 中选择 **IPRO7AI Reef**；名称输入 `my_app`，类别保留为 `user`，然后点击 **Create**。
+2. **填写表单。** 在 **Start from** 中选择 **Hello World for a board**；在 **Board** 中选择 **IPRO7AI Reef**（使用 IPRO6S EVK 时选择 **IPRO6S EVK**；请参阅[为 IPRO6S EVK 创建应用程序](flash.md#ipro6s-new-app)）；名称输入 `my_app`，类别保留为 `user`，然后点击 **Create**。
 
     名称只能包含小写字母、数字和下划线，并且必须以字母开头。
 
@@ -80,6 +80,7 @@ description: 在 IPRO Workbench 中用 ipro_unit_test 完整走一遍构建、�
 | **Build, Flash and Monitor** / **Build** / **Flash** / **Debug** | 与工具栏上的相同 |
 | **Settings (Kconfig)…** / **Menuconfig** / **Open .config** | 修改应用程序的配置；请参阅[开发应用程序](develop.md#kconfig) |
 | **Pin Configuration…** | 分配 GPIO 功能并生成代码 |
+| **GATT Configuration…** | 定义 BLE 服务和特征并生成代码；请参阅[配置 GATT 服务](develop.md#gatt) |
 | **Reconfigure and Build** / **Clean** | 重新运行 CMake 配置并构建；删除构建结果 |
 | **Memory Map** | 查看内存用在了哪里 |
 | **Partition Table** / **AI Model…** / **Power…** | 请参阅[烧录与开发板](flash.md)和[测试与测量](measure.md#power) |
@@ -88,6 +89,6 @@ description: 在 IPRO Workbench 中用 ipro_unit_test 完整走一遍构建、�
 
 ## 下一步 { #next-steps }
 
-- [开发应用程序](develop.md)：配置（Kconfig）、引脚、构建错误以及内存用在了哪里。
-- [烧录与开发板](flash.md)：IDE 在烧录时检查的内容、分区表和 AI 模型。
+- [开发应用程序](develop.md)：配置（Kconfig）、引脚、GATT 服务、构建错误以及内存用在了哪里。
+- [烧录与开发板](flash.md)：IDE 在烧录时检查的内容、分区表、AI 模型和 IPRO6S EVK。
 - [串口监视](monitor.md)：过滤、时间戳、日志、串口绘图器和第二个端口。

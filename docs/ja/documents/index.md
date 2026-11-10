@@ -7,7 +7,7 @@ migrate_from: []
 
 # ドキュメント
 
-INTELPRO が IPRO7 と IPRO7AI 向けに提供している正式ドキュメントです。ソフトウェアのドキュメントは SDK V2.1 と IPRO AI Teach 2.0 に、IPRO Workbench 操作マニュアルは IPRO Workbench 0.1.0 に対応しています。各ドキュメントの提供言語は表に記載しています。
+INTELPRO が IPRO7 と IPRO7AI 向けに提供している正式ドキュメントです。ソフトウェアのドキュメントは SDK V2.1 と IPRO AI Teach 2.0 に、IPRO Workbench 操作マニュアルは IPRO Workbench 0.1.1 に対応しています。各ドキュメントの提供言語は表に記載しています。
 
 !!! info "入手方法"
     「INTELPRO にお問い合わせください」と記載されたドキュメントは、ドキュメント名、バージョン、言語を明記のうえ INTELPRO にお問い合わせください。
@@ -32,7 +32,7 @@ INTELPRO が IPRO7 と IPRO7AI 向けに提供している正式ドキュメン�
 | IPRO7 ソフトウェアツール ユーザーガイド | V1.1 | 繁体字中国語／英語 | RISC-V ツールチェーン、ビルドと設定のシステム、書き込み・ダウンロードツール、デバッグツール、シリアルモニター、BLE ツール、RF 調整ツール、イメージツール、メモリとサイズの解析 | INTELPRO にお問い合わせください |
 | IPRO7AI Edge AI プログラミングガイド | V1.2 | 繁体字中国語 | Edge AI Platform V2.0 のランタイム、モデルストア、データソース、前処理、アプリケーションフレームワークとイベント、デバイスプロトコル、ホスト SDK とコマンドライン | INTELPRO にお問い合わせください |
 | IPRO7AI AI Studio ユーザーガイド | V1.3 | 繁体字中国語／英語 | モデルの準備とコンパイル、NPU ディスパッチの確認、数値検証、ボード上での実行、演算子サポート表 | INTELPRO にお問い合わせください |
-| IPRO Workbench 操作マニュアル | V1.1 | 繁体字中国語／英語 | IPRO Workbench 0.1.0 のインストール、初回の実行、開発と設定、書き込み、シリアルモニター、デバッグ、ボード上のテストと測定、AI アシスタント、トラブルシューティング | [繁体字中国語](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.0/IPRO-Workbench-Operation-Manual-V1.1-zh-TW.pdf)／[英語](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.0/IPRO-Workbench-Operation-Manual-V1.1-en.pdf) |
+| IPRO Workbench 操作マニュアル | V1.2 | 繁体字中国語／英語 | IPRO Workbench 0.1.1 のインストール、初回の実行、開発と設定、書き込み（IPRO6S EVK を含む）、シリアルモニター、デバッグ、ボード上のテストと測定（Wi-Fi スループットを含む）、AI アシスタント、トラブルシューティング | [繁体字中国語](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.1/IPRO-Workbench-Operation-Manual-V1.2-zh-TW.pdf)／[英語](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.1/IPRO-Workbench-Operation-Manual-V1.2-en.pdf) |
 
 ## ボードのドキュメント { #board-documents }
 

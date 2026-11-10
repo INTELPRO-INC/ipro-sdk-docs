@@ -55,8 +55,7 @@ The panel that holds the **IPRO Monitor** tab has a few buttons at its top right
 
 The filter judges a line only once the whole line has arrived, so the shell prompt shows only after you press Enter.
 
-!!! tip
-    The firmware check, the partition table comparison and the board tests read every line the monitor receives. Clear the filter before you do any of these.
+The filter only changes what is shown: the firmware check, the partition table comparison and the board tests still read every line the board prints, so they work with a filter on.
 
 ### Timestamps { #timestamps }
 

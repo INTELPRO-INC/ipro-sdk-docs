@@ -26,7 +26,7 @@ V2.2.0 の修正リリースで、アプリケーションは V2.2.0 と同じ 4
 
 ### 既知の問題 { #v2-2-1-known-issues }
 
-- **IPRO Workbench 0.1.0 と IPRO6S**：Workbench は IPRO6S のパーティションテーブルを付けずに IPRO6S イメージを書き込むため、ボードが起動しません。[IPRO6S](../hardware/chips/ipro6s.md#flashing) のとおり IntelProCube のコマンドラインで書き込んでください。
+- **IPRO Workbench 0.1.0 と IPRO6S**：Workbench は IPRO6S のパーティションテーブルを付けずに IPRO6S イメージを書き込むため、ボードが起動しません。IPRO Workbench 0.1.1 以降を使う（[IPRO6S EVK](../workbench/flash.md#ipro6s) を参照）か、[IPRO6S](../hardware/chips/ipro6s.md#flashing) のとおり IntelProCube のコマンドラインで書き込んでください。
 
 ## IPRO-SDK-V2.2.0 { #v2-2-0 }
 

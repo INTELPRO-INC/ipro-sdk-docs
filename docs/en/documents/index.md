@@ -7,7 +7,7 @@ migrate_from: []
 
 # Documents
 
-The formal documents INTELPRO provides for IPRO7 and IPRO7AI, The software documents match SDK V2.1 and IPRO AI Teach 2.0; the IPRO Workbench Operation Manual matches IPRO Workbench 0.1.0. The languages of each document are listed in the table.
+The formal documents INTELPRO provides for IPRO7 and IPRO7AI, The software documents match SDK V2.1 and IPRO AI Teach 2.0; the IPRO Workbench Operation Manual matches IPRO Workbench 0.1.1. The languages of each document are listed in the table.
 
 !!! info "How to get them"
     For documents marked "On request", contact INTELPRO and name the document, version and language.
@@ -32,7 +32,7 @@ The formal documents INTELPRO provides for IPRO7 and IPRO7AI, The software docum
 | IPRO7 Software Tools User Guide | V1.1 | zh-TW / English | RISC-V toolchain, build and configuration system, flashing and download tool, debugging tools, serial monitoring, BLE tools, RF tuning tool, image tools, memory and size analysis | On request |
 | IPRO7AI Edge AI Programming Guide | V1.2 | zh-TW | The Edge AI Platform V2.0 runtime, model store, data sources, pre-processing, application framework and events, device protocol, host SDK and command line | On request |
 | IPRO7AI AI Studio User Guide | V1.3 | zh-TW / English | Model preparation and compilation, NPU dispatch inspection, numerical verification, running on board and the operator support matrix | On request |
-| IPRO Workbench Operation Manual | V1.1 | zh-TW / English | Installing IPRO Workbench 0.1.0, first run, development and settings, flashing, serial monitor, debugging, on-board tests and measurement, the AI assistant and troubleshooting | [zh-TW](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.0/IPRO-Workbench-Operation-Manual-V1.1-zh-TW.pdf) / [English](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.0/IPRO-Workbench-Operation-Manual-V1.1-en.pdf) |
+| IPRO Workbench Operation Manual | V1.2 | zh-TW / English | Installing IPRO Workbench 0.1.1, first run, development and settings, flashing (including the IPRO6S EVK), serial monitor, debugging, on-board tests and measurement (including Wi-Fi throughput), the AI assistant and troubleshooting | [zh-TW](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.1/IPRO-Workbench-Operation-Manual-V1.2-zh-TW.pdf) / [English](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.1/IPRO-Workbench-Operation-Manual-V1.2-en.pdf) |
 
 ## Board documents { #board-documents }
 

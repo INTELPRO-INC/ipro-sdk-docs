@@ -55,8 +55,7 @@ description: 在 IPRO Workbench 的 IPRO Monitor 看板子的 UART 輸出、送�
 
 篩選時一行要收完才判斷，所以 shell 提示字元要按 Enter 後才看得到。
 
-!!! tip
-    韌體核對、分割表比對與板上測試讀的是監看收到的每一行。做這些事之前，請先取消篩選。
+篩選只影響畫面：[韌體核對](flash.md#board-flash)、[分割表比對](flash.md#partitions)與[板上測試](measure.md#board-tests)照樣讀得到板子印出的每一行，開著篩選也能使用。
 
 ### 時間戳記 { #timestamps }
 

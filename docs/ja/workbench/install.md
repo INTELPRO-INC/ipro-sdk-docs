@@ -1,19 +1,19 @@
 ---
 title: "IPRO Workbench のインストール"
-description: IPRO Workbench 0.1.0 をダウンロードして検証し、macOS または Windows にインストールして開発環境を整え、IPRO SDK を開き、IDE がボードを認識するまで接続します。
+description: IPRO Workbench 0.1.1 をダウンロードして検証し、macOS または Windows にインストールして開発環境を整え、IPRO SDK を開き、IDE が認識するまで IPRO7AI Reef EVK V4.0 または IPRO6S EVK を接続します。
 ---
 
 # IPRO Workbench のインストール
 
-このページでは、IPRO Workbench のインストールから、IDE が IPRO7AI Reef EVK V4.0 を認識するまでを説明します。完了すると、IPRO Home のバナーに「Ready to run」と表示されます。対象は IPRO Workbench 0.1.0 です。ボタンなどのインターフェースのラベルは、英語のインターフェースでの表記のまま太字で示します。
+このページでは、IPRO Workbench のインストールから、IDE がボードを認識するまでを説明します。完了すると、IPRO Home のバナーに「Ready to run」と表示されます。対象は IPRO Workbench 0.1.1 です。ボタンなどのインターフェースのラベルは、英語のインターフェースでの表記のまま太字で示します。
 
 ## 前提条件 { #prerequisites }
 
 | 項目 | 内容 |
 |---|---|
 | コンピューター | macOS 12 以降（Apple シリコン）または Windows 11（x64）で、GitHub にアクセスできること。IDE、ツール、SDK で合計約 4 GB のディスク容量が必要です。 |
-| インストーラー | macOS：`IPRO-Workbench-0.1.0-mac-arm64.dmg`、Windows：`IPRO-Workbench-0.1.0-win-x64.exe`。GitHub の IPRO Workbench リリースページからダウンロードします（[ダウンロードと検証](#download)を参照）。GitHub アカウントは不要です。 |
-| ボード | [IPRO7AI Reef EVK V4.0](../hardware/boards/reef-evk.md) |
+| インストーラー | macOS：`IPRO-Workbench-0.1.1-mac-arm64.dmg`、Windows：`IPRO-Workbench-0.1.1-win-x64.exe`。GitHub の IPRO Workbench リリースページからダウンロードします（[ダウンロードと検証](#download)を参照）。GitHub アカウントは不要です。 |
+| ボード | [IPRO7AI Reef EVK V4.0](../hardware/boards/reef-evk.md)、または IPRO6S EVK |
 | プローブとケーブル | IPRO Debug Probe と、それをコンピューターに接続する USB ケーブル |
 | macOS で追加で必要なもの | Xcode Command Line Tools と、Homebrew の CMake および Ninja（[開発環境を整える](#environment)を参照） |
 
@@ -21,8 +21,8 @@ description: IPRO Workbench 0.1.0 をダウンロードして検証し、macOS �
 
 | ファイル | システム | サイズ |
 |---|---|---|
-| [`IPRO-Workbench-0.1.0-mac-arm64.dmg`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.0/IPRO-Workbench-0.1.0-mac-arm64.dmg) | macOS 12 以降、Apple シリコン | 199 MB |
-| [`IPRO-Workbench-0.1.0-win-x64.exe`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.0/IPRO-Workbench-0.1.0-win-x64.exe) | Windows 11、x64 | 160 MB |
+| [`IPRO-Workbench-0.1.1-mac-arm64.dmg`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.1/IPRO-Workbench-0.1.1-mac-arm64.dmg) | macOS 12 以降、Apple シリコン | 199 MB |
+| [`IPRO-Workbench-0.1.1-win-x64.exe`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.1/IPRO-Workbench-0.1.1-win-x64.exe) | Windows 11、x64 | 160 MB |
 
 <div class="ipro-steps" markdown>
 
@@ -33,22 +33,22 @@ description: IPRO Workbench 0.1.0 をダウンロードして検証し、macOS �
     === "macOS"
 
         ```bash
-        shasum -a 256 IPRO-Workbench-0.1.0-mac-arm64.dmg
+        shasum -a 256 IPRO-Workbench-0.1.1-mac-arm64.dmg
         ```
 
     === "Windows"
 
         ```powershell
-        (Get-FileHash .\IPRO-Workbench-0.1.0-win-x64.exe -Algorithm SHA256).Hash
+        (Get-FileHash .\IPRO-Workbench-0.1.1-win-x64.exe -Algorithm SHA256).Hash
         ```
 
     **期待される結果**：同じファイルについて、下記の値と同じ値が表示されます（Windows では大文字で表示されます）。リリースページの `SHA256SUMS.txt` にもこれらの値が記載されています。
 
-    ```text title="IPRO Workbench 0.1.0 インストーラーの SHA-256"
-    # IPRO-Workbench-0.1.0-mac-arm64.dmg
-    f1c562e6e0584dedb78b173a37fcd1b51b30fdf906927dc3f91d757cfe210d5b
-    # IPRO-Workbench-0.1.0-win-x64.exe
-    b517d14225cc1a99b7b0cc3d382b89049fc1c5966b6e6a374690e4ce0bece586
+    ```text title="IPRO Workbench 0.1.1 インストーラーの SHA-256"
+    # IPRO-Workbench-0.1.1-mac-arm64.dmg
+    fb6980af59e4021ebd7357d3da1721a1490e2cec7446a98425b6c9ba0e25959e
+    # IPRO-Workbench-0.1.1-win-x64.exe
+    e057fb56c15cb68cdfeb8c60b0cfecd7f5bd82860573003ad2d94788a34aa74c
     ```
 
 </div>
@@ -63,11 +63,11 @@ description: IPRO Workbench 0.1.0 をダウンロードして検証し、macOS �
 
     === "macOS"
 
-        `IPRO-Workbench-0.1.0-mac-arm64.dmg` を開き、**IPRO Workbench** を「アプリケーション」フォルダーにドラッグします。
+        `IPRO-Workbench-0.1.1-mac-arm64.dmg` を開き、**IPRO Workbench** を「アプリケーション」フォルダーにドラッグします。
 
     === "Windows"
 
-        1. `IPRO-Workbench-0.1.0-win-x64.exe` をダブルクリックします。
+        1. `IPRO-Workbench-0.1.1-win-x64.exe` をダブルクリックします。
         2. 「Windows によって PC が保護されました」と表示される場合があります。**詳細情報** をクリックしてアプリ名を確認し、**実行** をクリックします。
         3. インストーラーのウィザードでインストール対象のユーザーを尋ねられたら、現在のユーザーのみにインストールする方を選択します（管理者権限は不要です）。続いてインストール先のフォルダーを変更できます。**Install** をクリックし、完了したら **Finish** をクリックします。
 
@@ -90,7 +90,7 @@ description: IPRO Workbench 0.1.0 をダウンロードして検証し、macOS �
 </div>
 
 !!! tip
-    IT 担当者が一括展開する場合は、サイレントインストール `IPRO-Workbench-0.1.0-win-x64.exe /S` を使用するか、`/D=<folder>` でインストール先を指定します（`/D` は最後のパラメーターにする必要があります）。
+    IT 担当者が一括展開する場合は、サイレントインストール `IPRO-Workbench-0.1.1-win-x64.exe /S` を使用するか、`/D=<folder>` でインストール先を指定します（`/D` は最後のパラメーターにする必要があります）。
 
 ## 表示言語 { #language }
 
@@ -106,10 +106,11 @@ IPRO Workbench は、開発に必要なすべてのツールを自動的にチ�
 | RISC-V toolchain | ファームウェアをコンパイルします | できます |
 | CMake, Build program | ビルドを生成して実行します | Windows ではできます（Ninja、Python と 1 つのパッケージ）。macOS では Homebrew でインストールします |
 | Python (menuconfig) | 設定（Kconfig）と Menuconfig | kconfiglib パッケージは別途インストールが必要です（下記参照） |
-| IntelProCube | 書き込み | できます |
+| IntelProCube | 書き込み | できます（IPRO6S EVK に必要な 0.7.0.1 以降をインストールします） |
+| clangd (code navigation) | 定義へのジャンプ、入力中のエラー表示 | できます。clangd 拡張機能がダウンロードします（Fix の後、拡張機能がインストールするかどうかをもう一度確認します） |
 | OpenOCD (debugging) | JTAG デバッグ（本リリースではまだ利用できません） | Windows ではできます。これがなくてもビルドと書き込みは動作します |
 | Board | IPRO Debug Probe を検出します | プローブを接続するだけです |
-| SDK for this toolchain | Windows のみ：SDK 2.2.0 を Windows でビルドできるようにします | できます |
+| SDK for this toolchain | Windows のみ：IPRO SDK 2.2 を Windows でビルドできるようにします | できます |
 | macOS quarantine | macOS のみ：ブラウザーでダウンロードしたツールはシステムにブロックされます | できます。確認後にフラグを削除します |
 
 <div class="ipro-steps" markdown>
@@ -141,7 +142,7 @@ IPRO Workbench は、開発に必要なすべてのツールを自動的にチ�
         python -m pip install kconfiglib windows-curses
         ```
 
-5. **既存のツールを使用します（任意）。** ツールチェーンや IntelProCube がすでにコンピューターにある場合は、再インストールする必要はありません。**Environment** の該当する行でフォルダーアイコン（**Use one already on this computer…**）をクリックし、ツールがあるフォルダーを選択します。
+5. **既存のツールを使用します（任意）。** ツールチェーンや IntelProCube がすでにコンピューターにある場合は、再インストールする必要はありません。**Environment** の該当する行でフォルダーアイコン（**Use one already on this computer…**）をクリックし、ツールがあるフォルダーを選択します。IPRO6S EVK に書き込むには、IntelProCube が 0.7.0.1 以降である必要があります。バージョンは、IntelProCube のフォルダーにある `RELEASE_INFO.txt` で確認できます。
 
 6. **（macOS）quarantine フラグを解除します。** **macOS quarantine** の行は、ブラウザーやチャットアプリでダウンロードしたツールがあり、実行時にシステムにブロックされることを示します。その行の鍵アイコンをクリックし、確認すると IDE がフラグを削除します。
 
@@ -153,7 +154,7 @@ IPRO Workbench は、IPRO SDK のフォルダーをワークスペースとし�
 
 <div class="ipro-steps" markdown>
 
-1. **SDK フォルダーを開きます。** IPRO Home で **Open SDK…** をクリックし、IPRO SDK のフォルダー（例：ホームフォルダーの `IPRO/SDK/IPRO-SDK-V2.2.0`）を選択します。SDK がまだない場合は、**Install SDK from GitHub…** をクリックします。
+1. **SDK フォルダーを開きます。** IPRO Home で **Open SDK…** をクリックし、IPRO SDK のフォルダー（例：ホームフォルダーの `IPRO/SDK/IPRO-SDK-V2.2.1`）を選択します。SDK がまだない場合は、**Install SDK from GitHub…** をクリックします。
 
     **期待される結果**：サイドバーの **Applications** に SDK 内のアプリケーションがカテゴリー別に一覧表示され、検索ボックスに「Filter N applications」と表示されます。
 
@@ -169,7 +170,7 @@ SDK そのものと、IDE を使わずに入手する方法については、[�
 
 <div class="ipro-steps" markdown>
 
-1. **プローブとボードを接続します。** IPRO Debug Probe を USB ケーブルでコンピューターに接続し、次にプローブを Reef V4 に接続します（プローブはボードの[デバッグコネクター U6](../hardware/boards/reef-evk.md#debug-connector) に取り付けます）。
+1. **プローブとボードを接続します。** IPRO Debug Probe を USB ケーブルでコンピューターに接続し、次にプローブを Reef V4 に接続します（プローブはボードの[デバッグコネクター U6](../hardware/boards/reef-evk.md#debug-connector) に取り付けます。IPRO6S EVK も同じように接続します）。
 
     **期待される結果**：サイドバーの **Board** に **IPRO Debug Probe** と 2 つのポートが表示されます。例えば macOS では `UART cu.usbmodemXXXX · CCI cu.usbmodemYYYY`、Windows では `UART COM5 · CCI COM6` です。ツールバーのボード名の横にも、同じ UART ポートが表示されます。
 

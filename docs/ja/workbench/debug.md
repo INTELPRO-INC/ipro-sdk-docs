@@ -12,10 +12,8 @@ description: IPRO Workbench でクラッシュの原因となったコード行�
 IPRO7 のファームウェアがクラッシュすると、例外が発生したプログラムアドレス（MEPC）、リターンアドレス（ra）、スタックバックトレースをシリアルポートに出力します。IPRO Monitor は、各アドレスの下にデコード結果を灰色の行で追加表示します（画面上では矢印で始まります。下の例では `->` で示しています）。例：
 
 ```text
-MEPC   : 0x1300012c
-    -> 0x1300012c crash_now  …/apps/user/plot_demo/main.c:35
-Return Address (ra): 0x130001b6
-    -> 0x130001b6 cmd_crash  …/apps/user/plot_demo/main.c:55
+MEPC   : 0x13000146
+    -> 0x13000146 crash_now  …/apps/user/plot_demo/main.c:30
 ```
 
 デコード結果は、関数名と、ソースコードのファイル名および行番号です。

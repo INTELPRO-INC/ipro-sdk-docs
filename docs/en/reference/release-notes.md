@@ -26,7 +26,7 @@ Built and checked from the package before release: the 36 IPRO7 FreeRTOS applica
 
 ### Known issues { #v2-2-1-known-issues }
 
-- **IPRO Workbench 0.1.0 and IPRO6S**: Workbench flashes IPRO6S images without the IPRO6S partition table, and the board does not boot. Flash IPRO6S with the IntelProCube command line, as on [IPRO6S](../hardware/chips/ipro6s.md#flashing).
+- **IPRO Workbench 0.1.0 and IPRO6S**: Workbench flashes IPRO6S images without the IPRO6S partition table, and the board does not boot. Use IPRO Workbench 0.1.1 or later (see [IPRO6S EVK](../workbench/flash.md#ipro6s)), or flash IPRO6S with the IntelProCube command line, as on [IPRO6S](../hardware/chips/ipro6s.md#flashing).
 
 ## IPRO-SDK-V2.2.0 { #v2-2-0 }
 

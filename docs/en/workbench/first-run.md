@@ -53,7 +53,7 @@ If any step fails, the IDE stops at that step and shows an explanation with butt
 
 1. **Start a new application.** Click **+** (**New Application…**) above the **Applications** list, or **New application from a template or an example** on IPRO Home.
 
-2. **Fill in the form.** Under **Start from**, choose **Hello World for a board**; under **Board**, choose **IPRO7AI Reef**; enter `my_app` as the name, leave the category as `user`, and click **Create**.
+2. **Fill in the form.** Under **Start from**, choose **Hello World for a board**; under **Board**, choose **IPRO7AI Reef** (with the IPRO6S EVK, choose **IPRO6S EVK**; see [Creating an Application for the IPRO6S EVK](flash.md#ipro6s-new-app)); enter `my_app` as the name, leave the category as `user`, and click **Create**.
 
     The name can only contain lowercase letters, digits and underscores, and must start with a letter.
 
@@ -80,6 +80,7 @@ Right-click an application in the **Applications** list to do these things direc
 | **Build, Flash and Monitor** / **Build** / **Flash** / **Debug** | Same as on the toolbar |
 | **Settings (Kconfig)…** / **Menuconfig** / **Open .config** | Change the application's settings; see [Develop an Application](develop.md#kconfig) |
 | **Pin Configuration…** | Assign GPIO functions and generate code |
+| **GATT Configuration…** | Define BLE services and characteristics and generate code; see [Configuring GATT Services](develop.md#gatt) |
 | **Reconfigure and Build** / **Clean** | Run the CMake configuration again and build; delete the build results |
 | **Memory Map** | See where the memory goes |
 | **Partition Table** / **AI Model…** / **Power…** | See [Flashing and the Board](flash.md) and [Testing and Measurement](measure.md#power) |
@@ -88,6 +89,6 @@ Right-click an application in the **Applications** list to do these things direc
 
 ## Next steps { #next-steps }
 
-- [Develop an Application](develop.md): settings (Kconfig), pins, build errors and where the memory goes.
-- [Flashing and the Board](flash.md): what the IDE checks when it flashes, the partition table and AI models.
+- [Develop an Application](develop.md): settings (Kconfig), pins, GATT services, build errors and where the memory goes.
+- [Flashing and the Board](flash.md): what the IDE checks when it flashes, the partition table, AI models and the IPRO6S EVK.
 - [Serial Monitor](monitor.md): filter, timestamps, logs, the serial plotter and a second port.

@@ -12,10 +12,8 @@ When the board crashes or misbehaves, these tools help you find which line of co
 When IPRO7 firmware crashes, it prints the program address of the exception (MEPC), the return address (ra) and a stack backtrace over the serial port. IPRO Monitor prints an extra gray line with the decoded result under each address (on screen it starts with an arrow; the example below shows it as `->`), for example:
 
 ```text
-MEPC   : 0x1300012c
-    -> 0x1300012c crash_now  …/apps/user/plot_demo/main.c:35
-Return Address (ra): 0x130001b6
-    -> 0x130001b6 cmd_crash  …/apps/user/plot_demo/main.c:55
+MEPC   : 0x13000146
+    -> 0x13000146 crash_now  …/apps/user/plot_demo/main.c:30
 ```
 
 The decoded result is the function name and the file and line number in the source code.

@@ -1,6 +1,6 @@
 ---
 title: "快捷鍵、命令與設定"
-description: IPRO Workbench 0.1.0 的快捷鍵、IPRO 命令、ipro.* 設定、MCP 工具，以及 IDE 用到的檔案與資料夾。
+description: IPRO Workbench 0.1.1 的快捷鍵、IPRO 命令、ipro.* 設定、MCP 工具，以及 IDE 用到的檔案與資料夾。
 ---
 
 # 快捷鍵、命令與設定
@@ -15,7 +15,7 @@ description: IPRO Workbench 0.1.0 的快捷鍵、IPRO 命令、ipro.* 設定、M
 | 序列埠監看 | `Cmd+Alt+M` | `Ctrl+Alt+M` |
 | 命令選擇區 | `Cmd+Shift+P` | `Ctrl+Shift+P` |
 | 開啟設定 | `Cmd+,` | `Ctrl+,` |
-| 儲存（設定、腳位、檔案） | `Cmd+S` | `Ctrl+S` |
+| 儲存（設定、腳位、GATT、檔案） | `Cmd+S` | `Ctrl+S` |
 
 ## IPRO 命令一覽 { #commands }
 
@@ -37,10 +37,11 @@ description: IPRO Workbench 0.1.0 的快捷鍵、IPRO 命令、ipro.* 設定、M
 | 序列埠繪圖 | 把板子印出的數字畫成曲線 |
 | 設定（Kconfig）…／Menuconfig／開啟 .config | 修改應用程式設定 |
 | 腳位設定… | 設定腳位並產生程式碼 |
+| GATT 設定… | 定義 BLE 服務與特性並產生程式碼 |
 | 記憶體分佈 | 看記憶體用到哪裡 |
 | 分割表／AI 模型… | 分割表檢視；檢查並寫入 NPU 模型 |
 | 在板子上執行測試 | 重置板子並收集 Unity 測試結果 |
-| RF 測試（DTM）…／功耗… | 射頻與功耗量測 |
+| RF 測試（DTM）…／Wi-Fi 傳輸速率（iperf）…／功耗… | 射頻、Wi-Fi 傳輸速率與功耗量測 |
 | 當機傾印… | 開啟收集過的當機傾印 |
 | 暫存器參考 | 查周邊、暫存器與欄位 |
 | 請 AI 分析上次當機／連接 AI 助理（MCP）… | AI 助理 |
@@ -59,9 +60,10 @@ description: IPRO Workbench 0.1.0 的快捷鍵、IPRO 命令、ipro.* 設定、M
 | `ipro.build.generator` | CMake 產生器：auto、Unix Makefiles、Ninja |
 | `ipro.build.memoryBudget` | 各記憶體區段的用量上限（百分比），例如 `{ "flash": 90 }` |
 | `ipro.build.failOverBudget` | 超出記憶體預算時算建置失敗 |
-| `ipro.board.id` | 開發板，auto 表示依應用程式的 `.config` |
+| `ipro.board.id` | 開發板，auto 表示依應用程式的 `.config`（晶片與板子） |
 | `ipro.board.port` | 燒錄與監看用的序列埠，留空則使用探棒的 UART |
 | `ipro.flash.baudRate` | IntelProCube 的鮑率 |
+| `ipro.run.openMonitor` | 燒錄成功後開啟序列埠監看，預設開啟 |
 | `ipro.monitor.baudRate` | 序列埠監看的鮑率，預設 115200 |
 | `ipro.monitor.timestamps` | 監看每一行開頭加上收到的時間 |
 | `ipro.monitor.filter` | 監看只顯示符合這個正規表示式的行 |
@@ -87,6 +89,7 @@ IDE 外的 AI 助理經 MCP 看到的工具如下（名稱即 MCP 的工具名�
 | `ipro_board_tests` | 板子上次開機的韌體與 Unity 測試結果 |
 | `ipro_get_settings`／`ipro_set_settings` | 讀取、修改應用程式的 Kconfig 設定 |
 | `ipro_get_pins`／`ipro_set_pins` | 讀取、修改腳位設定並產生程式碼 |
+| `ipro_get_gatt`／`ipro_set_gatt` | 讀取、修改 GATT 服務並產生程式碼（可先只檢查不寫入） |
 | `ipro_memory_map` | 各記憶體區段的用量與最大的函式庫、物件檔 |
 | `ipro_partition_table` | 燒錄會寫入的分割表與檢查結果 |
 | `ipro_ai_model` | 檢查 NPU 模型能否放進應用程式與分割表 |
@@ -105,3 +108,4 @@ IDE 外的 AI 助理經 MCP 看到的工具如下（名稱即 MCP 的工具名�
 | `apps/<分類>/<名稱>/build/logs` | 監看的完整記錄（開啟 Log To File 時） |
 | `apps/<分類>/<名稱>/build/crash` | 收集的當機傾印 |
 | `apps/<分類>/<名稱>/pins.yaml` | 腳位設定；`app_pins.h`、`app_pins.c` 由它產生 |
+| `apps/<分類>/<名稱>/gatt.yaml` | GATT 服務；`app_gatt.h`、`app_gatt.c` 由它產生 |

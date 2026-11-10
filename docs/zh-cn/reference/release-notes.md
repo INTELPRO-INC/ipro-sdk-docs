@@ -26,7 +26,7 @@ V2.2.0 的修正版，应用与 V2.2.0 相同，共 40 个 FreeRTOS 应用。下
 
 ### 已知问题 { #v2-2-1-known-issues }
 
-- **IPRO Workbench 0.1.0 与 IPRO6S**：Workbench 烧录 IPRO6S 镜像时没有带入 IPRO6S 的分区表，板子无法启动。请按 [IPRO6S](../hardware/chips/ipro6s.md#flashing) 用 IntelProCube 命令行烧录。
+- **IPRO Workbench 0.1.0 与 IPRO6S**：Workbench 烧录 IPRO6S 镜像时没有带入 IPRO6S 的分区表，板子无法启动。请改用 IPRO Workbench 0.1.1 及以上版本（见 [IPRO6S EVK](../workbench/flash.md#ipro6s)），或按 [IPRO6S](../hardware/chips/ipro6s.md#flashing) 用 IntelProCube 命令行烧录。
 
 ## IPRO-SDK-V2.2.0 { #v2-2-0 }
 

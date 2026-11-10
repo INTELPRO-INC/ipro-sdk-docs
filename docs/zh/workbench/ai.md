@@ -5,7 +5,7 @@ description: 開啟 IPRO Workbench 的 AI 功能、請內建的 IPRO AI 助理�
 
 # AI 助理
 
-IPRO Workbench 內建 IPRO AI 助理。它不只回答問題，還能自己使用 IDE 的工具：建置、讀建置輸出、燒錄、讀序列埠、改設定與腳位、查記憶體分佈與暫存器、解碼當機位址。IDE 外面的 AI 助理（例如 Claude Code）也能透過 MCP 使用同一組工具。
+IPRO Workbench 內建 IPRO AI 助理。它不只回答問題，還能自己使用 IDE 的工具：建置、讀建置輸出、燒錄、讀序列埠、改設定、腳位與 GATT 服務、查記憶體分佈與暫存器、解碼當機位址。IDE 外面的 AI 助理（例如 Claude Code）也能透過 MCP 使用同一組工具。
 
 ## 開啟 AI 功能 { #enable }
 
@@ -33,7 +33,7 @@ AI 功能預設關閉。使用前：
 
 </div>
 
-`pins.yaml` 有錯誤或 CMake 設定失敗時，通知上的 **請 AI 修正** 也會請助理處理對應的問題。
+`pins.yaml`、`gatt.yaml` 有錯誤或 CMake 設定失敗時，通知上的 **請 AI 修正** 也會請助理處理對應的問題。
 
 ## 請 AI 分析當機 { #analyze-crash }
 

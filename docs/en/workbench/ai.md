@@ -5,7 +5,7 @@ description: The IPRO AI assistant built into IPRO Workbench - turn on AI featur
 
 # AI Assistant
 
-IPRO Workbench has a built-in IPRO AI assistant. It does more than answer questions: it can use the IDE's tools by itself to build, read the build output, flash, read the serial port, change settings and pins, look up the memory map and registers, and decode crash addresses. AI assistants outside the IDE (for example Claude Code) can also use the same set of tools through MCP.
+IPRO Workbench has a built-in IPRO AI assistant. It does more than answer questions: it can use the IDE's tools by itself to build, read the build output, flash, read the serial port, change settings, pins and GATT services, look up the memory map and registers, and decode crash addresses. AI assistants outside the IDE (for example Claude Code) can also use the same set of tools through MCP.
 
 ## Turn on AI features { #enable }
 
@@ -33,7 +33,7 @@ If the AI features are still off when you press any of the **Ask AI…** buttons
 
 </div>
 
-When `pins.yaml` has errors or the CMake configuration fails, **Ask AI to Fix** on the notification also asks the assistant to handle that problem.
+When `pins.yaml` or `gatt.yaml` has errors or the CMake configuration fails, **Ask AI to Fix** on the notification also asks the assistant to handle that problem.
 
 ## Ask AI to analyze a crash { #analyze-crash }
 
@@ -55,7 +55,7 @@ While IPRO Workbench is open, it provides an MCP server on this computer so that
 
 1. **Copy the setup.** Choose **Connect an AI Assistant (MCP)…** from the IPRO menu (or **AI assistant (MCP)** on IPRO Home), and select the assistant you use.
 
-    **You should see**: the notification "Copied the … setup. It includes the token, so keep it private." The list has Claude Code, VS Code / GitHub Copilot and Cursor. For Claude Code, the copied text is a single `claude mcp add …` command to run in a terminal; for the other two, it is content to paste into a configuration file (`.vscode/mcp.json`, `~/.cursor/mcp.json`).
+    **You should see**: the notification "Copied the … setup. It includes the token, so keep it private." appears. The list has Claude Code, VS Code / GitHub Copilot and Cursor. For Claude Code, the copied text is a single `claude mcp add …` command to run in a terminal; for the other two, it is content to paste into a configuration file (`.vscode/mcp.json`, `~/.cursor/mcp.json`).
 
 2. **Paste it.** Paste the clipboard contents into the matching place. For Claude Code, for example, paste and run that command in a terminal, then start Claude Code.
 

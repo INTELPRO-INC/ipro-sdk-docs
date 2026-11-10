@@ -1,11 +1,11 @@
 ---
 title: "ショートカット、コマンド、設定"
-description: IPRO Workbench 0.1.0 のリファレンスです。キーボードショートカット、IPRO コマンド、ipro.* 設定、MCP ツール、IDE が使用するファイルとフォルダーをまとめています。
+description: IPRO Workbench 0.1.1 のリファレンスです。キーボードショートカット、IPRO コマンド、ipro.* 設定、MCP ツール、IDE が使用するファイルとフォルダーをまとめています。
 ---
 
 # ショートカット、コマンド、設定
 
-IPRO Workbench 0.1.0 のキーボードショートカット、コマンド、設定、MCP ツール、ファイルの場所です。
+IPRO Workbench 0.1.1 のキーボードショートカット、コマンド、設定、MCP ツール、ファイルの場所です。
 
 ## キーボードショートカット { #shortcuts }
 
@@ -17,7 +17,7 @@ IPRO Workbench 0.1.0 のキーボードショートカット、コマンド、�
 | シリアルモニター | `Cmd+Alt+M` | `Ctrl+Alt+M` |
 | コマンドパレット | `Cmd+Shift+P` | `Ctrl+Shift+P` |
 | 設定を開く | `Cmd+,` | `Ctrl+,` |
-| 保存（設定、ピン、ファイル） | `Cmd+S` | `Ctrl+S` |
+| 保存（設定、ピン、GATT、ファイル） | `Cmd+S` | `Ctrl+S` |
 
 ## IPRO コマンド { #commands }
 
@@ -39,10 +39,11 @@ IPRO Workbench 0.1.0 のキーボードショートカット、コマンド、�
 | **Serial Plotter** | ボードが出力した数値を曲線としてプロットする |
 | **Settings (Kconfig)…** / **Menuconfig** / **Open .config** | アプリケーションの設定を変更する |
 | **Pin Configuration…** | ピンを設定し、コードを生成する |
+| **GATT Configuration…** | BLE のサービスとキャラクタリスティックを定義し、コードを生成する |
 | **Memory Map** | メモリを使っているものを確認する |
 | **Partition Table** / **AI Model…** | パーティションテーブルの表示／NPU モデルのチェックと書き込み |
 | **Run Tests on Board** | ボードをリセットし、Unity テストの結果を収集する |
-| **RF Test (DTM)…** / **Power…** | RF と消費電力の測定 |
+| **RF Test (DTM)…** / **Wi-Fi Throughput (iperf)…** / **Power…** | RF、Wi-Fi スループット、消費電力の測定 |
 | **Crash Dumps…** | 以前に収集したクラッシュダンプを開く |
 | **Register Reference** | 周辺機能、レジスター、フィールドを参照する |
 | **Ask AI About the Last Crash** / **Connect an AI Assistant (MCP)…** | AI アシスタント |
@@ -64,6 +65,7 @@ IPRO Workbench 0.1.0 のキーボードショートカット、コマンド、�
 | `ipro.board.id` | ボード。auto の場合はアプリケーションの `.config` に従う |
 | `ipro.board.port` | 書き込みとモニターに使用するシリアルポート。空の場合はプローブの UART を選択 |
 | `ipro.flash.baudRate` | IntelProCube のボーレート |
+| `ipro.run.openMonitor` | 書き込みに成功した後でシリアルモニターを開く。デフォルトでオン |
 | `ipro.monitor.baudRate` | シリアルモニターのコンソールのボーレート。デフォルトは 115200 |
 | `ipro.monitor.timestamps` | モニターの各行の先頭に受信時刻を付ける |
 | `ipro.monitor.filter` | この正規表現に一致するモニターの行だけを表示する |
@@ -89,6 +91,7 @@ IDE の外部の AI アシスタントからは、MCP を通じて次のツー�
 | `ipro_board_tests` | ボードが前回起動したファームウェアと、Unity テストの結果 |
 | `ipro_get_settings` / `ipro_set_settings` | アプリケーションの Kconfig 設定を読み取る／変更する |
 | `ipro_get_pins` / `ipro_set_pins` | ピン設定を読み取る／変更してコードを生成する |
+| `ipro_get_gatt` / `ipro_set_gatt` | GATT サービスを読み取る／変更してコードを生成する（ドライランでは書き込まずにチェックだけを行う） |
 | `ipro_memory_map` | 各メモリ領域の使用量と、サイズの大きいライブラリとオブジェクトファイル |
 | `ipro_partition_table` | 書き込み時に書き込まれるパーティションテーブルと、そのチェック結果 |
 | `ipro_ai_model` | NPU モデルがアプリケーションとそのパーティションテーブルに収まるかをチェックする |
@@ -107,3 +110,4 @@ IDE の外部の AI アシスタントからは、MCP を通じて次のツー�
 | `apps/<category>/<name>/build/logs` | モニターの全ログ（**Log To File** がオンの場合） |
 | `apps/<category>/<name>/build/crash` | 収集したクラッシュダンプ |
 | `apps/<category>/<name>/pins.yaml` | ピン設定。`app_pins.h` と `app_pins.c` はこのファイルから生成される |
+| `apps/<category>/<name>/gatt.yaml` | GATT サービス。`app_gatt.h` と `app_gatt.c` はこのファイルから生成される |

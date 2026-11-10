@@ -1,11 +1,11 @@
 ---
 title: "開發應用程式"
-description: 在 IPRO Workbench 以表單修改應用程式的 .config、設定腳位並產生初始化程式碼、處理建置錯誤，以及查看記憶體分佈、大小變化與記憶體預算。
+description: 在 IPRO Workbench 以表單修改應用程式的 .config、設定腳位並產生初始化程式碼、定義 GATT 服務並產生程式碼、處理建置錯誤，以及查看記憶體分佈、大小變化與記憶體預算。
 ---
 
 # 開發應用程式
 
-寫程式時最常用的幾個檢視：修改設定（Kconfig）、設定腳位、處理建置錯誤，以及看記憶體用到哪裡。
+寫程式時最常用的幾個檢視：修改設定（Kconfig）、設定腳位、設定 GATT 服務、處理建置錯誤，以及看記憶體用到哪裡。
 
 ## 修改設定（Kconfig） { #kconfig }
 
@@ -85,6 +85,85 @@ description: 在 IPRO Workbench 以表單修改應用程式的 .config、設定�
     - `app_pins.h` 和 `app_pins.c` 由 IDE 產生，請不要手改。被手改過的檔案 IDE 不會直接覆蓋，而是先問你要不要 **覆蓋**。
     - `pins.yaml` 有錯誤時建置會停下來，錯誤列在「問題」面板。
     - 腳位資料取自 IPRO7 規格書。
+
+## 設定 GATT 服務 { #gatt }
+
+「GATT 設定」以樹狀清單與表單定義 BLE 應用程式的 GATT 服務與特性，存成 `gatt.yaml`，並產生 `app_gatt.h`、`app_gatt.c`：每個服務一段 `BT_GATT_SERVICE_DEFINE`，每個特性一組讀寫值的函式與通知函式。應用程式不必自己寫 GATT 的屬性表。
+
+應用程式的 `.config` 需要 `CONFIG_BLUETOOTH_LE_ENABLE=y` 與 `CONFIG_BT_PERIPHERAL=y`，例如 `ipro_ble_remote`。
+
+<div class="ipro-steps" markdown>
+
+1. **開啟 GATT 設定。** 在應用程式上按右鍵，選 **GATT 設定…**（或首頁的「GATT 服務」）。
+
+    **應該看到**：「GATT：<應用程式>」分頁。還沒有 `gatt.yaml` 時，上方提示先新增服務。
+
+2. **新增服務。** 按 **＋ 服務**，把名稱改成 `sensor`。
+
+    **應該看到**：左邊清單多了 `sensor`；UUID 已填入一個隨機的 128 位元 UUID，按 **新的** 可以再換一個。
+
+3. **新增特性。** 按 **＋ 特性**，名稱改成 `counter`，屬性勾選 **read** 與 **notify**，值的型別選 `uint32`，說明輸入 `Seconds since boot`。
+
+    **應該看到**：右邊「app_gatt.h 提供的函式」列出 `app_gatt_sensor_counter_get`、`_set`、`_notify`、`_subscribed`，下方列出可以自己定義的掛鉤 `app_gatt_sensor_counter_subscription_changed`；「問題」顯示「沒有問題。」
+
+4. **試一個錯誤。** 試著把 UUID 改成 `2a1`。
+
+    **應該看到**：「問題」列出「sensor.counter："2a1" 不是 16 位元 UUID（例如 2a19），也不是 128 位元 UUID」，下方的產生程式碼改成「請先修正錯誤」。按 **新的** 換回有效的 UUID。
+
+5. **儲存並產生程式碼。** 按 **儲存並產生**（`Cmd+S`／`Ctrl+S`）。
+
+    **應該看到**：通知「已儲存 gatt.yaml，並產生 app_gatt.h 與 app_gatt.c。」應用程式資料夾多了 `gatt.yaml`、`app_gatt.h`、`app_gatt.c`，`CMakeLists.txt` 多了一行 `app_gatt.c`。
+
+6. **在程式中使用產生的函式。** 加上 `#include "app_gatt.h"`，在自己的工作裡更新值並通知訂閱的對方；廣播資料帶上服務的 UUID，對方掃描時才認得出來：
+
+    ```c
+    #include "app_gatt.h"
+
+    static const struct bt_data ad[] = {
+        BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
+        BT_DATA_BYTES(BT_DATA_UUID128_ALL, APP_GATT_SENSOR_UUID_VAL),
+    };
+
+    /* 每秒一次，在自己的工作中呼叫（不要在中斷裡呼叫） */
+    app_gatt_sensor_counter_set(seconds);
+    if (app_gatt_sensor_counter_subscribed()) {
+        app_gatt_sensor_counter_notify(NULL);   /* NULL：送給所有訂閱的對方 */
+    }
+    ```
+
+    按 **建置、燒錄並監看**。
+
+    **應該看到**：**IPRO Build** 先顯示 `gatt: wrote app_gatt.c from gatt.yaml`，再開始編譯。用手機或電腦上的 BLE 工具（例如 nRF Connect）連上板子後，看得到 `sensor` 服務與 `counter`；訂閱通知後，每秒收到一次新的值。
+
+</div>
+
+![gatt_check 的 GATT 設定：左邊是服務與特性的樹狀清單，右邊是特性 check.counter 的表單，下方是產生的程式碼](../assets/workbench/gatt.svg)
+
+特性的設定：
+
+| 設定 | 說明 |
+|---|---|
+| 屬性 | read、write、write_without_response、notify、indicate；勾了 notify 或 indicate 會自動加上 CCC，讓對方訂閱 |
+| 值的型別 | `uint8`～`int32`（固定長度，以 little-endian 傳送）、`bytes`、`string`（最長長度 1–512 位元組） |
+| 初始值 | 整數寫數字（可用 `0x1f`）；`string` 寫文字；`bytes` 寫十六進位，例如 `01 02 ff` |
+| 安全性 | 需加密連線或需驗證配對（防 MITM）時，`.config` 要有 `CONFIG_BT_SMP=y` |
+| 說明 | 寫進 Characteristic User Description，BLE 工具會顯示它 |
+
+每個特性產生的函式（以服務 sensor、特性 counter 為例）：
+
+| 函式 | 用途 |
+|---|---|
+| `app_gatt_sensor_counter_get`／`_set` | 讀、改對方讀到的值 |
+| `app_gatt_sensor_counter_notify`／`_indicate` | 把目前的值送給訂閱的對方（有勾 notify／indicate 時） |
+| `app_gatt_sensor_counter_subscribed` | 是否有對方訂閱 |
+| `app_gatt_sensor_counter_written`（掛鉤） | 對方寫入後呼叫，值已經存好；在自己的原始碼定義同名函式即可 |
+| `app_gatt_sensor_counter_subscription_changed`（掛鉤） | 對方開啟或關閉通知時呼叫 |
+
+!!! note
+    - `app_gatt.h` 和 `app_gatt.c` 由 IDE 產生，請不要手改；掛鉤是 weak 函式，在自己的原始碼定義同名函式就會取代它。被手改過的檔案 IDE 不會直接覆蓋，而是先問你要不要 **覆蓋**。
+    - `gatt.yaml` 有錯誤時建置會停下來，錯誤列在「問題」面板。
+    - 超過 20 位元組的通知，要等對方調高 ATT MTU 才送得完整；一次通知最多 244 位元組。
+    - 對方配對過之後再改服務，對方可能還記著舊的服務清單；請在對方的藍牙設定刪除配對後再連線。
 
 ## 建置與錯誤 { #build }
 

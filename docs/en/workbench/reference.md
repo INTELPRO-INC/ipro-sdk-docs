@@ -1,11 +1,11 @@
 ---
 title: "Shortcuts, Commands and Settings"
-description: Reference for IPRO Workbench 0.1.0 - keyboard shortcuts, IPRO commands, ipro.* settings, the MCP tools and the files and folders the IDE uses.
+description: Reference for IPRO Workbench 0.1.1 - keyboard shortcuts, IPRO commands, ipro.* settings, the MCP tools and the files and folders the IDE uses.
 ---
 
 # Shortcuts, Commands and Settings
 
-Keyboard shortcuts, commands, settings, MCP tools and file locations of IPRO Workbench 0.1.0.
+Keyboard shortcuts, commands, settings, MCP tools and file locations of IPRO Workbench 0.1.1.
 
 ## Keyboard shortcuts { #shortcuts }
 
@@ -17,7 +17,7 @@ Keyboard shortcuts, commands, settings, MCP tools and file locations of IPRO Wor
 | Serial Monitor | `Cmd+Alt+M` | `Ctrl+Alt+M` |
 | Command Palette | `Cmd+Shift+P` | `Ctrl+Shift+P` |
 | Open Settings | `Cmd+,` | `Ctrl+,` |
-| Save (settings, pins, files) | `Cmd+S` | `Ctrl+S` |
+| Save (settings, pins, GATT, files) | `Cmd+S` | `Ctrl+S` |
 
 ## IPRO commands { #commands }
 
@@ -39,10 +39,11 @@ You can find all of the commands below by typing `IPRO` in the command palette. 
 | **Serial Plotter** | Plot the numbers the board prints as curves |
 | **Settings (Kconfig)…** / **Menuconfig** / **Open .config** | Change the application settings |
 | **Pin Configuration…** | Configure pins and generate code |
+| **GATT Configuration…** | Define BLE services and characteristics and generate code |
 | **Memory Map** | See what uses the memory |
 | **Partition Table** / **AI Model…** | Partition table view; check and write an NPU model |
 | **Run Tests on Board** | Reset the board and collect the Unity test results |
-| **RF Test (DTM)…** / **Power…** | RF and power measurements |
+| **RF Test (DTM)…** / **Wi-Fi Throughput (iperf)…** / **Power…** | RF, Wi-Fi throughput and power measurements |
 | **Crash Dumps…** | Open crash dumps collected earlier |
 | **Register Reference** | Look up peripherals, registers and fields |
 | **Ask AI About the Last Crash** / **Connect an AI Assistant (MCP)…** | AI assistant |
@@ -64,6 +65,7 @@ Open Settings and search for `ipro` to see the following items.
 | `ipro.board.id` | Board. auto follows the application's `.config` |
 | `ipro.board.port` | Serial port for flashing and the monitor. Empty picks the probe's UART |
 | `ipro.flash.baudRate` | IntelProCube baud rate |
+| `ipro.run.openMonitor` | Open the serial monitor after a successful flash; on by default |
 | `ipro.monitor.baudRate` | Console baud rate of the serial monitor, 115200 by default |
 | `ipro.monitor.timestamps` | Start each monitor line with the time it came |
 | `ipro.monitor.filter` | Show only monitor lines matching this regular expression |
@@ -89,6 +91,7 @@ AI assistants outside the IDE see the following tools through MCP (the names are
 | `ipro_board_tests` | The firmware the board booted last time and the Unity test results |
 | `ipro_get_settings` / `ipro_set_settings` | Read and change the application's Kconfig settings |
 | `ipro_get_pins` / `ipro_set_pins` | Read and change the pin configuration and generate code |
+| `ipro_get_gatt` / `ipro_set_gatt` | Read and change the GATT services and generate code (a dry run checks without writing) |
 | `ipro_memory_map` | Usage of each memory region and the largest libraries and object files |
 | `ipro_partition_table` | The partition table that flashing writes, and its check results |
 | `ipro_ai_model` | Check whether an NPU model fits the application and its partition table |
@@ -107,3 +110,4 @@ AI assistants outside the IDE see the following tools through MCP (the names are
 | `apps/<category>/<name>/build/logs` | Full monitor logs (when **Log To File** is on) |
 | `apps/<category>/<name>/build/crash` | Collected crash dumps |
 | `apps/<category>/<name>/pins.yaml` | Pin configuration; `app_pins.h` and `app_pins.c` are generated from it |
+| `apps/<category>/<name>/gatt.yaml` | GATT services; `app_gatt.h` and `app_gatt.c` are generated from it |

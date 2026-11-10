@@ -5,7 +5,7 @@ description: IPRO Workbench 内置的 IPRO AI 助手：开启 AI 功能，让它
 
 # AI 助手
 
-IPRO Workbench 内置 IPRO AI 助手。它不只是回答问题，还能自行使用 IDE 的工具来构建、读取构建输出、烧录、读取串口、修改配置和引脚、查阅内存映射和寄存器，以及解码崩溃地址。IDE 之外的 AI 助手（例如 Claude Code）也可以通过 MCP 使用同一组工具。
+IPRO Workbench 内置 IPRO AI 助手。它不只是回答问题，还能自行使用 IDE 的工具来构建、读取构建输出、烧录、读取串口、修改配置、引脚和 GATT 服务、查阅内存映射和寄存器，以及解码崩溃地址。IDE 之外的 AI 助手（例如 Claude Code）也可以通过 MCP 使用同一组工具。
 
 ## 开启 AI 功能 { #enable }
 
@@ -33,7 +33,7 @@ AI 功能默认关闭。使用之前：
 
 </div>
 
-`pins.yaml` 有错误或 CMake 配置失败时，通知上的 **Ask AI to Fix** 同样会请助手处理该问题。
+`pins.yaml` 或 `gatt.yaml` 有错误或 CMake 配置失败时，通知上的 **Ask AI to Fix** 同样会请助手处理该问题。
 
 ## 让 AI 分析崩溃 { #analyze-crash }
 
@@ -55,7 +55,7 @@ IPRO Workbench 打开期间，会在本机提供一个 MCP 服务器，让 Claud
 
 1. **复制配置。** 在 IPRO 菜单中选择 **Connect an AI Assistant (MCP)…**（或点击 IPRO Home 上的 **AI assistant (MCP)**），然后选择你使用的助手。
 
-    **应看到**：通知“Copied the … setup. It includes the token, so keep it private.”列表中有 Claude Code、VS Code / GitHub Copilot 和 Cursor。对于 Claude Code，复制的内容是一条要在终端中运行的 `claude mcp add …` 命令；对于另外两个，复制的内容要粘贴到配置文件（`.vscode/mcp.json`、`~/.cursor/mcp.json`）中。
+    **应看到**：出现通知“Copied the … setup. It includes the token, so keep it private.”列表中有 Claude Code、VS Code / GitHub Copilot 和 Cursor。对于 Claude Code，复制的内容是一条要在终端中运行的 `claude mcp add …` 命令；对于另外两个，复制的内容要粘贴到配置文件（`.vscode/mcp.json`、`~/.cursor/mcp.json`）中。
 
 2. **粘贴。** 将剪贴板内容粘贴到对应的位置。以 Claude Code 为例，在终端中粘贴并运行该命令，然后启动 Claude Code。
 

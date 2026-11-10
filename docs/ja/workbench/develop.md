@@ -1,11 +1,11 @@
 ---
 title: "アプリケーションの開発"
-description: コードを書くときによく使う IPRO Workbench のビューです。設定（Kconfig）、ピン設定とコード生成、ビルドとエラー、メモリマップ、メモリバジェットを説明します。
+description: コードを書くときによく使う IPRO Workbench のビューです。設定（Kconfig）、ピン設定とコード生成、GATT サービスとコード生成、ビルドとエラー、メモリマップ、メモリバジェットを説明します。
 ---
 
 # アプリケーションの開発
 
-コードを書くときによく使うビューとして、設定（Kconfig）の変更、ピンの設定、ビルドエラーへの対処、メモリの使われ方の確認を説明します。例には IPRO7AI Reef EVK V4.0 を使用します。
+コードを書くときによく使うビューとして、設定（Kconfig）の変更、ピンの設定、GATT サービスの設定、ビルドエラーへの対処、メモリの使われ方の確認を説明します。例には IPRO7AI Reef EVK V4.0 を使用します。
 
 ## 設定（Kconfig）を変更する { #kconfig }
 
@@ -85,6 +85,83 @@ description: コードを書くときによく使う IPRO Workbench のビュー
     - `app_pins.h` と `app_pins.c` は IDE が生成するファイルです。手動で編集しないでください。手動で編集されたファイルを IDE がそのまま上書きすることはなく、先に **Overwrite** するかどうかを確認します。
     - `pins.yaml` にエラーがあるとビルドが停止し、エラーは **Problems** パネルに一覧表示されます。
     - ピンのデータは IPRO7 のデータシートに基づいています。
+
+## GATT サービスを設定する { #gatt }
+
+**GATT Configuration** では、BLE アプリケーションの GATT サービスとキャラクタリスティックをツリーとフォームで定義し、`gatt.yaml` に保存して、`app_gatt.h` と `app_gatt.c` を生成します。生成されるのは、サービスごとに 1 つの `BT_GATT_SERVICE_DEFINE` と、キャラクタリスティックごとに値の読み取り、値の変更、通知の送信を行う関数です。アプリケーション側で GATT 属性テーブルを書く必要はありません。
+
+アプリケーションの `.config` には、`ipro_ble_remote` と同じように `CONFIG_BLUETOOTH_LE_ENABLE=y` と `CONFIG_BT_PERIPHERAL=y` が必要です。
+
+<div class="ipro-steps" markdown>
+
+1. **GATT Configuration を開きます。** アプリケーションを右クリックして **GATT Configuration…** を選択します（または IPRO Home の **GATT services** をクリックします）。
+
+    **期待される結果**：**GATT: &lt;application&gt;** タブが開きます。`gatt.yaml` がまだない場合は、最初にサービスを追加するよう促す説明が上部に表示されます。
+
+2. **サービスを追加します。** **+ Service** をクリックし、名前を `sensor` に変更します。
+
+    **期待される結果**：左側の一覧に `sensor` が表示されます。UUID にはすでにランダムな 128 ビット UUID が入っており、**New** をクリックすると別の UUID に変わります。
+
+3. **キャラクタリスティックを追加します。** **+ Characteristic** をクリックし、名前を `counter` に変更し、プロパティの **read** と **notify** にチェックを入れ、値の型に `uint32` を選択して、説明に `Seconds since boot` と入力します。
+
+    **期待される結果**：右側の **In app_gatt.h** に `app_gatt_sensor_counter_get`、`_set`、`_notify`、`_subscribed` が一覧表示され、その下に、自分で定義できるフック `app_gatt_sensor_counter_subscription_changed` が表示されます。「No problems.」と表示されます。
+
+4. **無効な UUID を試します。** UUID を `2a1` に変更します。
+
+    **期待される結果**：問題の一覧に `sensor.counter: "2a1" is not a 16-bit UUID such as 2a19 or a 128-bit UUID` と表示され、生成コードの代わりに「Fix the errors to see the generated code.」と表示されます。**New** をクリックして、有効な UUID に戻します。
+
+5. **保存してコードを生成します。** **Save and Generate** をクリックします（`Cmd+S` / `Ctrl+S`）。
+
+    **期待される結果**：「Saved gatt.yaml and generated app_gatt.h and app_gatt.c.」という通知が表示されます。アプリケーションフォルダーに `gatt.yaml`、`app_gatt.h`、`app_gatt.c` が作成され、`CMakeLists.txt` に `app_gatt.c` の行が追加されます。
+
+6. **生成された関数をコードで使用します。** `#include "app_gatt.h"` を追加し、自分のタスクで値を更新して、購読しているピアに通知します。サービスをスキャンするピアがボードを見つけられるように、アドバタイズデータにサービスの UUID を入れます。
+
+    ```c
+    #include "app_gatt.h"
+
+    static const struct bt_data ad[] = {
+        BT_DATA_BYTES(BT_DATA_FLAGS, (BT_LE_AD_GENERAL | BT_LE_AD_NO_BREDR)),
+        BT_DATA_BYTES(BT_DATA_UUID128_ALL, APP_GATT_SENSOR_UUID_VAL),
+    };
+
+    /* Once a second, in your own task (not in an interrupt) */
+    app_gatt_sensor_counter_set(seconds);
+    if (app_gatt_sensor_counter_subscribed()) {
+        app_gatt_sensor_counter_notify(NULL);   /* NULL: every subscribed peer */
+    }
+    ```
+
+    **Build, Flash and Monitor** をクリックします。
+
+    **期待される結果**：**IPRO Build** にまず `gatt: wrote app_gatt.c from gatt.yaml` と表示され、それからコンパイルが始まります。スマートフォンやコンピューターの BLE ツール（例：nRF Connect）で接続すると、`sensor` サービスと `counter` が表示されます。通知を購読すると、1 秒ごとに新しい値が届きます。
+
+</div>
+
+![gatt_check の GATT 設定ページ。左側にサービスのツリー、右側にキャラクタリスティック check.counter のフォーム、その下に生成されたコードがある](../assets/workbench/gatt.svg)
+
+| 設定 | 意味 |
+|---|---|
+| プロパティ | read、write、write_without_response、notify、indicate。notify または indicate を選ぶと、ピアが購読できるように CCC が追加される |
+| 値の型 | `uint8` から `int32`（固定サイズ、リトルエンディアンで送信）、`bytes`、`string`（最大長は 1〜512 バイト） |
+| 初期値 | 整数型では数値（`0x1f` も可）、`string` ではテキスト、`bytes` では 16 進数（例：`01 02 ff`） |
+| セキュリティ | 暗号化されたリンクや認証付き（MITM 保護）ペアリングを要求する場合は、`.config` に `CONFIG_BT_SMP=y` が必要 |
+| 説明 | Characteristic User Description に入り、BLE ツールに表示される |
+
+キャラクタリスティックごとに生成される関数（サービス `sensor`、キャラクタリスティック `counter` の場合）：
+
+| 関数 | 用途 |
+|---|---|
+| `app_gatt_sensor_counter_get` / `_set` | ピアが読み取る値を読み取る、変更する |
+| `app_gatt_sensor_counter_notify` / `_indicate` | 現在の値を購読中のピアに送信する（notify / indicate がある場合） |
+| `app_gatt_sensor_counter_subscribed` | ピアが購読しているかどうか |
+| `app_gatt_sensor_counter_written`（フック） | ピアが書き込んだ後、値が保存された状態で呼び出される。同じ名前の関数を自分のソースに定義する |
+| `app_gatt_sensor_counter_subscription_changed`（フック） | ピアが通知をオンまたはオフにしたときに呼び出される |
+
+!!! note
+    - `app_gatt.h` と `app_gatt.c` は IDE が生成するファイルです。手動で編集しないでください。フックは weak 関数で、自分のソースに同じ名前の関数を定義すると置き換えられます。手動で編集されたファイルを IDE がそのまま上書きすることはなく、先に **Overwrite** するかどうかを確認します。
+    - `gatt.yaml` にエラーがあるとビルドが停止し、エラーは **Problems** パネルに一覧表示されます。
+    - 20 バイトを超える通知は、ピアが ATT MTU を引き上げた後でなければ全体が届きません。1 回の通知で送れるのは最大 244 バイトです。
+    - サービスを変更する前にペアリングしたピアは、古いサービス一覧を保持していることがあります。ピアの Bluetooth 設定でデバイスの登録を解除し、もう一度ペアリングしてください。
 
 ## ビルドとエラー { #build }
 

@@ -1,11 +1,11 @@
 ---
 title: "快捷键、命令与设置"
-description: IPRO Workbench 0.1.0 参考：键盘快捷键、IPRO 命令、ipro.* 设置、MCP 工具以及 IDE 使用的文件和文件夹。
+description: IPRO Workbench 0.1.1 参考：键盘快捷键、IPRO 命令、ipro.* 设置、MCP 工具以及 IDE 使用的文件和文件夹。
 ---
 
 # 快捷键、命令与设置
 
-IPRO Workbench 0.1.0 的键盘快捷键、命令、设置、MCP 工具和文件位置。
+IPRO Workbench 0.1.1 的键盘快捷键、命令、设置、MCP 工具和文件位置。
 
 ## 键盘快捷键 { #shortcuts }
 
@@ -17,7 +17,7 @@ IPRO Workbench 0.1.0 的键盘快捷键、命令、设置、MCP 工具和文件�
 | Serial Monitor | `Cmd+Alt+M` | `Ctrl+Alt+M` |
 | 命令面板 | `Cmd+Shift+P` | `Ctrl+Shift+P` |
 | 打开设置 | `Cmd+,` | `Ctrl+,` |
-| 保存（配置、引脚、文件） | `Cmd+S` | `Ctrl+S` |
+| 保存（配置、引脚、GATT、文件） | `Cmd+S` | `Ctrl+S` |
 
 ## IPRO 命令 { #commands }
 
@@ -39,10 +39,11 @@ IPRO Workbench 0.1.0 的键盘快捷键、命令、设置、MCP 工具和文件�
 | **Serial Plotter** | 将开发板打印的数值绘制成曲线 |
 | **Settings (Kconfig)…** / **Menuconfig** / **Open .config** | 修改应用程序配置 |
 | **Pin Configuration…** | 配置引脚并生成代码 |
+| **GATT Configuration…** | 定义 BLE 服务和特征并生成代码 |
 | **Memory Map** | 查看内存被什么占用 |
 | **Partition Table** / **AI Model…** | 分区表视图；检查并写入 NPU 模型 |
 | **Run Tests on Board** | 复位开发板并收集 Unity 测试结果 |
-| **RF Test (DTM)…** / **Power…** | 射频与功耗测量 |
+| **RF Test (DTM)…** / **Wi-Fi Throughput (iperf)…** / **Power…** | 射频、Wi-Fi 吞吐量与功耗测量 |
 | **Crash Dumps…** | 打开之前收集的崩溃转储 |
 | **Register Reference** | 查阅外设、寄存器和字段 |
 | **Ask AI About the Last Crash** / **Connect an AI Assistant (MCP)…** | AI 助手 |
@@ -64,6 +65,7 @@ IPRO Workbench 0.1.0 的键盘快捷键、命令、设置、MCP 工具和文件�
 | `ipro.board.id` | 开发板。auto 表示跟随应用程序的 `.config` |
 | `ipro.board.port` | 用于烧录和监视器的串口。留空表示选择探针的 UART |
 | `ipro.flash.baudRate` | IntelProCube 的波特率 |
+| `ipro.run.openMonitor` | 烧录成功后打开串口监视器；默认开启 |
 | `ipro.monitor.baudRate` | 串口监视器的控制台波特率，默认为 115200 |
 | `ipro.monitor.timestamps` | 在监视器每一行的开头加上接收时间 |
 | `ipro.monitor.filter` | 只显示与此正则表达式匹配的监视器行 |
@@ -89,6 +91,7 @@ IDE 之外的 AI 助手通过 MCP 可以看到以下工具（名称即 MCP 工�
 | `ipro_board_tests` | 开发板上次启动的固件以及 Unity 测试结果 |
 | `ipro_get_settings` / `ipro_set_settings` | 读取和修改应用程序的 Kconfig 配置 |
 | `ipro_get_pins` / `ipro_set_pins` | 读取和修改引脚配置并生成代码 |
+| `ipro_get_gatt` / `ipro_set_gatt` | 读取和修改 GATT 服务并生成代码（试运行只检查、不写入） |
 | `ipro_memory_map` | 各内存区域的用量以及占用最大的库和目标文件 |
 | `ipro_partition_table` | 烧录时写入的分区表及其检查结果 |
 | `ipro_ai_model` | 检查 NPU 模型是否适合该应用程序及其分区表 |
@@ -107,3 +110,4 @@ IDE 之外的 AI 助手通过 MCP 可以看到以下工具（名称即 MCP 工�
 | `apps/<category>/<name>/build/logs` | 监视器的完整日志（开启 **Log To File** 时） |
 | `apps/<category>/<name>/build/crash` | 收集的崩溃转储 |
 | `apps/<category>/<name>/pins.yaml` | 引脚配置；`app_pins.h` 和 `app_pins.c` 由它生成 |
+| `apps/<category>/<name>/gatt.yaml` | GATT 服务；`app_gatt.h` 和 `app_gatt.c` 由它生成 |

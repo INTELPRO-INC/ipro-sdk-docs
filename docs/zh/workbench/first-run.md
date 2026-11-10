@@ -5,7 +5,7 @@ description: 在 IPRO Workbench 用 SDK 內附的 ipro_unit_test 走完一輪建
 
 # 第一次執行
 
-先用 SDK 內附的單元測試 `ipro_unit_test` 走完一輪「建置 → 燒錄 → 看板子輸出」，確認電腦、探棒與 IPRO7AI Reef EVK V4.0 都正常；再建立自己的第一個應用程式 `my_app`，在 **IPRO Monitor** 看到它的輸出。
+先用 SDK 內附的單元測試 `ipro_unit_test` 走完一輪「建置 → 燒錄 → 看板子輸出」，確認電腦、探棒與開發板（本頁以 IPRO7AI Reef EVK V4.0 示範）都正常；再建立自己的第一個應用程式 `my_app`，在 **IPRO Monitor** 看到它的輸出。
 
 ## 前置需求 { #prerequisites }
 
@@ -53,7 +53,7 @@ description: 在 IPRO Workbench 用 SDK 內附的 ipro_unit_test 走完一輪建
 
 1. **開啟新增應用程式。** 在「應用程式」清單上方按 **＋**（新增應用程式…），或首頁的「從範本或範例新增應用程式」。
 
-2. **填寫並建立。** 「從何開始」選 **開發板的 Hello World**，開發板選 **IPRO7AI Reef**，名稱輸入 `my_app`，分類保留 `user`，按 **建立**。
+2. **填寫並建立。** 「從何開始」選 **開發板的 Hello World**，開發板選 **IPRO7AI Reef**（用 IPRO6S EVK 時選 **IPRO6S EVK**），名稱輸入 `my_app`，分類保留 `user`，按 **建立**。
 
     名稱只能用小寫英文字母、數字與底線，並以字母開頭。
 
@@ -73,22 +73,23 @@ description: 在 IPRO Workbench 用 SDK 內附的 ipro_unit_test 走完一輪建
 
 在「應用程式」清單的應用程式上按右鍵，可以直接做這些事：
 
-![在應用程式清單的 ipro_unit_test 上按右鍵開出的選單：建置、燒錄並監看、建置、燒錄、除錯、設定（Kconfig）…、腳位設定…、重新設定並建置、清除建置、記憶體分佈、分割表、AI 模型…、功耗…、Menuconfig、開啟 .config、複製為新應用程式…、開啟所在資料夾、複製路徑](../assets/workbench/app-menu.svg)
+![在應用程式清單的 ipro_unit_test 上按右鍵開出的選單：建置、燒錄並監看、建置、燒錄、除錯、設定（Kconfig）…、腳位設定…、開啟 .config、GATT 設定…、重新設定並建置、清除建置、記憶體分佈、分割表、AI 模型…、功耗…、Menuconfig、複製為新應用程式…、開啟所在資料夾、複製路徑](../assets/workbench/app-menu.svg)
 
 | 項目 | 用途 |
 |---|---|
 | 建置、燒錄並監看／建置／燒錄／除錯 | 與工具列相同 |
 | 設定（Kconfig）…／Menuconfig／開啟 .config | 修改應用程式的設定，見[開發應用程式](develop.md#kconfig) |
-| 腳位設定… | 指定 GPIO 的功能並產生程式碼 |
+| 腳位設定… | 指定 GPIO 的功能並產生程式碼，見[設定腳位](develop.md#pins) |
+| GATT 設定… | 定義 BLE 服務與特性並產生程式碼，見[設定 GATT 服務](develop.md#gatt) |
 | 重新設定並建置／清除建置 | 重新執行 CMake 設定後建置；刪除建置結果 |
-| 記憶體分佈 | 看記憶體用到哪裡 |
+| 記憶體分佈 | 看記憶體用到哪裡，見[看記憶體用到哪裡](develop.md#memory) |
 | 分割表／AI 模型…／功耗… | 見[燒錄與開發板](flash.md)與[測試與量測](measure.md#power) |
 | 複製為新應用程式… | 以這個應用程式為起點建立新的應用程式 |
 | 開啟所在資料夾／複製路徑 | 在檔案總管（Finder）中開啟，或複製資料夾路徑 |
 
 ## 下一步 { #next-steps }
 
-- [開發應用程式](develop.md)：修改設定、設定腳位、處理建置錯誤，以及看記憶體用到哪裡。
-- [燒錄與開發板](flash.md)：燒錄時的檢查、分割表與 AI 模型。
+- [開發應用程式](develop.md)：修改設定、設定腳位、設定 GATT 服務、處理建置錯誤，以及看記憶體用到哪裡。
+- [燒錄與開發板](flash.md)：燒錄時的檢查、分割表與 AI 模型，以及 IPRO6S EVK。
 - [序列埠監看](monitor.md)：篩選、時間戳記、存檔與序列埠繪圖。
 - 任何一步失敗時，見[疑難排解](troubleshooting.md)。

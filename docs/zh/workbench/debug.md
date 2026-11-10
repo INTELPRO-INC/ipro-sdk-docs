@@ -9,13 +9,11 @@ description: 在 IPRO Workbench 找出當機的那一行程式：序列埠監看
 
 ## 當機位址自動解碼 { #crash-decode }
 
-IPRO7 韌體當機時，會從序列埠印出例外的程式位址（MEPC）、返回位址（ra）與堆疊回溯。IPRO Monitor 會在每個位址下面多印一行灰色的解碼結果（畫面上以箭頭開頭，下例以 `->` 表示），例如：
+IPRO7 韌體當機時，會從序列埠印出例外的程式位址（MEPC）、返回位址（ra）與堆疊回溯。IPRO Monitor 會在每個位址下面多印一行灰色的解碼結果（畫面上以箭頭開頭，下例以 `->` 表示），例如例外的程式位址：
 
 ```text
-MEPC   : 0x1300012c
-    -> 0x1300012c crash_now  …/apps/user/plot_demo/main.c:35
-Return Address (ra): 0x130001b6
-    -> 0x130001b6 cmd_crash  …/apps/user/plot_demo/main.c:55
+MEPC   : 0x13000146
+    -> 0x13000146 crash_now  …/apps/user/plot_demo/main.c:30
 ```
 
 解碼結果是函式名稱與原始碼的檔案、行號。

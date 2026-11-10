@@ -5,7 +5,7 @@ description: What the messages, toolbar and side bar status of IPRO Workbench me
 
 # Troubleshooting
 
-Causes and fixes for the messages and states you see in IPRO Workbench 0.1.0, by where they appear.
+Causes and fixes for the messages and states you see in IPRO Workbench 0.1.1, by where they appear.
 
 ## Messages on screen { #messages }
 
@@ -24,9 +24,16 @@ Whenever a step fails, the IDE pops up an explanation with buttons to deal with 
 | The board started firmware built …, not the … just flashed. | The flash did not actually reach the board | Read the **IPRO Flash** output and press **Flash Again** |
 | … is over its memory budget | A memory region exceeds the limit set in `ipro.build.memoryBudget` | Press **Memory Map** to find the large symbols, or **Budget Settings** to adjust the limit |
 | The partition table of … reaches …, but the board on this probe has … of flash | The selected partition table is larger than the board's flash | Press **Partition Table** to choose another one, or check the flash size in `.config` |
+| IntelProCube has no …, the partition table … flashes with. Without one the board would not boot. | This IntelProCube version lacks the partition table the board needs (the IPRO6S EVK needs `partition_cfg_fw_direct.toml` of 0.7.0.1 or later) | Press **Install IntelProCube**, or select a version 0.7.0.1 or later on the IntelProCube row of **Environment**, then flash again |
 | `mfg uses the same space as FW …` (a check result in the **Partition Table** and **AI Model** views) | The 1M partition table has no separate space for the AI model | In **Partition Table**, select a table with a separate mfg partition (for example the one that ships with the application) |
 | The board did not answer. Is it running the MFG firmware? | During an RF test, the board is not running the MFG firmware, or the monitor is not open | Flash the MFG firmware, open the monitor, then press **Check Firmware** |
-| No results in the **Testing** view | The monitor filter hides the test lines, or the board did not restart | Clear the filter, then press **Run Tests on Board** |
+| No results in the **Testing** view | The board did not restart, or the application does not use the Unity test framework | Make sure the monitor is on the probe's UART port, then press **Run Tests on Board** |
+| The board did not answer wifi_state. Flash an application with the Wi-Fi shell and iperf… | Wi-Fi throughput: the application on the board has no Wi-Fi shell, or the monitor is on another port | On the IPRO6S EVK flash `platform/ipro6_demo`; under **Board** on the tool page choose this board's port |
+| The network name must be 1 to 32 characters without spaces… / The password must be 8 to 63 characters without spaces. | The board's shell cannot take a space | Use a network name and password without spaces (set up another network on the access point if necessary) |
+| The board did not join …. Check the name and password. | A typing mistake in the name or password, or the network is not on 2.4 GHz | Correct it and press **Join Network** again |
+| This PC has no address on the board's network (…). | The computer and the board are not on the same Wi-Fi network | Put the computer on the same network (in access point mode, the network the board created), then press **Run Test** |
+| The board did not connect to this PC on TCP port 5001. A firewall on this PC may block incoming connections… | With the board sending and the computer receiving, the computer's firewall blocks the incoming connection (the Windows default) | Let the firewall allow incoming TCP 5001 (see [Running the Test](measure.md#iperf-run)), or send from the computer to the board instead |
+| This PC could not reach the board's iperf server… / An earlier iperf is still running on the board… | The board's iperf server is still waiting for a connection | Press **Reset Board**; after the board restarts, join the network again |
 | The board did not restart. Is the monitor on the console port of an IPRO Debug Probe? | The monitor is open on CCI or another port | Click the board on the toolbar and use **Select Port…** to switch back to the probe's UART |
 
 ## Toolbar and side bar status { #status }
@@ -36,6 +43,7 @@ Whenever a step fails, the IDE pops up an explanation with buttons to deal with 
 | The toolbar shows "no probe" in amber | The IDE cannot find the IPRO Debug Probe. Check the USB cable and connect the probe directly to the computer if you can; once it is plugged in, it appears automatically within a few seconds. |
 | The status bar shows "Setup: N" | Click it to open IPRO Home, and press **Fix Environment** in the banner. |
 | **Board** shows "Runs other firmware" | The board is not running the latest build of the current application. To run the current program, flash it. |
+| **Board** has no "Runs …" line for the IPRO6S EVK | This is normal. IPRO6 series boards print no build time at boot, so the IDE cannot check the firmware on the board; rely on `[All Success]` in **IPRO Flash** and the boot messages in the monitor. |
 
 ## macOS issues { #macos }
 
@@ -52,9 +60,10 @@ Whenever a step fails, the IDE pops up an explanation with buttons to deal with 
 |---|---|
 | Installation shows "Windows protected your PC" | Click **More info**, check that the app name is IPRO-Workbench, then click **Run anyway**. |
 | A COM port cannot be opened from another serial tool | On Windows, a COM port can be used by only one program at a time. Close IPRO Monitor before you open the other tool, and close that tool when you are done so the IDE can flash. |
-| **SDK for this toolchain** says it needs adjusting | SDK 2.2.0 needs a few host fixes before it builds on Windows. Press **Fix Environment** (or **Prepare the SDK for this toolchain** on that row), and the IDE handles them automatically. |
+| **SDK for this toolchain** says it needs adjusting | IPRO SDK 2.2 needs a few host fixes before it builds on Windows. Press **Fix Environment** (or **Prepare the SDK for this toolchain** on that row), and the IDE handles them automatically. |
+| Wi-Fi throughput: no result when the board sends and the computer receives | The Windows firewall blocks incoming connections by default. Add an inbound rule that allows TCP port 5001 (see [Running the Test](measure.md#iperf-run)), or send from the computer to the board instead. |
 | The Python row says kconfiglib is missing | Run `python -m pip install kconfiglib windows-curses` in a Command Prompt, then press **Check Again**. |
-| The code editor prompts you to download clangd | Code navigation uses clangd. Follow the prompt and let it download. |
+| The code editor prompts you to download clangd | Code navigation uses clangd. Follow the prompt and let it download, or press Fix on the clangd row of **Environment**. |
 
 ## Collect information about a problem { #collect }
 

@@ -1,19 +1,19 @@
 ---
 title: "安装 IPRO Workbench"
-description: 下载并校验 IPRO Workbench 0.1.0，在 macOS 或 Windows 上安装，补全开发环境，打开 IPRO SDK 并连接开发板，直到 IDE 找到开发板。
+description: 下载并校验 IPRO Workbench 0.1.1，在 macOS 或 Windows 上安装，补全开发环境，打开 IPRO SDK 并连接 IPRO7AI Reef EVK V4.0 或 IPRO6S EVK，直到 IDE 找到开发板。
 ---
 
 # 安装 IPRO Workbench
 
-本页从安装 IPRO Workbench 开始，直到 IDE 找到你的 IPRO7AI Reef EVK V4.0 为止。完成后，IPRO Home 的横幅显示“Ready to run”。本页对应 IPRO Workbench 0.1.0；按钮等界面文字按英文界面中的原样以粗体标出。
+本页从安装 IPRO Workbench 开始，直到 IDE 找到你的开发板为止。完成后，IPRO Home 的横幅显示“Ready to run”。本页对应 IPRO Workbench 0.1.1；按钮等界面文字按英文界面中的原样以粗体标出。
 
 ## 前提条件 { #prerequisites }
 
 | 项目 | 说明 |
 |---|---|
 | 计算机 | macOS 12 或更高版本（Apple 芯片）或 Windows 11（x64），能够访问 GitHub。IDE、工具和 SDK 总共需要约 4 GB 磁盘空间。 |
-| 安装程序 | macOS：`IPRO-Workbench-0.1.0-mac-arm64.dmg`；Windows：`IPRO-Workbench-0.1.0-win-x64.exe`。从 GitHub 上的 IPRO Workbench 发布页下载（见[下载与校验](#download)），无需 GitHub 账号。 |
-| 开发板 | [IPRO7AI Reef EVK V4.0](../hardware/boards/reef-evk.md) |
+| 安装程序 | macOS：`IPRO-Workbench-0.1.1-mac-arm64.dmg`；Windows：`IPRO-Workbench-0.1.1-win-x64.exe`。从 GitHub 上的 IPRO Workbench 发布页下载（见[下载与校验](#download)），无需 GitHub 账号。 |
+| 开发板 | [IPRO7AI Reef EVK V4.0](../hardware/boards/reef-evk.md)，或 IPRO6S EVK |
 | 探针与线缆 | IPRO Debug Probe，以及将其连接到计算机的 USB 线 |
 | macOS 上另需 | Xcode 命令行工具，以及通过 Homebrew 安装的 CMake 和 Ninja（见[补全开发环境](#environment)） |
 
@@ -21,8 +21,8 @@ description: 下载并校验 IPRO Workbench 0.1.0，在 macOS 或 Windows 上安
 
 | 文件 | 系统 | 大小 |
 |---|---|---|
-| [`IPRO-Workbench-0.1.0-mac-arm64.dmg`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.0/IPRO-Workbench-0.1.0-mac-arm64.dmg) | macOS 12 或更高版本，Apple 芯片 | 199 MB |
-| [`IPRO-Workbench-0.1.0-win-x64.exe`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.0/IPRO-Workbench-0.1.0-win-x64.exe) | Windows 11，x64 | 160 MB |
+| [`IPRO-Workbench-0.1.1-mac-arm64.dmg`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.1/IPRO-Workbench-0.1.1-mac-arm64.dmg) | macOS 12 或更高版本，Apple 芯片 | 199 MB |
+| [`IPRO-Workbench-0.1.1-win-x64.exe`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.1/IPRO-Workbench-0.1.1-win-x64.exe) | Windows 11，x64 | 160 MB |
 
 <div class="ipro-steps" markdown>
 
@@ -33,22 +33,22 @@ description: 下载并校验 IPRO Workbench 0.1.0，在 macOS 或 Windows 上安
     === "macOS"
 
         ```bash
-        shasum -a 256 IPRO-Workbench-0.1.0-mac-arm64.dmg
+        shasum -a 256 IPRO-Workbench-0.1.1-mac-arm64.dmg
         ```
 
     === "Windows"
 
         ```powershell
-        (Get-FileHash .\IPRO-Workbench-0.1.0-win-x64.exe -Algorithm SHA256).Hash
+        (Get-FileHash .\IPRO-Workbench-0.1.1-win-x64.exe -Algorithm SHA256).Hash
         ```
 
     **应看到**：输出的值与下方同一文件的值相同（Windows 以大写显示）。发布页上的 `SHA256SUMS.txt` 也列出了这些值。
 
-    ```text title="IPRO Workbench 0.1.0 安装程序的 SHA-256"
-    # IPRO-Workbench-0.1.0-mac-arm64.dmg
-    f1c562e6e0584dedb78b173a37fcd1b51b30fdf906927dc3f91d757cfe210d5b
-    # IPRO-Workbench-0.1.0-win-x64.exe
-    b517d14225cc1a99b7b0cc3d382b89049fc1c5966b6e6a374690e4ce0bece586
+    ```text title="IPRO Workbench 0.1.1 安装程序的 SHA-256"
+    # IPRO-Workbench-0.1.1-mac-arm64.dmg
+    fb6980af59e4021ebd7357d3da1721a1490e2cec7446a98425b6c9ba0e25959e
+    # IPRO-Workbench-0.1.1-win-x64.exe
+    e057fb56c15cb68cdfeb8c60b0cfecd7f5bd82860573003ad2d94788a34aa74c
     ```
 
 </div>
@@ -63,11 +63,11 @@ description: 下载并校验 IPRO Workbench 0.1.0，在 macOS 或 Windows 上安
 
     === "macOS"
 
-        打开 `IPRO-Workbench-0.1.0-mac-arm64.dmg`，将 **IPRO Workbench** 拖到“应用程序”文件夹中。
+        打开 `IPRO-Workbench-0.1.1-mac-arm64.dmg`，将 **IPRO Workbench** 拖到“应用程序”文件夹中。
 
     === "Windows"
 
-        1. 双击 `IPRO-Workbench-0.1.0-win-x64.exe`。
+        1. 双击 `IPRO-Workbench-0.1.1-win-x64.exe`。
         2. Windows 可能会显示“Windows 已保护你的电脑”。点击 **更多信息**，确认应用名称，然后点击 **仍要运行**。
         3. 安装向导询问为谁安装时，选择仅为当前用户安装（无需管理员权限）。之后可以更改安装文件夹；点击 **安装**，完成后点击 **完成**。
 
@@ -90,7 +90,7 @@ description: 下载并校验 IPRO Workbench 0.1.0，在 macOS 或 Windows 上安
 </div>
 
 !!! tip
-    IT 人员批量部署时，可使用静默安装：`IPRO-Workbench-0.1.0-win-x64.exe /S`，或用 `/D=<folder>` 指定安装位置（`/D` 必须是最后一个参数）。
+    IT 人员批量部署时，可使用静默安装：`IPRO-Workbench-0.1.1-win-x64.exe /S`，或用 `/D=<folder>` 指定安装位置（`/D` 必须是最后一个参数）。
 
 ## 界面语言 { #language }
 
@@ -106,10 +106,11 @@ IPRO Workbench 会自行检查开发所需的每一项工具，并将结果列�
 | RISC-V toolchain | 编译固件 | 可以 |
 | CMake, Build program | 生成并运行构建 | Windows 上可以（与 Ninja 和 Python 在同一个包中）；macOS 上请用 Homebrew 安装 |
 | Python (menuconfig) | 配置（Kconfig）与 Menuconfig | 需要另外安装 kconfiglib 包（见下文） |
-| IntelProCube | 烧录 | 可以 |
+| IntelProCube | 烧录 | 可以（安装的是 0.7.0.1 或更高版本，IPRO6S EVK 需要该版本） |
+| clangd (code navigation) | 跳转到定义、输入时提示错误 | 可以，由 clangd 扩展下载（执行 Fix 之后，该扩展会再询问一次是否安装） |
 | OpenOCD (debugging) | JTAG 调试（本版本暂不支持） | Windows 上可以；未安装也不影响构建和烧录 |
 | Board | 查找 IPRO Debug Probe | 插上探针即可 |
-| SDK for this toolchain | 仅限 Windows：使 SDK 2.2.0 能够在 Windows 上构建 | 可以 |
+| SDK for this toolchain | 仅限 Windows：使 IPRO SDK 2.2 能够在 Windows 上构建 | 可以 |
 | macOS quarantine | 仅限 macOS：用浏览器下载的工具会被系统拦截 | 可以，确认后移除该标记 |
 
 <div class="ipro-steps" markdown>
@@ -141,7 +142,7 @@ IPRO Workbench 会自行检查开发所需的每一项工具，并将结果列�
         python -m pip install kconfiglib windows-curses
         ```
 
-5. **使用已有的工具（可选）。** 如果计算机上已有工具链或 IntelProCube，无需重新安装：在 **Environment** 中该工具所在的行，点击文件夹图标（**Use one already on this computer…**），选择工具所在的文件夹。
+5. **使用已有的工具（可选）。** 如果计算机上已有工具链或 IntelProCube，无需重新安装：在 **Environment** 中该工具所在的行，点击文件夹图标（**Use one already on this computer…**），选择工具所在的文件夹。要烧录 IPRO6S EVK，IntelProCube 必须是 0.7.0.1 或更高版本；IntelProCube 文件夹中的 `RELEASE_INFO.txt` 写有它的版本。
 
 6. **（macOS）清除隔离标记。** 出现 **macOS quarantine** 一行，表示有工具是用浏览器或聊天应用下载的，运行时会被系统拦截。点击该行的锁形图标；确认后，IDE 会移除该标记。
 
@@ -153,7 +154,7 @@ IPRO Workbench 以 IPRO SDK 文件夹作为工作区。
 
 <div class="ipro-steps" markdown>
 
-1. **打开 SDK 文件夹。** 在 IPRO Home 上点击 **Open SDK…**，选择 IPRO SDK 文件夹（例如主目录下的 `IPRO/SDK/IPRO-SDK-V2.2.0`）。如果还没有 SDK，请点击 **Install SDK from GitHub…**。
+1. **打开 SDK 文件夹。** 在 IPRO Home 上点击 **Open SDK…**，选择 IPRO SDK 文件夹（例如主目录下的 `IPRO/SDK/IPRO-SDK-V2.2.1`）。如果还没有 SDK，请点击 **Install SDK from GitHub…**。
 
     **应看到**：侧边栏的 **Applications** 按类别列出 SDK 中的应用程序，搜索框中显示“Filter N applications”。
 
@@ -169,7 +170,7 @@ IPRO Workbench 以 IPRO SDK 文件夹作为工作区。
 
 <div class="ipro-steps" markdown>
 
-1. **连接探针和开发板。** 用 USB 线将 IPRO Debug Probe 连接到计算机，再将探针连接到 Reef V4（探针接在开发板的[调试接口 U6](../hardware/boards/reef-evk.md#debug-connector) 上）。
+1. **连接探针和开发板。** 用 USB 线将 IPRO Debug Probe 连接到计算机，再将探针连接到 Reef V4（探针接在开发板的[调试接口 U6](../hardware/boards/reef-evk.md#debug-connector) 上；IPRO6S EVK 的连接方式相同）。
 
     **应看到**：侧边栏的 **Board** 下出现 **IPRO Debug Probe** 及其两个端口，例如 macOS 上的 `UART cu.usbmodemXXXX · CCI cu.usbmodemYYYY`，或 Windows 上的 `UART COM5 · CCI COM6`。工具栏上开发板旁边也显示同一个 UART 端口。
 

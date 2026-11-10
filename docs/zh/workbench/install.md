@@ -1,19 +1,19 @@
 ---
 title: "安裝 IPRO Workbench"
-description: 在 macOS 與 Windows 下載、核對並安裝 IPRO Workbench 0.1.0，補齊開發環境、開啟 IPRO SDK，直到 IDE 找到接在 IPRO 除錯探棒上的 IPRO7AI Reef EVK。
+description: 在 macOS 與 Windows 下載、核對並安裝 IPRO Workbench 0.1.1，補齊開發環境、開啟 IPRO SDK，直到 IDE 找到接在 IPRO 除錯探棒上的 IPRO7AI Reef EVK 或 IPRO6S EVK。
 ---
 
 # 安裝 IPRO Workbench
 
-本頁從安裝 IPRO Workbench 開始，一路到 IDE 找到開發板為止。完成後，電腦上有 IPRO Workbench 0.1.0 與開發需要的工具，IDE 開啟了 IPRO SDK，側邊欄「開發板」列出 IPRO 除錯探棒，首頁橫幅會顯示「已可執行」。
+本頁從安裝 IPRO Workbench 開始，一路到 IDE 找到開發板為止。完成後，電腦上有 IPRO Workbench 0.1.1 與開發需要的工具，IDE 開啟了 IPRO SDK，側邊欄「開發板」列出 IPRO 除錯探棒，首頁橫幅會顯示「已可執行」。
 
 ## 需要準備 { #prerequisites }
 
 | 項目 | 說明 |
 |---|---|
 | 電腦 | macOS 12 以上（Apple Silicon）或 Windows 11（x64），可以連上 GitHub。IDE、工具與 SDK 合計約需 4 GB 磁碟空間。 |
-| 安裝檔 | macOS：`IPRO-Workbench-0.1.0-mac-arm64.dmg`；Windows：`IPRO-Workbench-0.1.0-win-x64.exe`。從 GitHub 的 IPRO Workbench 發行頁下載（見[下載與核對](#download)），不需要 GitHub 帳號。 |
-| 開發板 | IPRO7AI Reef EVK V4.0，見 [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md) |
+| 安裝檔 | macOS：`IPRO-Workbench-0.1.1-mac-arm64.dmg`；Windows：`IPRO-Workbench-0.1.1-win-x64.exe`。從 GitHub 的 IPRO Workbench 發行頁下載（見[下載與核對](#download)），不需要 GitHub 帳號。 |
+| 開發板 | IPRO7AI Reef EVK V4.0（見 [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)），或 IPRO6S EVK（見 [IPRO6S EVK](flash.md#ipro6s)） |
 | 探棒與線材 | IPRO 除錯探棒（IPRO Debug Probe），以及接電腦用的 USB 線 |
 | macOS 另需 | Xcode 命令列工具與 Homebrew 的 CMake、Ninja（見[補齊開發環境](#environment)） |
 
@@ -21,8 +21,8 @@ description: 在 macOS 與 Windows 下載、核對並安裝 IPRO Workbench 0.1.0
 
 | 系統 | 安裝檔 | 大小 |
 |---|---|---|
-| macOS 12 以上（Apple Silicon） | [`IPRO-Workbench-0.1.0-mac-arm64.dmg`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.0/IPRO-Workbench-0.1.0-mac-arm64.dmg) | 199 MB |
-| Windows 11（x64） | [`IPRO-Workbench-0.1.0-win-x64.exe`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.0/IPRO-Workbench-0.1.0-win-x64.exe) | 160 MB |
+| macOS 12 以上（Apple Silicon） | [`IPRO-Workbench-0.1.1-mac-arm64.dmg`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.1/IPRO-Workbench-0.1.1-mac-arm64.dmg) | 199 MB |
+| Windows 11（x64） | [`IPRO-Workbench-0.1.1-win-x64.exe`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.1/IPRO-Workbench-0.1.1-win-x64.exe) | 160 MB |
 
 <div class="ipro-steps" markdown>
 
@@ -35,7 +35,7 @@ description: 在 macOS 與 Windows 下載、核對並安裝 IPRO Workbench 0.1.0
         在「終端機」執行：
 
         ```bash
-        shasum -a 256 IPRO-Workbench-0.1.0-mac-arm64.dmg
+        shasum -a 256 IPRO-Workbench-0.1.1-mac-arm64.dmg
         ```
 
     === "Windows"
@@ -43,16 +43,16 @@ description: 在 macOS 與 Windows 下載、核對並安裝 IPRO Workbench 0.1.0
         在 PowerShell 執行：
 
         ```powershell
-        (Get-FileHash .\IPRO-Workbench-0.1.0-win-x64.exe -Algorithm SHA256).Hash
+        (Get-FileHash .\IPRO-Workbench-0.1.1-win-x64.exe -Algorithm SHA256).Hash
         ```
 
     **應該看到**：和下面同一個檔案的值相同（Windows 以大寫顯示）。發行頁的 `SHA256SUMS.txt` 也列有這些值。
 
-    ```text title="IPRO Workbench 0.1.0 安裝檔的 SHA-256"
-    # IPRO-Workbench-0.1.0-mac-arm64.dmg
-    f1c562e6e0584dedb78b173a37fcd1b51b30fdf906927dc3f91d757cfe210d5b
-    # IPRO-Workbench-0.1.0-win-x64.exe
-    b517d14225cc1a99b7b0cc3d382b89049fc1c5966b6e6a374690e4ce0bece586
+    ```text title="IPRO Workbench 0.1.1 安裝檔的 SHA-256"
+    # IPRO-Workbench-0.1.1-mac-arm64.dmg
+    fb6980af59e4021ebd7357d3da1721a1490e2cec7446a98425b6c9ba0e25959e
+    # IPRO-Workbench-0.1.1-win-x64.exe
+    e057fb56c15cb68cdfeb8c60b0cfecd7f5bd82860573003ad2d94788a34aa74c
     ```
 
 </div>
@@ -67,11 +67,11 @@ description: 在 macOS 與 Windows 下載、核對並安裝 IPRO Workbench 0.1.0
 
     === "macOS"
 
-        打開 `IPRO-Workbench-0.1.0-mac-arm64.dmg`，把 **IPRO Workbench** 拖進「應用程式」資料夾。
+        打開 `IPRO-Workbench-0.1.1-mac-arm64.dmg`，把 **IPRO Workbench** 拖進「應用程式」資料夾。
 
     === "Windows"
 
-        按兩下 `IPRO-Workbench-0.1.0-win-x64.exe`。
+        按兩下 `IPRO-Workbench-0.1.1-win-x64.exe`。
 
         Windows 可能顯示「Windows 已保護您的電腦」。按 **其他資訊**，確認應用程式名稱後按 **仍要執行**。
 
@@ -96,7 +96,7 @@ description: 在 macOS 與 Windows 下載、核對並安裝 IPRO Workbench 0.1.0
 </div>
 
 !!! tip "大量部署（Windows）"
-    IT 人員大量部署時，可以用無人值守安裝：`IPRO-Workbench-0.1.0-win-x64.exe /S`，或以 `/D=<資料夾>` 指定安裝位置（`/D` 必須是最後一個參數）。
+    IT 人員大量部署時，可以用無人值守安裝：`IPRO-Workbench-0.1.1-win-x64.exe /S`，或以 `/D=<資料夾>` 指定安裝位置（`/D` 必須是最後一個參數）。
 
 ## 介面語言 { #language }
 
@@ -112,10 +112,11 @@ IPRO Workbench 會自己檢查開發需要的每一項工具，結果列在側�
 | RISC-V 工具鏈 | 編譯韌體 | 可以 |
 | CMake、建置程式 | 產生並執行建置 | Windows 可以（與 Ninja、Python 同一包）；macOS 請用 Homebrew 安裝 |
 | Python（menuconfig） | 設定（Kconfig）與 Menuconfig | 需要另外安裝 kconfiglib 套件（見下方） |
-| IntelProCube | 燒錄 | 可以 |
+| IntelProCube | 燒錄 | 可以（安裝的是 0.7.0.1 以上，IPRO6S EVK 需要這一版） |
+| clangd（程式碼導覽） | 跳到定義、邊打邊顯示錯誤 | 可以，由 clangd 擴充功能下載（按修復後，擴充功能會再問一次是否安裝） |
 | OpenOCD（除錯） | JTAG 除錯（本版尚未開放） | Windows 可以；未安裝不影響建置與燒錄 |
 | 開發板 | 找到 IPRO 除錯探棒 | 接上探棒即可 |
-| 配合此工具鏈的 SDK | Windows 才有：讓 SDK 2.2.0 能在 Windows 上建置 | 可以 |
+| 配合此工具鏈的 SDK | Windows 才有：讓 IPRO SDK 2.2 能在 Windows 上建置 | 可以 |
 | macOS 隔離標記 | macOS 才有：從瀏覽器下載的工具會被系統擋下 | 可以，確認後移除 |
 
 <div class="ipro-steps" markdown>
@@ -147,7 +148,7 @@ IPRO Workbench 會自己檢查開發需要的每一項工具，結果列在側�
         python -m pip install kconfiglib windows-curses
         ```
 
-5. **使用已有的工具（選用）。** 電腦上已經有工具鏈或 IntelProCube 時，不必重裝：在「開發環境」該列按資料夾圖示（**使用這台電腦上已有的…**），選工具所在的資料夾即可。
+5. **使用已有的工具（選用）。** 電腦上已經有工具鏈或 IntelProCube 時，不必重裝：在「開發環境」該列按資料夾圖示（**使用這台電腦上已有的…**），選工具所在的資料夾即可。要燒錄 IPRO6S EVK 時，IntelProCube 必須是 0.7.0.1 以上；版本寫在 IntelProCube 資料夾的 `RELEASE_INFO.txt`。
 
 6. **（macOS）移除隔離標記。** 出現「macOS 隔離標記」一列時，表示有工具是用瀏覽器或聊天軟體下載的，執行時會被系統擋下。按該列的鎖頭圖示，確認後 IDE 會移除標記。
 
@@ -159,7 +160,7 @@ IPRO Workbench 以 IPRO SDK 資料夾為工作區。SDK 的內容與命令列的
 
 <div class="ipro-steps" markdown>
 
-1. **開啟 SDK。** 首頁按 **開啟 SDK…**，選 IPRO SDK 資料夾（例如家目錄的 `IPRO/SDK/IPRO-SDK-V2.2.0`）。還沒有 SDK 時按 **從 GitHub 安裝 SDK…**。
+1. **開啟 SDK。** 首頁按 **開啟 SDK…**，選 IPRO SDK 資料夾（例如家目錄的 `IPRO/SDK/IPRO-SDK-V2.2.1`）。還沒有 SDK 時按 **從 GitHub 安裝 SDK…**。
 
     **應該看到**：側邊欄「應用程式」依分類列出 SDK 裡的應用程式，搜尋框寫著「篩選 N 個應用程式」。
 
@@ -173,7 +174,7 @@ IPRO Workbench 以 IPRO SDK 資料夾為工作區。SDK 的內容與命令列的
 
 <div class="ipro-steps" markdown>
 
-1. **接上探棒與開發板。** 用 USB 線把 IPRO 除錯探棒接到電腦，再把探棒接上 IPRO7AI Reef EVK V4.0（接法見 [IPRO7AI Reef EVK：除錯排座 U6](../hardware/boards/reef-evk.md#debug-connector)）。
+1. **接上探棒與開發板。** 用 USB 線把 IPRO 除錯探棒接到電腦，再把探棒接上 IPRO7AI Reef EVK V4.0（接法見 [IPRO7AI Reef EVK：除錯排座 U6](../hardware/boards/reef-evk.md#debug-connector)；IPRO6S EVK 的接法相同）。
 
     **應該看到**：側邊欄「開發板」出現「IPRO 除錯探棒」與它的兩個連接埠，例如 macOS 的 `UART cu.usbmodemXXXX · CCI cu.usbmodemYYYY`，Windows 的 `UART COM5 · CCI COM6`。工具列的開發板旁邊顯示同一個 UART 連接埠。
 
@@ -200,4 +201,5 @@ IPRO Workbench 以 IPRO SDK 資料夾為工作區。SDK 的內容與命令列的
 
 - [第一次執行](first-run.md)：用 `ipro_unit_test` 走完一輪建置、燒錄與監看，再建立自己的應用程式。
 - [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)：開發板的接頭、開關與除錯排座。
+- [IPRO6S EVK](flash.md#ipro6s)：在 IPRO6S EVK 上建置、燒錄並監看，以及它和 IPRO7 系列不同的地方。
 - 習慣在 VS Code 開發時，見 [VS Code Extension](../guides/vscode.md)。

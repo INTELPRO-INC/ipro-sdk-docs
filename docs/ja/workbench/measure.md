@@ -1,11 +1,11 @@
 ---
 title: "テストと測定"
-description: IPRO Workbench で、ボード上で Unity テストを実行して Testing ビューで結果を確認し、Direct Test Mode で BLE の RF を測定し、PPK2 の消費電力の記録を電池寿命の見積もりとともに解析します。
+description: IPRO Workbench で、ボード上で Unity テストを実行して Testing ビューで結果を確認し、Direct Test Mode で BLE の RF を測定し、iperf で Wi-Fi スループットを測定し、PPK2 の消費電力の記録を電池寿命の見積もりとともに解析します。
 ---
 
 # テストと測定
 
-ボード上でのテストの実行、BLE の RF の測定、消費電流の波形の確認について説明します。
+ボード上でのテストの実行、BLE の RF の測定、Wi-Fi スループットの測定、消費電流の波形の確認について説明します。これらのツールページはすべて、[IPRO Home](index.md#home) の **Tools** カードまたは IPRO メニューから開きます。
 
 ## ボードテスト { #board-tests }
 
@@ -26,7 +26,7 @@ description: IPRO Workbench で、ボード上で Unity テストを実行して
 ![Testing ビューのボードテストの結果。各テストに記号が付いている](../assets/workbench/board-tests.svg)
 
 !!! note
-    - **Testing** ビューは、ボードが起動後に出力するテストの行を読み取ります。そのため、モニターはプローブの UART（コンソール）ポートで開いている必要があり、フィルターを設定していてはいけません。
+    - **Testing** ビューは、ボードが起動後に出力するテストの行を読み取ります。そのため、モニターはプローブの UART（コンソール）ポートで開いている必要があります。モニターのフィルターは結果に影響しません。
     - ボードが再起動しない場合、IDE は「The board did not restart. Is the monitor on the console port of an IPRO Debug Probe?」と表示します。
 
 ## RF テスト（BLE DTM） { #rf-test }
@@ -35,7 +35,7 @@ description: IPRO Workbench で、ボード上で Unity テストを実行して
 
 <div class="ipro-steps" markdown>
 
-1. **ファームウェアを確認します。** ボードに MFG ファームウェアを書き込み、シリアルモニターを開きます。IPRO メニューから **RF Test (DTM)…** を選択し、**Check Firmware** をクリックします。MFG ファームウェアは IPRO SDK に含まれていません。INTELPRO の営業担当者にお問い合わせください。
+1. **ファームウェアを確認します。** ボードに MFG ファームウェアを書き込み、シリアルモニターを開きます。IPRO Home の **Tools** にある **RF test (DTM)** をクリックし（または IPRO メニューから **RF Test (DTM)…** を選択し）、**Check Firmware** をクリックします。MFG ファームウェアは IPRO SDK に含まれていません。INTELPRO の営業担当者にお問い合わせください。
 
     **期待される結果**：「MFG firmware 1.01」と表示されます。ボードが応答しない場合は、「The board did not answer. Is it running the MFG firmware?」と表示されます。
 
@@ -43,7 +43,7 @@ description: IPRO Workbench で、ボード上で Unity テストを実行して
 
     **期待される結果**：送信中は「Transmitting on 2402 MHz (1M, 37 bytes, every 625 µs).」のようなメッセージが表示されます。受信を停止すると、「Received M packets in N s; against a DTM transmitter at the standard rate that is a PER of X%.」と表示されます。
 
-    **Receive** だけをクリックした場合、PER は受信時間から推定されます。この受信時間には、ボードが受信を開始する前のわずかな時間も含まれるため、実際の値よりやや高く出ます（10 秒間で約 1〜3% 高くなります）。正確な PER を得るには、次の手順のように 2 台のボードで測定します。
+    **Receive** だけをクリックした場合、PER はボードが受信中であることを報告した時点から数え、期待されるパケット数は DTM の標準レートから推定します。この推定は、送信側がその間ずっと送信している場合に成り立ちます。IDE に両側を制御させるには、次の手順のように 2 台のボードで測定します。
 
 3. **2 台のボードで PER を測定します。** 両方のボードを同じコンピューターに接続し、2 台目のボードにも MFG ファームウェアを書き込み、**Open Monitor on Another Port…** をクリックしてそのモニターを開きます。**Packet error rate between two boards** で受信側と秒数を選択し、**Measure PER** をクリックします。
 
@@ -53,11 +53,77 @@ description: IPRO Workbench で、ボード上で Unity テストを実行して
 
 </div>
 
+![BLE RF テストのページ。ボードのポート、Check Firmware、チャネル、PHY、長さ、ペイロード、電力、Transmit・Receive・Stop の各ボタン、2 台のボード間の PER についてのヒントがある](../assets/workbench/rf-test.svg)
+
 !!! tip
     近くに Wi-Fi があると、Wi-Fi のチャネルと重なる BLE チャネル（例：2440 MHz 付近）では多くのパケットが失われます。PER を測定するときは、近くの Wi-Fi と重ならないチャネル（例：2478 MHz）を選んでください。
 
 !!! note
     テストを開始するたびに、MFG ファームウェアはまず BLE コントローラーを起動する必要があります（約 2.5 秒）。IDE はその応答を待ってからテストを開始します。
+
+## Wi-Fi スループット（iperf） { #iperf }
+
+**Wi-Fi throughput** は、このコンピューターとボードの間で TCP の iperf テストを実行し、Wi-Fi スループットを測定します。コンピューター側は IPRO Workbench 自身が実行するため、iperf をインストールする必要はありません。ボード側のコマンドは、IDE がシリアルモニターを通じて入力します。
+
+ボード上のアプリケーションには、SDK の Wi-Fi シェルコマンドと `iperf` コマンドが必要です。IPRO6S EVK では、IPRO SDK 2.2.1 の `platform/ipro6_demo` を使用します。書き込みについては、[IPRO6S EVK](flash.md#ipro6s)（[書き込みとボード](flash.md)のセクション）を参照してください。
+
+| Wi-Fi の役割 | 使用する場面 |
+|---|---|
+| **Station (joins the network this PC is on)** | 推奨の方法です。コンピューターがすでに接続している Wi-Fi ネットワーク（2.4 GHz）にボードが参加します。コンピューターのネットワークはそのままです。 |
+| **Access point (this PC joins it)** | 使用できる Wi-Fi ネットワークがない場合に使用します。ボードがアクセスポイントになり、コンピューターの Wi-Fi をボードに接続する必要があります。その間、コンピューターは通常インターネットに接続できません。 |
+
+### ボードをネットワークに接続する { #iperf-network }
+
+<div class="ipro-steps" markdown>
+
+1. **アプリケーションを書き込みます。** `ipro6_demo` を選択して IPRO6S EVK に書き込み、シリアルモニターを開いたままにします。
+
+2. **ページを開きます。** IPRO Home の **Tools** にある **Wi-Fi throughput** をクリックします（または IPRO メニューから **Wi-Fi Throughput (iperf)…** を選択します）。
+
+    **期待される結果**：**Wi-Fi Throughput (iperf)** タブが開き、「1. Put the board and this PC on one network」と「2. Run」の 2 つの部分が表示されます。モニターが開いていない場合は、モニターを開くよう促すヒントが上部に表示され、**Open Monitor** ボタンが提示されます。
+
+3. **ネットワークに参加します。** **Wi-Fi role** で **Station (joins the network this PC is on)** を選択し、**Network name** にコンピューターが接続している Wi-Fi ネットワークの名前を、**Password** にそのパスワードを入力して、**Join Network** をクリックします。
+
+    **期待される結果**：ステータスメッセージに「The board is joining &lt;network name&gt;…」、続いて「The board joined &lt;network name&gt;; its address is &lt;board's IP&gt;.」と表示され、**Board's IP address** が自動的に入力されます。下のログには、IDE がボードに送信したコマンド（→ で始まる行）とボードの応答（← で始まる行）として `wifi_state`、`stack_wifi`、`wifi_sta_connect` が一覧表示されます。このログでは、パスワードは `********` と表示されます。約 40 秒以内にボードが参加できなかった場合は、「The board did not join &lt;network name&gt;. Check the name and password.」というメッセージが表示されます。
+
+    代わりにアクセスポイントモードを使用するには、**Wi-Fi role** で **Access point (this PC joins it)** を選択し、作成するネットワークの名前、8〜63 文字のパスワード、チャネルを入力して、**Start Access Point** をクリックします。
+
+    **期待される結果**：「The board is the access point &lt;network name&gt; at 192.168.169.1. Join it from this PC, then run the test.」と表示されます。その後、コンピューターの Wi-Fi 設定でそのネットワークに接続します。
+
+</div>
+
+![Wi-Fi スループットのページ。パート 1 にはボードのポート、Wi-Fi の役割 Access point、ネットワーク名 IPRO-iperf、伏せ字のパスワード、チャネル 6、Start Access Point と Stop Access Point のボタン、ボードの IP アドレス 192.168.169.1 があり、パート 2 には方向と秒数がある。ステータスメッセージは、ボードがアクセスポイントであることを示している](../assets/workbench/iperf.svg)
+
+!!! warning "重要"
+    - ネットワーク名とパスワードにスペースを含めることはできません。ボードのシェルがスペースを受け付けないためです。どちらかにスペースがあると、IDE は何も送信せず、「The network name must be 1 to 32 characters without spaces」または「The password must be 8 to 63 characters without spaces.」と表示します。
+    - パスワードはシリアルポート経由でボードに送られ、ボードはそれをシリアルモニターにエコーします（ツールページ自体のログには表示されません）。**Log To File** がオンの場合、パスワードはモニターのログファイルにも残ります。モニターの出力やログファイルをほかの人に渡す前に、その行を削除してください。
+
+### テストを実行する { #iperf-run }
+
+<div class="ipro-steps" markdown>
+
+1. **テストを実行します。** **Direction** は **This PC sends, the board receives (board = iperf server)** のままにし、**Seconds** にテスト時間（デフォルトは 10）を入力して、**Run Test** をクリックします。
+
+    **期待される結果**：ステータスメッセージに「This PC (&lt;PC's IP&gt;) sends to the board (&lt;board's IP&gt;) for 10 s…」と表示され、その下の行に、ボードとコンピューターがそれぞれ集計した 1 秒ごとの Mbit/s が表示されます。終了すると、ステータスメッセージに「Done: … Mbit/s by the board's count, … Mbit/s by this PC's.」と表示され、結果の表に、方向、時間、転送量、ボードの集計値、この PC の集計値、ボード側の 1 秒ごとの数値からなる行が追加されます。
+
+2. **逆方向を測定します。** **Direction** を **The board sends, this PC receives (board = iperf client)** に変更し、もう一度 **Run Test** をクリックします。
+
+    **期待される結果**：結果の表の先頭に、新しい行「Board → PC」が追加されます。
+
+3. **停止してネットワークから切断します。** テストを途中で終了するには、**Stop** をクリックします。作業が終わったら、**Leave Network**（アクセスポイントモードでは **Stop Access Point**）をクリックして、ボードを Wi-Fi ネットワークから切断します。
+
+</div>
+
+| 方向 | 接続を待ち受ける側 | 備考 |
+|---|---|---|
+| この PC が送信し、ボードが受信する（デフォルト） | ボード（iperf サーバー、TCP ポート 5001） | コンピューターのファイアウォールを変更する必要はありません |
+| ボードが送信し、この PC が受信する | このコンピューター（TCP ポート 5001） | コンピューターのファイアウォールで、TCP 5001 の受信を許可する必要があります。Windows はデフォルトでブロックします。下記を参照してください |
+
+!!! note
+    - **Windows のファイアウォール**：ボードが送信してコンピューターが受信する場合に、ステータスメッセージが「The board did not connect to this PC on TCP port 5001. A firewall on this PC may block incoming connections…」であれば、「セキュリティが強化された Windows Defender ファイアウォール」で、TCP ポート 5001 を許可する受信の規則を追加します（コンピューターが接続しているネットワークのプロファイル、パブリックまたはプライベートに対して）。この規則は、テストの後で無効にするか削除できます。規則の追加には管理者権限が必要です。コンピューターからボードへの送信には、規則は不要です。
+    - **待ち受けたままのボード側サーバー**：ボードの iperf サーバーが接続を待ち始めると、コンピューターからの接続か、ボードの再起動でしか終了しません。そのため IDE は、ボードにサーバーを開始させる前に、このコンピューターがボードのネットワーク上のアドレスを持っていることを確認します。持っていない場合は、「This PC has no address on the board's network (…). Join the same Wi-Fi network, then run again.」というメッセージが表示されます。サーバーがすでに待ち受けている場合（ステータスメッセージが「This PC could not reach the board's iperf server…」または「An earlier iperf is still running on the board…」の場合）は、表示される **Reset Board** ボタンをクリックします。ボードが再起動したら、**Join Network** からやり直します。
+    - ボードとコンピューターは、それぞれ独自に集計します。ボードは受信した（または送信した）データから、コンピューターは送信した（または受信した）データから算出します。2 つの数値にわずかな差があるのは正常です。
+    - 2 つの Wi-Fi の役割で測定した数値を、互いに比較することはできません。アクセスポイントに接続したボードのスループットを評価するには、Station モードを使用してください。
 
 ## 消費電力 { #power }
 
@@ -65,7 +131,7 @@ description: IPRO Workbench で、ボード上で Unity テストを実行して
 
 <div class="ipro-steps" markdown>
 
-1. **記録を開きます。** アプリケーションを右クリックして **Power…** を選択し、**Open…** をクリックして、Power Profiler で保存した `.ppk2` または CSV ファイルを選択します。
+1. **記録を開きます。** アプリケーションを右クリックして **Power…** を選択し（または IPRO Home の **Tools** にある **Power** をクリックし）、**Open…** をクリックして、Power Profiler で保存した `.ppk2` または CSV ファイルを選択します。
 
     **期待される結果**：記録時間、平均、ピーク、スリープ時の下限（1 パーセンタイル）、電荷量と、「CR2032 (225 mAh) at this average」での持続時間が表示されます。その下には電流波形があり、**Log scale** に切り替えられます。
 
@@ -83,4 +149,4 @@ description: IPRO Workbench で、ボード上で Unity テストを実行して
 
 </div>
 
-![電流波形とその統計（記録時間、平均、ピーク、スリープ時の下限、電荷量、CR2032 での寿命）がある Power ビュー](../assets/workbench/power.svg)
+![電流波形とその統計（記録時間、平均、ピーク、スリープ時の下限、電荷量、CR2032 での寿命）がある Power ビュー。ポインターは 5.000 s の位置にあり、ツールチップにログ行「inference start」が表示されている](../assets/workbench/power.svg)

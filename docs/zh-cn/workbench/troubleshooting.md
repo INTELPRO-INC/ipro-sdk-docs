@@ -5,7 +5,7 @@ description: IPRO Workbench 的消息、工具栏和侧边栏状态的含义及�
 
 # 故障排除
 
-按出现的位置，列出 IPRO Workbench 0.1.0 中各种消息和状态的原因及解决方法。
+按出现的位置，列出 IPRO Workbench 0.1.1 中各种消息和状态的原因及解决方法。
 
 ## 界面上的消息 { #messages }
 
@@ -24,9 +24,16 @@ description: IPRO Workbench 的消息、工具栏和侧边栏状态的含义及�
 | The board started firmware built …, not the … just flashed. | 烧录实际上没有写入开发板 | 查看 **IPRO Flash** 的输出，然后点击 **Flash Again** |
 | … is over its memory budget | 某个内存区域超出了 `ipro.build.memoryBudget` 中设置的上限 | 点击 **Memory Map** 找出占用较大的符号，或点击 **Budget Settings** 调整上限 |
 | The partition table of … reaches …, but the board on this probe has … of flash | 所选的分区表大于开发板的 Flash | 点击 **Partition Table** 选择其他分区表，或检查 `.config` 中的 Flash 大小 |
+| IntelProCube has no …, the partition table … flashes with. Without one the board would not boot. | 此版本的 IntelProCube 缺少开发板所需的分区表（IPRO6S EVK 需要 0.7.0.1 或更高版本中的 `partition_cfg_fw_direct.toml`） | 点击 **Install IntelProCube**，或在 **Environment** 的 IntelProCube 一行选择 0.7.0.1 或更高的版本，然后重新烧录 |
 | `mfg uses the same space as FW …`（**Partition Table** 和 **AI Model** 视图中的检查结果） | 1M 分区表没有为 AI 模型单独预留空间 | 在 **Partition Table** 中选择带有独立 mfg 分区的分区表（例如应用程序自带的分区表） |
 | The board did not answer. Is it running the MFG firmware? | 射频测试期间，开发板运行的不是 MFG 固件，或监视器没有打开 | 烧录 MFG 固件并打开监视器，然后点击 **Check Firmware** |
-| **Testing** 视图中没有结果 | 监视器的过滤隐藏了测试行，或开发板没有重启 | 清除过滤，然后点击 **Run Tests on Board** |
+| **Testing** 视图中没有结果 | 开发板没有重启，或应用程序没有使用 Unity 测试框架 | 确认监视器接在探针的 UART 端口上，然后点击 **Run Tests on Board** |
+| The board did not answer wifi_state. Flash an application with the Wi-Fi shell and iperf… | Wi-Fi 吞吐量：开发板上的应用程序没有 Wi-Fi shell，或监视器打开在其他端口上 | 在 IPRO6S EVK 上烧录 `platform/ipro6_demo`；在工具页面的 **Board** 中选择这块开发板的端口 |
+| The network name must be 1 to 32 characters without spaces… / The password must be 8 to 63 characters without spaces. | 开发板的 shell 无法接受空格 | 使用不含空格的网络名称和密码（必要时在接入点上另设一个网络） |
+| The board did not join …. Check the name and password. | 名称或密码输入有误，或该网络不在 2.4 GHz 上 | 更正后再次点击 **Join Network** |
+| This PC has no address on the board's network (…). | 计算机与开发板不在同一个 Wi-Fi 网络上 | 让计算机加入同一个网络（接入点模式下为开发板创建的网络），然后点击 **Run Test** |
+| The board did not connect to this PC on TCP port 5001. A firewall on this PC may block incoming connections… | 开发板发送、计算机接收时，计算机的防火墙拦截了传入连接（Windows 的默认行为） | 让防火墙允许传入的 TCP 5001（请参阅[运行测试](measure.md#iperf-run)），或改为从计算机向开发板发送 |
+| This PC could not reach the board's iperf server… / An earlier iperf is still running on the board… | 开发板的 iperf 服务器仍在等待连接 | 点击 **Reset Board**；开发板重启后，重新加入网络 |
 | The board did not restart. Is the monitor on the console port of an IPRO Debug Probe? | 监视器打开在 CCI 或其他端口上 | 点击工具栏上的开发板，用 **Select Port…** 切换回探针的 UART |
 
 ## 工具栏和侧边栏的状态 { #status }
@@ -36,6 +43,7 @@ description: IPRO Workbench 的消息、工具栏和侧边栏状态的含义及�
 | 工具栏以琥珀色显示“no probe” | IDE 找不到 IPRO Debug Probe。检查 USB 线，并尽量将探针直接连接到计算机；插好后，探针会在几秒内自动出现。 |
 | 状态栏显示“Setup: N” | 点击它打开 IPRO Home，然后点击横幅中的 **Fix Environment**。 |
 | **Board** 显示“Runs other firmware” | 开发板运行的不是当前应用程序的最新构建。要运行当前的程序，请烧录它。 |
+| IPRO6S EVK 的 **Board** 下没有“Runs …”一行 | 这是正常现象。IPRO6 系列开发板启动时不打印构建时间，因此 IDE 无法核对开发板上的固件；请以 **IPRO Flash** 中的 `[All Success]` 和监视器中的启动信息为准。 |
 
 ## macOS 上的问题 { #macos }
 
@@ -52,9 +60,10 @@ description: IPRO Workbench 的消息、工具栏和侧边栏状态的含义及�
 |---|---|
 | 安装时显示“Windows 已保护你的电脑” | 点击 **更多信息**，确认应用名称为 IPRO-Workbench，然后点击 **仍要运行**。 |
 | 其他串口工具无法打开 COM 端口 | 在 Windows 上，一个 COM 端口同一时间只能被一个程序使用。打开其他工具前先关闭 IPRO Monitor；用完后也请关闭该工具，以便 IDE 进行烧录。 |
-| **SDK for this toolchain** 提示需要调整 | SDK 2.2.0 需要几处主机端修正才能在 Windows 上构建。点击 **Fix Environment**（或该行的 **Prepare the SDK for this toolchain**），IDE 会自动处理。 |
+| **SDK for this toolchain** 提示需要调整 | IPRO SDK 2.2 需要几处主机端修正才能在 Windows 上构建。点击 **Fix Environment**（或该行的 **Prepare the SDK for this toolchain**），IDE 会自动处理。 |
+| Wi-Fi 吞吐量：开发板发送、计算机接收时没有结果 | Windows 防火墙默认拦截传入连接。添加一条允许 TCP 端口 5001 的入站规则（请参阅[运行测试](measure.md#iperf-run)），或改为从计算机向开发板发送。 |
 | Python 一行提示缺少 kconfiglib | 在命令提示符中运行 `python -m pip install kconfiglib windows-curses`，然后点击 **Check Again**。 |
-| 代码编辑器提示下载 clangd | 代码导航使用 clangd。按提示让它下载即可。 |
+| 代码编辑器提示下载 clangd | 代码导航使用 clangd。按提示让它下载即可，或在 **Environment** 的 clangd 一行点击 Fix。 |
 
 ## 收集问题信息 { #collect }
 
