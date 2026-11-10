@@ -93,9 +93,9 @@ make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef
 | 應用 | 用途 | 板卡與設定 | 主控台 |
 |---|---|---|---|
 | [`ipro7_sdio_wifi`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro7_sdio_wifi) | IPRO7 作為 SDIO 主機、IPRO6S 作為 Wi-Fi 無線電，提供 lwIP 網路介面 `iproeth0` 與 DHCP。Reef 上的同等功能為 `ipro7ai_reef_demo` 的 `defconfig_wifi_ipro6s` | 需要 IPRO7 EVB 與 IPRO6S | UART 115200 |
-| [`ipro6_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro6_demo) | IPRO6S Wi-Fi 6 station／soft-AP 與 shell；`defconfig_ipro6_lpwifi` 加上 DTIM 省電，`defconfig_ipro6_lp` 為低功耗示範 | 需要 IPRO6S EVB（見 [IPRO6S](../hardware/chips/ipro6s.md)） | UART 115200 |
-| [`ipro6_if_wifi`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro6_if_wifi) | IPRO6S Wi-Fi 6 橋接到主機：SDIO（`defconfig_ipro6_sdio`，也是 Reef FIN 卡的韌體）或 USB（`defconfig_ipro6_usb`） | IPRO6S EVB；FIN 卡（`defconfig_ipro6_sdio`，以 `--chipname ipro6` 燒錄，見 [IPRO6S](../hardware/chips/ipro6s.md)） | UART 115200 |
-| [`ipro6_fmac`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro6_fmac) | 給 Linux cfg80211 主機的 FullMAC 韌體（`defconfig_ipro6_fmac`）與其 Flash 載入程式（`defconfig_ipro6_fmac_loader`）；Linux 驅動程式不在 SDK 內 | 需要 IPRO6S EVB | UART 115200 |
+| [`ipro6_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro6_demo) | IPRO6S Wi-Fi 6 station／soft-AP 與 shell；`defconfig_ipro6_lpwifi` 加上 DTIM 省電，`defconfig_ipro6_lp` 為低功耗示範 | 需要 IPRO6S EVK（見 [IPRO6S](../hardware/chips/ipro6s.md)） | UART 115200 |
+| [`ipro6_if_wifi`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro6_if_wifi) | IPRO6S Wi-Fi 6 橋接到主機：SDIO（`defconfig_ipro6_sdio`，也是 Reef FIN 卡的韌體）或 USB（`defconfig_ipro6_usb`） | IPRO6S EVK；FIN 卡（`defconfig_ipro6_sdio`，以 `--chipname ipro6` 燒錄，見 [IPRO6S](../hardware/chips/ipro6s.md)） | UART 115200 |
+| [`ipro6_fmac`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro6_fmac) | 給 Linux cfg80211 主機的 FullMAC 韌體（`defconfig_ipro6_fmac`）與其 Flash 載入程式（`defconfig_ipro6_fmac_loader`）；Linux 驅動程式不在 SDK 內 | 需要 IPRO6S EVK | UART 115200 |
 <!-- END generated: examples-networking -->
 
 IPRO6S 應用以 `--chipname ipro6` 燒錄；建置與設定見 [IPRO6S](../hardware/chips/ipro6s.md)。

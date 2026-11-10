@@ -88,7 +88,7 @@ migrate_from:
 
 </div>
 
-The SDK also carries applications for the IPRO7 EVB, the IPRO7AI EVK and the IPRO6S EVB; they are listed under [Examples](examples/index.md#other-boards). Contact INTELPRO for those boards.
+The SDK also carries applications for the IPRO7 EVB, the IPRO7AI EVK and the IPRO6S EVK; they are listed under [Examples](examples/index.md#other-boards). Contact INTELPRO for those boards.
 
 ## Three steps to start { #quick-start }
 

@@ -6,7 +6,7 @@ migrate_from: []
 
 # はじめに
 
-以下のページを順に進めると、まっさらなコンピューターから、IPRO7AI Reef EVK V4.0 上で出荷時ファームウェア `ipro7ai_reef_demo` を動かし、`reef selftest` で確認するところまで到達できます。このサイトの手順はすべてこのボード向けです。IPRO7 EVB、IPRO7AI EVK、IPRO6S EVB、IPRO7 Arduino ボード向けのアプリケーションにはそれぞれのボードが必要です。INTELPRO にお問い合わせください。
+以下のページを順に進めると、まっさらなコンピューターから、IPRO7AI Reef EVK V4.0 上で出荷時ファームウェア `ipro7ai_reef_demo` を動かし、`reef selftest` で確認するところまで到達できます。このサイトの手順はすべてこのボード向けです。IPRO7 EVB、IPRO7AI EVK、IPRO6S EVK、IPRO7 Arduino ボード向けのアプリケーションにはそれぞれのボードが必要です。INTELPRO にお問い合わせください。
 
 ## 必要なもの { #what-you-need }
 

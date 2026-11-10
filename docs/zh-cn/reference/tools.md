@@ -307,7 +307,7 @@ python3 apps/ai/ipro_reef_teach/mfg_payload.py \
 | `tools/script/parse_kconfig_dynamic.py Kconfig [PROJECT_SYMBOL]` | 把 Kconfig 树输出为 JSON；需要 kconfiglib。构建由 `cmake/generate_autoconf.cmake` 直接读取 `.config` 生成 `autoconf.h`，不使用此脚本 |
 | `components/audio/tools/gen_asrc_coef.py` | 生成音频采样率转换系数 |
 | `*/test_host/run.sh` | 在电脑上运行的单元测试，例如 `components/audio/test_host/run.sh`、`apps/ai/ipro_reef_teach/sensor/test_host/run.sh` |
-| 其他开发板的工具 | IPRO7AI EVK 示例的 `flash.sh`、`enter_dl.py`，`ipro6_fmac` 的 `tools/mkimg.py`（IPRO6S EVB），`tools/android/IproMicDemo/`（`ipro_pdm_mic_demo`）：需要对应的开发板 |
+| 其他开发板的工具 | IPRO7AI EVK 示例的 `flash.sh`、`enter_dl.py`，`ipro6_fmac` 的 `tools/mkimg.py`（IPRO6S EVK），`tools/android/IproMicDemo/`（`ipro_pdm_mic_demo`）：需要对应的开发板 |
 
 ## 开发流程 { #dev-workflow }
 

@@ -27,7 +27,7 @@ IPRO6S 是內建 Wi-Fi 6 的 RISC-V SoC，與 IPRO7 使用同一份 SDK 原始�
 | 無線 | 內建 Wi-Fi 6 |
 | NPU／ISP | 無 |
 | RTOS | FreeRTOS V11 |
-| 參考板 | IPRO6S EVB（供應請洽 INTELPRO）；Reef 的 FIN 卡 |
+| 參考板 | IPRO6S EVK（供應請洽 INTELPRO）；Reef 的 FIN 卡 |
 
 | 區域 | 大小 | 起始位址 | 說明 |
 |---|---|---|---|
@@ -54,7 +54,7 @@ CONFIG_FREERTOS_SUPPORT=y
 | 低功耗 | DTIM 低功耗韌體映像 `bsp/hal/lp_framework/ipro6/prebuilt/ipro6_lpfw.bin`，由低功耗設定嵌入 |
 | Bluetooth | IPRO6S 的藍牙控制器函式庫與雙模（BR/EDR）應用未包含於 V2.2.0，請洽 INTELPRO。本版 IPRO6S 應用只使用 Wi-Fi |
 | Zephyr RTOS | 隨附 `ipro6s_evb` 板型檔案，但本版不支援 IPRO6S 的 Zephyr 建置 |
-| 燒錄 | IntelProCube v0.6.3 命令列工具（另行取得），`--chipname ipro6`；`build_freertos.sh` 的 `flash` 只支援 IPRO7 |
+| 燒錄 | [IntelProCube](https://github.com/INTELPRO-INC/ipro-cube/releases) 0.7.0.1 以上的命令列工具，`--chipname ipro6`；`build_freertos.sh` 的 `flash` 只支援 IPRO7 |
 
 ## 應用與設定 { #apps }
 
@@ -72,7 +72,7 @@ CONFIG_FREERTOS_SUPPORT=y
 
 - `ipro6_demo/defconfig_ipro6_lpwifi_ping` 與 `ipro6_fmac/defconfig_ipro6_fmac_ap` 沒有設定 `CONFIG_WIRELESS_LIB_VARIANT`，不在驗證過的設定之列；使用前請洽 INTELPRO。
 - `ipro6_fmac` 的 Linux 主機端驅動未包含於 V2.2.0。
-- 這三個應用以 IPRO6S EVB 為目標（`CONFIG_BOARD="EVB"`）；在 Reef 上只有 `ipro6_if_wifi` 的 `defconfig_ipro6_sdio` 執行於 FIN 卡。
+- 這三個應用以 IPRO6S EVK 為目標（`CONFIG_BOARD="EVB"`）；在 Reef 上只有 `ipro6_if_wifi` 的 `defconfig_ipro6_sdio` 執行於 FIN 卡。
 
 ## 建置 { #build }
 
@@ -98,15 +98,94 @@ CONFIG_WIRELESS_LIB_VARIANT="ipro6_if_wifi-ipro6_sdio"
 
 `ipro6_demo` 以 `CONFIG_WIFI_MEM_PROFILE_PERF`（預設）、`_BALANCED`、`_APP` 三選一，決定 Wi-Fi 緩衝區與應用堆積如何分配 RAM；在設定檔加入一行即可切換，改完要刪除建置目錄再建置。各設定的可用堆積與吞吐量見 `apps/platform/ipro6_demo/profile_selection_readme.md`。
 
-## 燒錄 { #flashing }
+## 燒錄與上板驗證 { #flashing }
 
-IPRO6S 映像以 IntelProCube 命令列工具的 `--chipname ipro6` 燒錄，在 IntelProCube 目錄下執行：
+以下以 IPRO6S EVK 搭配 IPRO Debug Probe 為例，從建置 `ipro6_demo` 到在主控台看見 Wi-Fi 掃描結果。IPRO6S 映像以 IntelProCube 命令列工具的 `--chipname ipro6` 燒錄；`build_freertos.sh` 的 `flash` 不適用。
 
-```bash
-./ipro_iot_tool_macos --chipname ipro6 --config chips/ipro6/conf/iot.toml --skip-ota
-```
+需要：
 
-`chips/ipro6/conf/iot.toml` 要指向剛建置的 `.bin`。工具即使失敗也會以 0 結束，請以輸出中的 `[All Success]` 判斷結果。IPRO6S EVB 進入下載模式的操作請洽 INTELPRO；Reef 上的 FIN 卡見下一節。
+- IPRO6S EVK、2.4 GHz 天線、IPRO Debug Probe 與它的 UART 排線、USB-C 電源。
+- 依[準備開發環境](../../get-started/environment.md)安裝的工具鏈，以及 SDK V2.2.0（下文寫作 `<SDK>`）。
+- [IntelProCube](https://github.com/INTELPRO-INC/ipro-cube/releases) 0.7.0.1 以上：依 [README](https://github.com/INTELPRO-INC/ipro-cube#readme) 下載、核對 SHA-256，解壓到新的資料夾（下文寫作 `<IntelProCube>`）。以 0.7.0 燒錄的映像無法開機，見[燒錄成功卻沒有開機](#ipro6s-no-boot)。
+
+<div class="ipro-steps" markdown>
+
+1. **建置**：在 `<SDK>` 根目錄執行
+
+    ```bash
+    make -C apps/platform/ipro6_demo DEFCONFIG=defconfig_ipro6_lpwifi
+    ```
+
+    結束時連結器印出各記憶體區域的用量，其中 `flash` 一行約為：
+
+    ```text
+               flash:     1092656 B         2 MB     52.10%
+    ```
+
+    映像位於 `apps/platform/ipro6_demo/build_ipro6_lpwifi/build_out/ipro6_demo_IPRO6.bin`。
+
+2. **接線**：天線接到 EVK 的 RF1（u.FL）。IPRO Debug Probe 的 UART 排線接到 EVK 的 J_UART，探針以 USB 接電腦。EVK 以 USB-C 供電，LED1 亮起。
+
+3. **找出序列埠**：在 `<IntelProCube>` 目錄執行（Linux 為 `./ipro_iot_tool_linux`，Windows 為 `ipro_iot_tool.exe`，下同）
+
+    ```bash
+    ./ipro_iot_tool_macos --list-ports
+    ```
+
+    探針會列出兩個埠：標示 `(IPRO_U)`、名稱以 `02` 結尾的是 UART，燒錄與主控台都用它；`(IPRO_C)` 是晶片除錯埠。macOS 列出的名稱以 `/dev/tty.` 開頭，請改用 `/dev/cu.` 開頭的同名埠，例如 `/dev/cu.usbmodemXXXX02`。
+
+4. **燒錄**：
+
+    ```bash
+    ./ipro_iot_tool_macos --chipname ipro6 --chip-variant IPRO6S \
+        --port /dev/cu.usbmodemXXXX02 --baudrate 2000000 \
+        --pt chips/ipro6/partition/partition_cfg_fw_direct.toml \
+        --firmware <SDK>/apps/platform/ipro6_demo/build_ipro6_lpwifi/build_out/ipro6_demo_IPRO6.bin
+    ```
+
+    工具經探針讓晶片進入下載模式，燒錄並校驗後重置晶片，約需 15 秒。輸出最後出現 `[All Success]` 才算成功；工具即使失敗也以 0 結束。`partition_cfg_fw_direct.toml` 把韌體放在 Flash 位址 0x0、不使用 boot2，分割表放在最後兩個扇區。
+
+5. **確認開機**：以 115200 baud（8N1、無流量控制）開啟同一個埠，再按一下 EVK 的 RESET（SW2）。
+
+    ```bash
+    screen /dev/cu.usbmodemXXXX02 115200
+    ```
+
+    開機訊息的最後幾行：
+
+    ```text
+    [OS] Starting OS Scheduler...
+    [EVENT] Event loop initialized
+    [EVENT] WiFi event handler registered
+    Init Shell (RT-Thread FinSH based)
+    ipro />
+    ```
+
+6. **確認 Wi-Fi**：輸入 `stack_wifi`，出現 `CODE_WIFI_ON_MGMR_DONE` 後再輸入 `wifi_scan`。
+
+    ```text
+    ipro />stack_wifi
+    ...
+    [APP] [EVT] CODE_WIFI_ON_INIT_DONE
+    ...
+    [APP] [EVT] CODE_WIFI_ON_MGMR_DONE
+    ipro />wifi_scan
+    [APP] [EVT] CODE_WIFI_ON_SCAN_DONE
+    ...
+    index[00]: channel 01, bssid XX:XX:XX:XX:XX:XX, rssi -20, ... auth WPA2-PSK, cipher: AES, SSID <ssid>
+    ```
+
+    附近每個基地台一行（最多 50 行，沒用到的顯示 `empty`）。列得出基地台，表示射頻與 Wi-Fi 協定堆疊都正常。同一次開機只需執行一次 `stack_wifi`。
+
+</div>
+
+### 手動進入下載模式 { #ipro6s-download-mode }
+
+工具經探針的 DL 線自動進入下載模式。使用一般 USB 轉 UART 線，或工具回報握手失敗時，先手動進入下載模式再執行燒錄指令：按住 BOOT（SW1），按一下 RESET（SW2），再放開 BOOT。晶片在下載模式時主控台沒有任何輸出；燒錄完成後按一下 RESET 回到正常開機。燒錄前請關閉占用該序列埠的終端程式（例如 `screen`），否則工具無法開啟序列埠。
+
+### 燒錄成功卻沒有開機 { #ipro6s-no-boot }
+
+IntelProCube 0.7.0 的 IPRO6 開機標頭時序不適用於 2 MB 封裝內 Flash 的 IPRO6S：輸出有 `[All Success]`，重置後主控台卻沒有任何訊息，晶片停在下載模式。請改用 0.7.0.1 以上並解壓到新的資料夾。若把 0.7.0.1 解壓覆蓋在用過的 0.7.0 資料夾上，先刪除 `chips/ipro6/img_create_iot/efuse_bootheader_cfg.ini`：這個檔案在工具第一次執行時由範本產生，之後不會更新。IPRO SDK Online Setup 3.6.0 以前安裝的 IntelProCube 是 0.7.0，燒錄 IPRO6S 時請另外安裝 0.7.0.1。
 
 ## Reef 上的 FIN Wi-Fi 卡 { #dual-chip }
 

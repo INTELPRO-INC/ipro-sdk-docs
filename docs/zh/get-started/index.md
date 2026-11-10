@@ -6,7 +6,7 @@ migrate_from: []
 
 # 開始使用
 
-依下列順序完成，就能從一台新電腦開始，在 IPRO7AI Reef EVK V4.0 上建置、燒錄並執行開箱韌體 `ipro7ai_reef_demo`，再以 `reef selftest` 確認板上功能。本站的操作步驟都以這塊板子為準；IPRO7 EVB、IPRO7AI EVK、IPRO6S EVB 與 IPRO7 Arduino 板的應用需要對應的板子，請洽 INTELPRO。
+依下列順序完成，就能從一台新電腦開始，在 IPRO7AI Reef EVK V4.0 上建置、燒錄並執行開箱韌體 `ipro7ai_reef_demo`，再以 `reef selftest` 確認板上功能。本站的操作步驟都以這塊板子為準；IPRO7 EVB、IPRO7AI EVK、IPRO6S EVK 與 IPRO7 Arduino 板的應用需要對應的板子，請洽 INTELPRO。
 
 ## 需要準備 { #what-you-need }
 

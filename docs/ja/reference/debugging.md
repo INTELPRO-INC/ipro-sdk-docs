@@ -247,6 +247,7 @@ Reef の出荷時ファームウェア `ipro7ai_reef_demo` にはセルフテス
 | `build_freertos.sh flash` で `Flash tool not found` と表示される | IntelProCube ツールが見つかりません | `IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos` を設定するか、ツールのディレクトリを `PATH` に追加します |
 | `No serial port found` または `Several serial ports` | USB シリアルポートがない、または複数あります | `-p` を指定するか、`IPRO_SERIAL_PORT` を設定します |
 | IPRO6S アプリケーションで `build_freertos.sh flash` が失敗する | スクリプトは常に `--chipname ipro7` を渡します | IntelProCube のディレクトリから `--chipname ipro6` で書き込みます。[IPRO6S](../hardware/chips/ipro6s.md) を参照してください |
+| IPRO6S の書き込みが `[All Success]` で終わるのに、リセット後にコンソールに何も表示されない | IntelProCube 0.7.0 の IPRO6 ブートヘッダーのタイミング設定が 2 MB Flash の IPRO6S に適合しない | IntelProCube 0.7.0.1 以降を使用します。[IPRO6S](../hardware/chips/ipro6s.md#ipro6s-no-boot) を参照してください |
 | BLE OTA の後、Reef がまったく応答しない | 標準の `partition_cfg_2M.toml` で書き込んだボードで OTA を実行しました | ダウンロードモードに入り、boot2 と `partition_cfg_2M_remote_ab.toml` で書き込み直します。[ipro_ble_remote](../examples/ipro_ble_remote.md) を参照してください |
 
 ### コンソール { #troubleshooting-console }

@@ -340,7 +340,7 @@ The IPRO6S side of the link is an IPRO6S FreeRTOS application from the same SDK.
 |---|---|---|
 | `ipro6_if_wifi` | `defconfig_ipro6_sdio` | Wi-Fi 6 bridge to an SDIO host: the FIN card firmware |
 | `ipro6_if_wifi` | `defconfig_ipro6_usb` | The same bridge to a USB host |
-| `ipro6_demo` | `.config`, `defconfig_ipro6_lpwifi` | Stand-alone Wi-Fi 6 station / soft-AP on the IPRO6S EVB |
+| `ipro6_demo` | `.config`, `defconfig_ipro6_lpwifi` | Stand-alone Wi-Fi 6 station / soft-AP on the IPRO6S EVK |
 | `ipro6_fmac` | `defconfig_ipro6_fmac` | FullMAC firmware for a Linux cfg80211 host; the Linux driver is not part of this package |
 
 The chip, its board and flashing are covered on [IPRO6S](../hardware/chips/ipro6s.md).

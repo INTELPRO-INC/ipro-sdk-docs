@@ -6,7 +6,7 @@ migrate_from: []
 
 # 开始使用
 
-按以下顺序完成，就能从一台新电脑开始，在 IPRO7AI Reef EVK V4.0 上构建、烧录并运行出厂固件 `ipro7ai_reef_demo`，再用 `reef selftest` 检查板上功能。本站的操作步骤都以这块开发板为准；IPRO7 EVB、IPRO7AI EVK、IPRO6S EVB 与 IPRO7 Arduino 板的应用需要对应的开发板，请联系 INTELPRO。
+按以下顺序完成，就能从一台新电脑开始，在 IPRO7AI Reef EVK V4.0 上构建、烧录并运行出厂固件 `ipro7ai_reef_demo`，再用 `reef selftest` 检查板上功能。本站的操作步骤都以这块开发板为准；IPRO7 EVB、IPRO7AI EVK、IPRO6S EVK 与 IPRO7 Arduino 板的应用需要对应的开发板，请联系 INTELPRO。
 
 ## 需要准备 { #what-you-need }
 

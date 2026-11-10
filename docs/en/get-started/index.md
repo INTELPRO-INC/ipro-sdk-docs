@@ -6,7 +6,7 @@ migrate_from: []
 
 # Get Started
 
-Work through these pages in order to go from a fresh computer to the out-of-box firmware `ipro7ai_reef_demo` running on an IPRO7AI Reef EVK V4.0, checked with `reef selftest`. Every procedure on this site is written for this board; applications for the IPRO7 EVB, IPRO7AI EVK, IPRO6S EVB and IPRO7 Arduino board need those boards — contact INTELPRO.
+Work through these pages in order to go from a fresh computer to the out-of-box firmware `ipro7ai_reef_demo` running on an IPRO7AI Reef EVK V4.0, checked with `reef selftest`. Every procedure on this site is written for this board; applications for the IPRO7 EVB, IPRO7AI EVK, IPRO6S EVK and IPRO7 Arduino board need those boards — contact INTELPRO.
 
 ## What you need { #what-you-need }
 

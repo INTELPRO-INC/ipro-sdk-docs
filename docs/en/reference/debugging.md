@@ -247,6 +247,7 @@ The Reef's out-of-box firmware `ipro7ai_reef_demo` has a built-in self-test, han
 | `build_freertos.sh flash` says `Flash tool not found` | The IntelProCube tool was not found | Set `IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos`, or put the tool's directory on `PATH` |
 | `No serial port found` or `Several serial ports` | None, or more than one, USB serial port | Pass `-p`, or set `IPRO_SERIAL_PORT` |
 | `build_freertos.sh flash` fails for an IPRO6S application | The script always passes `--chipname ipro7` | Flash with `--chipname ipro6` from the IntelProCube directory; see [IPRO6S](../hardware/chips/ipro6s.md) |
+| An IPRO6S flash ends with `[All Success]`, but after a reset the console prints nothing | The IPRO6 boot header timing in IntelProCube 0.7.0 does not suit IPRO6S parts with 2 MB flash | Use IntelProCube 0.7.0.1 or later; see [IPRO6S](../hardware/chips/ipro6s.md#ipro6s-no-boot) |
 | The Reef is completely silent after a BLE OTA | OTA was run on a board flashed with the standard `partition_cfg_2M.toml` | Enter download mode and reflash with boot2 and `partition_cfg_2M_remote_ab.toml`; see [ipro_ble_remote](../examples/ipro_ble_remote.md) |
 
 ### Console { #troubleshooting-console }

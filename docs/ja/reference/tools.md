@@ -307,7 +307,7 @@ python3 apps/ai/ipro_reef_teach/mfg_payload.py \
 | `tools/script/parse_kconfig_dynamic.py Kconfig [PROJECT_SYMBOL]` | Kconfig ツリーを JSON で出力します。kconfiglib が必要です。ビルドでは使用しません：`cmake/generate_autoconf.cmake` が `.config` を直接読み取って `autoconf.h` を生成します |
 | `components/audio/tools/gen_asrc_coef.py` | オーディオのサンプリングレート変換器の係数を生成します |
 | `*/test_host/run.sh` | PC 上で実行するユニットテスト。例：`components/audio/test_host/run.sh`、`apps/ai/ipro_reef_teach/sensor/test_host/run.sh` |
-| 他のボード用のツール | IPRO7AI EVK サンプルの `flash.sh` と `enter_dl.py`、`ipro6_fmac` の `tools/mkimg.py`（IPRO6S EVB）、`tools/android/IproMicDemo/`（`ipro_pdm_mic_demo`）：それぞれのボードが必要です |
+| 他のボード用のツール | IPRO7AI EVK サンプルの `flash.sh` と `enter_dl.py`、`ipro6_fmac` の `tools/mkimg.py`（IPRO6S EVK）、`tools/android/IproMicDemo/`（`ipro_pdm_mic_demo`）：それぞれのボードが必要です |
 
 ## 開発の流れ { #dev-workflow }
 

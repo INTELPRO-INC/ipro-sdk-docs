@@ -88,7 +88,7 @@ migrate_from:
 
 </div>
 
-SDK 也包含 IPRO7 EVB、IPRO7AI EVK 與 IPRO6S EVB 的應用，列在[範例](examples/index.md#other-boards)；這些板卡的供應請洽 INTELPRO。
+SDK 也包含 IPRO7 EVB、IPRO7AI EVK 與 IPRO6S EVK 的應用，列在[範例](examples/index.md#other-boards)；這些板卡的供應請洽 INTELPRO。
 
 ## 三步上手 { #quick-start }
 

@@ -93,9 +93,9 @@ make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef
 | アプリケーション | 用途 | ボードと設定 | コンソール |
 |---|---|---|---|
 | [`ipro7_sdio_wifi`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro7_sdio_wifi) | IPRO7 を SDIO ホスト、IPRO6S を Wi-Fi 無線として使用し、lwIP ネットワークインターフェース `iproeth0` と DHCP を提供します。Reef での同じ機能は `ipro7ai_reef_demo` の `defconfig_wifi_ipro6s` です | IPRO7 EVB と IPRO6S が必要 | UART 115200 |
-| [`ipro6_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro6_demo) | シェル付きの IPRO6S Wi-Fi 6 station／soft-AP。`defconfig_ipro6_lpwifi` で DTIM 省電力が加わり、`defconfig_ipro6_lp` は低消費電力のデモです | IPRO6S EVB が必要（[IPRO6S](../hardware/chips/ipro6s.md) を参照） | UART 115200 |
-| [`ipro6_if_wifi`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro6_if_wifi) | SDIO（`defconfig_ipro6_sdio`。Reef の FIN カードのファームウェアでもあります）または USB（`defconfig_ipro6_usb`）でホストに接続する IPRO6S Wi-Fi 6 ブリッジ | IPRO6S EVB、FIN カード（`defconfig_ipro6_sdio`。`--chipname ipro6` で書き込み。[IPRO6S](../hardware/chips/ipro6s.md) を参照） | UART 115200 |
-| [`ipro6_fmac`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro6_fmac) | Linux cfg80211 ホスト向けの FullMAC ファームウェア（`defconfig_ipro6_fmac`）とその Flash ローダー（`defconfig_ipro6_fmac_loader`）。Linux ドライバーは SDK に含まれません | IPRO6S EVB が必要 | UART 115200 |
+| [`ipro6_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro6_demo) | シェル付きの IPRO6S Wi-Fi 6 station／soft-AP。`defconfig_ipro6_lpwifi` で DTIM 省電力が加わり、`defconfig_ipro6_lp` は低消費電力のデモです | IPRO6S EVK が必要（[IPRO6S](../hardware/chips/ipro6s.md) を参照） | UART 115200 |
+| [`ipro6_if_wifi`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro6_if_wifi) | SDIO（`defconfig_ipro6_sdio`。Reef の FIN カードのファームウェアでもあります）または USB（`defconfig_ipro6_usb`）でホストに接続する IPRO6S Wi-Fi 6 ブリッジ | IPRO6S EVK、FIN カード（`defconfig_ipro6_sdio`。`--chipname ipro6` で書き込み。[IPRO6S](../hardware/chips/ipro6s.md) を参照） | UART 115200 |
+| [`ipro6_fmac`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro6_fmac) | Linux cfg80211 ホスト向けの FullMAC ファームウェア（`defconfig_ipro6_fmac`）とその Flash ローダー（`defconfig_ipro6_fmac_loader`）。Linux ドライバーは SDK に含まれません | IPRO6S EVK が必要 | UART 115200 |
 <!-- END generated: examples-networking -->
 
 IPRO6S アプリケーションは `--chipname ipro6` で書き込みます。ビルドと設定は [IPRO6S](../hardware/chips/ipro6s.md) のページにあります。

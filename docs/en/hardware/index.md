@@ -44,7 +44,7 @@ Start here to look up chip specifications, wire up the IPRO7AI Reef EVK, map pin
 
 </div>
 
-The SDK also has applications for the IPRO7 EVB, the IPRO7AI EVK, the IPRO6S EVB and the IPRO7 Arduino board; see [Examples](../examples/index.md). Contact INTELPRO for these boards.
+The SDK also has applications for the IPRO7 EVB, the IPRO7AI EVK, the IPRO6S EVK and the IPRO7 Arduino board; see [Examples](../examples/index.md). Contact INTELPRO for these boards.
 
 ## Pins and power { #pinout-power }
 

@@ -340,7 +340,7 @@ Reef 只通过 IPRO6S FIN 卡连接 Wi-Fi。SDK 包中其他 SDIO Wi-Fi 模组�
 |---|---|---|
 | `ipro6_if_wifi` | `defconfig_ipro6_sdio` | 连接 SDIO host 的 Wi-Fi 6 桥接：FIN 卡固件 |
 | `ipro6_if_wifi` | `defconfig_ipro6_usb` | 同样的桥接，连接 USB host |
-| `ipro6_demo` | `.config`、`defconfig_ipro6_lpwifi` | IPRO6S EVB 上独立运行的 Wi-Fi 6 station／soft-AP |
+| `ipro6_demo` | `.config`、`defconfig_ipro6_lpwifi` | IPRO6S EVK 上独立运行的 Wi-Fi 6 station／soft-AP |
 | `ipro6_fmac` | `defconfig_ipro6_fmac` | 供 Linux cfg80211 主机使用的 FullMAC 固件；Linux 驱动不在本 SDK 包中 |
 
 芯片、开发板与烧录见 [IPRO6S](../hardware/chips/ipro6s.md)。

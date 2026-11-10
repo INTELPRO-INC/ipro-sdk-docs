@@ -27,7 +27,7 @@ IPRO6S is a RISC-V SoC with built-in Wi-Fi 6. It builds from the same SDK tree a
 | Wireless | Built-in Wi-Fi 6 |
 | NPU / ISP | None |
 | RTOS | FreeRTOS V11 |
-| Reference boards | IPRO6S EVB (contact INTELPRO); the FIN card on the Reef |
+| Reference boards | IPRO6S EVK (contact INTELPRO); the FIN card on the Reef |
 
 | Region | Size | Base address | Notes |
 |---|---|---|---|
@@ -54,7 +54,7 @@ CONFIG_FREERTOS_SUPPORT=y
 | Low power | The DTIM low-power firmware image `bsp/hal/lp_framework/ipro6/prebuilt/ipro6_lpfw.bin`, embedded by the low-power configurations |
 | Bluetooth | The IPRO6S Bluetooth controller libraries and dual-mode (BR/EDR) applications are not included in V2.2.0; contact INTELPRO. The IPRO6S applications in this release use Wi-Fi only |
 | Zephyr RTOS | The `ipro6s_evb` board files are included, but IPRO6S is not supported under Zephyr in this release |
-| Flashing | IntelProCube v0.6.3 command-line tool (obtained separately) with `--chipname ipro6`; the `flash` action of `build_freertos.sh` handles IPRO7 only |
+| Flashing | [IntelProCube](https://github.com/INTELPRO-INC/ipro-cube/releases) 0.7.0.1 or later, command-line tool, with `--chipname ipro6`; the `flash` action of `build_freertos.sh` handles IPRO7 only |
 
 ## Applications and configurations { #apps }
 
@@ -72,7 +72,7 @@ Each IPRO6S application picks its configuration with `DEFCONFIG=`. The table lis
 
 - `ipro6_demo/defconfig_ipro6_lpwifi_ping` and `ipro6_fmac/defconfig_ipro6_fmac_ap` set no `CONFIG_WIRELESS_LIB_VARIANT` and are not among the verified configurations; contact INTELPRO before using them.
 - The Linux host driver for `ipro6_fmac` is not included in V2.2.0.
-- The three applications target the IPRO6S EVB (`CONFIG_BOARD="EVB"`); on the Reef, only `defconfig_ipro6_sdio` of `ipro6_if_wifi` runs, on the FIN card.
+- The three applications target the IPRO6S EVK (`CONFIG_BOARD="EVB"`); on the Reef, only `defconfig_ipro6_sdio` of `ipro6_if_wifi` runs, on the FIN card.
 
 ## Build { #build }
 
@@ -98,15 +98,94 @@ For a custom configuration, keep the Wi-Fi options of one of the configurations 
 
 `ipro6_demo` chooses how RAM is split between the Wi-Fi buffers and the application heap with one of `CONFIG_WIFI_MEM_PROFILE_PERF` (default), `_BALANCED` and `_APP`. Add one line to the configuration to switch, then delete the build directory and build again. Free heap and throughput for each profile are in `apps/platform/ipro6_demo/profile_selection_readme.md`.
 
-## Flash { #flashing }
+## Flash and verify on the board { #flashing }
 
-Flash IPRO6S images with the IntelProCube command-line tool and `--chipname ipro6`, from the IntelProCube directory:
+This walk-through uses an IPRO6S EVK with an IPRO Debug Probe: build `ipro6_demo`, flash it, and see a Wi-Fi scan on the console. IPRO6S images are flashed with the IntelProCube command-line tool and `--chipname ipro6`; the `flash` action of `build_freertos.sh` does not apply.
 
-```bash
-./ipro_iot_tool_macos --chipname ipro6 --config chips/ipro6/conf/iot.toml --skip-ota
-```
+You need:
 
-Point `chips/ipro6/conf/iot.toml` at the `.bin` you built. The tool exits 0 even when flashing fails, so look for `[All Success]` in its output. For putting the IPRO6S EVB into download mode, contact INTELPRO; for the FIN card on the Reef, see the next section.
+- An IPRO6S EVK, a 2.4 GHz antenna, an IPRO Debug Probe with its UART cable, and a USB-C power source.
+- The toolchain, installed as in [Set Up Your Host](../../get-started/environment.md), and SDK V2.2.0 (written `<SDK>` below).
+- [IntelProCube](https://github.com/INTELPRO-INC/ipro-cube/releases) 0.7.0.1 or later: download it, check its SHA-256 and extract it to a new folder as its [README](https://github.com/INTELPRO-INC/ipro-cube#readme) describes (written `<IntelProCube>` below). Images flashed with 0.7.0 do not boot; see [Flashing succeeds but the board does not boot](#ipro6s-no-boot).
+
+<div class="ipro-steps" markdown>
+
+1. **Build**: in the `<SDK>` root, run
+
+    ```bash
+    make -C apps/platform/ipro6_demo DEFCONFIG=defconfig_ipro6_lpwifi
+    ```
+
+    When it finishes, the linker prints the use of each memory region; the `flash` line reads about:
+
+    ```text
+               flash:     1092656 B         2 MB     52.10%
+    ```
+
+    The image is `apps/platform/ipro6_demo/build_ipro6_lpwifi/build_out/ipro6_demo_IPRO6.bin`.
+
+2. **Connect**: connect the antenna to RF1 (u.FL) on the EVK. Connect the UART cable of the IPRO Debug Probe to J_UART on the EVK, and the probe to the computer over USB. Power the EVK through USB-C; LED1 lights up.
+
+3. **Find the serial port**: in `<IntelProCube>`, run (on Linux `./ipro_iot_tool_linux`, on Windows `ipro_iot_tool.exe`; the same below)
+
+    ```bash
+    ./ipro_iot_tool_macos --list-ports
+    ```
+
+    The probe shows two ports. The one marked `(IPRO_U)`, whose name ends in `02`, is the UART: use it for flashing and for the console. `(IPRO_C)` is the chip debug port. macOS lists names that start with `/dev/tty.`; use the matching port that starts with `/dev/cu.`, for example `/dev/cu.usbmodemXXXX02`.
+
+4. **Flash**:
+
+    ```bash
+    ./ipro_iot_tool_macos --chipname ipro6 --chip-variant IPRO6S \
+        --port /dev/cu.usbmodemXXXX02 --baudrate 2000000 \
+        --pt chips/ipro6/partition/partition_cfg_fw_direct.toml \
+        --firmware <SDK>/apps/platform/ipro6_demo/build_ipro6_lpwifi/build_out/ipro6_demo_IPRO6.bin
+    ```
+
+    The tool puts the chip into download mode through the probe, writes and verifies the image, and resets the chip, in about 15 seconds. Only `[All Success]` at the end of the output means success; the tool exits 0 even when it fails. `partition_cfg_fw_direct.toml` places the firmware at flash address 0x0 without boot2 and keeps the partition table in the last two sectors.
+
+5. **Check the boot**: open the same port at 115200 baud (8N1, no flow control), then press RESET (SW2) on the EVK.
+
+    ```bash
+    screen /dev/cu.usbmodemXXXX02 115200
+    ```
+
+    The boot messages end with:
+
+    ```text
+    [OS] Starting OS Scheduler...
+    [EVENT] Event loop initialized
+    [EVENT] WiFi event handler registered
+    Init Shell (RT-Thread FinSH based)
+    ipro />
+    ```
+
+6. **Check Wi-Fi**: type `stack_wifi`; when `CODE_WIFI_ON_MGMR_DONE` appears, type `wifi_scan`.
+
+    ```text
+    ipro />stack_wifi
+    ...
+    [APP] [EVT] CODE_WIFI_ON_INIT_DONE
+    ...
+    [APP] [EVT] CODE_WIFI_ON_MGMR_DONE
+    ipro />wifi_scan
+    [APP] [EVT] CODE_WIFI_ON_SCAN_DONE
+    ...
+    index[00]: channel 01, bssid XX:XX:XX:XX:XX:XX, rssi -20, ... auth WPA2-PSK, cipher: AES, SSID <ssid>
+    ```
+
+    Each nearby access point takes one line (up to 50 lines; unused ones show `empty`). If access points are listed, the radio and the Wi-Fi stack work. Run `stack_wifi` once per boot.
+
+</div>
+
+### Enter download mode by hand { #ipro6s-download-mode }
+
+The tool enters download mode through the DL line of the probe. With a plain USB-to-UART cable, or when the tool reports a handshake failure, enter download mode by hand and then run the flash command: hold BOOT (SW1), press RESET (SW2), release BOOT. In download mode the console prints nothing; after flashing, press RESET to boot normally. Close any terminal program that holds the serial port (for example `screen`) before flashing, or the tool cannot open the port.
+
+### Flashing succeeds but the board does not boot { #ipro6s-no-boot }
+
+The IPRO6 boot header timing in IntelProCube 0.7.0 does not suit IPRO6S parts with the 2 MB in-package flash: the output ends with `[All Success]`, but after a reset the console stays silent and the chip stays in download mode. Use 0.7.0.1 or later, extracted to a new folder. If you extracted 0.7.0.1 over a 0.7.0 folder that has been used, delete `chips/ipro6/img_create_iot/efuse_bootheader_cfg.ini` first: the tool creates it from the template on its first run and never updates it. IPRO SDK Online Setup 3.6.0 and earlier install IntelProCube 0.7.0; install 0.7.0.1 separately to flash an IPRO6S.
 
 ## The FIN Wi-Fi card on the Reef { #dual-chip }
 

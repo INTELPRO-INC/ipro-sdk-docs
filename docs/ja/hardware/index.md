@@ -44,7 +44,7 @@ migrate_from: []
 
 </div>
 
-SDK には IPRO7 EVB、IPRO7AI EVK、IPRO6S EVB、IPRO7 Arduino ボード向けのアプリケーションもあります。[サンプル](../examples/index.md)を参照してください。これらのボードについては INTELPRO にお問い合わせください。
+SDK には IPRO7 EVB、IPRO7AI EVK、IPRO6S EVK、IPRO7 Arduino ボード向けのアプリケーションもあります。[サンプル](../examples/index.md)を参照してください。これらのボードについては INTELPRO にお問い合わせください。
 
 ## ピンと電源 { #pinout-power }
 

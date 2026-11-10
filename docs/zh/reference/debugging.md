@@ -247,6 +247,7 @@ Reef 開箱韌體 `ipro7ai_reef_demo` 內建自我檢查，適合在收到板子
 | `build_freertos.sh flash` 顯示 `Flash tool not found` | 找不到 IntelProCube 工具 | 設定 `IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos`，或把工具目錄加入 `PATH` |
 | `No serial port found` 或 `Several serial ports` | 沒有或有多個 USB 序列埠 | 以 `-p` 指定，或設定 `IPRO_SERIAL_PORT` |
 | `build_freertos.sh flash` 燒錄 IPRO6S 應用失敗 | 腳本固定傳 `--chipname ipro7` | 在 IntelProCube 目錄直接以 `--chipname ipro6` 燒錄，見 [IPRO6S](../hardware/chips/ipro6s.md) |
+| IPRO6S 燒錄出現 `[All Success]`，重置後主控台卻沒有輸出 | IntelProCube 0.7.0 的 IPRO6 開機標頭時序不適用 2 MB Flash 的 IPRO6S | 改用 IntelProCube 0.7.0.1 以上，見 [IPRO6S](../hardware/chips/ipro6s.md#ipro6s-no-boot) |
 | Reef 做完 BLE OTA 後完全沒有輸出 | 以標準 `partition_cfg_2M.toml` 燒錄的板子做了 OTA | 進入下載模式，以 boot2 與 `partition_cfg_2M_remote_ab.toml` 重新燒錄，見 [ipro_ble_remote](../examples/ipro_ble_remote.md) |
 
 ### 主控台 { #troubleshooting-console }

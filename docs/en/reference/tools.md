@@ -307,7 +307,7 @@ With both `CONFIG_AI_SUPPORT` and `CONFIG_MM_SUPPORT`, the linker script shrinks
 | `tools/script/parse_kconfig_dynamic.py Kconfig [PROJECT_SYMBOL]` | Prints a Kconfig tree as JSON; needs kconfiglib. The build does not use it: `cmake/generate_autoconf.cmake` reads `.config` directly to generate `autoconf.h` |
 | `components/audio/tools/gen_asrc_coef.py` | Generates the audio sample-rate converter coefficients |
 | `*/test_host/run.sh` | Unit tests that run on the PC, for example `components/audio/test_host/run.sh` and `apps/ai/ipro_reef_teach/sensor/test_host/run.sh` |
-| Tools for other boards | `flash.sh` and `enter_dl.py` of the IPRO7AI EVK examples, `tools/mkimg.py` of `ipro6_fmac` (IPRO6S EVB), `tools/android/IproMicDemo/` (`ipro_pdm_mic_demo`): they need those boards |
+| Tools for other boards | `flash.sh` and `enter_dl.py` of the IPRO7AI EVK examples, `tools/mkimg.py` of `ipro6_fmac` (IPRO6S EVK), `tools/android/IproMicDemo/` (`ipro_pdm_mic_demo`): they need those boards |
 
 ## Development workflow { #dev-workflow }
 

@@ -44,7 +44,7 @@ migrate_from: []
 
 </div>
 
-SDK 中另有以 IPRO7 EVB、IPRO7AI EVK、IPRO6S EVB 與 IPRO7 Arduino 板為目標的應用，見[範例](../examples/index.md)；這些板子的供應請洽 INTELPRO。
+SDK 中另有以 IPRO7 EVB、IPRO7AI EVK、IPRO6S EVK 與 IPRO7 Arduino 板為目標的應用，見[範例](../examples/index.md)；這些板子的供應請洽 INTELPRO。
 
 ## 腳位與電源 { #pinout-power }
 

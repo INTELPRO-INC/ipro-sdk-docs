@@ -88,7 +88,7 @@ migrate_from:
 
 </div>
 
-SDK には IPRO7 EVB、IPRO7AI EVK、IPRO6S EVB 向けのアプリケーションも含まれており、[サンプル](examples/index.md#other-boards) に一覧があります。これらのボードについては INTELPRO にお問い合わせください。
+SDK には IPRO7 EVB、IPRO7AI EVK、IPRO6S EVK 向けのアプリケーションも含まれており、[サンプル](examples/index.md#other-boards) に一覧があります。これらのボードについては INTELPRO にお問い合わせください。
 
 ## 3 ステップで始める { #quick-start }
 
