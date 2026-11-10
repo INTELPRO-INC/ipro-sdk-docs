@@ -11,7 +11,7 @@ Reef out-of-box firmware: a shell command group for the RGB LED, keys, speaker a
 
 | Item | Details |
 |---|---|
-| Source | [`apps/platform/ipro7ai_reef_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro7ai_reef_demo) |
+| Source | [`apps/platform/ipro7ai_reef_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/platform/ipro7ai_reef_demo) |
 | Boards and configs | Reef (`.config`); Reef + IPRO6S FIN card (`defconfig_wifi_ipro6s`: Wi-Fi and an RTSP camera stream) |
 | Console | UART 115200 |
 | Build | `make -C apps/platform/ipro7ai_reef_demo`; Wi-Fi build: add `DEFCONFIG=defconfig_wifi_ipro6s` |
@@ -61,7 +61,7 @@ The Wi-Fi and RTSP build uses `DEFCONFIG=defconfig_wifi_ipro6s`, builds into `bu
 ## README { #readme }
 
 !!! note "The README as shipped"
-    Below is the README that ships with the application (SDK V2.2.0), as written; only content unfit for publication was replaced.
+    Below is the README that ships with the application (SDK V2.2.1), as written; only content unfit for publication was replaced.
 
 <!-- verbatim:start -->
 

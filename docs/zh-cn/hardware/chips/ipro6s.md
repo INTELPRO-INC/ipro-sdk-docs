@@ -1,6 +1,6 @@
 ---
 title: "IPRO6S"
-description: IPRO6S 的规格、V2.2.0 附带的三个 Wi-Fi 6 应用及其配置、构建与烧录，以及在 IPRO7AI Reef EVK 上作为 FIN Wi-Fi 卡的用法
+description: IPRO6S 的规格、V2.2.1 附带的三个 Wi-Fi 6 应用及其配置、构建与烧录，以及在 IPRO7AI Reef EVK 上作为 FIN Wi-Fi 卡的用法
 migrate_from:
   - "hardware.html#ipro6s"
   - "architecture.html#dual-chip"
@@ -10,7 +10,7 @@ migrate_from:
 
 # IPRO6S
 
-IPRO6S 是内置 Wi-Fi 6 的 RISC-V SoC，与 IPRO7 使用同一套 SDK 源代码树和同一套工具链构建。V2.2.0 附带三个 IPRO6S Wi-Fi 应用：独立联网的 `ipro6_demo`、把 Wi-Fi 经 SDIO 或 USB 桥接给主处理器的 `ipro6_if_wifi`，以及供 Linux 主机使用的 FullMAC 固件 `ipro6_fmac`。在 IPRO7AI Reef EVK 上，IPRO6S 是插在 microSD 卡座中的 FIN Wi-Fi 卡，经 SDIO 为 IPRO7AI 提供联网能力。
+IPRO6S 是内置 Wi-Fi 6 的 RISC-V SoC，与 IPRO7 使用同一套 SDK 源代码树和同一套工具链构建。V2.2.1 附带三个 IPRO6S Wi-Fi 应用：独立联网的 `ipro6_demo`、把 Wi-Fi 经 SDIO 或 USB 桥接给主处理器的 `ipro6_if_wifi`，以及供 Linux 主机使用的 FullMAC 固件 `ipro6_fmac`。在 IPRO7AI Reef EVK 上，IPRO6S 是插在 microSD 卡座中的 FIN Wi-Fi 卡，经 SDIO 为 IPRO7AI 提供联网能力。
 
 <div class="ipro-facts" markdown>
 <div><strong>Wi-Fi 6</strong><span>芯片内置</span></div>
@@ -47,12 +47,12 @@ CONFIG_FREERTOS_SUPPORT=y
 
 ## 本版本 SDK 支持 { #status }
 
-| 项目 | V2.2.0 |
+| 项目 | V2.2.1 |
 |---|---|
 | 应用 | `ipro6_demo`、`ipro6_if_wifi`、`ipro6_fmac`（`apps/platform/`） |
 | Wi-Fi 6 | MAC（`components/wireless/macsw`）、fhost API、wpa_supplicant 与 lwIP 适配层（`components/wireless/wifi6`）、RF 驱动（`components/wireless/rf/ipro6_rf`），均为按应用配置预编译的库 |
 | 低功耗 | DTIM 低功耗固件镜像 `bsp/hal/lp_framework/ipro6/prebuilt/ipro6_lpfw.bin`，由低功耗配置嵌入 |
-| Bluetooth | IPRO6S 的蓝牙控制器库与双模（BR/EDR）应用未包含在 V2.2.0 中，请联系 INTELPRO。本版本的 IPRO6S 应用只使用 Wi-Fi |
+| Bluetooth | IPRO6S 的蓝牙控制器库与双模（BR/EDR）应用未包含在 V2.2.1 中，请联系 INTELPRO。本版本的 IPRO6S 应用只使用 Wi-Fi |
 | Zephyr RTOS | 附带 `ipro6s_evb` 板型文件，但本版本不支持 IPRO6S 的 Zephyr 构建 |
 | 烧录 | [IntelProCube](https://github.com/INTELPRO-INC/ipro-cube/releases) 0.7.0.1 及以上的命令行工具，`--chipname ipro6`；`build_freertos.sh` 的 `flash` 只支持 IPRO7 |
 
@@ -71,7 +71,7 @@ CONFIG_FREERTOS_SUPPORT=y
 | | `defconfig_ipro6_fmac_loader` | 经 SDIO 或 USB 接收 FullMAC 固件的 Flash 加载程序 |
 
 - `ipro6_demo/defconfig_ipro6_lpwifi_ping` 与 `ipro6_fmac/defconfig_ipro6_fmac_ap` 没有设置 `CONFIG_WIRELESS_LIB_VARIANT`，不在验证过的配置之列；使用前请联系 INTELPRO。
-- `ipro6_fmac` 的 Linux 主机端驱动未包含在 V2.2.0 中。
+- `ipro6_fmac` 的 Linux 主机端驱动未包含在 V2.2.1 中。
 - 这三个应用以 IPRO6S EVK 为目标（`CONFIG_BOARD="EVB"`）；在 Reef 上只有 `ipro6_if_wifi` 的 `defconfig_ipro6_sdio` 运行在 FIN 卡上。
 
 ## 构建 { #build }
@@ -105,7 +105,7 @@ CONFIG_WIRELESS_LIB_VARIANT="ipro6_if_wifi-ipro6_sdio"
 需要：
 
 - IPRO6S EVK、2.4 GHz 天线、IPRO Debug Probe 及其 UART 排线、USB-C 电源。
-- 按[准备开发环境](../../get-started/environment.md)安装的工具链，以及 SDK V2.2.0（下文写作 `<SDK>`）。
+- 按[准备开发环境](../../get-started/environment.md)安装的工具链，以及 SDK V2.2.1（下文写作 `<SDK>`）。
 - [IntelProCube](https://github.com/INTELPRO-INC/ipro-cube/releases) 0.7.0.1 及以上：按 [README](https://github.com/INTELPRO-INC/ipro-cube#readme) 下载、校验 SHA-256，解压到新的文件夹（下文写作 `<IntelProCube>`）。用 0.7.0 烧录的镜像无法启动，见[烧录成功却没有启动](#ipro6s-no-boot)。
 
 <div class="ipro-steps" markdown>
@@ -176,6 +176,16 @@ CONFIG_WIRELESS_LIB_VARIANT="ipro6_if_wifi-ipro6_sdio"
     ```
 
     附近每个接入点一行（最多 50 行，未使用的显示 `empty`）。能列出接入点，说明射频和 Wi-Fi 协议栈都正常。每次启动只需执行一次 `stack_wifi`。
+
+7. **确认 soft-AP**：启动接入点，密钥为 8 到 63 个字符。
+
+    ```text
+    ipro />wifi_ap_start -s IPRO6S_AP -k <key> -c 6
+    [WPA] AP-ENABLED
+    [APP] [EVT] CODE_WIFI_ON_AP_STARTED
+    ```
+
+    用电脑或手机以该密钥连接 `IPRO6S_AP`，会从板子获得 192.168.169.0/24 的地址（板子为 192.168.169.1），控制台打印 `AP-STA-CONNECTED` 与该设备的 MAC 地址。`wifi_ap_stop` 停止接入点。
 
 </div>
 

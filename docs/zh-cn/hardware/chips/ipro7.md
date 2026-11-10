@@ -124,14 +124,14 @@ IPRO7 是 INTELPRO 的 2.4 GHz 低功耗无线 SoC：RISC-V RV32IMAFC 192 MHz �
 
 ## 本版本 SDK 支持 { #sdk-support }
 
-| 项目 | V2.2.0 |
+| 项目 | V2.2.1 |
 |---|---|
 | FreeRTOS 应用 | 40 个应用中 37 个以 IPRO7 为目标：`CONFIG_IPRO7=y`、`CONFIG_CHIP="IPRO7"`、`CONFIG_CPU_ID="intelpro_ipro7"`；镜像为 `<应用>_IPRO7.bin` |
 | Zephyr RTOS | Zephyr v4.4.0 模块；板型 `ipro7_evb` 与 `ipro7ai_evk`，本版本没有 Reef 的 Zephyr 板型 |
 | 工具链 | RISC-V GCC（`riscv64-unknown-elf-`，`rv32imafc`／`ilp32f`），不随 SDK 提供，请向 INTELPRO 获取 |
 | BLE | Zephyr v4.4.0 Host（源代码）搭配 IPRO BLE 控制器（预编译库，16 个 IPRO7 版本：`link1_periph`／`link1`／`link2`／`link4` × `bt52`／`bt54_iso2` × 调试／`_release`） |
 | IEEE 802.15.4／Thread | 仅 Zephyr RTOS：IEEE 802.15.4 驱动与 OpenThread |
-| Matter、Zigbee | 未包含在 V2.2.0 中，请联系 INTELPRO。 |
+| Matter、Zigbee | 未包含在 V2.2.1 中，请联系 INTELPRO。 |
 | 烧录 | IntelProCube 0.7.0.1 命令行工具（[GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases)）：`--chipname ipro7`；Reef 等 IPRO7AI 开发板用 `--chip-variant IPRO7AI` |
 
 ## 搭载 IPRO7 的开发板 { #boards }

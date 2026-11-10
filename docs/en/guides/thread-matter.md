@@ -13,8 +13,8 @@ Thread runs on IPRO7's IEEE 802.15.4 radio under Zephyr RTOS, using Zephyr's Ope
 
 !!! abstract "At a glance"
     - **Thread**: Zephyr RTOS only, sample board `ipro7_evb`. Configuration fragments for Zephyr's OpenThread shell sample ship in `zephyr/samples/ieee802154_shell/`.
-    - **IPRO7AI Reef EVK**: no Thread path in V2.2.0. The Reef has no Zephyr board definition, and the FreeRTOS applications it runs do not include 802.15.4.
-    - **Matter**: not included in V2.2.0 — no Matter stack, applications or build commands. Contact INTELPRO.
+    - **IPRO7AI Reef EVK**: no Thread path in V2.2.1. The Reef has no Zephyr board definition, and the FreeRTOS applications it runs do not include 802.15.4.
+    - **Matter**: not included in V2.2.1 — no Matter stack, applications or build commands. Contact INTELPRO.
     - Nothing on this page implies that the release is Thread or Matter certified.
 
 ## Delivery status { #overview }

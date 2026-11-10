@@ -1,6 +1,6 @@
 ---
 title: "ツールのコマンドライン"
-description: SDK V2.2.0 のホストツール（build_freertos.sh、make、IntelProCube 書き込みツール、serial_monitor.py、create_ota.py、Reef の Teach ツールと OTA ツール）のコマンド、オプション、使用例と、同梱されていないツールの一覧です。
+description: SDK V2.2.1 のホストツール（build_freertos.sh、make、IntelProCube 書き込みツール、serial_monitor.py、create_ota.py、Reef の Teach ツールと OTA ツール）のコマンド、オプション、使用例と、同梱されていないツールの一覧です。
 migrate_from:
   - "tools-debugging.html#overview"
   - "tools-debugging.html#build-cli"
@@ -28,11 +28,11 @@ SDK に同梱されているホストツールのコマンド構文、オプシ�
 | `parse_kconfig_dynamic.py` | `tools/script/` | Kconfig ツリーを JSON で出力（kconfiglib が必要。ビルドでは使用しない） | 同梱 |
 | CMake 3.15 | `tools/cmake/` | `PATH` に `cmake` がない場合の代替。Linux x86-64 専用 | 同梱 |
 | Zephyr スクリプト | `tools/zephyr/` | Zephyr のワークスペース、ビルド、書き込み、コンソール（`ipro7_evb` ボードと `ipro7ai_evk` ボード） | 同梱 |
-| IntelProCube 0.7.0.1 コマンドライン書き込みツール | `ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe` | シリアルポート経由でファームウェア、パーティションテーブル、boot2、`mfg` 内容を書き込み | V2.2.0 には含まれていません。[GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) からダウンロードします |
-| RISC-V ツールチェーン | `/opt/toolchain/riscv_ipro7/` | コンパイラー（GCC 14、`riscv64-unknown-elf-`） | V2.2.0 には含まれていません。INTELPRO にお問い合わせください |
+| IntelProCube 0.7.0.1 コマンドライン書き込みツール | `ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe` | シリアルポート経由でファームウェア、パーティションテーブル、boot2、`mfg` 内容を書き込み | V2.2.1 には含まれていません。[GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) からダウンロードします |
+| RISC-V ツールチェーン | `/opt/toolchain/riscv_ipro7/` | コンパイラー（GCC 14、`riscv64-unknown-elf-`） | V2.2.1 には含まれていません。INTELPRO にお問い合わせください |
 | IPRO AI Studio | — | IPRO AI Teach、モデル変換とデプロイ | SDK には含まれていません。[GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) からダウンロードしてください |
-| OpenOCD / GDB の接続設定、ボードテストスクリプト `tools/board_test.sh`、クラッシュダンプ用ホストツール | — | オンターゲットデバッグ、ボードの自動テスト、`==DUMP_READY:` 後のメモリ読み出し | V2.2.0 には含まれていません。INTELPRO にお問い合わせください |
-| `tools/kconfig/menuconfig.py`、defconfig ディレクトリ `configs/`、OTA 署名用の `ota_products.py` | — | `make menuconfig`、`make defconfig`、`create_ota.py --sign-key` | V2.2.0 には含まれていません |
+| OpenOCD / GDB の接続設定、ボードテストスクリプト `tools/board_test.sh`、クラッシュダンプ用ホストツール | — | オンターゲットデバッグ、ボードの自動テスト、`==DUMP_READY:` 後のメモリ読み出し | V2.2.1 には含まれていません。INTELPRO にお問い合わせください |
+| `tools/kconfig/menuconfig.py`、defconfig ディレクトリ `configs/`、OTA 署名用の `ota_products.py` | — | `make menuconfig`、`make defconfig`、`create_ota.py --sign-key` | V2.2.1 には含まれていません |
 
 本リリースには、JTAG / GDB によるオンターゲットデバッグの設定や手順はありません。デバッグはシリアルコンソール、ログ、オフラインの `addr2line` で行います。[デバッグとトラブルシューティング](debugging.md) を参照してください。
 
@@ -138,7 +138,7 @@ export IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos
 
 ## IntelProCube 書き込みツール { #flash-tool }
 
-書き込みには IntelProCube のコマンドラインツールを使います。このツールは V2.2.0 には含まれていません。[GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) から 0.7.0.1 をダウンロードし、[開発環境の準備](../get-started/environment.md#intelprocube)に従ってインストールしてください。ツールはチップファイルを自身の `chips/` ディレクトリから読み込むため、IntelProCube のディレクトリで実行してください。この表は SDK 内の README とスクリプトからまとめたものです。全オプションについてはツール自体が正となります。
+書き込みには IntelProCube のコマンドラインツールを使います。このツールは V2.2.1 には含まれていません。[GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) から 0.7.0.1 をダウンロードし、[開発環境の準備](../get-started/environment.md#intelprocube)に従ってインストールしてください。ツールはチップファイルを自身の `chips/` ディレクトリから読み込むため、IntelProCube のディレクトリで実行してください。この表は SDK 内の README とスクリプトからまとめたものです。全オプションについてはツール自体が正となります。
 
 | オプション | 意味 |
 |---|---|
@@ -217,7 +217,7 @@ python3 tools/create_ota.py <whole_img.bin> [--raw] [-o OUTPUT] [--hw-ver STR] [
 | `-o, --output` | 出力ファイル |
 | `--hw-ver` | ヘッダー内のハードウェアバージョン文字列。デフォルトに頼らず明示的に指定してください |
 | `--fw-ver` | ヘッダー内のファームウェアバージョン文字列（デフォルト `OTA_V1.0.0`） |
-| `--sign-key`、`--product` などの署名オプション | 同梱されていない `ota_products.py` が必要です。V2.2.0 では使用できません |
+| `--sign-key`、`--product` などの署名オプション | 同梱されていない `ota_products.py` が必要です。V2.2.1 では使用できません |
 
 Reef では、`ipro_ble_remote` の `make_reef_ota.sh` がツールの `--build` とこのスクリプトを自動で実行します。[Reef アプリケーション用のホストツール](#reef-tools) を参照してください。OTA の全体の流れは [OTA アップデート](../guides/ota.md) にあります。
 
@@ -258,7 +258,7 @@ python3 apps/ai/ipro_reef_teach/mfg_payload.py \
 
 | ツール | コマンド | 結果 |
 |---|---|---|
-| `make_reef_ota.sh` | `IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh` | 先に `DEFCONFIG=defconfig_reef` のビルドが必要です。`build_reef/build_out/ipro_ble_remote_reef.xz.ota`（約 345 KB）を生成します。V2.2.0 のスクリプトは boot2 v0.5.2 のパスを指定しているため、先に [OTA アップデート](../guides/ota.md#hands-on)の手順 4 のとおり v0.6.0 に書き換えます |
+| `make_reef_ota.sh` | `IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh` | 先に `DEFCONFIG=defconfig_reef` のビルドが必要です。`build_reef/build_out/ipro_ble_remote_reef.xz.ota`（約 345 KB）を生成します。boot2 は IntelProCube フォルダー内の最新版、または `IPRO_BOOT2` で指定したファイルを使います |
 | `reef_ota.py` | `.venv/bin/python apps/bluetooth/ble/ipro_ble_remote/tools/reef_ota.py <package.xz.ota>` | BLE（bleak）で `IPRO-Remote` という名前のボードにパッケージを送信し、進捗と状態を表示します |
 | `reef_ble_test.py` | `.venv/bin/python apps/bluetooth/ble/ipro_ble_remote/tools/reef_ble_test.py` | bleak セントラルとして Reef の GATT サービスをテストします（`info led env sound tone img`。`keys` と `motion` はボードのそばで操作する人が必要）。取得した JPEG はスクリプトと同じ場所に保存されます |
 | `ipro_remote_demo.apk` | Android スマートフォンにインストール | `ipro_ble_remote` 用のデモアプリ。`.xz.ota` パッケージを送信できます |

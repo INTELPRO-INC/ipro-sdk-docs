@@ -328,7 +328,7 @@ AIINFO path=sd:/rps_v3.inm layers=… npu=… in=…x…x… out=…x…x… pat
     git -C components/3rdparty/agora/aosl checkout d825607
     ```
 
-- Sentino のデバイストリプルも必要ですが、V2.2.0 には含まれていません。INTELPRO にお問い合わせください。
+- Sentino のデバイストリプルも必要ですが、V2.2.1 には含まれていません。INTELPRO にお問い合わせください。
 
 ## 本リリースの制限事項 { #limitations }
 

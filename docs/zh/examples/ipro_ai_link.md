@@ -11,7 +11,7 @@ IPRO AI Studio「Run on board」的板端韌體：由 microSD（`sd:/`）載入 
 
 | 項目 | 內容 |
 |---|---|
-| 原始碼 | [`apps/test/ipro_ai_link`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_ai_link) |
+| 原始碼 | [`apps/test/ipro_ai_link`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_ai_link) |
 | 板卡與設定 | Reef（`defconfig_reef`）；`.config` 為 IPRO7 EVB |
 | 主控台 | UART 115200（另有 USB CDC 主控台） |
 | 建置 | Reef：`make -C apps/test/ipro_ai_link DEFCONFIG=defconfig_reef` |

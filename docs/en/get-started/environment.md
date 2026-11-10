@@ -25,26 +25,26 @@ At the end of this page your computer has the SDK, the build tools, the RISC-V t
 
 <div class="ipro-steps" markdown>
 
-1. **Download** `IPRO-SDK-V2.2.0.tar.gz` from the [IPRO-SDK-V2.2.0 release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0) and note the SHA-256 published on that page.
+1. **Download** `IPRO-SDK-V2.2.1.tar.gz` from the [IPRO-SDK-V2.2.1 release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.1) and note the SHA-256 published on that page.
 
 2. **Verify** the download:
 
     === "macOS"
 
         ```bash
-        shasum -a 256 IPRO-SDK-V2.2.0.tar.gz
+        shasum -a 256 IPRO-SDK-V2.2.1.tar.gz
         ```
 
     === "Linux"
 
         ```bash
-        sha256sum IPRO-SDK-V2.2.0.tar.gz
+        sha256sum IPRO-SDK-V2.2.1.tar.gz
         ```
 
     === "Windows"
 
         ```powershell
-        Get-FileHash .\IPRO-SDK-V2.2.0.tar.gz -Algorithm SHA256
+        Get-FileHash .\IPRO-SDK-V2.2.1.tar.gz -Algorithm SHA256
         ```
 
     The 64 hexadecimal characters printed must match the value on the release page (case does not matter). If they differ, download again.
@@ -54,16 +54,16 @@ At the end of this page your computer has the SDK, the build tools, the RISC-V t
     === "macOS / Linux"
 
         ```bash
-        tar xzf IPRO-SDK-V2.2.0.tar.gz
-        cd IPRO-SDK-V2.2.0
+        tar xzf IPRO-SDK-V2.2.1.tar.gz
+        cd IPRO-SDK-V2.2.1
         cat VERSION.txt
         ```
 
     === "Windows"
 
         ```powershell
-        tar -xzf .\IPRO-SDK-V2.2.0.tar.gz
-        Get-Content .\IPRO-SDK-V2.2.0\VERSION.txt
+        tar -xzf .\IPRO-SDK-V2.2.1.tar.gz
+        Get-Content .\IPRO-SDK-V2.2.1\VERSION.txt
         ```
 
     `VERSION.txt` reads:
@@ -71,14 +71,14 @@ At the end of this page your computer has the SDK, the build tools, the RISC-V t
     ```text
     IPRO SDK Release
     ========================================
-    IPRO7: IPRO-SDK-V2.2.0
-    IPRO6: IPRO-SDK-V2.2.0
+    IPRO7: IPRO-SDK-V2.2.1
+    IPRO6: IPRO-SDK-V2.2.1
 
-    Release Date: 2026-11-03
+    Release Date: 2026-11-10
     Base Commit: 60afd4ab
     ```
 
-    `IPRO-SDK-V2.2.0/` is the SDK root (`<SDK>` on this site); it holds `apps/`, `bsp/`, `components/`, `build_freertos.sh` and `VERSION.txt`.
+    `IPRO-SDK-V2.2.1/` is the SDK root (`<SDK>` on this site); it holds `apps/`, `bsp/`, `components/`, `build_freertos.sh` and `VERSION.txt`.
 
 </div>
 

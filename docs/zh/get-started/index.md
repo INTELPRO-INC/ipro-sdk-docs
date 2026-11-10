@@ -18,7 +18,7 @@ migrate_from: []
 | 主機 | macOS 或 Linux（bash）可使用 SDK 全部的命令列工具；Windows 以安裝程式、VS Code Extension 與 `build_freertos.ps1` 開發 | — |
 | RISC-V 工具鏈 | GCC 14（Windows 為 GCC 13.1.1），`riscv64-unknown-elf-gcc` | macOS／Linux 版向 INTELPRO 索取；Windows 版由安裝程式安裝 |
 | IntelProCube 0.7.0.1 | 燒錄工具：`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe` | [GitHub Release](https://github.com/INTELPRO-INC/ipro-cube/releases)；Windows 版也由安裝程式安裝 |
-| SDK | `IPRO-SDK-V2.2.0.tar.gz` | [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0) |
+| SDK | `IPRO-SDK-V2.2.1.tar.gz` | [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.1) |
 | 選用 | OV5640 FLEX-24 相機模組、microSD 卡、8 Ω 喇叭（接 J_SPK）、耳機 | 自備；用來完成自我檢查的相機、卡槽與喇叭項目 |
 
 主控台線的接法見 [IPRO7AI Reef EVK：除錯排座 U6](../hardware/boards/reef-evk.md#debug-connector)。

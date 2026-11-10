@@ -7,11 +7,30 @@ migrate_from:
 
 # 版本資訊
 
-IPRO SDK 的正式發行紀錄，新版在前；目前版本為 V2.2.0。各版本的下載檔與發行說明在 [GitHub Releases](https://github.com/INTELPRO-INC/IPRO-SDK/releases)；SDK 套件的整體說明見套件根目錄的 `README.md`。Windows 線上安裝程式 Online Setup 的版本也列在此頁（目前為 3.6.0），下載位置是 [ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest)。
+IPRO SDK 的正式發行紀錄，新版在前；目前版本為 V2.2.1。各版本的下載檔與發行說明在 [GitHub Releases](https://github.com/INTELPRO-INC/IPRO-SDK/releases)；SDK 套件的整體說明見套件根目錄的 `README.md`。Windows 線上安裝程式 Online Setup 的版本也列在此頁（目前為 3.6.0），下載位置是 [ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest)。
+
+## IPRO-SDK-V2.2.1 { #v2-2-1 }
+
+<span class="ipro-badge">最新版本</span> 發行日期：2026-11-10 ・ [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.1)
+
+V2.2.0 的修正版，應用與 V2.2.0 相同，共 40 個 FreeRTOS 應用。下載檔為 `IPRO-SDK-V2.2.1.tar.gz`，SHA-256 見 Release 頁面。[V2.2.0](#v2-2-0) 的其餘說明（包括已知問題）同樣適用於 V2.2.1。
+
+**修正**
+
+- **IPRO6S soft-AP**：沒有出廠 MAC 位址的晶片（例如 IPRO6S EVK）執行 `wifi_ap_start` 會失敗，而且沒有任何訊息。現在 station 與 AP 每次開機共用同一個隨機位址，AP 只翻轉最低位元。修正在 `ipro6_demo`（`defconfig_ipro6_lpwifi`）與 `ipro6_if_wifi`（`defconfig_ipro6_sdio`、`defconfig_ipro6_usb`）的預建 `libipro_os_adapter.a`。操作步驟見 [IPRO6S](../hardware/chips/ipro6s.md#flashing)。
+- **`ipro_ble_remote` 的 `make_reef_ota.sh`**：使用 IntelProCube 資料夾裡最新的 boot2（0.7.0.1 為 v0.6.0），或 `IPRO_BOOT2` 指定的檔案，不必再先修改腳本。
+- **套件 README**：改為從 GitHub 下載 IntelProCube 0.7.0.1，附下載與檢查碼步驟，並加上 IPRO6S EVK 的燒錄指令（`--chip-variant IPRO6S`、`partition_cfg_fw_direct.toml`）。
+- **Zephyr**：`zephyr/subsys/net/ipro_wifi/net_al_zephyr.c` 改為配合套件內 lwIP 移植的 L2 socket 介面；IPRO6S 在 Zephyr 下仍未支援。
+
+發行前從套件建置並檢查：36 個 IPRO7 FreeRTOS 應用、7 個 IPRO6S 設定與 Zephyr 範例。上板：IPRO6S EVK 掃描正常，soft-AP 可讓電腦連上並取得 DHCP 位址（分別在 macOS 與 Windows 上建置與燒錄）；IPRO7AI Reef EVK 通過 `reef selftest`。
+
+### 已知問題 { #v2-2-1-known-issues }
+
+- **IPRO Workbench 0.1.0 與 IPRO6S**：Workbench 燒錄 IPRO6S 映像時沒有帶入 IPRO6S 的分割表，板子無法開機。請依 [IPRO6S](../hardware/chips/ipro6s.md#flashing) 以 IntelProCube 命令列燒錄。
 
 ## IPRO-SDK-V2.2.0 { #v2-2-0 }
 
-<span class="ipro-badge">最新版本</span> 發行日期：2026-11-03 ・ [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0)
+發行日期：2026-11-03 ・ [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0)
 
 IPRO7／IPRO7AI 與 IPRO6S 雙晶片版本，取代 V2.1.0。共 40 個 FreeRTOS 應用：37 個 IPRO7、3 個 IPRO6S。下載檔為 `IPRO-SDK-V2.2.0.tar.gz`，SHA-256 見 Release 頁面。
 

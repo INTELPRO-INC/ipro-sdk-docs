@@ -19,9 +19,9 @@ arch:
   chip_link_text: Chip specifications
   default: ipro7ai
   chips:
-    - { id: ipro7, name: IPRO7, sdk: V2.2.0, link: hardware/chips/ipro7/, desc: "RISC-V wireless SoC with BLE 5.4 and LE Audio, 802.15.4, ISP and MJPEG." }
-    - { id: ipro7ai, name: IPRO7AI, sdk: V2.2.0, link: hardware/chips/ipro7ai/, desc: "IPRO7 plus an NPU and in-package PSRAM; the SoC on the IPRO7AI Reef EVK V4.0." }
-    - { id: ipro6s, name: IPRO6S, sdk: V2.2.0, link: hardware/chips/ipro6s/, desc: "RISC-V SoC with on-chip Wi-Fi 6; on the Reef it is the FIN Wi-Fi card in the microSD slot." }
+    - { id: ipro7, name: IPRO7, sdk: V2.2.1, link: hardware/chips/ipro7/, desc: "RISC-V wireless SoC with BLE 5.4 and LE Audio, 802.15.4, ISP and MJPEG." }
+    - { id: ipro7ai, name: IPRO7AI, sdk: V2.2.1, link: hardware/chips/ipro7ai/, desc: "IPRO7 plus an NPU and in-package PSRAM; the SoC on the IPRO7AI Reef EVK V4.0." }
+    - { id: ipro6s, name: IPRO6S, sdk: V2.2.1, link: hardware/chips/ipro6s/, desc: "RISC-V SoC with on-chip Wi-Fi 6; on the Reef it is the FIN Wi-Fi card in the microSD slot." }
   layers:
     - name: Applications
       items:
@@ -96,7 +96,7 @@ The SDK also carries applications for the IPRO7 EVB, the IPRO7AI EVK and the IPR
 
 <div class="ipro-steps" markdown>
 
-1. **Set up your host**: get the RISC-V toolchain from INTELPRO and IntelProCube 0.7.0.1 from GitHub, install CMake 3.15 or later, GNU make and Python 3.8 or later, then download SDK V2.2.0 from the release page. [Installation](get-started/index.md)
+1. **Set up your host**: get the RISC-V toolchain from INTELPRO and IntelProCube 0.7.0.1 from GitHub, install CMake 3.15 or later, GNU make and Python 3.8 or later, then download SDK V2.2.1 from the release page. [Installation](get-started/index.md)
 2. **Build the out-of-box firmware**: from the SDK root run `make -C apps/platform/ipro7ai_reef_demo`; the image is `build/build_out/ipro7ai_reef_demo_IPRO7.bin`.
 3. **Flash and self-test**: hold SW1 and press SW2 for download mode, flash with IntelProCube and check for `[All Success]`; on the U6 console (115200 baud) type `reef selftest` and watch the LED, speaker, SD card and camera pass in turn. [Full walkthrough](get-started/first-app-freertos.md)
 
@@ -136,8 +136,9 @@ The SDK also carries applications for the IPRO7 EVB, the IPRO7AI EVK and the IPR
 
 </div>
 
-## What's new in V2.2.0 { #whats-new }
+## What's new in V2.2 { #whats-new }
 
+- **V2.2.1** (2026-11-10): IPRO6S soft-AP starts on parts without a factory MAC address, such as the IPRO6S EVK; `make_reef_ota.sh` finds boot2 in the public IntelProCube by itself. See the [Release Notes](reference/release-notes.md#v2-2-1).
 - **IPRO6S applications are back**: `ipro6_demo` (Wi-Fi 6 station / soft-AP with DTIM power save), `ipro6_if_wifi` (Wi-Fi bridge to a host over SDIO or USB, also the Reef FIN card's firmware) and `ipro6_fmac` (FullMAC firmware and its flash loader). The IPRO6S applications are Wi-Fi only; this release has no IPRO6S Bluetooth.
 - **Edge AI platform V2.0 and `ipro_reef_teach`**: one Reef firmware with the image, voice and sensor Teach tools, driven from IPRO AI Studio. Download IPRO AI Studio from [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest).
 - **New `ipro7_jpeg_decode`**: JPEG to RGB565 / RGB888 in software. `ipro7ai_reef_demo` adds `mic usb` (USB microphone) and `mic sdrec` (WAV recording to the SD card).

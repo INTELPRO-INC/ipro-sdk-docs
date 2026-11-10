@@ -79,7 +79,7 @@ python3 <SDK>/tools/create_ota.py chips/ipro7/img_create_iot/whole_img.bin \
 | `--raw` | 圧縮しません。`-o` を省略すると、出力ファイル名は入力ファイル名の拡張子を `.ota`（`--raw` の場合）または `.xz.ota` に置き換えたものになります |
 | `-o FILE` | 出力ファイル |
 | `--hw-ver`、`--fw-ver` | ヘッダーに書き込むハードウェアとファームウェアのバージョン文字列（それぞれ最大 15 文字）。boot2 はハードウェアバージョンを検査しません |
-| `--sign-key`、`--product`、`--hw-id`、`--fw-version`、`--force-version`、`--key-id` | 署名付きパッケージ用。V2.2.0 に含まれていない `tools/ota_products.py` が必要なため、使用できません |
+| `--sign-key`、`--product`、`--hw-id`、`--fw-version`、`--force-version`、`--key-id` | 署名付きパッケージ用。V2.2.1 に含まれていない `tools/ota_products.py` が必要なため、使用できません |
 
 | ヘッダーのオフセット | 内容 |
 |---|---|
@@ -91,7 +91,7 @@ python3 <SDK>/tools/create_ota.py chips/ipro7/img_create_iot/whole_img.bin \
 | 96–511 | 予約（0xFF）。署名付きパッケージでは署名ブロックが入ります |
 | 512 以降 | ペイロード（boot2 のデコーダーに合わせた 32 KB 辞書の XZ） |
 
-Reef 向けには、`apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh` が両方の手順を 1 つのコマンドで実行し、ビルド時刻をファームウェアバージョンとして書き込みます。[Reef でのハンズオン](#hands-on)を参照してください。V2.2.0 のスクリプトは boot2 v0.5.2 のパスを指定しているため、使う前に IntelProCube 0.7.0 以降に付属する v0.6.0 に書き換えてください（手順 4 の 1 行目）。
+Reef 向けには、`apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh` が両方の手順を 1 つのコマンドで実行し、ビルド時刻をファームウェアバージョンとして書き込みます。[Reef でのハンズオン](#hands-on)を参照してください。スクリプトは IntelProCube フォルダー内の最新の boot2（0.7.0.1 では v0.6.0）を使います。
 
 ## BLE OTA（ipro_ble_remote） { #ble-ota }
 
@@ -196,10 +196,9 @@ CONFIG_IPRO_BLE_REMOTE_OTA=y
 
 4. **コードを変更して OTA パッケージをビルドする**
 
-    コードに任意の変更を加え、同じ `make` コマンドで再ビルドしてから、新しいビルドをパッケージにします。SDK V2.2.0 のパッケージ化スクリプトは boot2 v0.5.2 のパスを指定していますが、IntelProCube 0.7.0 以降に付属するのは v0.6.0 です。そのため 1 行目でスクリプト内のバージョンを v0.6.0 に書き換えます（もう一度実行しても影響はありません）。Linux では `sed -i`（`''` なし）と `ipro_iot_tool_linux` を使います。
+    コードに任意の変更を加え、同じ `make` コマンドで再ビルドしてから、新しいビルドをパッケージにします。パッケージ化スクリプトは IntelProCube フォルダー内の最新の boot2（0.7.0.1 では v0.6.0）を使い、使用したファイルを表示します。Linux では `ipro_iot_tool_linux` を使います。
 
     ```bash
-    sed -i '' 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
     IPRO_FLASH_TOOL=<ICUBE>/ipro_iot_tool_macos \
         sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
     ```
@@ -254,11 +253,11 @@ CONFIG_IPRO_BLE_REMOTE_OTA=y
 
 ## Zephyr：MCUboot と MCUmgr { #zephyr-mcuboot }
 
-Zephyr のイメージは、boot2 のパッケージではなく MCUboot で更新します。boot2 が MCUboot を起動し、MCUboot が `slot1_partition` から新しいイメージを入れ替えます（swap-move）。サンプル `zephyr/samples/ble_ota` は、MCUmgr SMP で BLE 経由でイメージをアップロードします。V2.2.0 の Zephyr には IPRO7 EVB と IPRO7AI EVK のボード定義しかなく、Reef のボード定義はありません。ビルドと書き込みについては [Zephyr RTOS](zephyr.md) を参照してください。
+Zephyr のイメージは、boot2 のパッケージではなく MCUboot で更新します。boot2 が MCUboot を起動し、MCUboot が `slot1_partition` から新しいイメージを入れ替えます（swap-move）。サンプル `zephyr/samples/ble_ota` は、MCUmgr SMP で BLE 経由でイメージをアップロードします。V2.2.1 の Zephyr には IPRO7 EVB と IPRO7AI EVK のボード定義しかなく、Reef のボード定義はありません。ビルドと書き込みについては [Zephyr RTOS](zephyr.md) を参照してください。
 
 ## 本リリースの制限事項 { #limitations }
 
-- 署名付き OTA パッケージ（`create_ota.py --sign-key`）に必要な `tools/ota_products.py` は V2.2.0 に含まれていません。
+- 署名付き OTA パッケージ（`create_ota.py --sign-key`）に必要な `tools/ota_products.py` は V2.2.1 に含まれていません。
 - BLE OTA のリファレンスフローは `ipro_ble_remote` の `defconfig_reef` です。`ipro_ble_remote` のデフォルトのビルドには OTA がありません。
 - IPRO7 のファームウェアを Wi-Fi やイーサネットで更新するサンプルはありません。`ipro6s_ota` が更新するのは IPRO6S FIN カードだけです。
 - `build_freertos.sh flash` では boot2 のイメージを渡せません。OTA に対応したイメージの最初の書き込みは、上記のとおり IntelProCube のコマンドラインで行ってください。

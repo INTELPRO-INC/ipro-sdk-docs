@@ -1,6 +1,6 @@
 ---
 title: "IPRO6S"
-description: IPRO6S specifications, the three Wi-Fi 6 applications in V2.2.0 and their configurations, building and flashing, and its role as the FIN Wi-Fi card on the IPRO7AI Reef EVK
+description: IPRO6S specifications, the three Wi-Fi 6 applications in V2.2.1 and their configurations, building and flashing, and its role as the FIN Wi-Fi card on the IPRO7AI Reef EVK
 migrate_from:
   - "hardware.html#ipro6s"
   - "architecture.html#dual-chip"
@@ -10,7 +10,7 @@ migrate_from:
 
 # IPRO6S
 
-IPRO6S is a RISC-V SoC with built-in Wi-Fi 6. It builds from the same SDK tree and with the same toolchain as IPRO7. V2.2.0 ships three IPRO6S Wi-Fi applications: `ipro6_demo` for stand-alone networking, `ipro6_if_wifi` to bridge Wi-Fi to a host processor over SDIO or USB, and `ipro6_fmac`, FullMAC firmware for a Linux host. On the IPRO7AI Reef EVK the IPRO6S is the FIN Wi-Fi card in the microSD slot, which gives the IPRO7AI its network connection over SDIO.
+IPRO6S is a RISC-V SoC with built-in Wi-Fi 6. It builds from the same SDK tree and with the same toolchain as IPRO7. V2.2.1 ships three IPRO6S Wi-Fi applications: `ipro6_demo` for stand-alone networking, `ipro6_if_wifi` to bridge Wi-Fi to a host processor over SDIO or USB, and `ipro6_fmac`, FullMAC firmware for a Linux host. On the IPRO7AI Reef EVK the IPRO6S is the FIN Wi-Fi card in the microSD slot, which gives the IPRO7AI its network connection over SDIO.
 
 <div class="ipro-facts" markdown>
 <div><strong>Wi-Fi 6</strong><span>on the chip</span></div>
@@ -47,12 +47,12 @@ CONFIG_FREERTOS_SUPPORT=y
 
 ## SDK support in this release { #status }
 
-| Item | V2.2.0 |
+| Item | V2.2.1 |
 |---|---|
 | Applications | `ipro6_demo`, `ipro6_if_wifi`, `ipro6_fmac` (`apps/platform/`) |
 | Wi-Fi 6 | MAC (`components/wireless/macsw`), fhost API, wpa_supplicant and lwIP adapter (`components/wireless/wifi6`), RF driver (`components/wireless/rf/ipro6_rf`); all prebuilt per application configuration |
 | Low power | The DTIM low-power firmware image `bsp/hal/lp_framework/ipro6/prebuilt/ipro6_lpfw.bin`, embedded by the low-power configurations |
-| Bluetooth | The IPRO6S Bluetooth controller libraries and dual-mode (BR/EDR) applications are not included in V2.2.0; contact INTELPRO. The IPRO6S applications in this release use Wi-Fi only |
+| Bluetooth | The IPRO6S Bluetooth controller libraries and dual-mode (BR/EDR) applications are not included in V2.2.1; contact INTELPRO. The IPRO6S applications in this release use Wi-Fi only |
 | Zephyr RTOS | The `ipro6s_evb` board files are included, but IPRO6S is not supported under Zephyr in this release |
 | Flashing | [IntelProCube](https://github.com/INTELPRO-INC/ipro-cube/releases) 0.7.0.1 or later, command-line tool, with `--chipname ipro6`; the `flash` action of `build_freertos.sh` handles IPRO7 only |
 
@@ -71,7 +71,7 @@ Each IPRO6S application picks its configuration with `DEFCONFIG=`. The table lis
 | | `defconfig_ipro6_fmac_loader` | The flash loader that receives the FullMAC firmware over SDIO or USB |
 
 - `ipro6_demo/defconfig_ipro6_lpwifi_ping` and `ipro6_fmac/defconfig_ipro6_fmac_ap` set no `CONFIG_WIRELESS_LIB_VARIANT` and are not among the verified configurations; contact INTELPRO before using them.
-- The Linux host driver for `ipro6_fmac` is not included in V2.2.0.
+- The Linux host driver for `ipro6_fmac` is not included in V2.2.1.
 - The three applications target the IPRO6S EVK (`CONFIG_BOARD="EVB"`); on the Reef, only `defconfig_ipro6_sdio` of `ipro6_if_wifi` runs, on the FIN card.
 
 ## Build { #build }
@@ -105,7 +105,7 @@ This walk-through uses an IPRO6S EVK with an IPRO Debug Probe: build `ipro6_demo
 You need:
 
 - An IPRO6S EVK, a 2.4 GHz antenna, an IPRO Debug Probe with its UART cable, and a USB-C power source.
-- The toolchain, installed as in [Set Up Your Host](../../get-started/environment.md), and SDK V2.2.0 (written `<SDK>` below).
+- The toolchain, installed as in [Set Up Your Host](../../get-started/environment.md), and SDK V2.2.1 (written `<SDK>` below).
 - [IntelProCube](https://github.com/INTELPRO-INC/ipro-cube/releases) 0.7.0.1 or later: download it, check its SHA-256 and extract it to a new folder as its [README](https://github.com/INTELPRO-INC/ipro-cube#readme) describes (written `<IntelProCube>` below). Images flashed with 0.7.0 do not boot; see [Flashing succeeds but the board does not boot](#ipro6s-no-boot).
 
 <div class="ipro-steps" markdown>
@@ -176,6 +176,16 @@ You need:
     ```
 
     Each nearby access point takes one line (up to 50 lines; unused ones show `empty`). If access points are listed, the radio and the Wi-Fi stack work. Run `stack_wifi` once per boot.
+
+7. **Check the soft-AP**: start an access point; the key is 8 to 63 characters.
+
+    ```text
+    ipro />wifi_ap_start -s IPRO6S_AP -k <key> -c 6
+    [WPA] AP-ENABLED
+    [APP] [EVT] CODE_WIFI_ON_AP_STARTED
+    ```
+
+    Join `IPRO6S_AP` from a computer or phone with that key. It gets an address in 192.168.169.0/24 from the board, which is 192.168.169.1, and the console prints `AP-STA-CONNECTED` with its MAC address. `wifi_ap_stop` stops the access point.
 
 </div>
 

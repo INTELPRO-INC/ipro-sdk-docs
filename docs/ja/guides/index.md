@@ -86,6 +86,6 @@ migrate_from: []
 
     ---
 
-    SDK V2.2.0 に対応する Extension 3.3.0。ビルド、Reef への書き込み、シリアルモニター、メモリ解析。
+    SDK V2.2.1 に対応する Extension 3.3.0。ビルド、Reef への書き込み、シリアルモニター、メモリ解析。
 
 </div>

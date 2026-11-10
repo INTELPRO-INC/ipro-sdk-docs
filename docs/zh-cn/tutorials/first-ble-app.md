@@ -146,12 +146,11 @@ migrate_from:
 
     先让手机和工具 App 断开与开发板的连接：Reef 配置只允许一条连接（`CONFIG_BT_CONN=1`）。
 
-11. **生成 OTA 包**：随意修改一处代码（例如把提示音改为 `reef_hw_tone(2000, 150, 30)`），重新构建（步骤 1），再把构建结果打包成 boot2 OTA 包。打包脚本会调用 IntelProCube 生成整体镜像，再用 SDK 的 `tools/create_ota.py` 压缩。SDK V2.2.0 的打包脚本写的是 boot2 v0.5.2 的路径，IntelProCube 0.7.0 起附带的是 boot2 v0.6.0，所以第一行先把脚本里的版本改成 v0.6.0（重复运行没有影响）：
+11. **生成 OTA 包**：随意修改一处代码（例如把提示音改为 `reef_hw_tone(2000, 150, 30)`），重新构建（步骤 1），再把构建结果打包成 boot2 OTA 包。打包脚本会调用 IntelProCube 生成整体镜像，再用 SDK 的 `tools/create_ota.py` 压缩。脚本会使用 IntelProCube 文件夹里最新的 boot2（0.7.0.1 为 v0.6.0）：
 
     === "macOS"
 
         ```bash
-        sed -i '' 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos \
             sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         ```
@@ -159,7 +158,6 @@ migrate_from:
     === "Linux"
 
         ```bash
-        sed -i 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_linux \
             sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         ```
@@ -241,7 +239,7 @@ Reef 配置另外编入两个服务：OTA `0xFF60`（控制 `0xFF61`、数据 `0
 | 构建因警告失败 | 应用以 `-Werror` 编译 | 确认 `#include "reef_hw.h"` 放在 `CONFIG_IPRO7AI_REEF` 条件内，且调用写在函数内 |
 | `make_reef_ota.sh` 打印 `IntelProCube tool not found` | 没有设置 `IPRO_FLASH_TOOL`，PATH 中也没有烧录工具 | 设置 `IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos`（或 `_linux`） |
 | `make_reef_ota.sh` 打印 `build first: …` | 还没有 `build_reef/` 的构建结果 | 先执行步骤 1 |
-| `make_reef_ota.sh` 打印 `No such file or directory: …boot2_v0.5.2…` 与 `IntelProCube did not build whole_img.bin` | 脚本仍指向 IntelProCube 0.7.0 起不再附带的 boot2 v0.5.2 | 运行步骤 11 的 `sed` 行，再重新打包 |
+| `make_reef_ota.sh` 打印 `boot2 image not found` | `IPRO_FLASH_TOOL` 所在的 IntelProCube 文件夹没有 `chips/ipro7/builtin_imgs/boot2_v*` | 把 `IPRO_FLASH_TOOL` 指向 IntelProCube 0.7.0.1 文件夹里的工具，或用 `IPRO_BOOT2` 指定 boot2 的 `.bin` |
 | `reef_ota.py` 打印 `IPRO-Remote not found` | 开发板已改名、正与手机连接，或电脑的蓝牙未开启／未授权 | 设置 `REMOTE_NAME=IPRO-Hello`；断开手机连接；在 macOS 上允许“终端”使用蓝牙 |
 | `reef_ota.py` 打印 `device error …` | 开发板拒绝了该包或写入失败 | 确认发送的是 `.xz.ota`；查看控制台的 `[OTA]` 信息 |
 | OTA 后开发板没有恢复运行 | boot2 校验包失败时会停在 USB 救援模式 | 进入下载模式，用步骤 3 的命令重新烧录 |

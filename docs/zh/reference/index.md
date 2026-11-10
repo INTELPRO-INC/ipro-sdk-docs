@@ -32,7 +32,7 @@ migrate_from: []
 
     ---
 
-    V2.2.0 的新增內容、未包含項目與已知問題，以及歷來版本紀錄。
+    V2.2.1 的新增內容、未包含項目與已知問題，以及歷來版本紀錄。
 
 -   :material-frequently-asked-questions:{ .lg } **[常見問題](faq.md)**
 

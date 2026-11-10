@@ -86,6 +86,6 @@ migrate_from: []
 
     ---
 
-    Extension 3.3.0 搭配 SDK V2.2.0：建置、燒錄 Reef、序列埠監看與記憶體分析。
+    Extension 3.3.0 搭配 SDK V2.2.1：建置、燒錄 Reef、序列埠監看與記憶體分析。
 
 </div>

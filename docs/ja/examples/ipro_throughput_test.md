@@ -11,7 +11,7 @@ migrate_from: []
 
 | 項目 | 内容 |
 |---|---|
-| ソースコード | [`apps/bluetooth/ble/ipro_throughput_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/bluetooth/ble/ipro_throughput_test) |
+| ソースコード | [`apps/bluetooth/ble/ipro_throughput_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/bluetooth/ble/ipro_throughput_test) |
 | ボードと設定 | Reef 2 枚（`defconfig_reef`）、`.config` は IPRO7 EVB 用 |
 | コンソール | UART 115200 |
 | ビルド | Reef：`make -C apps/bluetooth/ble/ipro_throughput_test DEFCONFIG=defconfig_reef` |
@@ -47,7 +47,7 @@ migrate_from: []
 ## README { #readme }
 
 !!! note "README の原文"
-    以下はアプリケーションに付属する README（SDK V2.2.0）を原文のまま掲載したものです。翻訳はしておらず、公開に適さない内容だけを置き換えています。
+    以下はアプリケーションに付属する README（SDK V2.2.1）を原文のまま掲載したものです。翻訳はしておらず、公開に適さない内容だけを置き換えています。
 
 <!-- verbatim:start -->
 
@@ -325,7 +325,7 @@ CONFIG_FREERTOS_TIMER_TASK_STACK_WORDS=1024
 
 ### Related Documentation
 
-- [OPERATION_MANUAL.md](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.0/apps/bluetooth/ble/ipro_throughput_test/OPERATION_MANUAL.md) — operation manual in Chinese: hardware
+- [OPERATION_MANUAL.md](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.1/apps/bluetooth/ble/ipro_throughput_test/OPERATION_MANUAL.md) — operation manual in Chinese: hardware
     setup, test workflow, troubleshooting.
 
 ### API Reference

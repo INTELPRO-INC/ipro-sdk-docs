@@ -4,8 +4,8 @@ description: 使用 Zephyr v4.4.0 BLE Host 与 IPRO BLE 控制器（预编译库
 migrate_from:
   - "ble-development.html"
 not_migrated:
-  - "ble-development.html#app-framework — V2.2.0 沒有 Mediator／Applet 應用框架"
-  - "ble-development.html#ipro6s-btdm — V2.2.0 不含 IPRO6S 的 BLE 控制器"
+  - "ble-development.html#app-framework — V2.2.1 沒有 Mediator／Applet 應用框架"
+  - "ble-development.html#ipro6s-btdm — V2.2.1 不含 IPRO6S 的 BLE 控制器"
 ---
 
 # BLE 开发
@@ -17,7 +17,7 @@ FreeRTOS 应用的 BLE 由两部分组成：Zephyr v4.4.0 的 BLE Host（源代�
     - 控制器：16 个 IPRO7 归档文件，`link1_periph`／`link1`／`link2`／`link4` × `bt52`／`bt54_iso2` × 调试版／release 版，由 `CONFIG_IPRO_BLE_CTLR_LIB`、`CONFIG_IPRO_BLE_CTLR_FEATURE`、`CONFIG_IPRO_BLE_CTLR_CFG_DBG` 选择。
     - 初始化顺序：`ipro_ble_ctlr_controller_init()` → `hci_driver_ipro_ble_ctlr_init()` → `bt_enable()`。
     - Reef 的 BLE 配置：`ipro_ble_remote`、`ipro_throughput_test`、`ipro_le_audio_headset` 加 `DEFCONFIG=defconfig_reef`，以及 `ipro_agora_sentino`（BLE 配网）。
-    - 未包含于 V2.2.0：控制器源代码、PAwR／ESL 应用、IPRO6S 的 BLE 控制器。
+    - 未包含于 V2.2.1：控制器源代码、PAwR／ESL 应用、IPRO6S 的 BLE 控制器。
 
 ## 协议栈架构 { #stack-architecture }
 
@@ -51,7 +51,7 @@ CONFIG_BT_HOST_IPRO_V44=y
 
 缺少 `CONFIG_BT_CTLR_IPRO` 或 `CONFIG_BT_HOST_IPRO_V44` 时，构建在 CMake 配置阶段就会停止。Host 与控制器组件会导出自己的 include 路径，应用的 `CMakeLists.txt` 不需要另外添加 `zephyr/bluetooth/*.h` 的路径。
 
-Zephyr RTOS 镜像使用 Zephyr 自身的 Host，配合同一组控制器归档文件；V2.2.0 的 Zephyr 只有 IPRO7 EVB 与 IPRO7AI EVK 的板级定义，见 [Zephyr RTOS](zephyr.md)。
+Zephyr RTOS 镜像使用 Zephyr 自身的 Host，配合同一组控制器归档文件；V2.2.1 的 Zephyr 只有 IPRO7 EVB 与 IPRO7AI EVK 的板级定义，见 [Zephyr RTOS](zephyr.md)。
 
 ## 控制器选择 { #controller-variants }
 
@@ -78,7 +78,7 @@ Zephyr RTOS 镜像使用 Zephyr 自身的 Host，配合同一组控制器归档�
 
 `CONFIG_BT_CONN`（Host 的连接数）不可超过归档文件的连接数。Exchange Memory 从 OCRAM 顶端保留，见[内存布局](build-system.md#memory-layout)。
 
-V2.2.0 随附的 Reef 配置可作为起点：
+V2.2.1 随附的 Reef 配置可作为起点：
 
 | 应用与配置 | LIB | FEATURE | 调试版归档文件 | `CONFIG_BT_CONN` | `CONFIG_EM_SIZE` |
 |---|---|---|---|---|---|
@@ -420,17 +420,17 @@ LE Audio 需要 `CONFIG_IPRO_BLE_CTLR_FEATURE="bt54_iso2"` 与 `CONFIG_EM_SIZE=3
 
 - `ipro_ble_remote` 的 `defconfig_reef` 不使用 PDS：Reef 由 USB 供电，摄像头与音频也需要时钟。
 - 控制器的 PDS 睡眠只接受 16 KB EM 的布局；在 `bt54_iso2`（32 KB EM）配置下，控制器保留原生睡眠，但不进入 PDS。
-- `CONFIG_IPRO_PM_BLE` 与 `CONFIG_IPRO_PM_PDS_CONNECTED` 会强制从源代码构建控制器，V2.2.0 无法构建，见[本版本的限制](#limitations)。
+- `CONFIG_IPRO_PM_BLE` 与 `CONFIG_IPRO_PM_PDS_CONNECTED` 会强制从源代码构建控制器，V2.2.1 无法构建，见[本版本的限制](#limitations)。
 - BLE 配合 PDS31 睡眠与配对后重新连接的示例是 `ipro_pdm_mic_demo`，属于 IPRO7 EVB／IPRO7AI EVK。
 
 睡眠模式、唤醒源与测量方法见[低功耗](low-power.md)。
 
 ## 本版本的限制 { #limitations }
 
-- 控制器只以预编译库提供，V2.2.0 不含其源代码。以下配置需要从源代码构建控制器，会让构建停止：`CONFIG_IPRO_BLE_CTLR_FORCE_SOURCE_BUILD`、`CONFIG_IPRO_BLE_CTLR_SUBRATING`、`CONFIG_IPRO_BLE_CTLR_CSSA`、`CONFIG_IPRO_PM_BLE`、`CONFIG_IPRO_PM_PDS_CONNECTED`。
-- PAwR 与 ESL：Host 头文件含周期性广播相关 API，但没有 PAwR／ESL 应用。未包含于 V2.2.0，请联系 INTELPRO。
+- 控制器只以预编译库提供，V2.2.1 不含其源代码。以下配置需要从源代码构建控制器，会让构建停止：`CONFIG_IPRO_BLE_CTLR_FORCE_SOURCE_BUILD`、`CONFIG_IPRO_BLE_CTLR_SUBRATING`、`CONFIG_IPRO_BLE_CTLR_CSSA`、`CONFIG_IPRO_PM_BLE`、`CONFIG_IPRO_PM_PDS_CONNECTED`。
+- PAwR 与 ESL：Host 头文件含周期性广播相关 API，但没有 PAwR／ESL 应用。未包含于 V2.2.1，请联系 INTELPRO。
 - `ipro_ble_remote` 的 OTA 服务只在 `defconfig_reef` 中开启；默认 `.config` 构建的是不含 OTA 的 IPRO7 EVB 镜像。
-- V2.2.0 不含 IPRO6S 的 BLE 控制器；本套件中的 IPRO6S 应用只有 Wi-Fi。
+- V2.2.1 不含 IPRO6S 的 BLE 控制器；本套件中的 IPRO6S 应用只有 Wi-Fi。
 
 ## 参考应用 { #reference-apps }
 

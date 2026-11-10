@@ -11,7 +11,7 @@ IPRO AI Studio“Run on board”的板端固件：从 microSD（`sd:/`）加载 
 
 | 项目 | 内容 |
 |---|---|
-| 源代码 | [`apps/test/ipro_ai_link`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_ai_link) |
+| 源代码 | [`apps/test/ipro_ai_link`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_ai_link) |
 | 开发板与配置 | Reef（`defconfig_reef`）；`.config` 对应 IPRO7 EVB |
 | 控制台 | UART 115200（另有 USB CDC 控制台） |
 | 构建 | Reef：`make -C apps/test/ipro_ai_link DEFCONFIG=defconfig_reef` |

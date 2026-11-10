@@ -19,9 +19,9 @@ arch:
   chip_link_text: チップの仕様
   default: ipro7ai
   chips:
-    - { id: ipro7, name: IPRO7, sdk: V2.2.0, link: hardware/chips/ipro7/, desc: "BLE 5.4 と LE Audio、802.15.4、ISP、MJPEG を備えた RISC-V ワイヤレス SoC です。" }
-    - { id: ipro7ai, name: IPRO7AI, sdk: V2.2.0, link: hardware/chips/ipro7ai/, desc: "IPRO7 に NPU とパッケージ内 PSRAM を加えた SoC で、IPRO7AI Reef EVK V4.0 に搭載されています。" }
-    - { id: ipro6s, name: IPRO6S, sdk: V2.2.0, link: hardware/chips/ipro6s/, desc: "Wi-Fi 6 を内蔵した RISC-V SoC です。Reef では microSD スロットに挿す FIN Wi-Fi カードとして使います。" }
+    - { id: ipro7, name: IPRO7, sdk: V2.2.1, link: hardware/chips/ipro7/, desc: "BLE 5.4 と LE Audio、802.15.4、ISP、MJPEG を備えた RISC-V ワイヤレス SoC です。" }
+    - { id: ipro7ai, name: IPRO7AI, sdk: V2.2.1, link: hardware/chips/ipro7ai/, desc: "IPRO7 に NPU とパッケージ内 PSRAM を加えた SoC で、IPRO7AI Reef EVK V4.0 に搭載されています。" }
+    - { id: ipro6s, name: IPRO6S, sdk: V2.2.1, link: hardware/chips/ipro6s/, desc: "Wi-Fi 6 を内蔵した RISC-V SoC です。Reef では microSD スロットに挿す FIN Wi-Fi カードとして使います。" }
   layers:
     - name: アプリ
       items:
@@ -96,7 +96,7 @@ SDK には IPRO7 EVB、IPRO7AI EVK、IPRO6S EVK 向けのアプリケーショ�
 
 <div class="ipro-steps" markdown>
 
-1. **ホストの準備**：RISC-V ツールチェーンを INTELPRO から入手し、IntelProCube 0.7.0.1 を GitHub からダウンロードし、CMake 3.15 以降、GNU make、Python 3.8 以降をインストールしてから、リリースページから SDK V2.2.0 をダウンロードします。[インストール](get-started/index.md)
+1. **ホストの準備**：RISC-V ツールチェーンを INTELPRO から入手し、IntelProCube 0.7.0.1 を GitHub からダウンロードし、CMake 3.15 以降、GNU make、Python 3.8 以降をインストールしてから、リリースページから SDK V2.2.1 をダウンロードします。[インストール](get-started/index.md)
 2. **出荷時ファームウェアのビルド**：SDK ルートで `make -C apps/platform/ipro7ai_reef_demo` を実行します。イメージは `build/build_out/ipro7ai_reef_demo_IPRO7.bin` です。
 3. **書き込みとセルフテスト**：SW1 を押したまま SW2 を押してダウンロードモードに入り、IntelProCube で書き込んで `[All Success]` を確認します。U6 のコンソール（115200 baud）で `reef selftest` と入力し、LED、スピーカー、SD カード、カメラが順にチェックを通過することを確認します。[詳しい手順](get-started/first-app-freertos.md)
 
@@ -136,8 +136,9 @@ SDK には IPRO7 EVB、IPRO7AI EVK、IPRO6S EVK 向けのアプリケーショ�
 
 </div>
 
-## V2.2.0 の新機能 { #whats-new }
+## V2.2 の新機能 { #whats-new }
 
+- **V2.2.1**（2026-11-10）：工場出荷時の MAC アドレスがない IPRO6S（IPRO6S EVK など）でも soft-AP が起動します。`make_reef_ota.sh` は公開版 IntelProCube から boot2 を自動で見つけます。[リリースノート](reference/release-notes.md#v2-2-1)を参照してください。
 - **IPRO6S アプリケーションが復活**：`ipro6_demo`（DTIM 省電力に対応した Wi-Fi 6 ステーション／ソフト AP）、`ipro6_if_wifi`（SDIO または USB でホストと接続する Wi-Fi ブリッジで、Reef の FIN カードのファームウェアでもあります）、`ipro6_fmac`（FullMAC ファームウェアとその Flash ローダー）。IPRO6S アプリケーションは Wi-Fi のみで、本リリースには IPRO6S の Bluetooth はありません。
 - **Edge AI プラットフォーム V2.0 と `ipro_reef_teach`**：画像、声紋、センサーの Teach ツールをひとつにまとめた Reef 用ファームウェアで、IPRO AI Studio から操作します。IPRO AI Studio は [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) からダウンロードできます。
 - **新しい `ipro7_jpeg_decode`**：ソフトウェアで JPEG を RGB565 / RGB888 にデコードします。`ipro7ai_reef_demo` には `mic usb`（USB マイク）と `mic sdrec`（SD カードへの WAV 録音）が加わりました。

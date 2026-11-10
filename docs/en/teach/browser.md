@@ -13,7 +13,7 @@ The SDK's `tools/teach_web` is image Teach without installing IPRO AI Studio: op
 - A USB-C data cable from the Reef's USB-C to the computer: it powers the board and carries both the video and the model.
 - Chrome or Edge (they have Web Serial; Safari and Firefox do not).
 - Python 3.8 or later, only to serve the page on this computer.
-- SDK V2.2.0: `tools/teach_web/`.
+- SDK V2.2.1: `tools/teach_web/`.
 
 ## Start the page { #start }
 

@@ -79,7 +79,7 @@ python3 <SDK>/tools/create_ota.py chips/ipro7/img_create_iot/whole_img.bin \
 | `--raw` | No compression. Without `-o`, the output is the input name with its extension replaced by `.ota` (`--raw`) or `.xz.ota` |
 | `-o FILE` | Output file |
 | `--hw-ver`, `--fw-ver` | Hardware and firmware version strings written into the header (up to 15 characters each). boot2 does not check the hardware version |
-| `--sign-key`, `--product`, `--hw-id`, `--fw-version`, `--force-version`, `--key-id` | Signed packages. They need `tools/ota_products.py`, which is not included in V2.2.0, so they cannot be used |
+| `--sign-key`, `--product`, `--hw-id`, `--fw-version`, `--force-version`, `--key-id` | Signed packages. They need `tools/ota_products.py`, which is not included in V2.2.1, so they cannot be used |
 
 | Header offset | Contents |
 |---|---|
@@ -91,7 +91,7 @@ python3 <SDK>/tools/create_ota.py chips/ipro7/img_create_iot/whole_img.bin \
 | 96–511 | Reserved (0xFF); holds the signature block in signed packages |
 | 512 onward | Payload (XZ with a 32 KB dictionary, matching the boot2 decoder) |
 
-For the Reef, `apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh` runs both steps in one command and stamps the build time as the firmware version; see [Hands-on on the Reef](#hands-on). The V2.2.0 script names boot2 v0.5.2; change it to v0.6.0, which IntelProCube ships from 0.7.0 on, before you use it (the first line of step 4).
+For the Reef, `apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh` runs both steps in one command and stamps the build time as the firmware version; see [Hands-on on the Reef](#hands-on). It takes the newest boot2 in the IntelProCube folder (v0.6.0 in 0.7.0.1).
 
 ## BLE OTA (ipro_ble_remote) { #ble-ota }
 
@@ -196,10 +196,9 @@ Flash `ipro_ble_remote` once over UART, change the code, then install the new bu
 
 4. **Change the code and build the OTA package**
 
-    Make any change, rebuild with the same `make` command, then package the new build. The packaging script in SDK V2.2.0 names boot2 v0.5.2, while IntelProCube 0.7.0 and later ship v0.6.0, so the first line changes the version in the script to v0.6.0 (running it again does no harm). On Linux use `sed -i` (without `''`) and `ipro_iot_tool_linux`:
+    Make any change, rebuild with the same `make` command, then package the new build. The script takes the newest boot2 in the IntelProCube folder (v0.6.0 in 0.7.0.1) and prints the one it uses. On Linux use `ipro_iot_tool_linux`:
 
     ```bash
-    sed -i '' 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
     IPRO_FLASH_TOOL=<ICUBE>/ipro_iot_tool_macos \
         sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
     ```
@@ -254,11 +253,11 @@ Next: [Create your first application](../tutorials/first-own-app.md) starts a ne
 
 ## Zephyr: MCUboot and MCUmgr { #zephyr-mcuboot }
 
-Zephyr images update through MCUboot instead of the boot2 package: boot2 starts MCUboot, which swaps a new image in from `slot1_partition` (swap-move). The sample `zephyr/samples/ble_ota` uploads images over BLE with MCUmgr SMP. Zephyr in V2.2.0 has board definitions for the IPRO7 EVB and the IPRO7AI EVK only, not for the Reef; building and flashing are in [Zephyr RTOS](zephyr.md).
+Zephyr images update through MCUboot instead of the boot2 package: boot2 starts MCUboot, which swaps a new image in from `slot1_partition` (swap-move). The sample `zephyr/samples/ble_ota` uploads images over BLE with MCUmgr SMP. Zephyr in V2.2.1 has board definitions for the IPRO7 EVB and the IPRO7AI EVK only, not for the Reef; building and flashing are in [Zephyr RTOS](zephyr.md).
 
 ## Limitations in this release { #limitations }
 
-- `tools/ota_products.py`, which signed OTA packages (`create_ota.py --sign-key`) need, is not included in V2.2.0.
+- `tools/ota_products.py`, which signed OTA packages (`create_ota.py --sign-key`) need, is not included in V2.2.1.
 - The BLE OTA reference flow is `ipro_ble_remote` `defconfig_reef`; the default `ipro_ble_remote` build has no OTA.
 - There is no example that updates IPRO7 firmware over Wi-Fi or Ethernet; `ipro6s_ota` updates the IPRO6S FIN card only.
 - `build_freertos.sh flash` cannot pass a boot2 image; do the first flash of an OTA-capable image with the IntelProCube command line as above.

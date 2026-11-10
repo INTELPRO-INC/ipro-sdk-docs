@@ -86,6 +86,6 @@ What the SDK provides in each feature area, the `CONFIG_*` keys that turn it on,
 
     ---
 
-    Extension 3.3.0 with SDK V2.2.0: building, flashing the Reef, the serial monitor and memory analysis.
+    Extension 3.3.0 with SDK V2.2.1: building, flashing the Reef, the serial monitor and memory analysis.
 
 </div>

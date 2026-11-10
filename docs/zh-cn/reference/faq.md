@@ -13,17 +13,17 @@ migrate_from:
 
 ### SDK、烧录工具与工具链从哪里获取？ { #get-tools }
 
-- **SDK V2.2.0**：从 [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0) 下载 `IPRO-SDK-V2.2.0.tar.gz`，核对页面上的 SHA-256 后解压：
+- **SDK V2.2.1**：从 [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.1) 下载 `IPRO-SDK-V2.2.1.tar.gz`，核对页面上的 SHA-256 后解压：
 
     ```bash
-    shasum -a 256 IPRO-SDK-V2.2.0.tar.gz      # Linux：sha256sum；应与 Release 页面上的值相同
-    tar xzf IPRO-SDK-V2.2.0.tar.gz
-    cat IPRO-SDK-V2.2.0/VERSION.txt
+    shasum -a 256 IPRO-SDK-V2.2.1.tar.gz      # Linux：sha256sum；应与 Release 页面上的值相同
+    tar xzf IPRO-SDK-V2.2.1.tar.gz
+    cat IPRO-SDK-V2.2.1/VERSION.txt
     ```
 
-    `VERSION.txt` 打印 `IPRO7: IPRO-SDK-V2.2.0`、`IPRO6: IPRO-SDK-V2.2.0` 与 `Release Date: 2026-11-03`。
-- **RISC-V 工具链**：未包含在 V2.2.0 中，请联系 INTELPRO。默认安装在 `/opt/toolchain/riscv_ipro7/`。
-- **IntelProCube 命令行烧录工具**（`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe`）：未包含在 V2.2.0 中，从 [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) 下载 0.7.0.1，见[准备开发环境](../get-started/environment.md#intelprocube)。
+    `VERSION.txt` 打印 `IPRO7: IPRO-SDK-V2.2.1`、`IPRO6: IPRO-SDK-V2.2.1` 与 `Release Date: 2026-11-10`。
+- **RISC-V 工具链**：未包含在 V2.2.1 中，请联系 INTELPRO。默认安装在 `/opt/toolchain/riscv_ipro7/`。
+- **IntelProCube 命令行烧录工具**（`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe`）：未包含在 V2.2.1 中，从 [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) 下载 0.7.0.1，见[准备开发环境](../get-started/environment.md#intelprocube)。
 - **Windows 在线安装程序 3.6.0 与 VS Code Extension 3.3.0**：当前版本，从 [ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest) 下载；安装程序会直接安装 SDK V2.2.0 与 Windows 版工具链，见 [Windows 安装与 VS Code](../get-started/windows.md)。
 - **IPRO AI Studio**：不在 SDK 中，从 [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) 下载。
 
@@ -162,16 +162,16 @@ CONFIG_EASYFLASH4=y
 在 Reef 上，`ipro_ble_remote` 的 `defconfig_reef` 提供 BLE OTA（GATT 服务 `0xFF60`），需要 boot2 与 A/B 分区表 `partition_cfg_2M_remote_ab.toml`：
 
 1. 以 `--boot2` 与 `--pt …/partition_cfg_2M_remote_ab.toml` 首次烧录，启动信息中先出现 `[BOOT2] IPRO7 Boot2 v0.6.0`。
-2. 用 `make_reef_ota.sh` 生成 `build_reef/build_out/ipro_ble_remote_reef.xz.ota`。V2.2.0 的脚本要先把 boot2 路径改成 v0.6.0，见 [OTA 更新](../guides/ota.md#hands-on)第 4 步。
+2. 用 `make_reef_ota.sh` 生成 `build_reef/build_out/ipro_ble_remote_reef.xz.ota`。
 3. 用 `reef_ota.py` 或 Android 演示 App `ipro_remote_demo.apk` 发送升级包；开发板重启后运行新固件。
 
 不要在以标准 `partition_cfg_2M.toml` 烧录的 Reef 上做 OTA，否则开发板会完全没有输出，只能进入下载模式重新烧录。命令见 [Reef 的 OTA 工具](tools.md#reef-ota-tools)，整体流程见 [OTA 更新](../guides/ota.md)。
 
 ## 平台与联网 { #platform }
 
-### V2.2.0 支持 IPRO6S 吗？ { #ipro6s }
+### V2.2.1 支持 IPRO6S 吗？ { #ipro6s }
 
-支持 Wi-Fi。V2.2.0 随附 3 个 IPRO6S 应用：`ipro6_demo`（Wi-Fi 6 station／soft-AP）、`ipro6_if_wifi`（通过 SDIO 或 USB 供主机使用的 Wi-Fi 桥接）与 `ipro6_fmac`（Linux 主机用的 FullMAC 固件）。本版本没有 IPRO6S 的 BLE 控制器库与 BLE／BR/EDR 应用。
+支持 Wi-Fi。V2.2.1 随附 3 个 IPRO6S 应用：`ipro6_demo`（Wi-Fi 6 station／soft-AP）、`ipro6_if_wifi`（通过 SDIO 或 USB 供主机使用的 Wi-Fi 桥接）与 `ipro6_fmac`（Linux 主机用的 FullMAC 固件）。本版本没有 IPRO6S 的 BLE 控制器库与 BLE／BR/EDR 应用。
 
 在 Reef 上，IPRO6S 是插在 microSD 卡座中的 FIN Wi-Fi 卡，卡上固件是 `ipro6_if_wifi` 的 SDIO 配置：
 

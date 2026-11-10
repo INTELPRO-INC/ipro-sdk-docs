@@ -25,26 +25,26 @@ migrate_from:
 
 <div class="ipro-steps" markdown>
 
-1. **ダウンロードします：** [IPRO-SDK-V2.2.0 リリース](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0) から `IPRO-SDK-V2.2.0.tar.gz` をダウンロードし、そのページに掲載されている SHA-256 を控えておきます。
+1. **ダウンロードします：** [IPRO-SDK-V2.2.1 リリース](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.1) から `IPRO-SDK-V2.2.1.tar.gz` をダウンロードし、そのページに掲載されている SHA-256 を控えておきます。
 
 2. **ダウンロードしたファイルを検証します：**
 
     === "macOS"
 
         ```bash
-        shasum -a 256 IPRO-SDK-V2.2.0.tar.gz
+        shasum -a 256 IPRO-SDK-V2.2.1.tar.gz
         ```
 
     === "Linux"
 
         ```bash
-        sha256sum IPRO-SDK-V2.2.0.tar.gz
+        sha256sum IPRO-SDK-V2.2.1.tar.gz
         ```
 
     === "Windows"
 
         ```powershell
-        Get-FileHash .\IPRO-SDK-V2.2.0.tar.gz -Algorithm SHA256
+        Get-FileHash .\IPRO-SDK-V2.2.1.tar.gz -Algorithm SHA256
         ```
 
     表示される 64 文字の 16 進数が、リリースページの値と一致する必要があります（大文字と小文字は区別しません）。一致しない場合は、もう一度ダウンロードしてください。
@@ -54,16 +54,16 @@ migrate_from:
     === "macOS / Linux"
 
         ```bash
-        tar xzf IPRO-SDK-V2.2.0.tar.gz
-        cd IPRO-SDK-V2.2.0
+        tar xzf IPRO-SDK-V2.2.1.tar.gz
+        cd IPRO-SDK-V2.2.1
         cat VERSION.txt
         ```
 
     === "Windows"
 
         ```powershell
-        tar -xzf .\IPRO-SDK-V2.2.0.tar.gz
-        Get-Content .\IPRO-SDK-V2.2.0\VERSION.txt
+        tar -xzf .\IPRO-SDK-V2.2.1.tar.gz
+        Get-Content .\IPRO-SDK-V2.2.1\VERSION.txt
         ```
 
     `VERSION.txt` の内容：
@@ -71,14 +71,14 @@ migrate_from:
     ```text
     IPRO SDK Release
     ========================================
-    IPRO7: IPRO-SDK-V2.2.0
-    IPRO6: IPRO-SDK-V2.2.0
+    IPRO7: IPRO-SDK-V2.2.1
+    IPRO6: IPRO-SDK-V2.2.1
 
-    Release Date: 2026-11-03
+    Release Date: 2026-11-10
     Base Commit: 60afd4ab
     ```
 
-    `IPRO-SDK-V2.2.0/` が SDK ルート（このサイトでは `<SDK>`）で、`apps/`、`bsp/`、`components/`、`build_freertos.sh`、`VERSION.txt` が入っています。
+    `IPRO-SDK-V2.2.1/` が SDK ルート（このサイトでは `<SDK>`）で、`apps/`、`bsp/`、`components/`、`build_freertos.sh`、`VERSION.txt` が入っています。
 
 </div>
 

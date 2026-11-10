@@ -95,7 +95,7 @@ IPRO7 如何连接网络，以及 SDIO 另一端的 IPRO6S 应用，见[网络](
 ## 目录结构 { #directory }
 
 ```text
-IPRO-SDK-V2.2.0/
+IPRO-SDK-V2.2.1/
 ├── apps/                    FreeRTOS 应用（40 个）
 │   ├── ai/                  NPU 与 Edge AI 应用
 │   ├── bluetooth/ble/       BLE 示例

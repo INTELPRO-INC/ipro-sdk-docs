@@ -11,7 +11,7 @@ Board firmware for IPRO AI Studio "Run on board": loads `.inm` models and inputs
 
 | Item | Details |
 |---|---|
-| Source | [`apps/test/ipro_ai_link`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_ai_link) |
+| Source | [`apps/test/ipro_ai_link`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_ai_link) |
 | Boards and configs | Reef (`defconfig_reef`); `.config` targets the IPRO7 EVB |
 | Console | UART 115200 (also on a USB CDC port) |
 | Build | Reef: `make -C apps/test/ipro_ai_link DEFCONFIG=defconfig_reef` |

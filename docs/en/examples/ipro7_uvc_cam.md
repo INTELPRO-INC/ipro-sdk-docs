@@ -11,7 +11,7 @@ USB webcam: OV5640, ISP, hardware MJPEG, USB Video Class; a second Reef configur
 
 | Item | Details |
 |---|---|
-| Source | [`apps/multimedia/ipro7_uvc_cam`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/multimedia/ipro7_uvc_cam) |
+| Source | [`apps/multimedia/ipro7_uvc_cam`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/multimedia/ipro7_uvc_cam) |
 | Boards and configs | Reef (`defconfig_reef_ov5640`: webcam; `defconfig_reef_rps`: rock-paper-scissors); `.config` targets the IPRO7 EVB with an SC101IOT |
 | Console | Reef: UART 115200<br>`.config`: UART 921600 |
 | Build | Reef: `make -C apps/multimedia/ipro7_uvc_cam DEFCONFIG=defconfig_reef_ov5640` (or `defconfig_reef_rps`) |
@@ -49,7 +49,7 @@ SW7 must be on CAM.
 ## README { #readme }
 
 !!! note "The README as shipped"
-    Below is the README that ships with the application (SDK V2.2.0), as written; only content unfit for publication was replaced.
+    Below is the README that ships with the application (SDK V2.2.1), as written; only content unfit for publication was replaced.
 
 <!-- verbatim:start -->
 

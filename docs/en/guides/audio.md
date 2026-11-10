@@ -21,7 +21,7 @@ IPRO7 has an audio ADC (AUADC) for analog and PDM microphones, a 10-bit DAC (GPD
     - Reef audio: PDM microphone, headset microphone on jack J2, speaker amplifier and headphone output from the GPDAC. `ipro7ai_reef_demo` records, plays, monitors, records WAV files to the SD card (`mic sdrec`) and turns the board into a USB microphone (`mic usb`).
     - Configuration: `CONFIG_AUDIO_CAPTURE=y`, `CONFIG_AUDIO_OUTPUT=y`, `CONFIG_DMA_CHANNEL_ALLOCATOR=y`; add `CONFIG_CHERRYUSB_DEVICE_AUDIO=y` for USB audio.
     - LE Audio: unicast headset `ipro_le_audio_headset` (`defconfig_reef`), controller `bt54_iso2` with `CONFIG_EM_SIZE=32`, LC3 as a prebuilt library. Its README lists audio playback from a phone as not yet validated.
-    - Not included in V2.2.0: a FreeRTOS LE Audio broadcast example and a USB-to-BLE audio bridge.
+    - Not included in V2.2.1: a FreeRTOS LE Audio broadcast example and a USB-to-BLE audio bridge.
 
 ## Architecture { #overview }
 

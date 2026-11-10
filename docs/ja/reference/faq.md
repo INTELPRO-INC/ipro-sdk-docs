@@ -13,17 +13,17 @@ migrate_from:
 
 ### SDK、書き込みツール、ツールチェーンはどこで入手できますか？ { #get-tools }
 
-- **SDK V2.2.0**：[GitHub リリース](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0) から `IPRO-SDK-V2.2.0.tar.gz` をダウンロードし、同じページの SHA-256 と照合してから展開します。
+- **SDK V2.2.1**：[GitHub リリース](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.1) から `IPRO-SDK-V2.2.1.tar.gz` をダウンロードし、同じページの SHA-256 と照合してから展開します。
 
     ```bash
-    shasum -a 256 IPRO-SDK-V2.2.0.tar.gz      # Linux では sha256sum。リリースページの値と一致すること
-    tar xzf IPRO-SDK-V2.2.0.tar.gz
-    cat IPRO-SDK-V2.2.0/VERSION.txt
+    shasum -a 256 IPRO-SDK-V2.2.1.tar.gz      # Linux では sha256sum。リリースページの値と一致すること
+    tar xzf IPRO-SDK-V2.2.1.tar.gz
+    cat IPRO-SDK-V2.2.1/VERSION.txt
     ```
 
-    `VERSION.txt` には `IPRO7: IPRO-SDK-V2.2.0`、`IPRO6: IPRO-SDK-V2.2.0`、`Release Date: 2026-11-03` と表示されます。
-- **RISC-V ツールチェーン**：V2.2.0 には含まれていません。INTELPRO にお問い合わせください。デフォルトで `/opt/toolchain/riscv_ipro7/` にインストールされます。
-- **IntelProCube コマンドライン書き込みツール**（`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe`）：V2.2.0 には含まれていません。[GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) から 0.7.0.1 をダウンロードしてください。[開発環境の準備](../get-started/environment.md#intelprocube)を参照してください。
+    `VERSION.txt` には `IPRO7: IPRO-SDK-V2.2.1`、`IPRO6: IPRO-SDK-V2.2.1`、`Release Date: 2026-11-10` と表示されます。
+- **RISC-V ツールチェーン**：V2.2.1 には含まれていません。INTELPRO にお問い合わせください。デフォルトで `/opt/toolchain/riscv_ipro7/` にインストールされます。
+- **IntelProCube コマンドライン書き込みツール**（`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe`）：V2.2.1 には含まれていません。[GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) から 0.7.0.1 をダウンロードしてください。[開発環境の準備](../get-started/environment.md#intelprocube)を参照してください。
 - **Windows オンラインインストーラー 3.6.0 と VS Code 拡張機能 3.3.0**：最新版です。インストーラーは [ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest) からダウンロードします。SDK V2.2.0 と Windows 用ツールチェーンを直接インストールします。[Windows のセットアップと VS Code](../get-started/windows.md) を参照してください。
 - **IPRO AI Studio**：SDK には含まれていません。[GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) からダウンロードしてください。
 
@@ -162,16 +162,16 @@ CONFIG_EASYFLASH4=y
 Reef では、`ipro_ble_remote` の `defconfig_reef` が BLE OTA（GATT サービス `0xFF60`）を提供します。boot2 と A/B パーティションテーブル `partition_cfg_2M_remote_ab.toml` が必要です。
 
 1. 初回は `--boot2` と `--pt …/partition_cfg_2M_remote_ab.toml` で書き込みます。起動メッセージは `[BOOT2] IPRO7 Boot2 v0.6.0` から始まります。
-2. `make_reef_ota.sh` で `build_reef/build_out/ipro_ble_remote_reef.xz.ota` を生成します。V2.2.0 では、先にスクリプトの boot2 のパスを v0.6.0 に書き換えます（[OTA アップデート](../guides/ota.md#hands-on)の手順 4）。
+2. `make_reef_ota.sh` で `build_reef/build_out/ipro_ble_remote_reef.xz.ota` を生成します。
 3. `reef_ota.py` または Android デモアプリ `ipro_remote_demo.apk` でパッケージを送信します。再起動後、ボードは新しいファームウェアで動作します。
 
 標準の `partition_cfg_2M.toml` で書き込んだ Reef では、絶対に OTA を実行しないでください。ボードがまったく応答しなくなり、ダウンロードモードから書き込み直す必要があります。コマンドは [Reef OTA ツール](tools.md#reef-ota-tools) に、全体の流れは [OTA アップデート](../guides/ota.md) にあります。
 
 ## プラットフォームとネットワーク { #platform }
 
-### V2.2.0 は IPRO6S に対応していますか？ { #ipro6s }
+### V2.2.1 は IPRO6S に対応していますか？ { #ipro6s }
 
-はい、Wi-Fi について対応しています。V2.2.0 には IPRO6S 用のアプリケーションが 3 つあります：`ipro6_demo`（Wi-Fi 6 ステーション / ソフト AP）、`ipro6_if_wifi`（SDIO または USB 経由でホストに接続する Wi-Fi ブリッジ）、`ipro6_fmac`（Linux ホスト用の FullMAC ファームウェア）。本リリースには IPRO6S 用の BLE コントローラーライブラリはなく、IPRO6S 用の BLE や BR/EDR のアプリケーションもありません。
+はい、Wi-Fi について対応しています。V2.2.1 には IPRO6S 用のアプリケーションが 3 つあります：`ipro6_demo`（Wi-Fi 6 ステーション / ソフト AP）、`ipro6_if_wifi`（SDIO または USB 経由でホストに接続する Wi-Fi ブリッジ）、`ipro6_fmac`（Linux ホスト用の FullMAC ファームウェア）。本リリースには IPRO6S 用の BLE コントローラーライブラリはなく、IPRO6S 用の BLE や BR/EDR のアプリケーションもありません。
 
 Reef では、IPRO6S は microSD スロットに挿す FIN Wi-Fi カードで、そのファームウェアは `ipro6_if_wifi` の SDIO 用設定です。
 

@@ -1,6 +1,6 @@
 ---
 title: "工具命令行"
-description: SDK V2.2.0 随附主机端工具的命令、选项与示例：build_freertos.sh、make、IntelProCube 烧录工具、serial_monitor.py、create_ota.py、Reef 的 Teach 与 OTA 工具，以及未随附的项目。
+description: SDK V2.2.1 随附主机端工具的命令、选项与示例：build_freertos.sh、make、IntelProCube 烧录工具、serial_monitor.py、create_ota.py、Reef 的 Teach 与 OTA 工具，以及未随附的项目。
 migrate_from:
   - "tools-debugging.html#overview"
   - "tools-debugging.html#build-cli"
@@ -28,11 +28,11 @@ SDK 随附主机端工具的命令格式、选项与示例，示例以 IPRO7AI R
 | `parse_kconfig_dynamic.py` | `tools/script/` | 把 Kconfig 树导出为 JSON（需要 kconfiglib，构建流程不使用） | 随附 |
 | CMake 3.15 | `tools/cmake/` | 系统中没有 `cmake` 时的备用版本，仅限 Linux x86-64 | 随附 |
 | Zephyr 脚本 | `tools/zephyr/` | Zephyr 工作区、构建、烧录与控制台（`ipro7_evb`、`ipro7ai_evk` 板型） | 随附 |
-| IntelProCube 0.7.0.1 命令行烧录工具 | `ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe` | 通过串口烧录固件、分区表、boot2 与 `mfg` 内容 | 未包含在 V2.2.0 中，从 [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) 下载 |
-| RISC-V 工具链 | `/opt/toolchain/riscv_ipro7/` | 编译（GCC 14，`riscv64-unknown-elf-`） | 未包含在 V2.2.0 中，请联系 INTELPRO |
+| IntelProCube 0.7.0.1 命令行烧录工具 | `ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe` | 通过串口烧录固件、分区表、boot2 与 `mfg` 内容 | 未包含在 V2.2.1 中，从 [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) 下载 |
+| RISC-V 工具链 | `/opt/toolchain/riscv_ipro7/` | 编译（GCC 14，`riscv64-unknown-elf-`） | 未包含在 V2.2.1 中，请联系 INTELPRO |
 | IPRO AI Studio | — | IPRO AI Teach、模型转换与部署 | 不在 SDK 中，从 [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) 下载 |
-| OpenOCD／GDB 连接配置、板级自动测试脚本 `tools/board_test.sh`、崩溃转储主机端工具 | — | 片上调试、自动上板测试、读取 `==DUMP_READY:` 之后的内存 | 未包含在 V2.2.0 中，请联系 INTELPRO |
-| `tools/kconfig/menuconfig.py`、`configs/` 默认配置目录、OTA 签名用的 `ota_products.py` | — | `make menuconfig`、`make defconfig`、`create_ota.py --sign-key` | 未包含在 V2.2.0 中 |
+| OpenOCD／GDB 连接配置、板级自动测试脚本 `tools/board_test.sh`、崩溃转储主机端工具 | — | 片上调试、自动上板测试、读取 `==DUMP_READY:` 之后的内存 | 未包含在 V2.2.1 中，请联系 INTELPRO |
+| `tools/kconfig/menuconfig.py`、`configs/` 默认配置目录、OTA 签名用的 `ota_products.py` | — | `make menuconfig`、`make defconfig`、`create_ota.py --sign-key` | 未包含在 V2.2.1 中 |
 
 本版本没有通过 JTAG／GDB 进行片上调试的配置与步骤；调试以串口控制台、日志与离线的 `addr2line` 为主，见[调试与故障排除](debugging.md)。
 
@@ -138,7 +138,7 @@ export IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos
 
 ## IntelProCube 烧录工具 { #flash-tool }
 
-烧录使用 IntelProCube 的命令行工具。它未包含在 V2.2.0 中，从 [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) 下载 0.7.0.1，安装方法见[准备开发环境](../get-started/environment.md#intelprocube)。工具从自己的 `chips/` 目录读取芯片文件，请在 IntelProCube 目录下运行。下表根据 SDK 内的 README 与脚本整理，完整选项以工具本身为准。
+烧录使用 IntelProCube 的命令行工具。它未包含在 V2.2.1 中，从 [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) 下载 0.7.0.1，安装方法见[准备开发环境](../get-started/environment.md#intelprocube)。工具从自己的 `chips/` 目录读取芯片文件，请在 IntelProCube 目录下运行。下表根据 SDK 内的 README 与脚本整理，完整选项以工具本身为准。
 
 | 选项 | 说明 |
 |---|---|
@@ -217,7 +217,7 @@ python3 tools/create_ota.py <whole_img.bin> [--raw] [-o OUTPUT] [--hw-ver STR] [
 | `-o, --output` | 输出文件 |
 | `--hw-ver` | 写入头部的硬件版本字符串；请明确指定，不要依赖默认值 |
 | `--fw-ver` | 写入头部的固件版本字符串（默认 `OTA_V1.0.0`） |
-| `--sign-key`、`--product` 等签名选项 | 需要未随附的 `ota_products.py`，V2.2.0 中无法使用 |
+| `--sign-key`、`--product` 等签名选项 | 需要未随附的 `ota_products.py`，V2.2.1 中无法使用 |
 
 在 Reef 上，`ipro_ble_remote` 的 `make_reef_ota.sh` 会代为调用工具的 `--build` 与本脚本，见 [Reef 应用的主机端工具](#reef-tools)。OTA 的整体流程见 [OTA 更新](../guides/ota.md)。
 
@@ -258,7 +258,7 @@ python3 apps/ai/ipro_reef_teach/mfg_payload.py \
 
 | 工具 | 命令 | 结果 |
 |---|---|---|
-| `make_reef_ota.sh` | `IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh` | 先以 `DEFCONFIG=defconfig_reef` 构建；生成 `build_reef/build_out/ipro_ble_remote_reef.xz.ota`（约 345 KB）。V2.2.0 的脚本写的是 boot2 v0.5.2 的路径，先按 [OTA 更新](../guides/ota.md#hands-on)第 4 步改成 v0.6.0 |
+| `make_reef_ota.sh` | `IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh` | 先以 `DEFCONFIG=defconfig_reef` 构建；生成 `build_reef/build_out/ipro_ble_remote_reef.xz.ota`（约 345 KB）。boot2 使用 IntelProCube 文件夹里最新的版本，或 `IPRO_BOOT2` 指定的文件 |
 | `reef_ota.py` | `.venv/bin/python apps/bluetooth/ble/ipro_ble_remote/tools/reef_ota.py <升级包.xz.ota>` | 通过 BLE（bleak）把升级包传给名为 `IPRO-Remote` 的开发板，打印进度与状态 |
 | `reef_ble_test.py` | `.venv/bin/python apps/bluetooth/ble/ipro_ble_remote/tools/reef_ble_test.py` | 以 bleak 作为 central 测试 Reef 的 GATT 服务（`info led env sound tone img`；`keys`、`motion` 需要有人操作），拍摄的 JPEG 保存在脚本所在目录 |
 | `ipro_remote_demo.apk` | 安装到 Android 手机 | `ipro_ble_remote` 的演示 App，可推送 `.xz.ota` 升级包 |

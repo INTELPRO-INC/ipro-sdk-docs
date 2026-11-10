@@ -79,7 +79,7 @@ python3 <SDK>/tools/create_ota.py chips/ipro7/img_create_iot/whole_img.bin \
 | `--raw` | 不压缩。未指定 `-o` 时，输出文件名是把输入文件名的扩展名换成 `.ota`（`--raw`）或 `.xz.ota` |
 | `-o FILE` | 输出文件 |
 | `--hw-ver`、`--fw-ver` | 写入头部的硬件与固件版本字符串（各最多 15 个字符）。boot2 不检查硬件版本 |
-| `--sign-key`、`--product`、`--hw-id`、`--fw-version`、`--force-version`、`--key-id` | 用于签名 OTA 包。需要 V2.2.0 未包含的 `tools/ota_products.py`，因此无法使用 |
+| `--sign-key`、`--product`、`--hw-id`、`--fw-version`、`--force-version`、`--key-id` | 用于签名 OTA 包。需要 V2.2.1 未包含的 `tools/ota_products.py`，因此无法使用 |
 
 | 头部偏移 | 内容 |
 |---|---|
@@ -91,7 +91,7 @@ python3 <SDK>/tools/create_ota.py chips/ipro7/img_create_iot/whole_img.bin \
 | 96–511 | 保留（0xFF）；签名 OTA 包在此存放签名块 |
 | 512 起 | 内容（XZ，字典 32 KB，与 boot2 解码器一致） |
 
-Reef 可用 `apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh` 一次完成上述两步，并以构建时间作为固件版本，见[在 Reef 上动手实践](#hands-on)。V2.2.0 的脚本写的是 boot2 v0.5.2 的路径，使用前要先改成 IntelProCube 0.7.0 起附带的 v0.6.0（第 4 步的第一行）。
+Reef 可用 `apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh` 一次完成上述两步，并以构建时间作为固件版本，见[在 Reef 上动手实践](#hands-on)。脚本会使用 IntelProCube 文件夹里最新的 boot2（0.7.0.1 为 v0.6.0）。
 
 ## BLE OTA（ipro_ble_remote） { #ble-ota }
 
@@ -196,10 +196,9 @@ CONFIG_IPRO_BLE_REMOTE_OTA=y
 
 4. **修改代码并生成 OTA 包**
 
-    做任何修改后用同一条 `make` 命令重新构建，再把新版本打包。SDK V2.2.0 的打包脚本写的是 boot2 v0.5.2 的路径，IntelProCube 0.7.0 起附带的是 v0.6.0，所以第一行先把脚本里的版本改成 v0.6.0（重复运行没有影响）。Linux 用 `sed -i`（不加 `''`）与 `ipro_iot_tool_linux`：
+    做任何修改后用同一条 `make` 命令重新构建，再把新版本打包。打包脚本会使用 IntelProCube 文件夹里最新的 boot2（0.7.0.1 为 v0.6.0），并打印所用的文件。Linux 用 `ipro_iot_tool_linux`：
 
     ```bash
-    sed -i '' 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
     IPRO_FLASH_TOOL=<ICUBE>/ipro_iot_tool_macos \
         sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
     ```
@@ -254,11 +253,11 @@ CONFIG_IPRO_BLE_REMOTE_OTA=y
 
 ## Zephyr：MCUboot 与 MCUmgr { #zephyr-mcuboot }
 
-Zephyr 镜像不使用 boot2 OTA 包，而是经 MCUboot 更新：boot2 启动 MCUboot，由 MCUboot 从 `slot1_partition` 以 swap-move 方式换入新镜像。示例 `zephyr/samples/ble_ota` 通过 MCUmgr SMP 经 BLE 上传镜像。V2.2.0 的 Zephyr 只有 IPRO7 EVB 与 IPRO7AI EVK 的开发板定义，没有 Reef；构建与烧录见 [Zephyr RTOS](zephyr.md)。
+Zephyr 镜像不使用 boot2 OTA 包，而是经 MCUboot 更新：boot2 启动 MCUboot，由 MCUboot 从 `slot1_partition` 以 swap-move 方式换入新镜像。示例 `zephyr/samples/ble_ota` 通过 MCUmgr SMP 经 BLE 上传镜像。V2.2.1 的 Zephyr 只有 IPRO7 EVB 与 IPRO7AI EVK 的开发板定义，没有 Reef；构建与烧录见 [Zephyr RTOS](zephyr.md)。
 
 ## 本版本的限制 { #limitations }
 
-- 签名 OTA 包（`create_ota.py --sign-key`）所需的 `tools/ota_products.py` 未包含在 V2.2.0 中。
+- 签名 OTA 包（`create_ota.py --sign-key`）所需的 `tools/ota_products.py` 未包含在 V2.2.1 中。
 - BLE OTA 的参考流程是 `ipro_ble_remote` 的 `defconfig_reef`；`ipro_ble_remote` 的默认构建不含 OTA。
 - 没有经 Wi-Fi 或 Ethernet 更新 IPRO7 固件的示例；`ipro6s_ota` 只更新 IPRO6S FIN 卡。
 - `build_freertos.sh flash` 无法指定 boot2 镜像；支持 OTA 的镜像首次烧录请按上文使用 IntelProCube 命令行。

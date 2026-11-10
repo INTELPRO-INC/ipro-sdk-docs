@@ -86,6 +86,6 @@ migrate_from: []
 
     ---
 
-    Extension 3.3.0 配合 SDK V2.2.0：构建、烧录 Reef、串口监视与内存分析。
+    Extension 3.3.0 配合 SDK V2.2.1：构建、烧录 Reef、串口监视与内存分析。
 
 </div>

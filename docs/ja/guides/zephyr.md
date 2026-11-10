@@ -18,7 +18,7 @@ migrate_from:
 IPRO SDK は Zephyr v4.4.0 のモジュールでもあります。SDK の HAL と SoC ドライバーが Zephyr のデバイスドライバー API の背後にあるため、FreeRTOS の代わりに Zephyr でアプリケーションを作成できます。このページは Zephyr 側のリファレンスで、ボード、ワークスペース、`west` によるビルドと書き込み、サンプル、制限事項を扱います。FreeRTOS アプリケーションとそのビルドは変わりません。
 
 !!! abstract "要点"
-    - ボード：`ipro7_evb`（IPRO7 EVB）と `ipro7ai_evk`（IPRO7AI EVK）。**V2.2.0 には IPRO7AI Reef EVK 用の Zephyr ボード定義がありません**。Reef では FreeRTOS アプリケーションを使用してください。
+    - ボード：`ipro7_evb`（IPRO7 EVB）と `ipro7ai_evk`（IPRO7AI EVK）。**V2.2.1 には IPRO7AI Reef EVK 用の Zephyr ボード定義がありません**。Reef では FreeRTOS アプリケーションを使用してください。
     - 利用できるもの：一般的な周辺機能のドライバー、BLE（ビルド済みの IPRO BLE コントローラー上の Zephyr ホスト）、OpenThread を使う IEEE 802.15.4、MCUboot と BLE 経由の MCUmgr による更新。
     - 利用できないもの：低消費電力モード、カメラ、オーディオコーデック、USB、SD ホスト、イーサネット、NPU の Zephyr ドライバー。
     - コンソール：UART0、2,000,000 baud。ホストに必要なもの：venv を使える Python 3、git、GitHub へのネットワークアクセス、CMake 3.20 以降。
@@ -50,7 +50,7 @@ Zephyr ドライバーは SDK の HAL を呼び出し、HAL は `bsp/` から直
 - `ipro6s_evb` のボードファイルは SDK に同梱されていますが、本リリースでは IPRO6S は Zephyr でサポートされていません。
 
 !!! info "IPRO7AI Reef EVK"
-    V2.2.0 には Reef 用の Zephyr ボードも、Reef のカメラ、オーディオ、LED、microSD ソケットの devicetree もありません。本リリースでは、Reef での Zephyr イメージの動作は検証されていません。Reef で Zephyr が必要な場合は、INTELPRO にお問い合わせください。
+    V2.2.1 には Reef 用の Zephyr ボードも、Reef のカメラ、オーディオ、LED、microSD ソケットの devicetree もありません。本リリースでは、Reef での Zephyr イメージの動作は検証されていません。Reef で Zephyr が必要な場合は、INTELPRO にお問い合わせください。
 
 ## ワークスペース { #workspace }
 

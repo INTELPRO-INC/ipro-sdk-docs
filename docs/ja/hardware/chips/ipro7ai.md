@@ -31,7 +31,7 @@ Reef 用の構成のうち、`ipro_reef_teach` と `ipro_agora_sentino` の `.co
 
 ## NPU と推論ランタイム { #architecture }
 
-推論ランタイムはビルド済みライブラリ `components/ai/lib/libai.a` として提供されます。公開ヘッダーは `components/ai/iproai_def.h` と、`components/ai/` 以下の各モジュールのヘッダーです。ランタイムのソースはパッケージに含まれていません。V2.2.0 の `components/ai` は IPRO Edge AI プラットフォーム V2.0 で、ランタイム、ツールごとに 1 スロットを持つモデルストア、入力ソース、前処理、アプリケーションフレームワークで構成されます。NPU の完了待ちには上限時間があり、タイムアウトすると NPU ブロックをリセットして安全なフォールト状態にします。CPU での推論には TensorFlow Lite Micro、NMSIS-NN、TinyMaix（`components/3rdparty/`）を使えます。
+推論ランタイムはビルド済みライブラリ `components/ai/lib/libai.a` として提供されます。公開ヘッダーは `components/ai/iproai_def.h` と、`components/ai/` 以下の各モジュールのヘッダーです。ランタイムのソースはパッケージに含まれていません。V2.2.1 の `components/ai` は IPRO Edge AI プラットフォーム V2.0 で、ランタイム、ツールごとに 1 スロットを持つモデルストア、入力ソース、前処理、アプリケーションフレームワークで構成されます。NPU の完了待ちには上限時間があり、タイムアウトすると NPU ブロックをリセットして安全なフォールト状態にします。CPU での推論には TensorFlow Lite Micro、NMSIS-NN、TinyMaix（`components/3rdparty/`）を使えます。
 
 ### AI を有効にする { #config }
 

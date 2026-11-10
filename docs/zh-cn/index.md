@@ -19,9 +19,9 @@ arch:
   chip_link_text: 芯片规格
   default: ipro7ai
   chips:
-    - { id: ipro7, name: IPRO7, sdk: V2.2.0, link: hardware/chips/ipro7/, desc: 支持 BLE 5.4 与 LE Audio、802.15.4、ISP 与 MJPEG 的 RISC-V 无线 SoC。 }
-    - { id: ipro7ai, name: IPRO7AI, sdk: V2.2.0, link: hardware/chips/ipro7ai/, desc: IPRO7 加上 NPU 与封装内 PSRAM；IPRO7AI Reef EVK V4.0 的主芯片。 }
-    - { id: ipro6s, name: IPRO6S, sdk: V2.2.0, link: hardware/chips/ipro6s/, desc: 内置 Wi-Fi 6 的 RISC-V SoC；在 Reef 上是插在 microSD 卡座中的 FIN Wi-Fi 卡。 }
+    - { id: ipro7, name: IPRO7, sdk: V2.2.1, link: hardware/chips/ipro7/, desc: 支持 BLE 5.4 与 LE Audio、802.15.4、ISP 与 MJPEG 的 RISC-V 无线 SoC。 }
+    - { id: ipro7ai, name: IPRO7AI, sdk: V2.2.1, link: hardware/chips/ipro7ai/, desc: IPRO7 加上 NPU 与封装内 PSRAM；IPRO7AI Reef EVK V4.0 的主芯片。 }
+    - { id: ipro6s, name: IPRO6S, sdk: V2.2.1, link: hardware/chips/ipro6s/, desc: 内置 Wi-Fi 6 的 RISC-V SoC；在 Reef 上是插在 microSD 卡座中的 FIN Wi-Fi 卡。 }
   layers:
     - name: 应用
       items:
@@ -96,7 +96,7 @@ SDK 也包含 IPRO7 EVB、IPRO7AI EVK 与 IPRO6S EVK 的应用，列在[示例](
 
 <div class="ipro-steps" markdown>
 
-1. **准备开发环境**：向 INTELPRO 获取 RISC-V 工具链，从 GitHub 下载 IntelProCube 0.7.0.1，安装 CMake 3.15 及以上版本、GNU make 与 Python 3.8 及以上版本，再从发布页下载 SDK V2.2.0。[安装说明](get-started/index.md)
+1. **准备开发环境**：向 INTELPRO 获取 RISC-V 工具链，从 GitHub 下载 IntelProCube 0.7.0.1，安装 CMake 3.15 及以上版本、GNU make 与 Python 3.8 及以上版本，再从发布页下载 SDK V2.2.1。[安装说明](get-started/index.md)
 2. **构建出厂固件**：在 SDK 根目录执行 `make -C apps/platform/ipro7ai_reef_demo`，镜像位于 `build/build_out/ipro7ai_reef_demo_IPRO7.bin`。
 3. **烧录并自检**：按住 SW1、按一下 SW2 进入下载模式，用 IntelProCube 烧录并确认 `[All Success]`；在 U6 控制台（115200 baud）输入 `reef selftest`，LED、扬声器、SD 卡与摄像头依次通过。[完整步骤](get-started/first-app-freertos.md)
 
@@ -136,8 +136,9 @@ SDK 也包含 IPRO7 EVB、IPRO7AI EVK 与 IPRO6S EVK 的应用，列在[示例](
 
 </div>
 
-## V2.2.0 重点 { #whats-new }
+## V2.2 重点 { #whats-new }
 
+- **V2.2.1**（2026-11-10）：没有出厂 MAC 地址的 IPRO6S（例如 IPRO6S EVK）也能启动 soft-AP；`make_reef_ota.sh` 会自行从公开版 IntelProCube 找到 boot2。见[发布说明](reference/release-notes.md#v2-2-1)。
 - **IPRO6S 应用回归**：`ipro6_demo`（Wi-Fi 6 station／soft-AP 与 DTIM 省电）、`ipro6_if_wifi`（通过 SDIO 或 USB 桥接到主机，也是 Reef FIN 卡的固件）与 `ipro6_fmac`（FullMAC 固件与 Flash 加载程序）。IPRO6S 应用只包含 Wi-Fi，本版本没有 IPRO6S 蓝牙。
 - **Edge AI 平台 V2.0 与 `ipro_reef_teach`**：一个 Reef 固件包含图像、声纹与传感器三个 Teach 工具，由 IPRO AI Studio 操作；IPRO AI Studio 可从 [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) 下载。
 - **新应用 `ipro7_jpeg_decode`**：用软件把 JPEG 解码为 RGB565／RGB888。`ipro7ai_reef_demo` 新增 `mic usb`（USB 麦克风）与 `mic sdrec`（录制 WAV 到 SD 卡）。

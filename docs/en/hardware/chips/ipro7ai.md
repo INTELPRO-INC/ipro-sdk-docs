@@ -31,7 +31,7 @@ Among the Reef configurations, the `.config` of `ipro_reef_teach` and `ipro_agor
 
 ## NPU and inference runtime { #architecture }
 
-The inference runtime ships as the prebuilt library `components/ai/lib/libai.a`; its public headers are `components/ai/iproai_def.h` and the headers of the modules under `components/ai/`. The runtime source is not in the package. In V2.2.0 `components/ai` is the IPRO Edge AI platform V2.0: runtime, a model store with one slot per tool, input sources, preprocessing and an application framework. Waits on the NPU are bounded; a timeout resets the NPU block and leaves it in a safe fault state. For inference on the CPU there are TensorFlow Lite Micro, NMSIS-NN and TinyMaix (`components/3rdparty/`).
+The inference runtime ships as the prebuilt library `components/ai/lib/libai.a`; its public headers are `components/ai/iproai_def.h` and the headers of the modules under `components/ai/`. The runtime source is not in the package. In V2.2.1 `components/ai` is the IPRO Edge AI platform V2.0: runtime, a model store with one slot per tool, input sources, preprocessing and an application framework. Waits on the NPU are bounded; a timeout resets the NPU block and leaves it in a safe fault state. For inference on the CPU there are TensorFlow Lite Micro, NMSIS-NN and TinyMaix (`components/3rdparty/`).
 
 ### Enable AI { #config }
 

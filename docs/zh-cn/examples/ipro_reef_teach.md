@@ -11,7 +11,7 @@ Reef 的 Edge AI 固件：一个镜像包含三个 Teach 工具，`image`（USB 
 
 | 项目 | 内容 |
 |---|---|
-| 源代码 | [`apps/ai/ipro_reef_teach`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/ai/ipro_reef_teach) |
+| 源代码 | [`apps/ai/ipro_reef_teach`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/ai/ipro_reef_teach) |
 | 开发板与配置 | Reef（`.config`）；`image` 模式需要 OV5640 摄像头 |
 | 控制台 | UART 115200 |
 | 构建 | `make -C apps/ai/ipro_reef_teach` |
@@ -60,7 +60,7 @@ Reef 的 Edge AI 固件：一个镜像包含三个 Teach 工具，`image`（USB 
 ## README { #readme }
 
 !!! note "README 原文"
-    以下是应用附带的 README（SDK V2.2.0），保留原文、未翻译；只替换了不适合公开的内容。
+    以下是应用附带的 README（SDK V2.2.1），保留原文、未翻译；只替换了不适合公开的内容。
 
 <!-- verbatim:start -->
 

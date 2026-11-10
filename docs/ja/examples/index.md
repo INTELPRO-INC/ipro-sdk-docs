@@ -1,6 +1,6 @@
 ---
 title: "サンプル"
-description: V2.2.0 の 40 個の FreeRTOS アプリケーションです。IPRO7AI Reef EVK で動作する 9 個にはそれぞれ手順ページがあり、その他は必要なボードを記載しています。
+description: V2.2.1 の 40 個の FreeRTOS アプリケーションです。IPRO7AI Reef EVK で動作する 9 個にはそれぞれ手順ページがあり、その他は必要なボードを記載しています。
 migrate_from:
   - "applications.html"
 not_migrated:
@@ -55,8 +55,8 @@ make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef
 <!-- BEGIN generated: examples-ble -->
 | アプリケーション | 用途 | ボードと設定 | コンソール |
 |---|---|---|---|
-| [`ipro_ble_transparent`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/bluetooth/ble/ipro_ble_transparent) | AT コマンド（USB CDC 経由）で設定する UART／BLE 透過ブリッジ | IPRO7 EVB が必要 | UART 115200 |
-| [`ipro_ble_hid_keyboard`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/bluetooth/ble/ipro_ble_hid_keyboard) | HID over GATT キーボード | IPRO7 EVB が必要 | UART 115200 |
+| [`ipro_ble_transparent`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/bluetooth/ble/ipro_ble_transparent) | AT コマンド（USB CDC 経由）で設定する UART／BLE 透過ブリッジ | IPRO7 EVB が必要 | UART 115200 |
+| [`ipro_ble_hid_keyboard`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/bluetooth/ble/ipro_ble_hid_keyboard) | HID over GATT キーボード | IPRO7 EVB が必要 | UART 115200 |
 <!-- END generated: examples-ble -->
 
 ### オーディオと音声 { #audio }
@@ -64,7 +64,7 @@ make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef
 <!-- BEGIN generated: examples-audio -->
 | アプリケーション | 用途 | ボードと設定 | コンソール |
 |---|---|---|---|
-| [`ipro_pdm_mic_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/multimedia/ipro_pdm_mic_demo) | PDM マイクによる収音、DAC 再生、BLE 経由の LC3 ストリーミング、SMP ペアリング、PDS31 スリープとボンディング済みデバイスへの再接続。Android コンパニオンアプリのソースは `tools/android/IproMicDemo/` にあります。Reef では `ipro7ai_reef_demo` の `mic` コマンドを使用します | IPRO7 EVB（`.config`）または IPRO7AI EVK（`make BOARD=evk`）が必要 | EVB：UART 115200<br>EVK：UART 921600 |
+| [`ipro_pdm_mic_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/multimedia/ipro_pdm_mic_demo) | PDM マイクによる収音、DAC 再生、BLE 経由の LC3 ストリーミング、SMP ペアリング、PDS31 スリープとボンディング済みデバイスへの再接続。Android コンパニオンアプリのソースは `tools/android/IproMicDemo/` にあります。Reef では `ipro7ai_reef_demo` の `mic` コマンドを使用します | IPRO7 EVB（`.config`）または IPRO7AI EVK（`make BOARD=evk`）が必要 | EVB：UART 115200<br>EVK：UART 921600 |
 <!-- END generated: examples-audio -->
 
 ### プラットフォームとボード { #platform }
@@ -72,9 +72,9 @@ make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef
 <!-- BEGIN generated: examples-platform -->
 | アプリケーション | 用途 | ボードと設定 | コンソール |
 |---|---|---|---|
-| [`ipro7_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro7_demo) | チップ全体のリファレンス：PWM、SPI、I2S、LCD、オーディオ ADC／DAC、USB デバイス（CDC、HID、MSC、UAC、UVC）、ファイルシステム、TRNG、DSP など。それぞれにシェルコマンドがあります | IPRO7 EVB が必要。`defconfig_boot2_nopsram`、`defconfig_boot2_ota`、`defconfig_nist_fulltest`、`defconfig_security_cert` もあります | UART 115200 |
-| [`ipro7ai_evk_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro7ai_evk_demo) | IPRO7AI EVK のブリングアップ：LCD、カメラ、マイク、スピーカー、SD カード。`config_bt` で BLE と LE Audio が加わります | IPRO7AI EVK が必要 | `.config`：UART 921600<br>`config_*`：UART 115200 |
-| [`ipro7ai_evk_launcher`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro7ai_evk_launcher) | カメラ、LCD、マイク、スピーカーを 1 つのイメージに統合し、NPU で認識したハンドジェスチャーでページを切り替えます | IPRO7AI EVK が必要 | UART 921600 |
+| [`ipro7_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/platform/ipro7_demo) | チップ全体のリファレンス：PWM、SPI、I2S、LCD、オーディオ ADC／DAC、USB デバイス（CDC、HID、MSC、UAC、UVC）、ファイルシステム、TRNG、DSP など。それぞれにシェルコマンドがあります | IPRO7 EVB が必要。`defconfig_boot2_nopsram`、`defconfig_boot2_ota`、`defconfig_nist_fulltest`、`defconfig_security_cert` もあります | UART 115200 |
+| [`ipro7ai_evk_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/platform/ipro7ai_evk_demo) | IPRO7AI EVK のブリングアップ：LCD、カメラ、マイク、スピーカー、SD カード。`config_bt` で BLE と LE Audio が加わります | IPRO7AI EVK が必要 | `.config`：UART 921600<br>`config_*`：UART 115200 |
+| [`ipro7ai_evk_launcher`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/platform/ipro7ai_evk_launcher) | カメラ、LCD、マイク、スピーカーを 1 つのイメージに統合し、NPU で認識したハンドジェスチャーでページを切り替えます | IPRO7AI EVK が必要 | UART 921600 |
 <!-- END generated: examples-platform -->
 
 ### AI と画像認識 { #ai-vision }
@@ -82,9 +82,9 @@ make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef
 <!-- BEGIN generated: examples-ai-vision -->
 | アプリケーション | 用途 | ボードと設定 | コンソール |
 |---|---|---|---|
-| [`ipro7ai_evk_person_detect`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/ai/ipro7ai_evk_person_detect) | カメラのプレビューを LCD に表示し、NPU で実行した YOLOv8 による人物／ペットの枠を重ねます | IPRO7AI EVK が必要 | UART 115200 |
-| [`ipro7ai_evk_rps`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/ai/ipro7ai_evk_rps) | NPU 上の int8 CNN とじゃんけん。モデルと学習スクリプト付き。Reef での同じゲームは `ipro7_uvc_cam` の `defconfig_reef_rps` です | IPRO7AI EVK が必要 | UART 921600 |
-| [`ipro_speaker_recog`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/ai/ipro_speaker_recog) | NPU による話者認識。モデルは mfg パーティションに格納します。Reef での話者認識は `ipro_reef_teach` の `voice` モードです | IPRO7 EVB が必要 | UART 921600 |
+| [`ipro7ai_evk_person_detect`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/ai/ipro7ai_evk_person_detect) | カメラのプレビューを LCD に表示し、NPU で実行した YOLOv8 による人物／ペットの枠を重ねます | IPRO7AI EVK が必要 | UART 115200 |
+| [`ipro7ai_evk_rps`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/ai/ipro7ai_evk_rps) | NPU 上の int8 CNN とじゃんけん。モデルと学習スクリプト付き。Reef での同じゲームは `ipro7_uvc_cam` の `defconfig_reef_rps` です | IPRO7AI EVK が必要 | UART 921600 |
+| [`ipro_speaker_recog`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/ai/ipro_speaker_recog) | NPU による話者認識。モデルは mfg パーティションに格納します。Reef での話者認識は `ipro_reef_teach` の `voice` モードです | IPRO7 EVB が必要 | UART 921600 |
 <!-- END generated: examples-ai-vision -->
 
 ### ネットワークと IPRO6S { #networking }
@@ -92,10 +92,10 @@ make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef
 <!-- BEGIN generated: examples-networking -->
 | アプリケーション | 用途 | ボードと設定 | コンソール |
 |---|---|---|---|
-| [`ipro7_sdio_wifi`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro7_sdio_wifi) | IPRO7 を SDIO ホスト、IPRO6S を Wi-Fi 無線として使用し、lwIP ネットワークインターフェース `iproeth0` と DHCP を提供します。Reef での同じ機能は `ipro7ai_reef_demo` の `defconfig_wifi_ipro6s` です | IPRO7 EVB と IPRO6S が必要 | UART 115200 |
-| [`ipro6_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro6_demo) | シェル付きの IPRO6S Wi-Fi 6 station／soft-AP。`defconfig_ipro6_lpwifi` で DTIM 省電力が加わり、`defconfig_ipro6_lp` は低消費電力のデモです | IPRO6S EVK が必要（[IPRO6S](../hardware/chips/ipro6s.md) を参照） | UART 115200 |
-| [`ipro6_if_wifi`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro6_if_wifi) | SDIO（`defconfig_ipro6_sdio`。Reef の FIN カードのファームウェアでもあります）または USB（`defconfig_ipro6_usb`）でホストに接続する IPRO6S Wi-Fi 6 ブリッジ | IPRO6S EVK、FIN カード（`defconfig_ipro6_sdio`。`--chipname ipro6` で書き込み。[IPRO6S](../hardware/chips/ipro6s.md) を参照） | UART 115200 |
-| [`ipro6_fmac`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro6_fmac) | Linux cfg80211 ホスト向けの FullMAC ファームウェア（`defconfig_ipro6_fmac`）とその Flash ローダー（`defconfig_ipro6_fmac_loader`）。Linux ドライバーは SDK に含まれません | IPRO6S EVK が必要 | UART 115200 |
+| [`ipro7_sdio_wifi`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/platform/ipro7_sdio_wifi) | IPRO7 を SDIO ホスト、IPRO6S を Wi-Fi 無線として使用し、lwIP ネットワークインターフェース `iproeth0` と DHCP を提供します。Reef での同じ機能は `ipro7ai_reef_demo` の `defconfig_wifi_ipro6s` です | IPRO7 EVB と IPRO6S が必要 | UART 115200 |
+| [`ipro6_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/platform/ipro6_demo) | シェル付きの IPRO6S Wi-Fi 6 station／soft-AP。`defconfig_ipro6_lpwifi` で DTIM 省電力が加わり、`defconfig_ipro6_lp` は低消費電力のデモです | IPRO6S EVK が必要（[IPRO6S](../hardware/chips/ipro6s.md) を参照） | UART 115200 |
+| [`ipro6_if_wifi`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/platform/ipro6_if_wifi) | SDIO（`defconfig_ipro6_sdio`。Reef の FIN カードのファームウェアでもあります）または USB（`defconfig_ipro6_usb`）でホストに接続する IPRO6S Wi-Fi 6 ブリッジ | IPRO6S EVK、FIN カード（`defconfig_ipro6_sdio`。`--chipname ipro6` で書き込み。[IPRO6S](../hardware/chips/ipro6s.md) を参照） | UART 115200 |
+| [`ipro6_fmac`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/platform/ipro6_fmac) | Linux cfg80211 ホスト向けの FullMAC ファームウェア（`defconfig_ipro6_fmac`）とその Flash ローダー（`defconfig_ipro6_fmac_loader`）。Linux ドライバーは SDK に含まれません | IPRO6S EVK が必要 | UART 115200 |
 <!-- END generated: examples-networking -->
 
 IPRO6S アプリケーションは `--chipname ipro6` で書き込みます。ビルドと設定は [IPRO6S](../hardware/chips/ipro6s.md) のページにあります。
@@ -105,24 +105,24 @@ IPRO6S アプリケーションは `--chipname ipro6` で書き込みます。�
 <!-- BEGIN generated: examples-test-apps -->
 | アプリケーション | 用途 | ボードと設定 | コンソール |
 |---|---|---|---|
-| [`ipro_unit_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_unit_test) | HAL と共通コンポーネントのユニットテスト。最後に `ALL TESTS PASSED` または `SOME TESTS FAILED` を表示します | IPRO7 EVB が必要 | UART 115200 |
-| [`ipro_ai_bench`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_ai_bench) | モデル全体の推論時間の NPU と CPU での比較 | IPRO7 EVB が必要 | UART 115200 |
-| [`ipro_npu_yolo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_npu_yolo) | NPU による YOLOv8 の人物／ペット検出 | IPRO7 EVB が必要 | UART 115200 |
-| [`ipro_tflm_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_tflm_test) | NMSIS-NN カーネルを使用した TensorFlow Lite Micro のモデルベンチマーク | IPRO7 EVB が必要 | UART 115200 |
-| [`ipro_tflm_yolo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_tflm_yolo) | TensorFlow Lite Micro による CPU 上での YOLOv8 | IPRO7 EVB が必要 | UART 115200 |
-| [`ipro_nmsis_nn_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_nmsis_nn_test) | NMSIS-NN 演算子のテスト | IPRO7 EVB が必要 | UART 115200 |
-| [`ipro_tinymaix_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_tinymaix_demo) | TinyMaix INT8 MNIST 推論（`nn_info`、`nn_run`、`nn_benchmark`） | IPRO7 EVB が必要 | UART 115200 |
-| [`ipro_gh7007_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_gh7007_test) | GH7007 5 インチ SPI LCD のブリングアップ | IPRO7 EVB が必要 | USB CDC |
-| [`ipro_gh7007_video`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_gh7007_video) | SD カードの動画を GH7007 パネルで再生します | IPRO7 EVB が必要 | USB CDC |
-| [`ipro_epd_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_epd_test) | GDEY0213F52 2.13 インチ電子ペーパーのブリングアップ | IPRO7 EVB が必要 | UART 115200 |
-| [`ipro_epd_el036`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_epd_el036) | EL036MF1 電子ペーパーのブリングアップ | IPRO7 EVB が必要 | UART 921600 |
-| [`kw307_radar_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/kw307_radar_test) | UART 接続の KW307 24 GHz レーダーモジュール | IPRO7AI EVK が必要 | UART 115200 |
-| [`mpu6500_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/mpu6500_test) | I2C 接続の MPU-6500 IMU（`mpu_init`、`mpu_read`、`mpu_stream`） | IPRO7 EVB が必要 | UART 115200 |
-| [`ipro_enc28j60_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_enc28j60_test) | ENC28J60 SPI イーサネットのブリングアップ。生フレームを送受信します | IPRO7 Arduino ボードが必要 | USB CDC |
-| [`ipro_pio_sdh_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_pio_sdh_test) | ソフトウェア（PIO）SD ホストとハードウェア SDH を同時にマウントしたファイルシステムテスト | IPRO7 EVB が必要 | USB CDC |
-| [`ipro_sdio_probe`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_sdio_probe) | SDIO ホストの基本テスト | IPRO7 EVB が必要 | UART 115200 |
-| [`ipro_atbm_probe`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_atbm_probe) | ATBM6162 SDIO Wi-Fi モジュールのブリングアッププローブ | IPRO7 EVB が必要 | UART 115200 |
-| [`ipro_lp_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_lp_test) | PDS31 への移行と復帰、RTC ウェイクアップのテスト（`lp` コマンド） | IPRO7 EVB が必要 | UART 115200 |
+| [`ipro_unit_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_unit_test) | HAL と共通コンポーネントのユニットテスト。最後に `ALL TESTS PASSED` または `SOME TESTS FAILED` を表示します | IPRO7 EVB が必要 | UART 115200 |
+| [`ipro_ai_bench`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_ai_bench) | モデル全体の推論時間の NPU と CPU での比較 | IPRO7 EVB が必要 | UART 115200 |
+| [`ipro_npu_yolo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_npu_yolo) | NPU による YOLOv8 の人物／ペット検出 | IPRO7 EVB が必要 | UART 115200 |
+| [`ipro_tflm_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_tflm_test) | NMSIS-NN カーネルを使用した TensorFlow Lite Micro のモデルベンチマーク | IPRO7 EVB が必要 | UART 115200 |
+| [`ipro_tflm_yolo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_tflm_yolo) | TensorFlow Lite Micro による CPU 上での YOLOv8 | IPRO7 EVB が必要 | UART 115200 |
+| [`ipro_nmsis_nn_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_nmsis_nn_test) | NMSIS-NN 演算子のテスト | IPRO7 EVB が必要 | UART 115200 |
+| [`ipro_tinymaix_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_tinymaix_demo) | TinyMaix INT8 MNIST 推論（`nn_info`、`nn_run`、`nn_benchmark`） | IPRO7 EVB が必要 | UART 115200 |
+| [`ipro_gh7007_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_gh7007_test) | GH7007 5 インチ SPI LCD のブリングアップ | IPRO7 EVB が必要 | USB CDC |
+| [`ipro_gh7007_video`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_gh7007_video) | SD カードの動画を GH7007 パネルで再生します | IPRO7 EVB が必要 | USB CDC |
+| [`ipro_epd_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_epd_test) | GDEY0213F52 2.13 インチ電子ペーパーのブリングアップ | IPRO7 EVB が必要 | UART 115200 |
+| [`ipro_epd_el036`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_epd_el036) | EL036MF1 電子ペーパーのブリングアップ | IPRO7 EVB が必要 | UART 921600 |
+| [`kw307_radar_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/kw307_radar_test) | UART 接続の KW307 24 GHz レーダーモジュール | IPRO7AI EVK が必要 | UART 115200 |
+| [`mpu6500_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/mpu6500_test) | I2C 接続の MPU-6500 IMU（`mpu_init`、`mpu_read`、`mpu_stream`） | IPRO7 EVB が必要 | UART 115200 |
+| [`ipro_enc28j60_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_enc28j60_test) | ENC28J60 SPI イーサネットのブリングアップ。生フレームを送受信します | IPRO7 Arduino ボードが必要 | USB CDC |
+| [`ipro_pio_sdh_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_pio_sdh_test) | ソフトウェア（PIO）SD ホストとハードウェア SDH を同時にマウントしたファイルシステムテスト | IPRO7 EVB が必要 | USB CDC |
+| [`ipro_sdio_probe`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_sdio_probe) | SDIO ホストの基本テスト | IPRO7 EVB が必要 | UART 115200 |
+| [`ipro_atbm_probe`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_atbm_probe) | ATBM6162 SDIO Wi-Fi モジュールのブリングアッププローブ | IPRO7 EVB が必要 | UART 115200 |
+| [`ipro_lp_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_lp_test) | PDS31 への移行と復帰、RTC ウェイクアップのテスト（`lp` コマンド） | IPRO7 EVB が必要 | UART 115200 |
 <!-- END generated: examples-test-apps -->
 
 ## 次のステップ { #next-steps }

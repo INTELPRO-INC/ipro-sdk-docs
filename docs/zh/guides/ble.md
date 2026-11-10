@@ -4,8 +4,8 @@ description: 以 Zephyr v4.4.0 BLE Host 與 IPRO BLE 控制器（預編譯函式
 migrate_from:
   - "ble-development.html"
 not_migrated:
-  - "ble-development.html#app-framework — V2.2.0 沒有 Mediator／Applet 應用框架"
-  - "ble-development.html#ipro6s-btdm — V2.2.0 不含 IPRO6S 的 BLE 控制器"
+  - "ble-development.html#app-framework — V2.2.1 沒有 Mediator／Applet 應用框架"
+  - "ble-development.html#ipro6s-btdm — V2.2.1 不含 IPRO6S 的 BLE 控制器"
 ---
 
 # BLE 開發
@@ -17,7 +17,7 @@ FreeRTOS 應用的 BLE 由兩部分組成：Zephyr v4.4.0 的 BLE Host（原始�
     - 控制器：16 個 IPRO7 封存檔，`link1_periph`／`link1`／`link2`／`link4` × `bt52`／`bt54_iso2` × 除錯版／release 版，由 `CONFIG_IPRO_BLE_CTLR_LIB`、`CONFIG_IPRO_BLE_CTLR_FEATURE`、`CONFIG_IPRO_BLE_CTLR_CFG_DBG` 選擇。
     - 初始化順序：`ipro_ble_ctlr_controller_init()` → `hci_driver_ipro_ble_ctlr_init()` → `bt_enable()`。
     - Reef 的 BLE 組態：`ipro_ble_remote`、`ipro_throughput_test`、`ipro_le_audio_headset` 加 `DEFCONFIG=defconfig_reef`，以及 `ipro_agora_sentino`（BLE 配網）。
-    - 未包含於 V2.2.0：控制器原始碼、PAwR／ESL 應用、IPRO6S 的 BLE 控制器。
+    - 未包含於 V2.2.1：控制器原始碼、PAwR／ESL 應用、IPRO6S 的 BLE 控制器。
 
 ## 協定堆疊架構 { #stack-architecture }
 
@@ -51,7 +51,7 @@ CONFIG_BT_HOST_IPRO_V44=y
 
 缺少 `CONFIG_BT_CTLR_IPRO` 或 `CONFIG_BT_HOST_IPRO_V44` 時，建置在 CMake 設定階段就會停止。Host 與控制器元件會匯出自己的 include 路徑，應用的 `CMakeLists.txt` 不需要另外加入 `zephyr/bluetooth/*.h` 的路徑。
 
-Zephyr RTOS 映像使用 Zephyr 本身的 Host，搭配同一組控制器封存檔；V2.2.0 的 Zephyr 只有 IPRO7 EVB 與 IPRO7AI EVK 的板子定義，見 [Zephyr RTOS](zephyr.md)。
+Zephyr RTOS 映像使用 Zephyr 本身的 Host，搭配同一組控制器封存檔；V2.2.1 的 Zephyr 只有 IPRO7 EVB 與 IPRO7AI EVK 的板子定義，見 [Zephyr RTOS](zephyr.md)。
 
 ## 控制器選擇 { #controller-variants }
 
@@ -78,7 +78,7 @@ Zephyr RTOS 映像使用 Zephyr 本身的 Host，搭配同一組控制器封存�
 
 `CONFIG_BT_CONN`（Host 的連線數）不可超過封存檔的連線數。Exchange Memory 從 OCRAM 頂端保留，見[記憶體配置](build-system.md#memory-layout)。
 
-V2.2.0 隨附的 Reef 組態可作為起點：
+V2.2.1 隨附的 Reef 組態可作為起點：
 
 | 應用與組態 | LIB | FEATURE | 除錯版封存檔 | `CONFIG_BT_CONN` | `CONFIG_EM_SIZE` |
 |---|---|---|---|---|---|
@@ -420,17 +420,17 @@ LE Audio 需要 `CONFIG_IPRO_BLE_CTLR_FEATURE="bt54_iso2"` 與 `CONFIG_EM_SIZE=3
 
 - `ipro_ble_remote` 的 `defconfig_reef` 不使用 PDS：Reef 由 USB 供電，相機與音訊也需要時脈。
 - 控制器的 PDS 睡眠只接受 16 KB EM 的配置；`bt54_iso2`（32 KB EM）組態下控制器保留原生睡眠，但不進入 PDS。
-- `CONFIG_IPRO_PM_BLE` 與 `CONFIG_IPRO_PM_PDS_CONNECTED` 會強制從原始碼建置控制器，V2.2.0 無法建置，見[本版限制](#limitations)。
+- `CONFIG_IPRO_PM_BLE` 與 `CONFIG_IPRO_PM_PDS_CONNECTED` 會強制從原始碼建置控制器，V2.2.1 無法建置，見[本版限制](#limitations)。
 - BLE 搭配 PDS31 睡眠與配對後重新連線的範例是 `ipro_pdm_mic_demo`，屬於 IPRO7 EVB／IPRO7AI EVK。
 
 睡眠模式、喚醒來源與量測方法見[低功耗](low-power.md)。
 
 ## 本版限制 { #limitations }
 
-- 控制器只以預編譯函式庫提供，V2.2.0 不含其原始碼。以下設定需要從原始碼建置控制器，會讓建置停止：`CONFIG_IPRO_BLE_CTLR_FORCE_SOURCE_BUILD`、`CONFIG_IPRO_BLE_CTLR_SUBRATING`、`CONFIG_IPRO_BLE_CTLR_CSSA`、`CONFIG_IPRO_PM_BLE`、`CONFIG_IPRO_PM_PDS_CONNECTED`。
-- PAwR 與 ESL：Host 標頭含週期性廣播相關 API，但沒有 PAwR／ESL 應用。未包含於 V2.2.0，請洽 INTELPRO。
+- 控制器只以預編譯函式庫提供，V2.2.1 不含其原始碼。以下設定需要從原始碼建置控制器，會讓建置停止：`CONFIG_IPRO_BLE_CTLR_FORCE_SOURCE_BUILD`、`CONFIG_IPRO_BLE_CTLR_SUBRATING`、`CONFIG_IPRO_BLE_CTLR_CSSA`、`CONFIG_IPRO_PM_BLE`、`CONFIG_IPRO_PM_PDS_CONNECTED`。
+- PAwR 與 ESL：Host 標頭含週期性廣播相關 API，但沒有 PAwR／ESL 應用。未包含於 V2.2.1，請洽 INTELPRO。
 - `ipro_ble_remote` 的 OTA 服務只在 `defconfig_reef` 開啟；預設 `.config` 建置的是不含 OTA 的 IPRO7 EVB 映像。
-- V2.2.0 不含 IPRO6S 的 BLE 控制器；本套件中的 IPRO6S 應用只有 Wi-Fi。
+- V2.2.1 不含 IPRO6S 的 BLE 控制器；本套件中的 IPRO6S 應用只有 Wi-Fi。
 
 ## 參考應用 { #reference-apps }
 

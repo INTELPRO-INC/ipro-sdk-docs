@@ -11,7 +11,7 @@ USB 網路攝影機：OV5640、ISP、硬體 MJPEG、USB Video Class；另一個 
 
 | 項目 | 內容 |
 |---|---|
-| 原始碼 | [`apps/multimedia/ipro7_uvc_cam`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/multimedia/ipro7_uvc_cam) |
+| 原始碼 | [`apps/multimedia/ipro7_uvc_cam`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/multimedia/ipro7_uvc_cam) |
 | 板卡與設定 | Reef（`defconfig_reef_ov5640`：網路攝影機；`defconfig_reef_rps`：剪刀石頭布）；`.config` 為 IPRO7 EVB 搭配 SC101IOT |
 | 主控台 | Reef：UART 115200<br>`.config`：UART 921600 |
 | 建置 | Reef：`make -C apps/multimedia/ipro7_uvc_cam DEFCONFIG=defconfig_reef_ov5640`（或 `defconfig_reef_rps`） |
@@ -49,7 +49,7 @@ SW7 必須在 CAM。
 ## README { #readme }
 
 !!! note "README 原文"
-    以下是應用隨附的 README（SDK V2.2.0），保留原文、未翻譯；只替換了不適合公開的內容。
+    以下是應用隨附的 README（SDK V2.2.1），保留原文、未翻譯；只替換了不適合公開的內容。
 
 <!-- verbatim:start -->
 

@@ -95,7 +95,7 @@ How IPRO7 reaches a network, and the IPRO6S applications on the other end of the
 ## Directory layout { #directory }
 
 ```text
-IPRO-SDK-V2.2.0/
+IPRO-SDK-V2.2.1/
 ├── apps/                    FreeRTOS applications (40)
 │   ├── ai/                  NPU and Edge AI applications
 │   ├── bluetooth/ble/       BLE examples

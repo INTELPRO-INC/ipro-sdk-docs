@@ -11,7 +11,7 @@ IPRO AI Studio の「Run on board」用ボード側ファームウェア：micro
 
 | 項目 | 内容 |
 |---|---|
-| ソースコード | [`apps/test/ipro_ai_link`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_ai_link) |
+| ソースコード | [`apps/test/ipro_ai_link`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_ai_link) |
 | ボードと設定 | Reef（`defconfig_reef`）、`.config` は IPRO7 EVB 用 |
 | コンソール | UART 115200（USB CDC ポートでも使用可） |
 | ビルド | Reef：`make -C apps/test/ipro_ai_link DEFCONFIG=defconfig_reef` |

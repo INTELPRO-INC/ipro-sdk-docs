@@ -11,7 +11,7 @@ Sentino 雲端 AI 語音對話：BLE 配網、經 IPRO6S FIN 卡連 Wi-Fi、MQTT
 
 | 項目 | 內容 |
 |---|---|
-| 原始碼 | [`apps/multimedia/ipro_agora_sentino`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/multimedia/ipro_agora_sentino) |
+| 原始碼 | [`apps/multimedia/ipro_agora_sentino`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/multimedia/ipro_agora_sentino) |
 | 板卡與設定 | Reef＋IPRO6S FIN 卡（`.config`，`make` 或 `make BOARD=reef`）；`BOARD=evk` 為 IPRO7AI EVK（可建置，未經板上驗證） |
 | 主控台 | Reef：UART 115200 |
 | 建置 | `make -C apps/multimedia/ipro_agora_sentino` |
@@ -57,7 +57,7 @@ Sentino 雲端 AI 語音對話：BLE 配網、經 IPRO6S FIN 卡連 Wi-Fi、MQTT
 ## README { #readme }
 
 !!! note "README 原文"
-    以下是應用隨附的 README（SDK V2.2.0），保留原文、未翻譯；只替換了不適合公開的內容。
+    以下是應用隨附的 README（SDK V2.2.1），保留原文、未翻譯；只替換了不適合公開的內容。
 
 <!-- verbatim:start -->
 
@@ -67,7 +67,7 @@ Sentino 雲端 AI 語音對話：BLE 配網、經 IPRO6S FIN 卡連 Wi-Fi、MQTT
 2. 裝置經插在卡槽的 IPRO6S FIN 連上 Wi-Fi，登入 Sentino 雲端（MQTT）。
 3. 雲端配發 Agora RTC 存取權，裝置加入頻道；PDM 麥克風收音、DAC 喇叭播放，與 AI 即時語音對話。
 
-程式模組與資料流見 [ARCHITECTURE.md](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.0/apps/multimedia/ipro_agora_sentino/ARCHITECTURE.md)。
+程式模組與資料流見 [ARCHITECTURE.md](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.1/apps/multimedia/ipro_agora_sentino/ARCHITECTURE.md)。
 
 ### 需要準備
 

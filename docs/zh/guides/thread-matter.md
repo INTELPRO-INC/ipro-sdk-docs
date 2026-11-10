@@ -13,8 +13,8 @@ Thread 在 Zephyr RTOS 下使用 IPRO7 的 IEEE 802.15.4 無線電，由 Zephyr 
 
 !!! abstract "重點"
     - **Thread**：只在 Zephyr RTOS 下提供，範例板卡為 `ipro7_evb`。給 Zephyr OpenThread shell 範例用的設定片段在 `zephyr/samples/ieee802154_shell/`。
-    - **IPRO7AI Reef EVK**：V2.2.0 沒有 Reef 的 Thread 路徑。Reef 沒有 Zephyr 板卡定義，它執行的 FreeRTOS 應用也不含 802.15.4。
-    - **Matter**：未包含於 V2.2.0，沒有 Matter 協定堆疊、應用或建置命令。請洽 INTELPRO。
+    - **IPRO7AI Reef EVK**：V2.2.1 沒有 Reef 的 Thread 路徑。Reef 沒有 Zephyr 板卡定義，它執行的 FreeRTOS 應用也不含 802.15.4。
+    - **Matter**：未包含於 V2.2.1，沒有 Matter 協定堆疊、應用或建置命令。請洽 INTELPRO。
     - 本頁內容不代表此版本已通過 Thread 或 Matter 認證。
 
 ## 交付狀態 { #overview }

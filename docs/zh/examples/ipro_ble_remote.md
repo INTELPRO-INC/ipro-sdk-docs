@@ -11,7 +11,7 @@ GATT 參考應用：LED、按鍵、環境、UART、相機影像與影像上傳�
 
 | 項目 | 內容 |
 |---|---|
-| 原始碼 | [`apps/bluetooth/ble/ipro_ble_remote`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/bluetooth/ble/ipro_ble_remote) |
+| 原始碼 | [`apps/bluetooth/ble/ipro_ble_remote`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/bluetooth/ble/ipro_ble_remote) |
 | 板卡與設定 | Reef（`defconfig_reef`：WS2812、相機、SD 卡、音訊與 BLE A/B OTA）；`.config`、`defconfig` 為 IPRO7 EVB |
 | 主控台 | UART 115200 |
 | 建置 | Reef：`make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef` |
@@ -44,10 +44,9 @@ Reef 版使用 boot2 與 A/B 分割表 `partition_cfg_2M_remote_ab.toml`，才�
 
 3. **執行**：以 115200 baud 開啟主控台。開機訊息先出現 `[BOOT2] IPRO7 Boot2 v0.6.0`，接著是 `[BLE] Advertising: IPRO-Remote`。以手機的 nRF Connect 或 `ipro_remote_demo.apk` 連線到 `IPRO-Remote`；主控台輸入 `reef status` 查看板卡、相機與 LED 狀態。
 
-4. **BLE OTA**：產生 OTA 套件並以 BLE 推送（主機需安裝 Python 套件 `bleak`）。第一行把 V2.2.0 打包腳本裡的 boot2 v0.5.2 改成 IntelProCube 0.7.0 起附的 v0.6.0（Linux 用 `sed -i`，不加 `''`）
+4. **BLE OTA**：產生 OTA 套件並以 BLE 推送（主機需安裝 Python 套件 `bleak`）。打包腳本會使用 IntelProCube 資料夾裡最新的 boot2（0.7.0.1 為 v0.6.0）
 
     ```bash
-    sed -i '' 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
     IPRO_FLASH_TOOL=<ICUBE>/ipro_iot_tool_macos sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
     python3 apps/bluetooth/ble/ipro_ble_remote/tools/reef_ota.py \
         apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_reef.xz.ota
@@ -63,7 +62,7 @@ Reef 版使用 boot2 與 A/B 分割表 `partition_cfg_2M_remote_ab.toml`，才�
 ## README { #readme }
 
 !!! note "README 原文"
-    以下是應用隨附的 README（SDK V2.2.0），保留原文、未翻譯；只替換了不適合公開的內容。
+    以下是應用隨附的 README（SDK V2.2.1），保留原文、未翻譯；只替換了不適合公開的內容。
 
 <!-- verbatim:start -->
 
@@ -811,8 +810,8 @@ ipro_iot_tool_macos --chipname ipro7 --chip-variant IPRO7AI --port /dev/cu.usbmo
 `partition_cfg_2M_remote_ab.toml`：FW A 0x12000（824 KB，執行區）、FW B 0xE0000（512 KB，OTA 套件暫存區）。App 把手機送來的 `.xz.ota` 套件寫進 FW B、驗 CRC32、切換分割區後重開；boot2 驗套件的 SHA256，通過後才抹除 FW A 並解壓寫入，再從 FW A 開機。套件驗證失敗時 boot2 進 USB 救援模式，不會變磚。
 
 ```bash
-# 產生套件（需要 IntelProCube 命令列工具：IPRO_FLASH_TOOL 指向它，或放在 PATH 裡）
-sed -i '' 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
+# 產生套件（需要 IntelProCube 命令列工具：IPRO_FLASH_TOOL 指向它，或放在 PATH 裡；
+# boot2 自動用工具內最高版本，0.7.x 為 v0.6.0，要指定其他版本設 IPRO_BOOT2）
 IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
 # -> build_reef/build_out/ipro_ble_remote_reef.xz.ota（約 345 KB）
 
@@ -1030,14 +1029,14 @@ apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.elf
 
 1. **真實傳感器**: 連接 I2C/SPI 溫濕度傳感器 (如 SHT30)
 2. **PWM LED**: 使用 PWM 實現真正的亮度調節
-3. **✅ OTA 更新**: 已實作！支援 MTU 517 無線韌體更新 (請參考 [OTA_IMPLEMENTATION_GUIDE.md](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.0/apps/bluetooth/ble/ipro_ble_remote/OTA_IMPLEMENTATION_GUIDE.md))
+3. **✅ OTA 更新**: 已實作！支援 MTU 517 無線韌體更新 (請參考 [OTA_IMPLEMENTATION_GUIDE.md](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.1/apps/bluetooth/ble/ipro_ble_remote/OTA_IMPLEMENTATION_GUIDE.md))
 4. **多連接**: 支援多個手機同時連接
 5. **真實相機**: 整合 DVP/SPI Camera 模組
 6. **彩色圖片**: 擴展 JPEG 編碼器支援 RGB
 
 ### 📚 延伸閱讀
 
-- **[OTA Implementation Guide](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.0/apps/bluetooth/ble/ipro_ble_remote/OTA_IMPLEMENTATION_GUIDE.md)** - APP 團隊 OTA 實作完整指南 (v3.0)
+- **[OTA Implementation Guide](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.1/apps/bluetooth/ble/ipro_ble_remote/OTA_IMPLEMENTATION_GUIDE.md)** - APP 團隊 OTA 實作完整指南 (v3.0)
     - **新功能**: MTU 517 協商和動態負載偵測
     - BLE 服務規格 (支援 504-byte packets)
     - 協議流程和效能優化

@@ -1,6 +1,6 @@
 ---
 title: "Examples"
-description: The 40 FreeRTOS applications in V2.2.0. The 9 that run on the IPRO7AI Reef EVK each have a step-by-step page; the others list the board they need.
+description: The 40 FreeRTOS applications in V2.2.1. The 9 that run on the IPRO7AI Reef EVK each have a step-by-step page; the others list the board they need.
 migrate_from:
   - "applications.html"
 not_migrated:
@@ -55,8 +55,8 @@ These applications have no Reef configuration and need the board listed; the nam
 <!-- BEGIN generated: examples-ble -->
 | Application | Purpose | Boards and configs | Console |
 |---|---|---|---|
-| [`ipro_ble_transparent`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/bluetooth/ble/ipro_ble_transparent) | UART-to-BLE transparent bridge configured with AT commands (over USB CDC) | Needs the IPRO7 EVB | UART 115200 |
-| [`ipro_ble_hid_keyboard`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/bluetooth/ble/ipro_ble_hid_keyboard) | HID over GATT keyboard | Needs the IPRO7 EVB | UART 115200 |
+| [`ipro_ble_transparent`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/bluetooth/ble/ipro_ble_transparent) | UART-to-BLE transparent bridge configured with AT commands (over USB CDC) | Needs the IPRO7 EVB | UART 115200 |
+| [`ipro_ble_hid_keyboard`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/bluetooth/ble/ipro_ble_hid_keyboard) | HID over GATT keyboard | Needs the IPRO7 EVB | UART 115200 |
 <!-- END generated: examples-ble -->
 
 ### Audio and voice { #audio }
@@ -64,7 +64,7 @@ These applications have no Reef configuration and need the board listed; the nam
 <!-- BEGIN generated: examples-audio -->
 | Application | Purpose | Boards and configs | Console |
 |---|---|---|---|
-| [`ipro_pdm_mic_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/multimedia/ipro_pdm_mic_demo) | PDM microphone capture, DAC playback, LC3 streaming over BLE, SMP pairing, PDS31 sleep with bonded reconnect; the Android companion app's source is in `tools/android/IproMicDemo/`. On the Reef, use the `mic` commands of `ipro7ai_reef_demo` | Needs the IPRO7 EVB (`.config`) or the IPRO7AI EVK (`make BOARD=evk`) | EVB: UART 115200<br>EVK: UART 921600 |
+| [`ipro_pdm_mic_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/multimedia/ipro_pdm_mic_demo) | PDM microphone capture, DAC playback, LC3 streaming over BLE, SMP pairing, PDS31 sleep with bonded reconnect; the Android companion app's source is in `tools/android/IproMicDemo/`. On the Reef, use the `mic` commands of `ipro7ai_reef_demo` | Needs the IPRO7 EVB (`.config`) or the IPRO7AI EVK (`make BOARD=evk`) | EVB: UART 115200<br>EVK: UART 921600 |
 <!-- END generated: examples-audio -->
 
 ### Platform and boards { #platform }
@@ -72,9 +72,9 @@ These applications have no Reef configuration and need the board listed; the nam
 <!-- BEGIN generated: examples-platform -->
 | Application | Purpose | Boards and configs | Console |
 |---|---|---|---|
-| [`ipro7_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro7_demo) | Full-chip reference: PWM, SPI, I2S, LCD, audio ADC / DAC, USB device (CDC, HID, MSC, UAC, UVC), file systems, TRNG, DSP and more, each with shell commands | Needs the IPRO7 EVB; also `defconfig_boot2_nopsram`, `defconfig_boot2_ota`, `defconfig_nist_fulltest`, `defconfig_security_cert` | UART 115200 |
-| [`ipro7ai_evk_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro7ai_evk_demo) | IPRO7AI EVK bring-up: LCD, camera, microphone, speaker and SD card; `config_bt` adds BLE and LE Audio | Needs the IPRO7AI EVK | `.config`: UART 921600<br>`config_*`: UART 115200 |
-| [`ipro7ai_evk_launcher`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro7ai_evk_launcher) | Camera, LCD, microphone and speaker in one image, with pages switched by hand gestures recognized on the NPU | Needs the IPRO7AI EVK | UART 921600 |
+| [`ipro7_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/platform/ipro7_demo) | Full-chip reference: PWM, SPI, I2S, LCD, audio ADC / DAC, USB device (CDC, HID, MSC, UAC, UVC), file systems, TRNG, DSP and more, each with shell commands | Needs the IPRO7 EVB; also `defconfig_boot2_nopsram`, `defconfig_boot2_ota`, `defconfig_nist_fulltest`, `defconfig_security_cert` | UART 115200 |
+| [`ipro7ai_evk_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/platform/ipro7ai_evk_demo) | IPRO7AI EVK bring-up: LCD, camera, microphone, speaker and SD card; `config_bt` adds BLE and LE Audio | Needs the IPRO7AI EVK | `.config`: UART 921600<br>`config_*`: UART 115200 |
+| [`ipro7ai_evk_launcher`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/platform/ipro7ai_evk_launcher) | Camera, LCD, microphone and speaker in one image, with pages switched by hand gestures recognized on the NPU | Needs the IPRO7AI EVK | UART 921600 |
 <!-- END generated: examples-platform -->
 
 ### AI and vision { #ai-vision }
@@ -82,9 +82,9 @@ These applications have no Reef configuration and need the board listed; the nam
 <!-- BEGIN generated: examples-ai-vision -->
 | Application | Purpose | Boards and configs | Console |
 |---|---|---|---|
-| [`ipro7ai_evk_person_detect`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/ai/ipro7ai_evk_person_detect) | Camera preview on the LCD with YOLOv8 person / pet boxes from the NPU | Needs the IPRO7AI EVK | UART 115200 |
-| [`ipro7ai_evk_rps`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/ai/ipro7ai_evk_rps) | Rock-paper-scissors against an int8 CNN on the NPU, with the model and training scripts; on the Reef the same game is `ipro7_uvc_cam` `defconfig_reef_rps` | Needs the IPRO7AI EVK | UART 921600 |
-| [`ipro_speaker_recog`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/ai/ipro_speaker_recog) | Speaker recognition on the NPU, with the model in the mfg partition; on the Reef, speaker recognition is the `voice` mode of `ipro_reef_teach` | Needs the IPRO7 EVB | UART 921600 |
+| [`ipro7ai_evk_person_detect`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/ai/ipro7ai_evk_person_detect) | Camera preview on the LCD with YOLOv8 person / pet boxes from the NPU | Needs the IPRO7AI EVK | UART 115200 |
+| [`ipro7ai_evk_rps`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/ai/ipro7ai_evk_rps) | Rock-paper-scissors against an int8 CNN on the NPU, with the model and training scripts; on the Reef the same game is `ipro7_uvc_cam` `defconfig_reef_rps` | Needs the IPRO7AI EVK | UART 921600 |
+| [`ipro_speaker_recog`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/ai/ipro_speaker_recog) | Speaker recognition on the NPU, with the model in the mfg partition; on the Reef, speaker recognition is the `voice` mode of `ipro_reef_teach` | Needs the IPRO7 EVB | UART 921600 |
 <!-- END generated: examples-ai-vision -->
 
 ### Networking and IPRO6S { #networking }
@@ -92,10 +92,10 @@ These applications have no Reef configuration and need the board listed; the nam
 <!-- BEGIN generated: examples-networking -->
 | Application | Purpose | Boards and configs | Console |
 |---|---|---|---|
-| [`ipro7_sdio_wifi`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro7_sdio_wifi) | IPRO7 as the SDIO host with an IPRO6S as the Wi-Fi radio, providing the lwIP network interface `iproeth0` and DHCP. On the Reef the same is `ipro7ai_reef_demo` `defconfig_wifi_ipro6s` | Needs the IPRO7 EVB and an IPRO6S | UART 115200 |
-| [`ipro6_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro6_demo) | IPRO6S Wi-Fi 6 station / soft-AP with a shell; `defconfig_ipro6_lpwifi` adds DTIM power save, `defconfig_ipro6_lp` is the low-power demo | Needs the IPRO6S EVK (see [IPRO6S](../hardware/chips/ipro6s.md)) | UART 115200 |
-| [`ipro6_if_wifi`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro6_if_wifi) | IPRO6S Wi-Fi 6 bridge to a host over SDIO (`defconfig_ipro6_sdio`, also the Reef FIN card's firmware) or USB (`defconfig_ipro6_usb`) | IPRO6S EVK; FIN card (`defconfig_ipro6_sdio`, flashed with `--chipname ipro6`, see [IPRO6S](../hardware/chips/ipro6s.md)) | UART 115200 |
-| [`ipro6_fmac`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/platform/ipro6_fmac) | FullMAC firmware for a Linux cfg80211 host (`defconfig_ipro6_fmac`) and its flash loader (`defconfig_ipro6_fmac_loader`); the Linux driver is not part of the SDK | Needs the IPRO6S EVK | UART 115200 |
+| [`ipro7_sdio_wifi`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/platform/ipro7_sdio_wifi) | IPRO7 as the SDIO host with an IPRO6S as the Wi-Fi radio, providing the lwIP network interface `iproeth0` and DHCP. On the Reef the same is `ipro7ai_reef_demo` `defconfig_wifi_ipro6s` | Needs the IPRO7 EVB and an IPRO6S | UART 115200 |
+| [`ipro6_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/platform/ipro6_demo) | IPRO6S Wi-Fi 6 station / soft-AP with a shell; `defconfig_ipro6_lpwifi` adds DTIM power save, `defconfig_ipro6_lp` is the low-power demo | Needs the IPRO6S EVK (see [IPRO6S](../hardware/chips/ipro6s.md)) | UART 115200 |
+| [`ipro6_if_wifi`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/platform/ipro6_if_wifi) | IPRO6S Wi-Fi 6 bridge to a host over SDIO (`defconfig_ipro6_sdio`, also the Reef FIN card's firmware) or USB (`defconfig_ipro6_usb`) | IPRO6S EVK; FIN card (`defconfig_ipro6_sdio`, flashed with `--chipname ipro6`, see [IPRO6S](../hardware/chips/ipro6s.md)) | UART 115200 |
+| [`ipro6_fmac`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/platform/ipro6_fmac) | FullMAC firmware for a Linux cfg80211 host (`defconfig_ipro6_fmac`) and its flash loader (`defconfig_ipro6_fmac_loader`); the Linux driver is not part of the SDK | Needs the IPRO6S EVK | UART 115200 |
 <!-- END generated: examples-networking -->
 
 IPRO6S applications are flashed with `--chipname ipro6`; building and configuration are on the [IPRO6S](../hardware/chips/ipro6s.md) page.
@@ -105,24 +105,24 @@ IPRO6S applications are flashed with `--chipname ipro6`; building and configurat
 <!-- BEGIN generated: examples-test-apps -->
 | Application | Purpose | Boards and configs | Console |
 |---|---|---|---|
-| [`ipro_unit_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_unit_test) | Unit tests for the HAL and the shared components; ends with `ALL TESTS PASSED` or `SOME TESTS FAILED` | Needs the IPRO7 EVB | UART 115200 |
-| [`ipro_ai_bench`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_ai_bench) | Whole-model inference time on the NPU versus the CPU | Needs the IPRO7 EVB | UART 115200 |
-| [`ipro_npu_yolo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_npu_yolo) | YOLOv8 person / pet detection on the NPU | Needs the IPRO7 EVB | UART 115200 |
-| [`ipro_tflm_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_tflm_test) | TensorFlow Lite Micro model benchmark with NMSIS-NN kernels | Needs the IPRO7 EVB | UART 115200 |
-| [`ipro_tflm_yolo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_tflm_yolo) | YOLOv8 on the CPU with TensorFlow Lite Micro | Needs the IPRO7 EVB | UART 115200 |
-| [`ipro_nmsis_nn_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_nmsis_nn_test) | NMSIS-NN operator tests | Needs the IPRO7 EVB | UART 115200 |
-| [`ipro_tinymaix_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_tinymaix_demo) | TinyMaix INT8 MNIST inference (`nn_info`, `nn_run`, `nn_benchmark`) | Needs the IPRO7 EVB | UART 115200 |
-| [`ipro_gh7007_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_gh7007_test) | GH7007 5-inch SPI LCD bring-up | Needs the IPRO7 EVB | USB CDC |
-| [`ipro_gh7007_video`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_gh7007_video) | Plays videos from the SD card on the GH7007 panel | Needs the IPRO7 EVB | USB CDC |
-| [`ipro_epd_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_epd_test) | GDEY0213F52 2.13-inch e-paper bring-up | Needs the IPRO7 EVB | UART 115200 |
-| [`ipro_epd_el036`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_epd_el036) | EL036MF1 e-paper bring-up | Needs the IPRO7 EVB | UART 921600 |
-| [`kw307_radar_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/kw307_radar_test) | KW307 24 GHz radar module over UART | Needs the IPRO7AI EVK | UART 115200 |
-| [`mpu6500_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/mpu6500_test) | MPU-6500 IMU over I2C (`mpu_init`, `mpu_read`, `mpu_stream`) | Needs the IPRO7 EVB | UART 115200 |
-| [`ipro_enc28j60_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_enc28j60_test) | ENC28J60 SPI Ethernet bring-up, sending and receiving raw frames | Needs the IPRO7 Arduino board | USB CDC |
-| [`ipro_pio_sdh_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_pio_sdh_test) | File-system test with a software (PIO) SD host and the hardware SDH mounted at the same time | Needs the IPRO7 EVB | USB CDC |
-| [`ipro_sdio_probe`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_sdio_probe) | Basic SDIO host test | Needs the IPRO7 EVB | UART 115200 |
-| [`ipro_atbm_probe`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_atbm_probe) | Bring-up probe for an ATBM6162 SDIO Wi-Fi module | Needs the IPRO7 EVB | UART 115200 |
-| [`ipro_lp_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/test/ipro_lp_test) | PDS31 entry and exit with RTC wake-up (`lp` commands) | Needs the IPRO7 EVB | UART 115200 |
+| [`ipro_unit_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_unit_test) | Unit tests for the HAL and the shared components; ends with `ALL TESTS PASSED` or `SOME TESTS FAILED` | Needs the IPRO7 EVB | UART 115200 |
+| [`ipro_ai_bench`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_ai_bench) | Whole-model inference time on the NPU versus the CPU | Needs the IPRO7 EVB | UART 115200 |
+| [`ipro_npu_yolo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_npu_yolo) | YOLOv8 person / pet detection on the NPU | Needs the IPRO7 EVB | UART 115200 |
+| [`ipro_tflm_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_tflm_test) | TensorFlow Lite Micro model benchmark with NMSIS-NN kernels | Needs the IPRO7 EVB | UART 115200 |
+| [`ipro_tflm_yolo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_tflm_yolo) | YOLOv8 on the CPU with TensorFlow Lite Micro | Needs the IPRO7 EVB | UART 115200 |
+| [`ipro_nmsis_nn_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_nmsis_nn_test) | NMSIS-NN operator tests | Needs the IPRO7 EVB | UART 115200 |
+| [`ipro_tinymaix_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_tinymaix_demo) | TinyMaix INT8 MNIST inference (`nn_info`, `nn_run`, `nn_benchmark`) | Needs the IPRO7 EVB | UART 115200 |
+| [`ipro_gh7007_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_gh7007_test) | GH7007 5-inch SPI LCD bring-up | Needs the IPRO7 EVB | USB CDC |
+| [`ipro_gh7007_video`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_gh7007_video) | Plays videos from the SD card on the GH7007 panel | Needs the IPRO7 EVB | USB CDC |
+| [`ipro_epd_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_epd_test) | GDEY0213F52 2.13-inch e-paper bring-up | Needs the IPRO7 EVB | UART 115200 |
+| [`ipro_epd_el036`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_epd_el036) | EL036MF1 e-paper bring-up | Needs the IPRO7 EVB | UART 921600 |
+| [`kw307_radar_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/kw307_radar_test) | KW307 24 GHz radar module over UART | Needs the IPRO7AI EVK | UART 115200 |
+| [`mpu6500_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/mpu6500_test) | MPU-6500 IMU over I2C (`mpu_init`, `mpu_read`, `mpu_stream`) | Needs the IPRO7 EVB | UART 115200 |
+| [`ipro_enc28j60_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_enc28j60_test) | ENC28J60 SPI Ethernet bring-up, sending and receiving raw frames | Needs the IPRO7 Arduino board | USB CDC |
+| [`ipro_pio_sdh_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_pio_sdh_test) | File-system test with a software (PIO) SD host and the hardware SDH mounted at the same time | Needs the IPRO7 EVB | USB CDC |
+| [`ipro_sdio_probe`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_sdio_probe) | Basic SDIO host test | Needs the IPRO7 EVB | UART 115200 |
+| [`ipro_atbm_probe`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_atbm_probe) | Bring-up probe for an ATBM6162 SDIO Wi-Fi module | Needs the IPRO7 EVB | UART 115200 |
+| [`ipro_lp_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/test/ipro_lp_test) | PDS31 entry and exit with RTC wake-up (`lp` commands) | Needs the IPRO7 EVB | UART 115200 |
 <!-- END generated: examples-test-apps -->
 
 ## Next steps { #next-steps }

@@ -21,7 +21,7 @@ IPRO7 は、アナログマイクと PDM マイク用のオーディオ ADC（AU
     - Reef のオーディオ：PDM マイク、ジャック J2 のヘッドセットマイク、GPDAC から出力するスピーカーアンプとヘッドホン出力。`ipro7ai_reef_demo` で録音、再生、モニター、SD カードへの WAV ファイルの録音（`mic sdrec`）ができ、ボードを USB マイクにすること（`mic usb`）もできます。
     - 構成：`CONFIG_AUDIO_CAPTURE=y`、`CONFIG_AUDIO_OUTPUT=y`、`CONFIG_DMA_CHANNEL_ALLOCATOR=y`。USB オーディオには `CONFIG_CHERRYUSB_DEVICE_AUDIO=y` を追加します。
     - LE Audio：ユニキャストヘッドセット `ipro_le_audio_headset`（`defconfig_reef`）、`CONFIG_EM_SIZE=32` の `bt54_iso2` コントローラー、ビルド済みライブラリの LC3。その README では、スマートフォンからのオーディオ再生は未検証とされています。
-    - V2.2.0 に含まれないもの：FreeRTOS の LE Audio ブロードキャストのサンプル、USB から BLE へのオーディオブリッジ。
+    - V2.2.1 に含まれないもの：FreeRTOS の LE Audio ブロードキャストのサンプル、USB から BLE へのオーディオブリッジ。
 
 ## アーキテクチャ { #overview }
 

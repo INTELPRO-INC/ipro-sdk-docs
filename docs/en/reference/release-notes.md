@@ -7,11 +7,30 @@ migrate_from:
 
 # Release Notes
 
-Official IPRO SDK releases, newest first; the current release is V2.2.0. Downloads and the release notes of each version are on [GitHub Releases](https://github.com/INTELPRO-INC/IPRO-SDK/releases); the SDK package itself is described in the `README.md` at its root. The Windows online installer, Online Setup, is listed here too (currently 3.6.0); it is downloaded from [ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest).
+Official IPRO SDK releases, newest first; the current release is V2.2.1. Downloads and the release notes of each version are on [GitHub Releases](https://github.com/INTELPRO-INC/IPRO-SDK/releases); the SDK package itself is described in the `README.md` at its root. The Windows online installer, Online Setup, is listed here too (currently 3.6.0); it is downloaded from [ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest).
+
+## IPRO-SDK-V2.2.1 { #v2-2-1 }
+
+<span class="ipro-badge">Latest</span> Released 2026-11-10 · [GitHub release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.1)
+
+Patch release of V2.2.0 with the same 40 FreeRTOS applications. The download is `IPRO-SDK-V2.2.1.tar.gz`; its SHA-256 is on the release page. The rest of the [V2.2.0 notes](#v2-2-0), its known issues included, applies to V2.2.1.
+
+**Fixed**
+
+- **IPRO6S soft-AP**: on parts without a factory MAC address, such as the IPRO6S EVK, `wifi_ap_start` failed without a message. The station and the access point now share one random address per boot, the access point's with the lowest bit flipped. The fix is in the prebuilt `libipro_os_adapter.a` of `ipro6_demo` (`defconfig_ipro6_lpwifi`) and `ipro6_if_wifi` (`defconfig_ipro6_sdio`, `defconfig_ipro6_usb`). The steps are on [IPRO6S](../hardware/chips/ipro6s.md#flashing).
+- **`make_reef_ota.sh`** in `ipro_ble_remote` takes the newest boot2 in the IntelProCube folder (v0.6.0 in 0.7.0.1), or the file in `IPRO_BOOT2`; the script no longer needs changing first.
+- **Package README**: IntelProCube 0.7.0.1 from GitHub with download and checksum steps, and the IPRO6S EVK flash command (`--chip-variant IPRO6S`, `partition_cfg_fw_direct.toml`).
+- **Zephyr**: `zephyr/subsys/net/ipro_wifi/net_al_zephyr.c` matches the L2 socket interface of the lwIP port in the package; IPRO6S is still not supported under Zephyr.
+
+Built and checked from the package before release: the 36 IPRO7 FreeRTOS applications, seven IPRO6S configurations and the Zephyr samples. On the boards: the IPRO6S EVK scans and runs a soft-AP that a computer joins and gets a DHCP lease from, built and flashed on macOS and on Windows; `reef selftest` passes on the IPRO7AI Reef EVK.
+
+### Known issues { #v2-2-1-known-issues }
+
+- **IPRO Workbench 0.1.0 and IPRO6S**: Workbench flashes IPRO6S images without the IPRO6S partition table, and the board does not boot. Flash IPRO6S with the IntelProCube command line, as on [IPRO6S](../hardware/chips/ipro6s.md#flashing).
 
 ## IPRO-SDK-V2.2.0 { #v2-2-0 }
 
-<span class="ipro-badge">Latest</span> Released 2026-11-03 · [GitHub release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0)
+Released 2026-11-03 · [GitHub release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0)
 
 Dual-chip release for IPRO7 / IPRO7AI and IPRO6S, replacing V2.1.0. 40 FreeRTOS applications: 37 for IPRO7, 3 for IPRO6S. The download is `IPRO-SDK-V2.2.0.tar.gz`; its SHA-256 is on the release page.
 

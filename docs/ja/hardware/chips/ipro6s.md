@@ -1,6 +1,6 @@
 ---
 title: "IPRO6S"
-description: IPRO6S の仕様、V2.2.0 に含まれる 3 個の Wi-Fi 6 アプリケーションとその構成、ビルドと書き込み、IPRO7AI Reef EVK の FIN Wi-Fi カードとしての役割
+description: IPRO6S の仕様、V2.2.1 に含まれる 3 個の Wi-Fi 6 アプリケーションとその構成、ビルドと書き込み、IPRO7AI Reef EVK の FIN Wi-Fi カードとしての役割
 migrate_from:
   - "hardware.html#ipro6s"
   - "architecture.html#dual-chip"
@@ -10,7 +10,7 @@ migrate_from:
 
 # IPRO6S
 
-IPRO6S は Wi-Fi 6 を内蔵した RISC-V SoC です。IPRO7 と同じ SDK ツリー、同じツールチェーンでビルドします。V2.2.0 には IPRO6S の Wi-Fi アプリケーションが 3 個含まれます。単体でネットワークに接続する `ipro6_demo`、SDIO または USB でホストプロセッサーに Wi-Fi をブリッジする `ipro6_if_wifi`、Linux ホスト用の FullMAC ファームウェアである `ipro6_fmac` です。IPRO7AI Reef EVK では、IPRO6S は microSD スロットに挿す FIN Wi-Fi カードで、SDIO を通じて IPRO7AI にネットワーク接続を提供します。
+IPRO6S は Wi-Fi 6 を内蔵した RISC-V SoC です。IPRO7 と同じ SDK ツリー、同じツールチェーンでビルドします。V2.2.1 には IPRO6S の Wi-Fi アプリケーションが 3 個含まれます。単体でネットワークに接続する `ipro6_demo`、SDIO または USB でホストプロセッサーに Wi-Fi をブリッジする `ipro6_if_wifi`、Linux ホスト用の FullMAC ファームウェアである `ipro6_fmac` です。IPRO7AI Reef EVK では、IPRO6S は microSD スロットに挿す FIN Wi-Fi カードで、SDIO を通じて IPRO7AI にネットワーク接続を提供します。
 
 <div class="ipro-facts" markdown>
 <div><strong>Wi-Fi 6</strong><span>チップに内蔵</span></div>
@@ -47,12 +47,12 @@ CONFIG_FREERTOS_SUPPORT=y
 
 ## 本リリースでの SDK サポート { #status }
 
-| 項目 | V2.2.0 |
+| 項目 | V2.2.1 |
 |---|---|
 | アプリケーション | `ipro6_demo`、`ipro6_if_wifi`、`ipro6_fmac`（`apps/platform/`） |
 | Wi-Fi 6 | MAC（`components/wireless/macsw`）、fhost API、wpa_supplicant と lwIP アダプター（`components/wireless/wifi6`）、RF ドライバー（`components/wireless/rf/ipro6_rf`）。いずれもアプリケーション構成ごとにビルド済みです |
 | 低消費電力 | DTIM 低消費電力ファームウェアイメージ `bsp/hal/lp_framework/ipro6/prebuilt/ipro6_lpfw.bin`。低消費電力構成に組み込まれます |
-| Bluetooth | IPRO6S の Bluetooth コントローラーライブラリとデュアルモード（BR/EDR）アプリケーションは V2.2.0 には含まれていません。INTELPRO にお問い合わせください。本リリースの IPRO6S アプリケーションは Wi-Fi のみを使います |
+| Bluetooth | IPRO6S の Bluetooth コントローラーライブラリとデュアルモード（BR/EDR）アプリケーションは V2.2.1 には含まれていません。INTELPRO にお問い合わせください。本リリースの IPRO6S アプリケーションは Wi-Fi のみを使います |
 | Zephyr RTOS | `ipro6s_evb` のボードファイルは含まれていますが、本リリースでは Zephyr 上の IPRO6S はサポートされていません |
 | 書き込み | [IntelProCube](https://github.com/INTELPRO-INC/ipro-cube/releases) 0.7.0.1 以降のコマンドラインツールで `--chipname ipro6` を指定します。`build_freertos.sh` の `flash` アクションは IPRO7 にのみ対応しています |
 
@@ -71,7 +71,7 @@ CONFIG_FREERTOS_SUPPORT=y
 | | `defconfig_ipro6_fmac_loader` | SDIO または USB で FullMAC ファームウェアを受け取る Flash ローダー |
 
 - `ipro6_demo/defconfig_ipro6_lpwifi_ping` と `ipro6_fmac/defconfig_ipro6_fmac_ap` は `CONFIG_WIRELESS_LIB_VARIANT` を設定しておらず、検証済みの構成には含まれません。使用する前に INTELPRO にお問い合わせください。
-- `ipro6_fmac` 用の Linux ホストドライバーは V2.2.0 には含まれていません。
+- `ipro6_fmac` 用の Linux ホストドライバーは V2.2.1 には含まれていません。
 - 3 つのアプリケーションは IPRO6S EVK（`CONFIG_BOARD="EVB"`）を対象としています。Reef では、`ipro6_if_wifi` の `defconfig_ipro6_sdio` だけが FIN カード上で動作します。
 
 ## ビルド { #build }
@@ -105,7 +105,7 @@ CONFIG_WIRELESS_LIB_VARIANT="ipro6_if_wifi-ipro6_sdio"
 必要なもの：
 
 - IPRO6S EVK、2.4 GHz アンテナ、IPRO Debug Probe とその UART ケーブル、USB-C 電源。
-- [開発環境の準備](../../get-started/environment.md)に従ってインストールしたツールチェーンと SDK V2.2.0（以下 `<SDK>`）。
+- [開発環境の準備](../../get-started/environment.md)に従ってインストールしたツールチェーンと SDK V2.2.1（以下 `<SDK>`）。
 - [IntelProCube](https://github.com/INTELPRO-INC/ipro-cube/releases) 0.7.0.1 以降。[README](https://github.com/INTELPRO-INC/ipro-cube#readme) に従ってダウンロードし、SHA-256 を確認して新しいフォルダーに展開します（以下 `<IntelProCube>`）。0.7.0 で書き込んだイメージは起動しません。[書き込みは成功するが起動しない](#ipro6s-no-boot)を参照してください。
 
 <div class="ipro-steps" markdown>
@@ -176,6 +176,16 @@ CONFIG_WIRELESS_LIB_VARIANT="ipro6_if_wifi-ipro6_sdio"
     ```
 
     周辺のアクセスポイントが 1 行ずつ表示されます（最大 50 行。未使用の行は `empty`）。アクセスポイントが表示されれば、RF と Wi-Fi スタックは正常に動作しています。`stack_wifi` は起動ごとに 1 回だけ実行します。
+
+7. **soft-AP を確認**：アクセスポイントを起動します。キーは 8〜63 文字です。
+
+    ```text
+    ipro />wifi_ap_start -s IPRO6S_AP -k <key> -c 6
+    [WPA] AP-ENABLED
+    [APP] [EVT] CODE_WIFI_ON_AP_STARTED
+    ```
+
+    コンピューターやスマートフォンからそのキーで `IPRO6S_AP` に接続すると、ボード（192.168.169.1）から 192.168.169.0/24 のアドレスが割り当てられ、コンソールに `AP-STA-CONNECTED` とその機器の MAC アドレスが表示されます。`wifi_ap_stop` でアクセスポイントを停止します。
 
 </div>
 

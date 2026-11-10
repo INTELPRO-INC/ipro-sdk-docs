@@ -423,10 +423,9 @@ categories:
 
             3. **執行**：以 115200 baud 開啟主控台。開機訊息先出現 `[BOOT2] IPRO7 Boot2 v0.6.0`，接著是 `[BLE] Advertising: IPRO-Remote`。以手機的 nRF Connect 或 `ipro_remote_demo.apk` 連線到 `IPRO-Remote`；主控台輸入 `reef status` 查看板卡、相機與 LED 狀態。
 
-            4. **BLE OTA**：產生 OTA 套件並以 BLE 推送（主機需安裝 Python 套件 `bleak`）。第一行把 V2.2.0 打包腳本裡的 boot2 v0.5.2 改成 IntelProCube 0.7.0 起附的 v0.6.0（Linux 用 `sed -i`，不加 `''`）
+            4. **BLE OTA**：產生 OTA 套件並以 BLE 推送（主機需安裝 Python 套件 `bleak`）。打包腳本會使用 IntelProCube 資料夾裡最新的 boot2（0.7.0.1 為 v0.6.0）
 
                 ```bash
-                sed -i '' 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
                 IPRO_FLASH_TOOL=<ICUBE>/ipro_iot_tool_macos sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
                 python3 apps/bluetooth/ble/ipro_ble_remote/tools/reef_ota.py \
                     apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_reef.xz.ota
@@ -465,10 +464,9 @@ categories:
 
             3. **Run**: open the console at 115200 baud. The boot log starts with `[BOOT2] IPRO7 Boot2 v0.6.0`, then shows `[BLE] Advertising: IPRO-Remote`. Connect to `IPRO-Remote` with nRF Connect or `ipro_remote_demo.apk` on a phone; `reef status` at the console shows the board, camera and LED state.
 
-            4. **BLE OTA**: build the OTA package and push it over BLE (the host needs the Python package `bleak`). The first line changes boot2 v0.5.2 in the V2.2.0 packaging script to v0.6.0, which IntelProCube ships from 0.7.0 on (on Linux use `sed -i` without `''`):
+            4. **BLE OTA**: build the OTA package and push it over BLE (the host needs the Python package `bleak`). The packaging script takes the newest boot2 in the IntelProCube folder (v0.6.0 in 0.7.0.1):
 
                 ```bash
-                sed -i '' 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
                 IPRO_FLASH_TOOL=<ICUBE>/ipro_iot_tool_macos sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
                 python3 apps/bluetooth/ble/ipro_ble_remote/tools/reef_ota.py \
                     apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_reef.xz.ota
@@ -507,10 +505,9 @@ categories:
 
             3. **运行**：以 115200 baud 打开控制台。启动信息先出现 `[BOOT2] IPRO7 Boot2 v0.6.0`，接着是 `[BLE] Advertising: IPRO-Remote`。用手机上的 nRF Connect 或 `ipro_remote_demo.apk` 连接 `IPRO-Remote`；在控制台输入 `reef status` 查看开发板、摄像头与 LED 状态。
 
-            4. **BLE OTA**：生成 OTA 包并通过 BLE 推送（主机需安装 Python 包 `bleak`）。第一行把 V2.2.0 打包脚本里的 boot2 v0.5.2 改成 IntelProCube 0.7.0 起附带的 v0.6.0（Linux 用 `sed -i`，不加 `''`）
+            4. **BLE OTA**：生成 OTA 包并通过 BLE 推送（主机需安装 Python 包 `bleak`）。打包脚本会使用 IntelProCube 文件夹里最新的 boot2（0.7.0.1 为 v0.6.0）
 
                 ```bash
-                sed -i '' 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
                 IPRO_FLASH_TOOL=<ICUBE>/ipro_iot_tool_macos sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
                 python3 apps/bluetooth/ble/ipro_ble_remote/tools/reef_ota.py \
                     apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_reef.xz.ota
@@ -549,10 +546,9 @@ categories:
 
             3. **実行**：115200 baud でコンソールを開きます。起動ログは `[BOOT2] IPRO7 Boot2 v0.6.0` で始まり、続いて `[BLE] Advertising: IPRO-Remote` が表示されます。スマートフォンの nRF Connect または `ipro_remote_demo.apk` で `IPRO-Remote` に接続します。コンソールで `reef status` と入力すると、ボード、カメラ、LED の状態が表示されます。
 
-            4. **BLE OTA**：OTA パッケージを作成し、BLE で送信します（ホストには Python パッケージ `bleak` が必要です）。1 行目で、V2.2.0 のパッケージ化スクリプト内の boot2 v0.5.2 を、IntelProCube 0.7.0 以降に付属する v0.6.0 に書き換えます（Linux では `''` なしの `sed -i`）。
+            4. **BLE OTA**：OTA パッケージを作成し、BLE で送信します（ホストには Python パッケージ `bleak` が必要です）。パッケージ化スクリプトは IntelProCube フォルダー内の最新の boot2（0.7.0.1 では v0.6.0）を使います。
 
                 ```bash
-                sed -i '' 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
                 IPRO_FLASH_TOOL=<ICUBE>/ipro_iot_tool_macos sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
                 python3 apps/bluetooth/ble/ipro_ble_remote/tools/reef_ota.py \
                     apps/bluetooth/ble/ipro_ble_remote/build_reef/build_out/ipro_ble_remote_reef.xz.ota
@@ -564,17 +560,6 @@ categories:
 
             !!! warning "OTA には A/B テーブルが必要"
                 標準の `partition_cfg_2M.toml` で書き込んだ Reef には OTA を行わないでください。FW B に更新を書き込んで切り替えると、ボードは何も出力しなくなり、ダウンロードモードから書き込み直す必要があります。
-        readme:
-          replace:
-            # IntelProCube 0.7.0 and later ship boot2 v0.6.0; the V2.2.0 README and script name v0.5.2
-            - pattern: 'boot2_v0\.5\.2/ipro_boot2_IPRO7_v0\.5\.2\.bin'
-              repl: 'boot2_v0.6.0/ipro_boot2_IPRO7_v0.6.0.bin'
-            - pattern: 'IPRO7 Boot2 v0\.5\.2'
-              repl: 'IPRO7 Boot2 v0.6.0'
-            - pattern: '^(IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota\.sh)$'
-              repl: |-
-                sed -i '' 's/v0\\.5\\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
-                \1
       - name: ipro_throughput_test
         path: apps/bluetooth/ble/ipro_throughput_test
         purpose:

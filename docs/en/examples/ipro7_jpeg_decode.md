@@ -11,7 +11,7 @@ Software JPEG decoding (TJpgDec) to RGB565 / RGB888, with a format probe, built-
 
 | Item | Details |
 |---|---|
-| Source | [`apps/multimedia/ipro7_jpeg_decode`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/multimedia/ipro7_jpeg_decode) |
+| Source | [`apps/multimedia/ipro7_jpeg_decode`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/multimedia/ipro7_jpeg_decode) |
 | Boards and configs | Reef (`defconfig_reef`); `.config` targets the IPRO7AI EVK |
 | Console | UART **921600** |
 | Build | Reef: `make -C apps/multimedia/ipro7_jpeg_decode DEFCONFIG=defconfig_reef` |
@@ -47,7 +47,7 @@ This is the only Reef configuration with its console at 921600 baud.
 ## README { #readme }
 
 !!! note "The README as shipped"
-    Below is the README that ships with the application (SDK V2.2.0), as written; only content unfit for publication was replaced.
+    Below is the README that ships with the application (SDK V2.2.1), as written; only content unfit for publication was replaced.
 
 <!-- verbatim:start -->
 

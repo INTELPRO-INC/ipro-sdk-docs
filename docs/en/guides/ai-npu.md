@@ -328,7 +328,7 @@ There is no general-purpose cloud AI client component. `apps/multimedia/ipro_ago
     git -C components/3rdparty/agora/aosl checkout d825607
     ```
 
-- It also needs a Sentino device triple, which is not included in V2.2.0; contact INTELPRO.
+- It also needs a Sentino device triple, which is not included in V2.2.1; contact INTELPRO.
 
 ## Limitations in this release { #limitations }
 

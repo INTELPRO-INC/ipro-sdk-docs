@@ -124,14 +124,14 @@ With AI and imaging both enabled (`CONFIG_AI_SUPPORT`, `CONFIG_MM_SUPPORT`) the 
 
 ## SDK support in this release { #sdk-support }
 
-| Item | V2.2.0 |
+| Item | V2.2.1 |
 |---|---|
 | FreeRTOS applications | 37 of the 40 target IPRO7: `CONFIG_IPRO7=y`, `CONFIG_CHIP="IPRO7"`, `CONFIG_CPU_ID="intelpro_ipro7"`; images are `<app>_IPRO7.bin` |
 | Zephyr RTOS | Zephyr v4.4.0 module; boards `ipro7_evb` and `ipro7ai_evk`; there is no Zephyr board for the Reef in this release |
 | Toolchain | RISC-V GCC (`riscv64-unknown-elf-`, `rv32imafc` / `ilp32f`); not part of the SDK, obtain it from INTELPRO |
 | BLE | Zephyr v4.4.0 host (source) on the IPRO BLE controller (prebuilt library, 16 IPRO7 builds: `link1_periph` / `link1` / `link2` / `link4` × `bt52` / `bt54_iso2` × debug / `_release`) |
 | IEEE 802.15.4 / Thread | Zephyr RTOS only: IEEE 802.15.4 driver and OpenThread |
-| Matter, Zigbee | Not included in V2.2.0; contact INTELPRO. |
+| Matter, Zigbee | Not included in V2.2.1; contact INTELPRO. |
 | Flashing | IntelProCube 0.7.0.1 command-line tool ([GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases)): `--chipname ipro7`, with `--chip-variant IPRO7AI` for IPRO7AI boards such as the Reef |
 
 ## Boards with IPRO7 { #boards }

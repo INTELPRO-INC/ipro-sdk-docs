@@ -146,12 +146,11 @@ migrate_from:
 
     先にスマートフォンの接続を切断してください。Reef ビルドは 1 つの接続しか許可しません（`CONFIG_BT_CONN=1`）。
 
-11. **OTA パッケージをビルドします。** 小さな変更を加え（例：ビープ音を `reef_hw_tone(2000, 150, 30)` に変更）、再ビルド（手順 1）してから、ビルド結果を boot2 OTA パッケージにまとめます。スクリプトは IntelProCube に結合イメージを作成させ、SDK の `tools/create_ota.py` で圧縮します。SDK V2.2.0 のパッケージ化スクリプトは boot2 v0.5.2 のパスを指定していますが、IntelProCube 0.7.0 以降に付属するのは boot2 v0.6.0 です。そのため 1 行目でスクリプト内のバージョンを v0.6.0 に書き換えます（もう一度実行しても影響はありません）。
+11. **OTA パッケージをビルドします。** 小さな変更を加え（例：ビープ音を `reef_hw_tone(2000, 150, 30)` に変更）、再ビルド（手順 1）してから、ビルド結果を boot2 OTA パッケージにまとめます。スクリプトは IntelProCube に結合イメージを作成させ、SDK の `tools/create_ota.py` で圧縮します。スクリプトは IntelProCube フォルダー内の最新の boot2（0.7.0.1 では v0.6.0）を使います。
 
     === "macOS"
 
         ```bash
-        sed -i '' 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos \
             sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         ```
@@ -159,7 +158,6 @@ migrate_from:
     === "Linux"
 
         ```bash
-        sed -i 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_linux \
             sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         ```
@@ -241,7 +239,7 @@ Reef ビルドでは 2 つのサービスが追加されます。OTA `0xFF60`（
 | 警告でビルドが失敗する | アプリケーションは `-Werror` でコンパイルされる | `#include "reef_hw.h"` は `CONFIG_IPRO7AI_REEF` ブロック内に、呼び出しは関数内に置きます |
 | `make_reef_ota.sh` が `IntelProCube tool not found` を表示する | `IPRO_FLASH_TOOL` が未設定で、書き込みツールが PATH 上にない | `IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos`（または `_linux`）を設定します |
 | `make_reef_ota.sh` が `build first: …` を表示する | `build_reef/` にまだビルド結果がない | 先に手順 1 を実行します |
-| `make_reef_ota.sh` が `No such file or directory: …boot2_v0.5.2…` と `IntelProCube did not build whole_img.bin` を表示する | スクリプトが、IntelProCube 0.7.0 以降には付属しない boot2 v0.5.2 を指している | 手順 11 の `sed` の行を実行してから、もう一度パッケージ化します |
+| `make_reef_ota.sh` が `boot2 image not found` を表示する | `IPRO_FLASH_TOOL` が指す IntelProCube フォルダーに `chips/ipro7/builtin_imgs/boot2_v*` がない | `IPRO_FLASH_TOOL` を IntelProCube 0.7.0.1 フォルダー内のツールに向けるか、`IPRO_BOOT2` で boot2 の `.bin` を指定します |
 | `reef_ota.py` が `IPRO-Remote not found` を表示する | ボードの名前が変更されている、スマートフォンが接続している、またはコンピューターの Bluetooth がオフか使用を許可されていない | `REMOTE_NAME=IPRO-Hello` を設定します。スマートフォンの接続を切断します。macOS では、ターミナルに Bluetooth の使用を許可します |
 | `reef_ota.py` が `device error …` を表示する | ボードがパッケージを拒否した、または書き込みに失敗した | `.xz.ota` を送信したことを確認します。コンソールの `[OTA]` 行を確認します |
 | OTA 後にボードが復帰しない | boot2 はパッケージを拒否すると USB レスキューモードのままになる | ダウンロードモードに入り、手順 3 のコマンドで再書き込みします |

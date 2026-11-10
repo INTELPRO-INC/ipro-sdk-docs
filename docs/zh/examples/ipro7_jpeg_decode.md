@@ -11,7 +11,7 @@ migrate_from: []
 
 | 項目 | 內容 |
 |---|---|
-| 原始碼 | [`apps/multimedia/ipro7_jpeg_decode`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/multimedia/ipro7_jpeg_decode) |
+| 原始碼 | [`apps/multimedia/ipro7_jpeg_decode`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/multimedia/ipro7_jpeg_decode) |
 | 板卡與設定 | Reef（`defconfig_reef`）；`.config` 為 IPRO7AI EVK |
 | 主控台 | UART **921600** |
 | 建置 | Reef：`make -C apps/multimedia/ipro7_jpeg_decode DEFCONFIG=defconfig_reef` |
@@ -47,7 +47,7 @@ migrate_from: []
 ## README { #readme }
 
 !!! note "README 原文"
-    以下是應用隨附的 README（SDK V2.2.0），保留原文、未翻譯；只替換了不適合公開的內容。
+    以下是應用隨附的 README（SDK V2.2.1），保留原文、未翻譯；只替換了不適合公開的內容。
 
 <!-- verbatim:start -->
 

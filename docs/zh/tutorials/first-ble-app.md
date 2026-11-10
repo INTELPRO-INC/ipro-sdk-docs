@@ -146,12 +146,11 @@ migrate_from:
 
     手機與工具 App 先中斷和板子的連線：Reef 設定只允許一條連線（`CONFIG_BT_CONN=1`）。
 
-11. **產生 OTA 套件**：隨意改一處程式（例如把提示音改成 `reef_hw_tone(2000, 150, 30)`），重新建置（步驟 1），再把建置結果打包成 boot2 OTA 套件。打包腳本會呼叫 IntelProCube 產生整體映像，再以 SDK 的 `tools/create_ota.py` 壓縮。SDK V2.2.0 的打包腳本寫的是 boot2 v0.5.2 的路徑，IntelProCube 0.7.0 起附的是 boot2 v0.6.0，所以第一行先把腳本裡的版本改成 v0.6.0（重複執行沒有影響）：
+11. **產生 OTA 套件**：隨意改一處程式（例如把提示音改成 `reef_hw_tone(2000, 150, 30)`），重新建置（步驟 1），再把建置結果打包成 boot2 OTA 套件。打包腳本會呼叫 IntelProCube 產生整體映像，再以 SDK 的 `tools/create_ota.py` 壓縮。腳本會使用 IntelProCube 資料夾裡最新的 boot2（0.7.0.1 為 v0.6.0）：
 
     === "macOS"
 
         ```bash
-        sed -i '' 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos \
             sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         ```
@@ -159,7 +158,6 @@ migrate_from:
     === "Linux"
 
         ```bash
-        sed -i 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_linux \
             sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         ```
@@ -241,7 +239,7 @@ Reef 設定另外編入兩個服務：OTA `0xFF60`（控制 `0xFF61`、資料 `0
 | 建置因警告失敗 | 應用以 `-Werror` 編譯 | 確認 `#include "reef_hw.h"` 放在 `CONFIG_IPRO7AI_REEF` 條件內，且呼叫寫在函式內 |
 | `make_reef_ota.sh` 印出 `IntelProCube tool not found` | 沒有設定 `IPRO_FLASH_TOOL`，PATH 上也沒有燒錄工具 | 設定 `IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos`（或 `_linux`） |
 | `make_reef_ota.sh` 印出 `build first: …` | 還沒有 `build_reef/` 的建置結果 | 先執行步驟 1 |
-| `make_reef_ota.sh` 印出 `No such file or directory: …boot2_v0.5.2…` 與 `IntelProCube did not build whole_img.bin` | 腳本仍指向 IntelProCube 0.7.0 起不再附的 boot2 v0.5.2 | 執行步驟 11 的 `sed` 行，再重新打包 |
+| `make_reef_ota.sh` 印出 `boot2 image not found` | `IPRO_FLASH_TOOL` 所在的 IntelProCube 資料夾沒有 `chips/ipro7/builtin_imgs/boot2_v*` | 把 `IPRO_FLASH_TOOL` 指向 IntelProCube 0.7.0.1 資料夾裡的工具，或以 `IPRO_BOOT2` 指定 boot2 的 `.bin` |
 | `reef_ota.py` 印出 `IPRO-Remote not found` | 板子已改名、正與手機連線，或電腦的藍牙未開啟／未授權 | 設定 `REMOTE_NAME=IPRO-Hello`；中斷手機連線；macOS 上允許終端機使用藍牙 |
 | `reef_ota.py` 印出 `device error …` | 板子拒絕套件或寫入失敗 | 確認送的是 `.xz.ota`；看主控台的 `[OTA]` 訊息 |
 | OTA 後板子沒有回來 | boot2 驗證套件失敗時會停在 USB 救援模式 | 進入下載模式，以步驟 3 的命令重新燒錄 |

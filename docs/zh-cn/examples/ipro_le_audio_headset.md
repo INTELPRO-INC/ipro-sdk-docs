@@ -11,7 +11,7 @@ LE Audio unicast 耳机：BAP unicast server、PACS、ASCS、CAP、CSIP、VCP，
 
 | 项目 | 内容 |
 |---|---|
-| 源代码 | [`apps/bluetooth/le_audio/ipro_le_audio_headset`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/bluetooth/le_audio/ipro_le_audio_headset) |
+| 源代码 | [`apps/bluetooth/le_audio/ipro_le_audio_headset`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/bluetooth/le_audio/ipro_le_audio_headset) |
 | 开发板与配置 | Reef（`defconfig_reef`：DAC 输出到耳麦插孔与扬声器）；`.config`、`DAC.config`、`UAC.config` 对应 IPRO7 EVB |
 | 控制台 | UART 115200 |
 | 构建 | Reef：`make -C apps/bluetooth/le_audio/ipro_le_audio_headset DEFCONFIG=defconfig_reef` |
@@ -48,7 +48,7 @@ LE Audio unicast 耳机：BAP unicast server、PACS、ASCS、CAP、CSIP、VCP，
 ## README { #readme }
 
 !!! note "README 原文"
-    以下是应用附带的 README（SDK V2.2.0），保留原文、未翻译；只替换了不适合公开的内容。
+    以下是应用附带的 README（SDK V2.2.1），保留原文、未翻译；只替换了不适合公开的内容。
 
 <!-- verbatim:start -->
 
@@ -476,8 +476,8 @@ Configurable in `src/app_audio.h`:
 
 - [Bluetooth LE Audio Specification](https://www.bluetooth.com/specifications/le-audio/)
 - [LC3 Codec Documentation](https://www.bluetooth.com/specifications/lc3/)
-- [IPRO SDK Documentation](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.0/apps/bluetooth/README.md)
-- [BLE development overview](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.0/docs/ble/README.md)
+- [IPRO SDK Documentation](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.1/apps/bluetooth/README.md)
+- [BLE development overview](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.1/docs/ble/README.md)
 
 ### License
 

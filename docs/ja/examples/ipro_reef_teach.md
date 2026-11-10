@@ -11,7 +11,7 @@ Reef の Edge AI ファームウェア：1 つのイメージに 3 つの Teach 
 
 | 項目 | 内容 |
 |---|---|
-| ソースコード | [`apps/ai/ipro_reef_teach`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.0/apps/ai/ipro_reef_teach) |
+| ソースコード | [`apps/ai/ipro_reef_teach`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/ai/ipro_reef_teach) |
 | ボードと設定 | Reef（`.config`）、`image` モードには OV5640 カメラが必要 |
 | コンソール | UART 115200 |
 | ビルド | `make -C apps/ai/ipro_reef_teach` |
@@ -60,7 +60,7 @@ Reef の Edge AI ファームウェア：1 つのイメージに 3 つの Teach 
 ## README { #readme }
 
 !!! note "README の原文"
-    以下はアプリケーションに付属する README（SDK V2.2.0）を原文のまま掲載したものです。翻訳はしておらず、公開に適さない内容だけを置き換えています。
+    以下はアプリケーションに付属する README（SDK V2.2.1）を原文のまま掲載したものです。翻訳はしておらず、公開に適さない内容だけを置き換えています。
 
 <!-- verbatim:start -->
 

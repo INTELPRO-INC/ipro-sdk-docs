@@ -7,11 +7,30 @@ migrate_from:
 
 # リリースノート
 
-IPRO SDK の正式リリースを新しい順に掲載しています。現在のリリースは V2.2.0 です。各バージョンのダウンロードとリリースノートは [GitHub Releases](https://github.com/INTELPRO-INC/IPRO-SDK/releases) にあります。SDK パッケージ自体の説明は、パッケージのルートにある `README.md` を参照してください。Windows 用オンラインインストーラー Online Setup もここに掲載しています（現在 3.6.0）。[ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest) からダウンロードできます。
+IPRO SDK の正式リリースを新しい順に掲載しています。現在のリリースは V2.2.1 です。各バージョンのダウンロードとリリースノートは [GitHub Releases](https://github.com/INTELPRO-INC/IPRO-SDK/releases) にあります。SDK パッケージ自体の説明は、パッケージのルートにある `README.md` を参照してください。Windows 用オンラインインストーラー Online Setup もここに掲載しています（現在 3.6.0）。[ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest) からダウンロードできます。
+
+## IPRO-SDK-V2.2.1 { #v2-2-1 }
+
+<span class="ipro-badge">最新版</span> リリース日：2026-11-10 · [GitHub リリース](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.1)
+
+V2.2.0 の修正リリースで、アプリケーションは V2.2.0 と同じ 40 個の FreeRTOS アプリケーションです。ダウンロードファイルは `IPRO-SDK-V2.2.1.tar.gz` で、SHA-256 はリリースページに記載しています。[V2.2.0](#v2-2-0) のその他の内容（既知の問題を含む）は V2.2.1 にも当てはまります。
+
+**修正**
+
+- **IPRO6S の soft-AP**：工場出荷時の MAC アドレスがないチップ（IPRO6S EVK など）では、`wifi_ap_start` がメッセージなしで失敗していました。現在はステーションとアクセスポイントが起動ごとに 1 つのランダムアドレスを共有し、アクセスポイントは最下位ビットだけを反転させます。修正は `ipro6_demo`（`defconfig_ipro6_lpwifi`）と `ipro6_if_wifi`（`defconfig_ipro6_sdio`、`defconfig_ipro6_usb`）のビルド済み `libipro_os_adapter.a` に含まれます。手順は [IPRO6S](../hardware/chips/ipro6s.md#flashing) を参照してください。
+- **`ipro_ble_remote` の `make_reef_ota.sh`**：IntelProCube フォルダー内の最新の boot2（0.7.0.1 では v0.6.0）、または `IPRO_BOOT2` で指定したファイルを使います。スクリプトを先に書き換える必要はなくなりました。
+- **パッケージの README**：IntelProCube 0.7.0.1 を GitHub から取得する手順（ダウンロードとチェックサム）と、IPRO6S EVK の書き込みコマンド（`--chip-variant IPRO6S`、`partition_cfg_fw_direct.toml`）を記載しました。
+- **Zephyr**：`zephyr/subsys/net/ipro_wifi/net_al_zephyr.c` をパッケージ内の lwIP ポートの L2 ソケットインターフェースに合わせました。IPRO6S は引き続き Zephyr では未対応です。
+
+リリース前にパッケージからビルドして確認したもの：IPRO7 の FreeRTOS アプリケーション 36 個、IPRO6S の構成 7 個、Zephyr サンプル。ボード上では、IPRO6S EVK のスキャンと、コンピューターが接続して DHCP アドレスを取得できる soft-AP（macOS と Windows でそれぞれビルド・書き込み）、IPRO7AI Reef EVK の `reef selftest` を確認しました。
+
+### 既知の問題 { #v2-2-1-known-issues }
+
+- **IPRO Workbench 0.1.0 と IPRO6S**：Workbench は IPRO6S のパーティションテーブルを付けずに IPRO6S イメージを書き込むため、ボードが起動しません。[IPRO6S](../hardware/chips/ipro6s.md#flashing) のとおり IntelProCube のコマンドラインで書き込んでください。
 
 ## IPRO-SDK-V2.2.0 { #v2-2-0 }
 
-<span class="ipro-badge">最新版</span> リリース日：2026-11-03 · [GitHub リリース](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0)
+リリース日：2026-11-03 · [GitHub リリース](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.0)
 
 IPRO7 / IPRO7AI と IPRO6S のデュアルチップリリースで、V2.1.0 を置き換えます。FreeRTOS アプリケーションは 40 個（IPRO7 用 37 個、IPRO6S 用 3 個）です。ダウンロードファイルは `IPRO-SDK-V2.2.0.tar.gz` で、SHA-256 はリリースページに記載しています。
 

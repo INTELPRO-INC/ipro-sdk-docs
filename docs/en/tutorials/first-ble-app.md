@@ -146,12 +146,11 @@ At the end of this tutorial the IPRO7AI Reef EVK runs the SDK's GATT reference a
 
     Disconnect the phone first: the Reef build allows one connection only (`CONFIG_BT_CONN=1`).
 
-11. **Build an OTA package.** Make any small change (for example, change the beep to `reef_hw_tone(2000, 150, 30)`), rebuild (step 1), then package the build as a boot2 OTA package. The script has IntelProCube build the combined image and compresses it with the SDK's `tools/create_ota.py`. The packaging script in SDK V2.2.0 names boot2 v0.5.2, while IntelProCube 0.7.0 and later ship boot2 v0.6.0, so the first line changes the version in the script to v0.6.0 (running it again does no harm):
+11. **Build an OTA package.** Make any small change (for example, change the beep to `reef_hw_tone(2000, 150, 30)`), rebuild (step 1), then package the build as a boot2 OTA package. The script has IntelProCube build the combined image and compresses it with the SDK's `tools/create_ota.py`. It takes the newest boot2 in the IntelProCube folder (v0.6.0 in 0.7.0.1):
 
     === "macOS"
 
         ```bash
-        sed -i '' 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos \
             sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         ```
@@ -159,7 +158,6 @@ At the end of this tutorial the IPRO7AI Reef EVK runs the SDK's GATT reference a
     === "Linux"
 
         ```bash
-        sed -i 's/v0\.5\.2/v0.6.0/g' apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_linux \
             sh apps/bluetooth/ble/ipro_ble_remote/tools/make_reef_ota.sh
         ```
@@ -241,7 +239,7 @@ The Reef build adds two services: OTA `0xFF60` (control `0xFF61`, data `0xFF62`,
 | The build fails on a warning | The app compiles with `-Werror` | Keep `#include "reef_hw.h"` inside the `CONFIG_IPRO7AI_REEF` block and the call inside the function |
 | `make_reef_ota.sh` prints `IntelProCube tool not found` | `IPRO_FLASH_TOOL` is unset and the flasher is not on PATH | Set `IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos` (or `_linux`) |
 | `make_reef_ota.sh` prints `build first: …` | There is no build in `build_reef/` yet | Run step 1 first |
-| `make_reef_ota.sh` prints `No such file or directory: …boot2_v0.5.2…` and `IntelProCube did not build whole_img.bin` | The script still names boot2 v0.5.2, which IntelProCube no longer ships from 0.7.0 on | Run the `sed` line of step 11, then package again |
+| `make_reef_ota.sh` prints `boot2 image not found` | The IntelProCube folder that `IPRO_FLASH_TOOL` points to has no `chips/ipro7/builtin_imgs/boot2_v*` | Point `IPRO_FLASH_TOOL` at the tool in an IntelProCube 0.7.0.1 folder, or set `IPRO_BOOT2` to a boot2 `.bin` |
 | `reef_ota.py` prints `IPRO-Remote not found` | The board was renamed, a phone is connected, or the computer's Bluetooth is off or not allowed | Set `REMOTE_NAME=IPRO-Hello`; disconnect the phone; on macOS, allow the terminal to use Bluetooth |
 | `reef_ota.py` prints `device error …` | The board rejected the package or a write failed | Check that you sent the `.xz.ota`; read the `[OTA]` lines on the console |
 | The board does not come back after OTA | When boot2 rejects a package it stays in its USB rescue mode | Enter download mode and reflash with the command from step 3 |

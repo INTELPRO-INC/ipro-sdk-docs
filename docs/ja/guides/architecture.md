@@ -95,7 +95,7 @@ IPRO7 がネットワークに接続する方法と、SDIO リンクの反対側
 ## ディレクトリ構成 { #directory }
 
 ```text
-IPRO-SDK-V2.2.0/
+IPRO-SDK-V2.2.1/
 ├── apps/                    FreeRTOS アプリケーション（40 個）
 │   ├── ai/                  NPU と Edge AI のアプリケーション
 │   ├── bluetooth/ble/       BLE のサンプル

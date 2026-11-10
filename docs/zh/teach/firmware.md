@@ -12,7 +12,7 @@ description: 取得或建置 Edge AI 韌體 ipro_reef_teach、產生 mfg 酬載�
 - IPRO7AI Reef EVK V4.0，以及一條接 Reef USB-C（USB1）的資料線：燒錄時板子也由它供電。
 - IPRO Debug Probe：以 USB-C 線接電腦，再以兩端腳序對調的 SH1.0 6 pin 排線接 Reef 的 U6，見[除錯排座 U6](../hardware/boards/reef-evk.md#debug-connector)。探針不對 Reef 供電。
 - IntelProCube 0.7.0.1 命令列燒錄工具（`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe`），在它的工具目錄下執行。安裝方式見[準備開發環境](../get-started/environment.md#intelprocube)。
-- 韌體檔：IPRO Edge AI 套件的 `firmware/` 資料夾，或以 SDK V2.2.0 自行建置（需要[工具鏈](../get-started/environment.md)與 Python 3）。
+- 韌體檔：IPRO Edge AI 套件的 `firmware/` 資料夾，或以 SDK V2.2.1 自行建置（需要[工具鏈](../get-started/environment.md)與 Python 3）。
 
 ![Reef、IPRO Debug Probe 與電腦的接線：USB-C 資料線負責供電與 Teach 工具連線，探針經 SH1.0 排線接 U6 負責燒錄與主控台](../assets/teach/reef-connect.svg)
 

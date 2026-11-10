@@ -31,7 +31,7 @@ Reef 的應用設定中，`ipro_reef_teach`、`ipro_agora_sentino` 的 `.config`
 
 ## NPU 與推論執行庫 { #architecture }
 
-推論執行庫以預編譯函式庫 `components/ai/lib/libai.a` 提供，公開標頭為 `components/ai/iproai_def.h` 與 `components/ai/` 下各模組的標頭；套件不含推論執行庫原始碼。V2.2.0 的 `components/ai` 是 IPRO Edge AI 平台 V2.0：執行庫、每個工具一個槽位的模型儲存區、輸入來源、前處理與應用框架。等待 NPU 有時間上限，逾時會重置 NPU 區塊並進入安全的故障狀態。CPU 端推論另有 TensorFlow Lite Micro、NMSIS-NN 與 TinyMaix（`components/3rdparty/`）。
+推論執行庫以預編譯函式庫 `components/ai/lib/libai.a` 提供，公開標頭為 `components/ai/iproai_def.h` 與 `components/ai/` 下各模組的標頭；套件不含推論執行庫原始碼。V2.2.1 的 `components/ai` 是 IPRO Edge AI 平台 V2.0：執行庫、每個工具一個槽位的模型儲存區、輸入來源、前處理與應用框架。等待 NPU 有時間上限，逾時會重置 NPU 區塊並進入安全的故障狀態。CPU 端推論另有 TensorFlow Lite Micro、NMSIS-NN 與 TinyMaix（`components/3rdparty/`）。
 
 ### 啟用 AI { #config }
 
