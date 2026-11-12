@@ -18,11 +18,11 @@ IPRO AI Teach teaches the IPRO7AI Reef EVK to recognize things without writing c
 
 ## Introduction video { #video }
 
-<video controls preload="metadata" playsinline width="100%" poster="/ipro-sdk-docs/assets/videos/ipro-ai-teach-2-intro.jpg">
-  <source src="/ipro-sdk-docs/assets/videos/ipro-ai-teach-2-intro.mp4" type="video/mp4">
+<video controls preload="metadata" playsinline width="100%" poster="/ipro-sdk-docs/assets/videos/ipro-ai-teach-2-intro-en.jpg">
+  <source src="/ipro-sdk-docs/assets/videos/ipro-ai-teach-2-intro-en.mp4" type="video/mp4">
 </video>
 
-A board tour, flashing, and each tool from collecting data to recognition on the board (about 3 minutes, narrated in Mandarin with Chinese captions).
+A board tour, flashing, and each tool from collecting data to recognition on the board (about 3 minutes).
 
 ## The three tools { #tools }
 

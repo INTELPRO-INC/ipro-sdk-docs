@@ -18,11 +18,11 @@ IPRO AI Teach を使うと、コードを書かずに IPRO7AI Reef EVK に認識
 
 ## 紹介ビデオ { #video }
 
-<video controls preload="metadata" playsinline width="100%" poster="/ipro-sdk-docs/assets/videos/ipro-ai-teach-2-intro.jpg">
-  <source src="/ipro-sdk-docs/assets/videos/ipro-ai-teach-2-intro.mp4" type="video/mp4">
+<video controls preload="metadata" playsinline width="100%" poster="/ipro-sdk-docs/assets/videos/ipro-ai-teach-2-intro-en.jpg">
+  <source src="/ipro-sdk-docs/assets/videos/ipro-ai-teach-2-intro-en.mp4" type="video/mp4">
 </video>
 
-ボードの紹介、書き込み、各ツールのデータ収集からボード上での認識までを紹介します（約 3 分、中国語のナレーションと中国語字幕）。
+ボードの紹介、書き込み、各ツールのデータ収集からボード上での認識までを紹介します（約 3 分、英語のナレーション）。
 
 ## 3 つのツール { #tools }
 
