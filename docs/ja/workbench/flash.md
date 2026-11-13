@@ -154,6 +154,8 @@ IPRO7AI の NPU モデル（`.inm`）は通常、Flash の mfg パーティシ�
 
 </div>
 
+![送信後の OTA Package ページ："Package made" の表にファイル、サイズ、中のイメージ、バージョン、SHA-256、署名（Not signed）、作成日時が並び、"Send to the board" には Send to Board と Check on Board のボタンがあります。その下のメッセージは、38 秒で送信し、ボードがパッケージを確認して再起動中であることを示しています](../assets/workbench/ota-send.svg)
+
 !!! note
     - **Signature** は、パッケージのヘッダーに署名ブロックがあるかどうかを示します。「Signed: the header carries a signature block」または「Not signed」です。このページで作成するパッケージには署名がありません。署名付きパッケージについては [OTA アップデート](../guides/ota.md)を参照してください。
     - パッケージの送信中に **Stop** をクリックすると、「Stopped. The board asks for the rest for about 20 seconds, then gives up and returns to its shell; nothing was installed.」と表示されます。
@@ -267,7 +269,7 @@ IPRO Workbench は、IPRO SDK の IPRO6 アプリケーション（`.config` に
 
 </div>
 
-![New IPRO Application ダイアログ。ボードに IPRO6S EVK (IPRO6S)、名前に my_wifi_app が入力されている](../assets/workbench/new-app-ipro6s.svg)
+![New IPRO Application ダイアログ。Start from に「Wi-Fi station for the IPRO6S EVK (a copy of ipro6_demo, Wi-Fi configuration)」が選ばれ、SDK の IPRO6S 用 Wi-Fi ライブラリはこの構成向けにビルド済みであるという注意書き、その下に名前とカテゴリーがある](../assets/workbench/new-app-ipro6s.svg)
 
 Wi-Fi アプリケーションの場合は、代わりに **Start from** で **Wi-Fi station for the IPRO6S EVK (a copy of ipro6_demo, Wi-Fi configuration)** を選択し、名前を入力して **Create** をクリックします。
 

@@ -68,6 +68,8 @@ description: コードを書くときによく使う IPRO Workbench のビュー
 
 </div>
 
+!["Select the configuration ipro7_uvc_cam builds from" という見出しの構成の一覧：チェックの付いた .config（IPRO7 · IPRO7 EVB）と、defconfig_reef_ov5640、defconfig_reef_rps（IPRO7 · IPRO7AI Reef）が並び、各行にビルド先のフォルダーが表示されています](../assets/workbench/configurations.svg)
+
 !!! note
     - `defconfig_*` ファイルだけがあり `.config` がないアプリケーション（例：`ipro6_fmac`）も、**Applications** に表示されるようになりました。アプリケーション名と同じ名前のファイル、なければ最初のファイルから開始します。
     - 構成が 1 つしかないアプリケーションでは、**Select Configuration…** は「&lt;application&gt; has one configuration: .config.」と表示するだけです。

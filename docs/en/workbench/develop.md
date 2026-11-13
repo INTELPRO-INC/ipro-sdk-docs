@@ -68,6 +68,8 @@ The steps use `ipro7_uvc_cam`, whose `.config` is for the IPRO7 EVB and which ha
 
 </div>
 
+![The configuration list headed "Select the configuration ipro7_uvc_cam builds from": .config (IPRO7 · IPRO7 EVB) with a check mark, then defconfig_reef_ov5640 and defconfig_reef_rps (IPRO7 · IPRO7AI Reef), each with the folder it builds in](../assets/workbench/configurations.svg)
+
 !!! note
     - Applications that have only `defconfig_*` files and no `.config` (for example `ipro6_fmac`) now appear under **Applications**. They start on the file named after the application, or else the first one.
     - For an application with a single configuration, **Select Configuration…** only says "&lt;application&gt; has one configuration: .config."

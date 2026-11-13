@@ -68,6 +68,8 @@ description: 编写代码时最常用的 IPRO Workbench 视图：配置（Kconfi
 
 </div>
 
+![配置文件列表，标题为“Select the configuration ipro7_uvc_cam builds from”：已勾选的 .config（IPRO7 · IPRO7 EVB），以及 defconfig_reef_ov5640 与 defconfig_reef_rps（IPRO7 · IPRO7AI Reef），每一行下方注明构建到哪个文件夹](../assets/workbench/configurations.svg)
+
 !!! note
     - 只有 `defconfig_*` 而没有 `.config` 的应用程序（例如 `ipro6_fmac`）现在也会列在 **Applications** 中，默认使用与应用程序同名的配置文件，没有时使用第一个。
     - 应用程序只有一个配置文件时，**Select Configuration…** 只会提示“&lt;application&gt; has one configuration: .config.”

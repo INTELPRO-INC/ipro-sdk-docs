@@ -68,6 +68,8 @@ description: 在 IPRO Workbench 以表單修改應用程式的 .config、設定�
 
 </div>
 
+![「選擇設定檔」清單：上方提示「選擇 ipro7_uvc_cam 建置所用的設定檔」，列出打勾的 .config（IPRO7 · IPRO7 EVB）、defconfig_reef_ov5640 與 defconfig_reef_rps（IPRO7 · IPRO7AI Reef），每一列下面寫著要建置到哪個資料夾](../assets/workbench/configurations.svg)
+
 !!! note
     - 只有 `defconfig_*` 而沒有 `.config` 的應用程式（例如 `ipro6_fmac`）現在也會列在「應用程式」裡，預設使用和應用程式同名的設定檔，沒有時用第一個。
     - 應用程式只有一個設定檔時，**選擇設定檔…** 只會通知「<應用程式> 只有一個設定檔：.config。」

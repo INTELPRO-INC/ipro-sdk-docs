@@ -154,6 +154,8 @@ The steps use `ipro_ble_remote` of IPRO SDK V2.3.0 on the IPRO7AI Reef EVK V4.0;
 
 </div>
 
+![The OTA Package page after sending: "Package made" lists the file, size, image inside, version, SHA-256, signature (Not signed) and when it was made; "Send to the board" has the Send to Board and Check on Board buttons, and the message below says the package was sent in 38 s and the board checked it and is rebooting](../assets/workbench/ota-send.svg)
+
 !!! note
     - **Signature** tells whether the package header carries a signature block: "Signed: the header carries a signature block" or "Not signed". The packages this page makes are not signed; for signed packages, see [OTA Updates](../guides/ota.md).
     - Clicking **Stop** while a package is being sent shows "Stopped. The board asks for the rest for about 20 seconds, then gives up and returns to its shell; nothing was installed."
@@ -267,7 +269,7 @@ IPRO Workbench builds, flashes and monitors the IPRO6 applications of the IPRO S
 
 </div>
 
-![The New IPRO Application dialog with the board IPRO6S EVK (IPRO6S) and the name my_wifi_app](../assets/workbench/new-app-ipro6s.svg)
+![The New IPRO Application dialog with Start from set to "Wi-Fi station for the IPRO6S EVK (a copy of ipro6_demo, Wi-Fi configuration)", the note that the SDK's Wi-Fi libraries for the IPRO6S are prebuilt for this configuration, and the name and category](../assets/workbench/new-app-ipro6s.svg)
 
 For a Wi-Fi application, choose **Wi-Fi station for the IPRO6S EVK (a copy of ipro6_demo, Wi-Fi configuration)** under **Start from** instead, enter a name and click **Create**.
 

@@ -154,6 +154,8 @@ IPRO7AI 的 NPU 模型（`.inm`）通常放在 Flash 的 mfg 分割區，不和�
 
 </div>
 
+![送出之後的「OTA 包」頁面：「OTA 包已製作」表列出檔案、大小、包內映像、版本、SHA-256、簽章（未簽章）與製作時間；「傳送到板子」有傳送到板子與只在板上檢查兩個按鈕，下方訊息是已在 38 秒內送出、板子已檢查封包並重新開機](../assets/workbench/ota-send.svg)
+
 !!! note
     - 「簽章」顯示套件標頭有沒有簽章區塊：「已簽章：標頭帶有簽章區塊」或「未簽章」。這一頁製作的包不加簽章；簽章套件見 [OTA 更新](../guides/ota.md)。
     - 傳送中按 **停止**，顯示「已停止。板子會再要求剩下的資料約 20 秒，然後放棄並回到 shell；沒有安裝任何東西。」
@@ -267,7 +269,7 @@ IPRO Workbench 可以建置、燒錄並監看 IPRO SDK 的 IPRO6 應用程式（
 
 </div>
 
-![「新增 IPRO 應用程式」對話框：開發板選了 IPRO6S EVK (IPRO6S)，名稱 my_wifi_app](../assets/workbench/new-app-ipro6s.svg)
+![「新增 IPRO 應用程式」對話框：從何開始選了「IPRO6S EVK 的 Wi-Fi station（複製 ipro6_demo，Wi-Fi 設定）」，下面提示 SDK 的 IPRO6S Wi-Fi 函式庫是照這組設定預先編好的，接著是名稱與分類](../assets/workbench/new-app-ipro6s.svg)
 
 要做 Wi-Fi 應用程式時，在「從何開始」改選 **IPRO6S EVK 的 Wi-Fi station（複製 ipro6_demo，Wi-Fi 設定）**，輸入名稱後按 **建立**。
 

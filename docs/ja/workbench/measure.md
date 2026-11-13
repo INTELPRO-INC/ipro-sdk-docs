@@ -53,7 +53,7 @@ description: IPRO Workbench で、ボード上で Unity テストを実行して
 
 </div>
 
-![BLE RF テストのページ。ボードのポート、Check Firmware、チャネル、PHY、長さ、ペイロード、電力、Transmit・Receive・Stop の各ボタン、2 台のボード間の PER についてのヒントがある](../assets/workbench/rf-test.svg)
+![モニターを開く前の BLE RF テストのページ。INTELPRO MFG ファームウェアを実行しているボードでシリアルモニターを開くよう求めるヒントと Open Monitor ボタン、チャネル・PHY・長さ・ペイロード・TX 電力、モニターを開くまで使えない Transmit・Receive・Stop の各ボタン、2 台のボード間のパケットエラー率についてのヒントと Open Monitor on Another Port… ボタンがある](../assets/workbench/rf-test.svg)
 
 !!! tip
     近くに Wi-Fi があると、Wi-Fi のチャネルと重なる BLE チャネル（例：2440 MHz 付近）では多くのパケットが失われます。PER を測定するときは、近くの Wi-Fi と重ならないチャネル（例：2478 MHz）を選んでください。
@@ -193,4 +193,4 @@ IPRO6S の station が RAM を Wi-Fi スループットとアプリケーショ�
 
 </div>
 
-![電流波形とその統計（記録時間、平均、ピーク、スリープ時の下限、電荷量、CR2032 での寿命）がある Power ビュー。ポインターは 5.000 s の位置にあり、ツールチップにログ行「inference start」が表示されている](../assets/workbench/power.svg)
+![Power ビュー。上に統計（記録時間、平均、ピーク、スリープ時の下限、電荷量、CR2032 での寿命）、下に対数目盛の電流波形がある。ドラッグで選んだ区間は灰色で示され、ポインター位置 8.128 s のツールチップに平均電流とその範囲が表示されている](../assets/workbench/power.svg)

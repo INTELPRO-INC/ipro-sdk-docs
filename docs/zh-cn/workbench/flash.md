@@ -154,6 +154,8 @@ IPRO7AI 的 NPU 模型（`.inm`）通常存放在 Flash 的 mfg 分区中，不�
 
 </div>
 
+![发送之后的 OTA Package 页面：“Package made”表格列出文件、大小、包内镜像、版本、SHA-256、签名（Not signed）与生成时间；“Send to the board”下有 Send to Board 与 Check on Board 两个按钮，下方消息表示已在 38 秒内发送完毕、开发板已检查 OTA 包并正在重启](../assets/workbench/ota-send.svg)
+
 !!! note
     - **Signature** 显示 OTA 包头中有没有签名块：“Signed: the header carries a signature block”或“Not signed”。此页面制作的 OTA 包不加签名；签名 OTA 包请参阅 [OTA 更新](../guides/ota.md)。
     - 发送过程中点击 **Stop**，会显示“Stopped. The board asks for the rest for about 20 seconds, then gives up and returns to its shell; nothing was installed.”
@@ -267,7 +269,7 @@ IPRO Workbench 可以构建、烧录和监视 IPRO SDK 中的 IPRO6 应用程序
 
 </div>
 
-![New IPRO Application 对话框，开发板为 IPRO6S EVK (IPRO6S)，名称为 my_wifi_app](../assets/workbench/new-app-ipro6s.svg)
+![New IPRO Application 对话框：Start from 选择了“Wi-Fi station for the IPRO6S EVK (a copy of ipro6_demo, Wi-Fi configuration)”，下方说明 SDK 的 IPRO6S Wi-Fi 库是按这组配置预先编译的，接着是名称与分类](../assets/workbench/new-app-ipro6s.svg)
 
 要创建 Wi-Fi 应用程序时，在 **Start from** 中改选 **Wi-Fi station for the IPRO6S EVK (a copy of ipro6_demo, Wi-Fi configuration)**，输入名称后点击 **Create**。
 

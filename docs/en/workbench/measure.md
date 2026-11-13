@@ -53,7 +53,7 @@ When an application uses the SDK's Unity test framework (for example `ipro_unit_
 
 </div>
 
-![The BLE RF test page: board port, Check Firmware, channel, PHY, length, payload and power, the Transmit, Receive and Stop buttons, and the hint for the PER between two boards](../assets/workbench/rf-test.svg)
+![The BLE RF test page before a monitor is open: the hint to open the serial monitor on a board running the INTELPRO MFG firmware with the Open Monitor button, the channel, PHY, length, payload and TX power, the Transmit, Receive and Stop buttons (not available until the monitor is open), and the hint for the packet error rate between two boards with Open Monitor on Another Port…](../assets/workbench/rf-test.svg)
 
 !!! tip
     With Wi-Fi nearby, BLE channels that overlap a Wi-Fi channel lose many packets (for example around 2440 MHz). When you measure PER, choose a channel clear of the nearby Wi-Fi, for example 2478 MHz.
@@ -193,4 +193,4 @@ How an IPRO6S station splits its RAM between Wi-Fi throughput and the heap left 
 
 </div>
 
-![The Power view with the current curve and its statistics: duration, average, peak, sleep floor, charge and CR2032 life; the pointer hovers at 5.000 s, where the tooltip shows the log line "inference start"](../assets/workbench/power.svg)
+![The Power view with its statistics (duration, average, peak, sleep floor, charge and CR2032 life) above the current curve on a log scale; a dragged stretch is shaded, and the tooltip at the pointer, 8.128 s, gives the average current and its range](../assets/workbench/power.svg)

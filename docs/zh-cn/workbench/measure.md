@@ -53,7 +53,7 @@ description: 在 IPRO Workbench 中于开发板上运行 Unity 测试并在 Test
 
 </div>
 
-![BLE 射频测试页面：开发板端口、Check Firmware、信道、PHY、长度、载荷和功率，Transmit、Receive 和 Stop 按钮，以及两块开发板之间 PER 的提示](../assets/workbench/rf-test.svg)
+![尚未打开监视器时的 BLE RF 测试页面：顶部提示在运行 INTELPRO MFG 固件的开发板上打开串口监视器，右侧是 Open Monitor 按钮；接着是信道、PHY、长度、载荷和 TX 功率，以及打开监视器前不可用的 Transmit、Receive 和 Stop 按钮；下方是两块开发板之间封包错误率的提示与 Open Monitor on Another Port… 按钮](../assets/workbench/rf-test.svg)
 
 !!! tip
     附近有 Wi-Fi 时，与 Wi-Fi 信道重叠的 BLE 信道会大量丢包（例如 2440 MHz 附近）。测量 PER 时，请选择避开附近 Wi-Fi 的信道，例如 2478 MHz。
@@ -193,4 +193,4 @@ IPRO6S 作为 station 时，RAM 如何在 Wi-Fi 吞吐量和应用程序可用�
 
 </div>
 
-![Power 视图，包含电流曲线及其统计数据：时长、平均值、峰值、睡眠底电流、电荷量和 CR2032 续航；指针悬停在 5.000 s 处，提示框显示日志行“inference start”](../assets/workbench/power.svg)
+![Power 视图：上方是时长、平均值、峰值、睡眠底电流、电荷量和 CR2032 续航，下方是对数刻度的电流曲线；拖动选中的一段区间以灰底标示，指针所在的 8.128 s 处提示框显示平均电流与范围](../assets/workbench/power.svg)
