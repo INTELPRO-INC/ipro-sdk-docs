@@ -21,6 +21,14 @@ AI features are off by default. Before you use them:
 
 If the AI features are still off when you press any of the **Ask AI…** buttons below, the IDE first shows "AI features are off…". Press **Turn On AI** to turn them on.
 
+If the AI features are on but no language model is ready yet, an **Ask AI…** button first shows "The IPRO assistant has no language model to use yet. Set one up first: an API key of a model provider (Anthropic, OpenAI, Google…), GitHub Copilot, or a model running on this computer (Ollama). Or ask the Claude Code assistant, which uses your Claude Code login." with three buttons:
+
+| Button | What it does |
+|---|---|
+| **Set Up a Model** | Opens the AI model setup |
+| **Use Claude Code** | Sets `ipro.ai.assistant` to `claudeCode`, so requests go to the Claude Code assistant from now on. It then says "Ask AI now goes to the Claude Code assistant (the ipro.ai.assistant setting). It needs the Claude Agent SDK on this computer and, to use the IPRO tools, the MCP connection: Connect… copies the command."; click **Connect…** to copy it (see [Let AI assistants outside the IDE use it](#mcp)) |
+| **Ask Anyway** | Sends the request as it is |
+
 ## Ask AI to fix a build error { #fix-build }
 
 <div class="ipro-steps" markdown>
@@ -72,4 +80,4 @@ While IPRO Workbench is open, it provides an MCP server on this computer so that
     - The token is stored in `.ipro-ide/mcp.json` in your home folder, and only your account can read it. The copied setup contains the token; do not paste it anywhere public.
     - When you do not need the server, turn off `ipro.mcp.enabled` in Settings.
 
-For the tools that MCP provides, see [MCP tools](reference.md#mcp-tools).
+Besides building, flashing, reading the monitor and changing settings, an AI assistant outside the IDE can open an SDK folder, choose the board, the port and the [configuration](develop.md#configurations), open and close the serial monitor, and type a line on the board's console and read back the board's answer. For the tools that MCP provides, see [MCP tools](reference.md#mcp-tools).

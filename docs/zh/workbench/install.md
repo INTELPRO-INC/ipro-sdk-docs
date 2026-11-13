@@ -1,18 +1,19 @@
 ---
 title: "安裝 IPRO Workbench"
-description: 在 macOS 與 Windows 下載、核對並安裝 IPRO Workbench 0.1.1，補齊開發環境、開啟 IPRO SDK，直到 IDE 找到接在 IPRO 除錯探棒上的 IPRO7AI Reef EVK 或 IPRO6S EVK。
+description: 在 macOS 與 Windows 下載、核對並安裝 IPRO Workbench 0.2.0，補齊開發環境、開啟 IPRO SDK，直到 IDE 找到接在 IPRO 除錯探棒上的 IPRO7AI Reef EVK 或 IPRO6S EVK。
 ---
 
 # 安裝 IPRO Workbench
 
-本頁從安裝 IPRO Workbench 開始，一路到 IDE 找到開發板為止。完成後，電腦上有 IPRO Workbench 0.1.1 與開發需要的工具，IDE 開啟了 IPRO SDK，側邊欄「開發板」列出 IPRO 除錯探棒，首頁橫幅會顯示「已可執行」。
+本頁從安裝 IPRO Workbench 開始，一路到 IDE 找到開發板為止。完成後，電腦上有 IPRO Workbench 0.2.0 與開發需要的工具，IDE 開啟了 IPRO SDK，側邊欄「開發板」列出 IPRO 除錯探棒，首頁橫幅會顯示「已可執行」。
 
 ## 需要準備 { #prerequisites }
 
 | 項目 | 說明 |
 |---|---|
 | 電腦 | macOS 12 以上（Apple Silicon）或 Windows 11（x64），可以連上 GitHub。IDE、工具與 SDK 合計約需 4 GB 磁碟空間。 |
-| 安裝檔 | macOS：`IPRO-Workbench-0.1.1-mac-arm64.dmg`；Windows：`IPRO-Workbench-0.1.1-win-x64.exe`。從 GitHub 的 IPRO Workbench 發行頁下載（見[下載與核對](#download)），不需要 GitHub 帳號。 |
+| 安裝檔 | macOS：`IPRO-Workbench-0.2.0-mac-arm64.dmg`；Windows：`IPRO-Workbench-0.2.0-win-x64.exe`。從 GitHub 的 IPRO Workbench 發行頁下載（見[下載與核對](#download)），不需要 GitHub 帳號。 |
+| IPRO SDK | IPRO SDK V2.3.0（可以在[開啟 SDK](#open-sdk)時從 GitHub 安裝）。較舊的 SDK 也能用，只是標示「SDK V2.3.0」的功能無法使用 |
 | 開發板 | IPRO7AI Reef EVK V4.0（見 [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)），或 IPRO6S EVK（見 [IPRO6S EVK](flash.md#ipro6s)） |
 | 探棒與線材 | IPRO 除錯探棒（IPRO Debug Probe），以及接電腦用的 USB 線 |
 | macOS 另需 | Xcode 命令列工具與 Homebrew 的 CMake、Ninja（見[補齊開發環境](#environment)） |
@@ -21,12 +22,12 @@ description: 在 macOS 與 Windows 下載、核對並安裝 IPRO Workbench 0.1.1
 
 | 系統 | 安裝檔 | 大小 |
 |---|---|---|
-| macOS 12 以上（Apple Silicon） | [`IPRO-Workbench-0.1.1-mac-arm64.dmg`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.1/IPRO-Workbench-0.1.1-mac-arm64.dmg) | 199 MB |
-| Windows 11（x64） | [`IPRO-Workbench-0.1.1-win-x64.exe`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.1/IPRO-Workbench-0.1.1-win-x64.exe) | 160 MB |
+| macOS 12 以上（Apple Silicon） | [`IPRO-Workbench-0.2.0-mac-arm64.dmg`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.0/IPRO-Workbench-0.2.0-mac-arm64.dmg) | 201 MB |
+| Windows 11（x64） | [`IPRO-Workbench-0.2.0-win-x64.exe`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.0/IPRO-Workbench-0.2.0-win-x64.exe) | 161 MB |
 
 <div class="ipro-steps" markdown>
 
-1. **下載安裝檔。** 開啟 IPRO Workbench 的發行頁 <https://github.com/INTELPRO-INC/ipro-workbench/releases/latest>，在 **Assets** 下載自己系統的安裝檔。
+1. **下載安裝檔。** 開啟 IPRO Workbench 0.2.0 的發行頁 <https://github.com/INTELPRO-INC/ipro-workbench/releases/tag/v0.2.0>，在 **Assets** 下載自己系統的安裝檔。
 
 2. **核對下載的檔案**，確認沒有損壞或被替換：
 
@@ -35,7 +36,7 @@ description: 在 macOS 與 Windows 下載、核對並安裝 IPRO Workbench 0.1.1
         在「終端機」執行：
 
         ```bash
-        shasum -a 256 IPRO-Workbench-0.1.1-mac-arm64.dmg
+        shasum -a 256 IPRO-Workbench-0.2.0-mac-arm64.dmg
         ```
 
     === "Windows"
@@ -43,21 +44,21 @@ description: 在 macOS 與 Windows 下載、核對並安裝 IPRO Workbench 0.1.1
         在 PowerShell 執行：
 
         ```powershell
-        (Get-FileHash .\IPRO-Workbench-0.1.1-win-x64.exe -Algorithm SHA256).Hash
+        (Get-FileHash .\IPRO-Workbench-0.2.0-win-x64.exe -Algorithm SHA256).Hash
         ```
 
     **應該看到**：和下面同一個檔案的值相同（Windows 以大寫顯示）。發行頁的 `SHA256SUMS.txt` 也列有這些值。
 
-    ```text title="IPRO Workbench 0.1.1 安裝檔的 SHA-256"
-    # IPRO-Workbench-0.1.1-mac-arm64.dmg
-    fb6980af59e4021ebd7357d3da1721a1490e2cec7446a98425b6c9ba0e25959e
-    # IPRO-Workbench-0.1.1-win-x64.exe
-    e057fb56c15cb68cdfeb8c60b0cfecd7f5bd82860573003ad2d94788a34aa74c
+    ```text title="IPRO Workbench 0.2.0 安裝檔的 SHA-256"
+    # IPRO-Workbench-0.2.0-mac-arm64.dmg
+    0c2e4391d3cefbd8906c07ab65554a8f5a4812baa44ee67356ed51e4262c0cb7
+    # IPRO-Workbench-0.2.0-win-x64.exe
+    5d3643d1d346ae68b0b53ac608b758f3bff2bca7136b18cf00a4e351aaa9fb2a
     ```
 
 </div>
 
-發行頁上的 ZIP、`latest-mac.yml`、`latest.yml` 與 blockmap 檔是給內建更新功能用的，不必下載。
+發行頁上的 ZIP、`latest-mac.yml`、`latest.yml` 與 blockmap 檔是給內建更新功能用的，不必下載；兩份操作手冊 PDF 見[完整操作手冊](index.md#manual)。
 
 ## 安裝 { #install }
 
@@ -67,11 +68,11 @@ description: 在 macOS 與 Windows 下載、核對並安裝 IPRO Workbench 0.1.1
 
     === "macOS"
 
-        打開 `IPRO-Workbench-0.1.1-mac-arm64.dmg`，把 **IPRO Workbench** 拖進「應用程式」資料夾。
+        打開 `IPRO-Workbench-0.2.0-mac-arm64.dmg`，把 **IPRO Workbench** 拖進「應用程式」資料夾。
 
     === "Windows"
 
-        按兩下 `IPRO-Workbench-0.1.1-win-x64.exe`。
+        按兩下 `IPRO-Workbench-0.2.0-win-x64.exe`。
 
         Windows 可能顯示「Windows 已保護您的電腦」。按 **其他資訊**，確認應用程式名稱後按 **仍要執行**。
 
@@ -96,11 +97,11 @@ description: 在 macOS 與 Windows 下載、核對並安裝 IPRO Workbench 0.1.1
 </div>
 
 !!! tip "大量部署（Windows）"
-    IT 人員大量部署時，可以用無人值守安裝：`IPRO-Workbench-0.1.1-win-x64.exe /S`，或以 `/D=<資料夾>` 指定安裝位置（`/D` 必須是最後一個參數）。
+    IT 人員大量部署時，可以用無人值守安裝：`IPRO-Workbench-0.2.0-win-x64.exe /S`，或以 `/D=<資料夾>` 指定安裝位置（`/D` 必須是最後一個參數）。
 
 ## 介面語言 { #language }
 
-系統語言是繁體中文時，IPRO Workbench 第一次啟動就是中文。要換語言，按 `Cmd+Shift+P`（Windows 為 `Ctrl+Shift+P`）開啟命令選擇區，輸入 `Configure Display Language`，選擇語言後依提示重新啟動。
+IPRO Workbench 的介面有繁體中文、英文、簡體中文與日文。第一次啟動時依系統語言決定：繁體中文（台灣、香港、澳門）、簡體中文或日文的系統直接用該語言，其他系統用英文。之後要換語言，按 `Cmd+Shift+P`（Windows 為 `Ctrl+Shift+P`）開啟命令選擇區，輸入 `Configure Display Language`，選擇語言後依提示重新啟動。
 
 ## 補齊開發環境 { #environment }
 
@@ -109,14 +110,14 @@ IPRO Workbench 會自己檢查開發需要的每一項工具，結果列在側�
 | 項目 | 用途 | 「補齊環境」能否自動安裝 |
 |---|---|---|
 | IPRO SDK | 應用程式、驅動與範例的來源 | 可以，從 GitHub 安裝最新發行版 |
-| RISC-V 工具鏈 | 編譯韌體 | 可以 |
+| RISC-V 工具鏈 | 編譯韌體 | 可以（Windows 安裝的是 14.2.1；13.1.1 無法連結 SDK 預先編好的函式庫） |
 | CMake、建置程式 | 產生並執行建置 | Windows 可以（與 Ninja、Python 同一包）；macOS 請用 Homebrew 安裝 |
 | Python（menuconfig） | 設定（Kconfig）與 Menuconfig | 需要另外安裝 kconfiglib 套件（見下方） |
 | IntelProCube | 燒錄 | 可以（安裝的是 0.7.0.1 以上，IPRO6S EVK 需要這一版） |
 | clangd（程式碼導覽） | 跳到定義、邊打邊顯示錯誤 | 可以，由 clangd 擴充功能下載（按修復後，擴充功能會再問一次是否安裝） |
 | OpenOCD（除錯） | JTAG 除錯（本版尚未開放） | Windows 可以；未安裝不影響建置與燒錄 |
 | 開發板 | 找到 IPRO 除錯探棒 | 接上探棒即可 |
-| 配合此工具鏈的 SDK | Windows 才有：讓 IPRO SDK 2.2 能在 Windows 上建置 | 可以 |
+| 配合此工具鏈的 SDK | Windows 才有：讓 IPRO SDK 2.2.1 以前的版本能在 Windows 上建置 | 可以 |
 | macOS 隔離標記 | macOS 才有：從瀏覽器下載的工具會被系統擋下 | 可以，確認後移除 |
 
 <div class="ipro-steps" markdown>
@@ -160,7 +161,7 @@ IPRO Workbench 以 IPRO SDK 資料夾為工作區。SDK 的內容與命令列的
 
 <div class="ipro-steps" markdown>
 
-1. **開啟 SDK。** 首頁按 **開啟 SDK…**，選 IPRO SDK 資料夾（例如家目錄的 `IPRO/SDK/IPRO-SDK-V2.2.1`）。還沒有 SDK 時按 **從 GitHub 安裝 SDK…**。
+1. **開啟 SDK。** 首頁按 **開啟 SDK…**，選 IPRO SDK 資料夾（例如家目錄的 `IPRO/SDK/IPRO-SDK-V2.3.0`）。還沒有 SDK 時按 **從 GitHub 安裝 SDK…**，清單列出 SDK 的發行版，並標示「最新版」或「預覽版」。
 
     **應該看到**：側邊欄「應用程式」依分類列出 SDK 裡的應用程式，搜尋框寫著「篩選 N 個應用程式」。
 

@@ -67,6 +67,36 @@ description: 在 IPRO Workbench 中用 ipro_unit_test 完整走一遍构建、�
 
 ![New IPRO Application 对话框，包含 Start from、Board、名称和类别](../assets/workbench/new-app.svg)
 
+0.2.0 的 **Start from** 比上图多了三个选项，其他字段相同。**Start from** 可以选择：
+
+| Start from | 开发板 | 创建的内容 |
+|---|---|---|
+| **Hello World for a board** | 任意一块 | 最小的应用程序，运行后打印 `Hello from <名称>` |
+| **BLE peripheral for a board (GATT services from gatt.yaml)** | IPRO7、IPRO7AI 的开发板 | 会广播的 BLE peripheral：`gatt.yaml` 及由它生成的 `app_gatt.h`、`app_gatt.c`，再加上 `app_ble.c`（蓝牙启动、广播以及写入时的处理）。勾选 **With OTA** 时另见下文 |
+| **Wi-Fi station for the IPRO6S EVK (a copy of ipro6_demo, Wi-Fi configuration)** | IPRO6S EVK | 复制 `ipro6_demo`，以它的 Wi-Fi 配置文件作为 `.config`，可以直接运行 [Wi-Fi 吞吐量（iperf）](measure.md#iperf) |
+| **AI vision for the IPRO7AI Reef (a copy of ipro7_uvc_cam: USB camera with a model on the NPU)** | IPRO7AI Reef EVK V4.0 | 复制 `ipro7_uvc_cam`，以石头剪刀布的配置文件 `defconfig_reef_rps` 作为 `.config`；纯视频摄像头的 `defconfig_reef_ov5640` 保留为第二个[配置文件](develop.md#configurations) |
+| **A copy of an existing application** | 取决于来源 | 选择一个现有的应用程序，复制后将所有用到旧名称的地方改为新名称 |
+
+Wi-Fi station 和 AI vision 两个选项，只在 SDK 中有 `ipro6_demo`（含 `defconfig_ipro6_lpwifi`）和 `ipro7_uvc_cam`（含 `defconfig_reef_rps`）时出现。
+
+### 创建 BLE peripheral { #own-app-ble }
+
+<div class="ipro-steps" markdown>
+
+1. **填写表单并创建。** 在 **New IPRO Application** 的 **Start from** 中选择 **BLE peripheral for a board (GATT services from gatt.yaml)**；在 **Board** 中选择 **IPRO7AI Reef**；名称输入 `my_ble`，然后点击 **Create**。
+
+    **应看到**：通知“Created my_ble in user.”，列表中新增 `user/my_ble`，应用程序文件夹中有 `gatt.yaml`、`app_gatt.h`、`app_gatt.c`、`app_ble.c`、`main.c` 和 `README.md`。
+
+2. **运行。** 点击 **Build, Flash and Monitor**。
+
+    **应看到**：IPRO Monitor 中出现 `advertising as IPRO-my_ble`。用手机上的 BLE 工具（例如 nRF Connect）扫描，可以找到 `IPRO-my_ble`；连接后可以看到 `demo` 服务，其中有 `counter`（读取、通知：开机后的秒数）和 `message`（读取、写入：最长 20 字节的文本，写入时开发板会将其打印出来）。
+
+3. **修改服务。** 右键点击应用程序并选择 **GATT Configuration…**；请参阅[配置 GATT 服务](develop.md#gatt)。
+
+</div>
+
+**With OTA**（仅适用于 IPRO7AI 的开发板，需要 SDK V2.3.0）：勾选“With OTA: over BLE and the console UART, an A/B partition table, boot2 (2 MB boards)”后，应用程序还会带有 SDK `ipro_ota` 组件的配置（`CONFIG_IPRO_OTA`、`CONFIG_IPRO_OTA_BLE`、`CONFIG_IPRO_OTA_UART`）和 A/B 分区表 `partition_cfg_2M_ota_ab.toml`，IDE 也会将这份分区表选为它的 **Flash with**。烧录时 IDE 会一并写入 boot2；之后的更新以 [OTA 包](flash.md#ota)的形式发送到开发板。SDK 没有 OTA 组件时，该复选框无法勾选，鼠标悬停时显示“This SDK has no OTA component (components/sys/ipro_ota).”
+
 要基于现有示例开始，请在列表中右键点击该应用程序并选择 **Copy as New Application…**，或在 **Start from** 中选择 **A copy of an existing application**。新的应用程序位于 SDK 中的 `apps/<category>/<name>`。
 
 ## 应用程序的右键菜单 { #app-menu }

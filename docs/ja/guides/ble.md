@@ -4,8 +4,8 @@ description: Zephyr v4.4.0 BLE ホストと IPRO BLE コントローラー（ビ
 migrate_from:
   - "ble-development.html"
 not_migrated:
-  - "ble-development.html#app-framework — V2.2.1 has no Mediator/Applet application framework"
-  - "ble-development.html#ipro6s-btdm — the IPRO6S BLE controller is not part of V2.2.1"
+  - "ble-development.html#app-framework — V2.3.0 has no Mediator/Applet application framework"
+  - "ble-development.html#ipro6s-btdm — the IPRO6S BLE controller is not part of V2.3.0"
 ---
 
 # BLE 開発
@@ -17,7 +17,7 @@ FreeRTOS アプリケーションの BLE は 2 つの部分で構成されます
     - コントローラー：16 個の IPRO7 アーカイブ（`link1_periph` / `link1` / `link2` / `link4` × `bt52` / `bt54_iso2` × debug / release）。`CONFIG_IPRO_BLE_CTLR_LIB`、`CONFIG_IPRO_BLE_CTLR_FEATURE`、`CONFIG_IPRO_BLE_CTLR_CFG_DBG` で選択します。
     - 初期化の順序：`ipro_ble_ctlr_controller_init()` → `hci_driver_ipro_ble_ctlr_init()` → `bt_enable()`。
     - Reef の BLE 構成：`DEFCONFIG=defconfig_reef` を指定した `ipro_ble_remote`、`ipro_throughput_test`、`ipro_le_audio_headset`、および `ipro_agora_sentino`（BLE プロビジョニング）。
-    - V2.2.1 に含まれないもの：コントローラーのソースコード、PAwR/ESL アプリケーション、IPRO6S の BLE コントローラー。
+    - V2.3.0 に含まれないもの：コントローラーのソースコード、PAwR/ESL アプリケーション、IPRO6S の BLE コントローラー。
 
 ## スタックのアーキテクチャ { #stack-architecture }
 
@@ -51,7 +51,7 @@ CONFIG_BT_HOST_IPRO_V44=y
 
 `CONFIG_BT_CTLR_IPRO` または `CONFIG_BT_HOST_IPRO_V44` がないと、CMake の構成段階でビルドが停止します。ホストとコントローラーのコンポーネントは自身のインクルードパスをエクスポートするため、`CMakeLists.txt` に `zephyr/bluetooth/*.h` のパスを追加する必要はありません。
 
-Zephyr RTOS のイメージは、Zephyr 自身のホストと同じコントローラーアーカイブを使います。V2.2.1 の Zephyr には IPRO7 EVB と IPRO7AI EVK のボードしかありません。[Zephyr RTOS](zephyr.md) を参照してください。
+Zephyr RTOS のイメージは、Zephyr 自身のホストと同じコントローラーアーカイブを使います。V2.3.0 の Zephyr には IPRO7 EVB と IPRO7AI EVK のボードしかありません。[Zephyr RTOS](zephyr.md) を参照してください。
 
 ## コントローラーの選択 { #controller-variants }
 
@@ -78,7 +78,7 @@ Zephyr RTOS のイメージは、Zephyr 自身のホストと同じコントロ�
 
 `CONFIG_BT_CONN`（ホストの接続数）は、アーカイブの接続数を超えてはなりません。Exchange Memory は OCRAM の最上部に予約されます。[メモリレイアウト](build-system.md#memory-layout)を参照してください。
 
-V2.2.1 に同梱されている Reef 用構成は、出発点として適しています。
+V2.3.0 に同梱されている Reef 用構成は、出発点として適しています。
 
 | アプリケーションと構成 | LIB | FEATURE | デバッグ版アーカイブ | `CONFIG_BT_CONN` | `CONFIG_EM_SIZE` |
 |---|---|---|---|---|---|
@@ -420,17 +420,17 @@ LE Audio には `CONFIG_IPRO_BLE_CTLR_FEATURE="bt54_iso2"` と `CONFIG_EM_SIZE=3
 
 - `ipro_ble_remote` の `defconfig_reef` は PDS を使いません。Reef は USB 給電で動作し、カメラとオーディオにはクロックが必要なためです。
 - コントローラーの PDS スリープは 16 KB の EM プロファイルでのみ受け付けられます。`bt54_iso2`（32 KB の EM）では、コントローラーは本来のスリープは維持しますが PDS には入りません。
-- `CONFIG_IPRO_PM_BLE` と `CONFIG_IPRO_PM_PDS_CONNECTED` はコントローラーのソースビルドを強制しますが、V2.2.1 ではソースビルドはできません。[制限事項](#limitations)を参照してください。
+- `CONFIG_IPRO_PM_BLE` と `CONFIG_IPRO_PM_PDS_CONNECTED` はコントローラーのソースビルドを強制しますが、V2.3.0 ではソースビルドはできません。[制限事項](#limitations)を参照してください。
 - PDS31 スリープとボンディング済みデバイスへの再接続を伴う BLE は、IPRO7 EVB / IPRO7AI EVK 用のサンプル `ipro_pdm_mic_demo` で示されています。
 
 スリープモード、ウェイクアップ要因、測定については[低消費電力](low-power.md)を参照してください。
 
 ## 本リリースの制限事項 { #limitations }
 
-- コントローラーはビルド済みライブラリとしてのみ提供され、ソースコードは V2.2.1 に含まれていません。次の設定はコントローラーのソースビルドを必要とし、ビルドを停止させます：`CONFIG_IPRO_BLE_CTLR_FORCE_SOURCE_BUILD`、`CONFIG_IPRO_BLE_CTLR_SUBRATING`、`CONFIG_IPRO_BLE_CTLR_CSSA`、`CONFIG_IPRO_PM_BLE`、`CONFIG_IPRO_PM_PDS_CONNECTED`。
-- PAwR と ESL：ホストのヘッダーには周期的アドバタイズの API が含まれていますが、PAwR/ESL のアプリケーションはありません。V2.2.1 には含まれていません。INTELPRO にお問い合わせください。
+- コントローラーはビルド済みライブラリとしてのみ提供され、ソースコードは V2.3.0 に含まれていません。次の設定はコントローラーのソースビルドを必要とし、ビルドを停止させます：`CONFIG_IPRO_BLE_CTLR_FORCE_SOURCE_BUILD`、`CONFIG_IPRO_BLE_CTLR_SUBRATING`、`CONFIG_IPRO_BLE_CTLR_CSSA`、`CONFIG_IPRO_PM_BLE`、`CONFIG_IPRO_PM_PDS_CONNECTED`。
+- PAwR と ESL：ホストのヘッダーには周期的アドバタイズの API が含まれていますが、PAwR/ESL のアプリケーションはありません。V2.3.0 には含まれていません。INTELPRO にお問い合わせください。
 - `ipro_ble_remote` の OTA サービスは `defconfig_reef` でのみ有効です。デフォルトの `.config` は OTA なしの IPRO7 EVB 用イメージをビルドします。
-- IPRO6S の BLE コントローラーは V2.2.1 に含まれていません。このパッケージの IPRO6S アプリケーションは Wi-Fi のみです。
+- IPRO6S の BLE コントローラーは V2.3.0 に含まれていません。このパッケージの IPRO6S アプリケーションは Wi-Fi のみです。
 
 ## リファレンスアプリケーション { #reference-apps }
 

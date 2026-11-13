@@ -9,7 +9,7 @@ hero:
   release_text: "{sdk} を {date} にリリースしました"
   release_link: reference/release-notes/
   title: "IPRO チップ向けの​組み込み SDK"
-  lead: "IPRO7 と IPRO6 の両ファミリーをひとつのアーキテクチャで。FreeRTOS と Zephyr、BLE 5.4 と LE Audio、Wi-Fi 6、NPU によるオンデバイス AI、画像処理に対応します。"
+  lead: "IPRO7 と IPRO6 の両ファミリーをひとつのアーキテクチャで。FreeRTOS と Zephyr、BLE 5.4 と LE Audio、Wi-Fi、NPU によるオンデバイス AI、画像処理に対応します。"
   primary:
     text: はじめる
     link: get-started/
@@ -19,13 +19,13 @@ arch:
   chip_link_text: チップの仕様
   default: ipro7ai
   chips:
-    - { id: ipro7, name: IPRO7, sdk: V2.2.1, link: hardware/chips/ipro7/, desc: "BLE 5.4 と LE Audio、802.15.4、ISP、MJPEG を備えた RISC-V ワイヤレス SoC です。" }
-    - { id: ipro7ai, name: IPRO7AI, sdk: V2.2.1, link: hardware/chips/ipro7ai/, desc: "IPRO7 に NPU とパッケージ内 PSRAM を加えた SoC で、IPRO7AI Reef EVK V4.0 に搭載されています。" }
-    - { id: ipro6s, name: IPRO6S, sdk: V2.2.1, link: hardware/chips/ipro6s/, desc: "Wi-Fi 6 を内蔵した RISC-V SoC です。Reef では microSD スロットに挿す FIN Wi-Fi カードとして使います。" }
+    - { id: ipro7, name: IPRO7, sdk: V2.3.0, link: hardware/chips/ipro7/, desc: "BLE 5.4 と LE Audio、802.15.4、ISP、MJPEG を備えた RISC-V ワイヤレス SoC です。" }
+    - { id: ipro7ai, name: IPRO7AI, sdk: V2.3.0, link: hardware/chips/ipro7ai/, desc: "IPRO7 に NPU とパッケージ内 PSRAM を加えた SoC で、IPRO7AI Reef EVK V4.0 に搭載されています。" }
+    - { id: ipro6s, name: IPRO6S, sdk: V2.3.0, link: hardware/chips/ipro6s/, desc: "Wi-Fi を内蔵した RISC-V SoC です。Reef では microSD スロットに挿す FIN Wi-Fi カードとして使います。" }
   layers:
     - name: アプリ
       items:
-        - { title: サンプル, link: examples/, chips: [ipro7, ipro7ai, ipro6s], desc: "同梱の 40 個のアプリケーションです。Reef で動作する 9 個には手順ページがあります。" }
+        - { title: サンプル, link: examples/, chips: [ipro7, ipro7ai, ipro6s], desc: "同梱の 41 個のアプリケーションです。Reef で動作する 9 個には手順ページがあります。" }
         - { title: IPRO AI Teach, link: teach/, chips: [ipro7ai], desc: "Reef の Edge AI ファームウェアです。IPRO AI Studio を使って、ボードに画像、声紋、センサー信号を学習させます。" }
         - { title: 独自のアプリケーション, wide: true, link: tutorials/first-own-app/, chips: [ipro7, ipro7ai, ipro6s], desc: "Reef の .config のコピーから始め、その中でコンポーネントを選びます。" }
     - name: コンポーネント
@@ -36,7 +36,7 @@ arch:
         - { title: AI ランタイム, link: guides/ai-npu/, chips: [ipro7ai], desc: "NPU 推論ランタイムと Edge AI プラットフォーム（モデルストア、入力ソース、前処理）です。" }
         - { title: カメラと ISP, link: guides/camera/, chips: [ipro7, ipro7ai], desc: "DVP カメラ、ISP、ハードウェア MJPEG で、USB ウェブカメラを構成できます。" }
         - { title: lwIP / mbedTLS, link: guides/networking/, chips: [ipro7, ipro7ai, ipro6s], desc: "TCP/IP スタックと TLS です。" }
-        - { title: Wi-Fi 6, link: hardware/chips/ipro6s/, chips: [ipro6s], desc: "IPRO6S 内蔵の Wi-Fi 6 です。MAC、wpa_supplicant、RF はビルド済みライブラリとして提供します。" }
+        - { title: Wi-Fi, link: hardware/chips/ipro6s/, chips: [ipro6s], desc: "IPRO6S 内蔵の Wi-Fi です。MAC、wpa_supplicant、RF はビルド済みライブラリとして提供します。" }
         - { title: SDIO Wi-Fi ホスト, link: guides/networking/, chips: [ipro7, ipro7ai], desc: "SDIO で接続した IPRO6S（Reef では FIN カード）を通じて、IPRO7 ファミリーに Wi-Fi を提供します。" }
         - { title: Thread, link: guides/thread-matter/, chips: [ipro7, ipro7ai], desc: "802.15.4 と OpenThread で、Zephyr で利用できます。" }
     - name: RTOS
@@ -82,7 +82,7 @@ migrate_from:
 
     IPRO6S FIN カードを microSD スロットに挿し、SDIO 経由で Wi-Fi に接続して、カメラ映像を RTSP で配信します。
 
-    <span class="ipro-tag">IPRO6S</span> <span class="ipro-tag">Wi-Fi 6</span> <span class="ipro-tag">RTSP</span>
+    <span class="ipro-tag">IPRO6S</span> <span class="ipro-tag">Wi-Fi</span> <span class="ipro-tag">RTSP</span>
 
     [手順付きのチュートリアル](tutorials/wifi-rtsp.md)
 
@@ -96,7 +96,7 @@ SDK には IPRO7 EVB、IPRO7AI EVK、IPRO6S EVK 向けのアプリケーショ�
 
 <div class="ipro-steps" markdown>
 
-1. **ホストの準備**：RISC-V ツールチェーンを INTELPRO から入手し、IntelProCube 0.7.0.1 を GitHub からダウンロードし、CMake 3.15 以降、GNU make、Python 3.8 以降をインストールしてから、リリースページから SDK V2.2.1 をダウンロードします。[インストール](get-started/index.md)
+1. **ホストの準備**：RISC-V ツールチェーンを INTELPRO から入手し、IntelProCube 0.7.0.1 を GitHub からダウンロードし、CMake 3.15 以降、GNU make、Python 3.8 以降をインストールしてから、リリースページから SDK V2.3.0 をダウンロードします。[インストール](get-started/index.md)
 2. **出荷時ファームウェアのビルド**：SDK ルートで `make -C apps/platform/ipro7ai_reef_demo` を実行します。イメージは `build/build_out/ipro7ai_reef_demo_IPRO7.bin` です。
 3. **書き込みとセルフテスト**：SW1 を押したまま SW2 を押してダウンロードモードに入り、IntelProCube で書き込んで `[All Success]` を確認します。U6 のコンソール（115200 baud）で `reef selftest` と入力し、LED、スピーカー、SD カード、カメラが順にチェックを通過することを確認します。[詳しい手順](get-started/first-app-freertos.md)
 
@@ -129,17 +129,17 @@ SDK には IPRO7 EVB、IPRO7AI EVK、IPRO6S EVK 向けのアプリケーショ�
 - [:material-monitor-dashboard: **IPRO Workbench**](workbench/index.md)<br>IPRO の開発環境。ツールのセットアップ、ビルド、書き込み、モニター、デバッグをひとつのウィンドウで行えます
 - [:material-brain: **IPRO AI Teach**](teach/index.md)<br>IPRO AI Studio をインストールし、Edge AI ファームウェアを書き込んで、Reef に画像、声紋、センサー信号を学習させます
 - [:material-school-outline: **チュートリアル**](tutorials/index.md)<br>ビルドと書き込み、最初のアプリケーション、テスト、BLE、LE Audio、ウェブカメラ、Wi-Fi
-- [:material-view-grid-outline: **サンプル**](examples/index.md)<br>同梱の 40 個のアプリケーション。Reef で動作する 9 個には手順があります
+- [:material-view-grid-outline: **サンプル**](examples/index.md)<br>同梱の 41 個のアプリケーション。Reef で動作する 9 個には手順があります
 - [:material-code-tags: **API リファレンス**](reference/api/index.md)<br>プラットフォーム、HAL、BLE コントローラー、AI ランタイムのインターフェース
 - [:material-console: **ツールのコマンドライン**](reference/tools.md)<br>ビルドスクリプト、書き込み、シリアルコンソール、OTA、Teach ツール
 - [:material-help-circle-outline: **よくある質問**](reference/faq.md)<br>ビルド、書き込み、BLE、ネットワークに関するよくある質問
 
 </div>
 
-## V2.2 の新機能 { #whats-new }
+## V2.3 の新機能 { #whats-new }
 
-- **V2.2.1**（2026-11-10）：工場出荷時の MAC アドレスがない IPRO6S（IPRO6S EVK など）でも soft-AP が起動します。`make_reef_ota.sh` は公開版 IntelProCube から boot2 を自動で見つけます。[リリースノート](reference/release-notes.md#v2-2-1)を参照してください。
-- **IPRO6S アプリケーションが復活**：`ipro6_demo`（DTIM 省電力に対応した Wi-Fi 6 ステーション／ソフト AP）、`ipro6_if_wifi`（SDIO または USB でホストと接続する Wi-Fi ブリッジで、Reef の FIN カードのファームウェアでもあります）、`ipro6_fmac`（FullMAC ファームウェアとその Flash ローダー）。IPRO6S アプリケーションは Wi-Fi のみで、本リリースには IPRO6S の Bluetooth はありません。
-- **Edge AI プラットフォーム V2.0 と `ipro_reef_teach`**：画像、声紋、センサーの Teach ツールをひとつにまとめた Reef 用ファームウェアで、IPRO AI Studio から操作します。IPRO AI Studio は [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) からダウンロードできます。
-- **新しい `ipro7_jpeg_decode`**：ソフトウェアで JPEG を RGB565 / RGB888 にデコードします。`ipro7ai_reef_demo` には `mic usb`（USB マイク）と `mic sdrec`（SD カードへの WAV 録音）が加わりました。
-- **40 個のアプリケーション**。USB デバイス、lwIP、BSP の修正については [リリースノート](reference/release-notes.md) を参照してください。
+- **V2.3.0**（2026-11-13）：OTA コンポーネント `components/sys/ipro_ota`。BLE OTA サービス（0xFF60）とコンソール UART の `ota_uart` コマンドが同じパッケージ検査を使い、パーティションテーブルを切り替える前に、フラッシュに書き込んだパッケージのヘッダーと SHA-256 を確認します。[OTA アップデート](guides/ota.md)を参照してください。
+- **IPRO7AI Sensor Tag のサンプル `ipro7ai_sensor_tag_demo`**：IMU、燃料ゲージ、ボタンを読み取り、LED とブザーを制御し、ボード自身の USB から毎秒 20 行の値を出力して IPRO Workbench 0.2.0 のセンサーダッシュボードに表示します。書き込みは新しいツール `tools/ipro_dl.py` でボードの USB から行い、プローブは不要です。
+- **IPRO6S**：起動時に `Build:` 行（ビルド時刻）を表示するため、IPRO Workbench がボード上のファームウェアを判別できます。`wifi_ap_start -b 1 -o 1` で、近隣のネットワークと重なっても 2.4 GHz アクセスポイントが 40 MHz 幅を保ちます。DTIM 省電力時に、アクセスポイントのビーコンがときどき遅れても受信漏れしなくなりました。
+- **[IPRO Workbench 0.2.0](workbench/index.md) と組み合わせて**：別構成、センサーダッシュボード、OTA パッケージのボードへの送信、Wi-Fi ページ、新しい開始用アプリケーション、ボード自身の USB からの書き込み（macOS）、簡体字中国語と日本語の UI。
+- **41 個のアプリケーション**。その他の内容は[リリースノート](reference/release-notes.md#v2-3-0)にあります。V2.2 の新機能もそちらにまとめています。

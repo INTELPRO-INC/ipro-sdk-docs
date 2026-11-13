@@ -38,6 +38,42 @@ Other uses:
 - Check **Show hidden options** to see the options whose dependencies are not met: menuconfig hides them, but the build still reads them.
 - If you prefer a text interface, right-click and choose **Menuconfig** to edit the same settings in a terminal; choose **Open .config** to edit the file directly.
 
+## Configurations { #configurations }
+
+Some applications come with configuration files for other boards or uses besides `.config`: `defconfig_<name>` or `config_<name>`. The IDE lists them, and the one you choose is what it builds from. The build goes into `build_<name>` in the application folder (`build_config_<name>` for a `config_<name>` file), the same folder `make DEFCONFIG=<file>` uses on the command line, and the application's own `.config` is not touched. Settings (Kconfig), pin configuration and GATT configuration also read and write the chosen file.
+
+The steps use `ipro7_uvc_cam`, whose `.config` is for the IPRO7 EVB and which has two more configurations for the IPRO7AI Reef EVK V4.0.
+
+<div class="ipro-steps" markdown>
+
+1. **Select the application.** Under **Applications** in the side bar, click **ipro7_uvc_cam** (in the `multimedia` category).
+
+    **You should see**: a gear and `.config` next to the application name in the status bar: the application builds from `.config`. An application with no other configuration files has no such item.
+
+2. **Open the list of configurations.** Click `.config` in the status bar (or **Select Configuration…** in the IPRO menu, `IPRO: Select Configuration…` in the command palette).
+
+    **You should see**: a list headed "Select the configuration ipro7_uvc_cam builds from" with `.config`, `defconfig_reef_ov5640` and `defconfig_reef_rps`. Each row gives the chip and board (for example `IPRO7 · IPRO7AI Reef`) and a line saying "Built in build" or "Not built yet; builds in build_reef_rps". The configuration in use has a check mark.
+
+3. **Choose one.** Choose `defconfig_reef_rps`.
+
+    **You should see**: a notification "ipro7_uvc_cam now builds for IPRO7AI Reef (defconfig_reef_rps).", `defconfig_reef_rps` in the status bar, and IPRO7AI Reef as the board on the toolbar (the board follows the application's configuration; see `ipro.board.id` in [Settings](reference.md#settings)). When the chosen file is for the same board as before, there is no notification.
+
+4. **Build.** Click **Build**.
+
+    **You should see**: **IPRO Build** starts with `Configuration: defconfig_reef_rps -> …/build_reef_rps/.config`, and the firmware is in `build_reef_rps/build_out/`. The IDE copies the chosen file into the build folder as `.config`; the `.config` in the application folder stays as it was.
+
+5. **Switch back.** Click the status bar item again and choose `.config`.
+
+    **You should see**: `.config` in the status bar; builds and flashes use the `build` folder again.
+
+</div>
+
+!!! note
+    - Applications that have only `defconfig_*` files and no `.config` (for example `ipro6_fmac`) now appear under **Applications**. They start on the file named after the application, or else the first one.
+    - For an application with a single configuration, **Select Configuration…** only says "&lt;application&gt; has one configuration: .config."
+    - With a configuration chosen, **Clean** deletes that configuration's build folder.
+    - The IDE remembers the configuration chosen for each application, also after a restart.
+
 ## Configure pins { #pins }
 
 **Pin Configuration** assigns the function of each GPIO on a package drawing and in a table, checks for conflicts and against the board's wiring, and generates the initialization code `app_pins.h` and `app_pins.c`.
@@ -181,7 +217,7 @@ The functions generated for each characteristic (service `sensor`, characteristi
 |---|---|
 | **Build** | The usual case. Recompiles only the files that changed. |
 | **Reconfigure and Build** | After you change `CMakeLists.txt` or the build profile; runs the CMake configuration again. |
-| **Clean** | Deletes the application's `build` folder, so the next build starts from scratch. |
+| **Clean** | Deletes the application's `build` folder (with a [configuration](#configurations) chosen, that configuration's build folder), so the next build starts from scratch. |
 
 The build profile (Debug / Release / MinSizeRel) is selected with the `ipro.build.profile` setting; see [Settings](reference.md#settings).
 

@@ -1555,6 +1555,24 @@ categories:
           zh-cn: "UART 921600"
           ja: "UART 921600"
         readme: {exclude: true}   # catalog only: other boards
+      - name: ipro7ai_sensor_tag_demo
+        path: apps/platform/ipro7ai_sensor_tag_demo
+        purpose:
+          zh: "讀取 6 軸 IMU、電量計、按鍵，控制 LED 與蜂鳴器；每秒 20 行 `名稱:數值` 經板子的 USB 送出，IPRO Workbench 0.2.0 的感測器儀表板依 `dashboard.yaml` 排版；經板子的 USB 以 `tools/ipro_dl.py` 燒錄"
+          en: "Reads the 6-axis IMU, fuel gauge and button, drives the LEDs and buzzer; prints 20 `name:value` lines a second over the board's own USB, laid out by IPRO Workbench 0.2.0's Sensor Dashboard with `dashboard.yaml`; flashed over the board's USB with `tools/ipro_dl.py`"
+          zh-cn: "读取 6 轴 IMU、电量计、按键，控制 LED 与蜂鸣器；每秒 20 行 `名称:数值` 经开发板的 USB 输出，IPRO Workbench 0.2.0 的传感器仪表板按 `dashboard.yaml` 排版；经开发板的 USB 以 `tools/ipro_dl.py` 烧录"
+          ja: "6 軸 IMU、燃料ゲージ、ボタンを読み取り、LED とブザーを制御します。ボード自身の USB から毎秒 20 行の `名前:値` を出力し、IPRO Workbench 0.2.0 のセンサーダッシュボードが `dashboard.yaml` に従って表示します。書き込みはボードの USB から `tools/ipro_dl.py` で行います"
+        boards:
+          zh: "需要 IPRO7AI Sensor Tag"
+          en: "Needs the IPRO7AI Sensor Tag"
+          zh-cn: "需要 IPRO7AI Sensor Tag"
+          ja: "IPRO7AI Sensor Tag が必要"
+        console:
+          zh: "板子的 USB（CDC）"
+          en: "The board's USB (CDC)"
+          zh-cn: "开发板的 USB（CDC）"
+          ja: "ボードの USB（CDC）"
+        readme: {exclude: true}   # catalog only: other boards
   - id: ai-vision
     title: {zh: "AI 與影像", en: "AI and vision", zh-cn: "AI 与图像", ja: "AI と画像処理"}
     apps:
@@ -1636,10 +1654,10 @@ categories:
       - name: ipro6_demo
         path: apps/platform/ipro6_demo
         purpose:
-          zh: "IPRO6S Wi-Fi 6 station／soft-AP 與 shell；`defconfig_ipro6_lpwifi` 加上 DTIM 省電，`defconfig_ipro6_lp` 為低功耗示範"
-          en: "IPRO6S Wi-Fi 6 station / soft-AP with a shell; `defconfig_ipro6_lpwifi` adds DTIM power save, `defconfig_ipro6_lp` is the low-power demo"
-          zh-cn: "IPRO6S Wi-Fi 6 station／soft-AP 与 shell；`defconfig_ipro6_lpwifi` 加上 DTIM 省电，`defconfig_ipro6_lp` 为低功耗演示"
-          ja: "シェル付きの IPRO6S Wi-Fi 6 station／soft-AP。`defconfig_ipro6_lpwifi` で DTIM 省電力が加わり、`defconfig_ipro6_lp` は低消費電力のデモです"
+          zh: "IPRO6S Wi-Fi station／soft-AP 與 shell；`defconfig_ipro6_lpwifi` 加上 DTIM 省電，`defconfig_ipro6_lp` 為低功耗示範"
+          en: "IPRO6S Wi-Fi station / soft-AP with a shell; `defconfig_ipro6_lpwifi` adds DTIM power save, `defconfig_ipro6_lp` is the low-power demo"
+          zh-cn: "IPRO6S Wi-Fi station／soft-AP 与 shell；`defconfig_ipro6_lpwifi` 加上 DTIM 省电，`defconfig_ipro6_lp` 为低功耗演示"
+          ja: "シェル付きの IPRO6S Wi-Fi station／soft-AP。`defconfig_ipro6_lpwifi` で DTIM 省電力が加わり、`defconfig_ipro6_lp` は低消費電力のデモです"
         boards:
           zh: "需要 IPRO6S EVK（見 [IPRO6S](../hardware/chips/ipro6s.md)）"
           en: "Needs the IPRO6S EVK (see [IPRO6S](../hardware/chips/ipro6s.md))"
@@ -1654,10 +1672,10 @@ categories:
       - name: ipro6_if_wifi
         path: apps/platform/ipro6_if_wifi
         purpose:
-          zh: "IPRO6S Wi-Fi 6 橋接到主機：SDIO（`defconfig_ipro6_sdio`，也是 Reef FIN 卡的韌體）或 USB（`defconfig_ipro6_usb`）"
-          en: "IPRO6S Wi-Fi 6 bridge to a host over SDIO (`defconfig_ipro6_sdio`, also the Reef FIN card's firmware) or USB (`defconfig_ipro6_usb`)"
-          zh-cn: "IPRO6S Wi-Fi 6 桥接到主机：SDIO（`defconfig_ipro6_sdio`，也是 Reef FIN 卡的固件）或 USB（`defconfig_ipro6_usb`）"
-          ja: "SDIO（`defconfig_ipro6_sdio`。Reef の FIN カードのファームウェアでもあります）または USB（`defconfig_ipro6_usb`）でホストに接続する IPRO6S Wi-Fi 6 ブリッジ"
+          zh: "IPRO6S Wi-Fi 橋接到主機：SDIO（`defconfig_ipro6_sdio`，也是 Reef FIN 卡的韌體）或 USB（`defconfig_ipro6_usb`）"
+          en: "IPRO6S Wi-Fi bridge to a host over SDIO (`defconfig_ipro6_sdio`, also the Reef FIN card's firmware) or USB (`defconfig_ipro6_usb`)"
+          zh-cn: "IPRO6S Wi-Fi 桥接到主机：SDIO（`defconfig_ipro6_sdio`，也是 Reef FIN 卡的固件）或 USB（`defconfig_ipro6_usb`）"
+          ja: "SDIO（`defconfig_ipro6_sdio`。Reef の FIN カードのファームウェアでもあります）または USB（`defconfig_ipro6_usb`）でホストに接続する IPRO6S Wi-Fi ブリッジ"
         boards:
           zh: "IPRO6S EVK；FIN 卡（`defconfig_ipro6_sdio`，以 `--chipname ipro6` 燒錄，見 [IPRO6S](../hardware/chips/ipro6s.md)）"
           en: "IPRO6S EVK; FIN card (`defconfig_ipro6_sdio`, flashed with `--chipname ipro6`, see [IPRO6S](../hardware/chips/ipro6s.md))"

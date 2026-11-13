@@ -1,6 +1,6 @@
 ---
 title: "序列埠監看"
-description: 在 IPRO Workbench 的 IPRO Monitor 看板子的 UART 輸出、送指令給板子，以及篩選、時間戳記、存檔與完整記錄、序列埠繪圖和同時監看另一個連接埠。
+description: 在 IPRO Workbench 的 IPRO Monitor 看板子的 UART 輸出、送指令給板子，以及篩選、時間戳記、存檔與完整記錄、序列埠繪圖、同時監看另一個連接埠和感測器儀表板。
 ---
 
 # 序列埠監看
@@ -81,7 +81,7 @@ description: 在 IPRO Workbench 的 IPRO Monitor 看板子的 UART 輸出、送�
 
 <div class="ipro-steps" markdown>
 
-1. **讓韌體印出數字。** 讓韌體每行印出數字，例如 `temp:23.5,hum:40`（名稱:數值）或 `1.2 3.4`（以空白或逗號分隔）。
+1. **讓韌體印出數字。** 讓韌體每行印出數字，例如 `temp:23.5,hum:40`（名稱:數值）或 `1.2 3.4`（以空白或逗號分隔）。同樣的 `名稱:數值` 也可以用[感測器儀表板](#dashboard)顯示。
 
 2. **開啟序列埠繪圖。** 監看開著時，按監看頁籤上的曲線圖示（**序列埠繪圖**）。
 
@@ -109,3 +109,74 @@ description: 在 IPRO Workbench 的 IPRO Monitor 看板子的 UART 輸出、送�
 
 !!! note
     Windows 上一個 COM 埠同時只能給一個程式使用。要用其他序列埠工具時，請先關閉 IPRO Monitor。
+
+## 感測器儀表板 { #dashboard }
+
+「感測器儀表板」讀板子在序列埠印出的 `名稱:數值` 行（和[序列埠繪圖](#plotter)相同的格式），每個數值一張卡片，附單位；另有量表、指示燈、傾斜圖、每組一張曲線圖，以及在板子主控台上輸入指令的按鈕。版面寫在應用程式資料夾的 `dashboard.yaml`；沒有這個檔時，每個數值各有一張卡片與一張曲線圖。
+
+下面以 IPRO SDK V2.3.0 的 [`ipro7ai_sensor_tag_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/platform/ipro7ai_sensor_tag_demo) 在 IPRO7AI Sensor Tag 上示範，它的主控台在板子自己的 USB 埠上。
+
+<div class="ipro-steps" markdown>
+
+1. **燒錄並開監看。** 依[經開發板的 USB 燒錄](flash.md#usb-flash)把 `ipro7ai_sensor_tag_demo` 燒進 IPRO7AI Sensor Tag，連接埠選開發板的 USB 埠，按 **序列埠監看**。
+
+    **應該看到**：IPRO Monitor 每秒出現 20 行，例如：
+
+    ```text
+    ax:0.012 ay:-0.004 az:1.003 gx:0.3 gy:-0.1 gz:0.0 temp:27.4 batt:87 vbat:4.012 btn:0
+    ```
+
+2. **開啟感測器儀表板。** 選 IPRO 選單的 **感測器儀表板**（或命令選擇區的 `IPRO: 感測器儀表板`）。監看還沒開時，IDE 會在目前的連接埠上開啟它。
+
+    **應該看到**：編輯區開出「感測器儀表板」，標題是 `dashboard.yaml` 寫的 `IPRO7AI Sensor Tag`，下面一行是「每秒 … 行，來自 /dev/cu.usbmodemXXXX」與「依這個應用程式的 dashboard.yaml 排版」。接著是 Acceleration、Rotation 兩組（各三個數值、一張曲線圖；Acceleration 另有「傾斜」圖，寫著「俯仰 …° · 橫滾 …°」）與 Board 一組（Temperature、以量表顯示的 Battery、Battery voltage，以及指示燈 Button）。
+
+3. **動一動板子。** 把板子傾斜，再按板上的按鍵。
+
+    **應該看到**：傾斜圖跟著板子轉，加速度的曲線跟著變；按住按鍵時 Button 指示燈顯示「開」，放開時顯示「關」。滑鼠移到數值卡上，會顯示「<名稱>：自清除以來最低 …，最高 …」。
+
+4. **按指令按鈕。** 按上方的 **Beep**。
+
+    **應該看到**：板子的蜂鳴器響一聲。每個按鈕在主控台上輸入一行指令，**Beep** 輸入的是 `beep 200`；滑鼠移到按鈕上會顯示它的指令。
+
+5. **暫停、清除與重新讀取。** 按 **暫停** 凍結畫面（按鈕變成 **繼續**），按 **清除** 重新開始統計。改了 `dashboard.yaml` 之後，按 **重新讀取 dashboard.yaml**。
+
+</div>
+
+`dashboard.yaml` 的寫法（節錄自 `ipro7ai_sensor_tag_demo`）：
+
+```yaml title="dashboard.yaml"
+title: IPRO7AI Sensor Tag
+groups:
+  - title: Acceleration
+    unit: g
+    range: [-2, 2]
+    decimals: 3
+    chart: true
+    tilt: { x: ax, y: ay, z: az }
+    values:
+      - { name: ax, label: X }
+      - { name: ay, label: Y }
+      - { name: az, label: Z }
+  - title: Board
+    values:
+      - { name: temp, label: Temperature, unit: "°C", decimals: 1 }
+      - { name: batt, label: Battery, unit: "%", range: [0, 100], show: bar }
+      - { name: btn, label: Button, show: lamp }
+controls:
+  - { label: Beep, send: beep 200 }
+```
+
+| 欄位 | 說明 |
+|---|---|
+| `title` | 儀表板的標題；沒寫時是「<應用程式> 的感測器」 |
+| `groups` | 分組。每組有 `title`、`values`，可以給整組的 `unit`、`range`、`decimals` |
+| `chart: true` | 這一組畫一張隨時間變化的曲線圖 |
+| `tilt` | 用三軸加速度（`x`、`y`、`z` 寫數值名稱）畫俯仰與橫滾 |
+| `values` | 每個數值：`name`（板子印出的名稱）、`label`、`unit`、`decimals`、`range`、`show` |
+| `show` | `value`：只顯示數字（預設）；`bar`：數字加上在 `range` 中的位置；`lamp`：不為 0 時亮 |
+| `controls` | 按鈕：`label` 是按鈕上的字，`send` 是要在主控台輸入的指令 |
+
+!!! note
+    - 應用程式沒有 `dashboard.yaml` 時，畫面寫「這個應用程式沒有 dashboard.yaml：板子印出的每個數值都會顯示。這個檔可以指定分組、單位、範圍與按鈕。」
+    - `dashboard.yaml` 有錯時，錯誤以「dashboard.yaml 第 N 行：…」列出，寫錯的部分略過，其他照常顯示。
+    - 監看沒開時，畫面寫「序列監看視窗沒有開啟」並附 **開啟監看** 按鈕；板子一段時間沒印數值時寫「… 已有一段時間沒有資料」。

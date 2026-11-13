@@ -11,7 +11,7 @@ Reef 出厂固件：RGB LED、按键、扬声器与耳机、PDM 与耳麦麦克�
 
 | 项目 | 内容 |
 |---|---|
-| 源代码 | [`apps/platform/ipro7ai_reef_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/platform/ipro7ai_reef_demo) |
+| 源代码 | [`apps/platform/ipro7ai_reef_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/platform/ipro7ai_reef_demo) |
 | 开发板与配置 | Reef（`.config`）；Reef＋IPRO6S FIN 卡（`defconfig_wifi_ipro6s`：Wi-Fi 与 RTSP 摄像头视频流） |
 | 控制台 | UART 115200 |
 | 构建 | `make -C apps/platform/ipro7ai_reef_demo`；Wi-Fi 版加上 `DEFCONFIG=defconfig_wifi_ipro6s` |
@@ -61,7 +61,7 @@ Wi-Fi 与 RTSP 版以 `DEFCONFIG=defconfig_wifi_ipro6s` 构建，输出在 `buil
 ## README { #readme }
 
 !!! note "README 原文"
-    以下是应用附带的 README（SDK V2.2.1），保留原文、未翻译；只替换了不适合公开的内容。
+    以下是应用附带的 README（SDK V2.3.0），保留原文、未翻译；只替换了不适合公开的内容。
 
 <!-- verbatim:start -->
 

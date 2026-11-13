@@ -21,7 +21,7 @@ IPRO7 有连接模拟与 PDM 麦克风的音频 ADC（AUADC）、10 位 DAC（GP
     - Reef 音频：PDM 麦克风、耳机插孔 J2 的耳机麦克风、GPDAC 驱动的扬声器放大器与耳机输出。`ipro7ai_reef_demo` 可录音、播放、实时监听、录制 WAV 文件到 SD 卡（`mic sdrec`），也能把开发板变成 USB 麦克风（`mic usb`）。
     - 配置：`CONFIG_AUDIO_CAPTURE=y`、`CONFIG_AUDIO_OUTPUT=y`、`CONFIG_DMA_CHANNEL_ALLOCATOR=y`；USB 音频再加 `CONFIG_CHERRYUSB_DEVICE_AUDIO=y`。
     - LE Audio：单播耳机 `ipro_le_audio_headset`（`defconfig_reef`），控制器 `bt54_iso2` 配合 `CONFIG_EM_SIZE=32`，LC3 为预编译库。其 README 注明从手机播放音频尚未验证。
-    - 未包含于 V2.2.1：FreeRTOS 的 LE Audio 广播示例、USB 转 BLE 的音频桥接示例。
+    - 未包含于 V2.3.0：FreeRTOS 的 LE Audio 广播示例、USB 转 BLE 的音频桥接示例。
 
 ## 架构 { #overview }
 

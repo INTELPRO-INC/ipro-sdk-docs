@@ -1,18 +1,19 @@
 ---
 title: "Install IPRO Workbench"
-description: Download and verify IPRO Workbench 0.1.1, install it on macOS or Windows, complete the development environment, open the IPRO SDK and connect the IPRO7AI Reef EVK V4.0 or the IPRO6S EVK until the IDE finds it.
+description: Download and verify IPRO Workbench 0.2.0, install it on macOS or Windows, complete the development environment, open the IPRO SDK and connect the IPRO7AI Reef EVK V4.0 or the IPRO6S EVK until the IDE finds it.
 ---
 
 # Install IPRO Workbench
 
-This page takes you from installing IPRO Workbench to the point where the IDE finds your board. When you are done, the IPRO Home banner shows "Ready to run". It covers IPRO Workbench 0.1.1; buttons and other interface labels are shown in bold as they appear in the English interface.
+This page takes you from installing IPRO Workbench to the point where the IDE finds your board. When you are done, the IPRO Home banner shows "Ready to run". It covers IPRO Workbench 0.2.0; buttons and other interface labels are shown in bold as they appear in the English interface.
 
 ## Prerequisites { #prerequisites }
 
 | Item | Details |
 |---|---|
 | Computer | macOS 12 or later (Apple silicon) or Windows 11 (x64), with access to GitHub. The IDE, tools and SDK need about 4 GB of disk space in total. |
-| Installer | macOS: `IPRO-Workbench-0.1.1-mac-arm64.dmg`; Windows: `IPRO-Workbench-0.1.1-win-x64.exe`. Download it from the IPRO Workbench releases page on GitHub (see [Download and verify](#download)); no GitHub account is needed. |
+| Installer | macOS: `IPRO-Workbench-0.2.0-mac-arm64.dmg`; Windows: `IPRO-Workbench-0.2.0-win-x64.exe`. Download it from the IPRO Workbench releases page on GitHub (see [Download and verify](#download)); no GitHub account is needed. |
+| IPRO SDK | IPRO SDK V2.3.0 (you can install it from GitHub when you [open the SDK](#open-sdk)). Older SDKs work too, without the features marked "SDK V2.3.0" |
 | Board | [IPRO7AI Reef EVK V4.0](../hardware/boards/reef-evk.md), or IPRO6S EVK |
 | Probe and cable | IPRO Debug Probe, and a USB cable to connect it to the computer |
 | Also needed on macOS | Xcode Command Line Tools, and CMake and Ninja from Homebrew (see [Complete the development environment](#environment)) |
@@ -21,39 +22,39 @@ This page takes you from installing IPRO Workbench to the point where the IDE fi
 
 | File | System | Size |
 |---|---|---|
-| [`IPRO-Workbench-0.1.1-mac-arm64.dmg`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.1/IPRO-Workbench-0.1.1-mac-arm64.dmg) | macOS 12 or later, Apple silicon | 199 MB |
-| [`IPRO-Workbench-0.1.1-win-x64.exe`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.1.1/IPRO-Workbench-0.1.1-win-x64.exe) | Windows 11, x64 | 160 MB |
+| [`IPRO-Workbench-0.2.0-mac-arm64.dmg`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.0/IPRO-Workbench-0.2.0-mac-arm64.dmg) | macOS 12 or later, Apple silicon | 201 MB |
+| [`IPRO-Workbench-0.2.0-win-x64.exe`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.0/IPRO-Workbench-0.2.0-win-x64.exe) | Windows 11, x64 | 161 MB |
 
 <div class="ipro-steps" markdown>
 
-1. **Download the installer.** Open the IPRO Workbench releases page <https://github.com/INTELPRO-INC/ipro-workbench/releases/latest> and, under **Assets**, download the installer for your system.
+1. **Download the installer.** Open the IPRO Workbench 0.2.0 release page <https://github.com/INTELPRO-INC/ipro-workbench/releases/tag/v0.2.0> and, under **Assets**, download the installer for your system.
 
 2. **Verify the downloaded file** to make sure it is not damaged or replaced:
 
     === "macOS"
 
         ```bash
-        shasum -a 256 IPRO-Workbench-0.1.1-mac-arm64.dmg
+        shasum -a 256 IPRO-Workbench-0.2.0-mac-arm64.dmg
         ```
 
     === "Windows"
 
         ```powershell
-        (Get-FileHash .\IPRO-Workbench-0.1.1-win-x64.exe -Algorithm SHA256).Hash
+        (Get-FileHash .\IPRO-Workbench-0.2.0-win-x64.exe -Algorithm SHA256).Hash
         ```
 
     **You should see**: the same value as the one listed below for the same file (Windows shows it in uppercase). `SHA256SUMS.txt` on the releases page also lists these values.
 
-    ```text title="SHA-256 of the IPRO Workbench 0.1.1 installers"
-    # IPRO-Workbench-0.1.1-mac-arm64.dmg
-    fb6980af59e4021ebd7357d3da1721a1490e2cec7446a98425b6c9ba0e25959e
-    # IPRO-Workbench-0.1.1-win-x64.exe
-    e057fb56c15cb68cdfeb8c60b0cfecd7f5bd82860573003ad2d94788a34aa74c
+    ```text title="SHA-256 of the IPRO Workbench 0.2.0 installers"
+    # IPRO-Workbench-0.2.0-mac-arm64.dmg
+    0c2e4391d3cefbd8906c07ab65554a8f5a4812baa44ee67356ed51e4262c0cb7
+    # IPRO-Workbench-0.2.0-win-x64.exe
+    5d3643d1d346ae68b0b53ac608b758f3bff2bca7136b18cf00a4e351aaa9fb2a
     ```
 
 </div>
 
-The ZIP, `latest-mac.yml`, `latest.yml` and blockmap files on the releases page are for the built-in update function; you do not need to download them.
+The ZIP, `latest-mac.yml`, `latest.yml` and blockmap files on the releases page are for the built-in update function; you do not need to download them. For the two operation manual PDFs, see [Full manual](index.md#manual).
 
 ## Install { #install }
 
@@ -63,11 +64,11 @@ The ZIP, `latest-mac.yml`, `latest.yml` and blockmap files on the releases page 
 
     === "macOS"
 
-        Open `IPRO-Workbench-0.1.1-mac-arm64.dmg` and drag **IPRO Workbench** into the Applications folder.
+        Open `IPRO-Workbench-0.2.0-mac-arm64.dmg` and drag **IPRO Workbench** into the Applications folder.
 
     === "Windows"
 
-        1. Double-click `IPRO-Workbench-0.1.1-win-x64.exe`.
+        1. Double-click `IPRO-Workbench-0.2.0-win-x64.exe`.
         2. Windows may show "Windows protected your PC". Click **More info**, check the app name, and then click **Run anyway**.
         3. When the installer wizard asks who to install for, choose to install for the current user only (no administrator rights needed). You can then change the installation folder; click **Install**, and when it is done, click **Finish**.
 
@@ -90,11 +91,11 @@ The ZIP, `latest-mac.yml`, `latest.yml` and blockmap files on the releases page 
 </div>
 
 !!! tip
-    For mass deployment by IT staff, use a silent install: `IPRO-Workbench-0.1.1-win-x64.exe /S`, or set the installation location with `/D=<folder>` (`/D` must be the last parameter).
+    For mass deployment by IT staff, use a silent install: `IPRO-Workbench-0.2.0-win-x64.exe /S`, or set the installation location with `/D=<folder>` (`/D` must be the last parameter).
 
 ## Interface language { #language }
 
-When the system language is Traditional Chinese, IPRO Workbench starts in Chinese the first time. To change the language, press `Cmd+Shift+P` (`Ctrl+Shift+P` on Windows) to open the command palette, type `Configure Display Language`, choose a language, and restart when prompted.
+IPRO Workbench comes in Traditional Chinese, English, Simplified Chinese and Japanese. The first start follows the system language: a Traditional Chinese (Taiwan, Hong Kong, Macau), Simplified Chinese or Japanese system gets that language, any other system gets English. To change the language later, press `Cmd+Shift+P` (`Ctrl+Shift+P` on Windows) to open the command palette, type `Configure Display Language`, choose a language, and restart when prompted.
 
 ## Complete the development environment { #environment }
 
@@ -103,14 +104,14 @@ IPRO Workbench checks every tool needed for development by itself and lists the 
 | Item | Purpose | Can **Fix Environment** install it? |
 |---|---|---|
 | IPRO SDK | Source of the applications, drivers and examples | Yes, the latest release from GitHub |
-| RISC-V toolchain | Compiles the firmware | Yes |
+| RISC-V toolchain | Compiles the firmware | Yes (on Windows it installs 14.2.1; 13.1.1 cannot link the SDK's prebuilt libraries) |
 | CMake, Build program | Generates and runs the build | Yes on Windows (in one package with Ninja and Python); on macOS, install them with Homebrew |
 | Python (menuconfig) | Settings (Kconfig) and Menuconfig | The kconfiglib package must be installed separately (see below) |
 | IntelProCube | Flashing | Yes (it installs 0.7.0.1 or later, which the IPRO6S EVK needs) |
 | clangd (code navigation) | Go to definition, errors as you type | Yes, downloaded by the clangd extension (after Fix, the extension asks once more whether to install it) |
 | OpenOCD (debugging) | JTAG debugging (not available yet in this release) | Yes on Windows; building and flashing work without it |
 | Board | Finds the IPRO Debug Probe | Just plug in the probe |
-| SDK for this toolchain | Windows only: lets IPRO SDK 2.2 build on Windows | Yes |
+| SDK for this toolchain | Windows only: lets IPRO SDK 2.2.1 and earlier build on Windows | Yes |
 | macOS quarantine | macOS only: tools downloaded with a browser are blocked by the system | Yes, the flag is removed after you confirm |
 
 <div class="ipro-steps" markdown>
@@ -154,7 +155,7 @@ IPRO Workbench uses the IPRO SDK folder as its workspace.
 
 <div class="ipro-steps" markdown>
 
-1. **Open the SDK folder.** On IPRO Home, click **Open SDK…** and choose the IPRO SDK folder (for example `IPRO/SDK/IPRO-SDK-V2.2.1` in your home folder). If you do not have the SDK yet, click **Install SDK from GitHub…**.
+1. **Open the SDK folder.** On IPRO Home, click **Open SDK…** and choose the IPRO SDK folder (for example `IPRO/SDK/IPRO-SDK-V2.3.0` in your home folder). If you do not have the SDK yet, click **Install SDK from GitHub…**; the list shows the SDK releases and marks them "latest" or "preview".
 
     **You should see**: **Applications** in the side bar lists the applications in the SDK by category, and the search box reads "Filter N applications".
 

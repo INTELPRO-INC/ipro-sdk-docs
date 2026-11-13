@@ -11,7 +11,7 @@ The Reef's Edge AI firmware: one image with three Teach tools, `image` (USB came
 
 | Item | Details |
 |---|---|
-| Source | [`apps/ai/ipro_reef_teach`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/ai/ipro_reef_teach) |
+| Source | [`apps/ai/ipro_reef_teach`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/ai/ipro_reef_teach) |
 | Boards and configs | Reef (`.config`); `image` mode needs the OV5640 camera |
 | Console | UART 115200 |
 | Build | `make -C apps/ai/ipro_reef_teach` |
@@ -60,7 +60,7 @@ Each mode has its own USB-C identity (VID `0x3896`): `image` is PID `0x0705` (UV
 ## README { #readme }
 
 !!! note "The README as shipped"
-    Below is the README that ships with the application (SDK V2.2.1), as written; only content unfit for publication was replaced.
+    Below is the README that ships with the application (SDK V2.3.0), as written; only content unfit for publication was replaced.
 
 <!-- verbatim:start -->
 

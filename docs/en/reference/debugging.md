@@ -117,8 +117,8 @@ The Reef must be in download mode before flashing. In download mode the console 
 
 ## GDB and debug probe { #gdb-debugging }
 
-!!! info "Not included in V2.2.1"
-    The OpenOCD configuration and the procedure for on-target debugging over JTAG are not included in V2.2.1; contact INTELPRO.
+!!! info "Not included in V2.3.0"
+    The OpenOCD configuration and the procedure for on-target debugging over JTAG are not included in V2.3.0; contact INTELPRO.
 
 - **The ELF has debug information**: the default build compiles with `-g3 -Os`, so `<build dir>/build_out/<app>_IPRO7.elf` works with the toolchain's `riscv64-unknown-elf-addr2line` or `riscv64-unknown-elf-gdb` for offline analysis. The `.bin` you flash has no symbols.
 - **Prebuilt libraries have no debug information**: the IPRO BLE controller, RF, AI, ISP, LC3 and low-power framework libraries are stripped of debug information and keep only symbol names, so you cannot step through their source.
@@ -155,7 +155,7 @@ On a CPU exception, the default exception handler prints these blocks on the con
 </div>
 
 !!! warning "`==DUMP_READY:2000000==` keeps repeating"
-    The `.config` of `ipro7ai_reef_demo` and `ipro_reef_teach` sets `CONFIG_EXCEPTION_DUMP=y`: after the diagnostics above, the console prints `==DUMP_READY:2000000==` about every 10 seconds for up to 5 minutes, waiting for a host tool to read memory. That host tool is not included in V2.2.1. Save the diagnostics printed above, then press SW2 to reset; if you do not want the wait, set `CONFIG_EXCEPTION_DUMP=n` in `.config` and rebuild.
+    The `.config` of `ipro7ai_reef_demo` and `ipro_reef_teach` sets `CONFIG_EXCEPTION_DUMP=y`: after the diagnostics above, the console prints `==DUMP_READY:2000000==` about every 10 seconds for up to 5 minutes, waiting for a host tool to read memory. That host tool is not included in V2.3.0. Save the diagnostics printed above, then press SW2 to reset; if you do not want the wait, set `CONFIG_EXCEPTION_DUMP=n` in `.config` and rebuild.
 
 | Setting | Effect |
 |---|---|

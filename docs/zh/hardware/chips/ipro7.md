@@ -7,7 +7,7 @@ migrate_from:
 
 # IPRO7
 
-IPRO7 是 INTELPRO 的 2.4 GHz 低功耗無線 SoC：RISC-V RV32IMAFC 192 MHz 處理器、Bluetooth 5.4 與 LE Audio、IEEE 802.15.4 無線電、ISP 影像處理與硬體 MJPEG。本版 SDK 的 40 個應用中有 37 個以 IPRO7 為目標。啟用 NPU 的型號 [IPRO7AI](ipro7ai.md) 是 IPRO7AI Reef EVK 的主晶片。
+IPRO7 是 INTELPRO 的 2.4 GHz 低功耗無線 SoC：RISC-V RV32IMAFC 192 MHz 處理器、Bluetooth 5.4 與 LE Audio、IEEE 802.15.4 無線電、ISP 影像處理與硬體 MJPEG。本版 SDK 的 41 個應用中有 38 個以 IPRO7 為目標。啟用 NPU 的型號 [IPRO7AI](ipro7ai.md) 是 IPRO7AI Reef EVK 的主晶片。
 
 <div class="ipro-facts" markdown>
 <div><strong>192 MHz</strong><span>RISC-V RV32IMAFC</span></div>
@@ -58,7 +58,7 @@ IPRO7 是 INTELPRO 的 2.4 GHz 低功耗無線 SoC：RISC-V RV32IMAFC 192 MHz �
 
 | 無線電 | 介面 | SDK 中的位置 |
 |---|---|---|
-| IPRO6S（Wi-Fi 6） | SDIO，lwIP 網路介面 `iproeth0` | `components/network/ipronet_host`；Reef 上是插在 microSD 卡座的 FIN 卡，見 [IPRO6S](ipro6s.md) |
+| IPRO6S（Wi-Fi） | SDIO，lwIP 網路介面 `iproeth0` | `components/network/ipronet_host`；Reef 上是插在 microSD 卡座的 FIN 卡，見 [IPRO6S](ipro6s.md) |
 | ATBM6162 | SDIO | `components/wireless/wifi_atbm6162`；`ipro_atbm_probe` |
 | AIC8800 | SDIO（預編譯的廠商函式庫） | `components/wireless/wifi_aic8800`；`ipro_agora_sentino` 的 `config_evk` |
 | ESP32 | UART AT 指令 | `components/network/esp32_wifi_at`；`ipro7_demo`（`CONFIG_ESP32_WIFI_AT`） |
@@ -124,14 +124,14 @@ IPRO7 是 INTELPRO 的 2.4 GHz 低功耗無線 SoC：RISC-V RV32IMAFC 192 MHz �
 
 ## 本版 SDK 支援 { #sdk-support }
 
-| 項目 | V2.2.1 |
+| 項目 | V2.3.0 |
 |---|---|
-| FreeRTOS 應用 | 40 個應用中 37 個以 IPRO7 為目標：`CONFIG_IPRO7=y`、`CONFIG_CHIP="IPRO7"`、`CONFIG_CPU_ID="intelpro_ipro7"`；映像為 `<應用>_IPRO7.bin` |
+| FreeRTOS 應用 | 41 個應用中 38 個以 IPRO7 為目標：`CONFIG_IPRO7=y`、`CONFIG_CHIP="IPRO7"`、`CONFIG_CPU_ID="intelpro_ipro7"`；映像為 `<應用>_IPRO7.bin` |
 | Zephyr RTOS | Zephyr v4.4.0 模組；板型 `ipro7_evb` 與 `ipro7ai_evk`，本版沒有 Reef 的 Zephyr 板型 |
 | 工具鏈 | RISC-V GCC（`riscv64-unknown-elf-`，`rv32imafc`／`ilp32f`），不隨 SDK 提供，請向 INTELPRO 取得 |
 | BLE | Zephyr v4.4.0 Host（原始碼）搭配 IPRO BLE 控制器（預編譯函式庫，16 個 IPRO7 版本：`link1_periph`／`link1`／`link2`／`link4` × `bt52`／`bt54_iso2` × 除錯／`_release`） |
 | IEEE 802.15.4／Thread | 僅 Zephyr RTOS：IEEE 802.15.4 驅動與 OpenThread |
-| Matter、Zigbee | 未包含於 V2.2.1，請洽 INTELPRO。 |
+| Matter、Zigbee | 未包含於 V2.3.0，請洽 INTELPRO。 |
 | 燒錄 | IntelProCube 0.7.0.1 命令列工具（[GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases)）：`--chipname ipro7`；Reef 等 IPRO7AI 板用 `--chip-variant IPRO7AI` |
 
 ## 搭載 IPRO7 的開發板 { #boards }

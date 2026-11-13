@@ -9,7 +9,7 @@ description: 用 IPRO Workbench 找出崩溃对应的代码行：监视器中的
 
 ## 崩溃地址自动解码 { #crash-decode }
 
-IPRO7 固件崩溃时，会通过串口打印异常的程序地址（MEPC）、返回地址（ra）和栈回溯（stack backtrace）。IPRO Monitor 会在每个地址下方多打印一行灰色的解码结果（屏幕上以箭头开头；下面的示例用 `->` 表示），例如：
+IPRO7 系列和 IPRO6S 的固件崩溃时，都会通过串口打印同样格式的报告：异常的程序地址（MEPC）、返回地址（ra）和栈回溯（stack backtrace）。IPRO Monitor 会在每个地址下方多打印一行灰色的解码结果（屏幕上以箭头开头；下面的示例用 `->` 表示），例如：
 
 ```text
 MEPC   : 0x13000146

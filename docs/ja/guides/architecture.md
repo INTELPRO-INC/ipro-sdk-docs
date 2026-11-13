@@ -12,13 +12,13 @@ migrate_from:
 
 # システムアーキテクチャ
 
-1 つのソースツリーで 2 種類のチップと 2 種類の RTOS に対応します。`apps/` 以下の 40 個の FreeRTOS アプリケーション（IPRO7 と IPRO7AI 用が 37 個、IPRO6S 用が 3 個）と、IPRO7 用の Zephyr v4.4.0 モジュールです。どちらの経路も HAL、SoC ドライバー、ビルド済みライブラリを共有します。ビルドの流れとメモリレイアウトは[ビルドシステムと設定](build-system.md)を参照してください。
+1 つのソースツリーで 2 種類のチップと 2 種類の RTOS に対応します。`apps/` 以下の 41 個の FreeRTOS アプリケーション（IPRO7 と IPRO7AI 用が 38 個、IPRO6S 用が 3 個）と、IPRO7 用の Zephyr v4.4.0 モジュールです。どちらの経路も HAL、SoC ドライバー、ビルド済みライブラリを共有します。ビルドの流れとメモリレイアウトは[ビルドシステムと設定](build-system.md)を参照してください。
 
 !!! abstract "要点"
     - レイヤー：アプリケーション（`apps/`）→ コンポーネント（`components/`）→ RTOS（FreeRTOS V11.1.0 または Zephyr v4.4.0）→ BSP（`bsp/`）→ チップ。
     - IPRO7 と IPRO7AI：DSP 拡張付きの RISC-V RV32IMAFC、LE Audio 対応の BLE 5.4、IEEE 802.15.4。IPRO7AI はさらに NPU と ISP を備えます。ネットワーク接続はイーサネット（RMII）、または SDIO 接続の IPRO6S による Wi-Fi です。IPRO7AI Reef EVK では、この IPRO6S が microSD スロットに挿す FIN カードです。
-    - IPRO6S：同じコアにオンチップの Wi-Fi 6 を備え、FreeRTOS のみに対応します。
-    - BLE コントローラー、RF ドライバー、Wi-Fi 6 MAC、低消費電力フレームワーク、AI 推論ランタイム、ISP アルゴリズム、LC3 コーデックはビルド済みライブラリとして提供し、それ以外はソースコードで提供します。
+    - IPRO6S：同じコアにオンチップの Wi-Fi を備え、FreeRTOS のみに対応します。
+    - BLE コントローラー、RF ドライバー、Wi-Fi MAC、低消費電力フレームワーク、AI 推論ランタイム、ISP アルゴリズム、LC3 コーデックはビルド済みライブラリとして提供し、それ以外はソースコードで提供します。
     - このサイトのサンプルはすべて IPRO7AI Reef EVK で動作します。他の INTELPRO ボードが必要なアプリケーションには、そのボード名を記載しています。
 
 ## システム概要 { #overview }
@@ -28,7 +28,7 @@ migrate_from:
   <div class="l-host"><strong>コンポーネント components/</strong><span>BLE ホスト · lwIP · mbedTLS · CherryUSB · audio · ai · fs · shell</span></div>
   <div class="l-hci"><strong>RTOS</strong><span>FreeRTOS V11.1.0 · Zephyr v4.4.0（モジュール、IPRO7）</span></div>
   <div class="l-ctlr"><strong>BSP bsp/</strong><span>HAL · SoC ドライバー · ボード設定 · リンカースクリプト</span></div>
-  <div style="--layer: #64748b"><strong>チップ</strong><span>IPRO7／IPRO7AI：BLE 5.4 · 802.15.4 · ISP · NPU — IPRO6S：Wi-Fi 6</span></div>
+  <div style="--layer: #64748b"><strong>チップ</strong><span>IPRO7／IPRO7AI：BLE 5.4 · 802.15.4 · ISP · NPU — IPRO6S：Wi-Fi</span></div>
 </div>
 
 | レイヤー | 場所 | 役割 |
@@ -51,7 +51,7 @@ flowchart TB
 
 | | FreeRTOS | Zephyr |
 |---|---|---|
-| アプリケーションとサンプル | `apps/` 以下の 40 個のアプリケーション | `zephyr/samples/` の SDK サンプルと Zephyr アップストリームのサンプル。ドライバーテストは `zephyr/tests/` |
+| アプリケーションとサンプル | `apps/` 以下の 41 個のアプリケーション | `zephyr/samples/` の SDK サンプルと Zephyr アップストリームのサンプル。ドライバーテストは `zephyr/tests/` |
 | ビルド | `make -C apps/<category>/<app>` または `./build_freertos.sh` | `tools/zephyr/bootstrap.sh` でワークスペースを作成し、`west build` を実行 |
 | チップ | IPRO7、IPRO7AI、IPRO6S | IPRO7、IPRO7AI |
 | ボード | IPRO7AI Reef EVK（9 個のアプリケーションで 11 構成）と他の INTELPRO ボード | `ipro7_evb`、`ipro7ai_evk`。本リリースには Reef のボード定義はありません |
@@ -72,7 +72,7 @@ Reef、および低消費電力、カメラ、オーディオ、NPU を必要と
 | | `wireless/bluetooth/ipro_ble_controller/` | IPRO7 BLE コントローラー（ビルド済みライブラリ） |
 | 無線 | `wireless/rf/ipro7_rf/`、`wireless/rf/ipro6_rf/` | IPRO7 と IPRO6S の RF ドライバー（ビルド済みライブラリ） |
 | | `wireless/ieee802154/` | Zephyr 用の IEEE 802.15.4 MAC（ビルド済みライブラリ） |
-| Wi-Fi 6（IPRO6S） | `wireless/macsw/`、`wireless/wifi6/` | MAC、fhost API、wpa_supplicant、lwIP アダプター（ビルド済みライブラリ） |
+| Wi-Fi（IPRO6S） | `wireless/macsw/`、`wireless/wifi6/` | MAC、fhost API、wpa_supplicant、lwIP アダプター（ビルド済みライブラリ） |
 | ネットワーク | `network/lwip/` | lwIP 2.1.2 |
 | | `network/ipronet_host/` | SDIO 接続の IPRO6S を介した Wi-Fi の IPRO7 側（netif `iproeth0`）。Reef の FIN カードで使用します |
 | | `network/rtsp_server/` | RTSP MJPEG 映像ストリーミング |
@@ -95,8 +95,8 @@ IPRO7 がネットワークに接続する方法と、SDIO リンクの反対側
 ## ディレクトリ構成 { #directory }
 
 ```text
-IPRO-SDK-V2.2.1/
-├── apps/                    FreeRTOS アプリケーション（40 個）
+IPRO-SDK-V2.3.0/
+├── apps/                    FreeRTOS アプリケーション（41 個）
 │   ├── ai/                  NPU と Edge AI のアプリケーション
 │   ├── bluetooth/ble/       BLE のサンプル
 │   ├── bluetooth/le_audio/  LE Audio ヘッドセット

@@ -1,6 +1,6 @@
 ---
 title: "Tool Command Lines"
-description: Commands, options and examples for the host tools in SDK V2.2.1 — build_freertos.sh, make, the IntelProCube flash tool, serial_monitor.py, create_ota.py, the Reef Teach and OTA tools — and what does not ship.
+description: Commands, options and examples for the host tools in SDK V2.3.0 — build_freertos.sh, make, the IntelProCube flash tool, serial_monitor.py, create_ota.py, the Reef Teach and OTA tools — and what does not ship.
 migrate_from:
   - "tools-debugging.html#overview"
   - "tools-debugging.html#build-cli"
@@ -22,17 +22,18 @@ Command syntax, options and examples for the host tools that ship with the SDK. 
 | `make` + `project.build` | each application's `Makefile` | Build one application | Included |
 | `serial_monitor.py` | `tools/` | Read the console; optionally send one command first, wait for a pattern and save a log (macOS, Linux; not an interactive terminal) | Included |
 | `create_ota.py` | `tools/` | Wrap IntelProCube's combined image into a boot2 OTA package | Included |
+| `ipro_dl.py` | `tools/` | Flashes a board through boot2's USB downloader, Python standard library only (macOS, Linux); `ipro7ai_sensor_tag_demo` on the IPRO7AI Sensor Tag is flashed with it over the board's USB, and IPRO Workbench 0.2.0 on macOS uses it to flash over the board's USB. From V2.3.0 | Included |
 | Browser image Teach | `tools/teach_web/` | Collect images, train a classifier and deploy it to `ipro_reef_teach`, in Chrome or Edge | Included |
 | `mfg_payload.py` | `apps/ai/ipro_reef_teach/` | Build the `--mfg` content of `ipro_reef_teach` (boot mode and voiceprint model) | Included |
 | Reef BLE OTA tools | `apps/bluetooth/ble/ipro_ble_remote/tools/` | `make_reef_ota.sh`, `reef_ota.py`, `reef_ble_test.py`, plus the Android demo app `ipro_remote_demo.apk` (in the application directory) | Included |
 | `parse_kconfig_dynamic.py` | `tools/script/` | Export a Kconfig tree as JSON (needs kconfiglib; not used by the build) | Included |
 | CMake 3.15 | `tools/cmake/` | Fallback when no `cmake` is on `PATH`; Linux x86-64 only | Included |
 | Zephyr scripts | `tools/zephyr/` | Zephyr workspace, build, flash and console (`ipro7_evb` and `ipro7ai_evk` boards) | Included |
-| IntelProCube 0.7.0.1 command-line flasher | `ipro_iot_tool_macos`, `ipro_iot_tool_linux`, `ipro_iot_tool.exe` | Flash firmware, partition tables, boot2 and `mfg` content over the serial port | Not included in V2.2.1; download it from [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) |
-| RISC-V toolchain | `/opt/toolchain/riscv_ipro7/` | Compiler (GCC 14, `riscv64-unknown-elf-`) | Not included in V2.2.1; contact INTELPRO |
+| IntelProCube 0.7.0.1 command-line flasher | `ipro_iot_tool_macos`, `ipro_iot_tool_linux`, `ipro_iot_tool.exe` | Flash firmware, partition tables, boot2 and `mfg` content over the serial port | Not included in V2.3.0; download it from [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) |
+| RISC-V toolchain | `/opt/toolchain/riscv_ipro7/` | Compiler (GCC 14, `riscv64-unknown-elf-`) | Not included in V2.3.0; contact INTELPRO |
 | IPRO AI Studio | — | IPRO AI Teach, model conversion and deployment | Not in the SDK; download from [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) |
-| OpenOCD / GDB connection setup, the board test script `tools/board_test.sh`, a crash-dump host tool | — | On-target debugging, automated board tests, reading memory after `==DUMP_READY:` | Not included in V2.2.1; contact INTELPRO |
-| `tools/kconfig/menuconfig.py`, the `configs/` defconfig directory, `ota_products.py` for OTA signing | — | `make menuconfig`, `make defconfig`, `create_ota.py --sign-key` | Not included in V2.2.1 |
+| OpenOCD / GDB connection setup, the board test script `tools/board_test.sh`, a crash-dump host tool | — | On-target debugging, automated board tests, reading memory after `==DUMP_READY:` | Not included in V2.3.0; contact INTELPRO |
+| `tools/kconfig/menuconfig.py`, the `configs/` defconfig directory, `ota_products.py` for OTA signing | — | `make menuconfig`, `make defconfig`, `create_ota.py --sign-key` | Not included in V2.3.0 |
 
 This release has no setup or procedure for on-target debugging over JTAG / GDB. Debugging relies on the serial console, logs and offline `addr2line`; see [Debugging & Troubleshooting](debugging.md).
 
@@ -78,7 +79,7 @@ The console baud rate is `CONFIG_PLATFORM_UART_BAUDRATE` in the configuration fi
 | `-P, --pt TABLE` | Partition table for flashing: a `.toml` path (passed to the tool as an absolute path) or a table name under the tool's `chips/ipro7/partition/` | `$IPRO_FLASH_PT`, else none |
 | `-j, --jobs N` | Parallel jobs for the outer `make`; the inner CMake build always uses `-j4` | — |
 | `-v, --verbose` | Show the full build output | — |
-| `-l, --list` | List all 40 projects under `apps/` by category | — |
+| `-l, --list` | List all 41 projects under `apps/` by category | — |
 | `-h, --help` | Help | — |
 
 `<project>` is an application name (`ipro7ai_reef_demo`) or a path below `apps/` (`platform/ipro7ai_reef_demo`). An ambiguous or unknown name prints the candidates. The description column of `-l` comes from the first comment line of `.config` and is blank for some applications.
@@ -107,7 +108,7 @@ Pick another Reef configuration with `-d`, for example:
 ```bash
 ./build_freertos.sh -d defconfig_reef build ipro_ble_remote          # output in build_reef/build_out/
 ./build_freertos.sh -d defconfig_reef_ov5640 build flash ipro7_uvc_cam
-./build_freertos.sh -l                                              # list the 40 projects
+./build_freertos.sh -l                                              # list the 41 projects
 ./build_freertos.sh size ipro7ai_reef_demo
 ```
 
@@ -138,7 +139,7 @@ Each application's `Makefile` calls `project.build` in the SDK root (CMake with 
 
 ## IntelProCube flash tool { #flash-tool }
 
-Flashing uses the IntelProCube command-line tool. It is not included in V2.2.1: download 0.7.0.1 from [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) and install it as in [Set Up Your Host](../get-started/environment.md#intelprocube). The tool reads its chip files from its own `chips/` directory, so run it from the IntelProCube directory. The table is compiled from the READMEs and scripts in the SDK; the tool itself is the reference for the full option set.
+Flashing uses the IntelProCube command-line tool. It is not included in V2.3.0: download 0.7.0.1 from [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) and install it as in [Set Up Your Host](../get-started/environment.md#intelprocube). The tool reads its chip files from its own `chips/` directory, so run it from the IntelProCube directory. The table is compiled from the READMEs and scripts in the SDK; the tool itself is the reference for the full option set.
 
 | Option | Meaning |
 |---|---|
@@ -217,7 +218,7 @@ python3 tools/create_ota.py <whole_img.bin> [--raw] [-o OUTPUT] [--hw-ver STR] [
 | `-o, --output` | Output file |
 | `--hw-ver` | Hardware version string in the header; set it explicitly rather than relying on the default |
 | `--fw-ver` | Firmware version string in the header (default `OTA_V1.0.0`) |
-| `--sign-key`, `--product` and the other signing options | Need `ota_products.py`, which does not ship; not usable with V2.2.1 |
+| `--sign-key`, `--product` and the other signing options | Need `ota_products.py`, which does not ship; not usable with V2.3.0 |
 
 On the Reef, `make_reef_ota.sh` of `ipro_ble_remote` runs the tool's `--build` and this script for you; see [Host tools for Reef applications](#reef-tools). The complete OTA flow is in [OTA Updates](../guides/ota.md).
 

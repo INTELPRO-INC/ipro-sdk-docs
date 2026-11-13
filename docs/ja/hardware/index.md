@@ -16,7 +16,7 @@ migrate_from: []
 
     ---
 
-    RISC-V RV32IMAFC、LE Audio 対応の BLE 5.4、IEEE 802.15.4、ISP、ハードウェア MJPEG を備えます。本リリースでは 37 個のアプリケーションの対象チップです。
+    RISC-V RV32IMAFC、LE Audio 対応の BLE 5.4、IEEE 802.15.4、ISP、ハードウェア MJPEG を備えます。本リリースでは 38 個のアプリケーションの対象チップです。
 
 -   :material-brain:{ .lg } **[IPRO7AI](chips/ipro7ai.md)**
 
@@ -28,7 +28,7 @@ migrate_from: []
 
     ---
 
-    Wi-Fi 6 を内蔵した RISC-V SoC です。本リリースには IPRO6S の Wi-Fi アプリケーションが 3 個含まれます。Reef では microSD スロットに挿す FIN Wi-Fi カードとして使います。
+    Wi-Fi を内蔵した RISC-V SoC です。本リリースには IPRO6S の Wi-Fi アプリケーションが 3 個含まれます。Reef では microSD スロットに挿す FIN Wi-Fi カードとして使います。
 
 </div>
 

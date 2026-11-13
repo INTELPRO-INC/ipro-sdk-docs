@@ -9,7 +9,7 @@ hero:
   release_text: "{sdk} released on {date}"
   release_link: reference/release-notes/
   title: The embedded SDK for IPRO chips
-  lead: "One architecture for the IPRO7 and IPRO6 families: FreeRTOS and Zephyr, BLE 5.4 and LE Audio, Wi-Fi 6, on-device NPU AI and imaging."
+  lead: "One architecture for the IPRO7 and IPRO6 families: FreeRTOS and Zephyr, BLE 5.4 and LE Audio, Wi-Fi, on-device NPU AI and imaging."
   primary:
     text: Get started
     link: get-started/
@@ -19,13 +19,13 @@ arch:
   chip_link_text: Chip specifications
   default: ipro7ai
   chips:
-    - { id: ipro7, name: IPRO7, sdk: V2.2.1, link: hardware/chips/ipro7/, desc: "RISC-V wireless SoC with BLE 5.4 and LE Audio, 802.15.4, ISP and MJPEG." }
-    - { id: ipro7ai, name: IPRO7AI, sdk: V2.2.1, link: hardware/chips/ipro7ai/, desc: "IPRO7 plus an NPU and in-package PSRAM; the SoC on the IPRO7AI Reef EVK V4.0." }
-    - { id: ipro6s, name: IPRO6S, sdk: V2.2.1, link: hardware/chips/ipro6s/, desc: "RISC-V SoC with on-chip Wi-Fi 6; on the Reef it is the FIN Wi-Fi card in the microSD slot." }
+    - { id: ipro7, name: IPRO7, sdk: V2.3.0, link: hardware/chips/ipro7/, desc: "RISC-V wireless SoC with BLE 5.4 and LE Audio, 802.15.4, ISP and MJPEG." }
+    - { id: ipro7ai, name: IPRO7AI, sdk: V2.3.0, link: hardware/chips/ipro7ai/, desc: "IPRO7 plus an NPU and in-package PSRAM; the SoC on the IPRO7AI Reef EVK V4.0." }
+    - { id: ipro6s, name: IPRO6S, sdk: V2.3.0, link: hardware/chips/ipro6s/, desc: "RISC-V SoC with on-chip Wi-Fi; on the Reef it is the FIN Wi-Fi card in the microSD slot." }
   layers:
     - name: Applications
       items:
-        - { title: Examples, link: examples/, chips: [ipro7, ipro7ai, ipro6s], desc: "The 40 shipped applications; the 9 that run on the Reef come with step-by-step pages." }
+        - { title: Examples, link: examples/, chips: [ipro7, ipro7ai, ipro6s], desc: "The 41 shipped applications; the 9 that run on the Reef come with step-by-step pages." }
         - { title: IPRO AI Teach, link: teach/, chips: [ipro7ai], desc: "The Reef's Edge AI firmware: teach the board images, voices and sensor signals with IPRO AI Studio." }
         - { title: Your application, wide: true, link: tutorials/first-own-app/, chips: [ipro7, ipro7ai, ipro6s], desc: "Start from a copy of the Reef's .config and pick components in it." }
     - name: Components
@@ -36,7 +36,7 @@ arch:
         - { title: AI runtime, link: guides/ai-npu/, chips: [ipro7ai], desc: "NPU inference runtime and the Edge AI platform: model store, input sources and preprocessing." }
         - { title: Camera & ISP, link: guides/camera/, chips: [ipro7, ipro7ai], desc: "DVP camera, ISP and hardware MJPEG, enough for a USB webcam." }
         - { title: lwIP / mbedTLS, link: guides/networking/, chips: [ipro7, ipro7ai, ipro6s], desc: "TCP/IP stack and TLS." }
-        - { title: Wi-Fi 6, link: hardware/chips/ipro6s/, chips: [ipro6s], desc: "The IPRO6S built-in Wi-Fi 6; MAC, wpa_supplicant and RF ship as prebuilt libraries." }
+        - { title: Wi-Fi, link: hardware/chips/ipro6s/, chips: [ipro6s], desc: "The IPRO6S built-in Wi-Fi; MAC, wpa_supplicant and RF ship as prebuilt libraries." }
         - { title: SDIO Wi-Fi host, link: guides/networking/, chips: [ipro7, ipro7ai], desc: "Wi-Fi for the IPRO7 family through an IPRO6S over SDIO (the FIN card on the Reef)." }
         - { title: Thread, link: guides/thread-matter/, chips: [ipro7, ipro7ai], desc: "802.15.4 and OpenThread, available under Zephyr." }
     - name: RTOS
@@ -82,7 +82,7 @@ migrate_from:
 
     Plug the IPRO6S FIN card into the microSD slot, join Wi-Fi over SDIO and stream the camera over RTSP.
 
-    <span class="ipro-tag">IPRO6S</span> <span class="ipro-tag">Wi-Fi 6</span> <span class="ipro-tag">RTSP</span>
+    <span class="ipro-tag">IPRO6S</span> <span class="ipro-tag">Wi-Fi</span> <span class="ipro-tag">RTSP</span>
 
     [Step-by-step tutorial](tutorials/wifi-rtsp.md)
 
@@ -96,7 +96,7 @@ The SDK also carries applications for the IPRO7 EVB, the IPRO7AI EVK and the IPR
 
 <div class="ipro-steps" markdown>
 
-1. **Set up your host**: get the RISC-V toolchain from INTELPRO and IntelProCube 0.7.0.1 from GitHub, install CMake 3.15 or later, GNU make and Python 3.8 or later, then download SDK V2.2.1 from the release page. [Installation](get-started/index.md)
+1. **Set up your host**: get the RISC-V toolchain from INTELPRO and IntelProCube 0.7.0.1 from GitHub, install CMake 3.15 or later, GNU make and Python 3.8 or later, then download SDK V2.3.0 from the release page. [Installation](get-started/index.md)
 2. **Build the out-of-box firmware**: from the SDK root run `make -C apps/platform/ipro7ai_reef_demo`; the image is `build/build_out/ipro7ai_reef_demo_IPRO7.bin`.
 3. **Flash and self-test**: hold SW1 and press SW2 for download mode, flash with IntelProCube and check for `[All Success]`; on the U6 console (115200 baud) type `reef selftest` and watch the LED, speaker, SD card and camera pass in turn. [Full walkthrough](get-started/first-app-freertos.md)
 
@@ -129,17 +129,17 @@ The SDK also carries applications for the IPRO7 EVB, the IPRO7AI EVK and the IPR
 - [:material-monitor-dashboard: **IPRO Workbench**](workbench/index.md)<br>The IPRO development environment: set up the tools, build, flash, monitor and debug in one window
 - [:material-brain: **IPRO AI Teach**](teach/index.md)<br>Install IPRO AI Studio, flash the Edge AI firmware and teach the Reef images, voices and sensor signals
 - [:material-school-outline: **Tutorials**](tutorials/index.md)<br>Build and flash, your first application, testing, BLE, LE Audio, the webcam and Wi-Fi
-- [:material-view-grid-outline: **Examples**](examples/index.md)<br>The 40 shipped applications; the 9 that run on the Reef come with steps
+- [:material-view-grid-outline: **Examples**](examples/index.md)<br>The 41 shipped applications; the 9 that run on the Reef come with steps
 - [:material-code-tags: **API Reference**](reference/api/index.md)<br>Platform, HAL, BLE controller and AI runtime interfaces
 - [:material-console: **Tool Command Lines**](reference/tools.md)<br>Build script, flashing, serial console, OTA and Teach tools
 - [:material-help-circle-outline: **FAQ**](reference/faq.md)<br>Common questions about building, flashing, BLE and networking
 
 </div>
 
-## What's new in V2.2 { #whats-new }
+## What's new in V2.3 { #whats-new }
 
-- **V2.2.1** (2026-11-10): IPRO6S soft-AP starts on parts without a factory MAC address, such as the IPRO6S EVK; `make_reef_ota.sh` finds boot2 in the public IntelProCube by itself. See the [Release Notes](reference/release-notes.md#v2-2-1).
-- **IPRO6S applications are back**: `ipro6_demo` (Wi-Fi 6 station / soft-AP with DTIM power save), `ipro6_if_wifi` (Wi-Fi bridge to a host over SDIO or USB, also the Reef FIN card's firmware) and `ipro6_fmac` (FullMAC firmware and its flash loader). The IPRO6S applications are Wi-Fi only; this release has no IPRO6S Bluetooth.
-- **Edge AI platform V2.0 and `ipro_reef_teach`**: one Reef firmware with the image, voice and sensor Teach tools, driven from IPRO AI Studio. Download IPRO AI Studio from [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest).
-- **New `ipro7_jpeg_decode`**: JPEG to RGB565 / RGB888 in software. `ipro7ai_reef_demo` adds `mic usb` (USB microphone) and `mic sdrec` (WAV recording to the SD card).
-- **40 applications**. The USB device, lwIP and BSP fixes are in the [Release Notes](reference/release-notes.md).
+- **V2.3.0** (2026-11-13): the OTA component `components/sys/ipro_ota`. The BLE OTA service (0xFF60) and the console UART command `ota_uart` share one package check, which verifies the header and SHA-256 of the package written to flash before the partition table is switched. See [OTA Updates](guides/ota.md).
+- **IPRO7AI Sensor Tag example `ipro7ai_sensor_tag_demo`**: reads the IMU, fuel gauge and button, drives the LEDs and buzzer, and sends 20 lines of values a second over the board's own USB for the Sensor Dashboard of IPRO Workbench 0.2.0. It is flashed over the board's USB with the new tool `tools/ipro_dl.py`, without a probe.
+- **IPRO6S**: the boot prints a `Build:` line (the build time), so IPRO Workbench can tell which firmware the board runs; `wifi_ap_start -b 1 -o 1` keeps a 2.4 GHz access point on its 40 MHz channel when neighbouring networks overlap it; with DTIM power save, beacons that an access point sometimes sends late are no longer missed.
+- **Use it with [IPRO Workbench 0.2.0](workbench/index.md)**: configurations, the Sensor Dashboard, sending OTA packages to the board, the Wi-Fi page, new starting applications, flashing over the board's own USB (macOS), and Simplified Chinese and Japanese.
+- **41 applications**. Everything else is in the [Release Notes](reference/release-notes.md#v2-3-0), along with what was new in V2.2.

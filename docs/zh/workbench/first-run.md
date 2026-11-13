@@ -67,6 +67,36 @@ description: 在 IPRO Workbench 用 SDK 內附的 ipro_unit_test 走完一輪建
 
 ![「新增 IPRO 應用程式」對話框：從何開始選了開發板的 Hello World，開發板是 IPRO7AI Reef (IPRO7AI)，名稱 my_app，分類 user，右下是建立與取消按鈕](../assets/workbench/new-app.svg)
 
+0.2.0 的「從何開始」比上圖多了三個選項，其他欄位相同。「從何開始」可以選：
+
+| 從何開始 | 開發板 | 建立的內容 |
+|---|---|---|
+| 開發板的 Hello World | 任何一塊 | 最小的應用程式，執行後印出 `Hello from <名稱>` |
+| 指定板子的 BLE peripheral（GATT 服務來自 gatt.yaml） | IPRO7、IPRO7AI 的開發板 | 會廣播的 BLE peripheral：`gatt.yaml` 與它產生的 `app_gatt.h`、`app_gatt.c`，加上 `app_ble.c`（藍牙啟動、廣播與寫入時的處理）。勾選 **加上 OTA** 時另見下方 |
+| IPRO6S EVK 的 Wi-Fi station（複製 ipro6_demo，Wi-Fi 設定） | IPRO6S EVK | 複製 `ipro6_demo`，以它的 Wi-Fi 設定檔當 `.config`，可以直接跑 [Wi-Fi 傳輸速率（iperf）](measure.md#iperf) |
+| IPRO7AI Reef 的 AI 視覺（複製 ipro7_uvc_cam：USB 相機，模型在 NPU 上執行） | IPRO7AI Reef EVK V4.0 | 複製 `ipro7_uvc_cam`，以剪刀石頭布的設定檔 `defconfig_reef_rps` 當 `.config`；純視訊鏡頭的 `defconfig_reef_ov5640` 留著當第二個[設定檔](develop.md#configurations) |
+| 複製現有的應用程式 | 依來源 | 選一個現有的應用程式，複製後把所有用到舊名稱的地方改成新名稱 |
+
+Wi-Fi station 與 AI 視覺兩個選項，只在 SDK 有 `ipro6_demo`（含 `defconfig_ipro6_lpwifi`）與 `ipro7_uvc_cam`（含 `defconfig_reef_rps`）時出現。
+
+### 建立 BLE peripheral { #own-app-ble }
+
+<div class="ipro-steps" markdown>
+
+1. **填寫並建立。** 在「新增 IPRO 應用程式」的「從何開始」選 **指定板子的 BLE peripheral（GATT 服務來自 gatt.yaml）**，開發板選 **IPRO7AI Reef**，名稱輸入 `my_ble`，按 **建立**。
+
+    **應該看到**：通知「已在 user 建立 my_ble。」，清單多了 `user/my_ble`，應用程式資料夾有 `gatt.yaml`、`app_gatt.h`、`app_gatt.c`、`app_ble.c`、`main.c` 與 `README.md`。
+
+2. **執行。** 按 **建置、燒錄並監看**。
+
+    **應該看到**：IPRO Monitor 出現 `advertising as IPRO-my_ble`。用手機上的 BLE 工具（例如 nRF Connect）掃描，找得到 `IPRO-my_ble`；連上後看得到 `demo` 服務，裡面有 `counter`（讀取、通知：開機後的秒數）與 `message`（讀取、寫入：最長 20 位元組的文字，寫入時板子會印出來）。
+
+3. **改服務。** 在應用程式上按右鍵選 **GATT 設定…**，見[設定 GATT 服務](develop.md#gatt)。
+
+</div>
+
+**加上 OTA**（只適用 IPRO7AI 的開發板，需要 SDK V2.3.0）：勾選「加上 OTA：經 BLE 與主控台 UART、A/B 分割表、boot2（2 MB 的板子）」後，應用程式另外帶有 SDK `ipro_ota` 元件的設定（`CONFIG_IPRO_OTA`、`CONFIG_IPRO_OTA_BLE`、`CONFIG_IPRO_OTA_UART`）與 A/B 分割表 `partition_cfg_2M_ota_ab.toml`，IDE 也把這份分割表選為它的「燒錄時使用」。燒錄時 IDE 一併寫入 boot2；之後的更新用 [OTA 包](flash.md#ota)送到板子。SDK 沒有 OTA 元件時，這個勾選框不能勾，滑鼠移上去會顯示「這份 SDK 沒有 OTA 元件（components/sys/ipro_ota）。」
+
 要從現有的範例開始，在清單的應用程式上按右鍵，選 **複製為新應用程式…**，或在「從何開始」選 **複製現有的應用程式**。新的應用程式放在 SDK 的 `apps/<分類>/<名稱>`。
 
 ## 應用程式的右鍵選單 { #app-menu }

@@ -21,6 +21,14 @@ AI 功能默认关闭。使用之前：
 
 如果在 AI 功能仍处于关闭状态时点击下文任何一个 **Ask AI…** 按钮，IDE 会先显示“AI features are off…”。点击 **Turn On AI** 即可开启。
 
+如果 AI 功能已开启，但还没有可用的语言模型，点击 **Ask AI…** 按钮时 IDE 会先显示“The IPRO assistant has no language model to use yet. Set one up first: an API key of a model provider (Anthropic, OpenAI, Google…), GitHub Copilot, or a model running on this computer (Ollama). Or ask the Claude Code assistant, which uses your Claude Code login.”，并提供三个按钮：
+
+| 按钮 | 作用 |
+|---|---|
+| **Set Up a Model** | 打开 AI 的模型设置 |
+| **Use Claude Code** | 将设置 `ipro.ai.assistant` 改为 `claudeCode`，此后的请求交给 Claude Code 助手。随后显示“Ask AI now goes to the Claude Code assistant (the ipro.ai.assistant setting). It needs the Claude Agent SDK on this computer and, to use the IPRO tools, the MCP connection: Connect… copies the command.”，点击 **Connect…** 即可复制该命令（请参阅[让 IDE 之外的 AI 助手使用它](#mcp)） |
+| **Ask Anyway** | 照常发送请求 |
+
 ## 让 AI 修复构建错误 { #fix-build }
 
 <div class="ipro-steps" markdown>
@@ -72,4 +80,4 @@ IPRO Workbench 打开期间，会在本机提供一个 MCP 服务器，让 Claud
     - 令牌保存在主目录下的 `.ipro-ide/mcp.json` 中，只有你的账户可以读取。复制的配置中包含令牌；请勿将其粘贴到任何公开的地方。
     - 不需要该服务器时，请在设置中关闭 `ipro.mcp.enabled`。
 
-MCP 提供的工具请参阅 [MCP 工具](reference.md#mcp-tools)。
+除了构建、烧录、读取监视器和修改配置，IDE 之外的 AI 助手还可以打开 SDK 文件夹，选择开发板、端口和[配置文件](develop.md#configurations)，打开和关闭串口监视器，并在开发板的控制台上输入一行命令、读回开发板的响应。MCP 提供的工具请参阅 [MCP 工具](reference.md#mcp-tools)。

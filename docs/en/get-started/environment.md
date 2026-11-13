@@ -25,45 +25,51 @@ At the end of this page your computer has the SDK, the build tools, the RISC-V t
 
 <div class="ipro-steps" markdown>
 
-1. **Download** `IPRO-SDK-V2.2.1.tar.gz` from the [IPRO-SDK-V2.2.1 release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.1) and note the SHA-256 published on that page.
+1. **Download** `IPRO-SDK-V2.3.0.tar.gz` from the [IPRO-SDK-V2.3.0 release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.3.0) and note the SHA-256 published on that page.
 
 2. **Verify** the download:
 
     === "macOS"
 
         ```bash
-        shasum -a 256 IPRO-SDK-V2.2.1.tar.gz
+        shasum -a 256 IPRO-SDK-V2.3.0.tar.gz
         ```
 
     === "Linux"
 
         ```bash
-        sha256sum IPRO-SDK-V2.2.1.tar.gz
+        sha256sum IPRO-SDK-V2.3.0.tar.gz
         ```
 
     === "Windows"
 
         ```powershell
-        Get-FileHash .\IPRO-SDK-V2.2.1.tar.gz -Algorithm SHA256
+        Get-FileHash .\IPRO-SDK-V2.3.0.tar.gz -Algorithm SHA256
         ```
 
-    The 64 hexadecimal characters printed must match the value on the release page (case does not matter). If they differ, download again.
+    The 64 hexadecimal characters printed must match the value on the release page (case does not matter). For V2.3.0 it is:
+
+    ```text
+    0f39c1d2551be0aa748bfee6613ec3c8cb5cfa6b1cea310780f9d58ce216574b  IPRO-SDK-V2.3.0.tar.gz
+    ```
+
+    If they differ, download again.
 
 3. **Unpack and check the version.** Unpack into a new directory; do not overwrite an older SDK.
 
     === "macOS / Linux"
 
         ```bash
-        tar xzf IPRO-SDK-V2.2.1.tar.gz
-        cd IPRO-SDK-V2.2.1
+        tar xzf IPRO-SDK-V2.3.0.tar.gz
+        cd IPRO-SDK-V2.3.0
         cat VERSION.txt
         ```
 
     === "Windows"
 
         ```powershell
-        tar -xzf .\IPRO-SDK-V2.2.1.tar.gz
-        Get-Content .\IPRO-SDK-V2.2.1\VERSION.txt
+        tar -xzf .\IPRO-SDK-V2.3.0.tar.gz
+        Get-Content .\IPRO-SDK-V2.3.0\VERSION.txt
         ```
 
     `VERSION.txt` reads:
@@ -71,14 +77,14 @@ At the end of this page your computer has the SDK, the build tools, the RISC-V t
     ```text
     IPRO SDK Release
     ========================================
-    IPRO7: IPRO-SDK-V2.2.1
-    IPRO6: IPRO-SDK-V2.2.1
+    IPRO7: IPRO-SDK-V2.3.0
+    IPRO6: IPRO-SDK-V2.3.0
 
-    Release Date: 2026-11-10
-    Base Commit: 60afd4ab
+    Release Date: 2026-11-13
+    Base Commit: …
     ```
 
-    `IPRO-SDK-V2.2.1/` is the SDK root (`<SDK>` on this site); it holds `apps/`, `bsp/`, `components/`, `build_freertos.sh` and `VERSION.txt`.
+    `IPRO-SDK-V2.3.0/` is the SDK root (`<SDK>` on this site); it holds `apps/`, `bsp/`, `components/`, `build_freertos.sh` and `VERSION.txt`.
 
 </div>
 

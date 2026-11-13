@@ -12,13 +12,13 @@ migrate_from:
 
 # Architecture
 
-One source tree serves two chips and two RTOSes: 40 FreeRTOS applications under `apps/` (37 for IPRO7 and IPRO7AI, 3 for IPRO6S), and a Zephyr v4.4.0 module for IPRO7. Both paths share the HAL, the SoC drivers and the prebuilt libraries. The build flow and memory layout are in [Build System & Configuration](build-system.md).
+One source tree serves two chips and two RTOSes: 41 FreeRTOS applications under `apps/` (38 for IPRO7 and IPRO7AI, 3 for IPRO6S), and a Zephyr v4.4.0 module for IPRO7. Both paths share the HAL, the SoC drivers and the prebuilt libraries. The build flow and memory layout are in [Build System & Configuration](build-system.md).
 
 !!! abstract "At a glance"
     - Layers: applications (`apps/`) → components (`components/`) → RTOS (FreeRTOS V11.1.0 or Zephyr v4.4.0) → BSP (`bsp/`) → chip.
     - IPRO7 and IPRO7AI: RISC-V RV32IMAFC with DSP extensions, BLE 5.4 with LE Audio, IEEE 802.15.4; IPRO7AI adds the NPU and ISP. Networking is Ethernet (RMII) or Wi-Fi through an IPRO6S over SDIO; on the IPRO7AI Reef EVK the IPRO6S is the FIN card in the microSD slot.
-    - IPRO6S: the same core with on-chip Wi-Fi 6, FreeRTOS only.
-    - The BLE controller, RF drivers, Wi-Fi 6 MAC, low-power framework, AI inference runtime, ISP algorithms and LC3 codec ship as prebuilt libraries; everything else is source.
+    - IPRO6S: the same core with on-chip Wi-Fi, FreeRTOS only.
+    - The BLE controller, RF drivers, Wi-Fi MAC, low-power framework, AI inference runtime, ISP algorithms and LC3 codec ship as prebuilt libraries; everything else is source.
     - Every example on this site runs on the IPRO7AI Reef EVK; other INTELPRO boards are named where an application needs one.
 
 ## System overview { #overview }
@@ -28,7 +28,7 @@ One source tree serves two chips and two RTOSes: 40 FreeRTOS applications under 
   <div class="l-host"><strong>Components components/</strong><span>BLE host · lwIP · mbedTLS · CherryUSB · audio · ai · fs · shell</span></div>
   <div class="l-hci"><strong>RTOS</strong><span>FreeRTOS V11.1.0 · Zephyr v4.4.0 (module, IPRO7)</span></div>
   <div class="l-ctlr"><strong>BSP bsp/</strong><span>HAL · SoC drivers · board configuration · linker scripts</span></div>
-  <div style="--layer: #64748b"><strong>Chip</strong><span>IPRO7 / IPRO7AI: BLE 5.4 · 802.15.4 · ISP · NPU — IPRO6S: Wi-Fi 6</span></div>
+  <div style="--layer: #64748b"><strong>Chip</strong><span>IPRO7 / IPRO7AI: BLE 5.4 · 802.15.4 · ISP · NPU — IPRO6S: Wi-Fi</span></div>
 </div>
 
 | Layer | Location | Role |
@@ -51,7 +51,7 @@ flowchart TB
 
 | | FreeRTOS | Zephyr |
 |---|---|---|
-| Applications and samples | 40 applications under `apps/` | SDK samples in `zephyr/samples/` and upstream Zephyr samples; driver tests in `zephyr/tests/` |
+| Applications and samples | 41 applications under `apps/` | SDK samples in `zephyr/samples/` and upstream Zephyr samples; driver tests in `zephyr/tests/` |
 | Build | `make -C apps/<category>/<app>` or `./build_freertos.sh` | Create a workspace with `tools/zephyr/bootstrap.sh`, then `west build` |
 | Chips | IPRO7, IPRO7AI, IPRO6S | IPRO7, IPRO7AI |
 | Boards | IPRO7AI Reef EVK (11 configurations in 9 applications) and other INTELPRO boards | `ipro7_evb`, `ipro7ai_evk`; no Reef board in this release |
@@ -72,7 +72,7 @@ All paths below are under `components/`.
 | | `wireless/bluetooth/ipro_ble_controller/` | IPRO7 BLE controller (prebuilt library) |
 | Radio | `wireless/rf/ipro7_rf/`, `wireless/rf/ipro6_rf/` | IPRO7 and IPRO6S RF drivers (prebuilt libraries) |
 | | `wireless/ieee802154/` | IEEE 802.15.4 MAC for Zephyr (prebuilt library) |
-| Wi-Fi 6 (IPRO6S) | `wireless/macsw/`, `wireless/wifi6/` | MAC, fhost API, wpa_supplicant and lwIP adapter (prebuilt libraries) |
+| Wi-Fi (IPRO6S) | `wireless/macsw/`, `wireless/wifi6/` | MAC, fhost API, wpa_supplicant and lwIP adapter (prebuilt libraries) |
 | Networking | `network/lwip/` | lwIP 2.1.2 |
 | | `network/ipronet_host/` | IPRO7 side of Wi-Fi through an IPRO6S over SDIO (netif `iproeth0`); used with the Reef's FIN card |
 | | `network/rtsp_server/` | RTSP MJPEG video streaming |
@@ -95,7 +95,7 @@ How IPRO7 reaches a network, and the IPRO6S applications on the other end of the
 ## Directory layout { #directory }
 
 ```text
-IPRO-SDK-V2.2.1/
+IPRO-SDK-V2.3.0/
 ├── apps/                    FreeRTOS applications (40)
 │   ├── ai/                  NPU and Edge AI applications
 │   ├── bluetooth/ble/       BLE examples

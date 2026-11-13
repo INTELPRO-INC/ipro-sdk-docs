@@ -67,6 +67,36 @@ SDK に付属するユニットテスト `ipro_unit_test` を使って「ビル�
 
 ![Start from、Board、名前、カテゴリーの欄がある New IPRO Application ダイアログ](../assets/workbench/new-app.svg)
 
+0.2.0 では、**Start from** の選択肢が図より 3 つ多くなっています。ほかの欄は同じです。選択肢は次のとおりです。
+
+| Start from | ボード | 作成されるもの |
+|---|---|---|
+| **Hello World for a board** | すべて | 最小のアプリケーション。`Hello from <name>` を出力します |
+| **BLE peripheral for a board (GATT services from gatt.yaml)** | IPRO7 と IPRO7AI のボード | アドバタイズする BLE ペリフェラル。`gatt.yaml` と、そこから生成した `app_gatt.h` と `app_gatt.c`、`app_ble.c`（Bluetooth の起動、アドバタイズ、書き込まれたときの処理）が含まれます。**With OTA** については後述します |
+| **Wi-Fi station for the IPRO6S EVK (a copy of ipro6_demo, Wi-Fi configuration)** | IPRO6S EVK | `.config` を Wi-Fi 構成にした `ipro6_demo` のコピー。そのまま [Wi-Fi スループット（iperf）](measure.md#iperf)を実行できます |
+| **AI vision for the IPRO7AI Reef (a copy of ipro7_uvc_cam: USB camera with a model on the NPU)** | IPRO7AI Reef EVK V4.0 | `.config` をじゃんけん認識の構成 `defconfig_reef_rps` にした `ipro7_uvc_cam` のコピー。通常の Web カメラ `defconfig_reef_ov5640` は 2 つ目の[別構成](develop.md#configurations)として残ります |
+| **A copy of an existing application** | コピー元と同じ | 選択したアプリケーションのコピー。名前が出てくる箇所はすべて新しい名前に置き換えられます |
+
+Wi-Fi station と AI vision の選択肢は、SDK に `ipro6_demo`（`defconfig_ipro6_lpwifi` を含む）と `ipro7_uvc_cam`（`defconfig_reef_rps` を含む）がある場合にだけ表示されます。
+
+### BLE ペリフェラルを作成する { #own-app-ble }
+
+<div class="ipro-steps" markdown>
+
+1. **フォームに入力します。** **New IPRO Application** の **Start from** で **BLE peripheral for a board (GATT services from gatt.yaml)** を、**Board** で **IPRO7AI Reef** を選択し、名前に `my_ble` と入力して **Create** をクリックします。
+
+    **期待される結果**：「Created my_ble in user.」という通知が表示され、一覧に `user/my_ble` が表示されます。そのフォルダーには `gatt.yaml`、`app_gatt.h`、`app_gatt.c`、`app_ble.c`、`main.c`、`README.md` があります。
+
+2. **実行します。** **Build, Flash and Monitor** をクリックします。
+
+    **期待される結果**：IPRO Monitor に `advertising as IPRO-my_ble` が表示されます。スマートフォンの BLE アプリ（例：nRF Connect）で `IPRO-my_ble` が見つかり、接続すると `demo` サービスが表示されます。サービスには `counter`（read、notify：起動からの秒数）と `message`（read、write：最大 20 バイトのテキスト。書き込まれるとボードが出力します）があります。
+
+3. **サービスを変更します。** アプリケーションを右クリックして **GATT Configuration…** を選択します。[GATT サービスを設定する](develop.md#gatt)を参照してください。
+
+</div>
+
+**With OTA**（IPRO7AI のボードのみ、SDK V2.3.0）：「With OTA: over BLE and the console UART, an A/B partition table, boot2 (2 MB boards)」にチェックを入れると、アプリケーションには SDK の `ipro_ota` コンポーネントの設定（`CONFIG_IPRO_OTA`、`CONFIG_IPRO_OTA_BLE`、`CONFIG_IPRO_OTA_UART`）と A/B パーティションテーブル `partition_cfg_2M_ota_ab.toml` も追加され、IDE はこのテーブルを **Flash with** に選択します。書き込み時には boot2 も一緒に書き込まれ、以降の更新は [OTA パッケージ](flash.md#ota)としてボードに送ります。SDK に OTA コンポーネントがない場合はチェックを入れられず、ツールチップに「This SDK has no OTA component (components/sys/ipro_ota).」と表示されます。
+
 既存のサンプルから始めるには、一覧でアプリケーションを右クリックして **Copy as New Application…** を選択するか、**Start from** で **A copy of an existing application** を選択します。新しいアプリケーションは SDK の `apps/<category>/<name>` に作成されます。
 
 ## アプリケーションのコンテキストメニュー { #app-menu }

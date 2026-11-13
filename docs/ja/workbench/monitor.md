@@ -1,6 +1,6 @@
 ---
 title: "シリアルモニター"
-description: IPRO Workbench の IPRO Monitor について、モニターを開いてボードにコマンドを入力する方法、フィルター、タイムスタンプ、保存と全ログ、シリアルプロッター、2 つ目のポートのモニターを説明します。
+description: IPRO Workbench の IPRO Monitor について、モニターを開いてボードにコマンドを入力する方法、フィルター、タイムスタンプ、保存と全ログ、シリアルプロッター、2 つ目のポートのモニター、センサーダッシュボードを説明します。
 ---
 
 # シリアルモニター
@@ -81,7 +81,7 @@ description: IPRO Workbench の IPRO Monitor について、モニターを開�
 
 <div class="ipro-steps" markdown>
 
-1. **数値を出力します。** ファームウェアから各行に数値を出力させます。例えば `temp:23.5,hum:40`（名前:値）や `1.2 3.4`（スペースまたはカンマ区切り）です。
+1. **数値を出力します。** ファームウェアから各行に数値を出力させます。例えば `temp:23.5,hum:40`（名前:値）や `1.2 3.4`（スペースまたはカンマ区切り）です。同じ `name:value` の行は[センサーダッシュボード](#dashboard)でも表示できます。
 
 2. **プロッターを開きます。** モニターを開いた状態で、モニタータブの折れ線グラフのアイコン（**Serial Plotter**）をクリックします。
 
@@ -109,3 +109,74 @@ description: IPRO Workbench の IPRO Monitor について、モニターを開�
 
 !!! note
     Windows では、1 つの COM ポートを同時に使用できるのは 1 つのプログラムだけです。別のシリアルツールを使うには、先に IPRO Monitor を閉じてください。
+
+## センサーダッシュボード { #dashboard }
+
+**Sensor Dashboard** は、ボードがシリアルポートに出力する `name:value` の行（[シリアルプロッター](#plotter)と同じ形式）を読み取り、値ごとに単位付きのタイルを表示します。さらに、メーター、ランプ、傾きビュー、グループごとのグラフ、ボードのコンソールにコマンドを入力するボタンもあります。レイアウトはアプリケーションフォルダーの `dashboard.yaml` で決めます。このファイルがない場合は、すべての値にタイルとグラフが 1 つずつ表示されます。
+
+手順では、IPRO7AI Sensor Tag で IPRO SDK V2.3.0 の [`ipro7ai_sensor_tag_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/platform/ipro7ai_sensor_tag_demo) を使用します。このボードのコンソールはボード自身の USB ポートにあります。
+
+<div class="ipro-steps" markdown>
+
+1. **書き込んでモニターを開きます。** [ボード自身の USB から書き込む](flash.md#usb-flash)の手順で、ボードの USB ポートを選択した状態で `ipro7ai_sensor_tag_demo` を IPRO7AI Sensor Tag に書き込み、**Serial Monitor** をクリックします。
+
+    **期待される結果**：IPRO Monitor に、次のような行が 1 秒に 20 行表示されます。
+
+    ```text
+    ax:0.012 ay:-0.004 az:1.003 gx:0.3 gy:-0.1 gz:0.0 temp:27.4 batt:87 vbat:4.012 btn:0
+    ```
+
+2. **Sensor Dashboard を開きます。** IPRO メニューから **Sensor Dashboard** を選択します（またはコマンドパレットで `IPRO: Sensor Dashboard` を選択します）。モニターがまだ開いていない場合、IDE は使用中のポートでモニターを開きます。
+
+    **期待される結果**：エディター領域に **Sensor Dashboard** が開き、`dashboard.yaml` に書かれたタイトル `IPRO7AI Sensor Tag`、「… lines a second from /dev/cu.usbmodemXXXX」という行、「Laid out by dashboard.yaml of this application」が表示されます。その下に、Acceleration と Rotation のグループ（それぞれ 3 つの値とグラフ。Acceleration には「pitch …° · roll …°」と表示される **Tilt** ビューもあります）と、Board のグループ（Temperature、メーター表示の Battery、Battery voltage、Button のランプ）が表示されます。
+
+3. **ボードを動かします。** ボードを傾けてから、ボード上のボタンを押します。
+
+    **期待される結果**：傾きビューがボードの動きに追従し、加速度のグラフが変化します。ボタンを押している間は Button のランプに「On」、離すと「Off」と表示されます。タイルにマウスポインターを合わせると、「&lt;name&gt;: lowest …, highest … since the page was cleared」と表示されます。
+
+4. **コマンドボタンをクリックします。** 上部の **Beep** をクリックします。
+
+    **期待される結果**：ボードのブザーが鳴ります。各ボタンはコンソールに 1 行を入力します。**Beep** は `beep 200` を入力します。ボタンにマウスポインターを合わせると、そのコマンドが表示されます。
+
+5. **一時停止、クリア、ファイルの再読み込みを行います。** **Pause** をクリックするとページの表示が止まり（ボタンは **Resume** に変わります）、**Clear** をクリックすると統計を最初からやり直します。`dashboard.yaml` を変更した後は、**Read dashboard.yaml Again** をクリックします。
+
+</div>
+
+`dashboard.yaml` の書き方（`ipro7ai_sensor_tag_demo` のものを短くしたもの）：
+
+```yaml title="dashboard.yaml"
+title: IPRO7AI Sensor Tag
+groups:
+  - title: Acceleration
+    unit: g
+    range: [-2, 2]
+    decimals: 3
+    chart: true
+    tilt: { x: ax, y: ay, z: az }
+    values:
+      - { name: ax, label: X }
+      - { name: ay, label: Y }
+      - { name: az, label: Z }
+  - title: Board
+    values:
+      - { name: temp, label: Temperature, unit: "°C", decimals: 1 }
+      - { name: batt, label: Battery, unit: "%", range: [0, 100], show: bar }
+      - { name: btn, label: Button, show: lamp }
+controls:
+  - { label: Beep, send: beep 200 }
+```
+
+| キー | 意味 |
+|---|---|
+| `title` | ダッシュボードのタイトル。ない場合は「Sensors of &lt;application&gt;」 |
+| `groups` | グループ。それぞれに `title` と `values` があり、グループ全体の `unit`、`range`、`decimals` も指定できます |
+| `chart: true` | グループの値の時間変化をグラフに描きます |
+| `tilt` | 3 つの加速度からピッチとロールを求めます（`x`、`y`、`z` で値の名前を指定します） |
+| `values` | 値ごとに 1 つのエントリ：`name`（ボードが出力する名前）、`label`、`unit`、`decimals`、`range`、`show` |
+| `show` | `value`：数値（デフォルト）、`bar`：数値と `range` 内での位置、`lamp`：0 以外のときに点灯 |
+| `controls` | ボタン。`label` はボタンの文字列、`send` はコンソールに入力するコマンド |
+
+!!! note
+    - `dashboard.yaml` がないアプリケーションでは、ページに「This application has no dashboard.yaml: every value the board prints is shown. The file names groups, units, ranges and buttons.」と表示されます。
+    - `dashboard.yaml` の誤りは「dashboard.yaml line N: …」として一覧表示されます。誤った部分は除外され、残りが表示されます。
+    - モニターが開いていない場合、ページには「The serial monitor is not open」と表示され、**Open Monitor** が提示されます。ボードがしばらく何も出力しない場合は「Nothing from … for a while」と表示されます。

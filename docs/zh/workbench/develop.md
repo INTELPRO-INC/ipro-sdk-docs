@@ -38,6 +38,42 @@ description: 在 IPRO Workbench 以表單修改應用程式的 .config、設定�
 - 勾選 **顯示隱藏項目**，可以看到相依條件不成立、menuconfig 會隱藏但建置仍會讀取的項目。
 - 習慣文字介面時，右鍵選 **Menuconfig**，在終端機裡編輯同一份設定；選 **開啟 .config** 則直接編輯檔案。
 
+## 設定檔 { #configurations }
+
+有些應用程式除了 `.config`，還附有給其他開發板或用途的設定檔 `defconfig_<名稱>` 或 `config_<名稱>`。IDE 列出這些檔案，選一個就以它建置：建置結果放在應用程式資料夾的 `build_<名稱>`（`config_<名稱>` 是 `build_config_<名稱>`），和命令列 `make DEFCONFIG=<檔案>` 用的是同一個資料夾，應用程式自己的 `.config` 不會被改動。設定（Kconfig）、腳位設定與 GATT 設定讀寫的也是選定的那個檔案。
+
+下面以 `ipro7_uvc_cam` 示範，它的 `.config` 給 IPRO7 EVB，另有兩個給 IPRO7AI Reef EVK V4.0 的設定檔。
+
+<div class="ipro-steps" markdown>
+
+1. **選應用程式。** 在側邊欄「應用程式」點 **ipro7_uvc_cam**（在 `multimedia` 分類下）。
+
+    **應該看到**：狀態列的應用程式名稱旁邊多了一個齒輪與 `.config`，表示目前以 `.config` 建置。應用程式沒有其他設定檔時，狀態列不顯示這一項。
+
+2. **開啟設定檔清單。** 按狀態列的 `.config`（或 IPRO 選單的 **選擇設定檔…**，命令選擇區的 `IPRO: 選擇設定檔…`）。
+
+    **應該看到**：清單上方提示「選擇 ipro7_uvc_cam 建置所用的設定檔」，列出 `.config`、`defconfig_reef_ov5640` 與 `defconfig_reef_rps`；每一列寫著晶片與開發板（例如 `IPRO7 · IPRO7AI Reef`），下一行是「已建置於 build」或「尚未建置；將建置於 build_reef_rps」。目前的設定檔前面有勾號。
+
+3. **選設定檔。** 選 `defconfig_reef_rps`。
+
+    **應該看到**：通知「ipro7_uvc_cam 現在為 IPRO7AI Reef 建置（defconfig_reef_rps）。」，狀態列改成 `defconfig_reef_rps`，工具列的開發板換成 IPRO7AI Reef（開發板依應用程式的設定決定，見[設定一覽](reference.md#settings)的 `ipro.board.id`）。設定檔的開發板和原本相同時，不會出現這則通知。
+
+4. **建置。** 按 **建置**。
+
+    **應該看到**：**IPRO Build** 的開頭有一行 `Configuration: defconfig_reef_rps -> …/build_reef_rps/.config`，韌體在 `build_reef_rps/build_out/`。IDE 把選定的檔案複製到建置資料夾當 `.config`，應用程式資料夾的 `.config` 不變。
+
+5. **換回來。** 再按狀態列，選 `.config`。
+
+    **應該看到**：狀態列回到 `.config`，之後的建置與燒錄都使用 `build` 資料夾。
+
+</div>
+
+!!! note
+    - 只有 `defconfig_*` 而沒有 `.config` 的應用程式（例如 `ipro6_fmac`）現在也會列在「應用程式」裡，預設使用和應用程式同名的設定檔，沒有時用第一個。
+    - 應用程式只有一個設定檔時，**選擇設定檔…** 只會通知「<應用程式> 只有一個設定檔：.config。」
+    - 選了設定檔之後，**清除建置** 刪除的是那個設定檔的建置資料夾。
+    - IDE 會記住每個應用程式選的設定檔，重新啟動後仍然有效。
+
 ## 設定腳位 { #pins }
 
 「腳位設定」以封裝圖與表格指定每支 GPIO 的功能，檢查衝突與開發板上的接線，並產生初始化程式碼 `app_pins.h`、`app_pins.c`。
@@ -183,7 +219,7 @@ description: 在 IPRO Workbench 以表單修改應用程式的 .config、設定�
 |---|---|
 | 建置 | 一般情況。只重新編譯有變動的檔案。 |
 | 重新設定並建置 | 改了 `CMakeLists.txt` 或建置組態後，重新執行 CMake 設定。 |
-| 清除建置 | 刪除應用程式的 `build` 資料夾，下一次建置從頭開始。 |
+| 清除建置 | 刪除應用程式的 `build` 資料夾（選了[設定檔](#configurations)時是那個設定檔的建置資料夾），下一次建置從頭開始。 |
 
 建置組態（Debug／Release／MinSizeRel）在設定 `ipro.build.profile` 選擇，見[設定一覽](reference.md#settings)。
 

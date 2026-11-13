@@ -338,9 +338,9 @@ Reef が Wi-Fi に接続する手段は IPRO6S FIN カードだけです。パ�
 
 | アプリケーション | 設定 | 役割 |
 |---|---|---|
-| `ipro6_if_wifi` | `defconfig_ipro6_sdio` | SDIO ホスト向けの Wi-Fi 6 ブリッジ：FIN カードのファームウェア |
+| `ipro6_if_wifi` | `defconfig_ipro6_sdio` | SDIO ホスト向けの Wi-Fi ブリッジ：FIN カードのファームウェア |
 | `ipro6_if_wifi` | `defconfig_ipro6_usb` | USB ホスト向けの同じブリッジ |
-| `ipro6_demo` | `.config`、`defconfig_ipro6_lpwifi` | IPRO6S EVK 上の単体の Wi-Fi 6 ステーション／soft-AP |
+| `ipro6_demo` | `.config`、`defconfig_ipro6_lpwifi` | IPRO6S EVK 上の単体の Wi-Fi ステーション／soft-AP |
 | `ipro6_fmac` | `defconfig_ipro6_fmac` | Linux cfg80211 ホスト向けの FullMAC ファームウェア。Linux ドライバーはこのパッケージに含まれていません |
 
 チップ、ボード、書き込みについては [IPRO6S](../hardware/chips/ipro6s.md) を参照してください。

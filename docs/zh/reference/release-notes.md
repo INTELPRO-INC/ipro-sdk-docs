@@ -7,11 +7,48 @@ migrate_from:
 
 # 版本資訊
 
-IPRO SDK 的正式發行紀錄，新版在前；目前版本為 V2.2.1。各版本的下載檔與發行說明在 [GitHub Releases](https://github.com/INTELPRO-INC/IPRO-SDK/releases)；SDK 套件的整體說明見套件根目錄的 `README.md`。Windows 線上安裝程式 Online Setup 的版本也列在此頁（目前為 3.6.0），下載位置是 [ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest)。
+IPRO SDK 的正式發行紀錄，新版在前；目前版本為 V2.3.0。各版本的下載檔與發行說明在 [GitHub Releases](https://github.com/INTELPRO-INC/IPRO-SDK/releases)；SDK 套件的整體說明見套件根目錄的 `README.md`。Windows 線上安裝程式 Online Setup 的版本也列在此頁（目前為 3.6.0），下載位置是 [ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest)。
+
+## IPRO-SDK-V2.3.0 { #v2-3-0 }
+
+<span class="ipro-badge">最新版本</span> 發行日期：2026-11-13 ・ [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.3.0)
+
+IPRO7／IPRO7AI 與 IPRO6S 版本：各種傳輸方式共用的 OTA 元件、IPRO7AI Sensor Tag 的開放範例（經板子自己的 USB 燒錄），以及 IPRO6S 的建置時間行。共 41 個 FreeRTOS 應用：38 個 IPRO7、3 個 IPRO6S。請搭配 [IPRO Workbench 0.2.0](https://github.com/INTELPRO-INC/ipro-workbench/releases/tag/v0.2.0)（見 [IPRO Workbench](../workbench/index.md)）與 IntelProCube 0.7.0.1 以上使用。
+
+| 下載檔 | 大小 | SHA-256 |
+|---|---|---|
+| `IPRO-SDK-V2.3.0.tar.gz` | 163.4 MB | `0f39c1d2551be0aa748bfee6613ec3c8cb5cfa6b1cea310780f9d58ce216574b` |
+
+**新增與變更**
+
+- **OTA 元件** `components/sys/ipro_ota`（`CONFIG_IPRO_OTA`）：各種傳輸方式共用同一套套件檢查。它讀取 512 位元組的 OTA 標頭，在板子切換之前檢查寫入 Flash 的映像 SHA-256，並在寫入每個 Flash 扇區前才抹除它。使用它的傳輸方式有兩種：
+    - **經主控台 UART 的 OTA**：shell 指令 `ota_uart <位元組數> [noapply]`（`CONFIG_IPRO_OTA_UART`）。IPRO Workbench 0.2.0 以它把套件傳到板子（OTA 包 → 傳送到板子）。
+    - **BLE OTA 服務**（UUID 0xFF60，`CONFIG_IPRO_OTA_BLE`）：原本 `ipro_ble_remote` 的服務，現在在元件中。`ipro_ble_remote`（`defconfig_reef`）拒絕 SHA-256 不符的套件，而且不再先抹除整個暫存區，START 後不到半秒就開始接收（原本約 4 秒）。
+
+    說明在 `components/sys/ipro_ota/README.md`，操作見 [OTA 更新](../guides/ota.md)。
+- **`ipro7ai_sensor_tag_demo`**：IPRO7AI Sensor Tag 板的範例，讀取 IMU（ISM330BX：加速度、角速度、溫度）、電量計（CW2015）與按鍵，控制兩顆 LED 與蜂鳴器。它經板子自己的 USB 每秒印出 20 行 `名稱:數值`，IPRO Workbench 0.2.0 的感測器儀表板依應用的 `dashboard.yaml` 排版；shell 指令有 `stream`、`rate`、`led`、`beep`。見[範例](../examples/index.md)。
+- **`tools/ipro_dl.py`**：經 boot2 的 USB 下載模式燒錄板子（只用 Python 標準函式庫，macOS 與 Linux）。Sensor Tag 範例以它燒錄；IPRO Workbench 0.2.0 在 macOS 上燒錄到板子自己的 USB 埠時也使用它。
+- **IPRO6S**：開機時和 IPRO7 一樣印出含建置日期與時間的 `Build:` 行，IPRO Workbench 可以辨識板子上執行的韌體。
+- **IPRO6S Wi-Fi**：`wifi_ap_start -b 1 -o 1` 讓 2.4 GHz 基地台在鄰近網路重疊時仍維持 40 MHz 頻道（只用 `-b 1` 時和以前一樣退回 20 MHz）。
+- **修正**：使用 DTIM 省電時，若基地台的 beacon 偶爾因鄰近網路而延遲，IPRO6S 會太晚打開接收器而漏收 beacon；現在接收視窗維持在準時的 beacon 上。
+- `ipro6_demo` 只隨附它的預編譯函式庫所對應的設定：`defconfig_ipro6_lpwifi` 與 `defconfig_ipro6_lp`。V2.2.x 隨附的 `defconfig_ipro6_lpwifi_ping` 需要 Wi-Fi 函式庫原始碼，已不在套件中。
+- 套件 README：IPRO6S 描述為 Wi-Fi。
+
+**應用**
+
+- 共 41 個：38 個 IPRO7、3 個 IPRO6S。相較 V2.2.1，新增 `ipro7ai_sensor_tag_demo`。
+- 從 V2.2.x 升級：解開新套件，重新建置應用。
+
+發行前從套件建置並檢查：37 個 FreeRTOS 應用（`ipro_agora_sentino` 需先取得 AOSL）、全部 7 個隨附的 IPRO6S 設定，以及 `ipro7_evb`、`ipro7ai_evk` 的 Zephyr 範例矩陣與 `twister --build-only`。上板：IPRO6S EVK 以 IPRO Workbench 0.2.0 建置 `ipro6_demo`（`defconfig_ipro6_lpwifi`），以 IntelProCube 0.7.0.1 燒錄（`partition_cfg_fw_direct.toml`），開機印出 `Build:` 行並掃描到周圍的基地台；IPRO7AI Reef EVK V4.0 以 IntelProCube 0.7.0.1 燒錄 `ipro7ai_reef_demo`，通過 `reef selftest`；IPRO7AI Sensor Tag 經板子自己的 USB 燒錄 `ipro7ai_sensor_tag_demo`（從主控台與從 boot2 下載模式，分別以 `tools/ipro_dl.py` 與 IPRO Workbench 0.2.0），每秒送出 20 行感測值。
+
+### 已知問題 { #v2-3-0-known-issues }
+
+- [V2.2.0](#v2-2-0-known-issues) 的已知問題與注意事項仍然適用，但 `ipro6_demo/defconfig_ipro6_lpwifi_ping` 已不在套件中；`ipro6_fmac/defconfig_ipro6_fmac_ap` 仍沒有對應的預編譯函式庫。
+- **經板子的 USB 燒錄**：IPRO Workbench 0.2.0 只有 macOS 版支援；Windows 上請用 IPRO Debug Probe。
 
 ## IPRO-SDK-V2.2.1 { #v2-2-1 }
 
-<span class="ipro-badge">最新版本</span> 發行日期：2026-11-10 ・ [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.1)
+發行日期：2026-11-10 ・ [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.1)
 
 V2.2.0 的修正版，應用與 V2.2.0 相同，共 40 個 FreeRTOS 應用。下載檔為 `IPRO-SDK-V2.2.1.tar.gz`，SHA-256 見 Release 頁面。[V2.2.0](#v2-2-0) 的其餘說明（包括已知問題）同樣適用於 V2.2.1。
 
@@ -36,7 +73,7 @@ IPRO7／IPRO7AI 與 IPRO6S 雙晶片版本，取代 V2.1.0。共 40 個 FreeRTOS
 
 **新增與變更**
 
-- **IPRO6S 應用回到套件**：`ipro6_demo`（Wi-Fi 6 station／soft-AP，DTIM 低功耗）、`ipro6_if_wifi`（經 SDIO 或 USB 給主機用的 Wi-Fi 橋接）與 `ipro6_fmac`（FullMAC 韌體與其 Flash 載入程式）。Wi-Fi MAC、共存與 RF 函式庫依每個隨附的 `defconfig_*` 各自預編譯，每個設定連結為它建置的函式庫。Reef 的 FIN Wi-Fi 卡韌體即 `ipro6_if_wifi` 的 `defconfig_ipro6_sdio`，見 [IPRO6S](../hardware/chips/ipro6s.md)。
+- **IPRO6S 應用回到套件**：`ipro6_demo`（Wi-Fi station／soft-AP，DTIM 低功耗）、`ipro6_if_wifi`（經 SDIO 或 USB 給主機用的 Wi-Fi 橋接）與 `ipro6_fmac`（FullMAC 韌體與其 Flash 載入程式）。Wi-Fi MAC、共存與 RF 函式庫依每個隨附的 `defconfig_*` 各自預編譯，每個設定連結為它建置的函式庫。Reef 的 FIN Wi-Fi 卡韌體即 `ipro6_if_wifi` 的 `defconfig_ipro6_sdio`，見 [IPRO6S](../hardware/chips/ipro6s.md)。
 - **新應用 `ipro_reef_teach`**：IPRO7AI Reef EVK 上的 Edge AI 韌體，內含三個 Teach 工具：`image`（USB 相機與分類器）、`voice`（辨識誰在說話）與 `sensor`（任何感測器）。開機時選定一個模式，每個模式有自己的 USB 識別，由 IPRO AI Studio 操作；也可用 `tools/teach_web/` 在瀏覽器中做影像 Teach。IPRO AI Studio 可從 [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) 下載。
 - **IPRO Edge AI 平台 V2.0**（`components/ai`）：執行環境、每個工具一個槽位的模型儲存區、輸入來源、前處理與應用框架；NPU 等待設有上限，逾時會重置該區塊並進入安全的故障狀態；Edge AI 韌體會啟用 AON 看門狗（進入下載模式時關閉）。修正 CPU 層圖讀取超出最後一筆層記錄的問題。
 - **整晶片重置**：`hal_reboot_full()` 經 AON 看門狗重置整顆晶片，包含 always-on 電源域；啟用 `CONFIG_APP_WATCHDOG` 時，`platform_init()` 從開機一開始就啟動看門狗。`ipro_reef_teach` 以它切換工具，修正 Reef 接著相機時，從 `image` 模式切出後下一次開機可能停住直到重置的問題。

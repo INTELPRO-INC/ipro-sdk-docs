@@ -25,45 +25,51 @@ migrate_from:
 
 <div class="ipro-steps" markdown>
 
-1. **ダウンロードします：** [IPRO-SDK-V2.2.1 リリース](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.1) から `IPRO-SDK-V2.2.1.tar.gz` をダウンロードし、そのページに掲載されている SHA-256 を控えておきます。
+1. **ダウンロードします：** [IPRO-SDK-V2.3.0 リリース](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.3.0) から `IPRO-SDK-V2.3.0.tar.gz` をダウンロードし、そのページに掲載されている SHA-256 を控えておきます。
 
 2. **ダウンロードしたファイルを検証します：**
 
     === "macOS"
 
         ```bash
-        shasum -a 256 IPRO-SDK-V2.2.1.tar.gz
+        shasum -a 256 IPRO-SDK-V2.3.0.tar.gz
         ```
 
     === "Linux"
 
         ```bash
-        sha256sum IPRO-SDK-V2.2.1.tar.gz
+        sha256sum IPRO-SDK-V2.3.0.tar.gz
         ```
 
     === "Windows"
 
         ```powershell
-        Get-FileHash .\IPRO-SDK-V2.2.1.tar.gz -Algorithm SHA256
+        Get-FileHash .\IPRO-SDK-V2.3.0.tar.gz -Algorithm SHA256
         ```
 
-    表示される 64 文字の 16 進数が、リリースページの値と一致する必要があります（大文字と小文字は区別しません）。一致しない場合は、もう一度ダウンロードしてください。
+    表示される 64 文字の 16 進数が、リリースページの値と一致する必要があります（大文字と小文字は区別しません）。V2.3.0 の値は次のとおりです。
+
+    ```text
+    0f39c1d2551be0aa748bfee6613ec3c8cb5cfa6b1cea310780f9d58ce216574b  IPRO-SDK-V2.3.0.tar.gz
+    ```
+
+    一致しない場合は、もう一度ダウンロードしてください。
 
 3. **展開してバージョンを確認します。** 新しいディレクトリに展開し、古い SDK に上書きしないでください。
 
     === "macOS / Linux"
 
         ```bash
-        tar xzf IPRO-SDK-V2.2.1.tar.gz
-        cd IPRO-SDK-V2.2.1
+        tar xzf IPRO-SDK-V2.3.0.tar.gz
+        cd IPRO-SDK-V2.3.0
         cat VERSION.txt
         ```
 
     === "Windows"
 
         ```powershell
-        tar -xzf .\IPRO-SDK-V2.2.1.tar.gz
-        Get-Content .\IPRO-SDK-V2.2.1\VERSION.txt
+        tar -xzf .\IPRO-SDK-V2.3.0.tar.gz
+        Get-Content .\IPRO-SDK-V2.3.0\VERSION.txt
         ```
 
     `VERSION.txt` の内容：
@@ -71,14 +77,14 @@ migrate_from:
     ```text
     IPRO SDK Release
     ========================================
-    IPRO7: IPRO-SDK-V2.2.1
-    IPRO6: IPRO-SDK-V2.2.1
+    IPRO7: IPRO-SDK-V2.3.0
+    IPRO6: IPRO-SDK-V2.3.0
 
-    Release Date: 2026-11-10
-    Base Commit: 60afd4ab
+    Release Date: 2026-11-13
+    Base Commit: …
     ```
 
-    `IPRO-SDK-V2.2.1/` が SDK ルート（このサイトでは `<SDK>`）で、`apps/`、`bsp/`、`components/`、`build_freertos.sh`、`VERSION.txt` が入っています。
+    `IPRO-SDK-V2.3.0/` が SDK ルート（このサイトでは `<SDK>`）で、`apps/`、`bsp/`、`components/`、`build_freertos.sh`、`VERSION.txt` が入っています。
 
 </div>
 

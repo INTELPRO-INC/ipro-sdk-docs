@@ -1,6 +1,6 @@
 ---
 title: "測試與量測"
-description: 在 IPRO Workbench 執行板上的 Unity 測試並在「測試」檢視看結果、以 MFG 韌體做 BLE DTM 的 RF 測試與 PER 量測、以 iperf 量 Wi-Fi 傳輸速率，以及讀取 PPK2 電流紀錄看功耗曲線與 CR2032 電池壽命估算。
+description: 在 IPRO Workbench 執行板上的 Unity 測試並在「測試」檢視看結果、以 MFG 韌體做 BLE DTM 的 RF 測試與 PER 量測、以 iperf 量 Wi-Fi 傳輸速率並設定 IPRO6S 的 Wi-Fi 記憶體 profile，以及讀取 PPK2 電流紀錄看功耗曲線與 CR2032 電池壽命估算。
 ---
 
 # 測試與量測
@@ -65,12 +65,12 @@ description: 在 IPRO Workbench 執行板上的 Unity 測試並在「測試」�
 
 「Wi-Fi 傳輸速率」在這台電腦和板子之間跑一次 TCP 的 iperf 測試，量 Wi-Fi 的傳輸速率。電腦這一端由 IPRO Workbench 自己執行，不需要另外安裝 iperf；板子那一端由 IDE 經序列埠監看下指令。
 
-板子上的應用程式要有 SDK 的 Wi-Fi 指令與 `iperf` 指令。IPRO6S EVK 請用 IPRO SDK 2.2.1 的 `platform/ipro6_demo`（燒錄步驟見[燒錄與開發板](flash.md)的 [IPRO6S EVK](flash.md#ipro6s)）。
+板子上的應用程式要有 SDK 的 Wi-Fi 指令與 `iperf` 指令。IPRO6S EVK 請用 IPRO SDK V2.3.0 的 `platform/ipro6_demo`（燒錄步驟見[燒錄與開發板](flash.md)的 [IPRO6S EVK](flash.md#ipro6s)），或以[新增應用程式](first-run.md#own-app)的「IPRO6S EVK 的 Wi-Fi station」建立的複本。頁面也會替 IPRO6S 啟動 Wi-Fi、掃描網路、顯示板子的 MAC 與訊號，並設定 [Wi-Fi 記憶體 profile](#wifi-profile)。
 
 | Wi-Fi 角色 | 什麼時候用 |
 |---|---|
-| Station（加入這台電腦所在的網路） | 建議的方式。板子加入電腦已經連上的 Wi-Fi 網路（2.4 GHz），電腦的網路不必更動。 |
-| 無線基地台（這台電腦連上它） | 手邊沒有 Wi-Fi 網路時。板子自己當基地台，電腦的 Wi-Fi 要改連到板子；連上後電腦通常無法上網。 |
+| Station（加入這台電腦所在的網路） | 建議的方式，頁面預設就是它。板子加入電腦已經連上的 Wi-Fi 網路（2.4 GHz），電腦的網路不必更動。 |
+| 無線基地台（這台電腦連上它） | 手邊沒有 Wi-Fi 網路時。板子自己當基地台，電腦的 Wi-Fi 要改連到板子；連上後電腦通常無法上網。選這個角色時頁面會提醒：「板子當無線基地台時，實測吞吐量遠低於當 Station（IPRO6S EVK 的 ipro6_demo）。要量吞吐量請用 Station。」 |
 
 ### 讓板子加入網路 { #iperf-network }
 
@@ -82,9 +82,15 @@ description: 在 IPRO Workbench 執行板上的 Unity 測試並在「測試」�
 
     **應該看到**：「Wi-Fi 傳輸速率（iperf）」分頁，分成「1. 讓板子和這台電腦在同一個網路」與「2. 執行」兩段。監看沒開時，最上面會提示先開啟監看，並附 **開啟監看** 按鈕。
 
-3. **加入網路。** 「Wi-Fi 角色」選 **Station（加入這台電腦所在的網路）**，「網路名稱」輸入電腦所連 Wi-Fi 的名稱，「密碼」輸入它的密碼，按 **加入網路**。
+3. **掃描（選用）。** 「Wi-Fi 角色」保留 **Station（加入這台電腦所在的網路）**，按 **掃描**。
 
-    **應該看到**：狀態訊息依序顯示「板子正在加入 <網路名稱>…」與「板子已連上 <網路名稱>，位址是 <板子的 IP>。」；「板子的 IP 位址」自動填好。下方的記錄列出 IDE 送給板子的指令（以 → 開頭）與板子的回應（以 ← 開頭）：`wifi_state`、`stack_wifi`、`wifi_sta_connect`，記錄中的密碼以 `********` 代替。約 40 秒內沒有連上時顯示「板子沒有連上 <網路名稱>。請檢查名稱與密碼。」
+    **應該看到**：狀態訊息顯示「板子正在掃描…」，接著是「板子聽到 N 個網路。點選其中一個可填入名稱。」下方表格列出「網路名稱」「訊號（dBm）」「頻道」「安全性」「AP 數」，最多 12 個訊號最強的網路（更多時寫「N 個網路中訊號最強的 12 個。」）。名稱含空白的網路標示「（名稱含空白：板子的 shell 無法接受）」。點一列，「網路名稱」就填入它的名稱。
+
+    板子的 Wi-Fi 還沒啟動時，IDE 會先送 `stack_wifi` 啟動它，再掃描；加入網路時也一樣。
+
+4. **加入網路。** 「網路名稱」輸入電腦所連 Wi-Fi 的名稱（或用上一步點選），「密碼」輸入它的密碼，按 **加入網路**。
+
+    **應該看到**：狀態訊息依序顯示「板子正在加入 <網路名稱>…」與「板子已連上 <網路名稱>，位址是 <板子的 IP>。」；「板子的 IP 位址」自動填好，下面一行是「板子的 MAC：…」（Wi-Fi 啟動時讀到；板子的 eFuse 沒有 MAC 時，後面多「（不是板子 eFuse 裡的 MAC）」）與「訊號 … dBm，頻道 …」。下方的記錄列出 IDE 送給板子的指令（以 → 開頭）與板子的回應（以 ← 開頭）：`wifi_state`、`stack_wifi`（Wi-Fi 還沒啟動時）、`wifi_sta_connect`、`wifi_sta_info`，記錄中的密碼以 `********` 代替。約 40 秒內沒有連上時顯示「板子沒有連上 <網路名稱>。請檢查名稱與密碼。」
 
     要改用基地台模式時，「Wi-Fi 角色」選 **無線基地台（這台電腦連上它）**，輸入要建立的網路名稱、8 到 63 個字元的密碼與頻道，按 **啟動基地台**。
 
@@ -120,10 +126,48 @@ description: 在 IPRO Workbench 執行板上的 Unity 測試並在「測試」�
 | 板子送、這台電腦收 | 這台電腦（TCP 連接埠 5001） | 電腦的防火牆要允許連入 TCP 5001。Windows 預設會擋下，請見下方說明 |
 
 !!! note
-    - **Windows 防火牆**：板子送、電腦收時，如果狀態訊息顯示「板子沒有連到這台電腦的 TCP 連接埠 5001。可能是這台電腦的防火牆擋住了連入的連線…」，請在「具有進階安全性的 Windows Defender 防火牆」新增一條輸入規則，允許 TCP 連接埠 5001（設定檔勾選電腦目前網路所屬的那一種，公用或私人），測完後可以停用或刪除這條規則。新增規則需要系統管理員權限。電腦送、板子收不需要這條規則。
+    - **Windows 防火牆**：板子送、電腦收時，如果狀態訊息顯示「板子沒有連到這台電腦的 TCP 連接埠 5001。可能是這台電腦的防火牆擋住了連入的連線…」，Windows 版的訊息後面會附上放行與移除的指令。以系統管理員身分開啟命令提示字元，執行放行的指令：
+
+        ```powershell
+        netsh advfirewall firewall add rule name="IPRO Workbench iperf" dir=in action=allow protocol=TCP localport=5001
+        ```
+
+        測完後移除這條規則：
+
+        ```powershell
+        netsh advfirewall firewall delete rule name="IPRO Workbench iperf"
+        ```
+
+        也可以在「具有進階安全性的 Windows Defender 防火牆」手動新增一條允許 TCP 連接埠 5001 的輸入規則。電腦送、板子收不需要這條規則。
     - **等待中的板子伺服器**：板子的 iperf 伺服器開始等待後，要有電腦連上或板子重新開機才會結束。所以 IDE 會先確認這台電腦在板子的網路上有位址，才讓板子啟動伺服器；沒有時顯示「這台電腦在板子的網路（…）上沒有位址。請先連上同一個 Wi-Fi 網路，再執行一次。」如果伺服器已經在等待（狀態訊息顯示「這台電腦連不上板子的 iperf 伺服器…」或「板子上前一次的 iperf 還在執行…」），按這時出現的 **重置板子**，板子重新開機後再從「加入網路」做起。
     - 板子與電腦各自計算速率：板子依它收到（或送出）的資料量，電腦依它送出（或收到）的資料量，兩個數字略有差異是正常的。
     - 兩種 Wi-Fi 角色量到的數字不能互相比較。要評估板子連上無線基地台時的傳輸速率，請用 Station 模式。
+
+### Wi-Fi 記憶體 profile { #wifi-profile }
+
+IPRO6S 當 station 時，RAM 怎麼分給 Wi-Fi 吞吐量與應用程式可用的 heap，由建置設定的 Wi-Fi 記憶體 profile 決定。目前的應用程式是 IPRO6 的 Wi-Fi 應用程式（例如 `ipro6_demo`）時，「Wi-Fi 傳輸速率」頁下方多一段「<應用程式> 的記憶體 profile（建置設定）」。
+
+<div class="ipro-steps" markdown>
+
+1. **看目前的 profile。** 選 `ipro6_demo`，開啟「Wi-Fi 傳輸速率」，捲到下方。
+
+    **應該看到**：說明「IPRO6 站台如何把 RAM 分給 Wi-Fi 吞吐量與應用程式可用的 heap。數字是 SDK 在 ipro6_demo 上的量測；用來比較三種 profile，不是比較網路。」與下表；目前設定檔使用的那一列寫「設定檔目前使用」，其他列有 **使用**。
+
+    | Profile | 連線後可用 heap | 相對 PERF 的吞吐量 |
+    |---|---|---|
+    | PERF：吞吐量優先 | 約 36 KB | 100 % |
+    | BALANCED：一般產品 | 約 170 KB | 40–75 % |
+    | APP：把大部分 RAM 留給應用程式 | 約 210 KB | 25–50 % |
+
+2. **換 profile。** 在 BALANCED 那一列按 **使用**。
+
+    **應該看到**：IDE 把 profile 寫進目前的設定檔（`.config`，或選定的[設定檔](develop.md#configurations)），BALANCED 那一列改成「設定檔目前使用」，下方出現警告「設定檔現在是 BALANCED，但已建置的仍是 PERF。profile 也會改變連結腳本，所以要清除後重新建置。」與 **清除並建置** 按鈕。
+
+3. **清除並建置。** 按 **清除並建置**。
+
+    **應該看到**：**IPRO Build** 從頭建置；成功後警告消失。燒錄後再[執行測試](#iperf-run)，比較傳輸速率。
+
+</div>
 
 ## 功耗 { #power }
 

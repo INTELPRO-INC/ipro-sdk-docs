@@ -5,7 +5,7 @@ description: IPRO Workbench 的消息、工具栏和侧边栏状态的含义及�
 
 # 故障排除
 
-按出现的位置，列出 IPRO Workbench 0.1.1 中各种消息和状态的原因及解决方法。
+按出现的位置，列出 IPRO Workbench 0.2.0 中各种消息和状态的原因及解决方法。
 
 ## 界面上的消息 { #messages }
 
@@ -35,6 +35,22 @@ description: IPRO Workbench 的消息、工具栏和侧边栏状态的含义及�
 | The board did not connect to this PC on TCP port 5001. A firewall on this PC may block incoming connections… | 开发板发送、计算机接收时，计算机的防火墙拦截了传入连接（Windows 的默认行为） | 让防火墙允许传入的 TCP 5001（请参阅[运行测试](measure.md#iperf-run)），或改为从计算机向开发板发送 |
 | This PC could not reach the board's iperf server… / An earlier iperf is still running on the board… | 开发板的 iperf 服务器仍在等待连接 | 点击 **Reset Board**；开发板重启后，重新加入网络 |
 | The board did not restart. Is the monitor on the console port of an IPRO Debug Probe? | 监视器打开在 CCI 或其他端口上 | 点击工具栏上的开发板，用 **Select Port…** 切换回探针的 UART |
+| … is not connected. Check the cable to the board, or pick another port. | 所选端口已不存在（开发板被拔掉，或 USB 端口的名称变了） | 检查线缆，然后点击工具栏上的开发板，用 **Select Port…** 重新选择 |
+| The setting ipro.board.port keeps the port at …. Clear the setting to use …? | 设置 `ipro.board.port` 指定的端口与你要使用的不同 | 点击 **Use …** 清除该设置；要保留时取消 |
+| The board on … answered, but its flash did not: it was flashed as …, and the flash pins of that board are not this one's. | 工具栏上选择的开发板与实际连接的不同，烧录用错了 Flash 引脚 | 点击 **Select Board** 选择实际连接的开发板，然后点击 **Retry** |
+| … is laid out for boot2, and this IntelProCube has no boot2 image for …. | 分区表需要 boot2，而 IntelProCube 没有这颗芯片的 boot2 | 点击 **Install IntelProCube** 更新，或在 **Partition Table** 中改选直接启动固件的分区表 |
+| IntelProCube … is too old for …: a board flashed with it does not start. | IPRO6S EVK 需要 IntelProCube 0.7.0.1 或更高版本 | 点击 **Install IntelProCube**，或通过 **Browse…** 指向较新的版本 |
+| The board did not start boot2's USB downloader. … | [通过开发板自身的 USB 烧录](flash.md#usb-flash)时，开发板没有重启并进入下载模式（例如固件没有 USB 控制台） | 再次点击 **Flash**，并在 20 秒内拔下开发板的 USB 线再插上 |
+| … is the board's own USB port. Flashing over it is not available on Windows yet… | Windows 版不支持通过开发板的 USB 烧录 | 在 macOS 上烧录，或连接 IPRO Debug Probe 并选择它的 UART |
+| … is the board's own USB port, and this SDK has no tools/ipro_dl.py to flash over it. | SDK 早于 V2.3.0 | 改用 IPRO SDK V2.3.0，或通过 IPRO Debug Probe 烧录 |
+| The default partition table comes with IntelProCube, and IntelProCube was not found. / This IntelProCube has no …. | **Partition Table** 找不到默认的分区表 | 点击 **Install IntelProCube**，或在 **Flash with** 中改选其他分区表 |
+| The partition table's FW partition has one slot. An OTA needs a table with a second FW slot… / This partition table is a layout without boot2… | **OTA Package**：分区表不是 boot2 的 A/B 布局 | 在 **Partition Table** 中选择为 boot2 预留了空间且有第二个 FW slot 的分区表（例如 `ipro_ble_remote` 的 `partition_cfg_2M_remote_ab.toml`）；请参阅 [OTA 包](flash.md#ota) |
+| boot2 OTA packages are for IPRO7 applications; this one is built for the …. | **OTA Package** 不支持 IPRO6S 的应用程序 | 无；IPRO6S 不制作 boot2 OTA 包 |
+| The board did not answer the ota_uart command. Its application needs CONFIG_IPRO_OTA=y and CONFIG_IPRO_OTA_UART=y… | 开发板上的应用程序没有 `ota_uart` 命令，或端口不是它的控制台 | 用 IPRO SDK V2.3.0、开启这两项配置构建并烧录后，再发送 |
+| The board refused the package: the partition table on the board has no second FW slot. … | 开发板尚未用 A/B 分区表烧录过 | 先用 A/B 分区表和 boot2 烧录应用程序（请参阅 [OTA 包](flash.md#ota)的第 2、3 步） |
+| The board refused the package: its SHA-256 does not match: the file is damaged, or the line dropped data. | 传输中丢失了数据 | 点击 **Check on Board** 再试一次；仍然失败时重新制作 OTA 包 |
+| The board did not list any network (no answer to wifi_scan). | Wi-Fi 吞吐量：开发板没有响应扫描 | 确认开发板上的应用程序带有 Wi-Fi 命令（例如 `ipro6_demo`），然后点击 **Scan** |
+| The Wi-Fi stack did not start (no answer to stack_wifi). | 开发板没有响应 `stack_wifi` | 复位开发板后再点击 **Join Network** |
 
 ## 工具栏和侧边栏的状态 { #status }
 
@@ -43,7 +59,8 @@ description: IPRO Workbench 的消息、工具栏和侧边栏状态的含义及�
 | 工具栏以琥珀色显示“no probe” | IDE 找不到 IPRO Debug Probe。检查 USB 线，并尽量将探针直接连接到计算机；插好后，探针会在几秒内自动出现。 |
 | 状态栏显示“Setup: N” | 点击它打开 IPRO Home，然后点击横幅中的 **Fix Environment**。 |
 | **Board** 显示“Runs other firmware” | 开发板运行的不是当前应用程序的最新构建。要运行当前的程序，请烧录它。 |
-| IPRO6S EVK 的 **Board** 下没有“Runs …”一行 | 这是正常现象。IPRO6 系列开发板启动时不打印构建时间，因此 IDE 无法核对开发板上的固件；请以 **IPRO Flash** 中的 `[All Success]` 和监视器中的启动信息为准。 |
+| IPRO6S EVK 的 **Board** 下没有“Runs …”一行 | 使用 IPRO SDK 2.2.1 或更早版本时属于正常现象：这些版本的 IPRO6 固件启动时不打印构建时间，因此 IDE 无法核对开发板上的固件；请以 **IPRO Flash** 中的 `[All Success]` 和监视器中的启动信息为准。从 IPRO SDK V2.3.0 起会显示这一行（请参阅[与 IPRO7 系列的不同之处](flash.md#ipro6s-differences)）。 |
+| 状态栏中没有配置文件（齿轮和 `.config`） | 这是正常现象。应用程序没有 `defconfig_*`、`config_*` 等其他配置文件时不显示（请参阅[配置文件](develop.md#configurations)）。 |
 
 ## macOS 上的问题 { #macos }
 
@@ -60,8 +77,10 @@ description: IPRO Workbench 的消息、工具栏和侧边栏状态的含义及�
 |---|---|
 | 安装时显示“Windows 已保护你的电脑” | 点击 **更多信息**，确认应用名称为 IPRO-Workbench，然后点击 **仍要运行**。 |
 | 其他串口工具无法打开 COM 端口 | 在 Windows 上，一个 COM 端口同一时间只能被一个程序使用。打开其他工具前先关闭 IPRO Monitor；用完后也请关闭该工具，以便 IDE 进行烧录。 |
-| **SDK for this toolchain** 提示需要调整 | IPRO SDK 2.2 需要几处主机端修正才能在 Windows 上构建。点击 **Fix Environment**（或该行的 **Prepare the SDK for this toolchain**），IDE 会自动处理。 |
+| **SDK for this toolchain** 提示需要调整 | IPRO SDK 2.2.1 及更早版本需要几处主机端修正才能在 Windows 上构建。点击 **Fix Environment**（或该行的 **Prepare the SDK for this toolchain**），IDE 会自动处理。 |
 | Wi-Fi 吞吐量：开发板发送、计算机接收时没有结果 | Windows 防火墙默认拦截传入连接。添加一条允许 TCP 端口 5001 的入站规则（请参阅[运行测试](measure.md#iperf-run)），或改为从计算机向开发板发送。 |
+| 使用 RISC-V 工具链 13.1.1 构建时链接失败 | 在 Windows 上构建 IPRO SDK 需要使用 RISC-V 工具链 14.2.1，13.1.1 无法链接 SDK 预编译的库。点击 **Fix Environment** 安装 14.2.1，或在 **Environment** 的工具链一行改选它。 |
+| 选择开发板自身的 USB 端口后无法烧录 | Windows 版暂时不支持通过开发板的 USB 烧录。请连接 IPRO Debug Probe 并选择它的 UART。 |
 | Python 一行提示缺少 kconfiglib | 在命令提示符中运行 `python -m pip install kconfiglib windows-curses`，然后点击 **Check Again**。 |
 | 代码编辑器提示下载 clangd | 代码导航使用 clangd。按提示让它下载即可，或在 **Environment** 的 clangd 一行点击 Fix。 |
 

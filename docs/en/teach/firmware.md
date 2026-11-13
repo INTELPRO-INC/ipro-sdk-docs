@@ -12,7 +12,7 @@ All three Teach tools live in the Edge AI firmware, `ipro_reef_teach`. At the en
 - An IPRO7AI Reef EVK V4.0 and a data cable on the Reef's USB-C (USB1); it also powers the board while flashing.
 - An IPRO Debug Probe, connected to the computer with a USB-C cable and to the Reef's U6 with a pin-reversed SH1.0 6-pin cable; see [Debug connector U6](../hardware/boards/reef-evk.md#debug-connector). The probe does not power the Reef.
 - The IntelProCube 0.7.0.1 command-line flash tool (`ipro_iot_tool_macos`, `ipro_iot_tool_linux`, `ipro_iot_tool.exe`), run from its own directory. [Set Up Your Host](../get-started/environment.md#intelprocube) shows how to install it.
-- The firmware files: the `firmware/` folder of the IPRO Edge AI package, or a build from SDK V2.2.1 (needs the [toolchain](../get-started/environment.md) and Python 3).
+- The firmware files: the `firmware/` folder of the IPRO Edge AI package, or a build from SDK V2.3.0 (needs the [toolchain](../get-started/environment.md) and Python 3).
 
 ![Wiring of the Reef, the IPRO Debug Probe and the computer: the USB-C data cable carries power and the Teach tools; the probe on U6 carries flashing and the console](../assets/teach/reef-connect.svg)
 

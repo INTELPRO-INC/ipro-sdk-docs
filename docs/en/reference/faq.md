@@ -13,17 +13,17 @@ Each answer starts with the conclusion; where you need to act, it gives the comm
 
 ### Where do I get the SDK, the flash tool and the toolchain? { #get-tools }
 
-- **SDK V2.2.1**: download `IPRO-SDK-V2.2.1.tar.gz` from the [GitHub release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.1), check it against the SHA-256 on that page and unpack it:
+- **SDK V2.3.0**: download `IPRO-SDK-V2.3.0.tar.gz` from the [GitHub release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.3.0), check it against the SHA-256 on that page and unpack it:
 
     ```bash
-    shasum -a 256 IPRO-SDK-V2.2.1.tar.gz      # Linux: sha256sum; must match the release page
-    tar xzf IPRO-SDK-V2.2.1.tar.gz
-    cat IPRO-SDK-V2.2.1/VERSION.txt
+    shasum -a 256 IPRO-SDK-V2.3.0.tar.gz      # Linux: sha256sum; must match the release page
+    tar xzf IPRO-SDK-V2.3.0.tar.gz
+    cat IPRO-SDK-V2.3.0/VERSION.txt
     ```
 
-    `VERSION.txt` prints `IPRO7: IPRO-SDK-V2.2.1`, `IPRO6: IPRO-SDK-V2.2.1` and `Release Date: 2026-11-10`.
-- **The RISC-V toolchain**: not included in V2.2.1; contact INTELPRO. It installs to `/opt/toolchain/riscv_ipro7/` by default.
-- **The IntelProCube command-line flash tool** (`ipro_iot_tool_macos`, `ipro_iot_tool_linux`, `ipro_iot_tool.exe`): not included in V2.2.1; download 0.7.0.1 from [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases), see [Set Up Your Host](../get-started/environment.md#intelprocube).
+    `VERSION.txt` prints `IPRO7: IPRO-SDK-V2.3.0`, `IPRO6: IPRO-SDK-V2.3.0` and `Release Date: 2026-11-13`.
+- **The RISC-V toolchain**: not included in V2.3.0; contact INTELPRO. It installs to `/opt/toolchain/riscv_ipro7/` by default.
+- **The IntelProCube command-line flash tool** (`ipro_iot_tool_macos`, `ipro_iot_tool_linux`, `ipro_iot_tool.exe`): not included in V2.3.0; download 0.7.0.1 from [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases), see [Set Up Your Host](../get-started/environment.md#intelprocube).
 - **Windows online installer 3.6.0 and VS Code extension 3.3.0**: current; download the installer from [ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest). It installs SDK V2.2.0 and the Windows toolchain directly; see [Windows Setup & VS Code](../get-started/windows.md).
 - **IPRO AI Studio**: not in the SDK; download it from [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest).
 
@@ -40,7 +40,7 @@ Both produce the same output in `<app>/build/build_out/`. `build_freertos.sh fla
 
 ### Which applications run on the Reef, and which configuration do I pick? { #reef-apps }
 
-Nine of the 40 applications have a Reef configuration. Only `ipro7ai_reef_demo`, `ipro_reef_teach` and `ipro_agora_sentino` build for the Reef with a plain `make`; for the others, `.config` targets the IPRO7 EVB or the IPRO7AI EVK, and you select the Reef configuration with `DEFCONFIG=`:
+Nine of the 41 applications have a Reef configuration. Only `ipro7ai_reef_demo`, `ipro_reef_teach` and `ipro_agora_sentino` build for the Reef with a plain `make`; for the others, `.config` targets the IPRO7 EVB or the IPRO7AI EVK, and you select the Reef configuration with `DEFCONFIG=`:
 
 | Application | Build command (from the SDK root) |
 |---|---|
@@ -72,7 +72,7 @@ The build reads `.config` as written and generates `autoconf.h` from it with `cm
 
 ### The toolchain is not found, or it is not in the default path { #toolchain }
 
-The toolchain prefix comes from, in order: `CROSS_COMPILE` in the environment or on the command line, `CONFIG_CROSS_COMPILE` in the configuration file, and the default in `project.build`, `/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-` (there is no default on Windows). 30 of the 40 `.config` files set `CONFIG_CROSS_COMPILE`. With the toolchain elsewhere:
+The toolchain prefix comes from, in order: `CROSS_COMPILE` in the environment or on the command line, `CONFIG_CROSS_COMPILE` in the configuration file, and the default in `project.build`, `/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-` (there is no default on Windows). 30 of the 41 `.config` files set `CONFIG_CROSS_COMPILE`. With the toolchain elsewhere:
 
 ```bash
 export CROSS_COMPILE=<toolchain dir>/bin/riscv64-unknown-elf-
@@ -169,9 +169,9 @@ Never run OTA on a Reef flashed with the standard `partition_cfg_2M.toml`: the b
 
 ## Platform and networking { #platform }
 
-### Does V2.2.1 support IPRO6S? { #ipro6s }
+### Does V2.3.0 support IPRO6S? { #ipro6s }
 
-Yes, for Wi-Fi. V2.2.1 ships three IPRO6S applications: `ipro6_demo` (Wi-Fi 6 station / soft-AP), `ipro6_if_wifi` (Wi-Fi bridge to a host over SDIO or USB) and `ipro6_fmac` (FullMAC firmware for a Linux host). This release has no IPRO6S BLE controller library and no BLE or BR/EDR application for IPRO6S.
+Yes, for Wi-Fi. V2.3.0 ships three IPRO6S applications: `ipro6_demo` (Wi-Fi station / soft-AP), `ipro6_if_wifi` (Wi-Fi bridge to a host over SDIO or USB) and `ipro6_fmac` (FullMAC firmware for a Linux host). This release has no IPRO6S BLE controller library and no BLE or BR/EDR application for IPRO6S.
 
 On the Reef, the IPRO6S is the FIN Wi-Fi card in the microSD slot, and its firmware is the SDIO configuration of `ipro6_if_wifi`:
 
@@ -193,7 +193,7 @@ See [Networking](../guides/networking.md).
 
 ### Which RTOSes does the SDK support? Is the BLE host Zephyr? { #rtos }
 
-All 40 applications are FreeRTOS (kernel V11.1.0): 37 for IPRO7 and 3 for IPRO6S. The BLE host is Zephyr v4.4.0's, running on FreeRTOS through the SDK's port layer; applications use Zephyr's `bt_*` API without installing Zephyr.
+All 41 applications are FreeRTOS (kernel V11.1.0): 38 for IPRO7 and 3 for IPRO6S. The BLE host is Zephyr v4.4.0's, running on FreeRTOS through the SDK's port layer; applications use Zephyr's `bt_*` API without installing Zephyr.
 
 The SDK is also a Zephyr v4.4.0 module with the boards `ipro7_evb` and `ipro7ai_evk`, and no Reef board; the SoC's Kconfig help notes that a Reef running `ipro7_evb` images needs `CONFIG_SOC_IPRO7_XTAL_CAPCODE=95`. See [Zephyr RTOS](../guides/zephyr.md).
 

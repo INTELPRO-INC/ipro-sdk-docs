@@ -1,11 +1,11 @@
 ---
 title: "快捷键、命令与设置"
-description: IPRO Workbench 0.1.1 参考：键盘快捷键、IPRO 命令、ipro.* 设置、MCP 工具以及 IDE 使用的文件和文件夹。
+description: IPRO Workbench 0.2.0 参考：键盘快捷键、IPRO 命令、ipro.* 设置、MCP 工具以及 IDE 使用的文件和文件夹。
 ---
 
 # 快捷键、命令与设置
 
-IPRO Workbench 0.1.1 的键盘快捷键、命令、设置、MCP 工具和文件位置。
+IPRO Workbench 0.2.0 的键盘快捷键、命令、设置、MCP 工具和文件位置。
 
 ## 键盘快捷键 { #shortcuts }
 
@@ -29,6 +29,7 @@ IPRO Workbench 0.1.1 的键盘快捷键、命令、设置、MCP 工具和文件�
 | **Open SDK…** / **Install SDK from GitHub…** | 打开或安装 IPRO SDK |
 | **Check Environment** / **Fix Environment** | 重新检查开发环境；安装缺少的项目 |
 | **Select Application…** / **New Application…** / **Copy as New Application…** | 管理应用程序 |
+| **Select Configuration…** | 选择应用程序构建所用的配置文件（`.config`、`defconfig_*`、`config_*`）；请参阅[配置文件](develop.md#configurations) |
 | **Select Board…** / **Select Port…** | 更换开发板或串口 |
 | **Select Toolchain…** / **Select IntelProCube…** | 改用本机上已有的工具 |
 | **Build, Flash and Monitor** / **Build** / **Flash** / **Stop** | 运行与停止 |
@@ -37,11 +38,13 @@ IPRO Workbench 0.1.1 的键盘快捷键、命令、设置、MCP 工具和文件�
 | **Serial Monitor** / **Open Monitor on Another Port…** | 打开监视器 |
 | **Filter Monitor Output…** / **Show Monitor Timestamps** / **Save Monitor Output…** | 显示和保存监视器输出 |
 | **Serial Plotter** | 将开发板打印的数值绘制成曲线 |
+| **Sensor Dashboard** | 将开发板打印的 `名称:数值` 显示为仪表板；请参阅[传感器仪表板](monitor.md#dashboard) |
 | **Settings (Kconfig)…** / **Menuconfig** / **Open .config** | 修改应用程序配置 |
 | **Pin Configuration…** | 配置引脚并生成代码 |
 | **GATT Configuration…** | 定义 BLE 服务和特征并生成代码 |
 | **Memory Map** | 查看内存被什么占用 |
 | **Partition Table** / **AI Model…** | 分区表视图；检查并写入 NPU 模型 |
+| **OTA Package…** | 制作 boot2 OTA 包并发送到开发板；请参阅 [OTA 包](flash.md#ota) |
 | **Run Tests on Board** | 复位开发板并收集 Unity 测试结果 |
 | **RF Test (DTM)…** / **Wi-Fi Throughput (iperf)…** / **Power…** | 射频、Wi-Fi 吞吐量与功耗测量 |
 | **Crash Dumps…** | 打开之前收集的崩溃转储 |
@@ -71,6 +74,7 @@ IPRO Workbench 0.1.1 的键盘快捷键、命令、设置、MCP 工具和文件�
 | `ipro.monitor.filter` | 只显示与此正则表达式匹配的监视器行 |
 | `ipro.monitor.logToFile` | 将每次监视器会话的完整内容保存到应用程序的 `build/logs` |
 | `ipro.mcp.enabled` / `ipro.mcp.port` | 供 IDE 之外的 AI 助手使用的 MCP 服务器；默认开启，端口 41730 |
+| `ipro.ai.assistant` | **Ask AI to Fix** 等请求交给谁：`ipro`（IPRO 助手，需要语言模型；默认）或 `claudeCode`（Claude Code 助手，使用你的 Claude Code 登录，并通过 MCP 使用 IPRO 工具） |
 | `ipro.macos.probeDownloadMode` | macOS：烧录时保持 IPRO Debug Probe 的下载模式 strap 引脚 |
 | `ipro.macos.checkQuarantine` | macOS：启动时检查工具是否带有隔离标记 |
 
@@ -81,13 +85,19 @@ IDE 之外的 AI 助手通过 MCP 可以看到以下工具（名称即 MCP 工�
 | 工具 | 用途 |
 |---|---|
 | `ipro_get_target` | SDK、当前的应用程序、开发板和串口、开发环境问题以及上一次构建的结果 |
+| `ipro_open_folder` | 打开 IPRO SDK 文件夹；指定应用程序文件夹时，打开它所在的 SDK 并将它设为当前应用程序 |
 | `ipro_list_applications` | 列出 SDK 中的所有应用程序 |
 | `ipro_select_application` | 切换当前应用程序 |
+| `ipro_list_configurations` / `ipro_select_configuration` | 列出当前应用程序的配置文件；选择构建所用的配置文件 |
+| `ipro_list_boards` / `ipro_select_board` | 列出 IDE 识别的开发板及当前使用的开发板；选择开发板，或恢复为 auto |
+| `ipro_list_ports` / `ipro_select_port` | 列出这台计算机的串口（探针的 UART、CCI 及其他）；选择烧录、监视和复位使用的端口 |
 | `ipro_build` | 构建当前应用程序；返回错误、警告和内存用量 |
 | `ipro_get_build_output` | 读取 IPRO Build 或 IPRO Flash 的最新输出 |
 | `ipro_flash` | 烧录最新构建并打开监视器 |
 | `ipro_reset_board` | 通过探针复位开发板 |
+| `ipro_open_monitor` / `ipro_close_monitor` | 在当前端口上打开串口监视器（可同时复位开发板）；关闭监视器以释放端口 |
 | `ipro_read_monitor` | 读取开发板在监视器上打印的最新几行 |
+| `ipro_write_monitor` | 在开发板的控制台上输入一行命令，并返回开发板随后打印的内容 |
 | `ipro_board_tests` | 开发板上次启动的固件以及 Unity 测试结果 |
 | `ipro_get_settings` / `ipro_set_settings` | 读取和修改应用程序的 Kconfig 配置 |
 | `ipro_get_pins` / `ipro_set_pins` | 读取和修改引脚配置并生成代码 |
@@ -107,7 +117,10 @@ IDE 之外的 AI 助手通过 MCP 可以看到以下工具（名称即 MCP 工�
 | 主目录下的 `IPRO/SDK/<version>` | **Install SDK from GitHub…** 安装的 SDK |
 | 主目录下的 `.ipro-ide` | IDE 设置和 MCP 访问令牌（`mcp.json`） |
 | `apps/<category>/<name>/build` | 应用程序的构建结果（固件、ELF、map 文件） |
+| `apps/<category>/<name>/build_<configuration>` | 以 `defconfig_<configuration>` 构建的结果（`config_<configuration>` 对应 `build_config_<configuration>`），与 `make DEFCONFIG=<file>` 相同 |
+| `apps/<category>/<name>/build/build_out/<name>.xz.ota` | **OTA Package** 制作的 boot2 OTA 包（选择了配置文件时位于该配置文件的构建文件夹中） |
 | `apps/<category>/<name>/build/logs` | 监视器的完整日志（开启 **Log To File** 时） |
 | `apps/<category>/<name>/build/crash` | 收集的崩溃转储 |
 | `apps/<category>/<name>/pins.yaml` | 引脚配置；`app_pins.h` 和 `app_pins.c` 由它生成 |
 | `apps/<category>/<name>/gatt.yaml` | GATT 服务；`app_gatt.h` 和 `app_gatt.c` 由它生成 |
+| `apps/<category>/<name>/dashboard.yaml` | Sensor Dashboard 的布局 |

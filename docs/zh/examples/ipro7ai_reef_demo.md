@@ -11,7 +11,7 @@ Reef 開箱韌體：RGB LED、按鍵、喇叭與耳機、PDM 與耳麥麥克風�
 
 | 項目 | 內容 |
 |---|---|
-| 原始碼 | [`apps/platform/ipro7ai_reef_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/platform/ipro7ai_reef_demo) |
+| 原始碼 | [`apps/platform/ipro7ai_reef_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/platform/ipro7ai_reef_demo) |
 | 板卡與設定 | Reef（`.config`）；Reef＋IPRO6S FIN 卡（`defconfig_wifi_ipro6s`：Wi-Fi 與 RTSP 相機串流） |
 | 主控台 | UART 115200 |
 | 建置 | `make -C apps/platform/ipro7ai_reef_demo`；Wi-Fi 版加上 `DEFCONFIG=defconfig_wifi_ipro6s` |
@@ -61,7 +61,7 @@ Wi-Fi 與 RTSP 版以 `DEFCONFIG=defconfig_wifi_ipro6s` 建置，輸出在 `buil
 ## README { #readme }
 
 !!! note "README 原文"
-    以下是應用隨附的 README（SDK V2.2.1），保留原文、未翻譯；只替換了不適合公開的內容。
+    以下是應用隨附的 README（SDK V2.3.0），保留原文、未翻譯；只替換了不適合公開的內容。
 
 <!-- verbatim:start -->
 

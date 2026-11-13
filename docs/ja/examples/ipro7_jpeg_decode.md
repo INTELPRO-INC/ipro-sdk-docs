@@ -11,7 +11,7 @@ migrate_from: []
 
 | 項目 | 内容 |
 |---|---|
-| ソースコード | [`apps/multimedia/ipro7_jpeg_decode`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/multimedia/ipro7_jpeg_decode) |
+| ソースコード | [`apps/multimedia/ipro7_jpeg_decode`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/multimedia/ipro7_jpeg_decode) |
 | ボードと設定 | Reef（`defconfig_reef`）、`.config` は IPRO7AI EVK 用 |
 | コンソール | UART **921600** |
 | ビルド | Reef：`make -C apps/multimedia/ipro7_jpeg_decode DEFCONFIG=defconfig_reef` |
@@ -47,7 +47,7 @@ Reef 構成の中で、コンソールが 921600 baud なのはこのアプリ�
 ## README { #readme }
 
 !!! note "README の原文"
-    以下はアプリケーションに付属する README（SDK V2.2.1）を原文のまま掲載したものです。翻訳はしておらず、公開に適さない内容だけを置き換えています。
+    以下はアプリケーションに付属する README（SDK V2.3.0）を原文のまま掲載したものです。翻訳はしておらず、公開に適さない内容だけを置き換えています。
 
 <!-- verbatim:start -->
 

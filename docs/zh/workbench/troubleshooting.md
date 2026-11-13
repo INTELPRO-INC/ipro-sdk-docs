@@ -35,6 +35,22 @@ IDE 在每一步失敗時都會跳出說明與處理按鈕。下表依訊息列�
 | 板子沒有連到這台電腦的 TCP 連接埠 5001。可能是這台電腦的防火牆擋住了連入的連線… | 板子送、電腦收時，電腦的防火牆擋住連入的連線（Windows 的預設） | 讓防火牆允許連入 TCP 5001（見 [Wi-Fi 傳輸速率：執行測試](measure.md#iperf-run)），或改用電腦送、板子收 |
 | 這台電腦連不上板子的 iperf 伺服器…／板子上前一次的 iperf 還在執行… | 板子的 iperf 伺服器還在等待連線 | 按 **重置板子**，板子重新開機後重新加入網路 |
 | 板子沒有重新啟動。監看是否接在 IPRO Debug Probe 的主控台連接埠？ | 監看開在 CCI 或其他連接埠 | 按工具列的開發板，**選擇連接埠…** 改回探棒的 UART |
+| 找不到 …。請檢查開發板的連接線，或改選其他連接埠。 | 選的連接埠已經不在（板子拔掉，或 USB 埠的名稱變了） | 檢查線材，按工具列的開發板，**選擇連接埠…** 重新選 |
+| 設定 ipro.board.port 把連接埠固定在 …。要清除這個設定並改用 … 嗎？ | 設定 `ipro.board.port` 指定了連接埠，和你要用的不同 | 按 **改用 …** 清除設定；要保留時取消 |
+| … 上的板子有回應，但它的 Flash 沒有：這次是以 … 燒錄，而那塊板的 Flash 腳位和這塊不同。 | 工具列選的開發板和實際接上的不同，燒錄用錯了 Flash 腳位 | 按 **選擇開發板** 選實際接上的開發板，再 **重試** |
+| … 是 boot2 配置的分割表，而這份 IntelProCube 沒有 … 的 boot2 映像。 | 分割表需要 boot2，IntelProCube 沒有附這顆晶片的 boot2 | 按 **安裝 IntelProCube** 更新，或在 **分割表** 改選直接啟動韌體的分割表 |
+| IntelProCube … 版本太舊，不能用來燒錄 …：用它燒錄後開發板不會開機。 | IPRO6S EVK 需要 IntelProCube 0.7.0.1 以上 | 按 **安裝 IntelProCube**，或 **瀏覽…** 指定較新的版本 |
+| 開發板沒有進入 boot2 的 USB 下載模式。… | [經開發板的 USB 燒錄](flash.md#usb-flash)時，板子沒有重新開機進入下載模式（例如韌體沒有 USB 主控台） | 再按一次 **燒錄**，並在 20 秒內拔掉開發板的 USB 線再插上 |
+| … 是開發板自己的 USB 埠。Windows 版暫時還不能經這個埠燒錄… | Windows 版不提供經開發板 USB 燒錄 | 在 macOS 上燒錄，或接上 IPRO 除錯探棒並選它的 UART |
+| … 是開發板自己的 USB 埠，而這個 SDK 沒有經它燒錄用的 tools/ipro_dl.py。 | SDK 比 V2.3.0 舊 | 改用 IPRO SDK V2.3.0，或經 IPRO 除錯探棒燒錄 |
+| 預設的分割表隨 IntelProCube 提供，但找不到 IntelProCube。／這個 IntelProCube 沒有 …。 | 「分割表」頁找不到預設的分割表 | 按 **安裝 IntelProCube**，或在「燒錄時使用」改選其他分割表 |
+| 分割表的 FW 分割區只有一個 slot。OTA 需要有第二個 FW slot 的分割表…／這份分割表是沒有 boot2 的配置… | 「OTA 包」：分割表不是 boot2 的 A/B 配置 | 在 **分割表** 選有 boot2 空間與第二個 FW slot 的分割表（例如 `ipro_ble_remote` 的 `partition_cfg_2M_remote_ab.toml`），見 [OTA 包](flash.md#ota) |
+| boot2 OTA 包只適用 IPRO7 的應用；這個應用是為 … 建置的。 | 「OTA 包」不支援 IPRO6S 的應用程式 | 無；IPRO6S 不做 boot2 OTA 包 |
+| 板子沒有回應 ota_uart 指令。它的應用程式需要 CONFIG_IPRO_OTA=y 和 CONFIG_IPRO_OTA_UART=y… | 板子上的應用程式沒有 `ota_uart` 指令，或連接埠不是它的主控台 | 以 IPRO SDK V2.3.0、開啟這兩個設定建置並燒錄，再傳送 |
+| 板子拒絕了這個 OTA 包：板子上的分割表沒有第二個 FW slot。… | 板子還沒用 A/B 分割表燒錄過 | 先以 A/B 分割表與 boot2 燒錄應用程式（見 [OTA 包](flash.md#ota)第 2、3 步） |
+| 板子拒絕了這個 OTA 包：它的 SHA-256 不符：檔案損壞，或傳輸掉了資料。 | 傳輸中掉了資料 | 按 **只在板上檢查** 再試一次；仍然失敗時重新製作 |
+| 板子沒有列出任何網路（wifi_scan 沒有回應）。 | Wi-Fi 傳輸速率：板子沒有回應掃描 | 確認板子上的應用程式有 Wi-Fi 指令（例如 `ipro6_demo`），再按 **掃描** |
+| Wi-Fi 協定堆疊沒有啟動（stack_wifi 沒有回應）。 | 板子沒有回應 `stack_wifi` | 重置板子後再按 **加入網路** |
 
 ## 工具列與側邊欄的狀態 { #status }
 
@@ -43,7 +59,8 @@ IDE 在每一步失敗時都會跳出說明與處理按鈕。下表依訊息列�
 | 工具列顯示琥珀色的「無探棒」 | IDE 找不到 IPRO 除錯探棒。檢查 USB 線，盡量直接接電腦；探棒接上後幾秒內會自動出現。 |
 | 狀態列顯示「環境：N 項待處理」 | 按一下開啟首頁，依橫幅按 **補齊環境**。 |
 | 「開發板」顯示「執行中：其他韌體」 | 板子上的不是目前應用程式最近一次建置的韌體。要執行目前的程式，請燒錄。 |
-| IPRO6S EVK 的「開發板」沒有「執行中：…」一行 | 正常。IPRO6 系列的板子開機時不印建置時間，IDE 無法核對板子上的韌體；請以 **IPRO Flash** 的 `[All Success]` 與監看的開機訊息確認（見[和 IPRO7 系列不同的地方](flash.md#ipro6s-differences)）。 |
+| IPRO6S EVK 的「開發板」沒有「執行中：…」一行 | 用 IPRO SDK 2.2.1 以前的版本時是正常的：那些版本的 IPRO6 韌體開機時不印建置時間，IDE 無法核對板子上的韌體；請以 **IPRO Flash** 的 `[All Success]` 與監看的開機訊息確認。IPRO SDK V2.3.0 起會顯示（見[和 IPRO7 系列不同的地方](flash.md#ipro6s-differences)）。 |
+| 狀態列沒有設定檔（齒輪與 `.config`） | 正常。應用程式沒有 `defconfig_*`、`config_*` 等其他設定檔時不顯示（見[設定檔](develop.md#configurations)）。 |
 
 ## macOS 特有的狀況 { #macos }
 
@@ -60,8 +77,10 @@ IDE 在每一步失敗時都會跳出說明與處理按鈕。下表依訊息列�
 |---|---|
 | 安裝時顯示「Windows 已保護您的電腦」 | 按 **其他資訊**，確認應用程式名稱是 IPRO-Workbench 後按 **仍要執行**。 |
 | 用其他序列埠工具時打不開 COM 埠 | Windows 的 COM 埠同時只能給一個程式使用。先關閉 IPRO Monitor，再開其他工具；用完後關掉它，IDE 才能燒錄。 |
-| 「配合此工具鏈的 SDK」顯示需要調整 | IPRO SDK 2.2 在 Windows 上建置前需要幾項主機修正。按 **補齊環境**（或該列的 **讓 SDK 配合此工具鏈**），IDE 會自動處理。 |
+| 「配合此工具鏈的 SDK」顯示需要調整 | IPRO SDK 2.2.1 以前的版本在 Windows 上建置前需要幾項主機修正。按 **補齊環境**（或該列的 **讓 SDK 配合此工具鏈**），IDE 會自動處理。 |
 | Wi-Fi 傳輸速率：板子送、電腦收時沒有結果 | Windows 防火牆預設擋下連入的連線。新增一條允許 TCP 連接埠 5001 的輸入規則（見 [Wi-Fi 傳輸速率：執行測試](measure.md#iperf-run)），或改用電腦送、板子收。 |
+| 用 RISC-V 工具鏈 13.1.1 建置時，連結失敗 | 在 Windows 上建置 IPRO SDK 要用 RISC-V 工具鏈 14.2.1，13.1.1 無法連結 SDK 預先編好的函式庫。按 **補齊環境** 安裝 14.2.1，或在「開發環境」的工具鏈一列改選它。 |
+| 選了開發板自己的 USB 埠後無法燒錄 | Windows 版暫時不能經開發板的 USB 燒錄。接上 IPRO 除錯探棒並選它的 UART。 |
 | Python 一列顯示沒有 kconfiglib | 在命令提示字元執行 `python -m pip install kconfiglib windows-curses`，再按 **重新檢查**。 |
 | 程式碼編輯器提示要下載 clangd | 程式碼導覽使用 clangd。依提示讓它下載即可，或在「開發環境」的 clangd 一列按修復。 |
 

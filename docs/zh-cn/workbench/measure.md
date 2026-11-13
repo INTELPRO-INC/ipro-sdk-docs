@@ -1,6 +1,6 @@
 ---
 title: "测试与测量"
-description: 在 IPRO Workbench 中于开发板上运行 Unity 测试并在 Testing 视图中查看结果，以 Direct Test Mode 测量 BLE 射频，以 iperf 测量 Wi-Fi 吞吐量，以及分析 PPK2 功耗记录并估算电池续航。
+description: 在 IPRO Workbench 中于开发板上运行 Unity 测试并在 Testing 视图中查看结果，以 Direct Test Mode 测量 BLE 射频，以 iperf 测量 Wi-Fi 吞吐量并设置 IPRO6S 的 Wi-Fi 内存 profile，以及分析 PPK2 功耗记录并估算电池续航。
 ---
 
 # 测试与测量
@@ -65,12 +65,12 @@ description: 在 IPRO Workbench 中于开发板上运行 Unity 测试并在 Test
 
 **Wi-Fi throughput** 在这台计算机与开发板之间运行 TCP iperf 测试，测量 Wi-Fi 吞吐量。计算机一端由 IPRO Workbench 自己运行，因此无需安装 iperf；开发板一端则由 IDE 通过串口监视器输入命令。
 
-开发板上的应用程序必须带有 SDK 的 Wi-Fi shell 命令和 `iperf` 命令。在 IPRO6S EVK 上请使用 IPRO SDK 2.2.1 的 `platform/ipro6_demo`（烧录方法请参阅 [IPRO6S EVK](flash.md#ipro6s)，位于[烧录与开发板](flash.md)）。
+开发板上的应用程序必须带有 SDK 的 Wi-Fi shell 命令和 `iperf` 命令。在 IPRO6S EVK 上请使用 IPRO SDK V2.3.0 的 `platform/ipro6_demo`（烧录方法请参阅 [IPRO6S EVK](flash.md#ipro6s)，位于[烧录与开发板](flash.md)），或用[新建应用程序](first-run.md#own-app)的“Wi-Fi station for the IPRO6S EVK”创建的副本。该页面还会为 IPRO6S 启动 Wi-Fi、扫描网络、显示开发板的 MAC 与信号，并设置 [Wi-Fi 内存 profile](#wifi-profile)。
 
 | Wi-Fi 角色 | 使用时机 |
 |---|---|
-| **Station (joins the network this PC is on)** | 推荐的方式。开发板加入计算机已经连接的 Wi-Fi 网络（2.4 GHz）；计算机的网络保持不变。 |
-| **Access point (this PC joins it)** | 手边没有 Wi-Fi 网络时使用。开发板作为接入点，计算机的 Wi-Fi 要加入开发板的网络；在此期间，计算机通常无法上网。 |
+| **Station (joins the network this PC is on)** | 推荐的方式，页面默认即为此角色。开发板加入计算机已经连接的 Wi-Fi 网络（2.4 GHz）；计算机的网络保持不变。 |
+| **Access point (this PC joins it)** | 手边没有 Wi-Fi 网络时使用。开发板作为接入点，计算机的 Wi-Fi 要加入开发板的网络；在此期间，计算机通常无法上网。选择此角色时，页面会提示：“As an access point the board measured far lower throughput than as a station (ipro6_demo on the IPRO6S EVK). Use Station for throughput figures.” |
 
 ### 让开发板加入网络 { #iperf-network }
 
@@ -82,9 +82,15 @@ description: 在 IPRO Workbench 中于开发板上运行 Unity 测试并在 Test
 
     **应看到**：**Wi-Fi Throughput (iperf)** 标签页，分为两部分：“1. Put the board and this PC on one network”和“2. Run”。没有打开监视器时，顶部有一条提示请你打开监视器，并提供 **Open Monitor** 按钮。
 
-3. **加入网络。** 在 **Wi-Fi role** 中选择 **Station (joins the network this PC is on)**；在 **Network name** 中输入计算机所连 Wi-Fi 网络的名称；在 **Password** 中输入它的密码；然后点击 **Join Network**。
+3. **扫描（可选）。** **Wi-Fi role** 保持为 **Station (joins the network this PC is on)**，点击 **Scan**。
 
-    **应看到**：状态消息先显示“The board is joining &lt;network name&gt;…”，然后显示“The board joined &lt;network name&gt;; its address is &lt;board's IP&gt;.”；**Board's IP address** 会自动填好。下方的日志列出 IDE 发给开发板的命令（以 → 开头）和开发板的回复（以 ← 开头）：`wifi_state`、`stack_wifi`、`wifi_sta_connect`；密码在这份日志中显示为 `********`。如果开发板在大约 40 秒内没有加入网络，消息为“The board did not join &lt;network name&gt;. Check the name and password.”
+    **应看到**：状态消息显示“The board is scanning…”，然后显示“The board hears N networks. Pick one to fill in its name.”下方表格列出 **Network name**、**Signal (dBm)**、**Channel**、**Security** 和 **Access points**，最多列出 12 个信号最强的网络（更多时显示“The 12 strongest of N networks.”）。名称含空格的网络标注“(has a space: the board's shell cannot take it)”。点击一行，**Network name** 就会填入它的名称。
+
+    开发板的 Wi-Fi 尚未启动时，IDE 会先发送 `stack_wifi` 启动它，再进行扫描；加入网络时也是如此。
+
+4. **加入网络。** 在 **Network name** 中输入计算机所连 Wi-Fi 网络的名称（或在上一步中点选）；在 **Password** 中输入它的密码；然后点击 **Join Network**。
+
+    **应看到**：状态消息先显示“The board is joining &lt;network name&gt;…”，然后显示“The board joined &lt;network name&gt;; its address is &lt;board's IP&gt;.”；**Board's IP address** 会自动填好，下面一行为“Board's MAC: …”（在 Wi-Fi 启动时读取；开发板的 eFuse 中没有 MAC 时，后面会加上“(not the MAC in the board's eFuse)”）和“Signal … dBm on channel …”。下方的日志列出 IDE 发给开发板的命令（以 → 开头）和开发板的回复（以 ← 开头）：`wifi_state`、`stack_wifi`（Wi-Fi 尚未启动时）、`wifi_sta_connect`、`wifi_sta_info`；密码在这份日志中显示为 `********`。如果开发板在大约 40 秒内没有加入网络，消息为“The board did not join &lt;network name&gt;. Check the name and password.”
 
     要改用接入点模式，请在 **Wi-Fi role** 中选择 **Access point (this PC joins it)**，输入要创建的网络的名称、8 到 63 个字符的密码和信道，然后点击 **Start Access Point**。
 
@@ -120,10 +126,48 @@ description: 在 IPRO Workbench 中于开发板上运行 Unity 测试并在 Test
 | The board sends, this PC receives | 这台计算机（TCP 端口 5001） | 计算机的防火墙必须允许传入的 TCP 5001。Windows 默认会拦截；见下文 |
 
 !!! note
-    - **Windows 防火墙**：开发板发送、计算机接收时，如果状态消息为“The board did not connect to this PC on TCP port 5001. A firewall on this PC may block incoming connections…”，请在“高级安全 Windows Defender 防火墙”中添加一条允许 TCP 端口 5001 的入站规则（针对计算机所在网络的配置文件，公用或专用）；测试结束后可以禁用或删除该规则。添加规则需要管理员权限。从计算机向开发板发送则不需要规则。
+    - **Windows 防火墙**：开发板发送、计算机接收时，如果状态消息为“The board did not connect to this PC on TCP port 5001. A firewall on this PC may block incoming connections…”，Windows 版的消息后面会附上放行和删除规则的命令。以管理员身份打开命令提示符，运行放行的命令：
+
+        ```powershell
+        netsh advfirewall firewall add rule name="IPRO Workbench iperf" dir=in action=allow protocol=TCP localport=5001
+        ```
+
+        测试结束后删除这条规则：
+
+        ```powershell
+        netsh advfirewall firewall delete rule name="IPRO Workbench iperf"
+        ```
+
+        也可以在“高级安全 Windows Defender 防火墙”中手动添加一条允许 TCP 端口 5001 的入站规则。从计算机向开发板发送则不需要规则。
     - **开发板的服务器一直在等待**：开发板的 iperf 服务器一旦开始等待连接，只有来自计算机的连接或重启开发板才能结束它。因此 IDE 会先确认这台计算机在开发板所在的网络上有地址，然后才让开发板启动服务器；如果没有地址，消息为“This PC has no address on the board's network (…). Join the same Wi-Fi network, then run again.”已经有服务器在等待时（状态消息为“This PC could not reach the board's iperf server…”或“An earlier iperf is still running on the board…”），请点击出现的 **Reset Board** 按钮；开发板重启后，从 **Join Network** 重新开始。
     - 开发板和计算机各自统计：开发板根据它收到（或发出）的数据，计算机根据它发出（或收到）的数据。两个数值略有差异是正常的。
     - 在两种 Wi-Fi 角色下测得的数值不能相互比较。要评估连接到接入点的开发板的吞吐量，请使用 Station 模式。
+
+### Wi-Fi 内存 profile { #wifi-profile }
+
+IPRO6S 作为 station 时，RAM 如何在 Wi-Fi 吞吐量和应用程序可用的 heap 之间分配，由构建配置中的 Wi-Fi 内存 profile 决定。当前应用程序是 IPRO6 的 Wi-Fi 应用程序（例如 `ipro6_demo`）时，**Wi-Fi Throughput (iperf)** 页面下方会多出一部分“Memory profile of &lt;application&gt; (a build setting)”。
+
+<div class="ipro-steps" markdown>
+
+1. **查看当前的 profile。** 选择 `ipro6_demo`，打开 **Wi-Fi Throughput (iperf)**，滚动到下方。
+
+    **应看到**：说明“How the IPRO6 station splits its RAM between Wi-Fi throughput and the heap the application has. The figures are the SDK's measurements on ipro6_demo; compare the profiles with them, not networks.”以及下表；当前配置文件所用的那一行显示“In the configuration”，其他行提供 **Use**。
+
+    | Profile | 连接后可用 heap | 相对 PERF 的吞吐量 |
+    |---|---|---|
+    | PERF: throughput first | 约 36 KB | 100 % |
+    | BALANCED: general products | 约 170 KB | 40–75 % |
+    | APP: most of the RAM for the application | 约 210 KB | 25–50 % |
+
+2. **更换 profile。** 在 BALANCED 一行点击 **Use**。
+
+    **应看到**：IDE 将 profile 写入当前的配置文件（`.config`，或所选的[配置文件](develop.md#configurations)），BALANCED 一行变为“In the configuration”，下方出现警告“The configuration now says BALANCED; what is built is still PERF. The profile also changes the linker script, so it takes a build from clean.”以及 **Clean and Build** 按钮。
+
+3. **清除并构建。** 点击 **Clean and Build**。
+
+    **应看到**：**IPRO Build** 从头构建；成功后警告消失。烧录后再次[运行测试](#iperf-run)，比较吞吐量。
+
+</div>
 
 ## 功耗 { #power }
 

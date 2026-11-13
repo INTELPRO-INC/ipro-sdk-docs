@@ -1,6 +1,6 @@
 ---
 title: "Testing and Measurement"
-description: Run Unity tests on the board and read them in the Testing view, measure BLE RF in Direct Test Mode, measure Wi-Fi throughput with iperf, and analyze PPK2 power recordings with battery life estimates in IPRO Workbench.
+description: Run Unity tests on the board and read them in the Testing view, measure BLE RF in Direct Test Mode, measure Wi-Fi throughput with iperf and set the IPRO6S Wi-Fi memory profile, and analyze PPK2 power recordings with battery life estimates in IPRO Workbench.
 ---
 
 # Testing and Measurement
@@ -65,12 +65,12 @@ When an application uses the SDK's Unity test framework (for example `ipro_unit_
 
 **Wi-Fi throughput** runs a TCP iperf test between this computer and the board to measure the Wi-Fi throughput. IPRO Workbench runs the computer's side itself, so you do not need to install iperf; for the board's side the IDE types the commands through the serial monitor.
 
-The application on the board must have the SDK's Wi-Fi shell commands and the `iperf` command. On the IPRO6S EVK use `platform/ipro6_demo` of IPRO SDK 2.2.1 (for flashing, see [IPRO6S EVK](flash.md#ipro6s) in [Flashing and the Board](flash.md)).
+The application on the board must have the SDK's Wi-Fi shell commands and the `iperf` command. On the IPRO6S EVK use `platform/ipro6_demo` of IPRO SDK V2.3.0 (for flashing, see [IPRO6S EVK](flash.md#ipro6s) in [Flashing and the Board](flash.md)), or a copy made with the "Wi-Fi station for the IPRO6S EVK" start of [New Application](first-run.md#own-app). The page also starts Wi-Fi on the IPRO6S, scans for networks, shows the board's MAC and signal, and sets the [Wi-Fi memory profile](#wifi-profile).
 
 | Wi-Fi role | When to use it |
 |---|---|
-| **Station (joins the network this PC is on)** | The recommended way. The board joins the Wi-Fi network (2.4 GHz) the computer is already on; the computer's network stays as it is. |
-| **Access point (this PC joins it)** | When there is no Wi-Fi network at hand. The board is the access point, and the computer's Wi-Fi has to join the board; while it does, the computer usually has no internet access. |
+| **Station (joins the network this PC is on)** | The recommended way, and where the page starts. The board joins the Wi-Fi network (2.4 GHz) the computer is already on; the computer's network stays as it is. |
+| **Access point (this PC joins it)** | When there is no Wi-Fi network at hand. The board is the access point, and the computer's Wi-Fi has to join the board; while it does, the computer usually has no internet access. With this role chosen the page notes: "As an access point the board measured far lower throughput than as a station (ipro6_demo on the IPRO6S EVK). Use Station for throughput figures." |
 
 ### Putting the Board on the Network { #iperf-network }
 
@@ -82,9 +82,15 @@ The application on the board must have the SDK's Wi-Fi shell commands and the `i
 
     **You should see**: the **Wi-Fi Throughput (iperf)** tab, with two parts: "1. Put the board and this PC on one network" and "2. Run". When no monitor is open, a hint at the top asks you to open one and offers the **Open Monitor** button.
 
-3. **Join the network.** Under **Wi-Fi role**, choose **Station (joins the network this PC is on)**; under **Network name**, enter the name of the Wi-Fi network the computer is on; under **Password**, enter its password; then click **Join Network**.
+3. **Scan (optional).** Leave **Wi-Fi role** at **Station (joins the network this PC is on)** and click **Scan**.
 
-    **You should see**: the status message shows "The board is joining &lt;network name&gt;…" and then "The board joined &lt;network name&gt;; its address is &lt;board's IP&gt;."; **Board's IP address** is filled in for you. The log below lists the commands the IDE sent to the board (starting with →) and the board's replies (starting with ←): `wifi_state`, `stack_wifi`, `wifi_sta_connect`; the password is shown as `********` in this log. If the board has not joined within about 40 seconds, the message is "The board did not join &lt;network name&gt;. Check the name and password."
+    **You should see**: the status message "The board is scanning…", then "The board hears N networks. Pick one to fill in its name." The table below lists **Network name**, **Signal (dBm)**, **Channel**, **Security** and **Access points** for up to the 12 strongest networks ("The 12 strongest of N networks." when there are more). A name with a space is marked "(has a space: the board's shell cannot take it)". Click a row to fill in **Network name**.
+
+    When Wi-Fi is not running on the board yet, the IDE sends `stack_wifi` to start it before the scan; joining a network does the same.
+
+4. **Join the network.** Under **Network name**, enter the name of the Wi-Fi network the computer is on (or pick it in the previous step); under **Password**, enter its password; then click **Join Network**.
+
+    **You should see**: the status message shows "The board is joining &lt;network name&gt;…" and then "The board joined &lt;network name&gt;; its address is &lt;board's IP&gt;."; **Board's IP address** is filled in for you, and the line below gives "Board's MAC: …" (read when Wi-Fi starts; when the board's eFuse holds no MAC it adds "(not the MAC in the board's eFuse)") and "Signal … dBm on channel …". The log below lists the commands the IDE sent to the board (starting with →) and the board's replies (starting with ←): `wifi_state`, `stack_wifi` (when Wi-Fi was not running), `wifi_sta_connect`, `wifi_sta_info`; the password is shown as `********` in this log. If the board has not joined within about 40 seconds, the message is "The board did not join &lt;network name&gt;. Check the name and password."
 
     To use the access point mode instead, choose **Access point (this PC joins it)** under **Wi-Fi role**, enter the name of the network to create, a password of 8 to 63 characters and a channel, and click **Start Access Point**.
 
@@ -120,10 +126,48 @@ The application on the board must have the SDK's Wi-Fi shell commands and the `i
 | The board sends, this PC receives | This computer (TCP port 5001) | The computer's firewall must allow incoming TCP 5001. Windows blocks it by default; see below |
 
 !!! note
-    - **Windows firewall**: when the board sends and the computer receives, and the status message is "The board did not connect to this PC on TCP port 5001. A firewall on this PC may block incoming connections…", add an inbound rule in "Windows Defender Firewall with Advanced Security" that allows TCP port 5001 (for the profile of the network the computer is on, Public or Private); you can disable or delete the rule after the test. Adding a rule needs administrator rights. Sending from the computer to the board needs no rule.
+    - **Windows firewall**: when the board sends and the computer receives, and the status message is "The board did not connect to this PC on TCP port 5001. A firewall on this PC may block incoming connections…", the Windows version adds the commands that allow it and remove it again. Open a Command Prompt as administrator and allow it:
+
+        ```powershell
+        netsh advfirewall firewall add rule name="IPRO Workbench iperf" dir=in action=allow protocol=TCP localport=5001
+        ```
+
+        After the test, remove the rule:
+
+        ```powershell
+        netsh advfirewall firewall delete rule name="IPRO Workbench iperf"
+        ```
+
+        You can also add an inbound rule that allows TCP port 5001 by hand in "Windows Defender Firewall with Advanced Security". Sending from the computer to the board needs no rule.
     - **A board server left waiting**: once the board's iperf server waits for a connection, only a connection from a computer or a restart of the board ends it. So the IDE first checks that this computer has an address on the board's network before it lets the board start its server; if it has none, the message is "This PC has no address on the board's network (…). Join the same Wi-Fi network, then run again." When a server is already waiting (the status message is "This PC could not reach the board's iperf server…" or "An earlier iperf is still running on the board…"), click the **Reset Board** button that appears; after the board restarts, start again from **Join Network**.
     - The board and the computer each count for themselves: the board from the data it received (or sent), the computer from the data it sent (or received). A small difference between the two figures is normal.
     - Figures measured in the two Wi-Fi roles cannot be compared with each other. To evaluate the throughput of a board that is connected to an access point, use the Station mode.
+
+### Wi-Fi memory profile { #wifi-profile }
+
+How an IPRO6S station splits its RAM between Wi-Fi throughput and the heap left to the application is a build setting, the Wi-Fi memory profile. When the active application is an IPRO6 Wi-Fi application (for example `ipro6_demo`), the **Wi-Fi Throughput (iperf)** page has a part "Memory profile of &lt;application&gt; (a build setting)" at the bottom.
+
+<div class="ipro-steps" markdown>
+
+1. **See the profile in use.** Select `ipro6_demo`, open **Wi-Fi Throughput (iperf)** and scroll to the bottom.
+
+    **You should see**: "How the IPRO6 station splits its RAM between Wi-Fi throughput and the heap the application has. The figures are the SDK's measurements on ipro6_demo; compare the profiles with them, not networks." and the table below; the row of the profile in use says "In the configuration", the others offer **Use**.
+
+    | Profile | Free heap after connect | Throughput against PERF |
+    |---|---|---|
+    | PERF: throughput first | about 36 KB | 100 % |
+    | BALANCED: general products | about 170 KB | 40–75 % |
+    | APP: most of the RAM for the application | about 210 KB | 25–50 % |
+
+2. **Change the profile.** Click **Use** in the BALANCED row.
+
+    **You should see**: the IDE writes the profile into the configuration in use (`.config`, or the chosen [configuration](develop.md#configurations)); the BALANCED row now says "In the configuration", and a warning appears: "The configuration now says BALANCED; what is built is still PERF. The profile also changes the linker script, so it takes a build from clean.", with a **Clean and Build** button.
+
+3. **Clean and build.** Click **Clean and Build**.
+
+    **You should see**: **IPRO Build** builds from scratch; when it succeeds the warning goes away. Flash, then [run the test](#iperf-run) again to compare the throughput.
+
+</div>
 
 ## Power { #power }
 

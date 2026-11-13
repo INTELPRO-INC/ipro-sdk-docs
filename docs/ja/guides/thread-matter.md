@@ -13,8 +13,8 @@ Thread は、Zephyr RTOS 上で Zephyr の OpenThread と SDK の 802.15.4 ド�
 
 !!! abstract "要点"
     - **Thread**：Zephyr RTOS のみ。サンプルのボードは `ipro7_evb`。Zephyr の OpenThread シェルサンプル用の設定フラグメントを `zephyr/samples/ieee802154_shell/` に同梱しています。
-    - **IPRO7AI Reef EVK**：V2.2.1 では Thread を使う経路がありません。Reef には Zephyr のボード定義がなく、Reef で動く FreeRTOS アプリケーションには 802.15.4 が含まれていません。
-    - **Matter**：V2.2.1 には含まれていません。Matter スタック、アプリケーション、ビルドコマンドはありません。INTELPRO にお問い合わせください。
+    - **IPRO7AI Reef EVK**：V2.3.0 では Thread を使う経路がありません。Reef には Zephyr のボード定義がなく、Reef で動く FreeRTOS アプリケーションには 802.15.4 が含まれていません。
+    - **Matter**：V2.3.0 には含まれていません。Matter スタック、アプリケーション、ビルドコマンドはありません。INTELPRO にお問い合わせください。
     - このページのいかなる記述も、本リリースが Thread または Matter の認証を取得していることを意味するものではありません。
 
 ## 提供状況 { #overview }

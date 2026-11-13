@@ -1,18 +1,19 @@
 ---
 title: "OTA 更新"
-description: FreeRTOS 的 boot2 OTA 套件與 A/B 分割表、以 ipro_ble_remote 經 BLE 更新 IPRO7AI Reef EVK、經 Wi-Fi 更新 IPRO6S FIN 卡，以及 Zephyr 下 MCUboot 的定位
+description: FreeRTOS 的 boot2 OTA 套件與 A/B 分割表、OTA 元件 ipro_ota、以 ipro_ble_remote 經 BLE 或主控台 UART 更新 IPRO7AI Reef EVK、經 Wi-Fi 更新 IPRO6S FIN 卡，以及 Zephyr 下 MCUboot 的定位
 migrate_from:
   - "tools-debugging.html#ota-package"
 ---
 
 # OTA 更新
 
-FreeRTOS 應用的 OTA 由 boot2 完成：執行中的應用把 OTA 套件寫進分割表中閒置的 FW 位置並切換啟用索引，重新開機後 boot2 檢查套件、解壓寫入執行區再開機。SDK 隨附打包工具 `tools/create_ota.py`，以及在 IPRO7AI Reef EVK 上經 BLE 更新的完整參考：`ipro_ble_remote` 的 `defconfig_reef`，搭配 A/B 分割表、打包腳本、Python 傳送程式與 Android App。
+FreeRTOS 應用的 OTA 由 boot2 完成：執行中的應用把 OTA 套件寫進分割表中閒置的 FW 位置並切換啟用索引，重新開機後 boot2 檢查套件、解壓寫入執行區再開機。SDK 隨附打包工具 `tools/create_ota.py`、各種傳輸方式共用的 OTA 元件 `components/sys/ipro_ota`（V2.3.0 起），以及在 IPRO7AI Reef EVK 上經 BLE 更新的完整參考：`ipro_ble_remote` 的 `defconfig_reef`，搭配 A/B 分割表、打包腳本、Python 傳送程式與 Android App。
 
 !!! abstract "重點"
     - 參考：`ipro_ble_remote` 的 `defconfig_reef`＋`partition_cfg_2M_remote_ab.toml`＋boot2 v0.6.0（隨 IntelProCube 提供）；預設 `.config` 不含 OTA。
     - 套件：`tools/create_ota.py` 把 IntelProCube 產生的合併映像 `whole_img.bin` 包成 `.xz.ota`（512 位元組標頭＋XZ 內容）；Reef 用 `make_reef_ota.sh` 一次完成兩個步驟。
-    - 傳送端：`tools/reef_ota.py`（Python，bleak）或 `ipro_remote_demo.apk`（Android），經 BLE OTA 服務 0xFF60。
+    - 元件：`components/sys/ipro_ota`（`CONFIG_IPRO_OTA`）在切換分割表之前檢查寫入 Flash 的套件標頭與 SHA-256；傳輸方式有 BLE OTA 服務 0xFF60（`CONFIG_IPRO_OTA_BLE`）與主控台 UART 指令 `ota_uart`（`CONFIG_IPRO_OTA_UART`）。
+    - 傳送端：`tools/reef_ota.py`（Python，bleak）或 `ipro_remote_demo.apk`（Android）經 BLE；IPRO Workbench 0.2.0 的 OTA 包頁面經主控台 UART。
     - IPRO6S FIN 卡以 `ipro7ai_reef_demo` `defconfig_wifi_ipro6s` 的 `ipro6s_ota <http url>` 經 Wi-Fi 更新。
     - 在 Reef 上絕對不要以標準 `partition_cfg_2M.toml` 做 OTA。未包含：簽章套件需要的產品設定（`tools/ota_products.py`）。
 
@@ -25,13 +26,13 @@ sequenceDiagram
   participant F as Flash
   participant B as boot2
   H->>A: BLE OTA 服務 0xFF60：START、資料、END
-  A->>F: 寫入 FW A[1]（暫存區），檢查 CRC32
+  A->>F: 寫入 FW A[1]（暫存區），檢查 CRC32、套件標頭與 SHA-256
   A->>F: activeIndex = 1，重新開機
   B->>F: 檢查套件 SHA-256，解壓寫入 FW A[0]
   B->>A: 重設 activeIndex，從 FW A[0] 開機
 ```
 
-依 `ipro_ble_remote` 的 README，套件通過 SHA-256 檢查後 boot2 才抹除執行區。檢查失敗時 boot2 停在 USB 救援模式，原本的執行區不受影響。
+V2.3.0 起，應用在切換分割表之前，先由 OTA 元件讀回暫存區、檢查套件標頭與 SHA-256：誤傳 `.bin` 或傳輸中損壞的套件在這一步就被拒絕，不會等到下次開機。依 `ipro_ble_remote` 的 README，套件通過 SHA-256 檢查後 boot2 才抹除執行區。檢查失敗時 boot2 停在 USB 救援模式，原本的執行區不受影響。
 
 ## 分割表與 A/B 配置 { #partitions }
 
@@ -79,7 +80,7 @@ python3 <SDK>/tools/create_ota.py chips/ipro7/img_create_iot/whole_img.bin \
 | `--raw` | 不壓縮。未指定 `-o` 時，輸出檔名是輸入檔名換成 `.ota`（`--raw`）或 `.xz.ota` 副檔名 |
 | `-o FILE` | 輸出檔案 |
 | `--hw-ver`、`--fw-ver` | 寫入標頭的硬體與韌體版本字串（各最多 15 個字元）。boot2 不檢查硬體版本 |
-| `--sign-key`、`--product`、`--hw-id`、`--fw-version`、`--force-version`、`--key-id` | 簽章套件用。需要 V2.2.1 未包含的 `tools/ota_products.py`，因此無法使用 |
+| `--sign-key`、`--product`、`--hw-id`、`--fw-version`、`--force-version`、`--key-id` | 簽章套件用。需要 V2.3.0 未包含的 `tools/ota_products.py`，因此無法使用 |
 
 | 標頭位移 | 內容 |
 |---|---|
@@ -103,7 +104,12 @@ CONFIG_IPRO7_FLASH_2M=y
 CONFIG_LINK_FLASH=y
 CONFIG_PARTITION=y
 CONFIG_IPRO_BLE_REMOTE_OTA=y
+CONFIG_IPRO_OTA=y
+CONFIG_IPRO_OTA_BLE=y
+CONFIG_IPRO_OTA_UART=y
 ```
+
+V2.3.0 起，OTA 服務由 OTA 元件提供（`components/sys/ipro_ota/src/ipro_ota_ble.c`），`ipro_ble_remote` 的 `include/ota_service.h` 只轉接到 `ipro_ota_ble.h`；同一個映像也有主控台 UART 的 `ota_uart` 指令，見[經主控台 UART 更新](#uart-ota)。
 
 服務與特徵值（給 App 開發者的完整說明在 `apps/bluetooth/ble/ipro_ble_remote/OTA_IMPLEMENTATION_GUIDE.md`）：
 
@@ -114,9 +120,31 @@ CONFIG_IPRO_BLE_REMOTE_OTA=y
 | OTA Status | `0xFF63` | Read、Notify | 狀態、錯誤碼、進度 %、保留 u16；狀態 0 閒置、1 接收中、2 驗證中、3 就緒、4 完成（送 REBOOT）、0xFF 錯誤 |
 
 - 要傳送 `.xz.ota` 套件，不是 `.bin`。CRC32 是對整個傳送檔案計算的標準 CRC-32（與 `zlib.crc32` 相同）。
-- 送出 START 後裝置會先抹除暫存區；等狀態變成 1（接收中）再送資料。
+- 送出 START 後等狀態變成 1（接收中）再送資料。V2.3.0 起裝置在寫入每個 4 KB 前才抹除它，不再先抹除整個暫存區，START 後不到半秒就開始接收（V2.2.x 約 4 秒）。
+- END 的 CRC32 通過後，裝置還會檢查套件標頭與 SHA-256；不符時狀態變成 0xFF（錯誤），不會切換分割表。
 - 裝置最多排隊 20 個封包，邊收邊寫 Flash。傳送端要控制節奏（`reef_ota.py` 每 8 個封包讀一次 OTA Status），否則封包會被丟棄，END 時回報錯誤。
 - 先協商較大的 MTU；README 建議連線後要求 MTU 513 以上。
+
+## 經主控台 UART 更新（ota_uart） { #uart-ota }
+
+V2.3.0 起，開啟 `CONFIG_IPRO_OTA_UART=y` 的應用有 shell 指令 `ota_uart <套件位元組數> [noapply]`：經主控台 UART 接收 `.xz.ota` 套件，不需要第二個 UART、不改鮑率，應用也不必寫任何程式。`ipro_ble_remote` 的 `defconfig_reef` 已開啟。板子要以 boot2 和有第二個 FW 位置的分割表（例如 `partition_cfg_2M_remote_ab.toml`）燒錄過。
+
+最簡單的傳送端是 IPRO Workbench 0.2.0 的 **OTA 包** 頁面：製作套件後按 **傳送到板子**，或按 **只在板上檢查** 讓板子檢查完整性但不安裝，步驟見 IPRO Workbench 的 [OTA 包](../workbench/flash.md#ota)。115200 鮑率下 200 KB 約需 22 秒。
+
+自己寫傳送端時，協定如下（整數為 little-endian；CRC 是對 seq、len 與資料計算的 CRC-16/CCITT-FALSE）：
+
+```text title="ota_uart 協定（components/sys/ipro_ota/README.md）"
+主機：ota_uart 200776
+板子：==OTA_UART_READY:1024==                    每個封包可接受的最大資料量
+主機：A5 5A  seq(u16)  len(u16)  資料  crc16       送一個封包後等回應
+板子：A5 06  seq(u16)                             收下；A5 15 seq：請重送
+板子：==OTA_UART_OK==                             檢查通過、已切換，重新開機
+      ==OTA_UART_FAIL:<原因>==
+```
+
+- 指令列要一個字元一個字元送出：shell 會丟掉一次整行抵達的輸入。
+- 加上 `noapply` 時，板子收完並檢查後就停止，不切換分割表；套件留在暫存區，執行中的韌體不變。
+- 板子回 `==OTA_UART_OK==` 後重新開機，由 boot2 安裝，主控台接著印出 `[BOOT2] OTA ok` 與新韌體的開機訊息。
 
 ## 在 Reef 上動手做 { #hands-on }
 
@@ -130,9 +158,9 @@ CONFIG_IPRO_BLE_REMOTE_OTA=y
 
 2. **看懂應用如何暫存套件**
 
-    OTA 服務透過 boot2 的分割表 API 取得閒置的 FW 位置，把套件寫進去，CRC32 檢查通過後把該位置設為啟用：
+    OTA 服務透過 boot2 的分割表 API 取得閒置的 FW 位置，把套件寫進去；CRC32 檢查通過、OTA 元件確認套件標頭與 SHA-256 之後，才把該位置設為啟用：
 
-    ```c title="apps/bluetooth/ble/ipro_ble_remote/src/services/ota_service.c（節錄）"
+    ```c title="components/sys/ipro_ota/src/ipro_ota_ble.c（節錄）"
     static int ota_get_backup_partition(uint32_t *addr, uint32_t *size)
     {
         int ret = hal_boot2_partition_addr_inactive("FW", addr, size);
@@ -155,11 +183,18 @@ CONFIG_IPRO_BLE_REMOTE_OTA=y
         }
         /* 省略與 pt_entry.maxLen[] 比對大小的檢查 */
 
-    #if defined(CONFIG_IPRO7AI_REEF)
-        /* The Reef image runs under boot2 (partition_cfg_2M_remote_ab.toml): the
-         * slot holds an OTA package that boot2 checks and unpacks by its own
-         * header, so the entry length is not used. */
+    #if !defined(CONFIG_IPRO_OTA_BLE_RAW_IMAGE)
+        /* The image runs under boot2 (an A/B table such as
+         * partition_cfg_2M_remote_ab.toml): the slot holds an OTA package that boot2
+         * checks and unpacks by its own header, so the entry length is not used. */
         pt_entry.len = 0;
+        /* Before boot2 is told to install it, the OTA core checks the package's
+         * header and the SHA-256 of the payload read back from the slot. */
+        ret = ota_validate_flash(g_ota_ctx.backup_partition_addr, g_ota_ctx.firmware_size);
+        if (ret != OTA_PKG_OK) {
+            return OTA_SWITCH_NOT_A_PACKAGE;   /* message left out */
+        }
+        IPRO_LOGI(LOG_TAG, "[OTA] Package header and SHA-256 OK");
     #else
         pt_entry.len = g_ota_ctx.firmware_size;
     #endif
@@ -225,6 +260,7 @@ CONFIG_IPRO_BLE_REMOTE_OTA=y
     [OTA] Transfer complete: … bytes in … ms (… bytes/s)
     [OTA] END: CRC32=0x…, …/… bytes
     [OTA] CRC32 OK! Switching partition...
+    [OTA] Package header and SHA-256 OK
     [OTA] Ready to reboot
     [OTA] Rebooting...
     [BOOT2] IPRO7 Boot2 v0.6.0
@@ -249,16 +285,17 @@ CONFIG_IPRO_BLE_REMOTE_OTA=y
 | 路徑 | 說明 |
 |---|---|
 | IPRO6S FIN 卡韌體 | 以 `DEFCONFIG=defconfig_wifi_ipro6s` 建置的 `ipro7ai_reef_demo` 有主控台指令 `ipro6s_ota <http url>`：經 Wi-Fi 下載套件，再以 `ipronet_ota_update()`（`components/network/ipronet_host/ipronet_ota.h`）交給 FIN 卡，約需 30–60 秒，完成時主控台印出 `[ota] RESULT OK`。套件是 IntelProCube 產生、硬體版本為 IPRO6 的 `FW_OTA.bin.xz.ota`；其他晶片的套件在開始前就會被主機端拒絕。FIN 卡的韌體是以 `defconfig_ipro6_sdio` 建置的 `ipro6_if_wifi`，其中的 `CONFIG_RNM_OTA=y` 提供裝置端功能。見[網路](networking.md) |
-| 共用 OTA 程式 | `apps/platform/common/ota/`：把套件寫進閒置 FW 位置、檢查 SHA-256 並切換啟用索引的核心，UART（zmodem）與 USB CDC 接收端，以及 `ota_sig` 簽章檢查。隨附的組態都不會建置這些檔案，可作為自行實作接收端的參考 |
+| 自行實作接收端 | 用 OTA 元件的串流介面：`ota_get_fw_b()` 取得暫存區、`ota_sink_begin_ex()`／`ota_sink()`／`ota_sink_end()` 邊收邊寫並計算雜湊、`ota_validate()` 檢查、`ota_mark_fwb_active()` 切換分割表；簽章套件的檢查在 `ipro_ota_sig.h`（`CONFIG_IPRO_OTA_SIGNATURE`）。說明在 `components/sys/ipro_ota/README.md`。`apps/platform/common/ota/` 的 UART（zmodem）與 USB CDC 接收端也改用這個元件；隨附的組態都不會建置它們 |
 
 ## Zephyr：MCUboot 與 MCUmgr { #zephyr-mcuboot }
 
-Zephyr 映像不使用 boot2 套件，而是經 MCUboot 更新：boot2 啟動 MCUboot，由 MCUboot 從 `slot1_partition` 以 swap-move 換入新映像。範例 `zephyr/samples/ble_ota` 以 MCUmgr SMP 經 BLE 上傳映像。V2.2.1 的 Zephyr 只有 IPRO7 EVB 與 IPRO7AI EVK 的板子定義，沒有 Reef；建置與燒錄見 [Zephyr RTOS](zephyr.md)。
+Zephyr 映像不使用 boot2 套件，而是經 MCUboot 更新：boot2 啟動 MCUboot，由 MCUboot 從 `slot1_partition` 以 swap-move 換入新映像。範例 `zephyr/samples/ble_ota` 以 MCUmgr SMP 經 BLE 上傳映像。V2.3.0 的 Zephyr 只有 IPRO7 EVB 與 IPRO7AI EVK 的板子定義，沒有 Reef；建置與燒錄見 [Zephyr RTOS](zephyr.md)。
 
 ## 本版限制 { #limitations }
 
-- 簽章 OTA 套件（`create_ota.py --sign-key`）需要的 `tools/ota_products.py` 未包含於 V2.2.1。
+- 簽章 OTA 套件（`create_ota.py --sign-key`）需要的 `tools/ota_products.py` 未包含於 V2.3.0。
 - BLE OTA 的參考流程是 `ipro_ble_remote` 的 `defconfig_reef`；`ipro_ble_remote` 的預設建置不含 OTA。
+- 主控台 UART 的 OTA 只適用 IPRO7 的 boot2 套件（IPRO7、IPRO7AI）；IPRO6S 沒有 `ota_uart`。
 - 沒有經 Wi-Fi 或 Ethernet 更新 IPRO7 韌體的範例；`ipro6s_ota` 只更新 IPRO6S FIN 卡。
 - `build_freertos.sh flash` 無法指定 boot2 映像；支援 OTA 的映像第一次燒錄請如上使用 IntelProCube 命令列。
 - boot2 映像與標準分割表隨 IntelProCube 提供，不在 SDK 套件中。

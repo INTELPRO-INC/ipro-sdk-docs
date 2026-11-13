@@ -7,11 +7,48 @@ migrate_from:
 
 # Release Notes
 
-Official IPRO SDK releases, newest first; the current release is V2.2.1. Downloads and the release notes of each version are on [GitHub Releases](https://github.com/INTELPRO-INC/IPRO-SDK/releases); the SDK package itself is described in the `README.md` at its root. The Windows online installer, Online Setup, is listed here too (currently 3.6.0); it is downloaded from [ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest).
+Official IPRO SDK releases, newest first; the current release is V2.3.0. Downloads and the release notes of each version are on [GitHub Releases](https://github.com/INTELPRO-INC/IPRO-SDK/releases); the SDK package itself is described in the `README.md` at its root. The Windows online installer, Online Setup, is listed here too (currently 3.6.0); it is downloaded from [ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest).
+
+## IPRO-SDK-V2.3.0 { #v2-3-0 }
+
+<span class="ipro-badge">Latest</span> Released 2026-11-13 · [GitHub release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.3.0)
+
+IPRO7 / IPRO7AI and IPRO6S release: one OTA component for every transport, an open example for the IPRO7AI Sensor Tag with flashing over the board's own USB, and the IPRO6S build line. 41 FreeRTOS applications: 38 for IPRO7, 3 for IPRO6S. Use it with [IPRO Workbench 0.2.0](https://github.com/INTELPRO-INC/ipro-workbench/releases/tag/v0.2.0) (see [IPRO Workbench](../workbench/index.md)) and IntelProCube 0.7.0.1 or later.
+
+| Download | Size | SHA-256 |
+|---|---|---|
+| `IPRO-SDK-V2.3.0.tar.gz` | 163.4 MB | `0f39c1d2551be0aa748bfee6613ec3c8cb5cfa6b1cea310780f9d58ce216574b` |
+
+**New and changed**
+
+- **OTA component** `components/sys/ipro_ota` (`CONFIG_IPRO_OTA`): one package check for every transport. It reads the 512-byte OTA header, checks the SHA-256 of the image written to flash before the board switches to it, and erases each flash sector just before it is written. Two transports use it:
+    - **OTA over the console UART**: the shell command `ota_uart <bytes> [noapply]` (`CONFIG_IPRO_OTA_UART`). IPRO Workbench 0.2.0 sends a package to the board with it (OTA Package → Send to Board).
+    - **BLE OTA service** (UUID 0xFF60, `CONFIG_IPRO_OTA_BLE`): the service `ipro_ble_remote` had, now in the component. `ipro_ble_remote` (`defconfig_reef`) refuses a package whose SHA-256 does not match, and starts receiving in under half a second instead of about four (it no longer erases the whole slot first).
+
+    See `components/sys/ipro_ota/README.md`; the steps are in [OTA Updates](../guides/ota.md).
+- **`ipro7ai_sensor_tag_demo`** for the IPRO7AI Sensor Tag board: IMU (ISM330BX: acceleration, rotation, temperature), fuel gauge (CW2015), button, two LEDs and buzzer. It prints 20 lines a second of `name:value` pairs over the board's own USB, which the Sensor Dashboard of IPRO Workbench 0.2.0 lays out with the application's `dashboard.yaml`; shell commands `stream`, `rate`, `led`, `beep`. See [Examples](../examples/index.md).
+- **`tools/ipro_dl.py`**: flashes a board through boot2's USB downloader (Python standard library only, macOS and Linux). The Sensor Tag example is flashed with it; IPRO Workbench 0.2.0 on macOS uses it when Flash targets the board's own USB port.
+- **IPRO6S**: the boot prints a `Build:` line with the build date and time, as IPRO7 does, so IPRO Workbench can tell which firmware the board runs.
+- **IPRO6S Wi-Fi**: `wifi_ap_start -b 1 -o 1` keeps a 2.4 GHz access point on its 40 MHz channel even when neighbouring networks overlap it (`-b 1` alone still falls back to 20 MHz, as before).
+- **Fixed**: with DTIM power save, an access point whose beacon is sometimes late behind a neighbour's made the IPRO6S open its receiver too late and miss beacons; the receive window now stays on the on-time beacon.
+- `ipro6_demo` ships the configurations its prebuilt archives build: `defconfig_ipro6_lpwifi` and `defconfig_ipro6_lp`. `defconfig_ipro6_lpwifi_ping` (in V2.2.x) is no longer in the package: it needs the Wi-Fi library sources.
+- Package README: IPRO6S is described as Wi-Fi.
+
+**Applications**
+
+- 41 in all: 38 for IPRO7, 3 for IPRO6S. New since V2.2.1: `ipro7ai_sensor_tag_demo`.
+- Upgrading from V2.2.x: unpack the new package and rebuild your applications.
+
+Built and checked from the package before release: 37 FreeRTOS applications (`ipro_agora_sentino` once AOSL is fetched), all 7 shipped IPRO6S configurations, and the Zephyr sample matrix and `twister --build-only` for `ipro7_evb` and `ipro7ai_evk`. On boards: an IPRO6S EVK ran `ipro6_demo` (`defconfig_ipro6_lpwifi`) built with IPRO Workbench 0.2.0 and flashed with IntelProCube 0.7.0.1 (`partition_cfg_fw_direct.toml`), printed its `Build:` line and scanned the access points around it; an IPRO7AI Reef EVK V4.0 passed `reef selftest` with `ipro7ai_reef_demo` flashed with IntelProCube 0.7.0.1; an IPRO7AI Sensor Tag ran `ipro7ai_sensor_tag_demo` flashed over the board's own USB (from its console and from boot2's downloader, with `tools/ipro_dl.py` and with IPRO Workbench 0.2.0) and streamed its sensors at 20 lines a second.
+
+### Known issues { #v2-3-0-known-issues }
+
+- The [V2.2.0 known issues and notes](#v2-2-0-known-issues) still apply, except that `ipro6_demo/defconfig_ipro6_lpwifi_ping` is no longer in the package; `ipro6_fmac/defconfig_ipro6_fmac_ap` still has no prebuilt library set.
+- **Flashing over the board's own USB**: IPRO Workbench 0.2.0 supports it on macOS only; on Windows, use the IPRO Debug Probe.
 
 ## IPRO-SDK-V2.2.1 { #v2-2-1 }
 
-<span class="ipro-badge">Latest</span> Released 2026-11-10 · [GitHub release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.1)
+Released 2026-11-10 · [GitHub release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.1)
 
 Patch release of V2.2.0 with the same 40 FreeRTOS applications. The download is `IPRO-SDK-V2.2.1.tar.gz`; its SHA-256 is on the release page. The rest of the [V2.2.0 notes](#v2-2-0), its known issues included, applies to V2.2.1.
 
@@ -36,7 +73,7 @@ Dual-chip release for IPRO7 / IPRO7AI and IPRO6S, replacing V2.1.0. 40 FreeRTOS 
 
 **New and changed**
 
-- **IPRO6S applications are back**: `ipro6_demo` (Wi-Fi 6 station / soft-AP, DTIM low power), `ipro6_if_wifi` (Wi-Fi bridge to a host over SDIO or USB) and `ipro6_fmac` (FullMAC firmware and its flash loader). The Wi-Fi MAC, coexistence and RF libraries are prebuilt once per shipped `defconfig_*`, so each configuration links the libraries built for it. The firmware of the Reef's FIN Wi-Fi card is `ipro6_if_wifi` with `defconfig_ipro6_sdio`; see [IPRO6S](../hardware/chips/ipro6s.md).
+- **IPRO6S applications are back**: `ipro6_demo` (Wi-Fi station / soft-AP, DTIM low power), `ipro6_if_wifi` (Wi-Fi bridge to a host over SDIO or USB) and `ipro6_fmac` (FullMAC firmware and its flash loader). The Wi-Fi MAC, coexistence and RF libraries are prebuilt once per shipped `defconfig_*`, so each configuration links the libraries built for it. The firmware of the Reef's FIN Wi-Fi card is `ipro6_if_wifi` with `defconfig_ipro6_sdio`; see [IPRO6S](../hardware/chips/ipro6s.md).
 - **New application `ipro_reef_teach`**: Edge AI firmware for the IPRO7AI Reef EVK with three Teach tools: `image` (USB camera and classifier), `voice` (who is speaking) and `sensor` (any sensor). One mode is picked at boot, each with its own USB identity, driven from IPRO AI Studio; `tools/teach_web/` does image Teach in the browser. IPRO AI Studio is downloaded from [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest).
 - **IPRO Edge AI platform V2.0** in `components/ai`: runtime, a model store with one slot per tool, input sources, preprocessing and an application framework; a bounded NPU wait that resets the block and enters a fail-closed fault state; the Edge AI firmware arms the AON watchdog (download mode turns it off). The CPU layer graph no longer reads past the last layer record.
 - **Whole-chip reset**: `hal_reboot_full()` resets the whole chip through the AON watchdog, always-on domain included; with `CONFIG_APP_WATCHDOG`, `platform_init()` arms the watchdog from the start of the boot. `ipro_reef_teach` switches tools with it, which fixes a Reef with a camera hanging on the next boot after leaving `image` mode until it was reset.

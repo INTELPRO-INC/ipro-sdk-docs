@@ -67,6 +67,36 @@ If any step fails, the IDE stops at that step and shows an explanation with butt
 
 ![The New IPRO Application dialog with Start from, Board, name and category](../assets/workbench/new-app.svg)
 
+In 0.2.0, **Start from** has three more choices than the picture shows; the other fields are the same. The choices are:
+
+| Start from | Board | What you get |
+|---|---|---|
+| **Hello World for a board** | Any | The smallest application; it prints `Hello from <name>` |
+| **BLE peripheral for a board (GATT services from gatt.yaml)** | IPRO7 and IPRO7AI boards | A BLE peripheral that advertises: `gatt.yaml` with the `app_gatt.h` and `app_gatt.c` generated from it, and `app_ble.c` (Bluetooth bring-up, advertising, and what happens on a write). For **With OTA**, see below |
+| **Wi-Fi station for the IPRO6S EVK (a copy of ipro6_demo, Wi-Fi configuration)** | IPRO6S EVK | A copy of `ipro6_demo` whose `.config` is its Wi-Fi configuration; it runs [Wi-Fi throughput (iperf)](measure.md#iperf) as it is |
+| **AI vision for the IPRO7AI Reef (a copy of ipro7_uvc_cam: USB camera with a model on the NPU)** | IPRO7AI Reef EVK V4.0 | A copy of `ipro7_uvc_cam` whose `.config` is the rock-paper-scissors configuration `defconfig_reef_rps`; the plain webcam `defconfig_reef_ov5640` stays as a second [configuration](develop.md#configurations) |
+| **A copy of an existing application** | As the source | A copy of an application you pick, with every mention of its name changed to the new name |
+
+The Wi-Fi station and AI vision choices appear only when the SDK has `ipro6_demo` (with `defconfig_ipro6_lpwifi`) and `ipro7_uvc_cam` (with `defconfig_reef_rps`).
+
+### Create a BLE peripheral { #own-app-ble }
+
+<div class="ipro-steps" markdown>
+
+1. **Fill in the form.** In **New IPRO Application**, under **Start from**, choose **BLE peripheral for a board (GATT services from gatt.yaml)**; under **Board**, choose **IPRO7AI Reef**; enter `my_ble` as the name and click **Create**.
+
+    **You should see**: a notification "Created my_ble in user.", `user/my_ble` in the list, and in its folder `gatt.yaml`, `app_gatt.h`, `app_gatt.c`, `app_ble.c`, `main.c` and `README.md`.
+
+2. **Run it.** Click **Build, Flash and Monitor**.
+
+    **You should see**: `advertising as IPRO-my_ble` in IPRO Monitor. A BLE app on a phone (for example nRF Connect) finds `IPRO-my_ble`; once connected it shows the `demo` service with `counter` (read, notify: seconds since boot) and `message` (read, write: a text of up to 20 bytes, which the board prints when written).
+
+3. **Change the services.** Right-click the application and choose **GATT Configuration…**; see [Configuring GATT Services](develop.md#gatt).
+
+</div>
+
+**With OTA** (IPRO7AI boards only, SDK V2.3.0): with "With OTA: over BLE and the console UART, an A/B partition table, boot2 (2 MB boards)" checked, the application also gets the settings of the SDK's `ipro_ota` component (`CONFIG_IPRO_OTA`, `CONFIG_IPRO_OTA_BLE`, `CONFIG_IPRO_OTA_UART`) and the A/B partition table `partition_cfg_2M_ota_ab.toml`, which the IDE selects as its **Flash with** table. Flashing writes boot2 along with it; later updates go to the board as an [OTA package](flash.md#ota). When the SDK has no OTA component, the box cannot be checked, and its tooltip says "This SDK has no OTA component (components/sys/ipro_ota)."
+
 To start from an existing example, right-click the application in the list and choose **Copy as New Application…**, or choose **A copy of an existing application** under **Start from**. The new application goes into `apps/<category>/<name>` in the SDK.
 
 ## The application context menu { #app-menu }

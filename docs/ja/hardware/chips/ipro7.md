@@ -7,7 +7,7 @@ migrate_from:
 
 # IPRO7
 
-IPRO7 は INTELPRO の 2.4 GHz 低消費電力ワイヤレス SoC です。192 MHz の RISC-V RV32IMAFC コア、LE Audio 対応の Bluetooth 5.4、IEEE 802.15.4 無線、ISP、ハードウェア MJPEG を搭載しています。本 SDK リリースの 40 個のアプリケーションのうち 37 個が IPRO7 を対象としています。NPU を有効にしたバリアントである [IPRO7AI](ipro7ai.md) は、IPRO7AI Reef EVK のメインチップです。
+IPRO7 は INTELPRO の 2.4 GHz 低消費電力ワイヤレス SoC です。192 MHz の RISC-V RV32IMAFC コア、LE Audio 対応の Bluetooth 5.4、IEEE 802.15.4 無線、ISP、ハードウェア MJPEG を搭載しています。本 SDK リリースの 41 個のアプリケーションのうち 38 個が IPRO7 を対象としています。NPU を有効にしたバリアントである [IPRO7AI](ipro7ai.md) は、IPRO7AI Reef EVK のメインチップです。
 
 <div class="ipro-facts" markdown>
 <div><strong>192 MHz</strong><span>RISC-V RV32IMAFC</span></div>
@@ -58,7 +58,7 @@ IPRO7 は INTELPRO の 2.4 GHz 低消費電力ワイヤレス SoC です。192 M
 
 | 無線チップ | インターフェース | SDK 内の場所 |
 |---|---|---|
-| IPRO6S（Wi-Fi 6） | SDIO、lwIP ネットワークインターフェース `iproeth0` | `components/network/ipronet_host`。Reef では microSD スロットの FIN カードです。[IPRO6S](ipro6s.md) を参照 |
+| IPRO6S（Wi-Fi） | SDIO、lwIP ネットワークインターフェース `iproeth0` | `components/network/ipronet_host`。Reef では microSD スロットの FIN カードです。[IPRO6S](ipro6s.md) を参照 |
 | ATBM6162 | SDIO | `components/wireless/wifi_atbm6162`、`ipro_atbm_probe` |
 | AIC8800 | SDIO（ベンダー提供のビルド済みライブラリ） | `components/wireless/wifi_aic8800`、`ipro_agora_sentino` の `config_evk` |
 | ESP32 | UART AT コマンド | `components/network/esp32_wifi_at`、`ipro7_demo`（`CONFIG_ESP32_WIFI_AT`） |
@@ -124,14 +124,14 @@ AI と画像処理の両方を有効にすると（`CONFIG_AI_SUPPORT`、`CONFIG
 
 ## 本リリースでの SDK サポート { #sdk-support }
 
-| 項目 | V2.2.1 |
+| 項目 | V2.3.0 |
 |---|---|
-| FreeRTOS アプリケーション | 40 個のうち 37 個が IPRO7 対象：`CONFIG_IPRO7=y`、`CONFIG_CHIP="IPRO7"`、`CONFIG_CPU_ID="intelpro_ipro7"`。イメージは `<app>_IPRO7.bin` |
+| FreeRTOS アプリケーション | 41 個のうち 38 個が IPRO7 対象：`CONFIG_IPRO7=y`、`CONFIG_CHIP="IPRO7"`、`CONFIG_CPU_ID="intelpro_ipro7"`。イメージは `<app>_IPRO7.bin` |
 | Zephyr RTOS | Zephyr v4.4.0 モジュール。ボードは `ipro7_evb` と `ipro7ai_evk`。本リリースには Reef 用の Zephyr ボードはありません |
 | ツールチェーン | RISC-V GCC（`riscv64-unknown-elf-`、`rv32imafc` / `ilp32f`）。SDK には含まれていないため、INTELPRO から入手してください |
 | BLE | Zephyr v4.4.0 ホスト（ソース）を IPRO BLE コントローラー（ビルド済みライブラリ、IPRO7 用 16 ビルド：`link1_periph` / `link1` / `link2` / `link4` × `bt52` / `bt54_iso2` × debug / `_release`）上で使用 |
 | IEEE 802.15.4 / Thread | Zephyr RTOS のみ：IEEE 802.15.4 ドライバーと OpenThread |
-| Matter、Zigbee | V2.2.1 には含まれていません。INTELPRO にお問い合わせください。 |
+| Matter、Zigbee | V2.3.0 には含まれていません。INTELPRO にお問い合わせください。 |
 | 書き込み | IntelProCube 0.7.0.1 コマンドラインツール（[GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases)）：`--chipname ipro7`。Reef などの IPRO7AI ボードでは `--chip-variant IPRO7AI` を追加します |
 
 ## IPRO7 搭載ボード { #boards }

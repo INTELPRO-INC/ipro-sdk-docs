@@ -13,7 +13,7 @@ SDK の `tools/teach_web` は、IPRO AI Studio をインストールせずに使
 - Reef の USB-C とコンピューターを接続する USB-C データケーブル。ボードへの電源供給と、映像とモデルの両方の転送に使います。
 - Chrome または Edge（Web Serial に対応しています。Safari と Firefox は非対応です）。
 - Python 3.8 以降。このコンピューターでページを配信するためだけに使います。
-- SDK V2.2.1：`tools/teach_web/`。
+- SDK V2.3.0：`tools/teach_web/`。
 
 ## ページの起動 { #start }
 

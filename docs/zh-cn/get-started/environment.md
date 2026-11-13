@@ -25,45 +25,51 @@ migrate_from:
 
 <div class="ipro-steps" markdown>
 
-1. **下载**：从 [IPRO-SDK-V2.2.1 Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.1) 下载 `IPRO-SDK-V2.2.1.tar.gz`，并记下页面上公布的 SHA-256 值。
+1. **下载**：从 [IPRO-SDK-V2.3.0 Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.3.0) 下载 `IPRO-SDK-V2.3.0.tar.gz`，并记下页面上公布的 SHA-256 值。
 
 2. **校验**：计算下载文件的 SHA-256。
 
     === "macOS"
 
         ```bash
-        shasum -a 256 IPRO-SDK-V2.2.1.tar.gz
+        shasum -a 256 IPRO-SDK-V2.3.0.tar.gz
         ```
 
     === "Linux"
 
         ```bash
-        sha256sum IPRO-SDK-V2.2.1.tar.gz
+        sha256sum IPRO-SDK-V2.3.0.tar.gz
         ```
 
     === "Windows"
 
         ```powershell
-        Get-FileHash .\IPRO-SDK-V2.2.1.tar.gz -Algorithm SHA256
+        Get-FileHash .\IPRO-SDK-V2.3.0.tar.gz -Algorithm SHA256
         ```
 
-    屏幕输出 64 个十六进制字符，应与 Release 页面公布的值完全相同（不区分大小写）。不同时请重新下载。
+    屏幕输出 64 个十六进制字符，应与 Release 页面公布的值完全相同（不区分大小写）。V2.3.0 的值是：
+
+    ```text
+    0f39c1d2551be0aa748bfee6613ec3c8cb5cfa6b1cea310780f9d58ce216574b  IPRO-SDK-V2.3.0.tar.gz
+    ```
+
+    不同时请重新下载。
 
 3. **解压并确认版本**：解压到新的目录，不要覆盖旧版 SDK。
 
     === "macOS／Linux"
 
         ```bash
-        tar xzf IPRO-SDK-V2.2.1.tar.gz
-        cd IPRO-SDK-V2.2.1
+        tar xzf IPRO-SDK-V2.3.0.tar.gz
+        cd IPRO-SDK-V2.3.0
         cat VERSION.txt
         ```
 
     === "Windows"
 
         ```powershell
-        tar -xzf .\IPRO-SDK-V2.2.1.tar.gz
-        Get-Content .\IPRO-SDK-V2.2.1\VERSION.txt
+        tar -xzf .\IPRO-SDK-V2.3.0.tar.gz
+        Get-Content .\IPRO-SDK-V2.3.0\VERSION.txt
         ```
 
     `VERSION.txt` 的内容：
@@ -71,14 +77,14 @@ migrate_from:
     ```text
     IPRO SDK Release
     ========================================
-    IPRO7: IPRO-SDK-V2.2.1
-    IPRO6: IPRO-SDK-V2.2.1
+    IPRO7: IPRO-SDK-V2.3.0
+    IPRO6: IPRO-SDK-V2.3.0
 
-    Release Date: 2026-11-10
-    Base Commit: 60afd4ab
+    Release Date: 2026-11-13
+    Base Commit: …
     ```
 
-    解压出的 `IPRO-SDK-V2.2.1/` 就是 SDK 根目录（本站写作 `<SDK>`），其中包含 `apps/`、`bsp/`、`components/`、`build_freertos.sh` 与 `VERSION.txt`。
+    解压出的 `IPRO-SDK-V2.3.0/` 就是 SDK 根目录（本站写作 `<SDK>`），其中包含 `apps/`、`bsp/`、`components/`、`build_freertos.sh` 与 `VERSION.txt`。
 
 </div>
 

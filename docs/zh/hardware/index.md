@@ -16,7 +16,7 @@ migrate_from: []
 
     ---
 
-    RISC-V RV32IMAFC、BLE 5.4 與 LE Audio、IEEE 802.15.4、ISP 與硬體 MJPEG；本版 37 個應用的目標晶片。
+    RISC-V RV32IMAFC、BLE 5.4 與 LE Audio、IEEE 802.15.4、ISP 與硬體 MJPEG；本版 38 個應用的目標晶片。
 
 -   :material-brain:{ .lg } **[IPRO7AI](chips/ipro7ai.md)**
 
@@ -28,7 +28,7 @@ migrate_from: []
 
     ---
 
-    內建 Wi-Fi 6 的 RISC-V SoC。本版隨附三個 IPRO6S Wi-Fi 應用；在 Reef 上它是插在 microSD 卡座的 FIN Wi-Fi 卡。
+    內建 Wi-Fi 的 RISC-V SoC。本版隨附三個 IPRO6S Wi-Fi 應用；在 Reef 上它是插在 microSD 卡座的 FIN Wi-Fi 卡。
 
 </div>
 

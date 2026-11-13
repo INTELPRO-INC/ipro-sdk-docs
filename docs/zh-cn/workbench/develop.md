@@ -38,6 +38,42 @@ description: 编写代码时最常用的 IPRO Workbench 视图：配置（Kconfi
 - 勾选 **Show hidden options**，查看依赖条件未满足的选项：menuconfig 会隐藏它们，但构建仍会读取。
 - 如果更喜欢文本界面，可右键选择 **Menuconfig**，在终端中编辑同样的配置；选择 **Open .config** 可直接编辑该文件。
 
+## 配置文件 { #configurations }
+
+有些应用程序除了 `.config`，还附带供其他开发板或用途使用的配置文件 `defconfig_<名称>` 或 `config_<名称>`。IDE 会列出这些文件，选择哪一个就以它构建：构建结果放在应用程序文件夹的 `build_<名称>` 中（`config_<名称>` 对应 `build_config_<名称>`），与命令行 `make DEFCONFIG=<文件>` 使用的是同一个文件夹，应用程序自己的 `.config` 不会被修改。配置（Kconfig）、引脚配置和 GATT 配置读写的也是所选的文件。
+
+下面以 `ipro7_uvc_cam` 为例，它的 `.config` 用于 IPRO7 EVB，另有两个用于 IPRO7AI Reef EVK V4.0 的配置文件。
+
+<div class="ipro-steps" markdown>
+
+1. **选择应用程序。** 在侧边栏的 **Applications** 下点击 **ipro7_uvc_cam**（位于 `multimedia` 类别）。
+
+    **应看到**：状态栏中应用程序名称旁边多了一个齿轮和 `.config`，表示当前以 `.config` 构建。应用程序没有其他配置文件时，状态栏不显示这一项。
+
+2. **打开配置文件列表。** 点击状态栏中的 `.config`（或 IPRO 菜单中的 **Select Configuration…**，命令面板中的 `IPRO: Select Configuration…`）。
+
+    **应看到**：列表上方提示“Select the configuration ipro7_uvc_cam builds from”，列出 `.config`、`defconfig_reef_ov5640` 和 `defconfig_reef_rps`；每一行写有芯片和开发板（例如 `IPRO7 · IPRO7AI Reef`），下一行为“Built in build”或“Not built yet; builds in build_reef_rps”。当前使用的配置文件前面有勾选标记。
+
+3. **选择配置文件。** 选择 `defconfig_reef_rps`。
+
+    **应看到**：通知“ipro7_uvc_cam now builds for IPRO7AI Reef (defconfig_reef_rps).”，状态栏变为 `defconfig_reef_rps`，工具栏上的开发板变为 IPRO7AI Reef（开发板由应用程序的配置决定，请参阅[设置](reference.md#settings)中的 `ipro.board.id`）。所选配置文件的开发板与原来相同时，不会出现这条通知。
+
+4. **构建。** 点击 **Build**。
+
+    **应看到**：**IPRO Build** 的开头有一行 `Configuration: defconfig_reef_rps -> …/build_reef_rps/.config`，固件位于 `build_reef_rps/build_out/`。IDE 将所选文件复制到构建文件夹中作为 `.config`，应用程序文件夹中的 `.config` 保持不变。
+
+5. **切换回来。** 再次点击状态栏中的这一项，选择 `.config`。
+
+    **应看到**：状态栏恢复为 `.config`，之后的构建和烧录都使用 `build` 文件夹。
+
+</div>
+
+!!! note
+    - 只有 `defconfig_*` 而没有 `.config` 的应用程序（例如 `ipro6_fmac`）现在也会列在 **Applications** 中，默认使用与应用程序同名的配置文件，没有时使用第一个。
+    - 应用程序只有一个配置文件时，**Select Configuration…** 只会提示“&lt;application&gt; has one configuration: .config.”
+    - 选择了配置文件之后，**Clean** 删除的是该配置文件的构建文件夹。
+    - IDE 会记住每个应用程序所选的配置文件，重启后依然有效。
+
 ## 配置引脚 { #pins }
 
 **Pin Configuration** 在封装图和表格中指定每个 GPIO 的功能，检查冲突以及与开发板接线是否一致，并生成初始化代码 `app_pins.h` 和 `app_pins.c`。
@@ -181,7 +217,7 @@ description: 编写代码时最常用的 IPRO Workbench 视图：配置（Kconfi
 |---|---|
 | **Build** | 一般情况。只重新编译有变化的文件。 |
 | **Reconfigure and Build** | 修改 `CMakeLists.txt` 或构建类型之后；重新运行 CMake 配置。 |
-| **Clean** | 删除应用程序的 `build` 文件夹，下次构建从头开始。 |
+| **Clean** | 删除应用程序的 `build` 文件夹（选择了[配置文件](#configurations)时为该配置文件的构建文件夹），下次构建从头开始。 |
 
 构建类型（Debug / Release / MinSizeRel）通过 `ipro.build.profile` 设置项选择；请参阅[设置](reference.md#settings)。
 

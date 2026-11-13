@@ -12,7 +12,7 @@ description: Edge AI ファームウェア ipro_reef_teach の入手またはビ
 - IPRO7AI Reef EVK V4.0 と、Reef の USB-C（USB1）に接続するデータケーブル。書き込み中のボードへの電源供給もこのケーブルで行います。
 - IPRO Debug Probe。USB-C ケーブルでコンピューターに、両端のピン順が逆になった SH1.0 6 ピンケーブルで Reef の U6 に接続します。[デバッグコネクター U6](../hardware/boards/reef-evk.md#debug-connector) を参照してください。プローブは Reef に電源を供給しません。
 - IntelProCube 0.7.0.1 コマンドライン書き込みツール（`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe`）。ツール自身のディレクトリから実行します。インストール方法は[開発環境の準備](../get-started/environment.md#intelprocube)を参照してください。
-- ファームウェアのファイル：IPRO Edge AI パッケージの `firmware/` フォルダー、または SDK V2.2.1 からのビルド（[ツールチェーン](../get-started/environment.md)と Python 3 が必要）。
+- ファームウェアのファイル：IPRO Edge AI パッケージの `firmware/` フォルダー、または SDK V2.3.0 からのビルド（[ツールチェーン](../get-started/environment.md)と Python 3 が必要）。
 
 ![Reef、IPRO Debug Probe、コンピューターの接続：USB-C データケーブルは電源と Teach ツール、U6 のプローブは書き込みとコンソールを担います](../assets/teach/reef-connect.svg)
 

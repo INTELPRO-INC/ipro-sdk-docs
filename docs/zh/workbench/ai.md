@@ -21,6 +21,14 @@ AI 功能預設關閉。使用前：
 
 功能還沒開啟時，按下面任何一個「請 AI…」按鈕，IDE 會先提示「AI 功能目前關閉…」，按 **開啟 AI 功能** 即可。
 
+AI 功能開了、但還沒有可用的語言模型時，按「請 AI…」按鈕，IDE 會先提示「IPRO 助理還沒有可用的語言模型。請先設定一個：模型供應商的 API 金鑰（Anthropic、OpenAI、Google…）、GitHub Copilot，或在這台電腦上執行的模型（Ollama）。也可以改問 Claude Code 助理，它使用你的 Claude Code 登入。」並提供三個按鈕：
+
+| 按鈕 | 作用 |
+|---|---|
+| **設定模型** | 開啟 AI 的模型設定 |
+| **改用 Claude Code** | 把設定 `ipro.ai.assistant` 改成 `claudeCode`，之後的請求交給 Claude Code 助理。接著提示「「請 AI 修」現在會交給 Claude Code 助理（ipro.ai.assistant 設定）。這台電腦需要有 Claude Agent SDK；要使用 IPRO 工具還需要 MCP 連線：「連接…」會複製指令。」，按 **連接…** 即可複製（見[讓 IDE 外的 AI 助理使用 IDE](#mcp)） |
+| **仍然詢問** | 照樣把請求送出 |
+
 ## 請 AI 修正建置錯誤 { #fix-build }
 
 <div class="ipro-steps" markdown>
@@ -72,4 +80,4 @@ IPRO Workbench 開著時，會在這台電腦上提供一個 MCP 伺服器，讓
     - 權杖存在家目錄的 `.ipro-ide/mcp.json`，只有你的帳號能讀。複製出來的設定含有權杖，不要貼到公開的地方。
     - 不需要時，在設定關閉 `ipro.mcp.enabled`。
 
-MCP 提供的工具見 [MCP 工具一覽](reference.md#mcp-tools)。
+除了建置、燒錄、讀監看與修改設定，IDE 外的 AI 助理也能開啟 SDK 資料夾、選擇開發板、連接埠與[設定檔](develop.md#configurations)、開關序列埠監看，並在板子的主控台上輸入一行指令再讀回板子的回應。MCP 提供的工具見 [MCP 工具一覽](reference.md#mcp-tools)。

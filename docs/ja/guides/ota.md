@@ -1,18 +1,19 @@
 ---
 title: "OTA アップデート"
-description: FreeRTOS の boot2 用 OTA パッケージと A/B パーティションテーブル、ipro_ble_remote による IPRO7AI Reef EVK の BLE 経由の更新、IPRO6S FIN カードの Wi-Fi 経由の更新、Zephyr での MCUboot の位置付け
+description: FreeRTOS の boot2 用 OTA パッケージと A/B パーティションテーブル、OTA コンポーネント ipro_ota、ipro_ble_remote による IPRO7AI Reef EVK の BLE またはコンソール UART 経由の更新、IPRO6S FIN カードの Wi-Fi 経由の更新、Zephyr での MCUboot の位置付け
 migrate_from:
   - "tools-debugging.html#ota-package"
 ---
 
 # OTA アップデート
 
-FreeRTOS アプリケーションでは、更新は boot2 が行います。動作中のアプリケーションが OTA パッケージをパーティションテーブルの空いている FW スロットに書き込み、アクティブインデックスを切り替えます。再起動後、boot2 がパッケージを検査して実行スロットに展開し、起動します。SDK には、パッケージ作成ツール `tools/create_ota.py` と、IPRO7AI Reef EVK を BLE で更新する完全なリファレンスが含まれています。リファレンスは、`defconfig_reef` でビルドした `ipro_ble_remote`、その A/B パーティションテーブル、パッケージ作成スクリプト、Python の送信ツール、Android アプリで構成されます。
+FreeRTOS アプリケーションでは、更新は boot2 が行います。動作中のアプリケーションが OTA パッケージをパーティションテーブルの空いている FW スロットに書き込み、アクティブインデックスを切り替えます。再起動後、boot2 がパッケージを検査して実行スロットに展開し、起動します。SDK には、パッケージ作成ツール `tools/create_ota.py`、すべての転送方式で共通の OTA コンポーネント `components/sys/ipro_ota`（V2.3.0 以降）、IPRO7AI Reef EVK を BLE で更新する完全なリファレンスが含まれています。リファレンスは、`defconfig_reef` でビルドした `ipro_ble_remote`、その A/B パーティションテーブル、パッケージ作成スクリプト、Python の送信ツール、Android アプリで構成されます。
 
 !!! abstract "要点"
     - リファレンス：`ipro_ble_remote` の `defconfig_reef` + `partition_cfg_2M_remote_ab.toml` + boot2 v0.6.0（IntelProCube に同梱）。デフォルトの `.config` には OTA がありません。
     - パッケージ：`tools/create_ota.py` が IntelProCube で結合した `whole_img.bin` を `.xz.ota`（512 バイトのヘッダー + XZ ペイロード）にまとめます。Reef 向けには `make_reef_ota.sh` が両方の手順を実行します。
-    - 送信側：`tools/reef_ota.py`（Python、bleak）または `ipro_remote_demo.apk`（Android）。BLE OTA サービス 0xFF60 を使います。
+    - コンポーネント：`components/sys/ipro_ota`（`CONFIG_IPRO_OTA`）は、パーティションテーブルを切り替える前に、Flash に書き込まれたパッケージのヘッダーと SHA-256 を検査します。転送方式は BLE OTA サービス 0xFF60（`CONFIG_IPRO_OTA_BLE`）とコンソール UART のコマンド `ota_uart`（`CONFIG_IPRO_OTA_UART`）です。
+    - 送信側：BLE では `tools/reef_ota.py`（Python、bleak）または `ipro_remote_demo.apk`（Android）、コンソール UART では IPRO Workbench 0.2.0 の OTA Package ページ。
     - IPRO6S FIN カードは、`defconfig_wifi_ipro6s` でビルドした `ipro7ai_reef_demo` の `ipro6s_ota <http url>` で Wi-Fi 経由で更新します。
     - Reef では標準の `partition_cfg_2M.toml` で OTA を実行しないでください。含まれないもの：署名付きパッケージの製品設定（`tools/ota_products.py`）。
 
@@ -25,13 +26,13 @@ sequenceDiagram
   participant F as Flash
   participant B as boot2
   H->>A: BLE OTA サービス 0xFF60：START、データ、END
-  A->>F: FW A[1]（ステージング）に書き込み、CRC32 を検査
+  A->>F: FW A[1]（ステージング）に書き込み、CRC32、パッケージのヘッダーと SHA-256 を検査
   A->>F: activeIndex = 1、再起動
   B->>F: パッケージの SHA-256 を検査し、FW A[0] に展開
   B->>A: activeIndex をリセットし、FW A[0] から起動
 ```
 
-`ipro_ble_remote` の README によると、boot2 はパッケージが SHA-256 の検査に合格してから実行スロットを消去します。検査に失敗したパッケージでは boot2 が USB レスキューモードのままになり、既存の実行スロットはそのまま残ります。
+V2.3.0 以降、アプリケーションはパーティションテーブルを切り替える前に、OTA コンポーネントでステージングスロットを読み戻し、パッケージのヘッダーと SHA-256 を検査します。誤って送った `.bin` や転送中に壊れたパッケージは、次回の起動時ではなくこの時点で拒否されます。`ipro_ble_remote` の README によると、boot2 はパッケージが SHA-256 の検査に合格してから実行スロットを消去します。検査に失敗したパッケージでは boot2 が USB レスキューモードのままになり、既存の実行スロットはそのまま残ります。
 
 ## パーティションテーブルと A/B レイアウト { #partitions }
 
@@ -79,7 +80,7 @@ python3 <SDK>/tools/create_ota.py chips/ipro7/img_create_iot/whole_img.bin \
 | `--raw` | 圧縮しません。`-o` を省略すると、出力ファイル名は入力ファイル名の拡張子を `.ota`（`--raw` の場合）または `.xz.ota` に置き換えたものになります |
 | `-o FILE` | 出力ファイル |
 | `--hw-ver`、`--fw-ver` | ヘッダーに書き込むハードウェアとファームウェアのバージョン文字列（それぞれ最大 15 文字）。boot2 はハードウェアバージョンを検査しません |
-| `--sign-key`、`--product`、`--hw-id`、`--fw-version`、`--force-version`、`--key-id` | 署名付きパッケージ用。V2.2.1 に含まれていない `tools/ota_products.py` が必要なため、使用できません |
+| `--sign-key`、`--product`、`--hw-id`、`--fw-version`、`--force-version`、`--key-id` | 署名付きパッケージ用。V2.3.0 に含まれていない `tools/ota_products.py` が必要なため、使用できません |
 
 | ヘッダーのオフセット | 内容 |
 |---|---|
@@ -103,7 +104,12 @@ CONFIG_IPRO7_FLASH_2M=y
 CONFIG_LINK_FLASH=y
 CONFIG_PARTITION=y
 CONFIG_IPRO_BLE_REMOTE_OTA=y
+CONFIG_IPRO_OTA=y
+CONFIG_IPRO_OTA_BLE=y
+CONFIG_IPRO_OTA_UART=y
 ```
+
+V2.3.0 以降、OTA サービスは OTA コンポーネント（`components/sys/ipro_ota/src/ipro_ota_ble.c`）が提供し、`ipro_ble_remote` の `include/ota_service.h` は `ipro_ota_ble.h` に転送するだけです。同じイメージにはコンソール UART のコマンド `ota_uart` もあります。[コンソール UART での更新](#uart-ota)を参照してください。
 
 サービスとそのキャラクタリスティック（アプリ開発者向けの詳しい説明は `apps/bluetooth/ble/ipro_ble_remote/OTA_IMPLEMENTATION_GUIDE.md` にあります）：
 
@@ -114,9 +120,31 @@ CONFIG_IPRO_BLE_REMOTE_OTA=y
 | OTA Status | `0xFF63` | Read、Notify | ステータス、エラーコード、進捗 %、予約 u16。ステータスは 0 アイドル、1 受信中、2 検証中、3 準備完了、4 完了（REBOOT を送信）、0xFF エラー |
 
 - `.bin` ではなく `.xz.ota` パッケージを送信します。CRC32 は、送信したファイル全体に対する標準の CRC-32（`zlib.crc32` と同じ）です。
-- START の後、デバイスはステージングスロットを消去します。ステータスが 1（受信中）になってからデータを送信してください。
+- START の後、ステータスが 1（受信中）になってからデータを送信してください。V2.3.0 以降、デバイスはステージングスロット全体を先に消去するのではなく、4 KB ごとに書き込む直前に消去するため、START から 0.5 秒未満で受信を開始します（V2.2.x では約 4 秒）。
+- END での CRC32 検査の後、デバイスはパッケージのヘッダーと SHA-256 も検査します。一致しない場合、ステータスは 0xFF（エラー）になり、パーティションテーブルは切り替わりません。
 - デバイスは最大 20 パケットをキューに入れ、到着した順に Flash に書き込みます。送信側でペースを調整しないと（`reef_ota.py` は 8 パケットごとに OTA Status を読み出します）、パケットが失われ、END がエラーを返します。
 - 先に大きな MTU をネゴシエートしてください。README では、接続後に MTU 513 以上を要求することを推奨しています。
+
+## コンソール UART での更新（ota_uart） { #uart-ota }
+
+V2.3.0 以降、`CONFIG_IPRO_OTA_UART=y` でビルドしたアプリケーションにはシェルコマンド `ota_uart <パッケージのバイト数> [noapply]` があります。コンソール UART で `.xz.ota` パッケージを受信するため、2 つ目の UART もボーレートの変更も、アプリケーション側のコードも不要です。`ipro_ble_remote` の `defconfig_reef` で有効になっています。ボードには、boot2 と 2 つ目の FW スロットを持つパーティションテーブル（`partition_cfg_2M_remote_ab.toml` など）を書き込んでおく必要があります。
+
+最も簡単な送信側は IPRO Workbench 0.2.0 の **OTA Package** ページです。パッケージを作成して **Send to Board** を押すか、**Check on Board** を押してインストールせずにボードでパッケージを検査させます。手順は IPRO Workbench の [OTA Package](../workbench/flash.md#ota)にあります。115200 baud では、200 KB に約 22 秒かかります。
+
+独自の送信側を作る場合のプロトコルは次のとおりです（整数はリトルエンディアン。CRC は seq、len、ペイロードに対する CRC-16/CCITT-FALSE）。
+
+```text title="ota_uart プロトコル（components/sys/ipro_ota/README.md）"
+ホスト：ota_uart 200776
+ボード：==OTA_UART_READY:1024==                  受け付ける最大ペイロード
+ホスト：A5 5A  seq(u16)  len(u16)  ペイロード  crc16   1 フレーム送って待つ
+ボード：A5 06  seq(u16)                           受信済み。A5 15 seq：再送要求
+ボード：==OTA_UART_OK==                           検査済み、切り替え済み、再起動
+        ==OTA_UART_FAIL:<理由>==
+```
+
+- コマンドラインは 1 文字ずつ送信してください。1 回でまとめて届いた行はシェルが破棄します。
+- `noapply` を付けると、ボードはパッケージの受信と検査を終えた時点で止まり、パーティションテーブルを切り替えません。パッケージはステージングスロットに残り、実行中のファームウェアは変わりません。
+- `==OTA_UART_OK==` の後、ボードは再起動し、boot2 がパッケージをインストールします。続いてコンソールに `[BOOT2] OTA ok` と新しいファームウェアの起動が表示されます。
 
 ## Reef でのハンズオン { #hands-on }
 
@@ -130,9 +158,9 @@ CONFIG_IPRO_BLE_REMOTE_OTA=y
 
 2. **アプリケーションがパッケージをステージングする方法を読む**
 
-    OTA サービスは boot2 のパーティション API に非アクティブな FW スロットを問い合わせ、そこにパッケージを書き込み、CRC32 の検査後にそのスロットをアクティブにします。
+    OTA サービスは boot2 のパーティション API に非アクティブな FW スロットを問い合わせ、そこにパッケージを書き込みます。CRC32 の検査と、OTA コンポーネントによるパッケージのヘッダーと SHA-256 の検査が済んでから、そのスロットをアクティブにします。
 
-    ```c title="apps/bluetooth/ble/ipro_ble_remote/src/services/ota_service.c（抜粋）"
+    ```c title="components/sys/ipro_ota/src/ipro_ota_ble.c（抜粋）"
     static int ota_get_backup_partition(uint32_t *addr, uint32_t *size)
     {
         int ret = hal_boot2_partition_addr_inactive("FW", addr, size);
@@ -155,11 +183,18 @@ CONFIG_IPRO_BLE_REMOTE_OTA=y
         }
         /* pt_entry.maxLen[] とのサイズ比較は省略 */
 
-    #if defined(CONFIG_IPRO7AI_REEF)
-        /* The Reef image runs under boot2 (partition_cfg_2M_remote_ab.toml): the
-         * slot holds an OTA package that boot2 checks and unpacks by its own
-         * header, so the entry length is not used. */
+    #if !defined(CONFIG_IPRO_OTA_BLE_RAW_IMAGE)
+        /* The image runs under boot2 (an A/B table such as
+         * partition_cfg_2M_remote_ab.toml): the slot holds an OTA package that boot2
+         * checks and unpacks by its own header, so the entry length is not used. */
         pt_entry.len = 0;
+        /* Before boot2 is told to install it, the OTA core checks the package's
+         * header and the SHA-256 of the payload read back from the slot. */
+        ret = ota_validate_flash(g_ota_ctx.backup_partition_addr, g_ota_ctx.firmware_size);
+        if (ret != OTA_PKG_OK) {
+            return OTA_SWITCH_NOT_A_PACKAGE;   /* message left out */
+        }
+        IPRO_LOGI(LOG_TAG, "[OTA] Package header and SHA-256 OK");
     #else
         pt_entry.len = g_ota_ctx.firmware_size;
     #endif
@@ -225,6 +260,7 @@ CONFIG_IPRO_BLE_REMOTE_OTA=y
     [OTA] Transfer complete: … bytes in … ms (… bytes/s)
     [OTA] END: CRC32=0x…, …/… bytes
     [OTA] CRC32 OK! Switching partition...
+    [OTA] Package header and SHA-256 OK
     [OTA] Ready to reboot
     [OTA] Rebooting...
     [BOOT2] IPRO7 Boot2 v0.6.0
@@ -249,16 +285,17 @@ CONFIG_IPRO_BLE_REMOTE_OTA=y
 | 経路 | 詳細 |
 |---|---|
 | IPRO6S FIN カードのファームウェア | `DEFCONFIG=defconfig_wifi_ipro6s` でビルドした `ipro7ai_reef_demo` には、コンソールコマンド `ipro6s_ota <http url>` があります。Wi-Fi でパッケージをダウンロードし、`ipronet_ota_update()`（`components/network/ipronet_host/ipronet_ota.h`）で FIN カードに渡します。所要時間は約 30～60 秒で、最後にコンソールに `[ota] RESULT OK` と表示されます。パッケージは、ハードウェアバージョンが IPRO6 の IntelProCube の `FW_OTA.bin.xz.ota` です。ほかのチップ向けのパッケージは、開始前にホストが拒否します。FIN カードのファームウェアは `defconfig_ipro6_sdio` でビルドした `ipro6_if_wifi` で、その `CONFIG_RNM_OTA=y` がデバイス側の処理を提供します。[ネットワーク](networking.md)を参照してください |
-| 共通の OTA コード | `apps/platform/common/ota/`：パッケージを非アクティブな FW スロットに書き込み、SHA-256 を検査してアクティブインデックスを切り替えるコア、UART（zmodem）と USB CDC の受信部、`ota_sig` の署名検査。同梱の設定でこれらのファイルをビルドするものはありません。独自の受信部を作る際のリファレンスとして使用してください |
+| 独自の受信部 | OTA コンポーネントのストリームインターフェースを使います。`ota_get_fw_b()` でステージングスロットを取得し、`ota_sink_begin_ex()`／`ota_sink()`／`ota_sink_end()` でデータの到着に合わせて書き込みとハッシュ計算を行い、`ota_validate()` で検査し、`ota_mark_fwb_active()` でパーティションテーブルを切り替えます。署名付きパッケージは `ipro_ota_sig.h`（`CONFIG_IPRO_OTA_SIGNATURE`）で検査します。`components/sys/ipro_ota/README.md` を参照してください。`apps/platform/common/ota/` の UART（zmodem）と USB CDC の受信部もこのコンポーネントを使うようになりました。同梱の設定でこれらをビルドするものはありません |
 
 ## Zephyr：MCUboot と MCUmgr { #zephyr-mcuboot }
 
-Zephyr のイメージは、boot2 のパッケージではなく MCUboot で更新します。boot2 が MCUboot を起動し、MCUboot が `slot1_partition` から新しいイメージを入れ替えます（swap-move）。サンプル `zephyr/samples/ble_ota` は、MCUmgr SMP で BLE 経由でイメージをアップロードします。V2.2.1 の Zephyr には IPRO7 EVB と IPRO7AI EVK のボード定義しかなく、Reef のボード定義はありません。ビルドと書き込みについては [Zephyr RTOS](zephyr.md) を参照してください。
+Zephyr のイメージは、boot2 のパッケージではなく MCUboot で更新します。boot2 が MCUboot を起動し、MCUboot が `slot1_partition` から新しいイメージを入れ替えます（swap-move）。サンプル `zephyr/samples/ble_ota` は、MCUmgr SMP で BLE 経由でイメージをアップロードします。V2.3.0 の Zephyr には IPRO7 EVB と IPRO7AI EVK のボード定義しかなく、Reef のボード定義はありません。ビルドと書き込みについては [Zephyr RTOS](zephyr.md) を参照してください。
 
 ## 本リリースの制限事項 { #limitations }
 
-- 署名付き OTA パッケージ（`create_ota.py --sign-key`）に必要な `tools/ota_products.py` は V2.2.1 に含まれていません。
+- 署名付き OTA パッケージ（`create_ota.py --sign-key`）に必要な `tools/ota_products.py` は V2.3.0 に含まれていません。
 - BLE OTA のリファレンスフローは `ipro_ble_remote` の `defconfig_reef` です。`ipro_ble_remote` のデフォルトのビルドには OTA がありません。
+- コンソール UART での OTA は IPRO7 の boot2 パッケージ（IPRO7、IPRO7AI）専用です。IPRO6S には `ota_uart` がありません。
 - IPRO7 のファームウェアを Wi-Fi やイーサネットで更新するサンプルはありません。`ipro6s_ota` が更新するのは IPRO6S FIN カードだけです。
 - `build_freertos.sh flash` では boot2 のイメージを渡せません。OTA に対応したイメージの最初の書き込みは、上記のとおり IntelProCube のコマンドラインで行ってください。
 - boot2 のイメージと標準のパーティションテーブルは、SDK パッケージではなく IntelProCube に同梱されています。

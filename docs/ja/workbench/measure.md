@@ -1,6 +1,6 @@
 ---
 title: "テストと測定"
-description: IPRO Workbench で、ボード上で Unity テストを実行して Testing ビューで結果を確認し、Direct Test Mode で BLE の RF を測定し、iperf で Wi-Fi スループットを測定し、PPK2 の消費電力の記録を電池寿命の見積もりとともに解析します。
+description: IPRO Workbench で、ボード上で Unity テストを実行して Testing ビューで結果を確認し、Direct Test Mode で BLE の RF を測定し、iperf で Wi-Fi スループットを測定して IPRO6S の Wi-Fi メモリプロファイルを設定し、PPK2 の消費電力の記録を電池寿命の見積もりとともに解析します。
 ---
 
 # テストと測定
@@ -65,12 +65,12 @@ description: IPRO Workbench で、ボード上で Unity テストを実行して
 
 **Wi-Fi throughput** は、このコンピューターとボードの間で TCP の iperf テストを実行し、Wi-Fi スループットを測定します。コンピューター側は IPRO Workbench 自身が実行するため、iperf をインストールする必要はありません。ボード側のコマンドは、IDE がシリアルモニターを通じて入力します。
 
-ボード上のアプリケーションには、SDK の Wi-Fi シェルコマンドと `iperf` コマンドが必要です。IPRO6S EVK では、IPRO SDK 2.2.1 の `platform/ipro6_demo` を使用します。書き込みについては、[IPRO6S EVK](flash.md#ipro6s)（[書き込みとボード](flash.md)のセクション）を参照してください。
+ボード上のアプリケーションには、SDK の Wi-Fi シェルコマンドと `iperf` コマンドが必要です。IPRO6S EVK では、IPRO SDK V2.3.0 の `platform/ipro6_demo`（書き込みについては、[IPRO6S EVK](flash.md#ipro6s)（[書き込みとボード](flash.md)のセクション）を参照してください）、または[新しいアプリケーション](first-run.md#own-app)の「Wi-Fi station for the IPRO6S EVK」で作成したコピーを使用します。このページでは、IPRO6S の Wi-Fi の起動、ネットワークのスキャン、ボードの MAC と信号強度の表示、[Wi-Fi メモリプロファイル](#wifi-profile)の設定も行えます。
 
 | Wi-Fi の役割 | 使用する場面 |
 |---|---|
-| **Station (joins the network this PC is on)** | 推奨の方法です。コンピューターがすでに接続している Wi-Fi ネットワーク（2.4 GHz）にボードが参加します。コンピューターのネットワークはそのままです。 |
-| **Access point (this PC joins it)** | 使用できる Wi-Fi ネットワークがない場合に使用します。ボードがアクセスポイントになり、コンピューターの Wi-Fi をボードに接続する必要があります。その間、コンピューターは通常インターネットに接続できません。 |
+| **Station (joins the network this PC is on)** | 推奨の方法で、ページの初期設定です。コンピューターがすでに接続している Wi-Fi ネットワーク（2.4 GHz）にボードが参加します。コンピューターのネットワークはそのままです。 |
+| **Access point (this PC joins it)** | 使用できる Wi-Fi ネットワークがない場合に使用します。ボードがアクセスポイントになり、コンピューターの Wi-Fi をボードに接続する必要があります。その間、コンピューターは通常インターネットに接続できません。この役割を選択すると、ページに「As an access point the board measured far lower throughput than as a station (ipro6_demo on the IPRO6S EVK). Use Station for throughput figures.」と表示されます。 |
 
 ### ボードをネットワークに接続する { #iperf-network }
 
@@ -82,9 +82,15 @@ description: IPRO Workbench で、ボード上で Unity テストを実行して
 
     **期待される結果**：**Wi-Fi Throughput (iperf)** タブが開き、「1. Put the board and this PC on one network」と「2. Run」の 2 つの部分が表示されます。モニターが開いていない場合は、モニターを開くよう促すヒントが上部に表示され、**Open Monitor** ボタンが提示されます。
 
-3. **ネットワークに参加します。** **Wi-Fi role** で **Station (joins the network this PC is on)** を選択し、**Network name** にコンピューターが接続している Wi-Fi ネットワークの名前を、**Password** にそのパスワードを入力して、**Join Network** をクリックします。
+3. **スキャンします（任意）。** **Wi-Fi role** は **Station (joins the network this PC is on)** のままにして、**Scan** をクリックします。
 
-    **期待される結果**：ステータスメッセージに「The board is joining &lt;network name&gt;…」、続いて「The board joined &lt;network name&gt;; its address is &lt;board's IP&gt;.」と表示され、**Board's IP address** が自動的に入力されます。下のログには、IDE がボードに送信したコマンド（→ で始まる行）とボードの応答（← で始まる行）として `wifi_state`、`stack_wifi`、`wifi_sta_connect` が一覧表示されます。このログでは、パスワードは `********` と表示されます。約 40 秒以内にボードが参加できなかった場合は、「The board did not join &lt;network name&gt;. Check the name and password.」というメッセージが表示されます。
+    **期待される結果**：ステータスメッセージに「The board is scanning…」、続いて「The board hears N networks. Pick one to fill in its name.」と表示されます。下の表には、信号の強い順に最大 12 のネットワークについて、**Network name**、**Signal (dBm)**、**Channel**、**Security**、**Access points** が一覧表示されます（それより多い場合は「The 12 strongest of N networks.」と表示されます）。スペースを含む名前には「(has a space: the board's shell cannot take it)」と表示されます。行をクリックすると、**Network name** に入力されます。
+
+    ボードで Wi-Fi がまだ動作していない場合、IDE はスキャンの前に `stack_wifi` を送って Wi-Fi を起動します。ネットワークへの参加でも同様です。
+
+4. **ネットワークに参加します。** **Network name** にコンピューターが接続している Wi-Fi ネットワークの名前を入力し（または前の手順で選択し）、**Password** にそのパスワードを入力して、**Join Network** をクリックします。
+
+    **期待される結果**：ステータスメッセージに「The board is joining &lt;network name&gt;…」、続いて「The board joined &lt;network name&gt;; its address is &lt;board's IP&gt;.」と表示され、**Board's IP address** が自動的に入力されます。その下の行には「Board's MAC: …」（Wi-Fi の起動時に読み取った値。ボードの eFuse に MAC がない場合は「(not the MAC in the board's eFuse)」が付きます）と「Signal … dBm on channel …」が表示されます。下のログには、IDE がボードに送信したコマンド（→ で始まる行）とボードの応答（← で始まる行）として `wifi_state`、`stack_wifi`（Wi-Fi が動作していなかった場合）、`wifi_sta_connect`、`wifi_sta_info` が一覧表示されます。このログでは、パスワードは `********` と表示されます。約 40 秒以内にボードが参加できなかった場合は、「The board did not join &lt;network name&gt;. Check the name and password.」というメッセージが表示されます。
 
     代わりにアクセスポイントモードを使用するには、**Wi-Fi role** で **Access point (this PC joins it)** を選択し、作成するネットワークの名前、8〜63 文字のパスワード、チャネルを入力して、**Start Access Point** をクリックします。
 
@@ -120,10 +126,48 @@ description: IPRO Workbench で、ボード上で Unity テストを実行して
 | ボードが送信し、この PC が受信する | このコンピューター（TCP ポート 5001） | コンピューターのファイアウォールで、TCP 5001 の受信を許可する必要があります。Windows はデフォルトでブロックします。下記を参照してください |
 
 !!! note
-    - **Windows のファイアウォール**：ボードが送信してコンピューターが受信する場合に、ステータスメッセージが「The board did not connect to this PC on TCP port 5001. A firewall on this PC may block incoming connections…」であれば、「セキュリティが強化された Windows Defender ファイアウォール」で、TCP ポート 5001 を許可する受信の規則を追加します（コンピューターが接続しているネットワークのプロファイル、パブリックまたはプライベートに対して）。この規則は、テストの後で無効にするか削除できます。規則の追加には管理者権限が必要です。コンピューターからボードへの送信には、規則は不要です。
+    - **Windows のファイアウォール**：ボードが送信してコンピューターが受信する場合に、ステータスメッセージが「The board did not connect to this PC on TCP port 5001. A firewall on this PC may block incoming connections…」であれば、Windows 版は、受信を許可するコマンドと、その許可を再び削除するコマンドを添えて表示します。管理者としてコマンドプロンプトを開き、受信を許可します。
+
+        ```powershell
+        netsh advfirewall firewall add rule name="IPRO Workbench iperf" dir=in action=allow protocol=TCP localport=5001
+        ```
+
+        テストの後、規則を削除します。
+
+        ```powershell
+        netsh advfirewall firewall delete rule name="IPRO Workbench iperf"
+        ```
+
+        「セキュリティが強化された Windows Defender ファイアウォール」で、TCP ポート 5001 を許可する受信の規則を手動で追加することもできます。コンピューターからボードへの送信には、規則は不要です。
     - **待ち受けたままのボード側サーバー**：ボードの iperf サーバーが接続を待ち始めると、コンピューターからの接続か、ボードの再起動でしか終了しません。そのため IDE は、ボードにサーバーを開始させる前に、このコンピューターがボードのネットワーク上のアドレスを持っていることを確認します。持っていない場合は、「This PC has no address on the board's network (…). Join the same Wi-Fi network, then run again.」というメッセージが表示されます。サーバーがすでに待ち受けている場合（ステータスメッセージが「This PC could not reach the board's iperf server…」または「An earlier iperf is still running on the board…」の場合）は、表示される **Reset Board** ボタンをクリックします。ボードが再起動したら、**Join Network** からやり直します。
     - ボードとコンピューターは、それぞれ独自に集計します。ボードは受信した（または送信した）データから、コンピューターは送信した（または受信した）データから算出します。2 つの数値にわずかな差があるのは正常です。
     - 2 つの Wi-Fi の役割で測定した数値を、互いに比較することはできません。アクセスポイントに接続したボードのスループットを評価するには、Station モードを使用してください。
+
+### Wi-Fi メモリプロファイル { #wifi-profile }
+
+IPRO6S の station が RAM を Wi-Fi スループットとアプリケーションに残すヒープにどう配分するかは、ビルド設定である Wi-Fi メモリプロファイルで決まります。アクティブなアプリケーションが IPRO6 の Wi-Fi アプリケーション（例：`ipro6_demo`）の場合、**Wi-Fi Throughput (iperf)** ページの下部に「Memory profile of &lt;application&gt; (a build setting)」という部分があります。
+
+<div class="ipro-steps" markdown>
+
+1. **使用中のプロファイルを確認します。** `ipro6_demo` を選択し、**Wi-Fi Throughput (iperf)** を開いて下部までスクロールします。
+
+    **期待される結果**：「How the IPRO6 station splits its RAM between Wi-Fi throughput and the heap the application has. The figures are the SDK's measurements on ipro6_demo; compare the profiles with them, not networks.」と下の表が表示されます。使用中のプロファイルの行には「In the configuration」と表示され、ほかの行には **Use** があります。
+
+    | プロファイル | 接続後の空きヒープ | PERF に対するスループット |
+    |---|---|---|
+    | PERF：スループット優先 | 約 36 KB | 100 % |
+    | BALANCED：一般的な製品向け | 約 170 KB | 40〜75 % |
+    | APP：RAM の大部分をアプリケーションに | 約 210 KB | 25〜50 % |
+
+2. **プロファイルを変更します。** BALANCED の行の **Use** をクリックします。
+
+    **期待される結果**：IDE は使用中の構成（`.config`、または選択した[別構成](develop.md#configurations)）にプロファイルを書き込みます。BALANCED の行に「In the configuration」と表示され、「The configuration now says BALANCED; what is built is still PERF. The profile also changes the linker script, so it takes a build from clean.」という警告と **Clean and Build** ボタンが表示されます。
+
+3. **クリーンビルドします。** **Clean and Build** をクリックします。
+
+    **期待される結果**：**IPRO Build** が最初からビルドし、成功すると警告が消えます。書き込んだ後、もう一度[テストを実行](#iperf-run)して、スループットを比較します。
+
+</div>
 
 ## 消費電力 { #power }
 

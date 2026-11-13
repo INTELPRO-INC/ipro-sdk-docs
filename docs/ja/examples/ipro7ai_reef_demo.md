@@ -11,7 +11,7 @@ Reef の出荷時ファームウェア：RGB LED、キー、スピーカーと�
 
 | 項目 | 内容 |
 |---|---|
-| ソースコード | [`apps/platform/ipro7ai_reef_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/platform/ipro7ai_reef_demo) |
+| ソースコード | [`apps/platform/ipro7ai_reef_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/platform/ipro7ai_reef_demo) |
 | ボードと設定 | Reef（`.config`）、Reef＋IPRO6S FIN カード（`defconfig_wifi_ipro6s`：Wi-Fi と RTSP カメラストリーミング） |
 | コンソール | UART 115200 |
 | ビルド | `make -C apps/platform/ipro7ai_reef_demo`、Wi-Fi 版は `DEFCONFIG=defconfig_wifi_ipro6s` を追加 |
@@ -61,7 +61,7 @@ Wi-Fi と RTSP 版は `DEFCONFIG=defconfig_wifi_ipro6s` でビルドし、出力
 ## README { #readme }
 
 !!! note "README の原文"
-    以下はアプリケーションに付属する README（SDK V2.2.1）を原文のまま掲載したものです。翻訳はしておらず、公開に適さない内容だけを置き換えています。
+    以下はアプリケーションに付属する README（SDK V2.3.0）を原文のまま掲載したものです。翻訳はしておらず、公開に適さない内容だけを置き換えています。
 
 <!-- verbatim:start -->
 

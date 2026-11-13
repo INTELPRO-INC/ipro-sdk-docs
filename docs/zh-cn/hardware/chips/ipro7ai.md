@@ -31,7 +31,7 @@ IPRO7AI 与 [IPRO7](ipro7.md) 是同一颗裸片：IPRO7AI 启用了 NPU，并�
 
 ## NPU 与推理运行库 { #architecture }
 
-推理运行库以预编译库 `components/ai/lib/libai.a` 提供，公开头文件为 `components/ai/iproai_def.h` 与 `components/ai/` 下各模块的头文件；发布包不含推理运行库源代码。V2.2.1 的 `components/ai` 是 IPRO Edge AI 平台 V2.0：运行库、每个工具一个槽位的模型存储区、输入源、预处理与应用框架。等待 NPU 有时间上限，超时会复位 NPU 模块并进入安全的故障状态。CPU 端推理另有 TensorFlow Lite Micro、NMSIS-NN 与 TinyMaix（`components/3rdparty/`）。
+推理运行库以预编译库 `components/ai/lib/libai.a` 提供，公开头文件为 `components/ai/iproai_def.h` 与 `components/ai/` 下各模块的头文件；发布包不含推理运行库源代码。V2.3.0 的 `components/ai` 是 IPRO Edge AI 平台 V2.0：运行库、每个工具一个槽位的模型存储区、输入源、预处理与应用框架。等待 NPU 有时间上限，超时会复位 NPU 模块并进入安全的故障状态。CPU 端推理另有 TensorFlow Lite Micro、NMSIS-NN 与 TinyMaix（`components/3rdparty/`）。
 
 ### 启用 AI { #config }
 

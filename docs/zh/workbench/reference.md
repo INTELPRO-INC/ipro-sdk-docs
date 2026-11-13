@@ -1,6 +1,6 @@
 ---
 title: "快捷鍵、命令與設定"
-description: IPRO Workbench 0.1.1 的快捷鍵、IPRO 命令、ipro.* 設定、MCP 工具，以及 IDE 用到的檔案與資料夾。
+description: IPRO Workbench 0.2.0 的快捷鍵、IPRO 命令、ipro.* 設定、MCP 工具，以及 IDE 用到的檔案與資料夾。
 ---
 
 # 快捷鍵、命令與設定
@@ -27,6 +27,7 @@ description: IPRO Workbench 0.1.1 的快捷鍵、IPRO 命令、ipro.* 設定、M
 | 開啟 SDK…／從 GitHub 安裝 SDK… | 開啟或安裝 IPRO SDK |
 | 檢查環境／補齊環境 | 重新檢查開發環境；安裝缺少的項目 |
 | 選擇應用程式…／新增應用程式…／複製為新應用程式… | 管理應用程式 |
+| 選擇設定檔… | 選擇應用程式建置所用的設定檔（`.config`、`defconfig_*`、`config_*`），見[設定檔](develop.md#configurations) |
 | 選擇開發板…／選擇連接埠… | 更換開發板或序列埠 |
 | 選擇工具鏈…／選擇 IntelProCube… | 改用這台電腦上已有的工具 |
 | 建置、燒錄並監看／建置／燒錄／停止 | 執行與停止 |
@@ -35,11 +36,13 @@ description: IPRO Workbench 0.1.1 的快捷鍵、IPRO 命令、ipro.* 設定、M
 | 序列埠監看／在另一個連接埠開監看… | 開啟監看 |
 | 篩選監看輸出…／顯示監看時間戳記／儲存監看輸出… | 監看的顯示與存檔 |
 | 序列埠繪圖 | 把板子印出的數字畫成曲線 |
+| 感測器儀表板 | 把板子印出的 `名稱:數值` 顯示成儀表板，見[感測器儀表板](monitor.md#dashboard) |
 | 設定（Kconfig）…／Menuconfig／開啟 .config | 修改應用程式設定 |
 | 腳位設定… | 設定腳位並產生程式碼 |
 | GATT 設定… | 定義 BLE 服務與特性並產生程式碼 |
 | 記憶體分佈 | 看記憶體用到哪裡 |
 | 分割表／AI 模型… | 分割表檢視；檢查並寫入 NPU 模型 |
+| OTA 包… | 製作 boot2 OTA 包並傳送到板子，見 [OTA 包](flash.md#ota) |
 | 在板子上執行測試 | 重置板子並收集 Unity 測試結果 |
 | RF 測試（DTM）…／Wi-Fi 傳輸速率（iperf）…／功耗… | 射頻、Wi-Fi 傳輸速率與功耗量測 |
 | 當機傾印… | 開啟收集過的當機傾印 |
@@ -69,6 +72,7 @@ description: IPRO Workbench 0.1.1 的快捷鍵、IPRO 命令、ipro.* 設定、M
 | `ipro.monitor.filter` | 監看只顯示符合這個正規表示式的行 |
 | `ipro.monitor.logToFile` | 把每次監看的完整內容存到應用程式的 `build/logs` |
 | `ipro.mcp.enabled`／`ipro.mcp.port` | 提供給 IDE 外 AI 助理的 MCP 伺服器，預設開啟、連接埠 41730 |
+| `ipro.ai.assistant` | 「請 AI 修正」等請求交給誰：`ipro`（IPRO 助理，需要語言模型，預設）或 `claudeCode`（Claude Code 助理，使用你的 Claude Code 登入，經 MCP 使用 IPRO 工具） |
 | `ipro.macos.probeDownloadMode` | macOS：燒錄時由探棒拉住下載腳位 |
 | `ipro.macos.checkQuarantine` | macOS：啟動時檢查工具的隔離標記 |
 
@@ -79,13 +83,19 @@ IDE 外的 AI 助理經 MCP 看到的工具如下（名稱即 MCP 的工具名�
 | 工具 | 用途 |
 |---|---|
 | `ipro_get_target` | SDK、目前的應用程式、開發板、序列埠、環境問題與上次建置結果 |
+| `ipro_open_folder` | 開啟 IPRO SDK 資料夾；給應用程式資料夾時，開啟它所在的 SDK 並把它設為目前的應用程式 |
 | `ipro_list_applications` | 列出 SDK 的所有應用程式 |
 | `ipro_select_application` | 切換目前的應用程式 |
+| `ipro_list_configurations`／`ipro_select_configuration` | 列出目前應用程式的設定檔；選擇建置所用的設定檔 |
+| `ipro_list_boards`／`ipro_select_board` | 列出 IDE 認得的開發板與目前使用的開發板；選擇開發板，或設回 auto |
+| `ipro_list_ports`／`ipro_select_port` | 列出這台電腦的序列埠（探棒的 UART、CCI 與其他）；選擇燒錄、監看與重置用的連接埠 |
 | `ipro_build` | 建置目前的應用程式，回傳錯誤、警告與記憶體用量 |
 | `ipro_get_build_output` | 讀 IPRO Build 或 IPRO Flash 最近的輸出 |
 | `ipro_flash` | 燒錄最近一次建置的韌體並開啟監看 |
 | `ipro_reset_board` | 透過探棒重置板子 |
+| `ipro_open_monitor`／`ipro_close_monitor` | 在目前的連接埠開啟序列埠監看（可同時重置板子）；關閉監看，讓出連接埠 |
 | `ipro_read_monitor` | 讀板子在監看上最近印出的行 |
+| `ipro_write_monitor` | 在板子的主控台輸入一行指令，並回傳板子之後印出的內容 |
 | `ipro_board_tests` | 板子上次開機的韌體與 Unity 測試結果 |
 | `ipro_get_settings`／`ipro_set_settings` | 讀取、修改應用程式的 Kconfig 設定 |
 | `ipro_get_pins`／`ipro_set_pins` | 讀取、修改腳位設定並產生程式碼 |
@@ -105,7 +115,10 @@ IDE 外的 AI 助理經 MCP 看到的工具如下（名稱即 MCP 的工具名�
 | 家目錄的 `IPRO/SDK/<版本>` | 「從 GitHub 安裝 SDK」安裝的 SDK |
 | 家目錄的 `.ipro-ide` | IDE 的設定與 MCP 存取權杖（`mcp.json`） |
 | `apps/<分類>/<名稱>/build` | 應用程式的建置結果（韌體、ELF、map 檔） |
+| `apps/<分類>/<名稱>/build_<設定檔>` | 以 `defconfig_<設定檔>` 建置的結果（`config_<設定檔>` 是 `build_config_<設定檔>`），和 `make DEFCONFIG=<檔案>` 相同 |
+| `apps/<分類>/<名稱>/build/build_out/<名稱>.xz.ota` | 「OTA 包」製作的 boot2 OTA 包（選了設定檔時在它的 `build_<設定檔>` 裡） |
 | `apps/<分類>/<名稱>/build/logs` | 監看的完整記錄（開啟 Log To File 時） |
 | `apps/<分類>/<名稱>/build/crash` | 收集的當機傾印 |
 | `apps/<分類>/<名稱>/pins.yaml` | 腳位設定；`app_pins.h`、`app_pins.c` 由它產生 |
 | `apps/<分類>/<名稱>/gatt.yaml` | GATT 服務；`app_gatt.h`、`app_gatt.c` 由它產生 |
+| `apps/<分類>/<名稱>/dashboard.yaml` | 感測器儀表板的版面 |

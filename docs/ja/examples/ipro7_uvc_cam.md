@@ -11,7 +11,7 @@ USB ウェブカメラ：OV5640、ISP、ハードウェア MJPEG、USB Video Cla
 
 | 項目 | 内容 |
 |---|---|
-| ソースコード | [`apps/multimedia/ipro7_uvc_cam`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/multimedia/ipro7_uvc_cam) |
+| ソースコード | [`apps/multimedia/ipro7_uvc_cam`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/multimedia/ipro7_uvc_cam) |
 | ボードと設定 | Reef（`defconfig_reef_ov5640`：ウェブカメラ、`defconfig_reef_rps`：じゃんけん）、`.config` は IPRO7 EVB と SC101IOT の組み合わせ用 |
 | コンソール | Reef：UART 115200<br>`.config`：UART 921600 |
 | ビルド | Reef：`make -C apps/multimedia/ipro7_uvc_cam DEFCONFIG=defconfig_reef_ov5640`（または `defconfig_reef_rps`） |
@@ -49,7 +49,7 @@ SW7 は必ず CAM にしてください。
 ## README { #readme }
 
 !!! note "README の原文"
-    以下はアプリケーションに付属する README（SDK V2.2.1）を原文のまま掲載したものです。翻訳はしておらず、公開に適さない内容だけを置き換えています。
+    以下はアプリケーションに付属する README（SDK V2.3.0）を原文のまま掲載したものです。翻訳はしておらず、公開に適さない内容だけを置き換えています。
 
 <!-- verbatim:start -->
 

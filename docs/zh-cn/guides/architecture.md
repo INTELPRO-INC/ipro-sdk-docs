@@ -12,13 +12,13 @@ migrate_from:
 
 # 系统架构
 
-同一份源代码树涵盖两款芯片与两种 RTOS：`apps/` 下 40 个 FreeRTOS 应用（IPRO7 与 IPRO7AI 37 个、IPRO6S 3 个），以及供 IPRO7 使用的 Zephyr v4.4.0 模块。两条路径共用 HAL、SoC 驱动与预编译库。构建流程与内存布局见[构建系统与配置](build-system.md)。
+同一份源代码树涵盖两款芯片与两种 RTOS：`apps/` 下 41 个 FreeRTOS 应用（IPRO7 与 IPRO7AI 38 个、IPRO6S 3 个），以及供 IPRO7 使用的 Zephyr v4.4.0 模块。两条路径共用 HAL、SoC 驱动与预编译库。构建流程与内存布局见[构建系统与配置](build-system.md)。
 
 !!! abstract "要点"
     - 分层：应用（`apps/`）→ 组件（`components/`）→ RTOS（FreeRTOS V11.1.0 或 Zephyr v4.4.0）→ BSP（`bsp/`）→ 芯片。
     - IPRO7 与 IPRO7AI：RISC-V RV32IMAFC（含 DSP 扩展）、BLE 5.4 与 LE Audio、IEEE 802.15.4；IPRO7AI 另有 NPU 与 ISP。联网方式为以太网（RMII），或经 SDIO 连接 IPRO6S 使用 Wi-Fi；在 IPRO7AI Reef EVK 上，这颗 IPRO6S 就是插在 microSD 插槽中的 FIN 卡。
-    - IPRO6S：相同内核、芯片内置 Wi-Fi 6，仅支持 FreeRTOS。
-    - BLE 控制器、RF 驱动、Wi-Fi 6 MAC、低功耗框架、AI 推理运行库、ISP 算法与 LC3 编解码器以预编译库提供，其余为源代码。
+    - IPRO6S：相同内核、芯片内置 Wi-Fi，仅支持 FreeRTOS。
+    - BLE 控制器、RF 驱动、Wi-Fi MAC、低功耗框架、AI 推理运行库、ISP 算法与 LC3 编解码器以预编译库提供，其余为源代码。
     - 本站所有示例都在 IPRO7AI Reef EVK 上运行；需要其他 INTELPRO 开发板的应用会另行注明。
 
 ## 系统总览 { #overview }
@@ -28,7 +28,7 @@ migrate_from:
   <div class="l-host"><strong>组件 components/</strong><span>BLE Host · lwIP · mbedTLS · CherryUSB · audio · ai · fs · shell</span></div>
   <div class="l-hci"><strong>RTOS</strong><span>FreeRTOS V11.1.0 · Zephyr v4.4.0（模块，IPRO7）</span></div>
   <div class="l-ctlr"><strong>BSP bsp/</strong><span>HAL · SoC 驱动 · 板级配置 · 链接脚本</span></div>
-  <div style="--layer: #64748b"><strong>芯片</strong><span>IPRO7／IPRO7AI：BLE 5.4 · 802.15.4 · ISP · NPU；IPRO6S：Wi-Fi 6</span></div>
+  <div style="--layer: #64748b"><strong>芯片</strong><span>IPRO7／IPRO7AI：BLE 5.4 · 802.15.4 · ISP · NPU；IPRO6S：Wi-Fi</span></div>
 </div>
 
 | 层 | 位置 | 职责 |
@@ -51,7 +51,7 @@ flowchart TB
 
 | 项目 | FreeRTOS | Zephyr |
 |---|---|---|
-| 应用与示例 | `apps/` 下 40 个应用 | `zephyr/samples/` 中的 SDK 示例与 Zephyr 上游示例；驱动测试在 `zephyr/tests/` |
+| 应用与示例 | `apps/` 下 41 个应用 | `zephyr/samples/` 中的 SDK 示例与 Zephyr 上游示例；驱动测试在 `zephyr/tests/` |
 | 构建 | `make -C apps/<分类>/<应用>` 或 `./build_freertos.sh` | `tools/zephyr/bootstrap.sh` 创建工作区后用 `west build` 构建 |
 | 芯片 | IPRO7、IPRO7AI、IPRO6S | IPRO7、IPRO7AI |
 | 开发板 | IPRO7AI Reef EVK（9 个应用、11 组配置）与其他 INTELPRO 开发板 | `ipro7_evb`、`ipro7ai_evk`；本版本没有 Reef 的板级定义 |
@@ -72,7 +72,7 @@ flowchart TB
 | | `wireless/bluetooth/ipro_ble_controller/` | IPRO7 BLE 控制器（预编译库） |
 | 射频 | `wireless/rf/ipro7_rf/`、`wireless/rf/ipro6_rf/` | IPRO7 与 IPRO6S 的 RF 驱动（预编译库） |
 | | `wireless/ieee802154/` | 供 Zephyr 使用的 IEEE 802.15.4 MAC（预编译库） |
-| Wi-Fi 6（IPRO6S） | `wireless/macsw/`、`wireless/wifi6/` | MAC、fhost API、wpa_supplicant 与 lwIP 适配层（预编译库） |
+| Wi-Fi（IPRO6S） | `wireless/macsw/`、`wireless/wifi6/` | MAC、fhost API、wpa_supplicant 与 lwIP 适配层（预编译库） |
 | 网络 | `network/lwip/` | lwIP 2.1.2 |
 | | `network/ipronet_host/` | 经 SDIO 通过 IPRO6S 使用 Wi-Fi 的 IPRO7 端（netif `iproeth0`）；Reef 的 FIN 卡就是用它 |
 | | `network/rtsp_server/` | RTSP MJPEG 视频流 |
@@ -95,8 +95,8 @@ IPRO7 如何连接网络，以及 SDIO 另一端的 IPRO6S 应用，见[网络](
 ## 目录结构 { #directory }
 
 ```text
-IPRO-SDK-V2.2.1/
-├── apps/                    FreeRTOS 应用（40 个）
+IPRO-SDK-V2.3.0/
+├── apps/                    FreeRTOS 应用（41 个）
 │   ├── ai/                  NPU 与 Edge AI 应用
 │   ├── bluetooth/ble/       BLE 示例
 │   ├── bluetooth/le_audio/  LE Audio 耳机

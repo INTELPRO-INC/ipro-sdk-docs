@@ -13,7 +13,7 @@ SDK 的 `tools/teach_web` 是无需安装 IPRO AI Studio 的图像 Teach：在 C
 - 一条支持数据传输的 USB-C 线，连接 Reef 的 USB-C 与电脑：用于供电，也用于传输图像与模型。
 - Chrome 或 Edge（支持 Web Serial；Safari 与 Firefox 不支持）。
 - Python 3.8 及以上，仅用于在本地提供网页。
-- SDK V2.2.1：`tools/teach_web/`。
+- SDK V2.3.0：`tools/teach_web/`。
 
 ## 启动网页 { #start }
 

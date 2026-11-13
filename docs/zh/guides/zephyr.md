@@ -18,7 +18,7 @@ migrate_from:
 IPRO SDK 同時是一個 Zephyr v4.4.0 模組：SDK 的 HAL 與 SoC 驅動透過 Zephyr 的裝置驅動 API 提供，可以改用 Zephyr 而非 FreeRTOS 開發應用。本頁是 Zephyr 端的參考：支援板卡、工作區、`west` 建置與燒錄、範例與限制。FreeRTOS 應用與其建置方式不受影響。
 
 !!! abstract "重點"
-    - 板卡：`ipro7_evb`（IPRO7 EVB）與 `ipro7ai_evk`（IPRO7AI EVK）。**V2.2.1 沒有 IPRO7AI Reef EVK 的 Zephyr 板卡定義**；在 Reef 上請使用 FreeRTOS 應用。
+    - 板卡：`ipro7_evb`（IPRO7 EVB）與 `ipro7ai_evk`（IPRO7AI EVK）。**V2.3.0 沒有 IPRO7AI Reef EVK 的 Zephyr 板卡定義**；在 Reef 上請使用 FreeRTOS 應用。
     - 可用：常用周邊驅動、BLE（Zephyr host 搭配預編譯的 IPRO BLE 控制器）、IEEE 802.15.4 與 OpenThread、MCUboot 搭配 MCUmgr 經 BLE 更新。
     - 不可用：低功耗模式，以及相機、音訊編解碼器、USB、SD host、乙太網路與 NPU 的 Zephyr 驅動。
     - 主控台：UART0，2,000,000 baud。主機需要：含 venv 的 Python 3、git、可連上 GitHub 的網路、CMake 3.20 以上。
@@ -50,7 +50,7 @@ Zephyr 驅動呼叫 SDK 的 HAL，HAL 直接從 `bsp/` 編譯。BLE 使用 Zephy
 - SDK 附有 `ipro6s_evb` 的板卡檔案，但本版 Zephyr 不支援 IPRO6S。
 
 !!! info "IPRO7AI Reef EVK"
-    V2.2.1 沒有 Reef 的 Zephyr 板卡，Reef 的相機、音訊、LED 與 microSD 插槽也沒有 devicetree 描述。本版未驗證在 Reef 上執行 Zephyr 映像。需要在 Reef 上使用 Zephyr 時請洽 INTELPRO。
+    V2.3.0 沒有 Reef 的 Zephyr 板卡，Reef 的相機、音訊、LED 與 microSD 插槽也沒有 devicetree 描述。本版未驗證在 Reef 上執行 Zephyr 映像。需要在 Reef 上使用 Zephyr 時請洽 INTELPRO。
 
 ## 工作區 { #workspace }
 

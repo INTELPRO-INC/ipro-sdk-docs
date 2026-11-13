@@ -7,7 +7,7 @@ migrate_from:
 
 # IPRO7
 
-IPRO7 is INTELPRO's 2.4 GHz low-power wireless SoC: a 192 MHz RISC-V RV32IMAFC core, Bluetooth 5.4 with LE Audio, an IEEE 802.15.4 radio, an ISP and hardware MJPEG. 37 of the 40 applications in this SDK release target IPRO7. The variant with the NPU enabled, [IPRO7AI](ipro7ai.md), is the main chip of the IPRO7AI Reef EVK.
+IPRO7 is INTELPRO's 2.4 GHz low-power wireless SoC: a 192 MHz RISC-V RV32IMAFC core, Bluetooth 5.4 with LE Audio, an IEEE 802.15.4 radio, an ISP and hardware MJPEG. 38 of the 41 applications in this SDK release target IPRO7. The variant with the NPU enabled, [IPRO7AI](ipro7ai.md), is the main chip of the IPRO7AI Reef EVK.
 
 <div class="ipro-facts" markdown>
 <div><strong>192 MHz</strong><span>RISC-V RV32IMAFC</span></div>
@@ -58,7 +58,7 @@ Wired networking uses the on-chip EMAC (RMII). Wireless networking uses an exter
 
 | Radio | Interface | Where in the SDK |
 |---|---|---|
-| IPRO6S (Wi-Fi 6) | SDIO, lwIP network interface `iproeth0` | `components/network/ipronet_host`; on the Reef it is the FIN card in the microSD slot, see [IPRO6S](ipro6s.md) |
+| IPRO6S (Wi-Fi) | SDIO, lwIP network interface `iproeth0` | `components/network/ipronet_host`; on the Reef it is the FIN card in the microSD slot, see [IPRO6S](ipro6s.md) |
 | ATBM6162 | SDIO | `components/wireless/wifi_atbm6162`; `ipro_atbm_probe` |
 | AIC8800 | SDIO (prebuilt vendor library) | `components/wireless/wifi_aic8800`; `config_evk` of `ipro_agora_sentino` |
 | ESP32 | UART AT commands | `components/network/esp32_wifi_at`; `ipro7_demo` (`CONFIG_ESP32_WIFI_AT`) |
@@ -124,14 +124,14 @@ With AI and imaging both enabled (`CONFIG_AI_SUPPORT`, `CONFIG_MM_SUPPORT`) the 
 
 ## SDK support in this release { #sdk-support }
 
-| Item | V2.2.1 |
+| Item | V2.3.0 |
 |---|---|
-| FreeRTOS applications | 37 of the 40 target IPRO7: `CONFIG_IPRO7=y`, `CONFIG_CHIP="IPRO7"`, `CONFIG_CPU_ID="intelpro_ipro7"`; images are `<app>_IPRO7.bin` |
+| FreeRTOS applications | 38 of the 41 target IPRO7: `CONFIG_IPRO7=y`, `CONFIG_CHIP="IPRO7"`, `CONFIG_CPU_ID="intelpro_ipro7"`; images are `<app>_IPRO7.bin` |
 | Zephyr RTOS | Zephyr v4.4.0 module; boards `ipro7_evb` and `ipro7ai_evk`; there is no Zephyr board for the Reef in this release |
 | Toolchain | RISC-V GCC (`riscv64-unknown-elf-`, `rv32imafc` / `ilp32f`); not part of the SDK, obtain it from INTELPRO |
 | BLE | Zephyr v4.4.0 host (source) on the IPRO BLE controller (prebuilt library, 16 IPRO7 builds: `link1_periph` / `link1` / `link2` / `link4` × `bt52` / `bt54_iso2` × debug / `_release`) |
 | IEEE 802.15.4 / Thread | Zephyr RTOS only: IEEE 802.15.4 driver and OpenThread |
-| Matter, Zigbee | Not included in V2.2.1; contact INTELPRO. |
+| Matter, Zigbee | Not included in V2.3.0; contact INTELPRO. |
 | Flashing | IntelProCube 0.7.0.1 command-line tool ([GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases)): `--chipname ipro7`, with `--chip-variant IPRO7AI` for IPRO7AI boards such as the Reef |
 
 ## Boards with IPRO7 { #boards }

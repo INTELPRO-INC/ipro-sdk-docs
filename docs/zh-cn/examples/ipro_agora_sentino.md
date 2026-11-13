@@ -11,7 +11,7 @@ Sentino 云端 AI 语音对话：BLE 配网、经 IPRO6S FIN 卡连接 Wi-Fi、M
 
 | 项目 | 内容 |
 |---|---|
-| 源代码 | [`apps/multimedia/ipro_agora_sentino`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/multimedia/ipro_agora_sentino) |
+| 源代码 | [`apps/multimedia/ipro_agora_sentino`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/multimedia/ipro_agora_sentino) |
 | 开发板与配置 | Reef＋IPRO6S FIN 卡（`.config`，`make` 或 `make BOARD=reef`）；`BOARD=evk` 对应 IPRO7AI EVK（可构建，未经板上验证） |
 | 控制台 | Reef：UART 115200 |
 | 构建 | `make -C apps/multimedia/ipro_agora_sentino` |
@@ -57,7 +57,7 @@ Sentino 云端 AI 语音对话：BLE 配网、经 IPRO6S FIN 卡连接 Wi-Fi、M
 ## README { #readme }
 
 !!! note "README 原文"
-    以下是应用附带的 README（SDK V2.2.1），保留原文、未翻译；只替换了不适合公开的内容。
+    以下是应用附带的 README（SDK V2.3.0），保留原文、未翻译；只替换了不适合公开的内容。
 
 <!-- verbatim:start -->
 
@@ -67,7 +67,7 @@ Sentino 云端 AI 语音对话：BLE 配网、经 IPRO6S FIN 卡连接 Wi-Fi、M
 2. 裝置經插在卡槽的 IPRO6S FIN 連上 Wi-Fi，登入 Sentino 雲端（MQTT）。
 3. 雲端配發 Agora RTC 存取權，裝置加入頻道；PDM 麥克風收音、DAC 喇叭播放，與 AI 即時語音對話。
 
-程式模組與資料流見 [ARCHITECTURE.md](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.1/apps/multimedia/ipro_agora_sentino/ARCHITECTURE.md)。
+程式模組與資料流見 [ARCHITECTURE.md](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.3.0/apps/multimedia/ipro_agora_sentino/ARCHITECTURE.md)。
 
 ### 需要準備
 

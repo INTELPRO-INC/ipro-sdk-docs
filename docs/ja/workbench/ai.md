@@ -21,6 +21,14 @@ AI 機能はデフォルトでオフです。使用する前に、次の設定�
 
 以下のいずれかの **Ask AI…** ボタンを押したときに AI 機能がまだオフの場合、IDE はまず「AI features are off…」と表示します。**Turn On AI** を押すと有効になります。
 
+AI 機能はオンでも使用できる言語モデルがまだない場合、**Ask AI…** ボタンはまず「The IPRO assistant has no language model to use yet. Set one up first: an API key of a model provider (Anthropic, OpenAI, Google…), GitHub Copilot, or a model running on this computer (Ollama). Or ask the Claude Code assistant, which uses your Claude Code login.」と表示し、次の 3 つのボタンを示します。
+
+| ボタン | 動作 |
+|---|---|
+| **Set Up a Model** | AI モデルの設定を開きます |
+| **Use Claude Code** | `ipro.ai.assistant` を `claudeCode` に設定し、以降のリクエストを Claude Code アシスタントに送ります。続いて「Ask AI now goes to the Claude Code assistant (the ipro.ai.assistant setting). It needs the Claude Agent SDK on this computer and, to use the IPRO tools, the MCP connection: Connect… copies the command.」と表示します。**Connect…** をクリックするとコマンドがコピーされます（[IDE の外部の AI アシスタントから使用する](#mcp)を参照） |
+| **Ask Anyway** | リクエストをそのまま送ります |
+
 ## ビルドエラーの修正を AI に依頼する { #fix-build }
 
 <div class="ipro-steps" markdown>
@@ -72,4 +80,4 @@ IPRO Workbench を開いている間、このコンピューター上で MCP サ
     - トークンはホームフォルダーの `.ipro-ide/mcp.json` に保存され、読み取れるのは自分のアカウントだけです。コピーした設定にはトークンが含まれているため、公開の場所に貼り付けないでください。
     - サーバーが不要な場合は、設定で `ipro.mcp.enabled` をオフにします。
 
-MCP が提供するツールについては、[MCP ツール](reference.md#mcp-tools)を参照してください。
+ビルド、書き込み、モニターの読み取り、設定の変更のほかに、IDE の外部の AI アシスタントは、SDK フォルダーを開く、ボード、ポート、[別構成](develop.md#configurations)を選択する、シリアルモニターを開閉する、ボードのコンソールに 1 行入力してボードの応答を読み取る、といった操作もできます。MCP が提供するツールについては、[MCP ツール](reference.md#mcp-tools)を参照してください。

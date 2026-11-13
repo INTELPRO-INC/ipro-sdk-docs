@@ -11,7 +11,7 @@ GATT reference: LED, key, environment, UART, camera image and image upload servi
 
 | Item | Details |
 |---|---|
-| Source | [`apps/bluetooth/ble/ipro_ble_remote`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/bluetooth/ble/ipro_ble_remote) |
+| Source | [`apps/bluetooth/ble/ipro_ble_remote`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/bluetooth/ble/ipro_ble_remote) |
 | Boards and configs | Reef (`defconfig_reef`: WS2812, camera, SD card, audio and BLE A/B OTA); `.config` and `defconfig` target the IPRO7 EVB |
 | Console | UART 115200 |
 | Build | Reef: `make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef` |
@@ -62,7 +62,7 @@ The Reef build uses boot2 and the A/B partition table `partition_cfg_2M_remote_a
 ## README { #readme }
 
 !!! note "The README as shipped"
-    Below is the README that ships with the application (SDK V2.2.1), as written; only content unfit for publication was replaced.
+    Below is the README that ships with the application (SDK V2.3.0), as written; only content unfit for publication was replaced.
 
 <!-- verbatim:start -->
 
@@ -1029,14 +1029,14 @@ apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.elf
 
 1. **真實傳感器**: 連接 I2C/SPI 溫濕度傳感器 (如 SHT30)
 2. **PWM LED**: 使用 PWM 實現真正的亮度調節
-3. **✅ OTA 更新**: 已實作！支援 MTU 517 無線韌體更新 (請參考 [OTA_IMPLEMENTATION_GUIDE.md](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.1/apps/bluetooth/ble/ipro_ble_remote/OTA_IMPLEMENTATION_GUIDE.md))
+3. **✅ OTA 更新**: 已實作！支援 MTU 517 無線韌體更新 (請參考 [OTA_IMPLEMENTATION_GUIDE.md](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.3.0/apps/bluetooth/ble/ipro_ble_remote/OTA_IMPLEMENTATION_GUIDE.md))
 4. **多連接**: 支援多個手機同時連接
 5. **真實相機**: 整合 DVP/SPI Camera 模組
 6. **彩色圖片**: 擴展 JPEG 編碼器支援 RGB
 
 ### 📚 延伸閱讀
 
-- **[OTA Implementation Guide](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.1/apps/bluetooth/ble/ipro_ble_remote/OTA_IMPLEMENTATION_GUIDE.md)** - APP 團隊 OTA 實作完整指南 (v3.0)
+- **[OTA Implementation Guide](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.3.0/apps/bluetooth/ble/ipro_ble_remote/OTA_IMPLEMENTATION_GUIDE.md)** - APP 團隊 OTA 實作完整指南 (v3.0)
     - **新功能**: MTU 517 協商和動態負載偵測
     - BLE 服務規格 (支援 504-byte packets)
     - 協議流程和效能優化

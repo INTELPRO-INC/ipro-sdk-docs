@@ -11,7 +11,7 @@ LE Audio ユニキャストヘッドセット：BAP unicast server、PACS、ASCS
 
 | 項目 | 内容 |
 |---|---|
-| ソースコード | [`apps/bluetooth/le_audio/ipro_le_audio_headset`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/bluetooth/le_audio/ipro_le_audio_headset) |
+| ソースコード | [`apps/bluetooth/le_audio/ipro_le_audio_headset`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/bluetooth/le_audio/ipro_le_audio_headset) |
 | ボードと設定 | Reef（`defconfig_reef`：DAC 出力をヘッドセットジャックとスピーカーへ）、`.config`、`DAC.config`、`UAC.config` は IPRO7 EVB 用 |
 | コンソール | UART 115200 |
 | ビルド | Reef：`make -C apps/bluetooth/le_audio/ipro_le_audio_headset DEFCONFIG=defconfig_reef` |
@@ -48,7 +48,7 @@ LE Audio ユニキャストヘッドセット：BAP unicast server、PACS、ASCS
 ## README { #readme }
 
 !!! note "README の原文"
-    以下はアプリケーションに付属する README（SDK V2.2.1）を原文のまま掲載したものです。翻訳はしておらず、公開に適さない内容だけを置き換えています。
+    以下はアプリケーションに付属する README（SDK V2.3.0）を原文のまま掲載したものです。翻訳はしておらず、公開に適さない内容だけを置き換えています。
 
 <!-- verbatim:start -->
 
@@ -476,8 +476,8 @@ Configurable in `src/app_audio.h`:
 
 - [Bluetooth LE Audio Specification](https://www.bluetooth.com/specifications/le-audio/)
 - [LC3 Codec Documentation](https://www.bluetooth.com/specifications/lc3/)
-- [IPRO SDK Documentation](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.1/apps/bluetooth/README.md)
-- [BLE development overview](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.1/docs/ble/README.md)
+- [IPRO SDK Documentation](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.3.0/apps/bluetooth/README.md)
+- [BLE development overview](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.3.0/docs/ble/README.md)
 
 ### License
 

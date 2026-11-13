@@ -11,7 +11,7 @@ GATT リファレンス：LED、キー、環境、UART、カメラ画像、画�
 
 | 項目 | 内容 |
 |---|---|
-| ソースコード | [`apps/bluetooth/ble/ipro_ble_remote`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/bluetooth/ble/ipro_ble_remote) |
+| ソースコード | [`apps/bluetooth/ble/ipro_ble_remote`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/bluetooth/ble/ipro_ble_remote) |
 | ボードと設定 | Reef（`defconfig_reef`：WS2812、カメラ、SD カード、オーディオ、BLE A/B OTA）、`.config` と `defconfig` は IPRO7 EVB 用 |
 | コンソール | UART 115200 |
 | ビルド | Reef：`make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef` |
@@ -62,7 +62,7 @@ Reef 版は boot2 と A/B パーティションテーブル `partition_cfg_2M_re
 ## README { #readme }
 
 !!! note "README の原文"
-    以下はアプリケーションに付属する README（SDK V2.2.1）を原文のまま掲載したものです。翻訳はしておらず、公開に適さない内容だけを置き換えています。
+    以下はアプリケーションに付属する README（SDK V2.3.0）を原文のまま掲載したものです。翻訳はしておらず、公開に適さない内容だけを置き換えています。
 
 <!-- verbatim:start -->
 
@@ -1029,14 +1029,14 @@ apps/bluetooth/ble/ipro_ble_remote/build/build_out/ipro_ble_remote_IPRO7.elf
 
 1. **真實傳感器**: 連接 I2C/SPI 溫濕度傳感器 (如 SHT30)
 2. **PWM LED**: 使用 PWM 實現真正的亮度調節
-3. **✅ OTA 更新**: 已實作！支援 MTU 517 無線韌體更新 (請參考 [OTA_IMPLEMENTATION_GUIDE.md](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.1/apps/bluetooth/ble/ipro_ble_remote/OTA_IMPLEMENTATION_GUIDE.md))
+3. **✅ OTA 更新**: 已實作！支援 MTU 517 無線韌體更新 (請參考 [OTA_IMPLEMENTATION_GUIDE.md](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.3.0/apps/bluetooth/ble/ipro_ble_remote/OTA_IMPLEMENTATION_GUIDE.md))
 4. **多連接**: 支援多個手機同時連接
 5. **真實相機**: 整合 DVP/SPI Camera 模組
 6. **彩色圖片**: 擴展 JPEG 編碼器支援 RGB
 
 ### 📚 延伸閱讀
 
-- **[OTA Implementation Guide](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.1/apps/bluetooth/ble/ipro_ble_remote/OTA_IMPLEMENTATION_GUIDE.md)** - APP 團隊 OTA 實作完整指南 (v3.0)
+- **[OTA Implementation Guide](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.3.0/apps/bluetooth/ble/ipro_ble_remote/OTA_IMPLEMENTATION_GUIDE.md)** - APP 團隊 OTA 實作完整指南 (v3.0)
     - **新功能**: MTU 517 協商和動態負載偵測
     - BLE 服務規格 (支援 504-byte packets)
     - 協議流程和效能優化

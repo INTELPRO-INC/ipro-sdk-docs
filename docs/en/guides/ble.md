@@ -4,8 +4,8 @@ description: Build FreeRTOS BLE applications on the Zephyr v4.4.0 BLE host and t
 migrate_from:
   - "ble-development.html"
 not_migrated:
-  - "ble-development.html#app-framework — V2.2.1 has no Mediator/Applet application framework"
-  - "ble-development.html#ipro6s-btdm — the IPRO6S BLE controller is not part of V2.2.1"
+  - "ble-development.html#app-framework — V2.3.0 has no Mediator/Applet application framework"
+  - "ble-development.html#ipro6s-btdm — the IPRO6S BLE controller is not part of V2.3.0"
 ---
 
 # BLE Development
@@ -17,7 +17,7 @@ BLE in a FreeRTOS application has two parts: the Zephyr v4.4.0 BLE host (source)
     - Controller: 16 IPRO7 archives, `link1_periph` / `link1` / `link2` / `link4` × `bt52` / `bt54_iso2` × debug / release, picked by `CONFIG_IPRO_BLE_CTLR_LIB`, `CONFIG_IPRO_BLE_CTLR_FEATURE` and `CONFIG_IPRO_BLE_CTLR_CFG_DBG`.
     - Bring-up order: `ipro_ble_ctlr_controller_init()` → `hci_driver_ipro_ble_ctlr_init()` → `bt_enable()`.
     - Reef BLE configurations: `ipro_ble_remote`, `ipro_throughput_test` and `ipro_le_audio_headset` with `DEFCONFIG=defconfig_reef`, and `ipro_agora_sentino` (BLE provisioning).
-    - Not included in V2.2.1: controller source, PAwR/ESL applications, the IPRO6S BLE controller.
+    - Not included in V2.3.0: controller source, PAwR/ESL applications, the IPRO6S BLE controller.
 
 ## Stack architecture { #stack-architecture }
 
@@ -51,7 +51,7 @@ CONFIG_BT_HOST_IPRO_V44=y
 
 Without `CONFIG_BT_CTLR_IPRO` or `CONFIG_BT_HOST_IPRO_V44` the build stops during CMake configuration. The host and controller components export their own include paths, so your `CMakeLists.txt` does not need to add the `zephyr/bluetooth/*.h` paths.
 
-Zephyr RTOS images use Zephyr's own host with the same controller archives; Zephyr in V2.2.1 has boards for the IPRO7 EVB and the IPRO7AI EVK only, see [Zephyr RTOS](zephyr.md).
+Zephyr RTOS images use Zephyr's own host with the same controller archives; Zephyr in V2.3.0 has boards for the IPRO7 EVB and the IPRO7AI EVK only, see [Zephyr RTOS](zephyr.md).
 
 ## Controller selection { #controller-variants }
 
@@ -78,7 +78,7 @@ Checks at configure time:
 
 `CONFIG_BT_CONN` (the host's connection count) must not exceed the archive's connection count. Exchange Memory is reserved at the top of OCRAM; see [Memory layout](build-system.md#memory-layout).
 
-The Reef configurations that ship with V2.2.1 are good starting points:
+The Reef configurations that ship with V2.3.0 are good starting points:
 
 | Application and configuration | LIB | FEATURE | Debug archive | `CONFIG_BT_CONN` | `CONFIG_EM_SIZE` |
 |---|---|---|---|---|---|
@@ -420,17 +420,17 @@ LE Audio needs `CONFIG_IPRO_BLE_CTLR_FEATURE="bt54_iso2"` and `CONFIG_EM_SIZE=32
 
 - `ipro_ble_remote` `defconfig_reef` does not use PDS: the Reef runs from USB power and the camera and audio need their clocks.
 - Controller PDS sleep is accepted only with the 16 KB EM profile; with `bt54_iso2` (32 KB EM) the controller keeps its native sleep but does not enter PDS.
-- `CONFIG_IPRO_PM_BLE` and `CONFIG_IPRO_PM_PDS_CONNECTED` force a controller source build, which V2.2.1 cannot do; see [Limitations](#limitations).
+- `CONFIG_IPRO_PM_BLE` and `CONFIG_IPRO_PM_PDS_CONNECTED` force a controller source build, which V2.3.0 cannot do; see [Limitations](#limitations).
 - BLE with PDS31 sleep and a bonded reconnect is shown by `ipro_pdm_mic_demo`, an IPRO7 EVB / IPRO7AI EVK example.
 
 Sleep modes, wake sources and measurement are covered in [Low Power](low-power.md).
 
 ## Limitations in this release { #limitations }
 
-- The controller ships only as prebuilt libraries; its source is not part of V2.2.1. These settings need a controller source build and stop the build: `CONFIG_IPRO_BLE_CTLR_FORCE_SOURCE_BUILD`, `CONFIG_IPRO_BLE_CTLR_SUBRATING`, `CONFIG_IPRO_BLE_CTLR_CSSA`, `CONFIG_IPRO_PM_BLE`, `CONFIG_IPRO_PM_PDS_CONNECTED`.
-- PAwR and ESL: the host headers include the periodic advertising APIs, but there is no PAwR/ESL application. Not included in V2.2.1; contact INTELPRO.
+- The controller ships only as prebuilt libraries; its source is not part of V2.3.0. These settings need a controller source build and stop the build: `CONFIG_IPRO_BLE_CTLR_FORCE_SOURCE_BUILD`, `CONFIG_IPRO_BLE_CTLR_SUBRATING`, `CONFIG_IPRO_BLE_CTLR_CSSA`, `CONFIG_IPRO_PM_BLE`, `CONFIG_IPRO_PM_PDS_CONNECTED`.
+- PAwR and ESL: the host headers include the periodic advertising APIs, but there is no PAwR/ESL application. Not included in V2.3.0; contact INTELPRO.
 - The OTA service of `ipro_ble_remote` is enabled only in `defconfig_reef`; the default `.config` builds the IPRO7 EVB image without OTA.
-- The IPRO6S BLE controller is not part of V2.2.1; the IPRO6S applications in this package are Wi-Fi only.
+- The IPRO6S BLE controller is not part of V2.3.0; the IPRO6S applications in this package are Wi-Fi only.
 
 ## Reference applications { #reference-apps }
 

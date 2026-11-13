@@ -16,7 +16,7 @@ Start here to look up chip specifications, wire up the IPRO7AI Reef EVK, map pin
 
     ---
 
-    RISC-V RV32IMAFC, BLE 5.4 with LE Audio, IEEE 802.15.4, ISP and hardware MJPEG; the target of 37 applications in this release.
+    RISC-V RV32IMAFC, BLE 5.4 with LE Audio, IEEE 802.15.4, ISP and hardware MJPEG; the target of 38 applications in this release.
 
 -   :material-brain:{ .lg } **[IPRO7AI](chips/ipro7ai.md)**
 
@@ -28,7 +28,7 @@ Start here to look up chip specifications, wire up the IPRO7AI Reef EVK, map pin
 
     ---
 
-    RISC-V SoC with built-in Wi-Fi 6. This release ships three IPRO6S Wi-Fi applications; on the Reef it is the FIN Wi-Fi card in the microSD slot.
+    RISC-V SoC with built-in Wi-Fi. This release ships three IPRO6S Wi-Fi applications; on the Reef it is the FIN Wi-Fi card in the microSD slot.
 
 </div>
 

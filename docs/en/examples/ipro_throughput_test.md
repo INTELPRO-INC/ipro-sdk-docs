@@ -11,7 +11,7 @@ Two-board BLE throughput test: 1M / 2M / Coded PHY, DLE, ATT MTU 247. Tutorial: 
 
 | Item | Details |
 |---|---|
-| Source | [`apps/bluetooth/ble/ipro_throughput_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.2.1/apps/bluetooth/ble/ipro_throughput_test) |
+| Source | [`apps/bluetooth/ble/ipro_throughput_test`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/bluetooth/ble/ipro_throughput_test) |
 | Boards and configs | Two Reefs (`defconfig_reef`); `.config` targets the IPRO7 EVB |
 | Console | UART 115200 |
 | Build | Reef: `make -C apps/bluetooth/ble/ipro_throughput_test DEFCONFIG=defconfig_reef` |
@@ -47,7 +47,7 @@ You need two Reefs, each with a console cable.
 ## README { #readme }
 
 !!! note "The README as shipped"
-    Below is the README that ships with the application (SDK V2.2.1), as written; only content unfit for publication was replaced.
+    Below is the README that ships with the application (SDK V2.3.0), as written; only content unfit for publication was replaced.
 
 <!-- verbatim:start -->
 
@@ -325,7 +325,7 @@ CONFIG_FREERTOS_TIMER_TASK_STACK_WORDS=1024
 
 ### Related Documentation
 
-- [OPERATION_MANUAL.md](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.2.1/apps/bluetooth/ble/ipro_throughput_test/OPERATION_MANUAL.md) — operation manual in Chinese: hardware
+- [OPERATION_MANUAL.md](https://github.com/INTELPRO-INC/IPRO-SDK/blob/IPRO-SDK-V2.3.0/apps/bluetooth/ble/ipro_throughput_test/OPERATION_MANUAL.md) — operation manual in Chinese: hardware
     setup, test workflow, troubleshooting.
 
 ### API Reference

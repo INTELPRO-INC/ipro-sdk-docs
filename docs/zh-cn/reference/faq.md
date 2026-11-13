@@ -13,17 +13,17 @@ migrate_from:
 
 ### SDK、烧录工具与工具链从哪里获取？ { #get-tools }
 
-- **SDK V2.2.1**：从 [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.1) 下载 `IPRO-SDK-V2.2.1.tar.gz`，核对页面上的 SHA-256 后解压：
+- **SDK V2.3.0**：从 [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.3.0) 下载 `IPRO-SDK-V2.3.0.tar.gz`，核对页面上的 SHA-256 后解压：
 
     ```bash
-    shasum -a 256 IPRO-SDK-V2.2.1.tar.gz      # Linux：sha256sum；应与 Release 页面上的值相同
-    tar xzf IPRO-SDK-V2.2.1.tar.gz
-    cat IPRO-SDK-V2.2.1/VERSION.txt
+    shasum -a 256 IPRO-SDK-V2.3.0.tar.gz      # Linux：sha256sum；应与 Release 页面上的值相同
+    tar xzf IPRO-SDK-V2.3.0.tar.gz
+    cat IPRO-SDK-V2.3.0/VERSION.txt
     ```
 
-    `VERSION.txt` 打印 `IPRO7: IPRO-SDK-V2.2.1`、`IPRO6: IPRO-SDK-V2.2.1` 与 `Release Date: 2026-11-10`。
-- **RISC-V 工具链**：未包含在 V2.2.1 中，请联系 INTELPRO。默认安装在 `/opt/toolchain/riscv_ipro7/`。
-- **IntelProCube 命令行烧录工具**（`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe`）：未包含在 V2.2.1 中，从 [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) 下载 0.7.0.1，见[准备开发环境](../get-started/environment.md#intelprocube)。
+    `VERSION.txt` 打印 `IPRO7: IPRO-SDK-V2.3.0`、`IPRO6: IPRO-SDK-V2.3.0` 与 `Release Date: 2026-11-13`。
+- **RISC-V 工具链**：未包含在 V2.3.0 中，请联系 INTELPRO。默认安装在 `/opt/toolchain/riscv_ipro7/`。
+- **IntelProCube 命令行烧录工具**（`ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe`）：未包含在 V2.3.0 中，从 [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) 下载 0.7.0.1，见[准备开发环境](../get-started/environment.md#intelprocube)。
 - **Windows 在线安装程序 3.6.0 与 VS Code Extension 3.3.0**：当前版本，从 [ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest) 下载；安装程序会直接安装 SDK V2.2.0 与 Windows 版工具链，见 [Windows 安装与 VS Code](../get-started/windows.md)。
 - **IPRO AI Studio**：不在 SDK 中，从 [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) 下载。
 
@@ -40,7 +40,7 @@ make -C apps/platform/ipro7ai_reef_demo
 
 ### 哪些应用能在 Reef 上运行？要选哪个配置文件？ { #reef-apps }
 
-40 个应用中有 9 个附带 Reef 配置。只有 `ipro7ai_reef_demo`、`ipro_reef_teach` 与 `ipro_agora_sentino` 直接 `make` 就是 Reef 版本；其他应用的 `.config` 是 IPRO7 EVB 或 IPRO7AI EVK 的配置，要以 `DEFCONFIG=` 选择 Reef 配置：
+41 个应用中有 9 个附带 Reef 配置。只有 `ipro7ai_reef_demo`、`ipro_reef_teach` 与 `ipro_agora_sentino` 直接 `make` 就是 Reef 版本；其他应用的 `.config` 是 IPRO7 EVB 或 IPRO7AI EVK 的配置，要以 `DEFCONFIG=` 选择 Reef 配置：
 
 | 应用 | 构建命令（在 SDK 根目录下） |
 |---|---|
@@ -72,7 +72,7 @@ grep CONFIG_IPRO7AI_REEF apps/bluetooth/ble/ipro_ble_remote/defconfig_reef
 
 ### 找不到工具链，或工具链不在默认路径？ { #toolchain }
 
-工具链前缀依次取自：环境或命令行中的 `CROSS_COMPILE`、配置文件中的 `CONFIG_CROSS_COMPILE`、`project.build` 的默认路径 `/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-`（Windows 没有默认值）。40 个 `.config` 中有 30 个写了 `CONFIG_CROSS_COMPILE`。工具链放在其他位置时：
+工具链前缀依次取自：环境或命令行中的 `CROSS_COMPILE`、配置文件中的 `CONFIG_CROSS_COMPILE`、`project.build` 的默认路径 `/opt/toolchain/riscv_ipro7/bin/riscv64-unknown-elf-`（Windows 没有默认值）。41 个 `.config` 中有 30 个写了 `CONFIG_CROSS_COMPILE`。工具链放在其他位置时：
 
 ```bash
 export CROSS_COMPILE=<工具链路径>/bin/riscv64-unknown-elf-
@@ -169,9 +169,9 @@ CONFIG_EASYFLASH4=y
 
 ## 平台与联网 { #platform }
 
-### V2.2.1 支持 IPRO6S 吗？ { #ipro6s }
+### V2.3.0 支持 IPRO6S 吗？ { #ipro6s }
 
-支持 Wi-Fi。V2.2.1 随附 3 个 IPRO6S 应用：`ipro6_demo`（Wi-Fi 6 station／soft-AP）、`ipro6_if_wifi`（通过 SDIO 或 USB 供主机使用的 Wi-Fi 桥接）与 `ipro6_fmac`（Linux 主机用的 FullMAC 固件）。本版本没有 IPRO6S 的 BLE 控制器库与 BLE／BR/EDR 应用。
+支持 Wi-Fi。V2.3.0 随附 3 个 IPRO6S 应用：`ipro6_demo`（Wi-Fi station／soft-AP）、`ipro6_if_wifi`（通过 SDIO 或 USB 供主机使用的 Wi-Fi 桥接）与 `ipro6_fmac`（Linux 主机用的 FullMAC 固件）。本版本没有 IPRO6S 的 BLE 控制器库与 BLE／BR/EDR 应用。
 
 在 Reef 上，IPRO6S 是插在 microSD 卡座中的 FIN Wi-Fi 卡，卡上固件是 `ipro6_if_wifi` 的 SDIO 配置：
 
@@ -193,7 +193,7 @@ IPRO7 通过外接无线模块连接 Wi-Fi，在 Reef 上是经 SDIO 连接的 I
 
 ### SDK 支持哪些 RTOS？BLE Host 是 Zephyr 吗？ { #rtos }
 
-40 个应用全部基于 FreeRTOS（内核 V11.1.0）：37 个 IPRO7、3 个 IPRO6S。BLE Host 来自 Zephyr v4.4.0，通过 SDK 的移植层在 FreeRTOS 上运行，应用使用 Zephyr 的 `bt_*` API，但无需安装 Zephyr。
+41 个应用全部基于 FreeRTOS（内核 V11.1.0）：38 个 IPRO7、3 个 IPRO6S。BLE Host 来自 Zephyr v4.4.0，通过 SDK 的移植层在 FreeRTOS 上运行，应用使用 Zephyr 的 `bt_*` API，但无需安装 Zephyr。
 
 SDK 同时也是 Zephyr v4.4.0 模块，板型为 `ipro7_evb` 与 `ipro7ai_evk`，没有 Reef 的板型；SoC 的 Kconfig 说明指出 Reef 运行 `ipro7_evb` 镜像时要设置 `CONFIG_SOC_IPRO7_XTAL_CAPCODE=95`。详见 [Zephyr RTOS](../guides/zephyr.md)。
 

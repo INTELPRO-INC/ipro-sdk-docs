@@ -9,7 +9,7 @@ hero:
   release_text: "{sdk} 已於 {date} 發佈"
   release_link: reference/release-notes/
   title: "IPRO 系列晶片\u200b開發套件"
-  lead: 一套架構涵蓋 IPRO7 與 IPRO6 系列：FreeRTOS 與 Zephyr、BLE 5.4 與 LE Audio、Wi-Fi 6、NPU 端側 AI 與影像處理。
+  lead: 一套架構涵蓋 IPRO7 與 IPRO6 系列：FreeRTOS 與 Zephyr、BLE 5.4 與 LE Audio、Wi-Fi、NPU 端側 AI 與影像處理。
   primary:
     text: 開始使用
     link: get-started/
@@ -19,13 +19,13 @@ arch:
   chip_link_text: 晶片規格
   default: ipro7ai
   chips:
-    - { id: ipro7, name: IPRO7, sdk: V2.2.1, link: hardware/chips/ipro7/, desc: BLE 5.4 與 LE Audio、802.15.4、ISP 與 MJPEG 的 RISC-V 無線 SoC。 }
-    - { id: ipro7ai, name: IPRO7AI, sdk: V2.2.1, link: hardware/chips/ipro7ai/, desc: IPRO7 加上 NPU 與封裝內 PSRAM；IPRO7AI Reef EVK V4.0 的主晶片。 }
-    - { id: ipro6s, name: IPRO6S, sdk: V2.2.1, link: hardware/chips/ipro6s/, desc: 內建 Wi-Fi 6 的 RISC-V SoC；在 Reef 上是插在 microSD 卡座的 FIN Wi-Fi 卡。 }
+    - { id: ipro7, name: IPRO7, sdk: V2.3.0, link: hardware/chips/ipro7/, desc: BLE 5.4 與 LE Audio、802.15.4、ISP 與 MJPEG 的 RISC-V 無線 SoC。 }
+    - { id: ipro7ai, name: IPRO7AI, sdk: V2.3.0, link: hardware/chips/ipro7ai/, desc: IPRO7 加上 NPU 與封裝內 PSRAM；IPRO7AI Reef EVK V4.0 的主晶片。 }
+    - { id: ipro6s, name: IPRO6S, sdk: V2.3.0, link: hardware/chips/ipro6s/, desc: 內建 Wi-Fi 的 RISC-V SoC；在 Reef 上是插在 microSD 卡座的 FIN Wi-Fi 卡。 }
   layers:
     - name: 應用
       items:
-        - { title: 範例應用, link: examples/, chips: [ipro7, ipro7ai, ipro6s], desc: 隨附的 40 個應用；在 Reef 上執行的 9 個各有逐步說明。 }
+        - { title: 範例應用, link: examples/, chips: [ipro7, ipro7ai, ipro6s], desc: 隨附的 41 個應用；在 Reef 上執行的 9 個各有逐步說明。 }
         - { title: IPRO AI Teach, link: teach/, chips: [ipro7ai], desc: Reef 的 Edge AI 韌體，以 IPRO AI Studio 教會板子辨識影像、聲紋與感測訊號。 }
         - { title: 你的應用, wide: true, link: tutorials/first-own-app/, chips: [ipro7, ipro7ai, ipro6s], desc: 從 Reef 的 .config 複製一個開始，以 .config 選擇元件。 }
     - name: 元件
@@ -36,7 +36,7 @@ arch:
         - { title: AI 執行庫, link: guides/ai-npu/, chips: [ipro7ai], desc: NPU 推論執行庫與 Edge AI 平台：模型儲存、輸入來源與前處理。 }
         - { title: 相機與 ISP, link: guides/camera/, chips: [ipro7, ipro7ai], desc: DVP 相機、ISP 與硬體 MJPEG，可做 USB 網路攝影機。 }
         - { title: lwIP／mbedTLS, link: guides/networking/, chips: [ipro7, ipro7ai, ipro6s], desc: TCP/IP 協定堆疊與 TLS。 }
-        - { title: Wi-Fi 6, link: hardware/chips/ipro6s/, chips: [ipro6s], desc: IPRO6S 內建的 Wi-Fi 6；MAC、wpa_supplicant 與射頻為預編譯函式庫。 }
+        - { title: Wi-Fi, link: hardware/chips/ipro6s/, chips: [ipro6s], desc: IPRO6S 內建的 Wi-Fi；MAC、wpa_supplicant 與射頻為預編譯函式庫。 }
         - { title: SDIO Wi-Fi 主機, link: guides/networking/, chips: [ipro7, ipro7ai], desc: 經 SDIO 接 IPRO6S（Reef 上為 FIN 卡），為 IPRO7 系列提供 Wi-Fi。 }
         - { title: Thread, link: guides/thread-matter/, chips: [ipro7, ipro7ai], desc: 802.15.4 與 OpenThread，在 Zephyr 下提供。 }
     - name: RTOS
@@ -82,7 +82,7 @@ migrate_from:
 
     把 IPRO6S FIN 卡插進 microSD 卡座，經 SDIO 連上 Wi-Fi，並以 RTSP 串流相機畫面。
 
-    <span class="ipro-tag">IPRO6S</span> <span class="ipro-tag">Wi-Fi 6</span> <span class="ipro-tag">RTSP</span>
+    <span class="ipro-tag">IPRO6S</span> <span class="ipro-tag">Wi-Fi</span> <span class="ipro-tag">RTSP</span>
 
     [逐步教學](tutorials/wifi-rtsp.md)
 
@@ -96,7 +96,7 @@ SDK 也包含 IPRO7 EVB、IPRO7AI EVK 與 IPRO6S EVK 的應用，列在[範例](
 
 <div class="ipro-steps" markdown>
 
-1. **準備開發環境**：向 INTELPRO 取得 RISC-V 工具鏈，從 GitHub 下載 IntelProCube 0.7.0.1，安裝 CMake 3.15 以上、GNU make 與 Python 3.8 以上，再從發佈頁下載 SDK V2.2.1。[安裝說明](get-started/index.md)
+1. **準備開發環境**：向 INTELPRO 取得 RISC-V 工具鏈，從 GitHub 下載 IntelProCube 0.7.0.1，安裝 CMake 3.15 以上、GNU make 與 Python 3.8 以上，再從發佈頁下載 SDK V2.3.0。[安裝說明](get-started/index.md)
 2. **建置開箱韌體**：在 SDK 根目錄執行 `make -C apps/platform/ipro7ai_reef_demo`，映像在 `build/build_out/ipro7ai_reef_demo_IPRO7.bin`。
 3. **燒錄並自我檢查**：按住 SW1、按一下 SW2 進入下載模式，以 IntelProCube 燒錄並確認 `[All Success]`；在 U6 主控台（115200 baud）輸入 `reef selftest`，LED、喇叭、SD 卡與相機依序通過。[完整步驟](get-started/first-app-freertos.md)
 
@@ -129,17 +129,17 @@ SDK 也包含 IPRO7 EVB、IPRO7AI EVK 與 IPRO6S EVK 的應用，列在[範例](
 - [:material-monitor-dashboard: **IPRO Workbench**](workbench/index.md)<br>IPRO 的整合開發環境：補齊工具、建置、燒錄、序列埠監看與除錯都在同一個視窗
 - [:material-brain: **IPRO AI Teach**](teach/index.md)<br>安裝 IPRO AI Studio、燒錄 Edge AI 韌體，教會 Reef 辨識影像、聲紋與感測訊號
 - [:material-school-outline: **教學**](tutorials/index.md)<br>建置與燒錄、第一個自己的應用、測試、BLE、LE Audio、網路攝影機與 Wi-Fi
-- [:material-view-grid-outline: **範例**](examples/index.md)<br>40 個隨附應用；Reef 上可執行的 9 個各有步驟
+- [:material-view-grid-outline: **範例**](examples/index.md)<br>41 個隨附應用；Reef 上可執行的 9 個各有步驟
 - [:material-code-tags: **API 參考**](reference/api/index.md)<br>平台、HAL、BLE 控制器與 AI 執行庫的介面
 - [:material-console: **工具命令列**](reference/tools.md)<br>建置腳本、燒錄、序列埠、OTA 與 Teach 工具
 - [:material-help-circle-outline: **常見問題**](reference/faq.md)<br>建置、燒錄、BLE 與連網的常見問題
 
 </div>
 
-## V2.2 重點 { #whats-new }
+## V2.3 重點 { #whats-new }
 
-- **V2.2.1**（2026-11-10）：沒有出廠 MAC 位址的 IPRO6S（例如 IPRO6S EVK）也能啟動 soft-AP；`make_reef_ota.sh` 會自行從公開版 IntelProCube 找到 boot2。見[發行說明](reference/release-notes.md#v2-2-1)。
-- **IPRO6S 應用回歸**：`ipro6_demo`（Wi-Fi 6 station／soft-AP 與 DTIM 省電）、`ipro6_if_wifi`（經 SDIO 或 USB 橋接到主機，也是 Reef FIN 卡的韌體）與 `ipro6_fmac`（FullMAC 韌體與 Flash 載入程式）。IPRO6S 應用只含 Wi-Fi，本版沒有 IPRO6S 藍牙。
-- **Edge AI 平台 V2.0 與 `ipro_reef_teach`**：一個 Reef 韌體包含影像、聲紋與感測器三個 Teach 工具，由 IPRO AI Studio 操作；IPRO AI Studio 可從 [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) 下載。
-- **新應用 `ipro7_jpeg_decode`**：以軟體把 JPEG 解碼成 RGB565／RGB888。`ipro7ai_reef_demo` 新增 `mic usb`（USB 麥克風）與 `mic sdrec`（錄 WAV 到 SD 卡）。
-- **共 40 個應用**。USB 裝置、lwIP 與 BSP 的修正見[版本資訊](reference/release-notes.md)。
+- **V2.3.0**（2026-11-13）：OTA 元件 `components/sys/ipro_ota`，BLE OTA 服務（0xFF60）與主控台 UART 的 `ota_uart` 指令共用同一套套件檢查，切換分割表前先檢查寫入 Flash 的套件標頭與 SHA-256。見 [OTA 更新](guides/ota.md)。
+- **IPRO7AI Sensor Tag 範例 `ipro7ai_sensor_tag_demo`**：讀取 IMU、電量計與按鍵，控制 LED 與蜂鳴器，經板子的 USB 每秒送出 20 行數值，給 IPRO Workbench 0.2.0 的感測器儀表板顯示；以新工具 `tools/ipro_dl.py` 經板子的 USB 燒錄，不需要探棒。
+- **IPRO6S**：開機時印出 `Build:` 行（建置時間），IPRO Workbench 可以辨識板子上的韌體；`wifi_ap_start -b 1 -o 1` 讓 2.4 GHz 基地台在鄰近網路重疊時仍維持 40 MHz 頻寬；DTIM 省電時不再因基地台 beacon 偶爾延遲而漏收。
+- **搭配 [IPRO Workbench 0.2.0](workbench/index.md)**：設定檔變體、感測器儀表板、OTA 包傳送到板子、Wi-Fi 頁面、新的起始應用程式、經板子的 USB 燒錄（macOS），以及簡體中文與日文介面。
+- **共 41 個應用**。完整內容見[版本資訊](reference/release-notes.md#v2-3-0)；V2.2 的重點也在那裡。

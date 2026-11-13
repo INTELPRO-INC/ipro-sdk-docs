@@ -1,6 +1,6 @@
 ---
 title: "IPRO6S"
-description: IPRO6S 的規格、V2.2.1 隨附的三個 Wi-Fi 6 應用與其設定、建置與燒錄，以及在 IPRO7AI Reef EVK 上作為 FIN Wi-Fi 卡的用法
+description: IPRO6S 的規格、V2.3.0 隨附的三個 Wi-Fi 應用與其設定、建置與燒錄，以及在 IPRO7AI Reef EVK 上作為 FIN Wi-Fi 卡的用法
 migrate_from:
   - "hardware.html#ipro6s"
   - "architecture.html#dual-chip"
@@ -10,10 +10,10 @@ migrate_from:
 
 # IPRO6S
 
-IPRO6S 是內建 Wi-Fi 6 的 RISC-V SoC，與 IPRO7 使用同一份 SDK 原始碼樹與同一套工具鏈建置。V2.2.1 隨附三個 IPRO6S Wi-Fi 應用：獨立連網的 `ipro6_demo`、把 Wi-Fi 經 SDIO 或 USB 橋接給主處理器的 `ipro6_if_wifi`，以及 Linux 主機用的 FullMAC 韌體 `ipro6_fmac`。在 IPRO7AI Reef EVK 上，IPRO6S 是插在 microSD 卡座的 FIN Wi-Fi 卡，經 SDIO 為 IPRO7AI 提供連網。
+IPRO6S 是內建 Wi-Fi 的 RISC-V SoC，與 IPRO7 使用同一份 SDK 原始碼樹與同一套工具鏈建置。V2.3.0 隨附三個 IPRO6S Wi-Fi 應用：獨立連網的 `ipro6_demo`、把 Wi-Fi 經 SDIO 或 USB 橋接給主處理器的 `ipro6_if_wifi`，以及 Linux 主機用的 FullMAC 韌體 `ipro6_fmac`。在 IPRO7AI Reef EVK 上，IPRO6S 是插在 microSD 卡座的 FIN Wi-Fi 卡，經 SDIO 為 IPRO7AI 提供連網。
 
 <div class="ipro-facts" markdown>
-<div><strong>Wi-Fi 6</strong><span>內建於晶片</span></div>
+<div><strong>Wi-Fi</strong><span>內建於晶片</span></div>
 <div><strong>RV32IMAFC</strong><span>與 IPRO7 相同的工具鏈</span></div>
 <div><strong>3</strong><span>IPRO6S 應用</span></div>
 <div><strong>ipro6</strong><span>燒錄時的 <code>--chipname</code></span></div>
@@ -24,7 +24,7 @@ IPRO6S 是內建 Wi-Fi 6 的 RISC-V SoC，與 IPRO7 使用同一份 SDK 原始�
 | 項目 | IPRO6S |
 |---|---|
 | 核心 | RISC-V RV32IMAFC，含 DSP 擴充 |
-| 無線 | 內建 Wi-Fi 6 |
+| 無線 | 內建 Wi-Fi |
 | NPU／ISP | 無 |
 | RTOS | FreeRTOS V11 |
 | 參考板 | IPRO6S EVK（供應請洽 INTELPRO）；Reef 的 FIN 卡 |
@@ -47,12 +47,12 @@ CONFIG_FREERTOS_SUPPORT=y
 
 ## 本版 SDK 支援 { #status }
 
-| 項目 | V2.2.1 |
+| 項目 | V2.3.0 |
 |---|---|
 | 應用 | `ipro6_demo`、`ipro6_if_wifi`、`ipro6_fmac`（`apps/platform/`） |
-| Wi-Fi 6 | MAC（`components/wireless/macsw`）、fhost API、wpa_supplicant 與 lwIP 轉接層（`components/wireless/wifi6`）、RF 驅動（`components/wireless/rf/ipro6_rf`），皆為依應用設定預編譯的函式庫 |
+| Wi-Fi | MAC（`components/wireless/macsw`）、fhost API、wpa_supplicant 與 lwIP 轉接層（`components/wireless/wifi6`）、RF 驅動（`components/wireless/rf/ipro6_rf`），皆為依應用設定預編譯的函式庫 |
 | 低功耗 | DTIM 低功耗韌體映像 `bsp/hal/lp_framework/ipro6/prebuilt/ipro6_lpfw.bin`，由低功耗設定嵌入 |
-| Bluetooth | IPRO6S 的藍牙控制器函式庫與雙模（BR/EDR）應用未包含於 V2.2.1，請洽 INTELPRO。本版 IPRO6S 應用只使用 Wi-Fi |
+| Bluetooth | IPRO6S 的藍牙控制器函式庫與雙模（BR/EDR）應用未包含於 V2.3.0，請洽 INTELPRO。本版 IPRO6S 應用只使用 Wi-Fi |
 | Zephyr RTOS | 隨附 `ipro6s_evb` 板型檔案，但本版不支援 IPRO6S 的 Zephyr 建置 |
 | 燒錄 | [IntelProCube](https://github.com/INTELPRO-INC/ipro-cube/releases) 0.7.0.1 以上的命令列工具，`--chipname ipro6`；`build_freertos.sh` 的 `flash` 只支援 IPRO7 |
 
@@ -62,16 +62,16 @@ CONFIG_FREERTOS_SUPPORT=y
 
 | 應用 | 設定 | 內容 |
 |---|---|---|
-| `ipro6_demo` | `defconfig_ipro6_lpwifi` | Wi-Fi 6 Station 與 soft-AP、lwIP、shell，加上 DTIM 省電 |
+| `ipro6_demo` | `defconfig_ipro6_lpwifi` | Wi-Fi Station 與 soft-AP、lwIP、shell，加上 DTIM 省電 |
 | | `defconfig_ipro6_lp` | 低功耗示範，不含 Wi-Fi |
-| `ipro6_if_wifi` | `defconfig_ipro6_sdio` | Wi-Fi 6 橋接：主處理器經 SDIO 看到類似乙太網路的介面；Reef 的 FIN 卡韌體 |
+| `ipro6_if_wifi` | `defconfig_ipro6_sdio` | Wi-Fi 橋接：主處理器經 SDIO 看到類似乙太網路的介面；Reef 的 FIN 卡韌體 |
 | | `defconfig_ipro6_usb` | 同上，經 USB |
 | | `defconfig_ipro6_lp` | 低功耗示範，不含 Wi-Fi |
 | `ipro6_fmac` | `defconfig_ipro6_fmac` | Linux cfg80211 主機用的 FullMAC 韌體（映像 `ipro6s_fmac.img`）；`make` 預設使用這個設定 |
 | | `defconfig_ipro6_fmac_loader` | 經 SDIO 或 USB 接收 FullMAC 韌體的 Flash 載入程式 |
 
-- `ipro6_demo/defconfig_ipro6_lpwifi_ping` 與 `ipro6_fmac/defconfig_ipro6_fmac_ap` 沒有設定 `CONFIG_WIRELESS_LIB_VARIANT`，不在驗證過的設定之列；使用前請洽 INTELPRO。
-- `ipro6_fmac` 的 Linux 主機端驅動未包含於 V2.2.1。
+- `ipro6_fmac/defconfig_ipro6_fmac_ap` 沒有設定 `CONFIG_WIRELESS_LIB_VARIANT`，不在驗證過的設定之列；使用前請洽 INTELPRO。V2.2.x 隨附的 `ipro6_demo/defconfig_ipro6_lpwifi_ping` 需要 Wi-Fi 函式庫原始碼，V2.3.0 起不在套件中。
+- `ipro6_fmac` 的 Linux 主機端驅動未包含於 V2.3.0。
 - 這三個應用以 IPRO6S EVK 為目標（`CONFIG_BOARD="EVB"`）；在 Reef 上只有 `ipro6_if_wifi` 的 `defconfig_ipro6_sdio` 執行於 FIN 卡。
 
 ## 建置 { #build }
@@ -105,7 +105,7 @@ CONFIG_WIRELESS_LIB_VARIANT="ipro6_if_wifi-ipro6_sdio"
 需要：
 
 - IPRO6S EVK、2.4 GHz 天線、IPRO Debug Probe 與它的 UART 排線、USB-C 電源。
-- 依[準備開發環境](../../get-started/environment.md)安裝的工具鏈，以及 SDK V2.2.1（下文寫作 `<SDK>`）。
+- 依[準備開發環境](../../get-started/environment.md)安裝的工具鏈，以及 SDK V2.3.0（下文寫作 `<SDK>`）。
 - [IntelProCube](https://github.com/INTELPRO-INC/ipro-cube/releases) 0.7.0.1 以上：依 [README](https://github.com/INTELPRO-INC/ipro-cube#readme) 下載、核對 SHA-256，解壓到新的資料夾（下文寫作 `<IntelProCube>`）。以 0.7.0 燒錄的映像無法開機，見[燒錄成功卻沒有開機](#ipro6s-no-boot)。
 
 <div class="ipro-steps" markdown>
@@ -151,7 +151,7 @@ CONFIG_WIRELESS_LIB_VARIANT="ipro6_if_wifi-ipro6_sdio"
     screen /dev/cu.usbmodemXXXX02 115200
     ```
 
-    開機訊息的最後幾行：
+    V2.3.0 起，開機訊息前段有一行 `Build:<時間>,<日期>`，是這次建置的時間，和 IPRO7 相同。開機訊息的最後幾行：
 
     ```text
     [OS] Starting OS Scheduler...
@@ -204,7 +204,7 @@ FIN 卡是把 IPRO6S 做在 SD 卡形狀板緣上的 Wi-Fi 卡，插進 Reef 的
 ```mermaid
 flowchart LR
     A["IPRO7AI（Reef）<br/>應用 + ipronet_host + lwIP"] -- "SDIO 4-bit（microSD 卡座）" --> B["IPRO6S FIN 卡<br/>ipro6_if_wifi"]
-    B -- "Wi-Fi 6" --> C["無線基地台"]
+    B -- "Wi-Fi" --> C["無線基地台"]
 ```
 
 IPRO7AI 端的主機元件 `components/network/ipronet_host` 經 SD 主控（GPIO28–33）驅動卡片，把連線呈現為 lwIP 網路介面 `iproeth0`。使用它的 Reef 應用：

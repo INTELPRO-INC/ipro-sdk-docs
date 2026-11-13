@@ -32,7 +32,7 @@ Look-up material for development: the exact names of APIs and tool options, what
 
     ---
 
-    What V2.2.1 adds, leaves out and its known issues, plus the history of earlier releases.
+    What V2.3.0 adds, leaves out and its known issues, plus the history of earlier releases.
 
 -   :material-frequently-asked-questions:{ .lg } **[FAQ](faq.md)**
 

@@ -328,7 +328,7 @@ SDK 沒有通用的雲端 AI 用戶端元件。`apps/multimedia/ipro_agora_senti
     git -C components/3rdparty/agora/aosl checkout d825607
     ```
 
-- 另需 Sentino 裝置三元組，未包含於 V2.2.1，請洽 INTELPRO。
+- 另需 Sentino 裝置三元組，未包含於 V2.3.0，請洽 INTELPRO。
 
 ## 本版限制 { #limitations }
 

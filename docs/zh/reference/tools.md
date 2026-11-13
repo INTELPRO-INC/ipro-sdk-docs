@@ -1,6 +1,6 @@
 ---
 title: "工具命令列"
-description: SDK V2.2.1 隨附主機端工具的命令、選項與範例：build_freertos.sh、make、IntelProCube 燒錄工具、serial_monitor.py、create_ota.py、Reef 的 Teach 與 OTA 工具，以及未隨附的項目。
+description: SDK V2.3.0 隨附主機端工具的命令、選項與範例：build_freertos.sh、make、IntelProCube 燒錄工具、serial_monitor.py、create_ota.py、Reef 的 Teach 與 OTA 工具，以及未隨附的項目。
 migrate_from:
   - "tools-debugging.html#overview"
   - "tools-debugging.html#build-cli"
@@ -22,17 +22,18 @@ SDK 隨附主機端工具的命令格式、選項與範例，範例以 IPRO7AI R
 | `make` ＋ `project.build` | 各應用的 `Makefile` | 建置單一應用 | 隨附 |
 | `serial_monitor.py` | `tools/` | 讀取主控台，可先送一行指令、等待指定字串並存檔（macOS、Linux；非互動式終端機） | 隨附 |
 | `create_ota.py` | `tools/` | 把 IntelProCube 的合併映像封裝成 boot2 OTA 套件 | 隨附 |
+| `ipro_dl.py` | `tools/` | 經 boot2 的 USB 下載模式燒錄板子，只需 Python 標準函式庫（macOS、Linux）；IPRO7AI Sensor Tag 的 `ipro7ai_sensor_tag_demo` 以它經板子的 USB 燒錄，IPRO Workbench 0.2.0 在 macOS 經板子的 USB 燒錄時也使用它。V2.3.0 起 | 隨附 |
 | 瀏覽器版影像 Teach | `tools/teach_web/` | 在 Chrome／Edge 中收集影像、訓練分類器並部署到 `ipro_reef_teach` | 隨附 |
 | `mfg_payload.py` | `apps/ai/ipro_reef_teach/` | 產生 `ipro_reef_teach` 的 `--mfg` 燒錄內容（模式與聲紋模型） | 隨附 |
 | Reef BLE OTA 工具 | `apps/bluetooth/ble/ipro_ble_remote/tools/` | `make_reef_ota.sh`、`reef_ota.py`、`reef_ble_test.py`，以及 Android 示範 App `ipro_remote_demo.apk`（在應用目錄） | 隨附 |
 | `parse_kconfig_dynamic.py` | `tools/script/` | 把 Kconfig 樹匯出成 JSON（需要 kconfiglib，建置流程不使用） | 隨附 |
 | CMake 3.15 | `tools/cmake/` | 系統沒有 `cmake` 時的備用版本，僅限 Linux x86-64 | 隨附 |
 | Zephyr 腳本 | `tools/zephyr/` | Zephyr 工作區、建置、燒錄與主控台（`ipro7_evb`、`ipro7ai_evk` 板型） | 隨附 |
-| IntelProCube 0.7.0.1 命令列燒錄工具 | `ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe` | 經序列埠燒錄韌體、分割表、boot2 與 `mfg` 內容 | 未包含於 V2.2.1，從 [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) 下載 |
-| RISC-V 工具鏈 | `/opt/toolchain/riscv_ipro7/` | 編譯（GCC 14，`riscv64-unknown-elf-`） | 未包含於 V2.2.1，請洽 INTELPRO |
+| IntelProCube 0.7.0.1 命令列燒錄工具 | `ipro_iot_tool_macos`、`ipro_iot_tool_linux`、`ipro_iot_tool.exe` | 經序列埠燒錄韌體、分割表、boot2 與 `mfg` 內容 | 未包含於 V2.3.0，從 [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) 下載 |
+| RISC-V 工具鏈 | `/opt/toolchain/riscv_ipro7/` | 編譯（GCC 14，`riscv64-unknown-elf-`） | 未包含於 V2.3.0，請洽 INTELPRO |
 | IPRO AI Studio | — | IPRO AI Teach、模型轉換與部署 | 不在 SDK 內，從 [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) 下載 |
-| OpenOCD／GDB 連線設定、板級自動測試腳本 `tools/board_test.sh`、當機傾印主機工具 | — | 晶片上除錯、自動上板測試、讀取 `==DUMP_READY:` 後的記憶體 | 未包含於 V2.2.1，請洽 INTELPRO |
-| `tools/kconfig/menuconfig.py`、`configs/` 預設設定目錄、OTA 簽章用的 `ota_products.py` | — | `make menuconfig`、`make defconfig`、`create_ota.py --sign-key` | 未包含於 V2.2.1 |
+| OpenOCD／GDB 連線設定、板級自動測試腳本 `tools/board_test.sh`、當機傾印主機工具 | — | 晶片上除錯、自動上板測試、讀取 `==DUMP_READY:` 後的記憶體 | 未包含於 V2.3.0，請洽 INTELPRO |
+| `tools/kconfig/menuconfig.py`、`configs/` 預設設定目錄、OTA 簽章用的 `ota_products.py` | — | `make menuconfig`、`make defconfig`、`create_ota.py --sign-key` | 未包含於 V2.3.0 |
 
 本版沒有以 JTAG／GDB 進行晶片上除錯的設定與步驟；除錯以序列埠主控台、日誌與離線的 `addr2line` 為主，見[除錯與疑難排解](debugging.md)。
 
@@ -78,7 +79,7 @@ SDK 隨附主機端工具的命令格式、選項與範例，範例以 IPRO7AI R
 | `-P, --pt TABLE` | 燒錄的分割表：`.toml` 路徑（轉成絕對路徑後傳給工具），或工具 `chips/ipro7/partition/` 下的表名 | `$IPRO_FLASH_PT`，否則不傳 |
 | `-j, --jobs N` | 外層 `make` 的平行工作數；內層 CMake 建置固定 `-j4` | — |
 | `-v, --verbose` | 顯示完整建置輸出 | — |
-| `-l, --list` | 依分類列出 `apps/` 下全部 40 個專案 | — |
+| `-l, --list` | 依分類列出 `apps/` 下全部 41 個專案 | — |
 | `-h, --help` | 說明 | — |
 
 `<專案>` 可寫應用名稱（`ipro7ai_reef_demo`），或 `apps/` 之下的路徑（`platform/ipro7ai_reef_demo`）。名稱不唯一或找不到時，會列出候選名稱。`-l` 的說明欄取自 `.config` 第一行註解，部分應用會顯示空白。
@@ -107,7 +108,7 @@ export IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos
 ```bash
 ./build_freertos.sh -d defconfig_reef build ipro_ble_remote          # 輸出在 build_reef/build_out/
 ./build_freertos.sh -d defconfig_reef_ov5640 build flash ipro7_uvc_cam
-./build_freertos.sh -l                                              # 列出 40 個專案
+./build_freertos.sh -l                                              # 列出 41 個專案
 ./build_freertos.sh size ipro7ai_reef_demo
 ```
 
@@ -138,7 +139,7 @@ export IPRO_FLASH_TOOL=<IntelProCube>/ipro_iot_tool_macos
 
 ## IntelProCube 燒錄工具 { #flash-tool }
 
-燒錄使用 IntelProCube 的命令列工具。它未包含於 V2.2.1，從 [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) 下載 0.7.0.1，安裝方式見[準備開發環境](../get-started/environment.md#intelprocube)。工具從自己的 `chips/` 目錄讀取晶片檔，請在 IntelProCube 目錄下執行。下表依 SDK 內的 README 與腳本整理，完整選項以工具本身為準。
+燒錄使用 IntelProCube 的命令列工具。它未包含於 V2.3.0，從 [GitHub](https://github.com/INTELPRO-INC/ipro-cube/releases) 下載 0.7.0.1，安裝方式見[準備開發環境](../get-started/environment.md#intelprocube)。工具從自己的 `chips/` 目錄讀取晶片檔，請在 IntelProCube 目錄下執行。下表依 SDK 內的 README 與腳本整理，完整選項以工具本身為準。
 
 | 選項 | 說明 |
 |---|---|
@@ -217,7 +218,7 @@ python3 tools/create_ota.py <whole_img.bin> [--raw] [-o OUTPUT] [--hw-ver STR] [
 | `-o, --output` | 輸出檔案 |
 | `--hw-ver` | 寫入表頭的硬體版本字串；請明確指定，不要依賴預設值 |
 | `--fw-ver` | 寫入表頭的韌體版本字串（預設 `OTA_V1.0.0`） |
-| `--sign-key`、`--product` 等簽章選項 | 需要未隨附的 `ota_products.py`，V2.2.1 無法使用 |
+| `--sign-key`、`--product` 等簽章選項 | 需要未隨附的 `ota_products.py`，V2.3.0 無法使用 |
 
 在 Reef 上，`ipro_ble_remote` 的 `make_reef_ota.sh` 會替您呼叫工具的 `--build` 與本腳本，見 [Reef 應用的主機端工具](#reef-tools)。OTA 的整體流程見 [OTA 更新](../guides/ota.md)。
 

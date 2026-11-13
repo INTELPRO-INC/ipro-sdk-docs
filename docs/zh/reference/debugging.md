@@ -117,8 +117,8 @@ Reef 的主控台是 UART0（GPIO20 TX／GPIO21 RX），由除錯排座 U6 引�
 
 ## GDB 與除錯器 { #gdb-debugging }
 
-!!! info "未包含於 V2.2.1"
-    以 JTAG 進行晶片上除錯所需的 OpenOCD 設定與步驟未包含於 V2.2.1，請洽 INTELPRO。
+!!! info "未包含於 V2.3.0"
+    以 JTAG 進行晶片上除錯所需的 OpenOCD 設定與步驟未包含於 V2.3.0，請洽 INTELPRO。
 
 - **ELF 帶除錯資訊**：預設建置以 `-g3 -Os` 編譯，`<建置目錄>/build_out/<應用>_IPRO7.elf` 可直接交給工具鏈的 `riscv64-unknown-elf-addr2line` 或 `riscv64-unknown-elf-gdb` 做離線分析。燒錄用的 `.bin` 不含符號。
 - **預編譯函式庫不含除錯資訊**：IPRO BLE 控制器、RF、AI、ISP、LC3 與低功耗框架等預編譯函式庫已移除除錯資訊，只保留符號名稱，無法在其中做原始碼層級單步執行。
@@ -155,7 +155,7 @@ CPU 例外時，預設的例外處理程式會在主控台印出下列區塊：
 </div>
 
 !!! warning "`==DUMP_READY:2000000==` 一直重複出現"
-    `ipro7ai_reef_demo` 與 `ipro_reef_teach` 的 `.config` 設了 `CONFIG_EXCEPTION_DUMP=y`：印完上述診斷後，主控台約每 10 秒印一次 `==DUMP_READY:2000000==`，最長 5 分鐘，等待主機端工具讀取記憶體。這個主機端工具未包含於 V2.2.1。請先存下上方的診斷，再按 SW2 重置；不需要這個等待時，在 `.config` 改成 `CONFIG_EXCEPTION_DUMP=n` 後重新建置。
+    `ipro7ai_reef_demo` 與 `ipro_reef_teach` 的 `.config` 設了 `CONFIG_EXCEPTION_DUMP=y`：印完上述診斷後，主控台約每 10 秒印一次 `==DUMP_READY:2000000==`，最長 5 分鐘，等待主機端工具讀取記憶體。這個主機端工具未包含於 V2.3.0。請先存下上方的診斷，再按 SW2 重置；不需要這個等待時，在 `.config` 改成 `CONFIG_EXCEPTION_DUMP=n` 後重新建置。
 
 | 設定 | 作用 |
 |---|---|

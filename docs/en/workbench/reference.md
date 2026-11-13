@@ -1,11 +1,11 @@
 ---
 title: "Shortcuts, Commands and Settings"
-description: Reference for IPRO Workbench 0.1.1 - keyboard shortcuts, IPRO commands, ipro.* settings, the MCP tools and the files and folders the IDE uses.
+description: Reference for IPRO Workbench 0.2.0 - keyboard shortcuts, IPRO commands, ipro.* settings, the MCP tools and the files and folders the IDE uses.
 ---
 
 # Shortcuts, Commands and Settings
 
-Keyboard shortcuts, commands, settings, MCP tools and file locations of IPRO Workbench 0.1.1.
+Keyboard shortcuts, commands, settings, MCP tools and file locations of IPRO Workbench 0.2.0.
 
 ## Keyboard shortcuts { #shortcuts }
 
@@ -29,6 +29,7 @@ You can find all of the commands below by typing `IPRO` in the command palette. 
 | **Open SDK…** / **Install SDK from GitHub…** | Open or install an IPRO SDK |
 | **Check Environment** / **Fix Environment** | Check the development environment again; install the missing items |
 | **Select Application…** / **New Application…** / **Copy as New Application…** | Manage applications |
+| **Select Configuration…** | Choose the configuration the application builds from (`.config`, `defconfig_*`, `config_*`); see [Configurations](develop.md#configurations) |
 | **Select Board…** / **Select Port…** | Change the board or the serial port |
 | **Select Toolchain…** / **Select IntelProCube…** | Use tools that are already on this computer instead |
 | **Build, Flash and Monitor** / **Build** / **Flash** / **Stop** | Run and stop |
@@ -37,11 +38,13 @@ You can find all of the commands below by typing `IPRO` in the command palette. 
 | **Serial Monitor** / **Open Monitor on Another Port…** | Open a monitor |
 | **Filter Monitor Output…** / **Show Monitor Timestamps** / **Save Monitor Output…** | Display and save the monitor output |
 | **Serial Plotter** | Plot the numbers the board prints as curves |
+| **Sensor Dashboard** | Show the `name:value` lines the board prints as a dashboard; see [Sensor dashboard](monitor.md#dashboard) |
 | **Settings (Kconfig)…** / **Menuconfig** / **Open .config** | Change the application settings |
 | **Pin Configuration…** | Configure pins and generate code |
 | **GATT Configuration…** | Define BLE services and characteristics and generate code |
 | **Memory Map** | See what uses the memory |
 | **Partition Table** / **AI Model…** | Partition table view; check and write an NPU model |
+| **OTA Package…** | Make a boot2 OTA package and send it to the board; see [OTA package](flash.md#ota) |
 | **Run Tests on Board** | Reset the board and collect the Unity test results |
 | **RF Test (DTM)…** / **Wi-Fi Throughput (iperf)…** / **Power…** | RF, Wi-Fi throughput and power measurements |
 | **Crash Dumps…** | Open crash dumps collected earlier |
@@ -71,6 +74,7 @@ Open Settings and search for `ipro` to see the following items.
 | `ipro.monitor.filter` | Show only monitor lines matching this regular expression |
 | `ipro.monitor.logToFile` | Save the full content of every monitor session to the application's `build/logs` |
 | `ipro.mcp.enabled` / `ipro.mcp.port` | MCP server for AI assistants outside the IDE; on by default, port 41730 |
+| `ipro.ai.assistant` | Who requests such as **Ask AI to Fix** go to: `ipro` (the IPRO assistant, which needs a language model; the default) or `claudeCode` (the Claude Code assistant, which uses your Claude Code login and reaches the IPRO tools over MCP) |
 | `ipro.macos.probeDownloadMode` | macOS: hold the IPRO Debug Probe download strap while flashing |
 | `ipro.macos.checkQuarantine` | macOS: check the tools for the quarantine flag at startup |
 
@@ -81,13 +85,19 @@ AI assistants outside the IDE see the following tools through MCP (the names are
 | Tool | Purpose |
 |---|---|
 | `ipro_get_target` | The SDK, the current application, board and serial port, environment problems and the last build result |
+| `ipro_open_folder` | Open an IPRO SDK folder; given an application folder, open its SDK and make it the current application |
 | `ipro_list_applications` | List all applications in the SDK |
 | `ipro_select_application` | Switch the current application |
+| `ipro_list_configurations` / `ipro_select_configuration` | List the current application's configurations; choose the one it builds from |
+| `ipro_list_boards` / `ipro_select_board` | List the boards the IDE knows and the one in use; choose a board, or go back to auto |
+| `ipro_list_ports` / `ipro_select_port` | List this computer's serial ports (a probe's UART and CCI, and the others); choose the port flash, monitor and reset use |
 | `ipro_build` | Build the current application; returns errors, warnings and memory usage |
 | `ipro_get_build_output` | Read the latest output of IPRO Build or IPRO Flash |
 | `ipro_flash` | Flash the latest build and open the monitor |
 | `ipro_reset_board` | Reset the board through the probe |
+| `ipro_open_monitor` / `ipro_close_monitor` | Open the serial monitor on the port in use (optionally restarting the board); close it to free the port |
 | `ipro_read_monitor` | Read the latest lines the board printed on the monitor |
+| `ipro_write_monitor` | Type a line on the board's console and return what the board printed after it |
 | `ipro_board_tests` | The firmware the board booted last time and the Unity test results |
 | `ipro_get_settings` / `ipro_set_settings` | Read and change the application's Kconfig settings |
 | `ipro_get_pins` / `ipro_set_pins` | Read and change the pin configuration and generate code |
@@ -107,7 +117,10 @@ AI assistants outside the IDE see the following tools through MCP (the names are
 | `IPRO/SDK/<version>` in the home folder | SDKs installed by **Install SDK from GitHub…** |
 | `.ipro-ide` in the home folder | IDE settings and the MCP access token (`mcp.json`) |
 | `apps/<category>/<name>/build` | Build results of the application (firmware, ELF, map file) |
+| `apps/<category>/<name>/build_<configuration>` | Build results from `defconfig_<configuration>` (`build_config_<configuration>` for `config_<configuration>`), as with `make DEFCONFIG=<file>` |
+| `apps/<category>/<name>/build/build_out/<name>.xz.ota` | The boot2 OTA package made by **OTA Package** (in the configuration's build folder when one is chosen) |
 | `apps/<category>/<name>/build/logs` | Full monitor logs (when **Log To File** is on) |
 | `apps/<category>/<name>/build/crash` | Collected crash dumps |
 | `apps/<category>/<name>/pins.yaml` | Pin configuration; `app_pins.h` and `app_pins.c` are generated from it |
 | `apps/<category>/<name>/gatt.yaml` | GATT services; `app_gatt.h` and `app_gatt.c` are generated from it |
+| `apps/<category>/<name>/dashboard.yaml` | The layout of the Sensor Dashboard |

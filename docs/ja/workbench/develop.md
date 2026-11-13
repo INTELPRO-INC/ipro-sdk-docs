@@ -38,6 +38,42 @@ description: コードを書くときによく使う IPRO Workbench のビュー
 - **Show hidden options** にチェックを入れると、依存関係が満たされていないオプションが表示されます。menuconfig では非表示になりますが、ビルドでは読み込まれます。
 - テキストのインターフェースを使いたい場合は、右クリックして **Menuconfig** を選択すると、同じ設定をターミナルで編集できます。**Open .config** を選択すると、ファイルを直接編集できます。
 
+## 別構成 { #configurations }
+
+一部のアプリケーションには、`.config` のほかに、別のボードや用途向けの構成ファイル `defconfig_<name>` または `config_<name>` があります。IDE はそれらを一覧表示し、選択したファイルからビルドします。ビルドはアプリケーションフォルダー内の `build_<name>`（`config_<name>` の場合は `build_config_<name>`）に出力されます。これはコマンドラインで `make DEFCONFIG=<file>` を実行したときと同じフォルダーで、アプリケーション自体の `.config` は変更されません。設定（Kconfig）、ピン設定、GATT 設定も、選択したファイルを読み書きします。
+
+手順では `ipro7_uvc_cam` を使用します。その `.config` は IPRO7 EVB 用で、IPRO7AI Reef EVK V4.0 用の別構成が 2 つあります。
+
+<div class="ipro-steps" markdown>
+
+1. **アプリケーションを選択します。** サイドバーの **Applications** で **ipro7_uvc_cam**（`multimedia` カテゴリー）をクリックします。
+
+    **期待される結果**：ステータスバーのアプリケーション名の横に、歯車と `.config` が表示されます。アプリケーションが `.config` からビルドされることを示しています。ほかの構成ファイルがないアプリケーションには、この項目はありません。
+
+2. **構成の一覧を開きます。** ステータスバーの `.config` をクリックします（または IPRO メニューの **Select Configuration…**、コマンドパレットの `IPRO: Select Configuration…` を選択します）。
+
+    **期待される結果**：「Select the configuration ipro7_uvc_cam builds from」という見出しの一覧に、`.config`、`defconfig_reef_ov5640`、`defconfig_reef_rps` が表示されます。各行にはチップとボード（例：`IPRO7 · IPRO7AI Reef`）と、「Built in build」または「Not built yet; builds in build_reef_rps」という行が表示されます。使用中の構成にはチェックマークが付きます。
+
+3. **選択します。** `defconfig_reef_rps` を選択します。
+
+    **期待される結果**：「ipro7_uvc_cam now builds for IPRO7AI Reef (defconfig_reef_rps).」という通知が表示され、ステータスバーに `defconfig_reef_rps`、ツールバーのボードに IPRO7AI Reef が表示されます（ボードはアプリケーションの構成に従います。[設定](reference.md#settings)の `ipro.board.id` を参照してください）。選択したファイルが以前と同じボード用の場合、通知は表示されません。
+
+4. **ビルドします。** **Build** をクリックします。
+
+    **期待される結果**：**IPRO Build** が `Configuration: defconfig_reef_rps -> …/build_reef_rps/.config` で始まり、ファームウェアが `build_reef_rps/build_out/` に出力されます。IDE は選択したファイルをビルドフォルダーに `.config` としてコピーします。アプリケーションフォルダーの `.config` は変更されません。
+
+5. **元に戻します。** ステータスバーの項目をもう一度クリックし、`.config` を選択します。
+
+    **期待される結果**：ステータスバーに `.config` が表示され、ビルドと書き込みで再び `build` フォルダーが使われます。
+
+</div>
+
+!!! note
+    - `defconfig_*` ファイルだけがあり `.config` がないアプリケーション（例：`ipro6_fmac`）も、**Applications** に表示されるようになりました。アプリケーション名と同じ名前のファイル、なければ最初のファイルから開始します。
+    - 構成が 1 つしかないアプリケーションでは、**Select Configuration…** は「&lt;application&gt; has one configuration: .config.」と表示するだけです。
+    - 構成を選択している場合、**Clean** はその構成のビルドフォルダーを削除します。
+    - IDE はアプリケーションごとに選択した構成を記憶し、再起動後も保持します。
+
 ## ピンを設定する { #pins }
 
 **Pin Configuration** では、パッケージ図と表で各 GPIO の機能を割り当て、競合とボードの配線をチェックし、初期化コード `app_pins.h` と `app_pins.c` を生成します。
@@ -181,7 +217,7 @@ description: コードを書くときによく使う IPRO Workbench のビュー
 |---|---|
 | **Build** | 通常はこれを使用します。変更されたファイルだけを再コンパイルします。 |
 | **Reconfigure and Build** | `CMakeLists.txt` やビルドプロファイルを変更した後に使用します。CMake の構成をやり直します。 |
-| **Clean** | アプリケーションの `build` フォルダーを削除し、次回のビルドを最初からやり直します。 |
+| **Clean** | アプリケーションの `build` フォルダー（[別構成](#configurations)を選択している場合はその構成のビルドフォルダー）を削除し、次回のビルドを最初からやり直します。 |
 
 ビルドプロファイル（Debug / Release / MinSizeRel）は `ipro.build.profile` 設定で選択します。[設定](reference.md#settings)を参照してください。
 

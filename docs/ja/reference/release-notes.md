@@ -7,11 +7,48 @@ migrate_from:
 
 # リリースノート
 
-IPRO SDK の正式リリースを新しい順に掲載しています。現在のリリースは V2.2.1 です。各バージョンのダウンロードとリリースノートは [GitHub Releases](https://github.com/INTELPRO-INC/IPRO-SDK/releases) にあります。SDK パッケージ自体の説明は、パッケージのルートにある `README.md` を参照してください。Windows 用オンラインインストーラー Online Setup もここに掲載しています（現在 3.6.0）。[ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest) からダウンロードできます。
+IPRO SDK の正式リリースを新しい順に掲載しています。現在のリリースは V2.3.0 です。各バージョンのダウンロードとリリースノートは [GitHub Releases](https://github.com/INTELPRO-INC/IPRO-SDK/releases) にあります。SDK パッケージ自体の説明は、パッケージのルートにある `README.md` を参照してください。Windows 用オンラインインストーラー Online Setup もここに掲載しています（現在 3.6.0）。[ipro-sdk-releases](https://github.com/INTELPRO-INC/ipro-sdk-releases/releases/latest) からダウンロードできます。
+
+## IPRO-SDK-V2.3.0 { #v2-3-0 }
+
+<span class="ipro-badge">最新版</span> リリース日：2026-11-13 · [GitHub リリース](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.3.0)
+
+IPRO7 / IPRO7AI と IPRO6S のリリースです。すべての転送方式で共通の OTA コンポーネント、ボード自身の USB から書き込む IPRO7AI Sensor Tag の公開サンプル、IPRO6S のビルド時刻行を追加しました。FreeRTOS アプリケーションは 41 個（IPRO7 用 38 個、IPRO6S 用 3 個）です。[IPRO Workbench 0.2.0](https://github.com/INTELPRO-INC/ipro-workbench/releases/tag/v0.2.0)（[IPRO Workbench](../workbench/index.md) を参照）と IntelProCube 0.7.0.1 以降を組み合わせて使ってください。
+
+| ダウンロード | サイズ | SHA-256 |
+|---|---|---|
+| `IPRO-SDK-V2.3.0.tar.gz` | 163.4 MB | `0f39c1d2551be0aa748bfee6613ec3c8cb5cfa6b1cea310780f9d58ce216574b` |
+
+**新機能と変更点**
+
+- **OTA コンポーネント** `components/sys/ipro_ota`（`CONFIG_IPRO_OTA`）：すべての転送方式で共通のパッケージ検査です。512 バイトの OTA ヘッダーを読み、ボードが切り替える前にフラッシュに書き込まれたイメージの SHA-256 を確認し、各フラッシュセクターを書き込む直前に消去します。これを使う転送方式は 2 つです。
+    - **コンソール UART 経由の OTA**：シェルコマンド `ota_uart <バイト数> [noapply]`（`CONFIG_IPRO_OTA_UART`）。IPRO Workbench 0.2.0 はこれでパッケージをボードに送ります（OTA Package → Send to Board）。
+    - **BLE OTA サービス**（UUID 0xFF60、`CONFIG_IPRO_OTA_BLE`）：`ipro_ble_remote` にあったサービスがコンポーネントに移りました。`ipro_ble_remote`（`defconfig_reef`）は SHA-256 が一致しないパッケージを拒否し、スロット全体を先に消去しなくなったため、START から 0.5 秒未満で受信を始めます（従来は約 4 秒）。
+
+    説明は `components/sys/ipro_ota/README.md`、手順は [OTA アップデート](../guides/ota.md)にあります。
+- **`ipro7ai_sensor_tag_demo`**：IPRO7AI Sensor Tag ボード用のサンプルです。IMU（ISM330BX：加速度、角速度、温度）、燃料ゲージ（CW2015）、ボタンを読み取り、2 個の LED とブザーを制御します。ボード自身の USB から毎秒 20 行の `名前:値` を出力し、IPRO Workbench 0.2.0 のセンサーダッシュボードがアプリケーションの `dashboard.yaml` に従って表示します。シェルコマンドは `stream`、`rate`、`led`、`beep` です。[サンプル](../examples/index.md)を参照してください。
+- **`tools/ipro_dl.py`**：boot2 の USB ダウンローダー経由でボードに書き込みます（Python 標準ライブラリのみ、macOS と Linux）。Sensor Tag のサンプルはこれで書き込みます。IPRO Workbench 0.2.0 も macOS でボード自身の USB ポートに書き込むときに使います。
+- **IPRO6S**：起動時に IPRO7 と同様、ビルド日時を含む `Build:` 行を表示するため、IPRO Workbench がボードで動いているファームウェアを判別できます。
+- **IPRO6S Wi-Fi**：`wifi_ap_start -b 1 -o 1` で、近隣のネットワークと重なっても 2.4 GHz アクセスポイントが 40 MHz チャネルを保ちます（`-b 1` だけの場合は従来どおり 20 MHz に戻ります）。
+- **修正**：DTIM 省電力時に、アクセスポイントのビーコンが近隣のネットワークのためにときどき遅れると、IPRO6S が受信機を開くのが遅すぎてビーコンを受信し損ねていました。受信ウィンドウは定刻のビーコンに合わせたままになりました。
+- `ipro6_demo` には、ビルド済みライブラリに対応する構成 `defconfig_ipro6_lpwifi` と `defconfig_ipro6_lp` だけを同梱します。V2.2.x に含まれていた `defconfig_ipro6_lpwifi_ping` は Wi-Fi ライブラリのソースが必要なため、パッケージから外しました。
+- パッケージの README：IPRO6S は Wi-Fi と記載しています。
+
+**アプリケーション**
+
+- 合計 41 個：IPRO7 用 38 個、IPRO6S 用 3 個。V2.2.1 から `ipro7ai_sensor_tag_demo` が増えました。
+- V2.2.x からのアップグレード：新しいパッケージを展開し、アプリケーションをビルドし直してください。
+
+リリース前にパッケージからビルドして確認した内容：37 個の FreeRTOS アプリケーション（`ipro_agora_sentino` は AOSL を取得したうえで）、同梱の IPRO6S 構成 7 個すべて、`ipro7_evb` と `ipro7ai_evk` の Zephyr サンプルマトリクスと `twister --build-only`。ボード上では、IPRO6S EVK で IPRO Workbench 0.2.0 でビルドした `ipro6_demo`（`defconfig_ipro6_lpwifi`）を IntelProCube 0.7.0.1（`partition_cfg_fw_direct.toml`）で書き込み、`Build:` 行の表示と周囲のアクセスポイントのスキャンを確認しました。IPRO7AI Reef EVK V4.0 では IntelProCube 0.7.0.1 で書き込んだ `ipro7ai_reef_demo` が `reef selftest` に合格しました。IPRO7AI Sensor Tag では `ipro7ai_sensor_tag_demo` をボード自身の USB から書き込み（コンソールからと boot2 のダウンローダーから、`tools/ipro_dl.py` と IPRO Workbench 0.2.0 のそれぞれで）、毎秒 20 行でセンサー値を出力することを確認しました。
+
+### 既知の問題 { #v2-3-0-known-issues }
+
+- [V2.2.0 の既知の問題と注意事項](#v2-2-0-known-issues)は引き続き当てはまります。ただし `ipro6_demo/defconfig_ipro6_lpwifi_ping` はパッケージに含まれなくなりました。`ipro6_fmac/defconfig_ipro6_fmac_ap` には引き続き対応するビルド済みライブラリがありません。
+- **ボード自身の USB からの書き込み**：IPRO Workbench 0.2.0 では macOS 版だけが対応しています。Windows では IPRO Debug Probe を使ってください。
 
 ## IPRO-SDK-V2.2.1 { #v2-2-1 }
 
-<span class="ipro-badge">最新版</span> リリース日：2026-11-10 · [GitHub リリース](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.1)
+リリース日：2026-11-10 · [GitHub リリース](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.2.1)
 
 V2.2.0 の修正リリースで、アプリケーションは V2.2.0 と同じ 40 個の FreeRTOS アプリケーションです。ダウンロードファイルは `IPRO-SDK-V2.2.1.tar.gz` で、SHA-256 はリリースページに記載しています。[V2.2.0](#v2-2-0) のその他の内容（既知の問題を含む）は V2.2.1 にも当てはまります。
 
@@ -36,7 +73,7 @@ IPRO7 / IPRO7AI と IPRO6S のデュアルチップリリースで、V2.1.0 を�
 
 **新機能と変更点**
 
-- **IPRO6S アプリケーションの復活**：`ipro6_demo`（Wi-Fi 6 ステーション / ソフト AP、DTIM 低消費電力）、`ipro6_if_wifi`（SDIO または USB 経由でホストに接続する Wi-Fi ブリッジ）、`ipro6_fmac`（FullMAC ファームウェアとその Flash ローダー）。Wi-Fi MAC、共存、RF のライブラリは同梱の `defconfig_*` ごとにビルド済みで、各設定はその設定用にビルドされたライブラリをリンクします。Reef の FIN Wi-Fi カードのファームウェアは、`ipro6_if_wifi` の `defconfig_ipro6_sdio` です。[IPRO6S](../hardware/chips/ipro6s.md) を参照してください。
+- **IPRO6S アプリケーションの復活**：`ipro6_demo`（Wi-Fi ステーション / ソフト AP、DTIM 低消費電力）、`ipro6_if_wifi`（SDIO または USB 経由でホストに接続する Wi-Fi ブリッジ）、`ipro6_fmac`（FullMAC ファームウェアとその Flash ローダー）。Wi-Fi MAC、共存、RF のライブラリは同梱の `defconfig_*` ごとにビルド済みで、各設定はその設定用にビルドされたライブラリをリンクします。Reef の FIN Wi-Fi カードのファームウェアは、`ipro6_if_wifi` の `defconfig_ipro6_sdio` です。[IPRO6S](../hardware/chips/ipro6s.md) を参照してください。
 - **新しいアプリケーション `ipro_reef_teach`**：IPRO7AI Reef EVK 用の Edge AI ファームウェアで、3 つの Teach ツールを備えています：`image`（USB カメラと分類器）、`voice`（誰が話しているか）、`sensor`（任意のセンサー）。起動時に 1 つのモードが選ばれ、モードごとに独自の USB ID を持ち、IPRO AI Studio から操作します。`tools/teach_web/` を使うとブラウザーで画像 Teach ができます。IPRO AI Studio は [GitHub](https://github.com/INTELPRO-INC/ipro-ai-studio/releases/latest) からダウンロードできます。
 - **IPRO Edge AI プラットフォーム V2.0**（`components/ai`）：ランタイム、ツールごとに 1 スロットを持つモデルストア、入力ソース、前処理、アプリケーションフレームワーク。NPU の待機には上限があり、超過するとブロックをリセットしてフェイルクローズの故障状態に入ります。Edge AI ファームウェアは AON ウォッチドッグを有効にします（ダウンロードモードでは無効）。CPU のレイヤーグラフが最後のレイヤーレコードを越えて読み出すことはなくなりました。
 - **チップ全体のリセット**：`hal_reboot_full()` は AON ウォッチドッグを通じて、常時オンドメインを含むチップ全体をリセットします。`CONFIG_APP_WATCHDOG` を有効にすると、`platform_init()` は起動の最初からウォッチドッグを有効にします。`ipro_reef_teach` はこれを使ってツールを切り替えます。これにより、カメラを接続した Reef で `image` モードから切り替えた後、次回の起動がリセットするまで停止する問題が修正されました。
