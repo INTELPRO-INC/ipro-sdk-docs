@@ -13,7 +13,7 @@ IPRO SDK 的正式发布记录，新版本在前；当前版本为 V2.3.0。各�
 
 <span class="ipro-badge">最新版本</span> 发布日期：2026-11-13 ・ [GitHub Release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.3.0)
 
-IPRO7／IPRO7AI 与 IPRO6S 版本：各种传输方式共用的 OTA 组件、IPRO7AI Sensor Tag 的开放示例（经开发板自己的 USB 烧录），以及 IPRO6S 的构建时间行。共 41 个 FreeRTOS 应用：38 个 IPRO7、3 个 IPRO6S。请配合 [IPRO Workbench 0.2.0](https://github.com/INTELPRO-INC/ipro-workbench/releases/tag/v0.2.0)（见 [IPRO Workbench](../workbench/index.md)）与 IntelProCube 0.7.0.1 及以上版本使用。
+IPRO7／IPRO7AI 与 IPRO6S 版本：各种传输方式共用的 OTA 组件、IPRO7AI Sensor Tag 的开放示例（经开发板自己的 USB 烧录），以及 IPRO6S 的构建时间行。共 41 个 FreeRTOS 应用：38 个 IPRO7、3 个 IPRO6S。请配合 [IPRO Workbench 0.2.1](https://github.com/INTELPRO-INC/ipro-workbench/releases/tag/v0.2.1)（见 [IPRO Workbench](../workbench/index.md)）与 IntelProCube 0.7.0.1 及以上版本使用。
 
 | 下载文件 | 大小 | SHA-256 |
 |---|---|---|
@@ -27,7 +27,7 @@ IPRO7／IPRO7AI 与 IPRO6S 版本：各种传输方式共用的 OTA 组件、IPR
 
     说明在 `components/sys/ipro_ota/README.md`，操作见 [OTA 更新](../guides/ota.md)。
 - **`ipro7ai_sensor_tag_demo`**：IPRO7AI Sensor Tag 板的示例，读取 IMU（ISM330BX：加速度、角速度、温度）、电量计（CW2015）与按键，控制两颗 LED 与蜂鸣器。它经开发板自己的 USB 每秒打印 20 行 `名称:数值`，IPRO Workbench 0.2.0 的传感器仪表板按应用的 `dashboard.yaml` 排版；shell 命令有 `stream`、`rate`、`led`、`beep`。见[示例](../examples/index.md)。
-- **`tools/ipro_dl.py`**：经 boot2 的 USB 下载模式烧录开发板（只用 Python 标准库，macOS 与 Linux）。Sensor Tag 示例用它烧录；IPRO Workbench 0.2.0 在 macOS 上烧录到开发板自己的 USB 端口时也使用它。
+- **`tools/ipro_dl.py`**：经 boot2 的 USB 下载模式烧录开发板（只用 Python 标准库，macOS 与 Linux）。Sensor Tag 示例用它烧录；IPRO Workbench 0.2.0 在 macOS 上烧录到开发板自己的 USB 端口时也使用它（0.2.1 起 Workbench 自己实现下载协议，不再需要它）。
 - **IPRO6S**：启动时与 IPRO7 一样打印含构建日期与时间的 `Build:` 行，IPRO Workbench 可以识别开发板上运行的固件。
 - **IPRO6S Wi-Fi**：`wifi_ap_start -b 1 -o 1` 让 2.4 GHz 接入点在邻近网络重叠时仍保持 40 MHz 信道（只用 `-b 1` 时与以前一样退回 20 MHz）。
 - **修正**：使用 DTIM 省电时，若接入点的 beacon 偶尔因邻近网络而延迟，IPRO6S 会太晚打开接收器而漏收 beacon；现在接收窗口保持在准时的 beacon 上。
@@ -44,7 +44,7 @@ IPRO7／IPRO7AI 与 IPRO6S 版本：各种传输方式共用的 OTA 组件、IPR
 ### 已知问题 { #v2-3-0-known-issues }
 
 - [V2.2.0](#v2-2-0-known-issues) 的已知问题与注意事项仍然适用，但 `ipro6_demo/defconfig_ipro6_lpwifi_ping` 已不在软件包中；`ipro6_fmac/defconfig_ipro6_fmac_ap` 仍没有对应的预编译库。
-- **经开发板的 USB 烧录**：IPRO Workbench 0.2.0 只有 macOS 版支持；在 Windows 上请使用 IPRO Debug Probe。
+- **经开发板的 USB 烧录**：IPRO Workbench 0.2.0 只有 macOS 版支持。请改用 IPRO Workbench 0.2.1 及以上版本，Windows 11 也能经开发板的 USB 烧录，见[通过开发板自身的 USB 烧录](../workbench/flash.md#usb-flash)。
 
 ## IPRO-SDK-V2.2.1 { #v2-2-1 }
 

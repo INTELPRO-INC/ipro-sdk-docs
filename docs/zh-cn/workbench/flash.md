@@ -164,7 +164,7 @@ IPRO7AI 的 NPU 模型（`.inm`）通常存放在 Flash 的 mfg 分区中，不�
 
 ## 通过开发板自身的 USB 烧录 { #usb-flash }
 
-有些开发板的控制台就在开发板自身的 USB 端口上（USB CDC），例如 IPRO7AI Sensor Tag，不需要 IPRO Debug Probe。所选端口是这种 USB 端口时，**Flash** 改为通过 boot2 的 USB 下载模式，使用 SDK 的 `tools/ipro_dl.py`（SDK V2.3.0）写入固件、校验并启动固件。此功能仅在 macOS 版中提供。
+有些开发板的控制台就在开发板自身的 USB 端口上（USB CDC），例如 IPRO7AI Sensor Tag，不需要 IPRO Debug Probe。所选端口是这种 USB 端口时，**Flash** 改为通过 boot2 的 USB 下载模式：IDE 自己写入固件、校验并启动固件，不需要 Python，也不使用 SDK 的 `tools/ipro_dl.py`，任何版本的 IPRO SDK 都可以。macOS 与 Windows 11 都支持（0.2.1 起）；在 Windows 上，开发板进入下载模式时会以另一个 COM 端口出现。
 
 IDE 在以下情况下走这条路径，其他情况照常使用 IntelProCube 通过探针烧录：
 
@@ -175,7 +175,7 @@ IDE 在以下情况下走这条路径，其他情况照常使用 IntelProCube �
 
 <div class="ipro-steps" markdown>
 
-1. **连接开发板。** 用 USB 线将 IPRO7AI Sensor Tag 的 USB 端口连接到 Mac。
+1. **连接开发板。** 用 USB 线将 IPRO7AI Sensor Tag 的 USB 端口连接到电脑。
 
 2. **选择应用程序并构建。** 在侧边栏的 **Applications** 下点击 **ipro7ai_sensor_tag_demo**（位于 `platform` 类别），然后点击 **Build**。
 
@@ -183,19 +183,20 @@ IDE 在以下情况下走这条路径，其他情况照常使用 IntelProCube �
 
 3. **选择开发板的端口。** 点击工具栏上的开发板名称，选择 **Select Port…**。
 
-    **应看到**：列表按“IPRO Debug Probes”“Other USB serial ports”等分组；开发板的端口列在“Other USB serial ports”下，例如 `/dev/cu.usbmodemXXXX`。选择它。
+    **应看到**：列表按“IPRO Debug Probes”“Other USB serial ports”等分组；开发板的端口列在“Other USB serial ports”下，例如 macOS 的 `/dev/cu.usbmodemXXXX`、Windows 的 `COM5`。选择它。
 
-4. **烧录。** 点击 **Flash**（`Cmd+Alt+U`）。
+4. **烧录。** 点击 **Flash**（`Cmd+Alt+U`／`Ctrl+Alt+U`）。
 
     **应看到**：**IPRO Flash** 依次显示：
 
     ```text
-    Flashing over the board's own USB (boot2's USB downloader) with tools/ipro_dl.py
+    Flashing over the board's own USB, through boot2's USB downloader
     Typing reboot_usb on /dev/cu.usbmodemXXXX: the board restarts into the downloader
     boot2's USB downloader is on /dev/cu.usbmodemYYYY
+    [usbflash] rescue handshake OK on /dev/cu.usbmodemYYYY
     ```
 
-    接着是 `ipro_dl.py` 的写入进度和 `verify OK`。完成后通知“Flashed ipro7ai_sensor_tag_demo in N s.”，开发板以新固件重启，IDE 重新选回开发板的端口（端口名称改变时，**IPRO Flash** 的最后一行为 `The board is back on …`）。
+    接着是擦除、写入的进度（`[usbflash] write …`）和 `[usbflash] verify OK`。在 Windows 上端口名称是 `COM5`、`COM6` 这类名称。完成后通知“Flashed ipro7ai_sensor_tag_demo in N s.”，开发板以新固件重启，IDE 重新选回开发板的端口（端口名称改变时，**IPRO Flash** 的最后一行为 `The board is back on …`）。
 
 5. **查看输出。** 点击 **Serial Monitor**。
 
@@ -206,8 +207,6 @@ IDE 在以下情况下走这条路径，其他情况照常使用 IntelProCube �
 !!! note
     - 这条路径只写入固件：分区表、boot2 和 mfg 都保持不变，**Partition Table** 中选择的分区表也不会用到。
     - 开发板没有进入下载模式时（例如固件没有 USB 控制台），IDE 显示“The board did not start boot2's USB downloader. Flash again, and while it waits (20 s), unplug the board's USB cable and plug it in: boot2 listens for the downloader at power-on.”照做即可。
-    - 在 Windows 版中选择开发板自身的 USB 端口时，显示“… is the board's own USB port. Flashing over it is not available on Windows yet: flash from macOS, or connect the IPRO Debug Probe and select its port.”
-    - SDK 中没有 `tools/ipro_dl.py`（V2.3.0 之前）时，显示“… is the board's own USB port, and this SDK has no tools/ipro_dl.py to flash over it. IPRO SDK V2.3.0 and later have it.”
 
 ## IPRO6S EVK { #ipro6s }
 
@@ -215,7 +214,7 @@ IPRO Workbench 可以构建、烧录和监视 IPRO SDK 中的 IPRO6 应用程序
 
 | 项目 | 版本 |
 |---|---|
-| IPRO Workbench | 0.2.0 |
+| IPRO Workbench | 0.2.1 |
 | IPRO SDK | V2.3.0（2.2.1 或更高版本也能构建、烧录和监视，但 **Board** 不显示开发板上运行的固件） |
 | IntelProCube | 0.7.0.1 或更高版本（带有 IPRO6S 的分区表 `partition_cfg_fw_direct.toml`） |
 

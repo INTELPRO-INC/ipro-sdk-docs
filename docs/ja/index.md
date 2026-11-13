@@ -139,7 +139,7 @@ SDK には IPRO7 EVB、IPRO7AI EVK、IPRO6S EVK 向けのアプリケーショ�
 ## V2.3 の新機能 { #whats-new }
 
 - **V2.3.0**（2026-11-13）：OTA コンポーネント `components/sys/ipro_ota`。BLE OTA サービス（0xFF60）とコンソール UART の `ota_uart` コマンドが同じパッケージ検査を使い、パーティションテーブルを切り替える前に、フラッシュに書き込んだパッケージのヘッダーと SHA-256 を確認します。[OTA アップデート](guides/ota.md)を参照してください。
-- **IPRO7AI Sensor Tag のサンプル `ipro7ai_sensor_tag_demo`**：IMU、燃料ゲージ、ボタンを読み取り、LED とブザーを制御し、ボード自身の USB から毎秒 20 行の値を出力して IPRO Workbench 0.2.0 のセンサーダッシュボードに表示します。書き込みは新しいツール `tools/ipro_dl.py` でボードの USB から行い、プローブは不要です。
+- **IPRO7AI Sensor Tag のサンプル `ipro7ai_sensor_tag_demo`**：IMU、燃料ゲージ、ボタンを読み取り、LED とブザーを制御し、ボード自身の USB から毎秒 20 行の値を出力して IPRO Workbench 0.2.1 のセンサーダッシュボードに表示します。書き込みは新しいツール `tools/ipro_dl.py` でボードの USB から行い、プローブは不要です。
 - **IPRO6S**：起動時に `Build:` 行（ビルド時刻）を表示するため、IPRO Workbench がボード上のファームウェアを判別できます。`wifi_ap_start -b 1 -o 1` で、近隣のネットワークと重なっても 2.4 GHz アクセスポイントが 40 MHz 幅を保ちます。DTIM 省電力時に、アクセスポイントのビーコンがときどき遅れても受信漏れしなくなりました。
-- **[IPRO Workbench 0.2.0](workbench/index.md) と組み合わせて**：別構成、センサーダッシュボード、OTA パッケージのボードへの送信、Wi-Fi ページ、新しい開始用アプリケーション、ボード自身の USB からの書き込み（macOS）、簡体字中国語と日本語の UI。
+- **[IPRO Workbench 0.2.1](workbench/index.md) と組み合わせて**：別構成、センサーダッシュボード、OTA パッケージのボードへの送信、Wi-Fi ページ、新しい開始用アプリケーション、ボード自身の USB からの書き込み（macOS、Windows 11）、簡体字中国語と日本語の UI。
 - **41 個のアプリケーション**。その他の内容は[リリースノート](reference/release-notes.md#v2-3-0)にあります。V2.2 の新機能もそちらにまとめています。

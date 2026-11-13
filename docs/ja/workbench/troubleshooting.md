@@ -5,7 +5,7 @@ description: IPRO Workbench のメッセージ、ツールバーとサイドバ�
 
 # トラブルシューティング
 
-IPRO Workbench 0.2.0 で表示されるメッセージと状態の原因と対処を、表示される場所ごとにまとめています。
+IPRO Workbench 0.2.1 で表示されるメッセージと状態の原因と対処を、表示される場所ごとにまとめています。
 
 ## 画面に表示されるメッセージ { #messages }
 
@@ -41,8 +41,6 @@ IPRO Workbench 0.2.0 で表示されるメッセージと状態の原因と対�
 | … is laid out for boot2, and this IntelProCube has no boot2 image for …. | パーティションテーブルに boot2 が必要だが、IntelProCube にそのチップ用の boot2 がない | **Install IntelProCube** を押して更新するか、**Partition Table** でファームウェアを直接起動するテーブルを選択する |
 | IntelProCube … is too old for …: a board flashed with it does not start. | IPRO6S EVK には IntelProCube 0.7.0.1 以降が必要 | **Install IntelProCube** を押すか、**Browse…** で新しいものを指定する |
 | The board did not start boot2's USB downloader. … | [ボード自身の USB から書き込む](flash.md#usb-flash)ときに、ボードがダウンローダーで再起動しなかった（例：USB コンソールのないファームウェア） | もう一度 **Flash** を押し、20 秒以内にボードの USB ケーブルを抜いて差し直す |
-| … is the board's own USB port. Flashing over it is not available on Windows yet… | Windows 版はボード自身の USB から書き込めない | macOS から書き込むか、IPRO Debug Probe を接続してその UART を選択する |
-| … is the board's own USB port, and this SDK has no tools/ipro_dl.py to flash over it. | SDK が V2.3.0 より古い | IPRO SDK V2.3.0 を使用するか、IPRO Debug Probe 経由で書き込む |
 | The default partition table comes with IntelProCube, and IntelProCube was not found. / This IntelProCube has no …. | **Partition Table** がデフォルトのテーブルを見つけられない | **Install IntelProCube** を押すか、**Flash with** で別のテーブルを選択する |
 | The partition table's FW partition has one slot. An OTA needs a table with a second FW slot… / This partition table is a layout without boot2… | **OTA Package**：パーティションテーブルが boot2 用の A/B レイアウトではない | **Partition Table** で、boot2 用の領域と 2 つ目の FW スロットを持つテーブル（例：`ipro_ble_remote` の `partition_cfg_2M_remote_ab.toml`）を選択する。[OTA パッケージ](flash.md#ota)を参照 |
 | boot2 OTA packages are for IPRO7 applications; this one is built for the …. | **OTA Package** は IPRO6S のアプリケーションに対応していない | なし。IPRO6S には boot2 用の OTA パッケージはない |

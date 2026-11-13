@@ -13,7 +13,7 @@ For FreeRTOS applications, boot2 performs the update: the running application wr
     - Reference: `ipro_ble_remote` `defconfig_reef` + `partition_cfg_2M_remote_ab.toml` + boot2 v0.6.0 (from IntelProCube); the default `.config` has no OTA.
     - Package: `tools/create_ota.py` wraps IntelProCube's combined `whole_img.bin` into an `.xz.ota` (512-byte header + XZ payload); `make_reef_ota.sh` runs both steps for the Reef.
     - Component: `components/sys/ipro_ota` (`CONFIG_IPRO_OTA`) checks the header and SHA-256 of the package written to flash before it switches the partition table; the transports are the BLE OTA service 0xFF60 (`CONFIG_IPRO_OTA_BLE`) and the console UART command `ota_uart` (`CONFIG_IPRO_OTA_UART`).
-    - Senders: `tools/reef_ota.py` (Python, bleak) or `ipro_remote_demo.apk` (Android) over BLE; the OTA Package page of IPRO Workbench 0.2.0 over the console UART.
+    - Senders: `tools/reef_ota.py` (Python, bleak) or `ipro_remote_demo.apk` (Android) over BLE; the OTA Package page of IPRO Workbench 0.2.1 over the console UART.
     - The IPRO6S FIN card updates over Wi-Fi with `ipro6s_ota <http url>` from `ipro7ai_reef_demo` `defconfig_wifi_ipro6s`.
     - Never run OTA with the standard `partition_cfg_2M.toml` on the Reef. Not included: signed-package product settings (`tools/ota_products.py`).
 
@@ -129,7 +129,7 @@ The service and its characteristics (full description for app developers in `app
 
 From V2.3.0, an application built with `CONFIG_IPRO_OTA_UART=y` has the shell command `ota_uart <package bytes> [noapply]`: it receives an `.xz.ota` package over the console UART, with no second UART, no baud-rate change and no code in the application. `ipro_ble_remote` `defconfig_reef` enables it. The board must have been flashed with boot2 and a partition table with a second FW slot (such as `partition_cfg_2M_remote_ab.toml`).
 
-The simplest sender is the **OTA Package** page of IPRO Workbench 0.2.0: make the package, then press **Send to Board**, or **Check on Board** to have the board check the package without installing it; the steps are in IPRO Workbench's [OTA Package](../workbench/flash.md#ota). At 115200 baud, 200 KB takes about 22 s.
+The simplest sender is the **OTA Package** page of IPRO Workbench 0.2.1: make the package, then press **Send to Board**, or **Check on Board** to have the board check the package without installing it; the steps are in IPRO Workbench's [OTA Package](../workbench/flash.md#ota). At 115200 baud, 200 KB takes about 22 s.
 
 To write your own sender, the protocol is (integers little-endian; the CRC is CRC-16/CCITT-FALSE over seq, len and the payload):
 

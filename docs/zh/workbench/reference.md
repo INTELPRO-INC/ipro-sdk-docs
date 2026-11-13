@@ -1,6 +1,6 @@
 ---
 title: "快捷鍵、命令與設定"
-description: IPRO Workbench 0.2.0 的快捷鍵、IPRO 命令、ipro.* 設定、MCP 工具，以及 IDE 用到的檔案與資料夾。
+description: IPRO Workbench 0.2.1 的快捷鍵、IPRO 命令、ipro.* 設定、MCP 工具，以及 IDE 用到的檔案與資料夾。
 ---
 
 # 快捷鍵、命令與設定

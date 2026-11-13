@@ -5,7 +5,7 @@ description: What the messages, toolbar and side bar status of IPRO Workbench me
 
 # Troubleshooting
 
-Causes and fixes for the messages and states you see in IPRO Workbench 0.2.0, by where they appear.
+Causes and fixes for the messages and states you see in IPRO Workbench 0.2.1, by where they appear.
 
 ## Messages on screen { #messages }
 
@@ -41,8 +41,6 @@ Whenever a step fails, the IDE pops up an explanation with buttons to deal with 
 | … is laid out for boot2, and this IntelProCube has no boot2 image for …. | The partition table needs boot2, and IntelProCube has none for the chip | Press **Install IntelProCube** to update it, or choose a table that starts the firmware directly in **Partition Table** |
 | IntelProCube … is too old for …: a board flashed with it does not start. | The IPRO6S EVK needs IntelProCube 0.7.0.1 or later | Press **Install IntelProCube**, or **Browse…** to a newer one |
 | The board did not start boot2's USB downloader. … | While [flashing over the board's own USB](flash.md#usb-flash), the board did not restart into the downloader (for example a firmware without a USB console) | Press **Flash** again, and within 20 s unplug the board's USB cable and plug it in |
-| … is the board's own USB port. Flashing over it is not available on Windows yet… | The Windows version cannot flash over a board's own USB | Flash from macOS, or connect the IPRO Debug Probe and select its UART |
-| … is the board's own USB port, and this SDK has no tools/ipro_dl.py to flash over it. | The SDK is older than V2.3.0 | Use IPRO SDK V2.3.0, or flash through the IPRO Debug Probe |
 | The default partition table comes with IntelProCube, and IntelProCube was not found. / This IntelProCube has no …. | **Partition Table** cannot find the default table | Press **Install IntelProCube**, or choose another table in **Flash with** |
 | The partition table's FW partition has one slot. An OTA needs a table with a second FW slot… / This partition table is a layout without boot2… | **OTA Package**: the partition table is not a boot2 A/B layout | In **Partition Table**, choose a table with room for boot2 and a second FW slot (for example `partition_cfg_2M_remote_ab.toml` of `ipro_ble_remote`); see [OTA package](flash.md#ota) |
 | boot2 OTA packages are for IPRO7 applications; this one is built for the …. | **OTA Package** does not take IPRO6S applications | None; the IPRO6S has no boot2 OTA package |

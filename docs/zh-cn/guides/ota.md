@@ -13,7 +13,7 @@ FreeRTOS 应用的 OTA 由 boot2 完成：运行中的应用把 OTA 包写入分
     - 参考：`ipro_ble_remote` 的 `defconfig_reef`＋`partition_cfg_2M_remote_ab.toml`＋boot2 v0.6.0（随 IntelProCube 提供）；默认 `.config` 不含 OTA。
     - OTA 包：`tools/create_ota.py` 把 IntelProCube 生成的合并镜像 `whole_img.bin` 打包为 `.xz.ota`（512 字节头＋XZ 内容）；Reef 用 `make_reef_ota.sh` 一次完成这两个步骤。
     - 组件：`components/sys/ipro_ota`（`CONFIG_IPRO_OTA`）在切换分区表之前检查写入 Flash 的 OTA 包头与 SHA-256；传输方式有 BLE OTA 服务 0xFF60（`CONFIG_IPRO_OTA_BLE`）与控制台 UART 命令 `ota_uart`（`CONFIG_IPRO_OTA_UART`）。
-    - 发送端：`tools/reef_ota.py`（Python，bleak）或 `ipro_remote_demo.apk`（Android）经 BLE；IPRO Workbench 0.2.0 的 OTA 包页面经控制台 UART。
+    - 发送端：`tools/reef_ota.py`（Python，bleak）或 `ipro_remote_demo.apk`（Android）经 BLE；IPRO Workbench 0.2.1 的 OTA 包页面经控制台 UART。
     - IPRO6S FIN 卡通过 `ipro7ai_reef_demo` `defconfig_wifi_ipro6s` 的 `ipro6s_ota <http url>` 经 Wi-Fi 更新。
     - 在 Reef 上绝对不要用标准的 `partition_cfg_2M.toml` 做 OTA。未包含：签名 OTA 包所需的产品配置（`tools/ota_products.py`）。
 
@@ -129,7 +129,7 @@ V2.3.0 起，OTA 服务由 OTA 组件提供（`components/sys/ipro_ota/src/ipro_
 
 V2.3.0 起，开启 `CONFIG_IPRO_OTA_UART=y` 的应用有 shell 命令 `ota_uart <OTA 包字节数> [noapply]`：经控制台 UART 接收 `.xz.ota` 包，不需要第二个 UART、不改波特率，应用也无需编写任何代码。`ipro_ble_remote` 的 `defconfig_reef` 已开启该命令。开发板要用 boot2 和带第二个 FW 位置的分区表（例如 `partition_cfg_2M_remote_ab.toml`）烧录过。
 
-最简单的发送端是 IPRO Workbench 0.2.0 的 **OTA Package** 页面：生成 OTA 包后点击 **Send to Board**，或点击 **Check on Board** 让开发板检查完整性但不安装，步骤见 IPRO Workbench 的 [OTA Package](../workbench/flash.md#ota)。115200 波特率下 200 KB 约需 22 秒。
+最简单的发送端是 IPRO Workbench 0.2.1 的 **OTA Package** 页面：生成 OTA 包后点击 **Send to Board**，或点击 **Check on Board** 让开发板检查完整性但不安装，步骤见 IPRO Workbench 的 [OTA Package](../workbench/flash.md#ota)。115200 波特率下 200 KB 约需 22 秒。
 
 自己编写发送端时，协议如下（整数为 little-endian；CRC 是对 seq、len 与数据计算的 CRC-16/CCITT-FALSE）：
 

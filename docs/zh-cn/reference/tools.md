@@ -22,7 +22,7 @@ SDK 随附主机端工具的命令格式、选项与示例，示例以 IPRO7AI R
 | `make` ＋ `project.build` | 各应用的 `Makefile` | 构建单个应用 | 随附 |
 | `serial_monitor.py` | `tools/` | 读取控制台输出，可先发送一行命令、等待指定字符串并保存到文件（macOS、Linux；非交互式终端） | 随附 |
 | `create_ota.py` | `tools/` | 把 IntelProCube 的合并镜像打包成 boot2 OTA 包 | 随附 |
-| `ipro_dl.py` | `tools/` | 经 boot2 的 USB 下载模式烧录开发板，只需 Python 标准库（macOS、Linux）；IPRO7AI Sensor Tag 的 `ipro7ai_sensor_tag_demo` 用它经开发板的 USB 烧录，IPRO Workbench 0.2.0 在 macOS 上经开发板的 USB 烧录时也使用它。V2.3.0 起提供 | 随附 |
+| `ipro_dl.py` | `tools/` | 经 boot2 的 USB 下载模式烧录开发板，只需 Python 标准库（macOS、Linux）；IPRO7AI Sensor Tag 的 `ipro7ai_sensor_tag_demo` 用它经开发板的 USB 烧录，IPRO Workbench 0.2.0 在 macOS 上经开发板的 USB 烧录时也使用它（0.2.1 起 Workbench 自己实现下载协议，不再需要它）。V2.3.0 起提供 | 随附 |
 | 浏览器版图像 Teach | `tools/teach_web/` | 在 Chrome／Edge 中采集图像、训练分类器并部署到 `ipro_reef_teach` | 随附 |
 | `mfg_payload.py` | `apps/ai/ipro_reef_teach/` | 生成 `ipro_reef_teach` 的 `--mfg` 烧录内容（模式与声纹模型） | 随附 |
 | Reef BLE OTA 工具 | `apps/bluetooth/ble/ipro_ble_remote/tools/` | `make_reef_ota.sh`、`reef_ota.py`、`reef_ble_test.py`，以及 Android 演示 App `ipro_remote_demo.apk`（在应用目录中） | 随附 |

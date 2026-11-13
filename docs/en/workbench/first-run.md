@@ -67,7 +67,7 @@ If any step fails, the IDE stops at that step and shows an explanation with butt
 
 ![The New IPRO Application dialog with Start from, Board, name and category](../assets/workbench/new-app.svg)
 
-In 0.2.0, **Start from** has three more choices than the picture shows; the other fields are the same. The choices are:
+The **Start from** choices are:
 
 | Start from | Board | What you get |
 |---|---|---|

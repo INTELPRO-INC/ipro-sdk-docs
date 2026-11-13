@@ -139,7 +139,7 @@ SDK 也包含 IPRO7 EVB、IPRO7AI EVK 與 IPRO6S EVK 的應用，列在[範例](
 ## V2.3 重點 { #whats-new }
 
 - **V2.3.0**（2026-11-13）：OTA 元件 `components/sys/ipro_ota`，BLE OTA 服務（0xFF60）與主控台 UART 的 `ota_uart` 指令共用同一套套件檢查，切換分割表前先檢查寫入 Flash 的套件標頭與 SHA-256。見 [OTA 更新](guides/ota.md)。
-- **IPRO7AI Sensor Tag 範例 `ipro7ai_sensor_tag_demo`**：讀取 IMU、電量計與按鍵，控制 LED 與蜂鳴器，經板子的 USB 每秒送出 20 行數值，給 IPRO Workbench 0.2.0 的感測器儀表板顯示；以新工具 `tools/ipro_dl.py` 經板子的 USB 燒錄，不需要探棒。
+- **IPRO7AI Sensor Tag 範例 `ipro7ai_sensor_tag_demo`**：讀取 IMU、電量計與按鍵，控制 LED 與蜂鳴器，經板子的 USB 每秒送出 20 行數值，給 IPRO Workbench 0.2.1 的感測器儀表板顯示；以新工具 `tools/ipro_dl.py` 經板子的 USB 燒錄，不需要探棒。
 - **IPRO6S**：開機時印出 `Build:` 行（建置時間），IPRO Workbench 可以辨識板子上的韌體；`wifi_ap_start -b 1 -o 1` 讓 2.4 GHz 基地台在鄰近網路重疊時仍維持 40 MHz 頻寬；DTIM 省電時不再因基地台 beacon 偶爾延遲而漏收。
-- **搭配 [IPRO Workbench 0.2.0](workbench/index.md)**：設定檔變體、感測器儀表板、OTA 包傳送到板子、Wi-Fi 頁面、新的起始應用程式、經板子的 USB 燒錄（macOS），以及簡體中文與日文介面。
+- **搭配 [IPRO Workbench 0.2.1](workbench/index.md)**：設定檔變體、感測器儀表板、OTA 包傳送到板子、Wi-Fi 頁面、新的起始應用程式、經板子的 USB 燒錄（macOS、Windows 11），以及簡體中文與日文介面。
 - **共 41 個應用**。完整內容見[版本資訊](reference/release-notes.md#v2-3-0)；V2.2 的重點也在那裡。

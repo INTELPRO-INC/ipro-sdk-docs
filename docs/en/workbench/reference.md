@@ -1,11 +1,11 @@
 ---
 title: "Shortcuts, Commands and Settings"
-description: Reference for IPRO Workbench 0.2.0 - keyboard shortcuts, IPRO commands, ipro.* settings, the MCP tools and the files and folders the IDE uses.
+description: Reference for IPRO Workbench 0.2.1 - keyboard shortcuts, IPRO commands, ipro.* settings, the MCP tools and the files and folders the IDE uses.
 ---
 
 # Shortcuts, Commands and Settings
 
-Keyboard shortcuts, commands, settings, MCP tools and file locations of IPRO Workbench 0.2.0.
+Keyboard shortcuts, commands, settings, MCP tools and file locations of IPRO Workbench 0.2.1.
 
 ## Keyboard shortcuts { #shortcuts }
 

@@ -13,7 +13,7 @@ IPRO SDK の正式リリースを新しい順に掲載しています。現在�
 
 <span class="ipro-badge">最新版</span> リリース日：2026-11-13 · [GitHub リリース](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.3.0)
 
-IPRO7 / IPRO7AI と IPRO6S のリリースです。すべての転送方式で共通の OTA コンポーネント、ボード自身の USB から書き込む IPRO7AI Sensor Tag の公開サンプル、IPRO6S のビルド時刻行を追加しました。FreeRTOS アプリケーションは 41 個（IPRO7 用 38 個、IPRO6S 用 3 個）です。[IPRO Workbench 0.2.0](https://github.com/INTELPRO-INC/ipro-workbench/releases/tag/v0.2.0)（[IPRO Workbench](../workbench/index.md) を参照）と IntelProCube 0.7.0.1 以降を組み合わせて使ってください。
+IPRO7 / IPRO7AI と IPRO6S のリリースです。すべての転送方式で共通の OTA コンポーネント、ボード自身の USB から書き込む IPRO7AI Sensor Tag の公開サンプル、IPRO6S のビルド時刻行を追加しました。FreeRTOS アプリケーションは 41 個（IPRO7 用 38 個、IPRO6S 用 3 個）です。[IPRO Workbench 0.2.1](https://github.com/INTELPRO-INC/ipro-workbench/releases/tag/v0.2.1)（[IPRO Workbench](../workbench/index.md) を参照）と IntelProCube 0.7.0.1 以降を組み合わせて使ってください。
 
 | ダウンロード | サイズ | SHA-256 |
 |---|---|---|
@@ -27,7 +27,7 @@ IPRO7 / IPRO7AI と IPRO6S のリリースです。すべての転送方式で�
 
     説明は `components/sys/ipro_ota/README.md`、手順は [OTA アップデート](../guides/ota.md)にあります。
 - **`ipro7ai_sensor_tag_demo`**：IPRO7AI Sensor Tag ボード用のサンプルです。IMU（ISM330BX：加速度、角速度、温度）、燃料ゲージ（CW2015）、ボタンを読み取り、2 個の LED とブザーを制御します。ボード自身の USB から毎秒 20 行の `名前:値` を出力し、IPRO Workbench 0.2.0 のセンサーダッシュボードがアプリケーションの `dashboard.yaml` に従って表示します。シェルコマンドは `stream`、`rate`、`led`、`beep` です。[サンプル](../examples/index.md)を参照してください。
-- **`tools/ipro_dl.py`**：boot2 の USB ダウンローダー経由でボードに書き込みます（Python 標準ライブラリのみ、macOS と Linux）。Sensor Tag のサンプルはこれで書き込みます。IPRO Workbench 0.2.0 も macOS でボード自身の USB ポートに書き込むときに使います。
+- **`tools/ipro_dl.py`**：boot2 の USB ダウンローダー経由でボードに書き込みます（Python 標準ライブラリのみ、macOS と Linux）。Sensor Tag のサンプルはこれで書き込みます。IPRO Workbench 0.2.0 も macOS でボード自身の USB ポートに書き込むときに使います（0.2.1 からは Workbench が自分でダウンローダーのプロトコルを扱うため、これを必要としません）。
 - **IPRO6S**：起動時に IPRO7 と同様、ビルド日時を含む `Build:` 行を表示するため、IPRO Workbench がボードで動いているファームウェアを判別できます。
 - **IPRO6S Wi-Fi**：`wifi_ap_start -b 1 -o 1` で、近隣のネットワークと重なっても 2.4 GHz アクセスポイントが 40 MHz チャネルを保ちます（`-b 1` だけの場合は従来どおり 20 MHz に戻ります）。
 - **修正**：DTIM 省電力時に、アクセスポイントのビーコンが近隣のネットワークのためにときどき遅れると、IPRO6S が受信機を開くのが遅すぎてビーコンを受信し損ねていました。受信ウィンドウは定刻のビーコンに合わせたままになりました。
@@ -44,7 +44,7 @@ IPRO7 / IPRO7AI と IPRO6S のリリースです。すべての転送方式で�
 ### 既知の問題 { #v2-3-0-known-issues }
 
 - [V2.2.0 の既知の問題と注意事項](#v2-2-0-known-issues)は引き続き当てはまります。ただし `ipro6_demo/defconfig_ipro6_lpwifi_ping` はパッケージに含まれなくなりました。`ipro6_fmac/defconfig_ipro6_fmac_ap` には引き続き対応するビルド済みライブラリがありません。
-- **ボード自身の USB からの書き込み**：IPRO Workbench 0.2.0 では macOS 版だけが対応しています。Windows では IPRO Debug Probe を使ってください。
+- **ボード自身の USB からの書き込み**：IPRO Workbench 0.2.0 では macOS 版だけが対応しています。IPRO Workbench 0.2.1 以降を使ってください。Windows 11 でもボード自身の USB から書き込めます。[ボード自身の USB から書き込む](../workbench/flash.md#usb-flash)を参照してください。
 
 ## IPRO-SDK-V2.2.1 { #v2-2-1 }
 

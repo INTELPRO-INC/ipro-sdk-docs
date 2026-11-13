@@ -10,7 +10,7 @@ IPRO Workbench は、INTELPRO が IPRO シリーズのチップ向けに提供�
 このセクションのページでは、[IPRO7AI Reef EVK V4.0](../hardware/boards/reef-evk.md) と IPRO Debug Probe を例に説明します。各手順には、行う操作と表示される内容を記載しています。画面が一致しない場合は[トラブルシューティング](troubleshooting.md)を参照してください。IPRO6S EVK でも、ビルド、書き込み、モニターの手順は同じです。異なる点は、[IPRO6S EVK](flash.md#ipro6s)（[書き込みとボード](flash.md)のセクション）にまとめています。VS Code で作業する場合は [VS Code 拡張機能](../guides/vscode.md)を参照してください。
 
 !!! info "提供状況"
-    macOS 版と Windows 版の IPRO Workbench 0.2.0（プレビュー）は、[GitHub の IPRO Workbench リリースページ](https://github.com/INTELPRO-INC/ipro-workbench/releases/tag/v0.2.0)で公開しています。GitHub アカウントは不要です。Linux 版はまだありません。[IPRO Workbench のインストール](install.md)を参照してください。
+    macOS 版と Windows 版の IPRO Workbench 0.2.1（プレビュー）は、[GitHub の IPRO Workbench リリースページ](https://github.com/INTELPRO-INC/ipro-workbench/releases/tag/v0.2.1)で公開しています。GitHub アカウントは不要です。Linux 版はまだありません。[IPRO Workbench のインストール](install.md)を参照してください。
 
     IPRO SDK V2.3.0 と組み合わせて使用してください。古い SDK でも使用できますが、これらのページで「SDK V2.3.0」と記載した機能は使えません。
 
@@ -28,7 +28,7 @@ IPRO Workbench は、INTELPRO が IPRO シリーズのチップ向けに提供�
 | メモリ解析 | flash、ocram、hbnram を使用しているライブラリ、オブジェクトファイル、シンボルを表示します。ビルドごとのサイズの変化を比較し、メモリバジェットを設定できます。 |
 | 書き込みとボード | パーティションテーブルの表示とチェック、パーティションテーブルが boot2 用のレイアウトの場合の boot2 の同時書き込み、ボードの Flash の検出、ボード上で動作しているファームウェアの確認、mfg パーティションへの AI モデルの書き込みを行います。IPRO6S EVK には専用のパーティションテーブルで書き込みます。 |
 | OTA パッケージ | アプリケーションの boot2 用 OTA パッケージを作成し、署名の有無を表示します。コンソール UART 経由でボードに送ってインストールさせることも、ボードで検査だけさせることもできます（SDK V2.3.0）。[OTA パッケージ](flash.md#ota)を参照してください。 |
-| ボード自身の USB からの書き込み | 選択したポートがボード自身の USB ポートの場合、プローブを使わずに boot2 の USB ダウンローダー経由で書き込みます（macOS、SDK V2.3.0）。[ボード自身の USB から書き込む](flash.md#usb-flash)を参照してください。 |
+| ボード自身の USB からの書き込み | 選択したポートがボード自身の USB ポートの場合、プローブを使わずに boot2 の USB ダウンローダー経由で書き込みます（macOS、Windows 11）。[ボード自身の USB から書き込む](flash.md#usb-flash)を参照してください。 |
 | シリアルモニター | フィルター、タイムスタンプ、保存と全ログの記録、シリアルプロッター、2 つ目のポートの同時モニターに対応します。 |
 | センサーダッシュボード | ボードが出力する `name:value` の行を、タイル、メーター、ランプ、傾きビュー、グラフで表示し、ボードにコマンドを入力するボタンも備えています。レイアウトはアプリケーションの `dashboard.yaml` で決めます。[センサーダッシュボード](monitor.md#dashboard)を参照してください。 |
 | デバッグと解析 | クラッシュアドレスをソース行に自動でデコードし（IPRO7 シリーズと IPRO6S）、クラッシュダンプを収集・解析し、レジスターとそのフィールドを参照できます。 |
@@ -71,7 +71,7 @@ IPRO Home は、SDK を開いた後にエディター領域の最初のタブと
 | IPRO SDK | IPRO SDK V2.3.0。「SDK V2.3.0」と記載した機能にはこのバージョンが必要です。それ以外の機能は 2.2.x でも動作します（IPRO6S EVK には 2.2.1 以降が必要です） |
 | チップ | IPRO7、IPRO7AI、IPRO6S（SDK の IPRO6 アプリケーションをビルドします） |
 | ボード | [IPRO7AI Reef EVK V4.0](../hardware/boards/reef-evk.md)、[IPRO6S EVK](flash.md#ipro6s)。IPRO7AI Sensor Tag（[センサーダッシュボード](monitor.md#dashboard)と[ボード自身の USB からの書き込み](flash.md#usb-flash)の例） |
-| 書き込みと接続 | IPRO Debug Probe（USB）。書き込みには IntelProCube を使用します（IPRO6S EVK には 0.7.0.1 以降が必要です）。macOS ではボード自身の USB からも書き込めます（SDK V2.3.0） |
+| 書き込みと接続 | IPRO Debug Probe（USB）。書き込みには IntelProCube を使用します（IPRO6S EVK には 0.7.0.1 以降が必要です）。ボード自身の USB からも書き込めます（macOS、Windows 11） |
 | 表示言語 | 繁体字中国語、英語、簡体字中国語、日本語 |
 
 ## 作業の流れ { #workflow }
@@ -94,7 +94,7 @@ IPRO Home は、SDK を開いた後にエディター領域の最初のタブと
 
 ## 完全版マニュアル { #manual }
 
-IPRO Workbench Operation Manual V1.2 は、PDF として 0.2.0 のリリースに添付されています。[英語版](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.0/IPRO-Workbench-Operation-Manual-V1.2-en.pdf)（73 ページ）と[繁体字中国語版](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.0/IPRO-Workbench-Operation-Manual-V1.2-zh-TW.pdf)（67 ページ）があります。V1.2 は 0.1.1 を対象としています。0.2.0 のマニュアルは後日提供の予定で、それまでは 0.2.0 で追加・変更された内容をこれらのページで説明します。[ドキュメント](../documents/index.md)にも掲載しています。
+IPRO Workbench Operation Manual V1.2 は、PDF として 0.2.1 のリリースに添付されています。[英語版](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.1/IPRO-Workbench-Operation-Manual-V1.2-en.pdf)（73 ページ）と[繁体字中国語版](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.1/IPRO-Workbench-Operation-Manual-V1.2-zh-TW.pdf)（67 ページ）があります。V1.2 は 0.1.1 を対象としています。0.2.1 のマニュアルは後日提供の予定で、それまでは 0.2.1 で追加・変更された内容をこれらのページで説明します。[ドキュメント](../documents/index.md)にも掲載しています。
 
 ## このセクションのページ { #pages }
 
@@ -164,13 +164,12 @@ IPRO Workbench Operation Manual V1.2 は、PDF として 0.2.0 のリリース�
 
 ## 本リリースの範囲 { #limitations }
 
-これらのページは IPRO Workbench 0.2.0 プレビューを対象としています。本リリースには次の制限事項があります。
+これらのページは IPRO Workbench 0.2.1 プレビューを対象としています。本リリースには次の制限事項があります。
 
 - インストーラーは Apple（公証を受けていません）や Microsoft の署名を受けていないため、IPRO Workbench を初めて開くときやインストールするときに、オペレーティングシステムが確認を表示します（対処方法は[インストール](install.md#install)を参照してください）。
 - JTAG によるデバッグはまだ利用できません。ボードがクラッシュした場合は、代わりに[デバッグと解析](debug.md)で説明しているクラッシュのデコードとクラッシュダンプを使用してください。
 - 自動更新はオフです。新しいバージョンを入手するには、リリースページからダウンロードして再度インストールしてください。
 - [Wi-Fi スループット（iperf）](measure.md#iperf)：ボードのネットワーク名とパスワードにスペースを含めることはできません。また、ボードはパスワードをシリアルモニターにエコーします。ボードから Windows PC に送信する場合は、ファイアウォールで受信 TCP ポート 5001 を許可する必要があります。
-- [ボード自身の USB からの書き込み](flash.md#usb-flash)は macOS 版にだけあります。Windows では IPRO Debug Probe 経由で書き込んでください。
 - Windows では、IPRO SDK を RISC-V ツールチェーン 14.2.1 でビルドしてください（環境チェックでインストールされます）。13.1.1 では SDK のビルド済みライブラリをリンクできません。
 - IPRO6 シリーズのボードは、起動時にパーティションテーブルと Flash の ID を出力しません。そのため、パーティションテーブルとボードの比較は行われず、起動時にボードの Flash も検出されません。IPRO SDK 2.2.1 以前では、**Board** にボードがどのファームウェアを実行しているかも表示されません（[IPRO7 シリーズとの違い](flash.md#ipro6s-differences)を参照してください）。
 - Linux 版はまだありません。

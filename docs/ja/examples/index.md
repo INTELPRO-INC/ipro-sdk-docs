@@ -75,7 +75,7 @@ make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef
 | [`ipro7_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/platform/ipro7_demo) | チップ全体のリファレンス：PWM、SPI、I2S、LCD、オーディオ ADC／DAC、USB デバイス（CDC、HID、MSC、UAC、UVC）、ファイルシステム、TRNG、DSP など。それぞれにシェルコマンドがあります | IPRO7 EVB が必要。`defconfig_boot2_nopsram`、`defconfig_boot2_ota`、`defconfig_nist_fulltest`、`defconfig_security_cert` もあります | UART 115200 |
 | [`ipro7ai_evk_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/platform/ipro7ai_evk_demo) | IPRO7AI EVK のブリングアップ：LCD、カメラ、マイク、スピーカー、SD カード。`config_bt` で BLE と LE Audio が加わります | IPRO7AI EVK が必要 | `.config`：UART 921600<br>`config_*`：UART 115200 |
 | [`ipro7ai_evk_launcher`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/platform/ipro7ai_evk_launcher) | カメラ、LCD、マイク、スピーカーを 1 つのイメージに統合し、NPU で認識したハンドジェスチャーでページを切り替えます | IPRO7AI EVK が必要 | UART 921600 |
-| [`ipro7ai_sensor_tag_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/platform/ipro7ai_sensor_tag_demo) | 6 軸 IMU、燃料ゲージ、ボタンを読み取り、LED とブザーを制御します。ボード自身の USB から毎秒 20 行の `名前:値` を出力し、IPRO Workbench 0.2.0 のセンサーダッシュボードが `dashboard.yaml` に従って表示します。書き込みはボードの USB から `tools/ipro_dl.py` で行います | IPRO7AI Sensor Tag が必要 | ボードの USB（CDC） |
+| [`ipro7ai_sensor_tag_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/platform/ipro7ai_sensor_tag_demo) | 6 軸 IMU、燃料ゲージ、ボタンを読み取り、LED とブザーを制御します。ボード自身の USB から毎秒 20 行の `名前:値` を出力し、IPRO Workbench 0.2.1 のセンサーダッシュボードが `dashboard.yaml` に従って表示します。書き込みはボードの USB から `tools/ipro_dl.py` で行います | IPRO7AI Sensor Tag が必要 | ボードの USB（CDC） |
 <!-- END generated: examples-platform -->
 
 ### AI と画像認識 { #ai-vision }

@@ -67,7 +67,7 @@ description: 在 IPRO Workbench 中用 ipro_unit_test 完整走一遍构建、�
 
 ![New IPRO Application 对话框，包含 Start from、Board、名称和类别](../assets/workbench/new-app.svg)
 
-0.2.0 的 **Start from** 比上图多了三个选项，其他字段相同。**Start from** 可以选择：
+**Start from** 可以选择：
 
 | Start from | 开发板 | 创建的内容 |
 |---|---|---|

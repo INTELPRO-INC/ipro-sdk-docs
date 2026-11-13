@@ -164,7 +164,7 @@ The steps use `ipro_ble_remote` of IPRO SDK V2.3.0 on the IPRO7AI Reef EVK V4.0;
 
 ## Flash over the board's own USB { #usb-flash }
 
-Some boards have their console on their own USB port (USB CDC), for example the IPRO7AI Sensor Tag, and need no IPRO Debug Probe. When the selected port is such a USB port, **Flash** goes through boot2's USB downloader with the SDK's `tools/ipro_dl.py` (SDK V2.3.0): it writes the firmware, checks it and starts it. This is only in the macOS version.
+Some boards have their console on their own USB port (USB CDC), for example the IPRO7AI Sensor Tag, and need no IPRO Debug Probe. When the selected port is such a USB port, **Flash** goes through boot2's USB downloader: the IDE writes the firmware, checks it and starts it itself, without Python or the SDK's `tools/ipro_dl.py`, so any IPRO SDK will do. It works on macOS and on Windows 11 (from 0.2.1); on Windows the downloader appears as its own COM port while the board is in it.
 
 The IDE takes this route in these cases, and flashes through the probe with IntelProCube otherwise:
 
@@ -175,7 +175,7 @@ The steps use [`ipro7ai_sensor_tag_demo`](https://github.com/INTELPRO-INC/IPRO-S
 
 <div class="ipro-steps" markdown>
 
-1. **Connect the board.** Connect the USB port of the IPRO7AI Sensor Tag to the Mac with a USB cable.
+1. **Connect the board.** Connect the USB port of the IPRO7AI Sensor Tag to the computer with a USB cable.
 
 2. **Select the application and build it.** Under **Applications**, click **ipro7ai_sensor_tag_demo** (in the `platform` category) and click **Build**.
 
@@ -183,19 +183,20 @@ The steps use [`ipro7ai_sensor_tag_demo`](https://github.com/INTELPRO-INC/IPRO-S
 
 3. **Select the board's port.** Click the board name on the toolbar and choose **Select Port…**.
 
-    **You should see**: the list grouped under headings such as "IPRO Debug Probes" and "Other USB serial ports"; the board's port is under "Other USB serial ports", for example `/dev/cu.usbmodemXXXX`. Select it.
+    **You should see**: the list grouped under headings such as "IPRO Debug Probes" and "Other USB serial ports"; the board's port is under "Other USB serial ports", for example `/dev/cu.usbmodemXXXX` on macOS or `COM5` on Windows. Select it.
 
-4. **Flash.** Click **Flash** (`Cmd+Alt+U`).
+4. **Flash.** Click **Flash** (`Cmd+Alt+U` / `Ctrl+Alt+U`).
 
     **You should see**: **IPRO Flash** shows
 
     ```text
-    Flashing over the board's own USB (boot2's USB downloader) with tools/ipro_dl.py
+    Flashing over the board's own USB, through boot2's USB downloader
     Typing reboot_usb on /dev/cu.usbmodemXXXX: the board restarts into the downloader
     boot2's USB downloader is on /dev/cu.usbmodemYYYY
+    [usbflash] rescue handshake OK on /dev/cu.usbmodemYYYY
     ```
 
-    then the write progress of `ipro_dl.py` and `verify OK`. A notification says "Flashed ipro7ai_sensor_tag_demo in N s.", the board restarts with the new firmware, and the IDE selects the board's port again (when its name changed, the last line of **IPRO Flash** is `The board is back on …`).
+    then the erase and write progress (`[usbflash] write …`) and `[usbflash] verify OK`. On Windows the ports are named like `COM5` and `COM6`. A notification says "Flashed ipro7ai_sensor_tag_demo in N s.", the board restarts with the new firmware, and the IDE selects the board's port again (when its name changed, the last line of **IPRO Flash** is `The board is back on …`).
 
 5. **Watch the output.** Click **Serial Monitor**.
 
@@ -206,8 +207,6 @@ The steps use [`ipro7ai_sensor_tag_demo`](https://github.com/INTELPRO-INC/IPRO-S
 !!! note
     - This route writes only the firmware: the partition table, boot2 and mfg stay as they are, and the table selected in **Partition Table** is not used.
     - When the board does not enter the downloader (for example a firmware without a USB console), the IDE says "The board did not start boot2's USB downloader. Flash again, and while it waits (20 s), unplug the board's USB cable and plug it in: boot2 listens for the downloader at power-on." Do that.
-    - In the Windows version, selecting a board's own USB port gives "… is the board's own USB port. Flashing over it is not available on Windows yet: flash from macOS, or connect the IPRO Debug Probe and select its port."
-    - With an SDK that has no `tools/ipro_dl.py` (before V2.3.0) the IDE says "… is the board's own USB port, and this SDK has no tools/ipro_dl.py to flash over it. IPRO SDK V2.3.0 and later have it."
 
 ## IPRO6S EVK { #ipro6s }
 
@@ -215,7 +214,7 @@ IPRO Workbench builds, flashes and monitors the IPRO6 applications of the IPRO S
 
 | Item | Version |
 |---|---|
-| IPRO Workbench | 0.2.0 |
+| IPRO Workbench | 0.2.1 |
 | IPRO SDK | V2.3.0 (2.2.1 and later build, flash and monitor too, but **Board** does not show the firmware the board runs) |
 | IntelProCube | 0.7.0.1 or later (it has the partition table for the IPRO6S, `partition_cfg_fw_direct.toml`) |
 

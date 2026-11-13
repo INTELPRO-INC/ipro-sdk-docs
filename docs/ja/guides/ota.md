@@ -13,7 +13,7 @@ FreeRTOS アプリケーションでは、更新は boot2 が行います。動�
     - リファレンス：`ipro_ble_remote` の `defconfig_reef` + `partition_cfg_2M_remote_ab.toml` + boot2 v0.6.0（IntelProCube に同梱）。デフォルトの `.config` には OTA がありません。
     - パッケージ：`tools/create_ota.py` が IntelProCube で結合した `whole_img.bin` を `.xz.ota`（512 バイトのヘッダー + XZ ペイロード）にまとめます。Reef 向けには `make_reef_ota.sh` が両方の手順を実行します。
     - コンポーネント：`components/sys/ipro_ota`（`CONFIG_IPRO_OTA`）は、パーティションテーブルを切り替える前に、Flash に書き込まれたパッケージのヘッダーと SHA-256 を検査します。転送方式は BLE OTA サービス 0xFF60（`CONFIG_IPRO_OTA_BLE`）とコンソール UART のコマンド `ota_uart`（`CONFIG_IPRO_OTA_UART`）です。
-    - 送信側：BLE では `tools/reef_ota.py`（Python、bleak）または `ipro_remote_demo.apk`（Android）、コンソール UART では IPRO Workbench 0.2.0 の OTA Package ページ。
+    - 送信側：BLE では `tools/reef_ota.py`（Python、bleak）または `ipro_remote_demo.apk`（Android）、コンソール UART では IPRO Workbench 0.2.1 の OTA Package ページ。
     - IPRO6S FIN カードは、`defconfig_wifi_ipro6s` でビルドした `ipro7ai_reef_demo` の `ipro6s_ota <http url>` で Wi-Fi 経由で更新します。
     - Reef では標準の `partition_cfg_2M.toml` で OTA を実行しないでください。含まれないもの：署名付きパッケージの製品設定（`tools/ota_products.py`）。
 
@@ -129,7 +129,7 @@ V2.3.0 以降、OTA サービスは OTA コンポーネント（`components/sys/
 
 V2.3.0 以降、`CONFIG_IPRO_OTA_UART=y` でビルドしたアプリケーションにはシェルコマンド `ota_uart <パッケージのバイト数> [noapply]` があります。コンソール UART で `.xz.ota` パッケージを受信するため、2 つ目の UART もボーレートの変更も、アプリケーション側のコードも不要です。`ipro_ble_remote` の `defconfig_reef` で有効になっています。ボードには、boot2 と 2 つ目の FW スロットを持つパーティションテーブル（`partition_cfg_2M_remote_ab.toml` など）を書き込んでおく必要があります。
 
-最も簡単な送信側は IPRO Workbench 0.2.0 の **OTA Package** ページです。パッケージを作成して **Send to Board** を押すか、**Check on Board** を押してインストールせずにボードでパッケージを検査させます。手順は IPRO Workbench の [OTA Package](../workbench/flash.md#ota)にあります。115200 baud では、200 KB に約 22 秒かかります。
+最も簡単な送信側は IPRO Workbench 0.2.1 の **OTA Package** ページです。パッケージを作成して **Send to Board** を押すか、**Check on Board** を押してインストールせずにボードでパッケージを検査させます。手順は IPRO Workbench の [OTA Package](../workbench/flash.md#ota)にあります。115200 baud では、200 KB に約 22 秒かかります。
 
 独自の送信側を作る場合のプロトコルは次のとおりです（整数はリトルエンディアン。CRC は seq、len、ペイロードに対する CRC-16/CCITT-FALSE）。
 

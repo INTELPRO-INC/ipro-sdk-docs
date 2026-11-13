@@ -41,8 +41,6 @@ IDE 在每一步失敗時都會跳出說明與處理按鈕。下表依訊息列�
 | … 是 boot2 配置的分割表，而這份 IntelProCube 沒有 … 的 boot2 映像。 | 分割表需要 boot2，IntelProCube 沒有附這顆晶片的 boot2 | 按 **安裝 IntelProCube** 更新，或在 **分割表** 改選直接啟動韌體的分割表 |
 | IntelProCube … 版本太舊，不能用來燒錄 …：用它燒錄後開發板不會開機。 | IPRO6S EVK 需要 IntelProCube 0.7.0.1 以上 | 按 **安裝 IntelProCube**，或 **瀏覽…** 指定較新的版本 |
 | 開發板沒有進入 boot2 的 USB 下載模式。… | [經開發板的 USB 燒錄](flash.md#usb-flash)時，板子沒有重新開機進入下載模式（例如韌體沒有 USB 主控台） | 再按一次 **燒錄**，並在 20 秒內拔掉開發板的 USB 線再插上 |
-| … 是開發板自己的 USB 埠。Windows 版暫時還不能經這個埠燒錄… | Windows 版不提供經開發板 USB 燒錄 | 在 macOS 上燒錄，或接上 IPRO 除錯探棒並選它的 UART |
-| … 是開發板自己的 USB 埠，而這個 SDK 沒有經它燒錄用的 tools/ipro_dl.py。 | SDK 比 V2.3.0 舊 | 改用 IPRO SDK V2.3.0，或經 IPRO 除錯探棒燒錄 |
 | 預設的分割表隨 IntelProCube 提供，但找不到 IntelProCube。／這個 IntelProCube 沒有 …。 | 「分割表」頁找不到預設的分割表 | 按 **安裝 IntelProCube**，或在「燒錄時使用」改選其他分割表 |
 | 分割表的 FW 分割區只有一個 slot。OTA 需要有第二個 FW slot 的分割表…／這份分割表是沒有 boot2 的配置… | 「OTA 包」：分割表不是 boot2 的 A/B 配置 | 在 **分割表** 選有 boot2 空間與第二個 FW slot 的分割表（例如 `ipro_ble_remote` 的 `partition_cfg_2M_remote_ab.toml`），見 [OTA 包](flash.md#ota) |
 | boot2 OTA 包只適用 IPRO7 的應用；這個應用是為 … 建置的。 | 「OTA 包」不支援 IPRO6S 的應用程式 | 無；IPRO6S 不做 boot2 OTA 包 |

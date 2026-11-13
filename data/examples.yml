@@ -1558,10 +1558,10 @@ categories:
       - name: ipro7ai_sensor_tag_demo
         path: apps/platform/ipro7ai_sensor_tag_demo
         purpose:
-          zh: "讀取 6 軸 IMU、電量計、按鍵，控制 LED 與蜂鳴器；每秒 20 行 `名稱:數值` 經板子的 USB 送出，IPRO Workbench 0.2.0 的感測器儀表板依 `dashboard.yaml` 排版；經板子的 USB 以 `tools/ipro_dl.py` 燒錄"
-          en: "Reads the 6-axis IMU, fuel gauge and button, drives the LEDs and buzzer; prints 20 `name:value` lines a second over the board's own USB, laid out by IPRO Workbench 0.2.0's Sensor Dashboard with `dashboard.yaml`; flashed over the board's USB with `tools/ipro_dl.py`"
-          zh-cn: "读取 6 轴 IMU、电量计、按键，控制 LED 与蜂鸣器；每秒 20 行 `名称:数值` 经开发板的 USB 输出，IPRO Workbench 0.2.0 的传感器仪表板按 `dashboard.yaml` 排版；经开发板的 USB 以 `tools/ipro_dl.py` 烧录"
-          ja: "6 軸 IMU、燃料ゲージ、ボタンを読み取り、LED とブザーを制御します。ボード自身の USB から毎秒 20 行の `名前:値` を出力し、IPRO Workbench 0.2.0 のセンサーダッシュボードが `dashboard.yaml` に従って表示します。書き込みはボードの USB から `tools/ipro_dl.py` で行います"
+          zh: "讀取 6 軸 IMU、電量計、按鍵，控制 LED 與蜂鳴器；每秒 20 行 `名稱:數值` 經板子的 USB 送出，IPRO Workbench 0.2.1 的感測器儀表板依 `dashboard.yaml` 排版；經板子的 USB 以 `tools/ipro_dl.py` 燒錄"
+          en: "Reads the 6-axis IMU, fuel gauge and button, drives the LEDs and buzzer; prints 20 `name:value` lines a second over the board's own USB, laid out by IPRO Workbench 0.2.1's Sensor Dashboard with `dashboard.yaml`; flashed over the board's USB with `tools/ipro_dl.py`"
+          zh-cn: "读取 6 轴 IMU、电量计、按键，控制 LED 与蜂鸣器；每秒 20 行 `名称:数值` 经开发板的 USB 输出，IPRO Workbench 0.2.1 的传感器仪表板按 `dashboard.yaml` 排版；经开发板的 USB 以 `tools/ipro_dl.py` 烧录"
+          ja: "6 軸 IMU、燃料ゲージ、ボタンを読み取り、LED とブザーを制御します。ボード自身の USB から毎秒 20 行の `名前:値` を出力し、IPRO Workbench 0.2.1 のセンサーダッシュボードが `dashboard.yaml` に従って表示します。書き込みはボードの USB から `tools/ipro_dl.py` で行います"
         boards:
           zh: "需要 IPRO7AI Sensor Tag"
           en: "Needs the IPRO7AI Sensor Tag"

@@ -5,7 +5,7 @@ description: IPRO Workbench 的消息、工具栏和侧边栏状态的含义及�
 
 # 故障排除
 
-按出现的位置，列出 IPRO Workbench 0.2.0 中各种消息和状态的原因及解决方法。
+按出现的位置，列出 IPRO Workbench 0.2.1 中各种消息和状态的原因及解决方法。
 
 ## 界面上的消息 { #messages }
 
@@ -41,8 +41,6 @@ description: IPRO Workbench 的消息、工具栏和侧边栏状态的含义及�
 | … is laid out for boot2, and this IntelProCube has no boot2 image for …. | 分区表需要 boot2，而 IntelProCube 没有这颗芯片的 boot2 | 点击 **Install IntelProCube** 更新，或在 **Partition Table** 中改选直接启动固件的分区表 |
 | IntelProCube … is too old for …: a board flashed with it does not start. | IPRO6S EVK 需要 IntelProCube 0.7.0.1 或更高版本 | 点击 **Install IntelProCube**，或通过 **Browse…** 指向较新的版本 |
 | The board did not start boot2's USB downloader. … | [通过开发板自身的 USB 烧录](flash.md#usb-flash)时，开发板没有重启并进入下载模式（例如固件没有 USB 控制台） | 再次点击 **Flash**，并在 20 秒内拔下开发板的 USB 线再插上 |
-| … is the board's own USB port. Flashing over it is not available on Windows yet… | Windows 版不支持通过开发板的 USB 烧录 | 在 macOS 上烧录，或连接 IPRO Debug Probe 并选择它的 UART |
-| … is the board's own USB port, and this SDK has no tools/ipro_dl.py to flash over it. | SDK 早于 V2.3.0 | 改用 IPRO SDK V2.3.0，或通过 IPRO Debug Probe 烧录 |
 | The default partition table comes with IntelProCube, and IntelProCube was not found. / This IntelProCube has no …. | **Partition Table** 找不到默认的分区表 | 点击 **Install IntelProCube**，或在 **Flash with** 中改选其他分区表 |
 | The partition table's FW partition has one slot. An OTA needs a table with a second FW slot… / This partition table is a layout without boot2… | **OTA Package**：分区表不是 boot2 的 A/B 布局 | 在 **Partition Table** 中选择为 boot2 预留了空间且有第二个 FW slot 的分区表（例如 `ipro_ble_remote` 的 `partition_cfg_2M_remote_ab.toml`）；请参阅 [OTA 包](flash.md#ota) |
 | boot2 OTA packages are for IPRO7 applications; this one is built for the …. | **OTA Package** 不支持 IPRO6S 的应用程序 | 无；IPRO6S 不制作 boot2 OTA 包 |

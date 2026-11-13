@@ -13,7 +13,7 @@ Official IPRO SDK releases, newest first; the current release is V2.3.0. Downloa
 
 <span class="ipro-badge">Latest</span> Released 2026-11-13 · [GitHub release](https://github.com/INTELPRO-INC/IPRO-SDK/releases/tag/IPRO-SDK-V2.3.0)
 
-IPRO7 / IPRO7AI and IPRO6S release: one OTA component for every transport, an open example for the IPRO7AI Sensor Tag with flashing over the board's own USB, and the IPRO6S build line. 41 FreeRTOS applications: 38 for IPRO7, 3 for IPRO6S. Use it with [IPRO Workbench 0.2.0](https://github.com/INTELPRO-INC/ipro-workbench/releases/tag/v0.2.0) (see [IPRO Workbench](../workbench/index.md)) and IntelProCube 0.7.0.1 or later.
+IPRO7 / IPRO7AI and IPRO6S release: one OTA component for every transport, an open example for the IPRO7AI Sensor Tag with flashing over the board's own USB, and the IPRO6S build line. 41 FreeRTOS applications: 38 for IPRO7, 3 for IPRO6S. Use it with [IPRO Workbench 0.2.1](https://github.com/INTELPRO-INC/ipro-workbench/releases/tag/v0.2.1) (see [IPRO Workbench](../workbench/index.md)) and IntelProCube 0.7.0.1 or later.
 
 | Download | Size | SHA-256 |
 |---|---|---|
@@ -27,7 +27,7 @@ IPRO7 / IPRO7AI and IPRO6S release: one OTA component for every transport, an op
 
     See `components/sys/ipro_ota/README.md`; the steps are in [OTA Updates](../guides/ota.md).
 - **`ipro7ai_sensor_tag_demo`** for the IPRO7AI Sensor Tag board: IMU (ISM330BX: acceleration, rotation, temperature), fuel gauge (CW2015), button, two LEDs and buzzer. It prints 20 lines a second of `name:value` pairs over the board's own USB, which the Sensor Dashboard of IPRO Workbench 0.2.0 lays out with the application's `dashboard.yaml`; shell commands `stream`, `rate`, `led`, `beep`. See [Examples](../examples/index.md).
-- **`tools/ipro_dl.py`**: flashes a board through boot2's USB downloader (Python standard library only, macOS and Linux). The Sensor Tag example is flashed with it; IPRO Workbench 0.2.0 on macOS uses it when Flash targets the board's own USB port.
+- **`tools/ipro_dl.py`**: flashes a board through boot2's USB downloader (Python standard library only, macOS and Linux). The Sensor Tag example is flashed with it; IPRO Workbench 0.2.0 on macOS uses it when Flash targets the board's own USB port (from 0.2.1 Workbench speaks the downloader protocol itself and no longer needs it).
 - **IPRO6S**: the boot prints a `Build:` line with the build date and time, as IPRO7 does, so IPRO Workbench can tell which firmware the board runs.
 - **IPRO6S Wi-Fi**: `wifi_ap_start -b 1 -o 1` keeps a 2.4 GHz access point on its 40 MHz channel even when neighbouring networks overlap it (`-b 1` alone still falls back to 20 MHz, as before).
 - **Fixed**: with DTIM power save, an access point whose beacon is sometimes late behind a neighbour's made the IPRO6S open its receiver too late and miss beacons; the receive window now stays on the on-time beacon.
@@ -44,7 +44,7 @@ Built and checked from the package before release: 37 FreeRTOS applications (`ip
 ### Known issues { #v2-3-0-known-issues }
 
 - The [V2.2.0 known issues and notes](#v2-2-0-known-issues) still apply, except that `ipro6_demo/defconfig_ipro6_lpwifi_ping` is no longer in the package; `ipro6_fmac/defconfig_ipro6_fmac_ap` still has no prebuilt library set.
-- **Flashing over the board's own USB**: IPRO Workbench 0.2.0 supports it on macOS only; on Windows, use the IPRO Debug Probe.
+- **Flashing over the board's own USB**: IPRO Workbench 0.2.0 supports it on macOS only. Use IPRO Workbench 0.2.1 or later, which flashes over the board's own USB on Windows 11 too; see [Flash over the board's own USB](../workbench/flash.md#usb-flash).
 
 ## IPRO-SDK-V2.2.1 { #v2-2-1 }
 

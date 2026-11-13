@@ -164,7 +164,7 @@ IPRO7AI 的 NPU 模型（`.inm`）通常放在 Flash 的 mfg 分割區，不和�
 
 ## 經開發板的 USB 燒錄 { #usb-flash }
 
-有些開發板的主控台就在板子自己的 USB 埠上（USB CDC），例如 IPRO7AI Sensor Tag，不需要 IPRO 除錯探棒。選的連接埠是這種 USB 埠時，**燒錄** 改經 boot2 的 USB 下載模式，用 SDK 的 `tools/ipro_dl.py`（SDK V2.3.0）寫入韌體、核對並啟動它。這個功能只有 macOS 版提供。
+有些開發板的主控台就在板子自己的 USB 埠上（USB CDC），例如 IPRO7AI Sensor Tag，不需要 IPRO 除錯探棒。選的連接埠是這種 USB 埠時，**燒錄** 改經 boot2 的 USB 下載模式：IDE 自己寫入韌體、核對並啟動它，不需要 Python，也不用 SDK 的 `tools/ipro_dl.py`，任何版本的 IPRO SDK 都可以。macOS 與 Windows 11 都支援（0.2.1 起）；在 Windows 上，板子進入下載模式時會以另一個 COM 埠出現。
 
 IDE 在下列情況改走這條路，其他情況照常用 IntelProCube 經探棒燒錄：
 
@@ -175,7 +175,7 @@ IDE 在下列情況改走這條路，其他情況照常用 IntelProCube 經探�
 
 <div class="ipro-steps" markdown>
 
-1. **接上開發板。** 用 USB 線把 IPRO7AI Sensor Tag 的 USB 埠接到 Mac。
+1. **接上開發板。** 用 USB 線把 IPRO7AI Sensor Tag 的 USB 埠接到電腦。
 
 2. **選應用程式並建置。** 在側邊欄「應用程式」點 **ipro7ai_sensor_tag_demo**（在 `platform` 分類下），按 **建置**。
 
@@ -183,19 +183,20 @@ IDE 在下列情況改走這條路，其他情況照常用 IntelProCube 經探�
 
 3. **選開發板的連接埠。** 按工具列的開發板名稱，選 **選擇連接埠…**。
 
-    **應該看到**：清單依「IPRO 除錯探棒」「其他 USB 序列埠」等分組；開發板的埠列在「其他 USB 序列埠」，例如 `/dev/cu.usbmodemXXXX`。選它。
+    **應該看到**：清單依「IPRO 除錯探棒」「其他 USB 序列埠」等分組；開發板的埠列在「其他 USB 序列埠」，例如 macOS 的 `/dev/cu.usbmodemXXXX`、Windows 的 `COM5`。選它。
 
-4. **燒錄。** 按 **燒錄**（`Cmd+Alt+U`）。
+4. **燒錄。** 按 **燒錄**（`Cmd+Alt+U`／`Ctrl+Alt+U`）。
 
     **應該看到**：**IPRO Flash** 依序顯示：
 
     ```text
-    Flashing over the board's own USB (boot2's USB downloader) with tools/ipro_dl.py
+    Flashing over the board's own USB, through boot2's USB downloader
     Typing reboot_usb on /dev/cu.usbmodemXXXX: the board restarts into the downloader
     boot2's USB downloader is on /dev/cu.usbmodemYYYY
+    [usbflash] rescue handshake OK on /dev/cu.usbmodemYYYY
     ```
 
-    接著是 `ipro_dl.py` 寫入的進度與 `verify OK`。完成後通知「ipro7ai_sensor_tag_demo 燒錄完成，耗時 N 秒。」，板子以新韌體重新開機，IDE 再選回開發板的埠（埠的名稱變了時，**IPRO Flash** 最後一行是 `The board is back on …`）。
+    接著是抹除、寫入的進度（`[usbflash] write …`）與 `[usbflash] verify OK`。Windows 上埠名是 `COM5`、`COM6` 這類名稱。完成後通知「ipro7ai_sensor_tag_demo 燒錄完成，耗時 N 秒。」，板子以新韌體重新開機，IDE 再選回開發板的埠（埠的名稱變了時，**IPRO Flash** 最後一行是 `The board is back on …`）。
 
 5. **看輸出。** 按 **序列埠監看**。
 
@@ -206,8 +207,6 @@ IDE 在下列情況改走這條路，其他情況照常用 IntelProCube 經探�
 !!! note
     - 這條路只寫入韌體：分割表、boot2 與 mfg 都不變，「分割表」選的分割表也不會用到。
     - 板子沒有進入下載模式時（例如韌體沒有 USB 主控台），顯示「開發板沒有進入 boot2 的 USB 下載模式。請再燒錄一次，並在它等待時（20 秒內）拔掉開發板的 USB 線再插上：boot2 會在開機時接受下載。」照著做即可。
-    - Windows 版選了開發板自己的 USB 埠時，顯示「… 是開發板自己的 USB 埠。Windows 版暫時還不能經這個埠燒錄：請在 macOS 上燒錄，或接上 IPRO Debug Probe 並選它的埠。」
-    - SDK 沒有 `tools/ipro_dl.py`（V2.3.0 以前）時，顯示「… 是開發板自己的 USB 埠，而這個 SDK 沒有經它燒錄用的 tools/ipro_dl.py。IPRO SDK V2.3.0 以上才有。」
 
 ## IPRO6S EVK { #ipro6s }
 
@@ -215,7 +214,7 @@ IPRO Workbench 可以建置、燒錄並監看 IPRO SDK 的 IPRO6 應用程式（
 
 | 項目 | 版本 |
 |---|---|
-| IPRO Workbench | 0.2.0 |
+| IPRO Workbench | 0.2.1 |
 | IPRO SDK | V2.3.0（2.2.1 以上也能建置、燒錄並監看，但「開發板」不顯示板子上執行的韌體） |
 | IntelProCube | 0.7.0.1 以上（附有 IPRO6S 用的分割表 `partition_cfg_fw_direct.toml`） |
 

@@ -10,7 +10,7 @@ IPRO Workbench is the integrated development environment (IDE) that INTELPRO pro
 The pages in this section use the [IPRO7AI Reef EVK V4.0](../hardware/boards/reef-evk.md) with the IPRO Debug Probe for their examples. Every step says what to do and what you should see; when the screen does not match, see [Troubleshooting](troubleshooting.md). With the IPRO6S EVK the steps for building, flashing and monitoring are the same; what differs is collected in the [IPRO6S EVK](flash.md#ipro6s) section of [Flashing and the Board](flash.md). If you work in VS Code instead, see [VS Code Extension](../guides/vscode.md).
 
 !!! info "Availability"
-    IPRO Workbench 0.2.0 (preview) for macOS and Windows is on the [IPRO Workbench releases page on GitHub](https://github.com/INTELPRO-INC/ipro-workbench/releases/tag/v0.2.0); no GitHub account is needed. There is no Linux version yet. See [Install IPRO Workbench](install.md).
+    IPRO Workbench 0.2.1 (preview) for macOS and Windows is on the [IPRO Workbench releases page on GitHub](https://github.com/INTELPRO-INC/ipro-workbench/releases/tag/v0.2.1); no GitHub account is needed. There is no Linux version yet. See [Install IPRO Workbench](install.md).
 
     Use it with IPRO SDK V2.3.0. Older SDKs work too, without the features marked "SDK V2.3.0" on these pages.
 
@@ -28,7 +28,7 @@ The pages in this section use the [IPRO7AI Reef EVK V4.0](../hardware/boards/ree
 | Memory analysis | Shows which libraries, object files and symbols use flash, ocram and hbnram; compares the size change from build to build, and lets you set a memory budget. |
 | Flashing and the board | Partition table view and check, writing boot2 along when the partition table is laid out for it, detection of the board's flash, checking the firmware running on the board, and writing AI models to the mfg partition; the IPRO6S EVK is flashed with its own partition table. |
 | OTA package | Makes the boot2 OTA package of the application and shows whether it is signed; sends it to the board over the console UART to install, or only for the board to check (SDK V2.3.0); see [OTA package](flash.md#ota). |
-| Flash over the board's own USB | When the selected port is the board's own USB port, flashes through boot2's USB downloader, with no probe (macOS, SDK V2.3.0); see [Flash over the board's own USB](flash.md#usb-flash). |
+| Flash over the board's own USB | When the selected port is the board's own USB port, flashes through boot2's USB downloader, with no probe (macOS, Windows 11); see [Flash over the board's own USB](flash.md#usb-flash). |
 | Serial monitor | Filtering, timestamps, saving and full logging, a serial plotter, and monitoring a second port at the same time. |
 | Sensor dashboard | Shows the `name:value` lines a board prints as tiles, meters, lamps, a tilt view and charts, with buttons that type commands on the board; `dashboard.yaml` in the application lays it out; see [Sensor dashboard](monitor.md#dashboard). |
 | Debugging and analysis | Decodes crash addresses into source lines automatically (IPRO7 series and IPRO6S), collects and analyzes crash dumps, and looks up registers and their fields. |
@@ -71,7 +71,7 @@ The tool pages all open in the editor area and share one layout: the title and t
 | IPRO SDK | IPRO SDK V2.3.0. The features marked "SDK V2.3.0" need it; the rest also work on 2.2.x (the IPRO6S EVK needs 2.2.1 or later) |
 | Chips | IPRO7, IPRO7AI, IPRO6S (builds the SDK's IPRO6 applications) |
 | Boards | [IPRO7AI Reef EVK V4.0](../hardware/boards/reef-evk.md), [IPRO6S EVK](flash.md#ipro6s); IPRO7AI Sensor Tag (the example for the [Sensor dashboard](monitor.md#dashboard) and for [flashing over the board's own USB](flash.md#usb-flash)) |
-| Flashing and connection | IPRO Debug Probe (USB); flashing uses IntelProCube (the IPRO6S EVK needs 0.7.0.1 or later); on macOS also over the board's own USB (SDK V2.3.0) |
+| Flashing and connection | IPRO Debug Probe (USB); flashing uses IntelProCube (the IPRO6S EVK needs 0.7.0.1 or later); also over the board's own USB (macOS, Windows 11) |
 | Interface languages | Traditional Chinese, English, Simplified Chinese, Japanese |
 
 ## Workflow { #workflow }
@@ -94,7 +94,7 @@ The tool pages all open in the editor area and share one layout: the title and t
 
 ## Full manual { #manual }
 
-The IPRO Workbench Operation Manual V1.2 is attached as a PDF to the 0.2.0 release: [English](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.0/IPRO-Workbench-Operation-Manual-V1.2-en.pdf) (73 pages) or [Traditional Chinese](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.0/IPRO-Workbench-Operation-Manual-V1.2-zh-TW.pdf) (67 pages). V1.2 is written for 0.1.1; a manual for 0.2.0 follows, and until then these pages describe what is new or changed in 0.2.0. It is also listed under [Documents](../documents/index.md).
+The IPRO Workbench Operation Manual V1.2 is attached as a PDF to the 0.2.1 release: [English](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.1/IPRO-Workbench-Operation-Manual-V1.2-en.pdf) (73 pages) or [Traditional Chinese](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.1/IPRO-Workbench-Operation-Manual-V1.2-zh-TW.pdf) (67 pages). V1.2 is written for 0.1.1; a manual for 0.2.1 follows, and until then these pages describe what is new or changed in 0.2.1. It is also listed under [Documents](../documents/index.md).
 
 ## Pages in this section { #pages }
 
@@ -164,13 +164,12 @@ The IPRO Workbench Operation Manual V1.2 is attached as a PDF to the 0.2.0 relea
 
 ## Scope of this release { #limitations }
 
-These pages cover the IPRO Workbench 0.2.0 preview. This release has the following limitations:
+These pages cover the IPRO Workbench 0.2.1 preview. This release has the following limitations:
 
 - The installers are not signed by Apple (not notarized) or Microsoft, so the operating system shows a prompt the first time you open or install IPRO Workbench (see [Install](install.md#install) for what to do).
 - Debugging over JTAG is not available yet. If the board crashes, use the crash decoding and crash dumps described in [Debugging and Analysis](debug.md) instead.
 - Automatic updates are off. To get a new version, download it from the releases page and install it again.
 - [Wi-Fi throughput (iperf)](measure.md#iperf): the board's network name and password cannot contain spaces, and the board echoes the password in the serial monitor. When the board sends to a Windows PC, the firewall must allow incoming TCP port 5001.
-- [Flashing over the board's own USB](flash.md#usb-flash) is only in the macOS version; on Windows, flash through the IPRO Debug Probe.
 - On Windows, build the IPRO SDK with the RISC-V toolchain 14.2.1 (the environment check installs it); 13.1.1 cannot link the SDK's prebuilt libraries.
 - IPRO6 series boards print no partition table or flash ID at boot, so the partition table is not compared with the board's and the board's flash is not detected at boot; with IPRO SDK 2.2.1 or earlier, **Board** also does not show which firmware the board runs (see [Differences from the IPRO7 Series](flash.md#ipro6s-differences)).
 - There is no Linux version yet.

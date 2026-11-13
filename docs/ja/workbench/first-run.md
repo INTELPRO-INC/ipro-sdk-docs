@@ -67,7 +67,7 @@ SDK に付属するユニットテスト `ipro_unit_test` を使って「ビル�
 
 ![Start from、Board、名前、カテゴリーの欄がある New IPRO Application ダイアログ](../assets/workbench/new-app.svg)
 
-0.2.0 では、**Start from** の選択肢が図より 3 つ多くなっています。ほかの欄は同じです。選択肢は次のとおりです。
+**Start from** の選択肢は次のとおりです。
 
 | Start from | ボード | 作成されるもの |
 |---|---|---|

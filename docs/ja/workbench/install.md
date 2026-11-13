@@ -1,18 +1,18 @@
 ---
 title: "IPRO Workbench のインストール"
-description: IPRO Workbench 0.2.0 をダウンロードして検証し、macOS または Windows にインストールして開発環境を整え、IPRO SDK を開き、IDE が認識するまで IPRO7AI Reef EVK V4.0 または IPRO6S EVK を接続します。
+description: IPRO Workbench 0.2.1 をダウンロードして検証し、macOS または Windows にインストールして開発環境を整え、IPRO SDK を開き、IDE が認識するまで IPRO7AI Reef EVK V4.0 または IPRO6S EVK を接続します。
 ---
 
 # IPRO Workbench のインストール
 
-このページでは、IPRO Workbench のインストールから、IDE がボードを認識するまでを説明します。完了すると、IPRO Home のバナーに「Ready to run」と表示されます。対象は IPRO Workbench 0.2.0 です。ボタンなどのインターフェースのラベルは、英語のインターフェースでの表記のまま太字で示します。
+このページでは、IPRO Workbench のインストールから、IDE がボードを認識するまでを説明します。完了すると、IPRO Home のバナーに「Ready to run」と表示されます。対象は IPRO Workbench 0.2.1 です。ボタンなどのインターフェースのラベルは、英語のインターフェースでの表記のまま太字で示します。
 
 ## 前提条件 { #prerequisites }
 
 | 項目 | 内容 |
 |---|---|
 | コンピューター | macOS 12 以降（Apple シリコン）または Windows 11（x64）で、GitHub にアクセスできること。IDE、ツール、SDK で合計約 4 GB のディスク容量が必要です。 |
-| インストーラー | macOS：`IPRO-Workbench-0.2.0-mac-arm64.dmg`、Windows：`IPRO-Workbench-0.2.0-win-x64.exe`。GitHub の IPRO Workbench リリースページからダウンロードします（[ダウンロードと検証](#download)を参照）。GitHub アカウントは不要です。 |
+| インストーラー | macOS：`IPRO-Workbench-0.2.1-mac-arm64.dmg`、Windows：`IPRO-Workbench-0.2.1-win-x64.exe`。GitHub の IPRO Workbench リリースページからダウンロードします（[ダウンロードと検証](#download)を参照）。GitHub アカウントは不要です。 |
 | IPRO SDK | IPRO SDK V2.3.0（[SDK を開く](#open-sdk)ときに GitHub からインストールできます）。古い SDK でも使用できますが、「SDK V2.3.0」と記載した機能は使えません |
 | ボード | [IPRO7AI Reef EVK V4.0](../hardware/boards/reef-evk.md)、または IPRO6S EVK |
 | プローブとケーブル | IPRO Debug Probe と、それをコンピューターに接続する USB ケーブル |
@@ -22,34 +22,34 @@ description: IPRO Workbench 0.2.0 をダウンロードして検証し、macOS �
 
 | ファイル | システム | サイズ |
 |---|---|---|
-| [`IPRO-Workbench-0.2.0-mac-arm64.dmg`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.0/IPRO-Workbench-0.2.0-mac-arm64.dmg) | macOS 12 以降、Apple シリコン | 201 MB |
-| [`IPRO-Workbench-0.2.0-win-x64.exe`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.0/IPRO-Workbench-0.2.0-win-x64.exe) | Windows 11、x64 | 161 MB |
+| [`IPRO-Workbench-0.2.1-mac-arm64.dmg`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.1/IPRO-Workbench-0.2.1-mac-arm64.dmg) | macOS 12 以降、Apple シリコン | 201 MB |
+| [`IPRO-Workbench-0.2.1-win-x64.exe`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.1/IPRO-Workbench-0.2.1-win-x64.exe) | Windows 11、x64 | 161 MB |
 
 <div class="ipro-steps" markdown>
 
-1. **インストーラーをダウンロードします。** IPRO Workbench 0.2.0 のリリースページ <https://github.com/INTELPRO-INC/ipro-workbench/releases/tag/v0.2.0> を開き、**Assets** から使用しているシステム用のインストーラーをダウンロードします。
+1. **インストーラーをダウンロードします。** IPRO Workbench 0.2.1 のリリースページ <https://github.com/INTELPRO-INC/ipro-workbench/releases/tag/v0.2.1> を開き、**Assets** から使用しているシステム用のインストーラーをダウンロードします。
 
 2. **ダウンロードしたファイルを検証し**、破損や差し替えがないことを確認します。
 
     === "macOS"
 
         ```bash
-        shasum -a 256 IPRO-Workbench-0.2.0-mac-arm64.dmg
+        shasum -a 256 IPRO-Workbench-0.2.1-mac-arm64.dmg
         ```
 
     === "Windows"
 
         ```powershell
-        (Get-FileHash .\IPRO-Workbench-0.2.0-win-x64.exe -Algorithm SHA256).Hash
+        (Get-FileHash .\IPRO-Workbench-0.2.1-win-x64.exe -Algorithm SHA256).Hash
         ```
 
     **期待される結果**：同じファイルについて、下記の値と同じ値が表示されます（Windows では大文字で表示されます）。リリースページの `SHA256SUMS.txt` にもこれらの値が記載されています。
 
-    ```text title="IPRO Workbench 0.2.0 インストーラーの SHA-256"
-    # IPRO-Workbench-0.2.0-mac-arm64.dmg
-    0c2e4391d3cefbd8906c07ab65554a8f5a4812baa44ee67356ed51e4262c0cb7
-    # IPRO-Workbench-0.2.0-win-x64.exe
-    5d3643d1d346ae68b0b53ac608b758f3bff2bca7136b18cf00a4e351aaa9fb2a
+    ```text title="IPRO Workbench 0.2.1 インストーラーの SHA-256"
+    # IPRO-Workbench-0.2.1-mac-arm64.dmg
+    85320f4ef469bb8e436f6cd0575d6f2410502e05040da3f137e3d343a17533f9
+    # IPRO-Workbench-0.2.1-win-x64.exe
+    0beb0daffcbd30f6b37e2f252ee9b75c00e41507b426da3045036319e4918660
     ```
 
 </div>
@@ -64,11 +64,11 @@ description: IPRO Workbench 0.2.0 をダウンロードして検証し、macOS �
 
     === "macOS"
 
-        `IPRO-Workbench-0.2.0-mac-arm64.dmg` を開き、**IPRO Workbench** を「アプリケーション」フォルダーにドラッグします。
+        `IPRO-Workbench-0.2.1-mac-arm64.dmg` を開き、**IPRO Workbench** を「アプリケーション」フォルダーにドラッグします。
 
     === "Windows"
 
-        1. `IPRO-Workbench-0.2.0-win-x64.exe` をダブルクリックします。
+        1. `IPRO-Workbench-0.2.1-win-x64.exe` をダブルクリックします。
         2. 「Windows によって PC が保護されました」と表示される場合があります。**詳細情報** をクリックしてアプリ名を確認し、**実行** をクリックします。
         3. インストーラーのウィザードでインストール対象のユーザーを尋ねられたら、現在のユーザーのみにインストールする方を選択します（管理者権限は不要です）。続いてインストール先のフォルダーを変更できます。**Install** をクリックし、完了したら **Finish** をクリックします。
 
@@ -91,7 +91,7 @@ description: IPRO Workbench 0.2.0 をダウンロードして検証し、macOS �
 </div>
 
 !!! tip
-    IT 担当者が一括展開する場合は、サイレントインストール `IPRO-Workbench-0.2.0-win-x64.exe /S` を使用するか、`/D=<folder>` でインストール先を指定します（`/D` は最後のパラメーターにする必要があります）。
+    IT 担当者が一括展開する場合は、サイレントインストール `IPRO-Workbench-0.2.1-win-x64.exe /S` を使用するか、`/D=<folder>` でインストール先を指定します（`/D` は最後のパラメーターにする必要があります）。
 
 ## 表示言語 { #language }
 

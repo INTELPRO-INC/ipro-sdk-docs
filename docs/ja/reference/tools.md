@@ -22,7 +22,7 @@ SDK に同梱されているホストツールのコマンド構文、オプシ�
 | `make` + `project.build` | 各アプリケーションの `Makefile` | 1 つのアプリケーションをビルド | 同梱 |
 | `serial_monitor.py` | `tools/` | コンソール出力の読み取り。最初に 1 つのコマンドを送信し、パターンを待ち、ログを保存することも可能（macOS、Linux。対話型ターミナルではありません） | 同梱 |
 | `create_ota.py` | `tools/` | IntelProCube の結合イメージを boot2 OTA パッケージにまとめる | 同梱 |
-| `ipro_dl.py` | `tools/` | boot2 の USB ダウンローダー経由でボードに書き込みます。Python 標準ライブラリだけで動きます（macOS、Linux）。IPRO7AI Sensor Tag の `ipro7ai_sensor_tag_demo` はこれでボードの USB から書き込み、IPRO Workbench 0.2.0 も macOS でボードの USB から書き込むときに使います。V2.3.0 から | 同梱 |
+| `ipro_dl.py` | `tools/` | boot2 の USB ダウンローダー経由でボードに書き込みます。Python 標準ライブラリだけで動きます（macOS、Linux）。IPRO7AI Sensor Tag の `ipro7ai_sensor_tag_demo` はこれでボードの USB から書き込み、IPRO Workbench 0.2.0 も macOS でボードの USB から書き込むときに使っていました（0.2.1 からは不要です）。V2.3.0 から | 同梱 |
 | ブラウザー版の画像 Teach | `tools/teach_web/` | Chrome または Edge で画像を収集し、分類器を学習して `ipro_reef_teach` にデプロイ | 同梱 |
 | `mfg_payload.py` | `apps/ai/ipro_reef_teach/` | `ipro_reef_teach` の `--mfg` 内容（起動モードと声紋モデル）を生成 | 同梱 |
 | Reef BLE OTA ツール | `apps/bluetooth/ble/ipro_ble_remote/tools/` | `make_reef_ota.sh`、`reef_ota.py`、`reef_ble_test.py`、および Android デモアプリ `ipro_remote_demo.apk`（アプリケーションディレクトリ内） | 同梱 |

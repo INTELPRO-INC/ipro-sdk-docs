@@ -1,11 +1,11 @@
 ---
 title: "快捷键、命令与设置"
-description: IPRO Workbench 0.2.0 参考：键盘快捷键、IPRO 命令、ipro.* 设置、MCP 工具以及 IDE 使用的文件和文件夹。
+description: IPRO Workbench 0.2.1 参考：键盘快捷键、IPRO 命令、ipro.* 设置、MCP 工具以及 IDE 使用的文件和文件夹。
 ---
 
 # 快捷键、命令与设置
 
-IPRO Workbench 0.2.0 的键盘快捷键、命令、设置、MCP 工具和文件位置。
+IPRO Workbench 0.2.1 的键盘快捷键、命令、设置、MCP 工具和文件位置。
 
 ## 键盘快捷键 { #shortcuts }
 

@@ -75,7 +75,7 @@ make -C apps/bluetooth/ble/ipro_ble_remote DEFCONFIG=defconfig_reef
 | [`ipro7_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/platform/ipro7_demo) | 全芯片参考：PWM、SPI、I2S、LCD、音频 ADC／DAC、USB 设备（CDC、HID、MSC、UAC、UVC）、文件系统、TRNG、DSP 等，各有 shell 命令 | 需要 IPRO7 EVB；另有 `defconfig_boot2_nopsram`、`defconfig_boot2_ota`、`defconfig_nist_fulltest`、`defconfig_security_cert` | UART 115200 |
 | [`ipro7ai_evk_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/platform/ipro7ai_evk_demo) | IPRO7AI EVK bring-up：LCD、摄像头、麦克风、扬声器与 SD 卡；`config_bt` 加上 BLE 与 LE Audio | 需要 IPRO7AI EVK | `.config`：UART 921600<br>`config_*`：UART 115200 |
 | [`ipro7ai_evk_launcher`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/platform/ipro7ai_evk_launcher) | 摄像头、LCD、麦克风与扬声器集成在单一镜像中，通过 NPU 识别手势切换页面 | 需要 IPRO7AI EVK | UART 921600 |
-| [`ipro7ai_sensor_tag_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/platform/ipro7ai_sensor_tag_demo) | 读取 6 轴 IMU、电量计、按键，控制 LED 与蜂鸣器；每秒 20 行 `名称:数值` 经开发板的 USB 输出，IPRO Workbench 0.2.0 的传感器仪表板按 `dashboard.yaml` 排版；经开发板的 USB 以 `tools/ipro_dl.py` 烧录 | 需要 IPRO7AI Sensor Tag | 开发板的 USB（CDC） |
+| [`ipro7ai_sensor_tag_demo`](https://github.com/INTELPRO-INC/IPRO-SDK/tree/IPRO-SDK-V2.3.0/apps/platform/ipro7ai_sensor_tag_demo) | 读取 6 轴 IMU、电量计、按键，控制 LED 与蜂鸣器；每秒 20 行 `名称:数值` 经开发板的 USB 输出，IPRO Workbench 0.2.1 的传感器仪表板按 `dashboard.yaml` 排版；经开发板的 USB 以 `tools/ipro_dl.py` 烧录 | 需要 IPRO7AI Sensor Tag | 开发板的 USB（CDC） |
 <!-- END generated: examples-platform -->
 
 ### AI 与图像 { #ai-vision }

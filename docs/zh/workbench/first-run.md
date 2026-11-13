@@ -67,7 +67,7 @@ description: 在 IPRO Workbench 用 SDK 內附的 ipro_unit_test 走完一輪建
 
 ![「新增 IPRO 應用程式」對話框：從何開始選了開發板的 Hello World，開發板是 IPRO7AI Reef (IPRO7AI)，名稱 my_app，分類 user，右下是建立與取消按鈕](../assets/workbench/new-app.svg)
 
-0.2.0 的「從何開始」比上圖多了三個選項，其他欄位相同。「從何開始」可以選：
+「從何開始」可以選：
 
 | 從何開始 | 開發板 | 建立的內容 |
 |---|---|---|

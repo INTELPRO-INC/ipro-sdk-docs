@@ -7,10 +7,10 @@ description: INTELPRO 為 IPRO 系列晶片提供的整合開發環境：在同�
 
 IPRO Workbench 是 INTELPRO 為 IPRO 系列晶片提供的整合開發環境（IDE）。在同一個視窗裡就能建置 IPRO SDK 的應用程式、燒錄到開發板、看板子的序列埠輸出，並提供 C/C++ 程式碼導覽、設定檔切換、腳位設定、GATT 設定、記憶體分析、OTA 包、感測器儀表板、當機分析、板上測試、RF、Wi-Fi 傳輸速率與功耗量測，以及能自己動手建置與燒錄的 AI 助理。
 
-本節對應 IPRO Workbench 0.2.0，以 [IPRO7AI Reef EVK V4.0](../hardware/boards/reef-evk.md) 加上 IPRO 除錯探棒（IPRO Debug Probe）示範。每一步都寫「做什麼」和「應該看到什麼」；畫面和本節不一樣時，請看[疑難排解](troubleshooting.md)。使用 IPRO6S EVK 時，建置、燒錄與監看的步驟相同，不同的地方集中在[燒錄與開發板](flash.md)的 [IPRO6S EVK](flash.md#ipro6s) 一節。習慣在 VS Code 開發時，見 [VS Code Extension](../guides/vscode.md)。
+本節對應 IPRO Workbench 0.2.1，以 [IPRO7AI Reef EVK V4.0](../hardware/boards/reef-evk.md) 加上 IPRO 除錯探棒（IPRO Debug Probe）示範。每一步都寫「做什麼」和「應該看到什麼」；畫面和本節不一樣時，請看[疑難排解](troubleshooting.md)。使用 IPRO6S EVK 時，建置、燒錄與監看的步驟相同，不同的地方集中在[燒錄與開發板](flash.md)的 [IPRO6S EVK](flash.md#ipro6s) 一節。習慣在 VS Code 開發時，見 [VS Code Extension](../guides/vscode.md)。
 
 !!! info "取得方式"
-    IPRO Workbench 0.2.0 預覽版的 macOS 與 Windows 安裝檔在 [GitHub 的 IPRO Workbench 發行頁](https://github.com/INTELPRO-INC/ipro-workbench/releases/tag/v0.2.0)，不需要 GitHub 帳號；安裝步驟見[安裝 IPRO Workbench](install.md)。尚未提供 Linux 版。
+    IPRO Workbench 0.2.1 預覽版的 macOS 與 Windows 安裝檔在 [GitHub 的 IPRO Workbench 發行頁](https://github.com/INTELPRO-INC/ipro-workbench/releases/tag/v0.2.1)，不需要 GitHub 帳號；安裝步驟見[安裝 IPRO Workbench](install.md)。尚未提供 Linux 版。
 
     請搭配 IPRO SDK V2.3.0 使用。較舊的 SDK 也能用，只是本節標示「SDK V2.3.0」的功能無法使用。
 
@@ -28,7 +28,7 @@ IPRO Workbench 是 INTELPRO 為 IPRO 系列晶片提供的整合開發環境（I
 | [記憶體分析](develop.md#memory) | 列出 flash、ocram、hbnram 各被哪些函式庫、物件檔與符號用掉；比較每次建置的大小變化，並可設定記憶體預算。 |
 | [燒錄與開發板](flash.md) | 分割表檢視與檢查、分割表是 boot2 配置時一併寫入 boot2、辨識板子的 Flash、核對板子上執行的韌體、把 AI 模型寫入 mfg 分割區；IPRO6S EVK 以它專用的分割表燒錄。 |
 | [OTA 包](flash.md#ota) | 製作應用程式的 boot2 OTA 包並顯示是否簽章；經主控台 UART 傳送到板子安裝，或只讓板子檢查（SDK V2.3.0）。 |
-| [經開發板的 USB 燒錄](flash.md#usb-flash) | 選的連接埠是開發板自己的 USB 埠時，經 boot2 的 USB 下載模式燒錄，不需要探棒（macOS，SDK V2.3.0）。 |
+| [經開發板的 USB 燒錄](flash.md#usb-flash) | 選的連接埠是開發板自己的 USB 埠時，經 boot2 的 USB 下載模式燒錄，不需要探棒（macOS、Windows 11）。 |
 | [序列埠監看](monitor.md) | 篩選、時間戳記、存檔與完整記錄、序列埠繪圖，以及在第二個連接埠同時監看。 |
 | [感測器儀表板](monitor.md#dashboard) | 把板子印出的 `名稱:數值` 顯示成數值卡、量表、指示燈、傾斜圖與曲線，並以按鈕送指令給板子；版面寫在應用程式的 `dashboard.yaml`。 |
 | [除錯與分析](debug.md) | 當機位址自動解碼成原始碼行號（IPRO7 系列與 IPRO6S）、收集並分析當機傾印、查暫存器與欄位。 |
@@ -71,7 +71,7 @@ IPRO 首頁是開啟 SDK 後編輯區的第一個分頁；關掉之後，按工�
 | IPRO SDK | IPRO SDK V2.3.0。標示「SDK V2.3.0」的功能需要這一版；其他功能在 2.2.x 上也能使用（IPRO6S EVK 需要 2.2.1 以上） |
 | 晶片 | IPRO7、IPRO7AI、IPRO6S（建置 SDK 的 IPRO6 應用程式） |
 | 開發板 | IPRO7AI Reef EVK V4.0，見 [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)；IPRO6S EVK，見 [IPRO6S EVK](flash.md#ipro6s)；IPRO7AI Sensor Tag（[感測器儀表板](monitor.md#dashboard)與[經開發板的 USB 燒錄](flash.md#usb-flash)的範例） |
-| 燒錄與連線 | IPRO 除錯探棒（USB），燒錄使用 IntelProCube（IPRO6S EVK 需要 0.7.0.1 以上）；macOS 上也能經開發板自己的 USB 燒錄（SDK V2.3.0） |
+| 燒錄與連線 | IPRO 除錯探棒（USB），燒錄使用 IntelProCube（IPRO6S EVK 需要 0.7.0.1 以上）；也能經開發板自己的 USB 燒錄（macOS、Windows 11） |
 | 介面語言 | 繁體中文、英文、簡體中文、日文 |
 
 ## 整體流程 { #workflow }
@@ -94,7 +94,7 @@ IPRO 首頁是開啟 SDK 後編輯區的第一個分頁；關掉之後，按工�
 
 ## 完整操作手冊 { #manual }
 
-《IPRO Workbench 操作手冊》V1.2 的 PDF 附在 GitHub 的 0.2.0 發行版：[繁體中文版](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.0/IPRO-Workbench-Operation-Manual-V1.2-zh-TW.pdf)（67 頁）、[英文版](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.0/IPRO-Workbench-Operation-Manual-V1.2-en.pdf)（73 頁）。V1.2 是為 0.1.1 寫的，0.2.0 的手冊之後提供；0.2.0 新增與改變的操作以本節為準。要離線閱讀或列印時，請下載 PDF。
+《IPRO Workbench 操作手冊》V1.2 的 PDF 附在 GitHub 的 0.2.1 發行版：[繁體中文版](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.1/IPRO-Workbench-Operation-Manual-V1.2-zh-TW.pdf)（67 頁）、[英文版](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.1/IPRO-Workbench-Operation-Manual-V1.2-en.pdf)（73 頁）。V1.2 是為 0.1.1 寫的，0.2.1 的手冊之後提供；0.2.1 新增與改變的操作以本節為準。要離線閱讀或列印時，請下載 PDF。
 
 ## 本節頁面 { #pages }
 
@@ -164,13 +164,12 @@ IPRO 首頁是開啟 SDK 後編輯區的第一個分頁；關掉之後，按工�
 
 ## 本版範圍 { #limitations }
 
-本節對應 IPRO Workbench 0.2.0 預覽版。這一版有下列限制：
+本節對應 IPRO Workbench 0.2.1 預覽版。這一版有下列限制：
 
 - 安裝檔沒有 Apple（未經公證）或 Microsoft 的簽章，第一次開啟或安裝時作業系統會提示（處理方式見[安裝](install.md#install)）。
 - 以 JTAG 除錯的功能尚未開放。當機時請改用[除錯與分析](debug.md)的當機解碼與當機傾印。
 - 自動更新關閉。新版本請到發行頁下載後重新安裝。
 - [Wi-Fi 傳輸速率（iperf）](measure.md#iperf)：板子的網路名稱與密碼不能有空白；板子會把密碼回顯在序列埠監看裡。板子送到 Windows 電腦時，防火牆要允許連入 TCP 連接埠 5001。
-- [經開發板的 USB 燒錄](flash.md#usb-flash)只有 macOS 版提供；Windows 上請用 IPRO 除錯探棒燒錄。
 - 在 Windows 上建置 IPRO SDK 要用 RISC-V 工具鏈 14.2.1（環境檢查會安裝它）；13.1.1 無法連結 SDK 預先編好的函式庫。
 - IPRO6 系列的板子開機時不印分割表與 Flash 識別碼，所以分割表不會和板子上的比對，開機時也不辨識板子的 Flash；用 IPRO SDK 2.2.1 以前的版本時，「開發板」也不會顯示板子上執行的是哪一版韌體（見[和 IPRO7 系列不同的地方](flash.md#ipro6s-differences)）。
 - 尚未提供 Linux 版。

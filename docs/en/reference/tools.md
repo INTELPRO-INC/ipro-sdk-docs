@@ -22,7 +22,7 @@ Command syntax, options and examples for the host tools that ship with the SDK. 
 | `make` + `project.build` | each application's `Makefile` | Build one application | Included |
 | `serial_monitor.py` | `tools/` | Read the console; optionally send one command first, wait for a pattern and save a log (macOS, Linux; not an interactive terminal) | Included |
 | `create_ota.py` | `tools/` | Wrap IntelProCube's combined image into a boot2 OTA package | Included |
-| `ipro_dl.py` | `tools/` | Flashes a board through boot2's USB downloader, Python standard library only (macOS, Linux); `ipro7ai_sensor_tag_demo` on the IPRO7AI Sensor Tag is flashed with it over the board's USB, and IPRO Workbench 0.2.0 on macOS uses it to flash over the board's USB. From V2.3.0 | Included |
+| `ipro_dl.py` | `tools/` | Flashes a board through boot2's USB downloader, Python standard library only (macOS, Linux); `ipro7ai_sensor_tag_demo` on the IPRO7AI Sensor Tag is flashed with it over the board's USB, and IPRO Workbench 0.2.0 on macOS used it to flash over the board's USB (from 0.2.1 Workbench no longer needs it). From V2.3.0 | Included |
 | Browser image Teach | `tools/teach_web/` | Collect images, train a classifier and deploy it to `ipro_reef_teach`, in Chrome or Edge | Included |
 | `mfg_payload.py` | `apps/ai/ipro_reef_teach/` | Build the `--mfg` content of `ipro_reef_teach` (boot mode and voiceprint model) | Included |
 | Reef BLE OTA tools | `apps/bluetooth/ble/ipro_ble_remote/tools/` | `make_reef_ota.sh`, `reef_ota.py`, `reef_ble_test.py`, plus the Android demo app `ipro_remote_demo.apk` (in the application directory) | Included |

@@ -164,7 +164,7 @@ IPRO7AI の NPU モデル（`.inm`）は通常、Flash の mfg パーティシ�
 
 ## ボード自身の USB から書き込む { #usb-flash }
 
-一部のボードは、コンソールをボード自身の USB ポート（USB CDC）に持っており（例：IPRO7AI Sensor Tag）、IPRO Debug Probe を必要としません。選択したポートがそのような USB ポートの場合、**Flash** は SDK の `tools/ipro_dl.py`（SDK V2.3.0）を使い、boot2 の USB ダウンローダーを経由して書き込みます。ファームウェアを書き込み、検証してから起動します。この機能は macOS 版にだけあります。
+一部のボードは、コンソールをボード自身の USB ポート（USB CDC）に持っており（例：IPRO7AI Sensor Tag）、IPRO Debug Probe を必要としません。選択したポートがそのような USB ポートの場合、**Flash** は boot2 の USB ダウンローダーを経由して書き込みます。IDE が自分でファームウェアを書き込み、検証してから起動するため、Python も SDK の `tools/ipro_dl.py` も不要で、どのバージョンの IPRO SDK でも使えます。macOS と Windows 11 の両方で動作します（0.2.1 から）。Windows では、ボードがダウンローダーに入っている間、別の COM ポートとして現れます。
 
 IDE は次の場合にこの方法を使い、それ以外の場合はプローブ経由で IntelProCube を使って書き込みます。
 
@@ -175,7 +175,7 @@ IDE は次の場合にこの方法を使い、それ以外の場合はプロー�
 
 <div class="ipro-steps" markdown>
 
-1. **ボードを接続します。** IPRO7AI Sensor Tag の USB ポートを USB ケーブルで Mac に接続します。
+1. **ボードを接続します。** IPRO7AI Sensor Tag の USB ポートを USB ケーブルでコンピューターに接続します。
 
 2. **アプリケーションを選択してビルドします。** **Applications** で **ipro7ai_sensor_tag_demo**（`platform` カテゴリー）をクリックし、**Build** をクリックします。
 
@@ -183,19 +183,20 @@ IDE は次の場合にこの方法を使い、それ以外の場合はプロー�
 
 3. **ボードのポートを選択します。** ツールバーのボード名をクリックし、**Select Port…** を選択します。
 
-    **期待される結果**：一覧が「IPRO Debug Probes」や「Other USB serial ports」などの見出しでグループ分けされて表示されます。ボードのポートは「Other USB serial ports」の下にあります（例：`/dev/cu.usbmodemXXXX`）。それを選択します。
+    **期待される結果**：一覧が「IPRO Debug Probes」や「Other USB serial ports」などの見出しでグループ分けされて表示されます。ボードのポートは「Other USB serial ports」の下にあります（例：macOS では `/dev/cu.usbmodemXXXX`、Windows では `COM5`）。それを選択します。
 
-4. **書き込みます。** **Flash** をクリックします（`Cmd+Alt+U`）。
+4. **書き込みます。** **Flash** をクリックします（`Cmd+Alt+U` / `Ctrl+Alt+U`）。
 
     **期待される結果**：**IPRO Flash** に次のように表示されます。
 
     ```text
-    Flashing over the board's own USB (boot2's USB downloader) with tools/ipro_dl.py
+    Flashing over the board's own USB, through boot2's USB downloader
     Typing reboot_usb on /dev/cu.usbmodemXXXX: the board restarts into the downloader
     boot2's USB downloader is on /dev/cu.usbmodemYYYY
+    [usbflash] rescue handshake OK on /dev/cu.usbmodemYYYY
     ```
 
-    続いて `ipro_dl.py` の書き込みの進行状況と `verify OK` が表示されます。「Flashed ipro7ai_sensor_tag_demo in N s.」という通知が表示され、ボードは新しいファームウェアで再起動し、IDE はボードのポートを再び選択します（ポート名が変わった場合、**IPRO Flash** の最後の行は `The board is back on …` です）。
+    続いて消去と書き込みの進行状況（`[usbflash] write …`）と `[usbflash] verify OK` が表示されます。Windows ではポート名は `COM5`、`COM6` のようになります。「Flashed ipro7ai_sensor_tag_demo in N s.」という通知が表示され、ボードは新しいファームウェアで再起動し、IDE はボードのポートを再び選択します（ポート名が変わった場合、**IPRO Flash** の最後の行は `The board is back on …` です）。
 
 5. **出力を確認します。** **Serial Monitor** をクリックします。
 
@@ -206,8 +207,6 @@ IDE は次の場合にこの方法を使い、それ以外の場合はプロー�
 !!! note
     - この方法で書き込まれるのはファームウェアだけです。パーティションテーブル、boot2、mfg はそのまま残り、**Partition Table** で選択したテーブルは使われません。
     - ボードがダウンローダーに入らない場合（例：USB コンソールのないファームウェア）、IDE は「The board did not start boot2's USB downloader. Flash again, and while it waits (20 s), unplug the board's USB cable and plug it in: boot2 listens for the downloader at power-on.」と表示します。その指示に従ってください。
-    - Windows 版でボード自身の USB ポートを選択すると、「… is the board's own USB port. Flashing over it is not available on Windows yet: flash from macOS, or connect the IPRO Debug Probe and select its port.」と表示されます。
-    - `tools/ipro_dl.py` がない SDK（V2.3.0 より前）では、IDE は「… is the board's own USB port, and this SDK has no tools/ipro_dl.py to flash over it. IPRO SDK V2.3.0 and later have it.」と表示します。
 
 ## IPRO6S EVK { #ipro6s }
 
@@ -215,7 +214,7 @@ IPRO Workbench は、IPRO SDK の IPRO6 アプリケーション（`.config` に
 
 | 項目 | バージョン |
 |---|---|
-| IPRO Workbench | 0.2.0 |
+| IPRO Workbench | 0.2.1 |
 | IPRO SDK | V2.3.0（2.2.1 以降でもビルド、書き込み、モニターは行えますが、**Board** にボードが実行しているファームウェアが表示されません） |
 | IntelProCube | 0.7.0.1 以降（IPRO6S 用のパーティションテーブル `partition_cfg_fw_direct.toml` を含む） |
 

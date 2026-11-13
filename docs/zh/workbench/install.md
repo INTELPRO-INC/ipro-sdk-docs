@@ -1,18 +1,18 @@
 ---
 title: "安裝 IPRO Workbench"
-description: 在 macOS 與 Windows 下載、核對並安裝 IPRO Workbench 0.2.0，補齊開發環境、開啟 IPRO SDK，直到 IDE 找到接在 IPRO 除錯探棒上的 IPRO7AI Reef EVK 或 IPRO6S EVK。
+description: 在 macOS 與 Windows 下載、核對並安裝 IPRO Workbench 0.2.1，補齊開發環境、開啟 IPRO SDK，直到 IDE 找到接在 IPRO 除錯探棒上的 IPRO7AI Reef EVK 或 IPRO6S EVK。
 ---
 
 # 安裝 IPRO Workbench
 
-本頁從安裝 IPRO Workbench 開始，一路到 IDE 找到開發板為止。完成後，電腦上有 IPRO Workbench 0.2.0 與開發需要的工具，IDE 開啟了 IPRO SDK，側邊欄「開發板」列出 IPRO 除錯探棒，首頁橫幅會顯示「已可執行」。
+本頁從安裝 IPRO Workbench 開始，一路到 IDE 找到開發板為止。完成後，電腦上有 IPRO Workbench 0.2.1 與開發需要的工具，IDE 開啟了 IPRO SDK，側邊欄「開發板」列出 IPRO 除錯探棒，首頁橫幅會顯示「已可執行」。
 
 ## 需要準備 { #prerequisites }
 
 | 項目 | 說明 |
 |---|---|
 | 電腦 | macOS 12 以上（Apple Silicon）或 Windows 11（x64），可以連上 GitHub。IDE、工具與 SDK 合計約需 4 GB 磁碟空間。 |
-| 安裝檔 | macOS：`IPRO-Workbench-0.2.0-mac-arm64.dmg`；Windows：`IPRO-Workbench-0.2.0-win-x64.exe`。從 GitHub 的 IPRO Workbench 發行頁下載（見[下載與核對](#download)），不需要 GitHub 帳號。 |
+| 安裝檔 | macOS：`IPRO-Workbench-0.2.1-mac-arm64.dmg`；Windows：`IPRO-Workbench-0.2.1-win-x64.exe`。從 GitHub 的 IPRO Workbench 發行頁下載（見[下載與核對](#download)），不需要 GitHub 帳號。 |
 | IPRO SDK | IPRO SDK V2.3.0（可以在[開啟 SDK](#open-sdk)時從 GitHub 安裝）。較舊的 SDK 也能用，只是標示「SDK V2.3.0」的功能無法使用 |
 | 開發板 | IPRO7AI Reef EVK V4.0（見 [IPRO7AI Reef EVK](../hardware/boards/reef-evk.md)），或 IPRO6S EVK（見 [IPRO6S EVK](flash.md#ipro6s)） |
 | 探棒與線材 | IPRO 除錯探棒（IPRO Debug Probe），以及接電腦用的 USB 線 |
@@ -22,12 +22,12 @@ description: 在 macOS 與 Windows 下載、核對並安裝 IPRO Workbench 0.2.0
 
 | 系統 | 安裝檔 | 大小 |
 |---|---|---|
-| macOS 12 以上（Apple Silicon） | [`IPRO-Workbench-0.2.0-mac-arm64.dmg`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.0/IPRO-Workbench-0.2.0-mac-arm64.dmg) | 201 MB |
-| Windows 11（x64） | [`IPRO-Workbench-0.2.0-win-x64.exe`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.0/IPRO-Workbench-0.2.0-win-x64.exe) | 161 MB |
+| macOS 12 以上（Apple Silicon） | [`IPRO-Workbench-0.2.1-mac-arm64.dmg`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.1/IPRO-Workbench-0.2.1-mac-arm64.dmg) | 201 MB |
+| Windows 11（x64） | [`IPRO-Workbench-0.2.1-win-x64.exe`](https://github.com/INTELPRO-INC/ipro-workbench/releases/download/v0.2.1/IPRO-Workbench-0.2.1-win-x64.exe) | 161 MB |
 
 <div class="ipro-steps" markdown>
 
-1. **下載安裝檔。** 開啟 IPRO Workbench 0.2.0 的發行頁 <https://github.com/INTELPRO-INC/ipro-workbench/releases/tag/v0.2.0>，在 **Assets** 下載自己系統的安裝檔。
+1. **下載安裝檔。** 開啟 IPRO Workbench 0.2.1 的發行頁 <https://github.com/INTELPRO-INC/ipro-workbench/releases/tag/v0.2.1>，在 **Assets** 下載自己系統的安裝檔。
 
 2. **核對下載的檔案**，確認沒有損壞或被替換：
 
@@ -36,7 +36,7 @@ description: 在 macOS 與 Windows 下載、核對並安裝 IPRO Workbench 0.2.0
         在「終端機」執行：
 
         ```bash
-        shasum -a 256 IPRO-Workbench-0.2.0-mac-arm64.dmg
+        shasum -a 256 IPRO-Workbench-0.2.1-mac-arm64.dmg
         ```
 
     === "Windows"
@@ -44,16 +44,16 @@ description: 在 macOS 與 Windows 下載、核對並安裝 IPRO Workbench 0.2.0
         在 PowerShell 執行：
 
         ```powershell
-        (Get-FileHash .\IPRO-Workbench-0.2.0-win-x64.exe -Algorithm SHA256).Hash
+        (Get-FileHash .\IPRO-Workbench-0.2.1-win-x64.exe -Algorithm SHA256).Hash
         ```
 
     **應該看到**：和下面同一個檔案的值相同（Windows 以大寫顯示）。發行頁的 `SHA256SUMS.txt` 也列有這些值。
 
-    ```text title="IPRO Workbench 0.2.0 安裝檔的 SHA-256"
-    # IPRO-Workbench-0.2.0-mac-arm64.dmg
-    0c2e4391d3cefbd8906c07ab65554a8f5a4812baa44ee67356ed51e4262c0cb7
-    # IPRO-Workbench-0.2.0-win-x64.exe
-    5d3643d1d346ae68b0b53ac608b758f3bff2bca7136b18cf00a4e351aaa9fb2a
+    ```text title="IPRO Workbench 0.2.1 安裝檔的 SHA-256"
+    # IPRO-Workbench-0.2.1-mac-arm64.dmg
+    85320f4ef469bb8e436f6cd0575d6f2410502e05040da3f137e3d343a17533f9
+    # IPRO-Workbench-0.2.1-win-x64.exe
+    0beb0daffcbd30f6b37e2f252ee9b75c00e41507b426da3045036319e4918660
     ```
 
 </div>
@@ -68,11 +68,11 @@ description: 在 macOS 與 Windows 下載、核對並安裝 IPRO Workbench 0.2.0
 
     === "macOS"
 
-        打開 `IPRO-Workbench-0.2.0-mac-arm64.dmg`，把 **IPRO Workbench** 拖進「應用程式」資料夾。
+        打開 `IPRO-Workbench-0.2.1-mac-arm64.dmg`，把 **IPRO Workbench** 拖進「應用程式」資料夾。
 
     === "Windows"
 
-        按兩下 `IPRO-Workbench-0.2.0-win-x64.exe`。
+        按兩下 `IPRO-Workbench-0.2.1-win-x64.exe`。
 
         Windows 可能顯示「Windows 已保護您的電腦」。按 **其他資訊**，確認應用程式名稱後按 **仍要執行**。
 
@@ -97,7 +97,7 @@ description: 在 macOS 與 Windows 下載、核對並安裝 IPRO Workbench 0.2.0
 </div>
 
 !!! tip "大量部署（Windows）"
-    IT 人員大量部署時，可以用無人值守安裝：`IPRO-Workbench-0.2.0-win-x64.exe /S`，或以 `/D=<資料夾>` 指定安裝位置（`/D` 必須是最後一個參數）。
+    IT 人員大量部署時，可以用無人值守安裝：`IPRO-Workbench-0.2.1-win-x64.exe /S`，或以 `/D=<資料夾>` 指定安裝位置（`/D` 必須是最後一個參數）。
 
 ## 介面語言 { #language }
 
